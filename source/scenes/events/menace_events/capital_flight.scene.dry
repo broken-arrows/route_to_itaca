@@ -15,12 +15,28 @@ Factories are shuttering, and industrial production is collapsing.
 
 @nationalize
 title: The government should seize unoccupied industries.
+subtitle: -1 budget
+unavailable-subtitle: [? if not (player_in_gov) : We must be in the government. ?][? if not ((player_party = "sr" and sr_industrial_policy >= 1) or (player_party = "m" and m_industrial_policy >= 1) or (player_party = "b")) : Our party does not support this radical course. ?]
+choose-if: (player_in_gov) and ((player_party = "sr" and sr_industrial_policy >= 1) or (player_party = "m" and m_industrial_policy >= 1) or (player_party = "b"))
+on-arrival: prov_gov_legitimacy += 5; budget -= 1; industries_nationalized += 20*(prov_gov_efficacy)
+
 
 @takeovers
 title: Workers must take over factories and organize production themselves!
+view-if: player_party != "k"
+unavailable-subtitle: [? if not (player_in_gov or player_in_exco) : We must be in the government or the Soviet executive committee. ?][? if not ((player_party = "sr" and sr_industrial_policy >= 1) or (player_party = "m" and m_industrial_policy >= 1) or (player_party = "b")) : Our party does not support this radical course. ?]
+choose-if: (player_in_gov or player_in_exco) and ((player_party = "sr" and sr_industrial_policy >= 1) or (player_party = "m" and m_industrial_policy >= 1) or (player_party = "b"))
+on-arrival: prov_gov_legitimacy += 5
+
+
 
 @assuage
 title: Can we assuage the capitalists somehow?
+unavailable-subtitle: [? if not player_in_gov: We must be in government. ?]
+choose-if: player_in_gov
+
 
 @nothing
 title: There is nothing we can do.
+
+There is nothing we can do.

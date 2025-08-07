@@ -130,7 +130,7 @@ if (Q.unemployed <= 1) {
 
 // inflation
 Q.inflation = Math.pow(1+0.01*Q.monthly_inflation, 12);
-Q.inflation = Math.round(100*(Q.inflation - 1));
+Q.inflation = Math.round(1000*(Q.inflation - 1))/10;
 
 // food production and distribution
 // food demand
@@ -305,7 +305,7 @@ if (Q.week_actions >= 1 && Q.current_player >= Q.n_players) {
         }
     }
     if (Q.civilian_production >= 50) {
-        if (Q.monthly_inflation >= 5) Q.monthly_inflation -= 0.1;
+        if (Q.monthly_inflation >= 4.5) Q.monthly_inflation -= 0.1;
         if (Q.rural_hunger <= 0 && Q.food_sold <= 0.08) {
             Q.food_sold += 0.001;
         }
@@ -329,13 +329,20 @@ if (Q.week_actions >= 1 && Q.current_player >= Q.n_players) {
         Q.train_capacity *= 0.995;
     }
     if (Q.transportation_production >= 5) {
-        Q.train_capacity *= 1.001;
+        if (Q.train_capcity < 140000) {
+            Q.train_capacity *= 1.005;
+        } else {
+            Q.train_capacity *= 1.001;
+        }
     }
 
     // Effects of hunger, inflation, and war exhaustion on party support /////////////////////////////////////////////////
+    // This changes based on which party is in opposition/government
     if (Q.hunger >= 10 && (Q.war_weariness >= 60 || Q.monthly_inflation >= 6.5)) {
-        Q.workers_b += 0.3;
-        Q.soldiers_b += 0.5;
+        if (!Q.b_in_gov) {
+            Q.workers_b += 0.3;
+            Q.soldiers_b += 0.5;
+        }
         if (Q.m_in_gov) {
             Q.workers_m -= 0.4;
             Q.soldiers_m -= 0.4;
@@ -347,8 +354,10 @@ if (Q.week_actions >= 1 && Q.current_player >= Q.n_players) {
     }
     if (Q.hunger >= 20 && (Q.war_weariness >= 50 || Q.monthly_inflation >= 5.5)) {
         Q.prov_gov_legitimacy -= 0.5;
-        Q.workers_b += 0.3;
-        Q.soldiers_b += 0.5;
+        if (!Q.b_in_gov) {
+            Q.workers_b += 0.3;
+            Q.soldiers_b += 0.5;
+        }
         if (Q.m_in_gov) {
             Q.workers_m -= 0.4;
             Q.soldiers_m -= 0.4;
@@ -360,14 +369,19 @@ if (Q.week_actions >= 1 && Q.current_player >= Q.n_players) {
     }
     if (Q.hunger >= 30 && (Q.war_weariness >= 40 || Q.monthly_inflation >= 5)) {
         Q.prov_gov_legitimacy -= 0.5;
-        Q.workers_b += 0.3;
-        Q.soldiers_b += 0.5;
+        if (!Q.b_in_gov) {
+            Q.workers_b += 0.3;
+            Q.soldiers_b += 0.5;
+        }
         if (Q.b_in_gov) {
             Q.workers_b -= 0.3;
             Q.soldiers_b -= 0.5;
-            // if Bolsheviks are in the provisional government and things are going badly, then anarchists gain in support.
-            Q.workers_anarchist += 0.3;
-            Q.soldiers_anarchist += 0.5;
+            Q.workers_anarchist += 0.1;
+            Q.soldiers_anarchist += 0.2;
+            if (!Q.m_in_gov) {
+                Q.workers_m += 0.1;
+                Q.soldiers_m += 0.1;
+            }
         }
         if (Q.m_in_gov) {
             Q.workers_m -= 0.4;
@@ -380,13 +394,18 @@ if (Q.week_actions >= 1 && Q.current_player >= Q.n_players) {
     }
     if (Q.hunger >= 40 && (Q.war_weariness >= 30 || Q.monthly_inflation >= 4)) {
         Q.prov_gov_legitimacy -= 0.5;
-        Q.workers_b += 0.3;
-        Q.soldiers_b += 0.5;
+        if (!Q.b_in_gov) {
+            Q.workers_b += 0.3;
+            Q.soldiers_b += 0.5;
+        }
         if (Q.b_in_gov) {
             Q.workers_b -= 0.3;
             Q.soldiers_b -= 0.5;
-            Q.workers_anarchist += 0.3;
-            Q.soldiers_anarchist += 0.5;
+            Q.workers_anarchist += 0.1;
+            Q.soldiers_anarchist += 0.2;
+            if (!Q.m_in_gov) {
+                Q.workers_m += 0.1;
+                Q.soldiers_m += 0.1;
         }
         if (Q.m_in_gov) {
             Q.workers_m -= 0.4;
@@ -399,13 +418,18 @@ if (Q.week_actions >= 1 && Q.current_player >= Q.n_players) {
     }
     if (Q.hunger >= 50) {
         Q.prov_gov_legitimacy -= 1;
-        Q.workers_b += 0.3;
-        Q.soldiers_b += 0.5;
+        if (!Q.b_in_gov) {
+            Q.workers_b += 0.3;
+            Q.soldiers_b += 0.5;
+        }
         if (Q.b_in_gov) {
             Q.workers_b -= 0.3;
             Q.soldiers_b -= 0.5;
-            Q.workers_anarchist += 0.3;
-            Q.soldiers_anarchist += 0.5;
+            Q.workers_anarchist += 0.1;
+            Q.soldiers_anarchist += 0.2;
+            if (!Q.m_in_gov) {
+                Q.workers_m += 0.1;
+                Q.soldiers_m += 0.1;
         }
         if (Q.m_in_gov) {
             Q.workers_m -= 0.4;
@@ -503,6 +527,16 @@ if (Q.player_party == "m") {
     Q.player_in_exco = Q.k_in_exco;
     Q.player_in_gov = Q.k_in_gov;
     Q.player_in_soviet = Q.k_in_soviet;
+}
+!}
+on-departure: {!
+// TODO: set historical/international events
+if (Q.month == 4 && Q.week == 1) {
+    Q.historical_event = "Formation of the USPD - The venerable Social Democratic Party of Germany has split, with the anti-war grouping forming the Independent Social Democratic Party of Germany, or USPD. Some in this faction are urging revolutionary action to overthrow the Kaiser and end the war.";
+} else if (Q.month == 4 && Q.week == 3) {
+    Q.historical_event = "The Nivelle Offensive - French commander-in-chief Robert Nivelle has ordered a large-scale offensive against German lines in Belgium. The offensive has been a disaster for the Entente, and French troops are on the verge of mutiny.";
+} else {
+    Q.historical_event = 0;
 }
 !}
 go-to: events_choice if has_event = 1; main if has_event = 0 and difficulty = 0; main.main_easy if has_event = 0 and difficulty < 0; main.main_hard if has_event = 0 and difficulty > 0

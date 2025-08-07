@@ -8,6 +8,7 @@ go-to: post_event if started = 1; start_menu if started = 0
 new-page: true
 go-to: start_menu_2
 
+
 = Social Democracy: Petrograd 1917 - An Alternate History
 
 @start_menu_2
@@ -248,13 +249,13 @@ Q.bonding_capacity = 4;
 // annualized from a 5.8% montly inflation rate
 Q.monthly_inflation = 5.8;
 Q.inflation = Math.pow(1+0.01*Q.monthly_inflation, 12);
-Q.inflation = Math.round(100*(Q.inflation - 1));
+Q.inflation = Math.round(1000*(Q.inflation - 1))/10;
 
 // nationalization + syndicalization of industries
 // percentage of industries nationalized
 Q.industries_nationalized = 10;
 // percentage of industries controlled by workers
-Q.industries_syndicalized = 10;
+Q.industries_syndicalized = 1;
 
 // availability of consumer goods (out of 100 - pre-war levels)
 // TODO: this is currently unused

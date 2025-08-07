@@ -43,6 +43,10 @@ if (Q.player_party == 'm') {
         Q.position = 'in oppsition';
     }
 }
+
+Q.monthly_inflation_disp = Q.monthly_inflation.toFixed(1);
+Q.inflation_disp = Q.inflation.toFixed(1);
+Q.unemployed_disp = Q.unemployed.toFixed(1);
 !}
 
 = Status
