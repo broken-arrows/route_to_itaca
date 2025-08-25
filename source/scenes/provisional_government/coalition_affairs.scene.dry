@@ -58,6 +58,8 @@ unavailable-subtitle: [? if m_prov_gov_policy < 3 : We currently do not support 
 view-if: player_party == "m" and k_in_gov and not in_socialist_coalition
 choose-if: m_prov_gov_policy >= 3 and m_k_relation >= 40 and m_sr_relation >= 55 and m_in_exco
 
+
+
 @m_establish_soviet
 title: Establish a Soviet government!
 view-if: player_party == "m" and government_form != 1 and m_prov_gov_policy >= 3

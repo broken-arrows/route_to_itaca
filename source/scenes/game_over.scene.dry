@@ -245,7 +245,7 @@ go-to: eg_menu if started == 1; root.start_menu_2 if started == 0
 
 [? if game_achievement_kornilovite : **Корниловцы (Kornilovite)** - successfully launch a military coup. ?]
 
-[? if game_achievement_coup_defeated: **Корниловцы разгромлен (Kornilovites defeated)** - attempt to launch a coup and fail. ?]
+[? if game_achievement_coup_defeated: **Корниловцы разгромлены (Kornilovites defeated)** - attempt to launch a coup and fail. ?]
 
 = Completed Achievements Overall
 
@@ -287,7 +287,7 @@ go-to: eg_menu if started == 1; root.start_menu_2 if started == 0
 
 [? if achievement_kornilovite : **Корниловцы (Kornilovite)** - successfully launch a military coup. ?]
 
-[? if achievement_coup_defeated: **Корниловцы разгромлен (Kornilovites defeated)** - attempt to launch a coup and fail. ?]
+[? if achievement_coup_defeated: **Корниловцы разгромлены (Kornilovites defeated)** - attempt to launch a coup and fail. ?]
 
 = Incomplete Achievements
 
@@ -329,7 +329,7 @@ go-to: eg_menu if started == 1; root.start_menu_2 if started == 0
 
 [? if not achievement_kornilovite : **Корниловцы (Kornilovite)** - successfully launch a military coup. ?]
 
-[? if not achievement_coup_defeated: **Корниловцы разгромлен (Kornilovites defeated)** - attempt to launch a coup and fail. ?]
+[? if not achievement_coup_defeated: **Корниловцы разгромлены (Kornilovites defeated)** - attempt to launch a coup and fail. ?]
 
 @end_game
 game-over: true
