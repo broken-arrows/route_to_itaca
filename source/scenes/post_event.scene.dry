@@ -136,7 +136,7 @@ Q.inflation = Math.round(1000*(Q.inflation - 1))/10;
 // food demand
 Q.urban_population = 145000000*(Q.workers)/100;
 Q.rural_population = 145000000*(100 - Q.workers - Q.soldiers)/100;
-Q.soldiers_population = 145000000*(Q.soldiers)/100
+Q.soldiers_population = 145000000*(Q.soldiers)/100;
 // These are basic demands
 Q.food_demand_urban = Q.urban_population*500/1000000;// in million kg/year
 Q.food_demand_rural = Q.rural_population*500/1000000; // million kg/year - minimal demand; lower than this would provoke famine/violence
@@ -246,7 +246,7 @@ if (Q.week_actions >= 1 && Q.current_player >= Q.n_players) {
     Q.other_soviet = Math.round(10*(Q.popular_socialist_soviet_votes_dec + Q.other_soviet_votes_dec + Q.k_soviet_votes_dec + Q.conservative_soviet_votes_dec))/10;
 
     // decrement timers
-    for (timer of Q.timers) {
+    for (var timer of Q.timers) {
         if (Q[timer+'_timer'] && Q[timer+'_timer'] > 0) {
             Q[timer+'_timer'] -= 1;
         }
@@ -406,6 +406,7 @@ if (Q.week_actions >= 1 && Q.current_player >= Q.n_players) {
             if (!Q.m_in_gov) {
                 Q.workers_m += 0.1;
                 Q.soldiers_m += 0.1;
+            }
         }
         if (Q.m_in_gov) {
             Q.workers_m -= 0.4;
@@ -430,6 +431,7 @@ if (Q.week_actions >= 1 && Q.current_player >= Q.n_players) {
             if (!Q.m_in_gov) {
                 Q.workers_m += 0.1;
                 Q.soldiers_m += 0.1;
+            }
         }
         if (Q.m_in_gov) {
             Q.workers_m -= 0.4;
