@@ -86,7 +86,7 @@ on-arrival: {!
 // calculations go here!
 
 !}
-got-to: jumpScene
+go-to: jumpScene
 
 ######################################### Petrograd Soviet
 @petrograd_soviet
