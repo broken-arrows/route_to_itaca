@@ -35,7 +35,7 @@ Q.month_actions = 0;
 // 0 = normal difficulty, 1 = hard mode, 2 = hard mode no saves
 Q.difficulty = 0;
 Q.historical_mode = 0;
-Q.player_party_name = "<span style='color: #ff8000;'>**ERC**</span>";
+Q.player_party_name = "<span style='font-style: italic;'>Not yet chosen</span>";
 Q.player_party = "m";
 Q.party_name_map = {"m": "Menshevik",
         "b": "Bolshevik",
@@ -1030,8 +1030,6 @@ Difficulty affects starting resources and inter-party relations, as well as how 
 - @easy_mode
 - @single_player
 - @hard_mode
-- @local_multiplayer
-#- @online_multiplayer
 
 @easy_mode
 title: Single Player (Easy)
@@ -1056,41 +1054,12 @@ Select a party:
 
 @party_selection
 
-- @mensheviks
-- @sr
-- @kadets
-- @bolsheviks
-
-@local_multiplayer
-title: Local Multiplayer
-choose-if: 1 == 0
-unavailable-subtitle: Not yet implemented
-
-TODO
-
-@online_multiplayer
-title: Online Multiplayer
-choose-if: 1 == 0
-unavailable-subtitle: Not yet implemented
-
-TODO
-
-@bolsheviks
-title: Russian Social-Democratic Labor Party (Bolshevik)
-choose-if: achievement_game_completed
-unavailable-subtitle: Complete the game as one of the other parties first.
-
-**Russian Social-Democratic Labor Party (Bolsheviks)** - The "majority" faction of the RSDLP is in fact the smaller party. Established by Vladimir Lenin's arguments in the various RSDLP congresses, the Bolsheviks are seen as more radical than the Mensheviks. They are a disciplined and centralized party of professional revolutionaries who aim to act as the vanguard of a proletarian revolution. During Lenin's exile, the remaining members in Russia have become more moderate and accommodating.
-
-- @bolsheviks_2: Yes, I am a Bolshevik!
-- @party_selection: No, select a different party.
-
-@bolsheviks_2
-on-arrival: player_party_name = "Bolshevik"; player_party = "b"; b_is_player = 1; m_is_player = 0; player_in_soviet = 1; player_in_exco = 0; player_in_gov = 0;
-go-to: intros
+- @esquerra
+- @junts
+- @cup
 
 
-@mensheviks
+@esquerra
 title: Russian Social-Democratic Labor Party (Menshevik)
 
 **Russian Social-Democratic Labor Party (Mensheviks)** - The "minority" faction of the RSDLP, the Mensheviks emerged from party splits, reunifications, and further splits in the 1900s. It is in fact the larger party, seeking to organize a mass party among the working class. A social-democratic party based on the teachings of Karl Marx, the party argues that the current revolution is the "bourgeois" revolution. The task of socialists is to achieve a democratic republic and gain political and economic rights for workers. The Mensheviks are deeply divided on their attitudes towards the war and participation in a bourgeois government.
@@ -1099,14 +1068,15 @@ title: Russian Social-Democratic Labor Party (Menshevik)
 - @party_selection: No, select a different party.
 
 
-@mensheviks_2
-on-arrival: player_party_name = "<span style='color: #ff8000;'>**ERC**</span>"; player_party = "m"; m_is_player = 1; player_in_soviet = 1; player_in_exco = 1; player_in_gov = 0;
+@esquerra_2
+on-arrival: player_party_name = "<span style='color: #ff8000; font-weight: bold;'>ERC</span>"; player_party = "m"; m_is_player = 1; player_in_soviet = 1; player_in_exco = 1; player_in_gov = 0;
 go-to: intros
 
 
-
-@sr
+@junts
 title: Party of Socialist-Revolutionaries (SRs)
+choose-if: 1==0;
+unavailable-subtitle: WIP!
 
 **Party of Socialist-Revolutionaries (SR)** - The SRs are based in the Russian ideology of *narodism*, or populism, which is an agrarian socialism that sees the traditional Russian village (the *obshchina*) as the basis of a future socialist society. Their support is strongest in the peasantry, but they have substantial support among workers as well. The SRs are deeply divided between left and right wings based on their attitudes towards the war and participation in government.
 
@@ -1114,20 +1084,22 @@ title: Party of Socialist-Revolutionaries (SRs)
 - @party_selection: No, select a different party.
 
 
-@sr_2
+@junts_2
 on-arrival: player_party = "sr"; player_party_name = "SR"; sr_is_player = 1; m_is_player = 0; player_in_soviet = 1; player_in_exco = 1; player_in_gov = 0;
 go-to: intros
 
-@kadets
+@cup
 title: Constitutional Democratic Party (Kadets)
+choose-if: 1==0;
+unavailable-subtitle: WIP!
 
 **Constitutional Democratic Party (Kadets)** - The Kadets were formerly on the left of the political spectrum, but they have moved to the center-right following the revolution. They are a liberal party whose goal is to establish a democratic republic or constitutional monarchy with moderate social reforms, while winning the war. They consider themselves a party representing all of Russian society, but are predominantly based in the middle class.
 
-- @kadets_2: Yes, I am a Kadet!
+- @cup_2: Yes, I am a Kadet!
 - @party_selection: No, select a different party.
 
 
-@kadets_2
+@cup_2
 on-arrival: player_party = "k"; player_party_name = "Kadet"; k_is_player = 1; m_is_player = 0; player_in_soviet = 0; player_in_gov = 1; player_in_exco = 0;
 go-to: intros
 
