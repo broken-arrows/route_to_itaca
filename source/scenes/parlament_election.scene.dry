@@ -162,7 +162,6 @@ if (window && d3) {
     parliament.exit.toCenter(false).bigToSmall(true);
     d3.select("#parlament").datum(data).call(parliament);
 }
-
 !}
 
 = Election Results
