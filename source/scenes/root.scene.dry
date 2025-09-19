@@ -1075,7 +1075,7 @@ go-to: intros
 
 @junts
 title: Party of Socialist-Revolutionaries (SRs)
-choose-if: 1==0;
+choose-if: 1==0
 unavailable-subtitle: WIP!
 
 **Party of Socialist-Revolutionaries (SR)** - The SRs are based in the Russian ideology of *narodism*, or populism, which is an agrarian socialism that sees the traditional Russian village (the *obshchina*) as the basis of a future socialist society. Their support is strongest in the peasantry, but they have substantial support among workers as well. The SRs are deeply divided between left and right wings based on their attitudes towards the war and participation in government.
@@ -1090,7 +1090,7 @@ go-to: intros
 
 @cup
 title: Constitutional Democratic Party (Kadets)
-choose-if: 1==0;
+choose-if: 1==0
 unavailable-subtitle: WIP!
 
 **Constitutional Democratic Party (Kadets)** - The Kadets were formerly on the left of the political spectrum, but they have moved to the center-right following the revolution. They are a liberal party whose goal is to establish a democratic republic or constitutional monarchy with moderate social reforms, while winning the war. They consider themselves a party representing all of Russian society, but are predominantly based in the middle class.
