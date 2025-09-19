@@ -6,7 +6,7 @@ set-jump: parlament_election.post_election
 on-arrival: {!
 // whatever we need to calc post election
 
-}
+!}
 on-display: {!
 const data = [];
 
@@ -171,4 +171,5 @@ WIP!
 - @back
 
 @back
+title: Back
 go-to: root
