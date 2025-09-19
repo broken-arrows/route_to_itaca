@@ -35,7 +35,7 @@ Q.month_actions = 0;
 // 0 = normal difficulty, 1 = hard mode, 2 = hard mode no saves
 Q.difficulty = 0;
 Q.historical_mode = 0;
-Q.player_party_name = "Menshevik";
+Q.player_party_name = "<span style="color: #ff8000;">**ERC**</span>";
 Q.player_party = "m";
 Q.party_name_map = {"m": "Menshevik",
         "b": "Bolshevik",
@@ -1100,7 +1100,7 @@ title: Russian Social-Democratic Labor Party (Menshevik)
 
 
 @mensheviks_2
-on-arrival: player_party_name = "Menshevik"; player_party = "m"; m_is_player = 1; player_in_soviet = 1; player_in_exco = 1; player_in_gov = 0;
+on-arrival: player_party_name = "<span style="color: #ff8000;">**ERC**</span>"; player_party = "m"; m_is_player = 1; player_in_soviet = 1; player_in_exco = 1; player_in_gov = 0;
 go-to: intros
 
 
