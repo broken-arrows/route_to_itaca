@@ -12,6 +12,8 @@ set-jump: post_election
 on-arrival: {!
 Q.election_type="cat";
 
+Q.parlament_size = 13500; // 135 seats * 100
+
 Q.ciu_parlament_r = 37.04; // 50 seats - 37.04%
 Q.erc_parlament_r = 15.56; // 21 seats - 21.29%
 Q.psc_parlament_r = 14.81; // 20 seats - 14.81%
