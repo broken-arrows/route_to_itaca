@@ -1,0 +1,175 @@
+title: Catalan Parlament Election
+go-to: election_algorithm.cat_parlament
+set-jump: parlament_election.post_election
+
+@post_election
+on-arrival: {!
+// whatever we need to calc post election
+
+}
+on-display: {!
+const data = [];
+
+if (Q.psc_parlament_r) {
+    data.push({
+        "id": "psc",
+        "legend": "PSC",
+        "name": "PSC",
+        "seats": Math.round(Q.psc_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.erc_parlament_r) {
+    data.push({
+        "id": "erc",
+        "legend": "ERC",
+        "name": "ERC",
+        "seats": Math.round(Q.erc_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.jxsi_parlament_r) {
+    data.push({
+        "id": "jxsi",
+        "legend": "JxSí",
+        "name": "JxSí",
+        "seats": Math.round(Q.jxsi_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.ciu_parlament_r) {
+    data.push({
+        "id": "ciu",
+        "legend": "CiU",
+        "name": "CiU",
+        "seats": Math.round(Q.ciu_parlament_r * Q.parlament_size),
+    });
+}
+if (Q.cdc_parlament_r) {
+    data.push({
+        "id": "cdc",
+        "legend": "CDC",
+        "name": "CDC",
+        "seats": Math.round(Q.cdc_parlament_r * Q.parlament_size),
+    });
+}
+if (Q.unio_parlament_r) {
+    data.push({
+        "id": "unio",
+        "legend": "Unió",
+        "name": "Unió",
+        "seats": Math.round(Q.unio_parlament_r * Q.parlament_size),
+    });
+}
+if (Q.pdcat_parlament_r) {
+    data.push({
+        "id": "pdcat",
+        "legend": "PDeCAT",
+        "name": "PDeCAT",
+        "seats": Math.round(Q.pdcat_parlament_r * Q.parlament_size),
+    });
+}
+if (Q.junts_parlament_r) {
+    data.push({
+        "id": "junts",
+        "legend": "Junts",
+        "name": "Junts",
+        "seats": Math.round(Q.junts_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.cup_parlament_r) {
+    data.push({
+        "id": "cup",
+        "legend": "CUP",
+        "name": "CUP",
+        "seats": Math.round(Q.cup_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.cs_parlament_r) {
+    data.push({
+        "id": "cs",
+        "legend": "Cs",
+        "name": "Cs",
+        "seats": Math.round(Q.cs_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.icv_parlament_r) {
+    data.push({
+        "id": "icv",
+        "legend": "ICV-EUiA",
+        "name": "ICV-EUiA",
+        "seats": Math.round(Q.icv_parlament_r * Q.parlament_size),
+    });
+}
+if (Q.csqp_parlament_r) {
+    data.push({
+        "id": "csqp",
+        "legend": "CSQP",
+        "name": "CSQP",
+        "seats": Math.round(Q.csqp_parlament_r * Q.parlament_size),
+    });
+}
+if (Q.cecp_parlament_r) {
+    data.push({
+        "id": "cecp",
+        "legend": "CECP",
+        "name": "CECP",
+        "seats": Math.round(Q.cecp_parlament_r * Q.parlament_size),
+    });
+}
+if(Q.ecp_parlament_r) {
+    data.push({
+        "id": "ecp",
+        "legend": "ECP-PEC",
+        "name": "ECP-PEC",
+        "seats": Math.round(Q.ecp_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.ppc_parlament_r) {
+    data.push({
+        "id": "ppc",
+        "legend": "PPC",
+        "name": "PPC",
+        "seats": Math.round(Q.ppc_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.vox_parlament_r) {
+    data.push({
+        "id": "vox",
+        "legend": "Vox",
+        "name": "Vox",
+        "seats": Math.round(Q.vox_parlament_r * Q.parlament_size),
+    });
+}
+
+if (window && d3) {
+    var width = 500;
+    var height = 500;
+    var screenWidth =  document.getElementById('content').offsetWidth;
+    if (screenWidth < width - 50) {
+        width = screenWidth - 50;
+        height = width;
+        document.getElementById("parlament").style.height = screenWidth/2 + "px";
+    }
+    var parliament = d3.parliament();
+    parliament.width(width).height(height).innerRadiusCoef(0.4);
+    parliament.enter.fromCenter(true).smallToBig(true);
+    parliament.exit.toCenter(false).bigToSmall(true);
+    d3.select("#parlament").datum(data).call(parliament);
+}
+
+!}
+
+= Election Results
+
+WIP!
+
+- @back
+
+@back
+go-to: root

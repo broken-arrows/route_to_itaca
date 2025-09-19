@@ -40,9 +40,12 @@ Q.player_party = "none";
 Q.party_name_map = {"erc": "<span style='color: #ff8000; font-weight: bold;'>ERC</span>",
         "ciu": "<span style='color: #002782; font-weight: bold;'>CiU</span>",
         "cdc": "<span style='color: #002782; font-weight: bold;'>CDC</span>",
+        "pdcat": "<span style='color: #0081c2; font-weight: bold;'>PDeCAT</span>",
         "jxs": "<span style='color: #3ab6a5; font-weight: bold;'>JxS</span>",
         "junts": "<span style='color: #20c0b2; font-weight: bold;'>Junts</span>",
         "cup": "<span style='color: #ffed00; font-weight: bold;'>CUP</span>"};
+
+Q.parlament_size = 13500; // 135 seats * 100
 
 Q.m_is_player = 1;
 Q.sr_is_player = 0;
@@ -1004,15 +1007,12 @@ Q.kollontai_advisor = 0; // Alexandra Kollontai - April week 1
 Q.trotsky_advisor = 0;
 
 !}
-set-bg: img/map_2.jpg
+set-bg: img/parlament_de_catalunya.jpg
 new-page: true
 
+> * I like Catalan people because [...] they do things. *
 
-> * In general, people do not see events concretely, solidly. They think more in words than in clearly-imagined pictures, and they have absolutely no idea what a revolution is, – of those many millions of causes which have gone to give it its present form, – and they are therefore inclined to exaggerate the importance in the progress of the revolution of their personality and of that attitude which they, their friends and co-thinkers will take up in this enormous upheaval. And of course they are absolutely incapable of understanding how powerless is any individual, whatever his intelligence and experience, in this whirlpool of hundreds of thousands of forces which have been put into motion by the upheaval.*
-
-> *They do not understand that once such a great natural phenomenon has begun, such as an earthquake, or, rather, such as a typhoon, separate individuals are powerless to exercise any kind of influence on the course of events. A party perhaps can do something, – far less than is usually thought, – and on the surface of the oncoming waves, its influence may, perhaps, be very slightly noticeable. But separate small aggregations not forming a fairly large mass are undoubtedly powerless – their Powers are certainly nil. *
-
- - Peter Kropotkin, The Russian Revolution and the Soviet Government, 1919
+ - Mariano Rajoy, President of the Government of Spain, 2015
 
 For more information on the politics of the Provisional Government, see the "Library" page on the top left. If this is your first time playing the game, it is recommended that you read at least some of this information.
 
@@ -1045,7 +1045,7 @@ Select a party:
 
 @party_selection
 
-- @esquerra: Republican Left of Catalonia(<span style='color: #ff8000; font-weight: bold;'>ERC</span>)
+- @esquerra: Republican Left of Catalonia (<span style='color: #ff8000; font-weight: bold;'>ERC</span>)
 - @ciu: Convergence and Union (<span style='color: #002782; font-weight: bold;'>JxCat</span>)
 - @cup: Popular Unity Candidacy (<span style='color: #ffed00; font-weight: bold;'>CUP</span>)
 

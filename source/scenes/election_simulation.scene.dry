@@ -2,10 +2,27 @@ title: Election Simulation
 set-jump: post_election
 
 
+- @2012_11: Catalan Parliament (November 2012, historical)
 - @1917_1: Constituent Assembly (March 1917 support levels)
 - @1917_11: Constituent Assembly (November 1917)
 - @ps_1917_3: Petrograd Soviet (March 1917)
 - @ps_1917_8: Petrograd Soviet (August 1917)
+
+@2012_11
+on-arrival: {!
+Q.election_type="cat";
+
+Q.ciu_parlament_r = 37.04; // 50 seats - 37.04%
+Q.erc_parlament_r = 15.56; // 21 seats - 21.29%
+Q.psc_parlament_r = 14.81; // 20 seats - 14.81%
+Q.ppc_parlament_r = 14.07; // 19 seats - 14.07%
+Q.icv_parlament_r = 9.63; // 13 seats - 9.63%
+Q.cs_parlament_r = 6.67; // 9 seats - 6.67%
+Q.cup_parlament_r = 3.22; // 3 seats - 3.22%
+
+!}
+go-to: election_algorithm.cat_parlament
+set-jump: post_election
 
 @1917_1
 on-arrival: {!

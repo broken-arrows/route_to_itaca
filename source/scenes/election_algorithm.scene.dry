@@ -78,6 +78,16 @@ go-to: jumpScene
 # note: this is a helpful utility to deal with elections and so on.
 
 
+######################################## Parlament de Catalunya
+@cat_parlament
+title: Catalan Parlament Elections
+on-arrival: {!
+
+// calculations go here!
+
+!}
+got-to: jumpScene
+
 ######################################### Petrograd Soviet
 @petrograd_soviet
 title: Petrograd Soviet Elections
