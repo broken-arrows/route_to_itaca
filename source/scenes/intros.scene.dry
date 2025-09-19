@@ -24,9 +24,7 @@ It seems that for now, anything is possible. The established order is gone. A ne
 
 @abdication_of_the_tsar
 title: The Abdication of the Tsar
-view-if: abdi_seen < n_players
 go-to: intro_menu
-on-arrival: abdi_seen += 1
 
 = The Abdication of the Tsar
 
@@ -36,9 +34,7 @@ Now, the reign of the Tsar is over, and power is vested in the Provisional Gover
 
 @petrograd_soviet
 title: The Petrograd Soviet
-view-if: ps_seen < n_players
 go-to: intro_menu
-on-arrival: ps_seen += 1
 
 = The Petrograd Soviet
 
@@ -49,7 +45,6 @@ The leaders of the Soviet, mostly Social Democrat and SR intellectuals, have org
 
 @order_number_1
 title: Restoring Order to the Army
-view-if: o1_seen < n_players
 go-to: o1_soviet if player_party = "sr" or player_party = "m"; o1_b if player_party = "b"; o1_k if player_party = "k"
 on-arrival: o1_seen = 1
 
@@ -125,7 +120,6 @@ The Kadets are generally displeased with this order, as it can lead to a breakdo
 
 @provisional_government
 title: The Provisional Government
-view-if: pg_seen < n_players
 go-to: pg_k if player_party = "k"; pg_sr if player_party = "sr"; pg_m if player_party = "m"; pg_b if player_party = "b"
 on-arrival: pg_seen += 1
 
@@ -162,7 +156,6 @@ go-to: intro_menu
 @war_conduct
 title: The Conduct of the War
 go-to: war_k if player_party = "k"; war_m if player_party = "m"; war_sr if player_party = "sr"; war_b if player_party = "b"
-view-if: war_seen < n_players
 on-arrival: war_seen += 1
 
 = The Conduct of the War
@@ -226,9 +219,6 @@ The position of the Bolsheviks is and has always been internationalism, to end t
 @what_now
 title: What now?
 go-to: 1917_main
-view-if: o1_seen = 1
-#view-if: o1_seen = 1 and ps_seen = 1 and abdi_seen = 1 and pg_seen = 1 and war_seen = 1
-
 
 @1917_main
 new-page: true

@@ -178,7 +178,7 @@ if (Q.soldier_hunger < 0) {
 
 
 // 1. update dates
-if (Q.week_actions >= 1 && Q.current_player >= Q.n_players) {
+if (Q.week_actions >= 1) {
     Q.week_actions = 0;
     Q.time += 1;
     Q.week += 1;
@@ -489,13 +489,6 @@ if (Q.week_actions >= 1 && Q.current_player >= Q.n_players) {
     }
     console.log("best attacking front:", Q.best_front, Q.best_front_ratio);
 
-} else if (Q.week_actions >= 0 && Q.current_player < Q.n_players) {
-    // If there are more players...
-    // production & support changes only happen after all players have gone
-    Q.week_actions = 0;
-    Q.current_player += 1;
-    Q.player_party = Q['player'+current_player+'_party'];
-    Q.player_party_name = Q.party_name_map[Q.player_party];
 }
 
 

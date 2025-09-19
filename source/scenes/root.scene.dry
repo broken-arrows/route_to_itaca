@@ -9,7 +9,7 @@ new-page: true
 go-to: start_menu_2
 
 
-= Social Democracy: Petrograd 1917 - An Alternate History
+= Route to Itaca - An Alternate History
 
 @start_menu_2
 
@@ -24,8 +24,8 @@ on-arrival: {!
 Q.started = 1;
 // time elapsed (in months)
 Q.time = 1;
-Q.year = 1917;
-Q.month = 3;
+Q.year = 2012;
+Q.month = 8;
 Q.week = 1;
 // how many actions have been taken this week?
 Q.week_actions = 0;
@@ -36,11 +36,13 @@ Q.month_actions = 0;
 Q.difficulty = 0;
 Q.historical_mode = 0;
 Q.player_party_name = "<span style='font-style: italic;'>Not yet chosen</span>";
-Q.player_party = "m";
-Q.party_name_map = {"m": "Menshevik",
-        "b": "Bolshevik",
-        "sr": "SR",
-        "k": "Kadet"};
+Q.player_party = "none";
+Q.party_name_map = {"erc": "<span style='color: #ff8000; font-weight: bold;'>ERC</span>",
+        "ciu": "<span style='color: #002782; font-weight: bold;'>CiU</span>",
+        "cdc": "<span style='color: #002782; font-weight: bold;'>CDC</span>",
+        "jxs": "<span style='color: #3ab6a5; font-weight: bold;'>JxS</span>",
+        "junts": "<span style='color: #20c0b2; font-weight: bold;'>Junts</span>",
+        "cup": "<span style='color: #ffed00; font-weight: bold;'>CUP</span>"};
 
 Q.m_is_player = 1;
 Q.sr_is_player = 0;
@@ -50,17 +52,6 @@ Q.k_is_player = 0;
 Q.player_in_exco = 1;
 Q.player_in_gov = 0;
 Q.player_in_soviet = 1;
-
-// multiplayer stuff
-Q.current_player = 1;
-Q.n_players = 1;
-// the player ID of the next player
-Q.next_player = 0;
-
-Q.player1_party = "m";
-Q.player2_party = "";
-Q.player3_party = "";
-Q.player4_party = "";
 
 // party resources
 Q.b_resources = 2;
@@ -1054,52 +1045,52 @@ Select a party:
 
 @party_selection
 
-- @esquerra
-- @junts
-- @cup
+- @esquerra: Republican Left of Catalonia(<span style='color: #ff8000; font-weight: bold;'>ERC</span>)
+- @ciu: Convergence and Union (<span style='color: #002782; font-weight: bold;'>JxCat</span>)
+- @cup: Popular Unity Candidacy (<span style='color: #ffed00; font-weight: bold;'>CUP</span>)
 
 
 @esquerra
-title: Russian Social-Democratic Labor Party (Menshevik)
+title: Republican Left of Catalonia (ERC)
 
-**Russian Social-Democratic Labor Party (Mensheviks)** - The "minority" faction of the RSDLP, the Mensheviks emerged from party splits, reunifications, and further splits in the 1900s. It is in fact the larger party, seeking to organize a mass party among the working class. A social-democratic party based on the teachings of Karl Marx, the party argues that the current revolution is the "bourgeois" revolution. The task of socialists is to achieve a democratic republic and gain political and economic rights for workers. The Mensheviks are deeply divided on their attitudes towards the war and participation in a bourgeois government.
+**Republican Left of Catalonia (ERC)** - A description WIP!
 
-- @esquerra_2: Yes, I am a Menshevik!
+- @esquerra_2: Yes, we'll be the left of a new country!
 - @party_selection: No, select a different party.
 
 
 @esquerra_2
-on-arrival: player_party_name = "<span style='color: #ff8000; font-weight: bold;'>ERC</span>"; player_party = "m"; m_is_player = 1; player_in_soviet = 1; player_in_exco = 1; player_in_gov = 0;
+on-arrival: player_party_name = "<span style='color: #ff8000; font-weight: bold;'>ERC</span>"; player_party = "erc"; m_is_player = 1; player_in_soviet = 1; player_in_exco = 1; player_in_gov = 0;
 go-to: intros
 
 
-@junts
-title: Party of Socialist-Revolutionaries (SRs)
-choose-if: 1==0
-unavailable-subtitle: WIP!
+@ciu
+title: Convergence and Union (CiU)
 
-**Party of Socialist-Revolutionaries (SR)** - The SRs are based in the Russian ideology of *narodism*, or populism, which is an agrarian socialism that sees the traditional Russian village (the *obshchina*) as the basis of a future socialist society. Their support is strongest in the peasantry, but they have substantial support among workers as well. The SRs are deeply divided between left and right wings based on their attitudes towards the war and participation in government.
+**Convergence and Union (CiU)** - A description WIP!
 
-- @junts_2: Yes, I am a Socialist-Revolutionary!
+- @ciu_2: Yes, I am a CiU fan!
 - @party_selection: No, select a different party.
 
 
-@junts_2
-on-arrival: player_party = "sr"; player_party_name = "SR"; sr_is_player = 1; m_is_player = 0; player_in_soviet = 1; player_in_exco = 1; player_in_gov = 0;
+@ciu_2
+choose-if: 1==0
+unavailable-subtitle: Work in progress...
+on-arrival: player_party = "ciu"; player_party_name = "<span style='color: #002782; font-weight: bold;'>CiU</span>"; sr_is_player = 1; m_is_player = 0; player_in_soviet = 1; player_in_exco = 1; player_in_gov = 0;
 go-to: intros
 
 @cup
-title: Constitutional Democratic Party (Kadets)
-choose-if: 1==0
-unavailable-subtitle: WIP!
+title: Popular Unity Candidacy (CUP)
 
-**Constitutional Democratic Party (Kadets)** - The Kadets were formerly on the left of the political spectrum, but they have moved to the center-right following the revolution. They are a liberal party whose goal is to establish a democratic republic or constitutional monarchy with moderate social reforms, while winning the war. They consider themselves a party representing all of Russian society, but are predominantly based in the middle class.
+**Popular Unity Candidacy (CUP)** - A description WIP!
 
-- @cup_2: Yes, I am a Kadet!
+- @cup_2: Yes, it's the time of the peoples!
 - @party_selection: No, select a different party.
 
 
 @cup_2
-on-arrival: player_party = "k"; player_party_name = "Kadet"; k_is_player = 1; m_is_player = 0; player_in_soviet = 0; player_in_gov = 1; player_in_exco = 0;
+choose-if: 1==0
+unavailable-subtitle: Work in progress...
+on-arrival: player_party = "cup"; player_party_name = "<span style='color: #ffed00; font-weight: bold;'>CUP</span>"; k_is_player = 1; m_is_player = 0; player_in_soviet = 0; player_in_gov = 1; player_in_exco = 0;
 go-to: intros
 

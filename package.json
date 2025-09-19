@@ -1,6 +1,6 @@
 {
-  "name": "petrograd_1917",
-  "version": "0.4.0",
+  "name": "route_to_itaca",
+  "version": "0.1.0",
   "description": "Building the game:",
   "main": "out/html/index.html",
   "scripts": {
@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://aucchen@github.com/aucchen/petrograd_1917.git"
+    "url": "git+https://broken-arrows@github.com/broken-arrows/route_to_itaca.git"
   },
   "keywords": [],
-  "author": "Autumn Chen",
+  "author": "Broken Arrows",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/aucchen/petrograd_1917/issues"
+    "url": "https://github.com/broken-arrows/route_to_itaca/issues"
   },
-  "homepage": "https://github.com/aucchen/petrograd_1917",
+  "homepage": "https://github.com/broken-arrows/route_to_itaca",
   "dependencies": {
     "dendrynexus": "github:aucchen/dendrynexus",
     "parliament-svg": "^3.0.0"
