@@ -501,47 +501,168 @@ set-jump: post_election_soviet
 
 
 @post_election
-on-arrival: {!
-// set congress proportion to votes
-Q.k_r = Q.k_assembly_votes_dec;
-Q.b_r = Q.b_assembly_votes_dec;
-Q.m_r = Q.m_assembly_votes_dec;
-Q.sr_r = Q.sr_assembly_votes_dec;
-Q.popular_socialist_r = Q.popular_socialist_assembly_votes_dec;
-Q.anarchist_r = Q.anarchist_assembly_votes_dec;
-Q.conservative_r = Q.conservative_assembly_votes_dec;
-Q.other_r = Q.other_assembly_votes_dec;
-Q.muslim_national_r = Q.musavat_assembly_votes_dec + Q.alash_assembly_votes_dec + Q.turkic_muslim_parties_assembly_votes_dec;
-// minority parties
+on-display: {!
+const data = [];
+
+if (Q.psc_parlament_r) {
+    data.push({
+        "id": "psc",
+        "legend": "PSC",
+        "name": "PSC",
+        "seats": Math.round(Q.psc_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.erc_parlament_r) {
+    data.push({
+        "id": "erc",
+        "legend": "ERC",
+        "name": "ERC",
+        "seats": Math.round(Q.erc_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.jxsi_parlament_r) {
+    data.push({
+        "id": "jxsi",
+        "legend": "JxSí",
+        "name": "JxSí",
+        "seats": Math.round(Q.jxsi_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.ciu_parlament_r) {
+    data.push({
+        "id": "ciu",
+        "legend": "CiU",
+        "name": "CiU",
+        "seats": Math.round(Q.ciu_parlament_r * Q.parlament_size),
+    });
+}
+if (Q.cdc_parlament_r) {
+    data.push({
+        "id": "cdc",
+        "legend": "CDC",
+        "name": "CDC",
+        "seats": Math.round(Q.cdc_parlament_r * Q.parlament_size),
+    });
+}
+if (Q.unio_parlament_r) {
+    data.push({
+        "id": "unio",
+        "legend": "Unió",
+        "name": "Unió",
+        "seats": Math.round(Q.unio_parlament_r * Q.parlament_size),
+    });
+}
+if (Q.pdcat_parlament_r) {
+    data.push({
+        "id": "pdcat",
+        "legend": "PDeCAT",
+        "name": "PDeCAT",
+        "seats": Math.round(Q.pdcat_parlament_r * Q.parlament_size),
+    });
+}
+if (Q.junts_parlament_r) {
+    data.push({
+        "id": "junts",
+        "legend": "Junts",
+        "name": "Junts",
+        "seats": Math.round(Q.junts_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.cup_parlament_r) {
+    data.push({
+        "id": "cup",
+        "legend": "CUP",
+        "name": "CUP",
+        "seats": Math.round(Q.cup_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.cs_parlament_r) {
+    data.push({
+        "id": "cs",
+        "legend": "Cs",
+        "name": "Cs",
+        "seats": Math.round(Q.cs_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.icv_parlament_r) {
+    data.push({
+        "id": "icv",
+        "legend": "ICV-EUiA",
+        "name": "ICV-EUiA",
+        "seats": Math.round(Q.icv_parlament_r * Q.parlament_size),
+    });
+}
+if (Q.csqp_parlament_r) {
+    data.push({
+        "id": "csqp",
+        "legend": "CSQP",
+        "name": "CSQP",
+        "seats": Math.round(Q.csqp_parlament_r * Q.parlament_size),
+    });
+}
+if (Q.cecp_parlament_r) {
+    data.push({
+        "id": "cecp",
+        "legend": "CECP",
+        "name": "CECP",
+        "seats": Math.round(Q.cecp_parlament_r * Q.parlament_size),
+    });
+}
+if(Q.ecp_parlament_r) {
+    data.push({
+        "id": "ecp",
+        "legend": "ECP-PEC",
+        "name": "ECP-PEC",
+        "seats": Math.round(Q.ecp_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.ppc_parlament_r) {
+    data.push({
+        "id": "ppc",
+        "legend": "PPC",
+        "name": "PPC",
+        "seats": Math.round(Q.ppc_parlament_r * Q.parlament_size),
+    });
+}
+
+if (Q.vox_parlament_r) {
+    data.push({
+        "id": "vox",
+        "legend": "Vox",
+        "name": "Vox",
+        "seats": Math.round(Q.vox_parlament_r * Q.parlament_size),
+    });
+}
+
+if (window && d3) {
+    var width = 500;
+    var height = 500;
+    var screenWidth =  document.getElementById('content').offsetWidth;
+    if (screenWidth < width - 50) {
+        width = screenWidth - 50;
+        height = width;
+        document.getElementById("parlament").style.height = screenWidth/2 + "px";
+    }
+    var parliament = d3.parliament();
+    parliament.width(width).height(height).innerRadiusCoef(0.4);
+    parliament.enter.fromCenter(true).smallToBig(true);
+    parliament.exit.toCenter(false).bigToSmall(true);
+    d3.select("#parlament").datum(data).call(parliament);
+}
 !}
 
-**Election results:**
+= Election Results
 
-SR: [+ sr_r +]%
+WIP!
 
-Ukrainian SRs: [+ ukrainian_sr_assembly_votes_dec +]%
 
-Mensheviks: [+ m_r +]%
-
-Bolsheviks: [+ b_r +]%
-
-Kadets: [+ k_r +]%
-
-Conservatives: [+ conservative_r +]%
-
-Popular Socialists: [+ popular_socialist_r +]%
-
-Cossacks: [+ cossacks_assembly_votes_dec +]%
-
-Muslim Socialists: [+ muslim_socialists_assembly_votes_dec +]%
-
-Muslim national parties (Alash, Musavat, others): [+ muslim_national_r +]%
-
-Armenian Revolutionary Federation (Dashnaks): [+ dashnak_assembly_votes_dec +]%
-
-Jewish National List: [+ jewish_national_list_assembly_votes_dec +]%
-
-Other: [+ other_r +]%
 
 
 @post_election_soviet
