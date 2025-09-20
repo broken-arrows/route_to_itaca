@@ -86,6 +86,7 @@ on-arrival: {!
 for (var p of Q.parties) {
     // I.e. we show the party in the results table also if they HAD seats in the previous election
     // Some shenanigans may be needed for handling the name changing parties, WIP!
+
     if (Q[p+'_parlament_s'] > 0) {
         Q[p+'_parlament_showviz'] = 1;
     } else {
@@ -93,6 +94,7 @@ for (var p of Q.parties) {
     }
     Q[p+'_parlament_pv_old'] = Q[p+'_parlament_pv'];
     Q[p+'_parlament_s_old'] = Q[p+'_parlament_s'];
+    console.log(`Party ${p} old seats: ${Q[p+'_parlament_s']}`);
 }
 
 // SPACE for the ACTUAL RESULT CALCULATION
@@ -127,7 +129,7 @@ for (var p of Q.parties) {
     } else {
         Q[p+'_parlament_spc'] = 0;
     }
-    if (Q[p+'_parlament_s_old'] == 0) {
+    if (Q[p+'_parlament_s_old'] == 0 || !Q[p+'_parlament_s_old']) {
         Q[p+'_parlament_s_delta'] = 'New!';
         Q[p+'_parlament_pv_delta'] = 'New!';
     } else {
@@ -136,7 +138,7 @@ for (var p of Q.parties) {
             '<img src="img/arrowup.png"> ' :
             Q[p+'_parlament_s_delta'] < 0 ? '<img src="img/arrowdown.png"> ' :
             '<img src="img/steady.png"> ';
-        console.log(Q[p+'_parlament_s_delta']);
+        console.log(`Party ${p} delta seats: ${Q[p+'_parlament_s_delta']} ${typeof Q[p+'_parlament_s_delta']} for old seats ${Q[p+'_parlament_s_old']} ${typeof Q[p+'_parlament_s_old']} and new seats ${Q[p+'_parlament_s']} ${typeof Q[p+'_parlament_s']}`);
         Q[p+'_parlament_s_delta'] = sign1 + Math.abs(Q[p+'_parlament_s_delta']);
         console.log(Q[p+'_parlament_s_delta']);
         Q[p+'_parlament_pv_delta'] = Q[p+'_parlament_pv'] - Q[p+'_parlament_pv_old'];

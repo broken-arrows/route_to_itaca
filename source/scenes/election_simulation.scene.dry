@@ -11,7 +11,7 @@ set-jump: post_election
 @2012_11
 on-arrival: {!
 Q.election_type="cat";
-Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si', 'cdc', 'unio', 'jxsi', 'pdcat', 'csqp', 'cecp', 'ecp', 'vox', 'ac'];
+Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si', 'cdc', 'unio', 'jxsi', 'junts', 'pdcat', 'csqp', 'cecp', 'ecp', 'vox', 'ac'];
 
 Q.parlament_size = 135; // 135 seats
 
@@ -707,7 +707,13 @@ data.sort(function(a, b) { return b.seats - a.seats; });
 [? if unio_parlament_showviz: {!<tr><td><div class="box" style='background-color:#0052a3'> </div> !} Unió {!</td><td>!}[+ unio_parlament_pv +]% {!</td><td>!} [+ unio_parlament_pv_delta +]% {!</td><td>!} [+ unio_parlament_s +] ([+ unio_parlament_spc +]%) {!</td><td>!} [+ unio_parlament_s_delta +] {!</td>!}?]
 [? if ac_parlament_showviz: {!<tr><td><div class="box" style='background-color:#064a81'> </div> !} AC {!</td><td>!}[+ ac_parlament_pv +]% {!</td><td>!} [+ ac_parlament_pv_delta +]% {!</td><td>!} [+ ac_parlament_s +] ([+ ac_parlament_spc +]%) {!</td><td>!} [+ ac_parlament_s_delta +] {!</td>!}?]
 [? if si_parlament_showviz: {!<tr><td><div class="box" style='background-color:#3ab6a5'> </div> !} SI {!</td><td>!}[+ si_parlament_pv +]% {!</td><td>!} [+ si_parlament_pv_delta +]% {!</td><td>!} [+ si_parlament_s +] ([+ si_parlament_spc +]%) {!</td><td>!} [+ si_parlament_s_delta +] {!</td>!}?]
+
 {!</table>!}
+
+**Data**
+
+[+ si_parlament_s +] - SI - [+ si_parlament_s_old +] - 
+[+ ciu_parlament_s +] - CiU - [+ ciu_parlament_s_old +] -
 
 
 
