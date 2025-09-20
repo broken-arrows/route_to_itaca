@@ -1046,7 +1046,7 @@ Q.kollontai_advisor = 0; // Alexandra Kollontai - April week 1
 Q.trotsky_advisor = 0;
 
 !}
-set-bg: img/parlament_de_catalunya.jpg
+set-bg: img/3rd_October_2017.jpg
 new-page: true
 
 > * I like Catalan people because [...] they do things. *
