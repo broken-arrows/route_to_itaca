@@ -11,29 +11,11 @@ set-jump: post_election
 @2012_11
 on-arrival: {!
 Q.election_type="cat";
-Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si'];
+Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si', 'cdc', 'unio', 'jxsi', 'pdcat', 'csqp', 'cecp', 'ecp', 'vox', 'ac'];
 
 Q.parlament_size = 135; // 135 seats
 
-// Popular vote percentage
-Q.ciu_parlament_pv = 30.68;
-Q.erc_parlament_pv = 13.68;
-Q.psc_parlament_pv = 14.43;
-Q.ppc_parlament_pv = 12.99;
-Q.icv_parlament_pv = 9.89;
-Q.cs_parlament_pv = 7.58;
-Q.cup_parlament_pv = 3.48;
-Q.si_parlament_pv = 1.29;
-
-// Seats in parlament
-Q.ciu_parlament_s = 50; // 50 seats - 37.04%
-Q.erc_parlament_s = 21; // 21 seats - 15.56%
-Q.psc_parlament_s = 20; // 20 seats - 14.81%
-Q.ppc_parlament_s = 19; // 19 seats - 14.07%
-Q.icv_parlament_s = 13; // 13 seats - 9.63%
-Q.cs_parlament_s = 9; // 9 seats - 6.67%
-Q.cup_parlament_s = 3; // 3 seats - 3.22%
-Q.si_parlament_s = 0; // 0 seats - 0%
+// Space to prepare variables for the actual simulation, when we have the algorithm ready lol
 
 !}
 go-to: election_algorithm.cat_parlament
@@ -709,14 +691,14 @@ data.sort(function(a, b) { return b.seats - a.seats; });
 {!<table>!}
 {!<tr><td>Party</td><td>Popular Vote</td><td>Change</td><td>Seats</td><td>Change</td></tr>!}
 [? if jxsi_parlament_showviz: {!<tr><td><div class="box" style='background-color:#3ab6a5; font-weight:bold;'> </div> !} JxSí {!</td><td>!}[+ jxsi_parlament_pv +]% {!</td><td>!} [+ jxsi_parlament_pv_delta +]% {!</td><td>!} [+ jxsi_parlament_s +] ([+ jxsi_parlament_spc +]%) {!</td><td>!} [+ jxsi_parlament_s_delta +] {!</td>!}?]
-[? if ciu_parlament_showviz: {!<tr><td><div class="box" style='background-color:#002782' </div> !} CiU {!</td><td>!}[+ ciu_parlament_pv +]% {!</td><td>!} [+ ciu_parlament_pv_delta +]% {!</td><td>!} [+ ciu_parlament_s +] ([+ ciu_parlament_spc +]%) {!</td><td>!} [+ ciu_parlament_s_delta +] {!</td>!}?]
-[? if cdc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#002782' </div> !} CDC {!</td><td>!}[+ cdc_parlament_pv +]% {!</td><td>!} [+ cdc_parlament_pv_delta +]% {!</td><td>!} [+ cdc_parlament_s +] ([+ cdc_parlament_spc +]%) {!</td><td>!} [+ cdc_parlament_s_delta +] {!</td>!}?]
-[? if pdcat_parlament_showviz: {!<tr><td><div class="box" style='background-color:#0081c2' </div> !} PDeCAT {!</td><td>!}[+ pdcat_parlament_pv +]% {!</td><td>!} [+ pdcat_parlament_pv_delta +]% {!</td><td>!} [+ pdcat_parlament_s +] ([+ pdcat_parlament_spc +]%) {!</td><td>!} [+ pdcat_parlament_s_delta +] {!</td>!}?]
+[? if ciu_parlament_showviz: {!<tr><td><div class="box" style='background-color:#002782'> </div> !} CiU {!</td><td>!}[+ ciu_parlament_pv +]% {!</td><td>!} [+ ciu_parlament_pv_delta +]% {!</td><td>!} [+ ciu_parlament_s +] ([+ ciu_parlament_spc +]%) {!</td><td>!} [+ ciu_parlament_s_delta +] {!</td>!}?]
+[? if cdc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#002782'> </div> !} CDC {!</td><td>!}[+ cdc_parlament_pv +]% {!</td><td>!} [+ cdc_parlament_pv_delta +]% {!</td><td>!} [+ cdc_parlament_s +] ([+ cdc_parlament_spc +]%) {!</td><td>!} [+ cdc_parlament_s_delta +] {!</td>!}?]
+[? if pdcat_parlament_showviz: {!<tr><td><div class="box" style='background-color:#0081c2'> </div> !} PDeCAT {!</td><td>!}[+ pdcat_parlament_pv +]% {!</td><td>!} [+ pdcat_parlament_pv_delta +]% {!</td><td>!} [+ pdcat_parlament_s +] ([+ pdcat_parlament_spc +]%) {!</td><td>!} [+ pdcat_parlament_s_delta +] {!</td>!}?]
 [? if erc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#ff8000'> </div> !} ERC {!</td><td>!}[+ erc_parlament_pv +]% {!</td><td>!} [+ erc_parlament_pv_delta +]% {!</td><td>!} [+ erc_parlament_s +] ([+ erc_parlament_spc +]%) {!</td><td>!} [+ erc_parlament_s_delta +] {!</td>!}?]
 [? if cs_parlament_showviz: {!<tr><td><div class="box" style='background-color:#f6c300'> </div> !} Cs {!</td><td>!}[+ cs_parlament_pv +]% {!</td><td>!} [+ cs_parlament_pv_delta +]% {!</td><td>!} [+ cs_parlament_s +] ([+ cs_parlament_spc +]%) {!</td><td>!} [+ cs_parlament_s_delta +] {!</td>!}?]
 [? if psc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#e73b39'> </div> !} PSC {!</td><td>!}[+ psc_parlament_pv +]% {!</td><td>!} [+ psc_parlament_pv_delta +]% {!</td><td>!} [+ psc_parlament_s +] ([+ psc_parlament_spc +]%) {!</td><td>!} [+ psc_parlament_s_delta +] {!</td>!}?]
 [? if ppc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#007fff'> </div> !} PPC {!</td><td>!}[+ ppc_parlament_pv +]% {!</td><td>!} [+ ppc_parlament_pv_delta +]% {!</td><td>!} [+ ppc_parlament_s +] ([+ ppc_parlament_spc +]%) {!</td><td>!} [+ ppc_parlament_s_delta +] {!</td>!}?]
-[? if vox_parlament_showviz: {!<tr><td><div class="box" style='background-color:#63be21; color:white;'> </div> !} Vox {!</td><td>!}[+ vox_parlament_pv +]% {!</td><td>!} [+ vox_parlament_pv_delta +]% {!</td><td>!} [+ vox_parlament_s +] ([+ vox_parlament_spc +]%) {!</td><td>!} [+ vox_parlament_s_delta +] {!</td>!}?]
+[? if vox_parlament_showviz: {!<tr><td><div class="box" style='background-color:#63be21'> </div> !} Vox {!</td><td>!}[+ vox_parlament_pv +]% {!</td><td>!} [+ vox_parlament_pv_delta +]% {!</td><td>!} [+ vox_parlament_s +] ([+ vox_parlament_spc +]%) {!</td><td>!} [+ vox_parlament_s_delta +] {!</td>!}?]
 [? if icv_parlament_showviz: {!<tr><td><div class="box" style='background-color:#67af2f'> </div> !} ICV-EUiA {!</td><td>!}[+ icv_parlament_pv +]% {!</td><td>!} [+ icv_parlament_pv_delta +]% {!</td><td>!} [+ icv_parlament_s +] ([+ icv_parlament_spc +]%) {!</td><td>!} [+ icv_parlament_s_delta +] {!</td>!}?]
 [? if csqp_parlament_showviz: {!<tr><td><div class="box" style='background-color:#c3113b'> </div> !} CSQP {!</td><td>!}[+ csqp_parlament_pv +]% {!</td><td>!} [+ csqp_parlament_pv_delta +]% {!</td><td>!} [+ csqp_parlament_s +] ([+ csqp_parlament_spc +]%) {!</td><td>!} [+ csqp_parlament_s_delta +] {!</td>!}?]
 [? if cecp_parlament_showviz: {!<tr><td><div class="box" style='background-color:#be3882'> </div> !} CECP {!</td><td>!}[+ cecp_parlament_pv +]% {!</td><td>!} [+ cecp_parlament_pv_delta +]% {!</td><td>!} [+ cecp_parlament_s +] ([+ cecp_parlament_spc +]%) {!</td><td>!} [+ cecp_parlament_s_delta +] {!</td>!}?]

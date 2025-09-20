@@ -84,8 +84,6 @@ title: Catalan Parlament Elections
 on-arrival: {! 
 // Store old results
 for (var p of Q.parties) {
-    Q[p+'_parlament_pv_old'] = Q[p+'_parlament_pv'];
-    Q[p+'_parlament_s_old'] = Q[p+'_parlament_s'];
     // I.e. we show the party in the results table also if they HAD seats in the previous election
     // Some shenanigans may be needed for handling the name changing parties, WIP!
     if (Q[p+'_parlament_s'] > 0) {
@@ -93,10 +91,32 @@ for (var p of Q.parties) {
     } else {
         Q[p+'_parlament_showviz'] = 0;
     }
+    Q[p+'_parlament_pv_old'] = Q[p+'_parlament_pv'];
+    Q[p+'_parlament_s_old'] = Q[p+'_parlament_s'];
 }
 
-
 // SPACE for the ACTUAL RESULT CALCULATION
+// for now, historical results nov 2012
+
+// Popular vote percentage
+Q.ciu_parlament_pv = 30.7;
+Q.erc_parlament_pv = 13.7;
+Q.psc_parlament_pv = 14.4;
+Q.ppc_parlament_pv = 13.0;
+Q.icv_parlament_pv = 9.9;
+Q.cs_parlament_pv = 7.6;
+Q.cup_parlament_pv = 3.5;
+Q.si_parlament_pv = 1.3;
+
+// Seats in parlament
+Q.ciu_parlament_s = 50;
+Q.erc_parlament_s = 21;
+Q.psc_parlament_s = 20;
+Q.ppc_parlament_s = 19;
+Q.icv_parlament_s = 13;
+Q.cs_parlament_s = 9;
+Q.cup_parlament_s = 3;
+Q.si_parlament_s = 0;
 
 
 // Calculate percent of parlament control and deltas
@@ -112,7 +132,17 @@ for (var p of Q.parties) {
         Q[p+'_parlament_pv_delta'] = 'New!';
     } else {
         Q[p+'_parlament_s_delta'] = Q[p+'_parlament_s'] - Q[p+'_parlament_s_old'];
+        var sign1 = Q[p+'_parlament_s_delta'] > 0 ?
+            '<img src="img/arrowup.png"> ' :
+            Q[p+'_parlament_s_delta'] < 0 ? '<img src="img/arrowdown.png"> ' :
+            '<img src="img/steady.png"> ';
+        Q[p+'_parlament_s_delta'] = sign1 + Math.abs(Q[p+'_parlament_s_delta']).toFixed(1);
         Q[p+'_parlament_pv_delta'] = Q[p+'_parlament_pv'] - Q[p+'_parlament_pv_old'];
+        var sign2 = Q[p+'_parlament_pv_delta'] > 0 ?
+            '<img src="img/arrowup.png"> ' :
+            Q[p+'_parlament_pv_delta'] < 0 ? '<img src="img/arrowdown.png"> ' :
+            '<img src="img/steady.png"> ';
+        Q[p+'_parlament_pv_delta'] = sign2 + Math.abs(Q[p+'_parlament_pv_delta']).toFixed(1);
     }
 }
 
