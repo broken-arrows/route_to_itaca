@@ -503,6 +503,24 @@ set-jump: post_election_soviet
 
 
 @post_election
+on-arrival: {!
+Q.psc_parlament_seats = Math.round(Q.psc_parlament_r * Q.parlament_size);
+Q.erc_parlament_seats = Math.round(Q.erc_parlament_r * Q.parlament_size);
+Q.jxsi_parlament_seats = Math.round(Q.jxsi_parlament_r * Q.parlament_size);
+Q.ciu_parlament_seats = Math.round(Q.ciu_parlament_r * Q.parlament_size);
+Q.cdc_parlament_seats = Math.round(Q.cdc_parlament_r * Q.parlament_size);
+Q.unio_parlament_seats = Math.round(Q.unio_parlament_r * Q.parlament_size);
+Q.pdcat_parlament_seats = Math.round(Q.pdcat_parlament_r * Q.parlament_size);
+Q.junts_parlament_seats = Math.round(Q.junts_parlament_r * Q.parlament_size);
+Q.cup_parlament_seats = Math.round(Q.cup_parlament_r * Q.parlament_size);
+Q.cs_parlament_seats = Math.round(Q.cs_parlament_r * Q.parlament_size);
+Q.icv_parlament_seats = Math.round(Q.icv_parlament_r * Q.parlament_size);
+Q.csqp_parlament_seats = Math.round(Q.csqp_parlament_r * Q.parlament_size);
+Q.cecp_parlament_seats = Math.round(Q.cecp_parlament_r * Q.parlament_size);
+Q.ecp_parlament_seats = Math.round(Q.ecp_parlament_r * Q.parlament_size);
+Q.ppc_parlament_seats = Math.round(Q.ppc_parlament_r * Q.parlament_size);
+Q.vox_parlament_seats = Math.round(Q.vox_parlament_r * Q.parlament_size);
+!}
 on-display: {!
 const data = [];
 
@@ -662,8 +680,30 @@ if (window && d3) {
 
 = Election Results
 
-WIP!
+{!<svg id="soviet" style="width: 500px; height: 250px;"> </svg>!}
 
+{!<table>!}
+{!<tr><td>Party</td><td>Vote share</td></tr>!}
+
+{!<tr><td><div class="box erc"> </div> !} ERC: {!</td><td>!} [+ erc_parlament_r +]% {!</td>!}
+
+{!<tr><td><div class="box ciu"> </div> !} CiU: {!</td><td>!} [+ ciu_parlament_r +]% {!</td>!}
+
+{!<tr><td><div class="box psc"> </div> !} PSC: {!</td><td>!} [+ psc_parlament_r +]% {!</td>!}
+
+{!<tr><td><div class="box ppc"> </div> !} PPC: {!</td><td>!} [+ ppc_parlament_r +]% {!</td>!}
+
+{!<tr><td><div class="box cup"> </div> !} CUP: {!</td><td>!} [+ cup_parlament_r +]% {!</td>!}
+
+{!<tr><td><div class="box icv"> </div> !} ICV-EUiA: {!</td><td>!} [+ icv_parlament_r +]% {!</td>!}
+
+{!<tr><td><div class="box cs"> </div> !} Cs: {!</td><td>!} [+ cs_parlament_r +]% {!</td>!}
+
+{!</table>!}
+
+**DATA**
+
+Test: PSC [+ psc_parlament_r +]% - [+ psc_parlament_seats +] seats? out of total seats [+ parlament_size +].
 
 
 
