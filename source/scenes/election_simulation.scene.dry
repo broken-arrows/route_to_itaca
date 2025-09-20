@@ -12,7 +12,7 @@ set-jump: post_election
 on-arrival: {!
 Q.election_type="cat";
 
-Q.parlament_size = 13500; // 135 seats * 100
+Q.parlament_size = 135; // 135 seats
 
 Q.ciu_parlament_r = 0.3704; // 50 seats - 37.04%
 Q.erc_parlament_r = 0.1556; // 21 seats - 15.56%
@@ -680,7 +680,7 @@ if (window && d3) {
 
 = Election Results
 
-{!<svg id="soviet" style="width: 500px; height: 250px;"> </svg>!}
+{!<svg id="parlament" style="width: 500px; height: 250px;"> </svg>!}
 
 {!<table>!}
 {!<tr><td>Party</td><td>Vote share</td></tr>!}

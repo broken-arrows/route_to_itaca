@@ -45,7 +45,7 @@ Q.party_name_map = {"erc": "<span style='color: #ff8000; font-weight: bold;'>ERC
         "junts": "<span style='color: #20c0b2; font-weight: bold;'>Junts</span>",
         "cup": "<span style='color: #ffed00; font-weight: bold;'>CUP</span>"};
 
-Q.parlament_size = 13500; // 135 seats * 100
+Q.parlament_size = 135; // 135 seats
 
 Q.m_is_player = 1;
 Q.sr_is_player = 0;
