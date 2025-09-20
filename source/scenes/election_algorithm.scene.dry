@@ -81,10 +81,25 @@ go-to: jumpScene
 ######################################## Parlament de Catalunya
 @cat_parlament
 title: Catalan Parlament Elections
-on-arrival: {!
+on-arrival: {! 
+// Copy historical results for visualization test
+Q.ciu_parlament = Q.ciu_parlament_r || 3704;
+Q.erc_parlament = Q.erc_parlament_r || 1556;
+Q.psc_parlament = Q.psc_parlament_r || 1481;
+Q.ppc_parlament = Q.ppc_parlament_r || 1407;
+Q.icv_parlament = Q.icv_parlament_r || 963;
+Q.cs_parlament = Q.cs_parlament_r || 667;
+Q.cup_parlament = Q.cup_parlament_r || 322;
 
-// calculations go here!
-
+// Optionally, calculate percentages (if needed for the visualization)
+var total = Q.ciu_parlament + Q.erc_parlament + Q.psc_parlament + Q.ppc_parlament + Q.icv_parlament + Q.cs_parlament + Q.cup_parlament;
+Q.ciu_parlament_pct = (Q.ciu_parlament / total) * 100;
+Q.erc_parlament_pct = (Q.erc_parlament / total) * 100;
+Q.psc_parlament_pct = (Q.psc_parlament / total) * 100;
+Q.ppc_parlament_pct = (Q.ppc_parlament / total) * 100;
+Q.icv_parlament_pct = (Q.icv_parlament / total) * 100;
+Q.cs_parlament_pct = (Q.cs_parlament / total) * 100;
+Q.cup_parlament_pct = (Q.cup_parlament / total) * 100;
 !}
 go-to: jumpScene
 
