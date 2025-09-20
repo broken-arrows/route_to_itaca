@@ -689,7 +689,7 @@ data.sort(function(a, b) { return b.seats - a.seats; });
 {!<svg id="parlament" style="width: 500px; height: 250px;"> </svg>!}
 
 {!<table>!}
-{!<tr><td>Party</td><td>Popular Vote</td><td>Change</td><td>Seats</td><td>Change</td></tr>!}
+{!<tr><td>Party</td><td style='width: 4em'>Vote</td><td>Change</td><td>Seats</td><td>Change</td></tr>!}
 [? if jxsi_parlament_showviz: {!<tr><td><div class="box" style='background-color:#3ab6a5; font-weight:bold;'> </div> !} JxSí {!</td><td>!}[+ jxsi_parlament_pv +]% {!</td><td>!} [+ jxsi_parlament_pv_delta +]% {!</td><td>!} [+ jxsi_parlament_s +] ([+ jxsi_parlament_spc +]%) {!</td><td>!} [+ jxsi_parlament_s_delta +] {!</td>!}?]
 [? if ciu_parlament_showviz: {!<tr><td><div class="box" style='background-color:#002782'> </div> !} CiU {!</td><td>!}[+ ciu_parlament_pv +]% {!</td><td>!} [+ ciu_parlament_pv_delta +]% {!</td><td>!} [+ ciu_parlament_s +] ([+ ciu_parlament_spc +]%) {!</td><td>!} [+ ciu_parlament_s_delta +] {!</td>!}?]
 [? if cdc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#002782'> </div> !} CDC {!</td><td>!}[+ cdc_parlament_pv +]% {!</td><td>!} [+ cdc_parlament_pv_delta +]% {!</td><td>!} [+ cdc_parlament_s +] ([+ cdc_parlament_spc +]%) {!</td><td>!} [+ cdc_parlament_s_delta +] {!</td>!}?]

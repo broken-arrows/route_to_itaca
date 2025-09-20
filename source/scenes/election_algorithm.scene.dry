@@ -136,7 +136,9 @@ for (var p of Q.parties) {
             '<img src="img/arrowup.png"> ' :
             Q[p+'_parlament_s_delta'] < 0 ? '<img src="img/arrowdown.png"> ' :
             '<img src="img/steady.png"> ';
-        Q[p+'_parlament_s_delta'] = sign1 + Math.abs(Q[p+'_parlament_s_delta']).toFixed(1);
+        console.log(Q[p+'_parlament_s_delta']);
+        Q[p+'_parlament_s_delta'] = sign1 + Math.abs(Q[p+'_parlament_s_delta']);
+        console.log(Q[p+'_parlament_s_delta']);
         Q[p+'_parlament_pv_delta'] = Q[p+'_parlament_pv'] - Q[p+'_parlament_pv_old'];
         var sign2 = Q[p+'_parlament_pv_delta'] > 0 ?
             '<img src="img/arrowup.png"> ' :
