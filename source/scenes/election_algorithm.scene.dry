@@ -146,7 +146,7 @@ for (var p of Q.parties) {
             '<img src="img/arrowup.png"> ' :
             Q[p+'_parlament_pv_delta'] < 0 ? '<img src="img/arrowdown.png"> ' :
             '<img src="img/steady.png"> ';
-        Q[p+'_parlament_pv_delta'] = sign2 + Math.abs(Q[p+'_parlament_pv_delta']).toFixed(1);
+        Q[p+'_parlament_pv_delta'] = sign2 + Math.abs(Q[p+'_parlament_pv_delta']).toFixed(1) + '%';
     }
 }
 
