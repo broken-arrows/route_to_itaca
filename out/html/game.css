@@ -540,135 +540,141 @@ table {
 /* Styles for parties - TODO: have the player party be highlighted. */
 /* Use CSS variables for the colors... */
 :root {
-  --anarchist: #000000;
-  --b: #8B0000;
-  --m: #E3000F;
-  --d: #fc7a82;
-  --i: #ff3c00;
-  --k: #DCCA4A;
-  --sr: #c700a2;
-  --lsr: #ff006a;
-  --rsr: #c268ff;
-  --usr: #FFBB5A;
-  --ps: #fcc761;
-  --m_n: #00780A;
-  --m_s: #76f981;
-  --j_n: #3F7BC1;
-  --other: #919191;
-  --dashnak: #fe67ff;
-  --conservative: #0030ff;
-  --cossack: #758fff;
+  --ciu: #002782; 
+  --cdc: #002782;
+  --unio: #0052a3;
+  --erc: #ff8000;
+  --cup: #ffed00;
+  --jxsi: #3ab6a5;
+  --pdcat: #0081c2;
+  --junts: #20c0b2;
+  --cs: #f6c300;
+  --ppc:#007fff;
+  --psc: #e73b39;
+  --icv: #67af2f;
+  --si: #000000;
+  --csqp: #c3113b;
+  --cecp: #be3882;
+  --ecp: #6e236e;
+  --vox: #63be21;
+  --ac: #064a81;
 }
 
-.seat.anarchist {
-    fill: var(--anarchist);
+.seat.ciu {
+    fill: var(--ciu);
 }
-.seat.b {
-    fill: var(--b);
+.seat.cdc {
+    fill: var(--cdc);
 }
-.seat.m {
-    fill: var(--m);
+.seat.unio {
+    fill: var(--unio);
 }
-.seat.defensist {
-    fill: var(--d);
+.seat.erc {
+    fill: var(--erc);
 }
-.seat.internationalist {
-    fill: var(--i);
+.seat.cup {
+    fill: var(--cup);
 }
-.seat.k {
-    fill: var(--k);
+.seat.fr {
+    fill: var(--fr);
 }
-.seat.sr {
-    fill: var(--sr);
+.seat.jxs {
+    fill: var(--jxs);
 }
-.seat.left_sr {
-    fill: var(--lsr);
+.seat.pdcat {
+    fill: var(--pdcat);
 }
-.seat.right_sr {
-    fill: var(--rsr);
+.seat.junts {
+    fill: var(--junts);
 }
-.seat.ukrainian_sr {
-    fill: var(--usr);
+.seat.cs {
+    fill: var(--cs);
 }
-.seat.popular_socialist {
-    fill: var(--ps);
+.seat.ppc {
+    fill: var(--ppc);
 }
-.seat.muslim_national {
-    fill: var(--m_n);
+.seat.psc {
+    fill: var(--psc);
 }
-.seat.muslim_socialist {
-    fill: var(--m_s);
+.seat.icv {
+    fill: var(--icv);
 }
-.seat.jewish_national {
-    fill: var(--j_n);
+.seat.si {
+    fill: var(--si);
 }
-.seat.other {
-    fill: var(--other);
+.seat.csqp {
+    fill: var(--csqp);
 }
-.seat.dashnak {
-    fill: var(--dashnak);
+.seat.cecp {
+    fill: var(--cecp);
 }
-.seat.conservative {
-    fill: var(--conservative);
+.seat.ecp {
+    fill: var(--ecp);
 }
-.seat.cossack {
-    fill: var(--cossack);
+.seat.vox {
+    fill: var(--vox);
+}
+.seat.ac {
+    fill: var(--ac);
 }
 
 /* boxes... */
-.box.a {
-    background-color: var(--anarchist);
+.box.ciu {
+    background-color: var(--ciu);
 }
-.box.b {
-    background-color: var(--b);
+.box.cdc {
+    background-color: var(--cdc);
 }
-.box.m {
-    background-color: var(--m);
+.box.unio {
+    background-color: var(--unio);
 }
-.box.defensist {
-    background-color: var(--d);
+.box.erc {
+    background-color: var(--erc);
 }
-.box.internationalist {
-    background-color: var(--i);
+.box.cup {
+    background-color: var(--cup);
 }
-.box.k {
-    background-color: var(--k);
+.box.fr {
+    background-color: var(--fr);
 }
-.box.sr {
-    background-color: var(--sr);
+.box.jxs {
+    background-color: var(--jxs);
 }
-.box.left_sr {
-    background-color: var(--lsr);
+.box.pdcat {
+    background-color: var(--pdcat);
 }
-.box.right_sr {
-    background-color: var(--rsr);
+.box.junts {
+    background-color: var(--junts);
 }
-.box.ukrainian_sr {
-    background-color: var(--usr);
+.box.cs {
+    background-color: var(--cs);
 }
-.box.popular_socialist {
-    background-color: var(--ps);
+.box.ppc {
+    background-color: var(--ppc);
 }
-.box.muslim_national {
-    background-color: var(--m_n);
+.box.psc {
+    background-color: var(--psc);
 }
-.box.muslim_socialist {
-    background-color: var(--m_s);
+.box.icv {
+    background-color: var(--icv);
 }
-.box.jewish_national {
-    background-color: var(--j_n);
+.box.si {
+    background-color: var(--si);
 }
-.box.other {
-    background-color: var(--other);
+.box.csqp {
+    background-color: var(--csqp);
 }
-.box.dashnak {
-    background-color: var(--dashnak);
+.box.cecp {
+    background-color: var(--cecp);
 }
-.box.conservative {
-    background-color: var(--conservative);
+.box.ecp {
+    background-color: var(--ecp);
 }
-.box.cossack {
-    background-color: var(--cossack);
+.box.vox {
+    background-color: var(--vox);
+}
+.box.ac {
+    background-color: var(--ac);
 }
 
 .tooltip-text {

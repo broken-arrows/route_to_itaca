@@ -11,16 +11,29 @@ set-jump: post_election
 @2012_11
 on-arrival: {!
 Q.election_type="cat";
+Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si'];
 
 Q.parlament_size = 135; // 135 seats
 
-Q.ciu_parlament_r = 0.3704; // 50 seats - 37.04%
-Q.erc_parlament_r = 0.1556; // 21 seats - 15.56%
-Q.psc_parlament_r = 0.1481; // 20 seats - 14.81%
-Q.ppc_parlament_r = 0.1407; // 19 seats - 14.07%
-Q.icv_parlament_r = 0.0963; // 13 seats - 9.63%
-Q.cs_parlament_r = 0.0667; // 9 seats - 6.67%
-Q.cup_parlament_r = 0.0322; // 3 seats - 3.22%
+// Popular vote percentage
+Q.ciu_parlament_pv = 30.68;
+Q.erc_parlament_pv = 13.68;
+Q.psc_parlament_pv = 14.43;
+Q.ppc_parlament_pv = 12.99;
+Q.icv_parlament_pv = 9.89;
+Q.cs_parlament_pv = 7.58;
+Q.cup_parlament_pv = 3.48;
+Q.si_parlament_pv = 1.29;
+
+// Seats in parlament
+Q.ciu_parlament_s = 50; // 50 seats - 37.04%
+Q.erc_parlament_s = 21; // 21 seats - 15.56%
+Q.psc_parlament_s = 20; // 20 seats - 14.81%
+Q.ppc_parlament_s = 19; // 19 seats - 14.07%
+Q.icv_parlament_s = 13; // 13 seats - 9.63%
+Q.cs_parlament_s = 9; // 9 seats - 6.67%
+Q.cup_parlament_s = 3; // 3 seats - 3.22%
+Q.si_parlament_s = 0; // 0 seats - 0%
 
 !}
 go-to: election_algorithm.cat_parlament
@@ -504,160 +517,170 @@ set-jump: post_election_soviet
 
 @post_election
 on-arrival: {!
-Q.psc_parlament_seats = Math.round(Q.psc_parlament_r * Q.parlament_size);
-Q.erc_parlament_seats = Math.round(Q.erc_parlament_r * Q.parlament_size);
-Q.jxsi_parlament_seats = Math.round(Q.jxsi_parlament_r * Q.parlament_size);
-Q.ciu_parlament_seats = Math.round(Q.ciu_parlament_r * Q.parlament_size);
-Q.cdc_parlament_seats = Math.round(Q.cdc_parlament_r * Q.parlament_size);
-Q.unio_parlament_seats = Math.round(Q.unio_parlament_r * Q.parlament_size);
-Q.pdcat_parlament_seats = Math.round(Q.pdcat_parlament_r * Q.parlament_size);
-Q.junts_parlament_seats = Math.round(Q.junts_parlament_r * Q.parlament_size);
-Q.cup_parlament_seats = Math.round(Q.cup_parlament_r * Q.parlament_size);
-Q.cs_parlament_seats = Math.round(Q.cs_parlament_r * Q.parlament_size);
-Q.icv_parlament_seats = Math.round(Q.icv_parlament_r * Q.parlament_size);
-Q.csqp_parlament_seats = Math.round(Q.csqp_parlament_r * Q.parlament_size);
-Q.cecp_parlament_seats = Math.round(Q.cecp_parlament_r * Q.parlament_size);
-Q.ecp_parlament_seats = Math.round(Q.ecp_parlament_r * Q.parlament_size);
-Q.ppc_parlament_seats = Math.round(Q.ppc_parlament_r * Q.parlament_size);
-Q.vox_parlament_seats = Math.round(Q.vox_parlament_r * Q.parlament_size);
+// Does something need to happen here?
 !}
 on-display: {!
 const data = [];
 
-if (Q.psc_parlament_r) {
+if (Q.si_parlament_s) {
     data.push({
-        "id": "psc",
-        "legend": "PSC",
-        "name": "PSC",
-        "seats": Math.round(Q.psc_parlament_r * Q.parlament_size),
+        "id": "si",
+        "legend": "SI",
+        "name": "SI",
+        "seats": Q.si_parlament_s,
     });
 }
 
-if (Q.erc_parlament_r) {
-    data.push({
-        "id": "erc",
-        "legend": "ERC",
-        "name": "ERC",
-        "seats": Math.round(Q.erc_parlament_r * Q.parlament_size),
-    });
-}
-
-if (Q.jxsi_parlament_r) {
-    data.push({
-        "id": "jxsi",
-        "legend": "JxSí",
-        "name": "JxSí",
-        "seats": Math.round(Q.jxsi_parlament_r * Q.parlament_size),
-    });
-}
-
-if (Q.ciu_parlament_r) {
-    data.push({
-        "id": "ciu",
-        "legend": "CiU",
-        "name": "CiU",
-        "seats": Math.round(Q.ciu_parlament_r * Q.parlament_size),
-    });
-}
-if (Q.cdc_parlament_r) {
-    data.push({
-        "id": "cdc",
-        "legend": "CDC",
-        "name": "CDC",
-        "seats": Math.round(Q.cdc_parlament_r * Q.parlament_size),
-    });
-}
-if (Q.unio_parlament_r) {
-    data.push({
-        "id": "unio",
-        "legend": "Unió",
-        "name": "Unió",
-        "seats": Math.round(Q.unio_parlament_r * Q.parlament_size),
-    });
-}
-if (Q.pdcat_parlament_r) {
-    data.push({
-        "id": "pdcat",
-        "legend": "PDeCAT",
-        "name": "PDeCAT",
-        "seats": Math.round(Q.pdcat_parlament_r * Q.parlament_size),
-    });
-}
-if (Q.junts_parlament_r) {
-    data.push({
-        "id": "junts",
-        "legend": "Junts",
-        "name": "Junts",
-        "seats": Math.round(Q.junts_parlament_r * Q.parlament_size),
-    });
-}
-
-if (Q.cup_parlament_r) {
+if (Q.cup_parlament_s) {
     data.push({
         "id": "cup",
         "legend": "CUP",
         "name": "CUP",
-        "seats": Math.round(Q.cup_parlament_r * Q.parlament_size),
+        "seats": Q.cup_parlament_s,
     });
 }
 
-if (Q.cs_parlament_r) {
+if (Q.jxsi_parlament_s) {
     data.push({
-        "id": "cs",
-        "legend": "Cs",
-        "name": "Cs",
-        "seats": Math.round(Q.cs_parlament_r * Q.parlament_size),
+        "id": "jxsi",
+        "legend": "JxSí",
+        "name": "JxSí",
+        "seats": Q.jxsi_parlament_s,
     });
 }
 
-if (Q.icv_parlament_r) {
+if (Q.icv_parlament_s) {
     data.push({
         "id": "icv",
         "legend": "ICV-EUiA",
         "name": "ICV-EUiA",
-        "seats": Math.round(Q.icv_parlament_r * Q.parlament_size),
+        "seats": Q.icv_parlament_s,
     });
 }
-if (Q.csqp_parlament_r) {
-    data.push({
-        "id": "csqp",
-        "legend": "CSQP",
-        "name": "CSQP",
-        "seats": Math.round(Q.csqp_parlament_r * Q.parlament_size),
-    });
-}
-if (Q.cecp_parlament_r) {
+
+if (Q.cecp_parlament_s) {
     data.push({
         "id": "cecp",
         "legend": "CECP",
         "name": "CECP",
-        "seats": Math.round(Q.cecp_parlament_r * Q.parlament_size),
+        "seats": Q.cecp_parlament_s,
     });
 }
-if(Q.ecp_parlament_r) {
+
+if(Q.ecp_parlament_s) {
     data.push({
         "id": "ecp",
         "legend": "ECP-PEC",
         "name": "ECP-PEC",
-        "seats": Math.round(Q.ecp_parlament_r * Q.parlament_size),
+        "seats": Q.ecp_parlament_s,
     });
 }
 
-if (Q.ppc_parlament_r) {
+if (Q.erc_parlament_s) {
+    data.push({
+        "id": "erc",
+        "legend": "ERC",
+        "name": "ERC",
+        "seats": Q.erc_parlament_s,
+    });
+}
+
+if (Q.csqp_parlament_s) {
+    data.push({
+        "id": "csqp",
+        "legend": "CSQP",
+        "name": "CSQP",
+        "seats": Q.csqp_parlament_s,
+    });
+}
+
+if (Q.psc_parlament_s) {
+    data.push({
+        "id": "psc",
+        "legend": "PSC",
+        "name": "PSC",
+        "seats": Q.psc_parlament_s,
+    });
+}
+
+if (Q.junts_parlament_s) {
+    data.push({
+        "id": "junts",
+        "legend": "Junts",
+        "name": "Junts",
+        "seats": Q.junts_parlament_s,
+    });
+}
+
+if (Q.cdc_parlament_s) {
+    data.push({
+        "id": "cdc",
+        "legend": "CDC",
+        "name": "CDC",
+        "seats": Q.cdc_parlament_s,
+    });
+}
+
+if (Q.pdcat_parlament_s) {
+    data.push({
+        "id": "pdcat",
+        "legend": "PDeCAT",
+        "name": "PDeCAT",
+        "seats": Q.pdcat_parlament_s,
+    });
+}
+
+if (Q.cs_parlament_s) {
+    data.push({
+        "id": "cs",
+        "legend": "Cs",
+        "name": "Cs",
+        "seats": Q.cs_parlament_s,
+    });
+}
+
+if (Q.ciu_parlament_s) {
+    data.push({
+        "id": "ciu",
+        "legend": "CiU",
+        "name": "CiU",
+        "seats": Q.ciu_parlament_s,
+    });
+}
+
+if (Q.unio_parlament_s) {
+    data.push({
+        "id": "unio",
+        "legend": "Unió",
+        "name": "Unió",
+        "seats": Q.unio_parlament_s,
+    });
+}
+
+if (Q.ppc_parlament_s) {
     data.push({
         "id": "ppc",
         "legend": "PPC",
         "name": "PPC",
-        "seats": Math.round(Q.ppc_parlament_r * Q.parlament_size),
+        "seats": Q.ppc_parlament_s,
     });
 }
 
-if (Q.vox_parlament_r) {
+if (Q.vox_parlament_s) {
     data.push({
         "id": "vox",
         "legend": "Vox",
         "name": "Vox",
-        "seats": Math.round(Q.vox_parlament_r * Q.parlament_size),
+        "seats": Q.vox_parlament_s,
+    });
+}
+
+if (Q.ac_parlament_s) {
+    data.push({
+        "id": "ac",
+        "legend": "AC",
+        "name": "AC",
+        "seats": Q.ac_parlament_s,
     });
 }
 
@@ -676,6 +699,7 @@ if (window && d3) {
     parliament.exit.toCenter(false).bigToSmall(true);
     d3.select("#parlament").datum(data).call(parliament);
 }
+data.sort(function(a, b) { return b.seats - a.seats; });
 !}
 
 = Election Results
@@ -683,27 +707,15 @@ if (window && d3) {
 {!<svg id="parlament" style="width: 500px; height: 250px;"> </svg>!}
 
 {!<table>!}
-{!<tr><td>Party</td><td>Vote share</td></tr>!}
-
-{!<tr><td><div class="box erc"> </div> !} ERC: {!</td><td>!} [+ erc_parlament_r +]% {!</td>!}
-
-{!<tr><td><div class="box ciu"> </div> !} CiU: {!</td><td>!} [+ ciu_parlament_r +]% {!</td>!}
-
-{!<tr><td><div class="box psc"> </div> !} PSC: {!</td><td>!} [+ psc_parlament_r +]% {!</td>!}
-
-{!<tr><td><div class="box ppc"> </div> !} PPC: {!</td><td>!} [+ ppc_parlament_r +]% {!</td>!}
-
-{!<tr><td><div class="box cup"> </div> !} CUP: {!</td><td>!} [+ cup_parlament_r +]% {!</td>!}
-
-{!<tr><td><div class="box icv"> </div> !} ICV-EUiA: {!</td><td>!} [+ icv_parlament_r +]% {!</td>!}
-
-{!<tr><td><div class="box cs"> </div> !} Cs: {!</td><td>!} [+ cs_parlament_r +]% {!</td>!}
-
+{!<tr><td>Party</td><td>Popular Vote</td><td>Change</td><td>Seats</td><td>Change</td><td>Parlament control (%)</td></tr>!}
+[? if jxsi_parlament_showviz: {!<tr><td><div class="box" style='background-color:#3ab6a5; font-weight:bold;'> </div> !} JxSí {!</td><td>!}[+ jxsi_parlament_pv +]% {!</td><td>!}?[+ jxsi_parlament_s +] seats {!</td><td>!}?[+ jxsi_parlament_spc +]% {!</td>!}?]
+{!<tr><td><div class="box" style='background-color:#ff8000'> </div> !} ERC {!</td><td>!}[+ erc_parlament_pv +]% {!</td><td>!}?[+ erc_parlament_s +] seats {!</td><td>!}?[+ erc_parlament_spc +]% {!</td>!}
+[? if psc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#f44336'> </div> !} PSC {!</td><td>!}[+ psc_parlament_pv +]% {!</td><td>!}?[+ psc_parlament_s +] seats {!</td><td>!}?[+ psc_parlament_spc +]% {!</td>!}?]
 {!</table>!}
 
 **DATA**
 
-Test: PSC [+ psc_parlament_r +]% - [+ psc_parlament_seats +] seats? out of total seats [+ parlament_size +].
+Test: PSC [+ psc_parlament_pv +]% - [+ psc_parlament_s +] seats out of total seats [+ parlament_size +] ([+ psc_parlament_spc +]).
 
 
 

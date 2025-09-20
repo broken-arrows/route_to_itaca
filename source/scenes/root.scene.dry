@@ -45,7 +45,46 @@ Q.party_name_map = {"erc": "<span style='color: #ff8000; font-weight: bold;'>ERC
         "junts": "<span style='color: #20c0b2; font-weight: bold;'>Junts</span>",
         "cup": "<span style='color: #ffed00; font-weight: bold;'>CUP</span>"};
 
-Q.parlament_size = 135; // 135 seats
+// start Parlament composition
+Q.parlament_size = 135; // seats
+
+Q.ciu_parlament_pv = 38.4;
+Q.ciu_parlament_s = 62;
+Q.psc_parlament_pv = 18.38;
+Q.psc_parlament_s = 28;
+Q.ppc_parlament_pv = 12.37;
+Q.ppc_parlament_s = 18;
+Q.icv_parlament_pv = 7.37;
+Q.icv_parlament_s = 10;
+Q.erc_parlament_pv = 7.00;
+Q.erc_parlament_s = 10;
+Q.cs_parlament_pv = 3.39;
+Q.cs_parlament_s = 3;
+Q.si_parlament_pv = 3.29;
+Q.si_parlament_s = 4;
+
+Q.cup_parlament_pv = 0.0;
+Q.cup_parlament_s = 0.0;
+Q.cdc_parlament_pv = 0.0;
+Q.cdc_parlament_s = 0.0;
+Q.unio_parlament_pv = 0.0;
+Q.unio_parlament_s = 0.0;
+Q.jxsi_parlament_pv = 0.0;
+Q.jxsi_parlament_s = 0.0;
+Q.pdcat_parlament_pv = 0.0;
+Q.pdcat_parlament_s = 0.0;
+Q.junts_parlament_pv = 0.0;
+Q.junts_parlament_s = 0.0;
+Q.csqp_parlament_pv = 0.0;
+Q.csqp_parlament_s = 0.0;
+Q.cecp_parlament_pv = 0.0;
+Q.cecp_parlament_s = 0.0;
+Q.ecp_parlament_pv = 0.0;
+Q.ecp_parlament_s = 0.0;
+Q.vox_parlament_pv = 0.0;
+Q.vox_parlament_s = 0.0;
+Q.ac_parlament_pv = 0.0;
+Q.ac_parlament_s = 0.0;
 
 Q.m_is_player = 1;
 Q.sr_is_player = 0;

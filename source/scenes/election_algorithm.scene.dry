@@ -82,14 +82,37 @@ go-to: jumpScene
 @cat_parlament
 title: Catalan Parlament Elections
 on-arrival: {! 
-// Copy historical results for visualization test
-Q.ciu_parlament = Q.ciu_parlament_r;
-Q.erc_parlament = Q.erc_parlament_r;
-Q.psc_parlament = Q.psc_parlament_r;
-Q.ppc_parlament = Q.ppc_parlament_r;
-Q.icv_parlament = Q.icv_parlament_r;
-Q.cs_parlament = Q.cs_parlament_r;
-Q.cup_parlament = Q.cup_parlament_r;
+// Store old results
+for (var p of Q.parties) {
+    // Some shenanigans may be needed for handling the name changing parties, WIP!
+    Q[p+'_parlament_pv_old'] = Q[p+'_parlament_pv'];
+    Q[p+'_parlament_s_old'] = Q[p+'_parlament_s'];
+    if (Q[p+'_parlament_s'] > 0) {
+        Q[p+'_parlament_showviz'] = 1;
+    } else {
+        Q[p+'_parlament_showviz'] = 0;
+    }
+}
+
+// Calculate percent of parlament control
+for (var p of Q.parties) {
+    Q[p+'_parlament_spc'] = Math.round(Q[p+'_parlament_s'] / Q.parlament_size * 1000) / 10;
+}
+
+// Calculate block votes
+Q.independence_parlament_pv = Q.ciu_parlament_pv + Q.erc_parlament_pv + Q.cup_parlament_pv + Q.junts_parlament_pv + Q.cdc_parlament_pv + Q.pdcat_parlament_pv + Q.jxsi_parlament_pv + Q.ac_parlament_pv + Q.si_parlament_pv ;
+Q.independence_parlament_s = Q.ciu_parlament_s + Q.erc_parlament_s + Q.cup_parlament_s + Q.junts_parlament_s + Q.cdc_parlament_s + Q.pdcat_parlament_s + Q.jxsi_parlament_s + Q.ac_parlament_s + Q.si_parlament_s ;
+Q.independence_parlament_spc = Math.round(Q.independence_parlament_s / Q.parlament_size * 1000) / 10;
+
+Q.unionist_parlament_pv = Q.ppc_parlament_pv + Q.psc_parlament_pv + Q.cs_parlament_pv + Q.vox_parlament_pv + Q.ecp_parlament_pv;
+Q.unionist_parlament_s = Q.ppc_parlament_s + Q.psc_parlament_s + Q.cs_parlament_s + Q.vox_parlament_s + Q.ecp_parlament_s;
+Q.unionist_parlament_spc = Math.round(Q.unionist_parlament_s / Q.parlament_size * 1000) / 10;
+
+Q.nonaligned_parlament_pv = Q.unio_parlament_pv + Q.icv_parlament_pv + Q.csqp_parlament_pv + Q.cecp_parlament_pv;
+Q.nonaligned_parlament_s = Q.unio_parlament_s + Q.icv_parlament_s + Q.csqp_parlament_s + Q.cecp_parlament_s;
+Q.nonaligned_parlament_spc = Math.round(Q.nonaligned_parlament_s / Q.parlament_size * 1000) / 10;
+
+
 !}
 go-to: jumpScene
 
