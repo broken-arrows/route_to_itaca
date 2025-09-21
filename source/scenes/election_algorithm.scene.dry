@@ -130,8 +130,8 @@ for (var p of Q.parties) {
         Q[p+'_parlament_spc'] = 0;
     }
     if (Q[p+'_parlament_s_old'] == 0 || !Q[p+'_parlament_s_old']) {
-        Q[p+'_parlament_s_delta'] = <div style='width: 100%; text-align: center; font-style: italic;'> 'New!'</div>;
-        Q[p+'_parlament_pv_delta'] = <div style='text-align: center; font-style: italic;'> 'New!'</div>;
+        Q[p+'_parlament_s_delta'] = '<div style="width: 100%; text-align: center; font-style: italic;"> New!</div>';
+        Q[p+'_parlament_pv_delta'] = '<div style="text-align: center; font-style: italic;"> New!</div>';
     } else {
         Q[p+'_parlament_s_delta'] = Q[p+'_parlament_s'] - Q[p+'_parlament_s_old'];
         var sign1 = Q[p+'_parlament_s_delta'] > 0 ?

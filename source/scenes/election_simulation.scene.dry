@@ -3,12 +3,8 @@ set-jump: post_election
 
 
 - @2012_11: Catalan Parliament (November 2012)
-// - @2015_9: Catalan Parliament (September 2015)
-// - @2017_12: Catalan Parliament (December 2017)
-// - @1917_1: Constituent Assembly (March 1917 support levels)
-// - @1917_11: Constituent Assembly (November 1917)
-// - @ps_1917_3: Petrograd Soviet (March 1917)
-// - @ps_1917_8: Petrograd Soviet (August 1917)
+# - @2015_9: Catalan Parliament (September 2015)
+# - @2017_12: Catalan Parliament (December 2017)
 
 @2012_11
 on-arrival: {!

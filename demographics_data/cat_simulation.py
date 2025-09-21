@@ -2,8 +2,6 @@
 
 import pandas as pd
 from collections import defaultdict
-
-# For visualization
 import matplotlib.pyplot as plt
 
 class CataloniaElectionSimulator:
@@ -15,7 +13,7 @@ class CataloniaElectionSimulator:
         self.population_file = population_file
         self.votes_file = votes_file
 
-        # Catalonia 2012 seat allocation by province
+        # Catalonia seat allocation by province
         self.seats_per_province = {
             'barcelona': 85,
             'girona': 17, 
