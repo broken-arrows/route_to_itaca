@@ -2,11 +2,13 @@ title: Election Simulation
 set-jump: post_election
 
 
-- @2012_11: Catalan Parliament (November 2012, historical)
-- @1917_1: Constituent Assembly (March 1917 support levels)
-- @1917_11: Constituent Assembly (November 1917)
-- @ps_1917_3: Petrograd Soviet (March 1917)
-- @ps_1917_8: Petrograd Soviet (August 1917)
+- @2012_11: Catalan Parliament (November 2012)
+// - @2015_9: Catalan Parliament (September 2015)
+// - @2017_12: Catalan Parliament (December 2017)
+// - @1917_1: Constituent Assembly (March 1917 support levels)
+// - @1917_11: Constituent Assembly (November 1917)
+// - @ps_1917_3: Petrograd Soviet (March 1917)
+// - @ps_1917_8: Petrograd Soviet (August 1917)
 
 @2012_11
 on-arrival: {!
@@ -697,7 +699,6 @@ if (window && d3) {
     parliament.exit.toCenter(false).bigToSmall(true);
     d3.select("#parlament").datum(data).call(parliament);
 }
-data.sort(function(a, b) { return b.seats - a.seats; });
 !}
 
 = Election Results
@@ -705,24 +706,24 @@ data.sort(function(a, b) { return b.seats - a.seats; });
 {!<svg id="parlament" style="width: 500px; height: 250px;"> </svg>!}
 
 {!<table>!}
-{!<tr><td>Party</td><td style='width: 4em'>Vote</td><td>Change</td><td>Seats</td><td>Change</td></tr>!}
-[? if jxsi_parlament_showviz: {!<tr><td><div class="box" style='background-color:#3ab6a5; font-weight:bold;'> </div> !} JxSí {!</td><td>!}[+ jxsi_parlament_pv +]% {!</td><td>!} [+ jxsi_parlament_pv_delta +] {!</td><td>!} [+ jxsi_parlament_s +] ([+ jxsi_parlament_spc +]%) {!</td><td>!} [+ jxsi_parlament_s_delta +] {!</td>!}?]
-[? if ciu_parlament_showviz: {!<tr><td><div class="box" style='background-color:#002782'> </div> !} CiU {!</td><td>!}[+ ciu_parlament_pv +]% {!</td><td>!} [+ ciu_parlament_pv_delta +] {!</td><td>!} [+ ciu_parlament_s +] ([+ ciu_parlament_spc +]%) {!</td><td>!} [+ ciu_parlament_s_delta +] {!</td>!}?]
-[? if cdc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#002782'> </div> !} CDC {!</td><td>!}[+ cdc_parlament_pv +]% {!</td><td>!} [+ cdc_parlament_pv_delta +] {!</td><td>!} [+ cdc_parlament_s +] ([+ cdc_parlament_spc +]%) {!</td><td>!} [+ cdc_parlament_s_delta +] {!</td>!}?]
-[? if pdcat_parlament_showviz: {!<tr><td><div class="box" style='background-color:#0081c2'> </div> !} PDeCAT {!</td><td>!}[+ pdcat_parlament_pv +]% {!</td><td>!} [+ pdcat_parlament_pv_delta +] {!</td><td>!} [+ pdcat_parlament_s +] ([+ pdcat_parlament_spc +]%) {!</td><td>!} [+ pdcat_parlament_s_delta +] {!</td>!}?]
-[? if erc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#ff8000'> </div> !} ERC {!</td><td>!}[+ erc_parlament_pv +]% {!</td><td>!} [+ erc_parlament_pv_delta +] {!</td><td>!} [+ erc_parlament_s +] ([+ erc_parlament_spc +]%) {!</td><td>!} [+ erc_parlament_s_delta +] {!</td>!}?]
-[? if cs_parlament_showviz: {!<tr><td><div class="box" style='background-color:#f6c300'> </div> !} Cs {!</td><td>!}[+ cs_parlament_pv +]% {!</td><td>!} [+ cs_parlament_pv_delta +] {!</td><td>!} [+ cs_parlament_s +] ([+ cs_parlament_spc +]%) {!</td><td>!} [+ cs_parlament_s_delta +] {!</td>!}?]
-[? if psc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#e73b39'> </div> !} PSC {!</td><td>!}[+ psc_parlament_pv +]% {!</td><td>!} [+ psc_parlament_pv_delta +] {!</td><td>!} [+ psc_parlament_s +] ([+ psc_parlament_spc +]%) {!</td><td>!} [+ psc_parlament_s_delta +] {!</td>!}?]
-[? if ppc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#007fff'> </div> !} PPC {!</td><td>!}[+ ppc_parlament_pv +]% {!</td><td>!} [+ ppc_parlament_pv_delta +] {!</td><td>!} [+ ppc_parlament_s +] ([+ ppc_parlament_spc +]%) {!</td><td>!} [+ ppc_parlament_s_delta +] {!</td>!}?]
-[? if vox_parlament_showviz: {!<tr><td><div class="box" style='background-color:#63be21'> </div> !} Vox {!</td><td>!}[+ vox_parlament_pv +]% {!</td><td>!} [+ vox_parlament_pv_delta +] {!</td><td>!} [+ vox_parlament_s +] ([+ vox_parlament_spc +]%) {!</td><td>!} [+ vox_parlament_s_delta +] {!</td>!}?]
-[? if icv_parlament_showviz: {!<tr><td><div class="box" style='background-color:#67af2f'> </div> !} ICV-EUiA {!</td><td>!}[+ icv_parlament_pv +]% {!</td><td>!} [+ icv_parlament_pv_delta +] {!</td><td>!} [+ icv_parlament_s +] ([+ icv_parlament_spc +]%) {!</td><td>!} [+ icv_parlament_s_delta +] {!</td>!}?]
-[? if csqp_parlament_showviz: {!<tr><td><div class="box" style='background-color:#c3113b'> </div> !} CSQP {!</td><td>!}[+ csqp_parlament_pv +]% {!</td><td>!} [+ csqp_parlament_pv_delta +] {!</td><td>!} [+ csqp_parlament_s +] ([+ csqp_parlament_spc +]%) {!</td><td>!} [+ csqp_parlament_s_delta +] {!</td>!}?]
-[? if cecp_parlament_showviz: {!<tr><td><div class="box" style='background-color:#be3882'> </div> !} CECP {!</td><td>!}[+ cecp_parlament_pv +]% {!</td><td>!} [+ cecp_parlament_pv_delta +] {!</td><td>!} [+ cecp_parlament_s +] ([+ cecp_parlament_spc +]%) {!</td><td>!} [+ cecp_parlament_s_delta +] {!</td>!}?]
-[? if ecp_parlament_showviz: {!<tr><td><div class="box" style='background-color:#6e236e'> </div> !} ECP {!</td><td>!}[+ ecp_parlament_pv +]% {!</td><td>!} [+ ecp_parlament_pv_delta +] {!</td><td>!} [+ ecp_parlament_s +] ([+ ecp_parlament_spc +]%) {!</td><td>!} [+ ecp_parlament_s_delta +] {!</td>!}?]
-[? if cup_parlament_showviz: {!<tr><td><div class="box" style='background-color:#ffed00'> </div> !} CUP {!</td><td>!}[+ cup_parlament_pv +]% {!</td><td>!} [+ cup_parlament_pv_delta +] {!</td><td>!} [+ cup_parlament_s +] ([+ cup_parlament_spc +]%) {!</td><td>!} [+ cup_parlament_s_delta +] {!</td>!}?]
-[? if unio_parlament_showviz: {!<tr><td><div class="box" style='background-color:#0052a3'> </div> !} Unió {!</td><td>!}[+ unio_parlament_pv +]% {!</td><td>!} [+ unio_parlament_pv_delta +] {!</td><td>!} [+ unio_parlament_s +] ([+ unio_parlament_spc +]%) {!</td><td>!} [+ unio_parlament_s_delta +] {!</td>!}?]
-[? if ac_parlament_showviz: {!<tr><td><div class="box" style='background-color:#064a81'> </div> !} AC {!</td><td>!}[+ ac_parlament_pv +]% {!</td><td>!} [+ ac_parlament_pv_delta +] {!</td><td>!} [+ ac_parlament_s +] ([+ ac_parlament_spc +]%) {!</td><td>!} [+ ac_parlament_s_delta +] {!</td>!}?]
-[? if si_parlament_showviz: {!<tr><td><div class="box" style='background-color:#3ab6a5'> </div> !} SI {!</td><td>!}[+ si_parlament_pv +]% {!</td><td>!} [+ si_parlament_pv_delta +] {!</td><td>!} [+ si_parlament_s +] ([+ si_parlament_spc +]%) {!</td><td>!} [+ si_parlament_s_delta +] {!</td>!}?]
+{!<tr><td style='width: 4em'>Party</td><td style='width: 4em'>Vote</td><td style='width: 4em'>Change</td><td style='width: 4em'>Seats</td><td style='width: 4em'>Change</td></tr>!}
+[? if jxsi_parlament_showviz: {!<tr><td><div class="box" style='background-color:#3ab6a5; font-weight:bold;'> </div> !} JxSí {!</td><td>!}[+ jxsi_parlament_pv +]% {!</td><td>!} [+ jxsi_parlament_pv_delta +] {!</td><td>!} [+ jxsi_parlament_s +] {!</td><td>!} [+ jxsi_parlament_s_delta +] {!</td>!}?]
+[? if ciu_parlament_showviz: {!<tr><td><div class="box" style='background-color:#002782'> </div> !} CiU {!</td><td>!}[+ ciu_parlament_pv +]% {!</td><td>!} [+ ciu_parlament_pv_delta +] {!</td><td>!} [+ ciu_parlament_s +] {!</td><td>!} [+ ciu_parlament_s_delta +] {!</td>!}?]
+[? if cdc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#002782'> </div> !} CDC {!</td><td>!}[+ cdc_parlament_pv +]% {!</td><td>!} [+ cdc_parlament_pv_delta +] {!</td><td>!} [+ cdc_parlament_s +] {!</td><td>!} [+ cdc_parlament_s_delta +] {!</td>!}?]
+[? if pdcat_parlament_showviz: {!<tr><td><div class="box" style='background-color:#0081c2'> </div> !} PDeCAT {!</td><td>!}[+ pdcat_parlament_pv +]% {!</td><td>!} [+ pdcat_parlament_pv_delta +] {!</td><td>!} [+ pdcat_parlament_s +] {!</td><td>!} [+ pdcat_parlament_s_delta +] {!</td>!}?]
+[? if erc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#ff8000'> </div> !} ERC {!</td><td>!}[+ erc_parlament_pv +]% {!</td><td>!} [+ erc_parlament_pv_delta +] {!</td><td>!} [+ erc_parlament_s +] {!</td><td>!} [+ erc_parlament_s_delta +] {!</td>!}?]
+[? if cs_parlament_showviz: {!<tr><td><div class="box" style='background-color:#f6c300'> </div> !} Cs {!</td><td>!}[+ cs_parlament_pv +]% {!</td><td>!} [+ cs_parlament_pv_delta +] {!</td><td>!} [+ cs_parlament_s +] {!</td><td>!} [+ cs_parlament_s_delta +] {!</td>!}?]
+[? if psc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#e73b39'> </div> !} PSC {!</td><td>!}[+ psc_parlament_pv +]% {!</td><td>!} [+ psc_parlament_pv_delta +] {!</td><td>!} [+ psc_parlament_s +] {!</td><td>!} [+ psc_parlament_s_delta +] {!</td>!}?]
+[? if ppc_parlament_showviz: {!<tr><td><div class="box" style='background-color:#007fff'> </div> !} PPC {!</td><td>!}[+ ppc_parlament_pv +]% {!</td><td>!} [+ ppc_parlament_pv_delta +] {!</td><td>!} [+ ppc_parlament_s +] {!</td><td>!} [+ ppc_parlament_s_delta +] {!</td>!}?]
+[? if vox_parlament_showviz: {!<tr><td><div class="box" style='background-color:#63be21'> </div> !} Vox {!</td><td>!}[+ vox_parlament_pv +]% {!</td><td>!} [+ vox_parlament_pv_delta +] {!</td><td>!} [+ vox_parlament_s +] {!</td><td>!} [+ vox_parlament_s_delta +] {!</td>!}?]
+[? if icv_parlament_showviz: {!<tr><td><div class="box" style='background-color:#67af2f'> </div> !} ICV-EUiA {!</td><td>!}[+ icv_parlament_pv +]% {!</td><td>!} [+ icv_parlament_pv_delta +] {!</td><td>!} [+ icv_parlament_s +] {!</td><td>!} [+ icv_parlament_s_delta +] {!</td>!}?]
+[? if csqp_parlament_showviz: {!<tr><td><div class="box" style='background-color:#c3113b'> </div> !} CSQP {!</td><td>!}[+ csqp_parlament_pv +]% {!</td><td>!} [+ csqp_parlament_pv_delta +] {!</td><td>!} [+ csqp_parlament_s +] {!</td><td>!} [+ csqp_parlament_s_delta +] {!</td>!}?]
+[? if cecp_parlament_showviz: {!<tr><td><div class="box" style='background-color:#be3882'> </div> !} CECP {!</td><td>!}[+ cecp_parlament_pv +]% {!</td><td>!} [+ cecp_parlament_pv_delta +] {!</td><td>!} [+ cecp_parlament_s +] {!</td><td>!} [+ cecp_parlament_s_delta +] {!</td>!}?]
+[? if ecp_parlament_showviz: {!<tr><td><div class="box" style='background-color:#6e236e'> </div> !} ECP {!</td><td>!}[+ ecp_parlament_pv +]% {!</td><td>!} [+ ecp_parlament_pv_delta +] {!</td><td>!} [+ ecp_parlament_s +] {!</td><td>!} [+ ecp_parlament_s_delta +] {!</td>!}?]
+[? if cup_parlament_showviz: {!<tr><td><div class="box" style='background-color:#ffed00'> </div> !} CUP {!</td><td>!}[+ cup_parlament_pv +]% {!</td><td>!} [+ cup_parlament_pv_delta +] {!</td><td>!} [+ cup_parlament_s +] {!</td><td>!} [+ cup_parlament_s_delta +] {!</td>!}?]
+[? if unio_parlament_showviz: {!<tr><td><div class="box" style='background-color:#0052a3'> </div> !} Unió {!</td><td>!}[+ unio_parlament_pv +]% {!</td><td>!} [+ unio_parlament_pv_delta +] {!</td><td>!} [+ unio_parlament_s +] {!</td><td>!} [+ unio_parlament_s_delta +] {!</td>!}?]
+[? if ac_parlament_showviz: {!<tr><td><div class="box" style='background-color:#064a81'> </div> !} AC {!</td><td>!}[+ ac_parlament_pv +]% {!</td><td>!} [+ ac_parlament_pv_delta +] {!</td><td>!} [+ ac_parlament_s +] {!</td><td>!} [+ ac_parlament_s_delta +] {!</td>!}?]
+[? if si_parlament_showviz: {!<tr><td><div class="box" style='background-color:#000000'> </div> !} SI {!</td><td>!}[+ si_parlament_pv +]% {!</td><td>!} [+ si_parlament_pv_delta +] {!</td><td>!} [+ si_parlament_s +] {!</td><td>!} [+ si_parlament_s_delta +] {!</td>!}?]
 
 {!</table>!}
 

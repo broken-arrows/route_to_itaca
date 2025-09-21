@@ -1,3 +1,4 @@
 /node_modules
 /out/game.json
 /out/html/core.js
+.temp/

@@ -130,17 +130,15 @@ for (var p of Q.parties) {
         Q[p+'_parlament_spc'] = 0;
     }
     if (Q[p+'_parlament_s_old'] == 0 || !Q[p+'_parlament_s_old']) {
-        Q[p+'_parlament_s_delta'] = 'New!';
-        Q[p+'_parlament_pv_delta'] = 'New!';
+        Q[p+'_parlament_s_delta'] = <div style='width: 100%; text-align: center; font-style: italic;'> 'New!'</div>;
+        Q[p+'_parlament_pv_delta'] = <div style='text-align: center; font-style: italic;'> 'New!'</div>;
     } else {
         Q[p+'_parlament_s_delta'] = Q[p+'_parlament_s'] - Q[p+'_parlament_s_old'];
         var sign1 = Q[p+'_parlament_s_delta'] > 0 ?
             '<img src="img/arrowup.png"> ' :
             Q[p+'_parlament_s_delta'] < 0 ? '<img src="img/arrowdown.png"> ' :
             '<img src="img/steady.png"> ';
-        console.log(`Party ${p} delta seats: ${Q[p+'_parlament_s_delta']} ${typeof Q[p+'_parlament_s_delta']} for old seats ${Q[p+'_parlament_s_old']} ${typeof Q[p+'_parlament_s_old']} and new seats ${Q[p+'_parlament_s']} ${typeof Q[p+'_parlament_s']}`);
-        Q[p+'_parlament_s_delta'] = sign1 + Math.abs(Q[p+'_parlament_s_delta']);
-        console.log(Q[p+'_parlament_s_delta']);
+        Q[p+'_parlament_s_delta'] = sign1 + Math.abs(Q[p+'_parlament_s_delta'])
         Q[p+'_parlament_pv_delta'] = Q[p+'_parlament_pv'] - Q[p+'_parlament_pv_old'];
         var sign2 = Q[p+'_parlament_pv_delta'] > 0 ?
             '<img src="img/arrowup.png"> ' :
