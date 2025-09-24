@@ -11,6 +11,7 @@ on-arrival: {!
 Q.election_type="cat";
 Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si', 'cdc', 'unio', 'jxsi', 'junts', 'pdcat', 'csqp', 'cecp', 'ecp', 'vox', 'ac'];
 
+Q.parlament_constituencies = ["barcelona", "girona", "lleida", "tarragona"];
 Q.parlament_seats = {
     "barcelona": 85,
     "girona": 17,
@@ -988,13 +989,13 @@ if (window && d3) {
 {!</table>!}
 
 **Government Formation**
-//yeah this is hardcoded because its only the simulation scenes
+# yeah this is hardcoded because its only the simulation scenes
 
-[? if ciu_parlament_showviz: {<span style='color: #002782; font-weight: bold;'>CiU</span>} will be able to form a {<span style='color: #002782; font-style: italic;'>minority government</span>} with the toleration of {<span style='color: #ff8000; font-weight: bold;'>ERC</span>}. ?]
+[? if ciu_parlament_showviz: <span style='color: #002782; font-weight: bold;'>CiU</span> will be able to form a <span style='color: #002782; font-style: italic;'>minority government</span> with the toleration of <span style='color: #ff8000; font-weight: bold;'>ERC</span>. ?]
 
-[? if jxsi_parlament_showviz: {<span style='color: #3ab6a5; font-weight: bold;'>JxSí</span>} will need the toleration of {<span style='color: #ffed00; font-weight: bold;'>CUP</span>} to form a {<span style='color: #3ab6a5; font-style: italic;'>united government</span>}. ?]
+[? if jxsi_parlament_showviz: <span style='color: #3ab6a5; font-weight: bold;'>JxSí</span> will need the toleration of <span style='color: #ffed00; font-weight: bold;'>CUP</span> to form a <span style='color: #3ab6a5; font-style: italic;'>united government</span>. ?]
 
-[? if junts_parlament_showviz: {<span style='color: #3ab6a5; font-weight: bold;'>Junts</span>} and {<span style='color: #ff8000; font-weight: bold;'>ERC</span>} will form a {<span style='color: #bfa62d; font-style: italic;'>sovereignty government</span>} with {<span style='color: #ffed00; font-weight: bold;'>CUP</span>} toleration. ?]
+[? if junts_parlament_showviz: <span style='color: #3ab6a5; font-weight: bold;'>Junts</span> and <span style='color: #ff8000; font-weight: bold;'>ERC</span> will form a <span style='color: #bfa62d; font-style: italic;'>sovereignty government</span> with <span style='color: #ffed00; font-weight: bold;'>CUP</span> toleration. ?]
 
 [? if not (ciu_parlament_showviz or jxsi_parlament_showviz or junts_parlament_showviz): How did we get here??? ?]
 

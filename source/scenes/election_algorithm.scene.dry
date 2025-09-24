@@ -164,7 +164,7 @@ for (var constituency of Q.parlament_constituencies) {
             if (Q['parlament_' + constituency + '_' + party + '_is_in'] != 1) {
                 continue;
             }
-            var quotient = Q['parlament_' + constituency + '_' + party + '_votes'] / (Q['parlament_' + constituency + '_' + party + '_seats'] + 1);
+            var quotient = Q['parlament_' + constituency + '_' + party + '_votes'] / (Q[party + '_parlament_' + constituency + '_s'] + 1);
             if (quotient > maxQuotient) {
                 maxQuotient = quotient;
                 winningParty = party;
