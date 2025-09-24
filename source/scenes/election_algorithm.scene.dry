@@ -161,13 +161,12 @@ for (var constituency of Q.parlament_constituencies) {
         var maxQuotient = 0;
         var winningParty = null;
         for (var party of Q.parties) {
-            if (not Q['parlament_' + constituency + '_' + party + '_is_in']) {
-                continue;
-            }
-            var quotient = Q['parlament_' + constituency + '_' + party + '_votes'] / (Q[party + '_parlament_' + constituency + '_s'] + 1);
-            if (quotient > maxQuotient) {
-                maxQuotient = quotient;
-                winningParty = party;
+            if (Q['parlament_' + constituency + '_' + party + '_is_in']) {
+                var quotient = Q['parlament_' + constituency + '_' + party + '_votes'] / (Q[party + '_parlament_' + constituency + '_s'] + 1);
+                if (quotient > maxQuotient) {
+                    maxQuotient = quotient;
+                    winningParty = party;
+                }
             }
         }
         if (winningParty) {
