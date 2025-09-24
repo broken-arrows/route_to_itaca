@@ -146,6 +146,8 @@ for (var constituency of Q.parlament_constituencies){
     for (var party of Q.parties) {
         if (Q['parlament_' + constituency + '_' + party + '_votes'] > 0.03 * Q['parlament_' + constituency + '_totalvotes']) {
             Q['parlament_' + constituency + '_' + party + '_is_in'] = 1;
+        } else {
+            Q['parlament_' + constituency + '_' + party + '_is_in'] = 0;
         }
     }
 }
