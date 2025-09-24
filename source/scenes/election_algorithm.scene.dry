@@ -82,7 +82,11 @@ go-to: jumpScene
 @cat_parlament
 title: Catalan Parlament Elections
 on-arrival: {! 
-// Store old results
+// This all could very probably be MUCH optimized by compressing loops, etc.
+// I'd rather have it readable tho.
+
+
+// 00. Store old results
 for (var p of Q.parties) {
     // I.e. we show the party in the results table also if they HAD seats in the previous election
     // Some shenanigans may be needed for handling the name changing parties, WIP!
@@ -117,11 +121,11 @@ for (var constituency of Q.parlament_constituencies) {
     Q['parlament_' + constituency + '_totalvotes'] = 0;
     Q['parlament_' + constituency + '_totalabstention'] = 0;
     for (var demographic of Q.parlament_demographics) {
-        Q['parlament_' + constituency + '_totalpop'] += Q['parlament_' + constituency + '_pop_' + demographic];
-        Q['parlament_' + constituency + '_totalabstention'] += Q['parlament_' + constituency + '_pop_' + demographic]*Q['parlament_' + constituency + '_' + demographic + '_abstention'];
-        Q['parlament_' + constituency + '_totalvotes'] += Q['parlament_' + constituency + '_pop_' + demographic]*(1 - Q['parlament_' + constituency + '_' + demographic + '_abstention']);
+        Q['parlament_' + constituency + '_totalpop'] += Q['parlament_' + constituency + '_' + demographic + '_pop'];
+        Q['parlament_' + constituency + '_totalabstention'] += Q['parlament_' + constituency + '_' + demographic + '_pop']*Q['abstain_parlament_' + constituency + '_' + demographic + '_support'];
         for (var party of Q.parties) {
-            Q['parlament_' + constituency + '_' + party + '_votes'] += Q['parlament_' + constituency + '_pop_' + demographic] * Q[party + '_' + constituency + '_' + demographic +'_support'];
+            Q['parlament_' + constituency + '_' + party + '_votes'] += Q['parlament_' + constituency + '_' + demographic + '_pop'] * Q[party + '_parlament_' + constituency + '_' + demographic +'_support'];
+            Q['parlament_' + constituency + '_totalvotes'] += Q['parlament_' + constituency + '_' + party + '_votes'];
             console.log(`Votes for party ${party} in ${constituency} from demographic ${demographic}: ${Q['parlament_' + constituency + '_' + party + '_votes']}`);
         }
     }
@@ -159,11 +163,15 @@ for (var constituency of Q.parlament_constituencies) {
         console.error(`No seats to allocate for constituency ${constituency}!!`);
         continue;
     }
+    if (!Q['parlament_' + constituency + '_totalvotes'] || Q['parlament_' + constituency + '_totalvotes'] <= 0) {
+        console.error(`No votes in constituency ${constituency}!!`);
+        continue;
+    }
     while (seats_to_allocate > 0) {
         var maxQuotient = 0;
         var winningParty = null;
         for (var party of Q.parties) {
-            if (Q['parlament_' + constituency + '_' + party + '_is_in']) {
+            if (Q['parlament_' + constituency + '_' + party + '_is_in'] == 1) {
                 var quotient = Q['parlament_' + constituency + '_' + party + '_votes'] / (Q[party + '_parlament_' + constituency + '_s'] + 1);
                 if (quotient > maxQuotient) {
                     maxQuotient = quotient;
