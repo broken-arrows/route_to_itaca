@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import argparse
 import pandas as pd
 from collections import defaultdict
 import matplotlib.pyplot as plt
@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 class CataloniaElectionSimulator:
     """Catalonia Election Simulator using d'Hondt method"""
 
-    def __init__(self, population_file='demographics_data//clean//ok_population_weights_2012.csv', 
-                 votes_file='demographics_data//clean//ok_vote_intention_2012.csv'):
+    def __init__(self, population_file='demographics_data/clean/ok_population_weights_2012.csv', 
+                 votes_file='demographics_data/clean/ok_vote_intention_2012.csv'):
         """Initialize with data files"""
         self.population_file = population_file
         self.votes_file = votes_file
@@ -75,6 +75,7 @@ class CataloniaElectionSimulator:
 
             province_votes[province] = {}
             abstention = 0
+            total_population = 0
 
             # Initialize party votes
             for party in parties:
@@ -88,6 +89,7 @@ class CataloniaElectionSimulator:
                     continue
 
                 demo_weight = float(pop_row[demo_group])
+                total_population += demo_weight
 
                 # Get vote intentions for this province and demographic group
                 demo_votes = self.vote_intentions[
@@ -108,11 +110,12 @@ class CataloniaElectionSimulator:
                     elif vote_row['party'] == 'abstain':
                         # Abstentions are not counted towards any party, but we want to print them
                         abstention += (vote_row['percentage']/100) * demo_weight
-            
-         
-            if abstention > 0:
-                print(f"  {province.upper()}: Abstention estimated at {abstention:.1f}%")
 
+            if total_population > 0:
+                abstention_pct = (abstention / total_population) * 100
+            else:
+                abstention_pct = 0
+            print(f"  {province.upper()}: Abstention estimated at {abstention_pct:.1f}%")
         return province_votes
 
     def apply_threshold(self, province_votes, threshold=3.0):
@@ -178,9 +181,9 @@ class CataloniaElectionSimulator:
         allocation_history = []
 
         # Allocate seats one by one
+        winning_party = None
         for seat_num in range(1, seats + 1):
             max_quotient = 0
-            winning_party = None
             quotients = {}
 
             # Calculate quotients for all parties
@@ -202,6 +205,10 @@ class CataloniaElectionSimulator:
                     'all_quotients': quotients.copy()
                 })
 
+        if winning_party is not None:
+            print(f"\n\n  (last won seat went to {winning_party})")
+        else:
+            print("\n\n  (no seats were allocated)")
         return allocation, allocation_history
 
     def simulate_election(self, threshold=3.0, verbose=True):
@@ -302,7 +309,7 @@ class CataloniaElectionSimulator:
             else:
                 print("✗ No party has absolute majority - coalition needed")
 
-        return detailed_results, dict(total_results), threshold_info, allocation_histories
+        return detailed_results, dict(total_results), province_votes
 
     def export_results(self, detailed_results, total_results, filename='demographics_data/simulation_results/catalonia_2012_results.csv'):
         """Export detailed results to CSV"""
@@ -465,11 +472,11 @@ class CataloniaElectionSimulator:
         plt.tight_layout()
         plt.show()
 
-def main():
+def main(population_file: str, votes_file: str, output_file: str):
     """Main execution function"""
 
     # Initialize simulator
-    simulator = CataloniaElectionSimulator()
+    simulator = CataloniaElectionSimulator(population_file, votes_file)
 
     # Load data
     if not simulator.load_data():
@@ -479,13 +486,13 @@ def main():
 
     # Run simulation with default 3% threshold
 
-    detailed_results, total_results, threshold_info, histories = simulator.simulate_election(
+    detailed_results, total_results, province_votes = simulator.simulate_election(
         threshold=3.0, 
         verbose=True
     )
 
     # Export results
-    simulator.export_results(detailed_results, total_results)
+    simulator.export_results(detailed_results, total_results, filename=output_file)
 
     print("\n" + "=" * 60)
     print("SIMULATION COMPLETE")
@@ -493,11 +500,29 @@ def main():
 
 
     # --- Visualization ---
-    # Get province_votes for plotting
-    province_votes = simulator.calculate_demographic_votes()
     simulator.plot_votes_and_seats(detailed_results, total_results, province_votes, simulator.seats_per_province)
 
-    return simulator, detailed_results, total_results
+    return simulator, detailed_results, total_results, province_votes
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Balance demographic percentages in a CSV file.")
+    parser.add_argument(
+        "input_file",
+        nargs="?",
+        default="demographics_data/clean/ok_population_weights_2012.csv",
+        help="Path to input CSV file"
+    )
+    parser.add_argument(
+        "votes_file",
+        nargs="?",
+        default="demographics_data/clean/ok_vote_intention_2012.csv",
+        help="Path to output CSV file"
+    )
+    parser.add_argument(
+        "output_file",
+        nargs="?",
+        default="demographics_data/simulation_results/catalonia_2012_results.csv",
+        help="Path to output CSV file"
+    )
+    args = parser.parse_args()
+    main(args.input_file, args.votes_file, args.output_file)

@@ -41,12 +41,18 @@ Q.party_name_map = {"erc": "<span style='color: #ff8000; font-weight: bold;'>ERC
         "ciu": "<span style='color: #002782; font-weight: bold;'>CiU</span>",
         "cdc": "<span style='color: #002782; font-weight: bold;'>CDC</span>",
         "pdcat": "<span style='color: #0081c2; font-weight: bold;'>PDeCAT</span>",
-        "jxs": "<span style='color: #3ab6a5; font-weight: bold;'>JxS</span>",
+        "jxsi": "<span style='color: #3ab6a5; font-weight: bold;'>JxSí</span>",
         "junts": "<span style='color: #20c0b2; font-weight: bold;'>Junts</span>",
         "cup": "<span style='color: #ffed00; font-weight: bold;'>CUP</span>"};
 
 // start Parlament composition
-Q.parlament_size = 135; // seats
+Q.parlament_seats = {
+    "barcelona": 85,
+    "girona": 17,
+    "lleida": 15,
+    "tarragona": 18
+  }; // seats
+Q.parlament_constituencies = ["barcelona", "girona", "lleida", "tarragona"];
 
 Q.ciu_parlament_pv = 38.4;
 Q.ciu_parlament_s = 62;
@@ -87,7 +93,39 @@ Q.ac_parlament_pv = 0.0;
 Q.ac_parlament_s = 0;
 
 
+// Demographics
+Q.parlament_demographics = ["bussiness", "industrial", "middle", "young", "retired", "rural", "unemployed"]
+Q.parlament_barcelona_pop_middle = 1246;
+Q.parlament_barcelona_pop_retired = 1830;
+Q.parlament_barcelona_pop_young = 1351;
+Q.parlament_barcelona_pop_unemployed = 847;
+Q.parlament_barcelona_pop_bussiness = 636;
+Q.parlament_barcelona_pop_rural = 699;
+Q.parlament_barcelona_pop_industrial = 1525;
+Q.parlament_girona_pop_middle = 627;
+Q.parlament_girona_pop_retired = 1702;
+Q.parlament_girona_pop_young = 1395;
+Q.parlament_girona_pop_unemployed = 771;
+Q.parlament_girona_pop_bussiness = 744;
+Q.parlament_girona_pop_rural = 1891;
+Q.parlament_girona_pop_industrial = 927;
+Q.parlament_lleida_pop_middle = 552;
+Q.parlament_lleida_pop_retired = 1867;
+Q.parlament_lleida_pop_young = 1386;
+Q.parlament_lleida_pop_unemployed = 556;
+Q.parlament_lleida_pop_bussiness = 468;
+Q.parlament_lleida_pop_rural = 2673;
+Q.parlament_lleida_pop_industrial = 793;
+Q.parlament_tarragona_pop_middle = 809;
+Q.parlament_tarragona_pop_retired = 1777;
+Q.parlament_tarragona_pop_young = 1353;
+Q.parlament_tarragona_pop_unemployed = 858;
+Q.parlament_tarragona_pop_bussiness = 547;
+Q.parlament_tarragona_pop_rural = 1445;
+Q.parlament_tarragona_pop_industrial = 1236;
 
+// Parties and initial party support
+Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si', 'cdc', 'unio', 'jxsi', 'junts', 'pdcat', 'csqp', 'cecp', 'ecp', 'vox', 'ac'];
 
 
 Q.m_is_player = 1;
@@ -775,7 +813,7 @@ Q.minorities = ['ukrainians', 'kyrgyz_kazakh', 'tatar', 'other_turkic', 'jews', 
 Q.major_parties = ['m', 'b', 'sr', 'k'];
 // parties represented in the soviets
 Q.soviet_parties = ['m', 'b', 'sr', 'anarchist', 'other'];
-Q.parties = ['m', 'b', 'sr', 'k', 'popular_socialist', 'conservative', 'other', 'anarchist', 'none'];
+// Q.parties = ['m', 'b', 'sr', 'k', 'popular_socialist', 'conservative', 'other', 'anarchist', 'none'];
 Q.minority_parties = ['ukrainian_sr', 'alash', 'musavat', 'dashnak', 'jewish_socialists', 'jewish_national_list', 'muslim_socialists', 'turkic_muslim_parties', 'cossacks'];
 
 // Support for party by social group

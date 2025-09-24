@@ -579,8 +579,8 @@ table {
 .seat.fr {
     fill: var(--fr);
 }
-.seat.jxs {
-    fill: var(--jxs);
+.seat.jxsi {
+    fill: var(--jxsi);
 }
 .seat.pdcat {
     fill: var(--pdcat);
@@ -638,8 +638,8 @@ table {
 .box.fr {
     background-color: var(--fr);
 }
-.box.jxs {
-    background-color: var(--jxs);
+.box.jxsi {
+    background-color: var(--jxsi);
 }
 .box.pdcat {
     background-color: var(--pdcat);

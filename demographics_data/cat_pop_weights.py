@@ -148,7 +148,7 @@ def working_condition_breakdown(df, total_population_by_province):
         return df0
 
     def categorize_rural(df1):
-        # Calculate rural share and add 'middle_rural' column using total_population_by_province
+        # Calculate rural share and add that column using total_population_by_province
         urban_csv = os.path.join(os.path.dirname(__file__), 'idescat_raw', 'idescat_urban_2015.csv')
         urban_df = pd.read_csv(urban_csv, sep=';', encoding='utf-8')
         urban_df = urban_df[urban_df['col'] == 'Població']

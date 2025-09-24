@@ -97,31 +97,91 @@ for (var p of Q.parties) {
     console.log(`Party ${p} old seats: ${Q[p+'_parlament_s']}`);
 }
 
-// SPACE for the ACTUAL RESULT CALCULATION
-// for now, historical results nov 2012
+// 0. Initialize/reset vote and seat counts
+for (var party of Q.parties) {
+    for (var constituency of Q.parlament_constituencies) {
+        Q[party + '_parlament_votes_' + constituency] = 0;
+        Q[party + '_parlament_s_' + constituency] = 0;
+    }
+    Q[party+'_parlament_totalvotes'] = 0;
+    Q[party+'_parlament_pv'] = 0;
+    Q[party+'_parlament_s'] = 0;
+}
+Q.abstention_parlament_totalvotes = 0;
+Q.abstention_parlament_pv = 0;
 
-// Popular vote percentage
-Q.ciu_parlament_pv = 30.7;
-Q.erc_parlament_pv = 13.7;
-Q.psc_parlament_pv = 14.4;
-Q.ppc_parlament_pv = 13.0;
-Q.icv_parlament_pv = 9.9;
-Q.cs_parlament_pv = 7.6;
-Q.cup_parlament_pv = 3.5;
-Q.si_parlament_pv = 1.3;
+// 1. Calculate demographic weighted support for each party, per province
+Q.parlament_totalpop = 0;
+for (var constituency of Q.parlament_constituencies) {
+    Q['parlament_' + constituency + '_totalpop'] = 0;
+    Q['parlament_' + constituency + '_totalvotes'] = 0;
+    Q['parlament_' + constituency + '_totalabstention'] = 0;
+    for (var demographic of Q.parlament_demographics) {
+        Q['parlament_' + constituency + '_totalpop'] += Q['parlament_' + constituency + '_pop_' + demographic];
+        Q['parlament_' + constituency + '_totalabstention'] += Q['parlament_' + constituency + '_pop_' + demographic]*Q['parlament_' + constituency + '_' + demographic + '_abstention'];
+        Q['parlament_' + constituency + '_totalvotes'] += Q['parlament_' + constituency + '_pop_' + demographic]*(1 - Q['parlament_' + constituency + '_' + demographic + '_abstention']);
+        for (var party of Q.parties) {
+            Q['parlament_' + constituency + '_' + party + '_votes'] += Q['parlament_' + constituency + '_pop_' + demographic] * Q[party + '_' + constituency + '_' + demographic +'_support'];
+            console.log(`Votes for party ${party} in ${constituency} from demographic ${demographic}: ${Q['parlament_' + constituency + '_' + party + '_votes']}`);
+        }
+    }
+}
 
-// Seats in parlament
-Q.ciu_parlament_s = 50;
-Q.erc_parlament_s = 21;
-Q.psc_parlament_s = 20;
-Q.ppc_parlament_s = 19;
-Q.icv_parlament_s = 13;
-Q.cs_parlament_s = 9;
-Q.cup_parlament_s = 3;
-Q.si_parlament_s = 0;
+// 2. Calculate popular vote percentages and abstention
+for (var constituency of Q.parlament_constituencies) {
+    for (var party of Q.parties) {
+        Q[party+'_parlament_totalvotes'] += Q['parlament_' + constituency + '_' + party + '_votes'];
+    }
+    Q.abstention_parlament_totalvotes += Q['parlament_' + constituency + '_totalabstention'];
+}
+Q.abstention_parlament_pv = Math.round(Q.abstention_parlament_totalvotes / Q.parlament_totalpop * 1000) / 10;
+for (var party of Q.parties) {
+    Q[party+'_parlament_pv'] = Math.round(Q[party+'_parlament_totalvotes'] / (Q.parlament_totalpop - Q.abstention_parlament_totalvotes) * 1000) / 10;
+    console.log(`Party ${party} total votes: ${Q[party+'_parlament_totalvotes']}, pv: ${Q[party+'_parlament_pv']}%`);
+}
 
 
-// Calculate percent of parlament control and deltas
+// 3. Apply 3% provincial thresholds
+for (var constituency of Q.parlament_constituencies){
+    for (var party of Q.parties) {
+        if (Q['parlament_' + constituency + '_' + party + '_votes'] > 0.03 * Q['parlament_' + constituency + '_totalvotes']) {
+            Q['parlament_' + constituency + '_' + party + '_is_in'] = 1;
+        }
+    }
+}
+
+// 4. Allocate seats via D'Hondt method
+for (var constituency of Q.parlament_constituencies) {
+    var seats_to_allocate = Q.parlament_seats[constituency];
+    if (!seats_to_allocate || seats_to_allocate <= 0) {
+        console.error(`No seats to allocate for constituency ${constituency}!!`);
+        continue;
+    }
+    while (seats_to_allocate > 0) {
+        var maxQuotient = 0;
+        var winningParty = null;
+        for (var party of Q.parties) {
+            if (Q['parlament_' + constituency + '_' + party + '_is_in'] != 1) {
+                continue;
+            }
+            var quotient = Q['parlament_' + constituency + '_' + party + '_votes'] / (Q['parlament_' + constituency + '_' + party + '_seats'] + 1);
+            if (quotient > maxQuotient) {
+                maxQuotient = quotient;
+                winningParty = party;
+            }
+        }
+        if (winningParty) {
+            Q[winningParty + '_parlament_' + constituency + '_s'] += 1;
+            Q[winningParty + '_parlament_s'] += 1;
+            seats_to_allocate -= 1;
+        }
+    }
+    console.log(`Finished allocating seats for constituency ${constituency}`);
+}
+
+
+// 5. Post-process
+// 5.1 Calculate percent of parlament control and deltas
 for (var p of Q.parties) {
     if (Q[p+'_parlament_s'] > 0) {
         Q[p+'_parlament_spc'] = Math.round(Q[p+'_parlament_s'] / Q.parlament_size * 1000) / 10;
@@ -130,8 +190,8 @@ for (var p of Q.parties) {
         Q[p+'_parlament_spc'] = 0;
     }
     if (Q[p+'_parlament_s_old'] == 0 || !Q[p+'_parlament_s_old']) {
-        Q[p+'_parlament_s_delta'] = '<div style="width: 100%; text-align: center; font-style: italic;"> New!</div>';
-        Q[p+'_parlament_pv_delta'] = '<div style="text-align: center; font-style: italic;"> New!</div>';
+        Q[p+'_parlament_s_delta'] = '<div style="font-style: italic;">New!</div>';
+        Q[p+'_parlament_pv_delta'] = '<div style="font-style: italic;">New!</div>';
     } else {
         Q[p+'_parlament_s_delta'] = Q[p+'_parlament_s'] - Q[p+'_parlament_s_old'];
         var sign1 = Q[p+'_parlament_s_delta'] > 0 ?
@@ -148,7 +208,7 @@ for (var p of Q.parties) {
     }
 }
 
-// Calculate block votes
+// 5.2 Calculate block votes
 Q.independence_parlament_pv = Q.ciu_parlament_pv + Q.erc_parlament_pv + Q.cup_parlament_pv + Q.junts_parlament_pv + Q.cdc_parlament_pv + Q.pdcat_parlament_pv + Q.jxsi_parlament_pv + Q.ac_parlament_pv + Q.si_parlament_pv ;
 Q.independence_parlament_s = Q.ciu_parlament_s + Q.erc_parlament_s + Q.cup_parlament_s + Q.junts_parlament_s + Q.cdc_parlament_s + Q.pdcat_parlament_s + Q.jxsi_parlament_s + Q.ac_parlament_s + Q.si_parlament_s ;
 Q.independence_parlament_spc = Math.round(Q.independence_parlament_s / Q.parlament_size * 1000) / 10;

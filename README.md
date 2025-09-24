@@ -4,7 +4,9 @@ A fork from the original Petrograd 1917 by Autumn Chen.
 
 ## Dev info
 
-Techincal stuff for you nerds.
+Techincal stuff for you nerds. 
+
+For more info on demographic data origins and processing, check out the `demographics_data` folder and the readme file there. Everything there is not needed to build the game though, so feel free to ignore it.
 
 ### Included Libraries
 
