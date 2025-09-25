@@ -54,11 +54,11 @@ Q.parlament_seats = {
   }; // seats
 Q.parlament_constituencies = ["barcelona", "girona", "lleida", "tarragona"];
 
-Q.ciu_parlament_pv = 38.4;
+Q.ciu_parlament_pv = 40;
 Q.ciu_parlament_s = 62;
 Q.psc_parlament_pv = 18.4;
 Q.psc_parlament_s = 28;
-Q.ppc_parlament_pv = 12.4;
+Q.ppc_parlament_pv = 11.5;
 Q.ppc_parlament_s = 18;
 Q.icv_parlament_pv = 7.4;
 Q.icv_parlament_s = 10;
@@ -94,35 +94,35 @@ Q.ac_parlament_s = 0;
 
 
 // Demographics
-Q.parlament_demographics = ["bussiness", "industrial", "middle", "young", "retired", "rural", "unemployed"]
+Q.parlament_demographics = ["buss", "ind", "middle", "young", "retired", "rural", "unemployed"]
 Q.parlament_barcelona_middle_pop = 1246;
 Q.parlament_barcelona_retired_pop = 1830;
 Q.parlament_barcelona_young_pop = 1351;
 Q.parlament_barcelona_unemployed_pop = 847;
-Q.parlament_barcelona_bussiness_pop = 636;
+Q.parlament_barcelona_buss_pop = 636;
 Q.parlament_barcelona_rural_pop = 699;
-Q.parlament_barcelona_industrial_pop = 1525;
+Q.parlament_barcelona_ind_pop = 1525;
 Q.parlament_girona_middle_pop = 627;
 Q.parlament_girona_retired_pop = 1702;
 Q.parlament_girona_young_pop = 1395;
 Q.parlament_girona_unemployed_pop = 771;
-Q.parlament_girona_bussiness_pop = 744;
+Q.parlament_girona_buss_pop = 744;
 Q.parlament_girona_rural_pop = 1891;
-Q.parlament_girona_industrial_pop = 927;
+Q.parlament_girona_ind_pop = 927;
 Q.parlament_lleida_middle_pop = 552;
 Q.parlament_lleida_retired_pop = 1867;
 Q.parlament_lleida_young_pop = 1386;
 Q.parlament_lleida_unemployed_pop = 556;
-Q.parlament_lleida_bussiness_pop = 468;
+Q.parlament_lleida_buss_pop = 468;
 Q.parlament_lleida_rural_pop = 2673;
-Q.parlament_lleida_industrial_pop = 793;
+Q.parlament_lleida_ind_pop = 793;
 Q.parlament_tarragona_middle_pop = 809;
 Q.parlament_tarragona_retired_pop = 1777;
 Q.parlament_tarragona_young_pop = 1353;
 Q.parlament_tarragona_unemployed_pop = 858;
-Q.parlament_tarragona_bussiness_pop = 547;
+Q.parlament_tarragona_buss_pop = 547;
 Q.parlament_tarragona_rural_pop = 1445;
-Q.parlament_tarragona_industrial_pop = 1236;
+Q.parlament_tarragona_ind_pop = 1236;
 
 // Parties and initial party support
 Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si', 'cdc', 'unio', 'jxsi', 'junts', 'pdcat', 'csqp', 'cecp', 'ecp', 'vox', 'ac'];
