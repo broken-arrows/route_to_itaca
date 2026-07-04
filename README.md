@@ -10,11 +10,11 @@ Or play it in Catalan! [broken-arrows.github.io/cami_a_itaca/](https://broken-ar
 
 ## Dev info
 
-This repo is quite heavy compared to other mods or denndry games since I include a lot of the data used for fine-tuning. Feel free to only focus on the `out` and `source` folders if you're only interested in the coding itself, regardless of parameter tuning.
+This repo is quite heavy compared to other mods or dendry games since I include a lot of the data used for fine-tuning. Feel free to only focus on the `out` and `source` folders if you're only interested in the coding itself, regardless of parameter tuning.
 
 ### Strictly required folders and files
 
-Both the `source` folder and the `out/html` folder containt game-essential components, even if some of the contents on the latter get re-written on game build. This goes beyond broken images and assets, as many bits of the original `css`, `js`, and `html` files have been adapted to the needs of this mod. **Without those the basic game will NOT work as intended**, these do way more than just visual changes.
+The `source` folder, `vendor` folder, and the `out/html` folder contain game-essential components, even if some of the contents on the latter get re-written on game build. This goes beyond broken images and assets, as many bits of the original `css`, `js`, and `html` files have been adapted to the needs of this mod. **Without those the basic game will NOT work as intended**, these do way more than just visual changes.
 
 ## Demographics, data analysis, and game-tuning simulations
 
@@ -30,12 +30,14 @@ For how this historical data is tuned into an actual, usable, game engine, consu
 
 [d3-parliament](https://github.com/geoffreybr/d3-parliament)
 
-*Note: the `d3-parliament` and `d3-linegraph` libraries has been heavily modified for this mod. I severely recommend you don't install the original version if working with this mod's files. Just use the provided one and your life will be easier.*
+_Note: the `d3-parliament` and `d3-linegraph` libraries has been heavily modified for this mod. I severely recommend you don't install the original version if working with this mod's files. Just use the provided one and your life will be easier._
+
+#### Modified Game Engine
+
+The Game Engine itself is a first-class part of this repo, and lives in `vendor/dendrynexus/`. It has been heavily modified to fit the needs of this project. Do not assume stuff will work using the original [dendrynexus](https://github.com/aucchen/dendrynexus) library. See `vendor/dendrynexus/VENDORING.md` for more details on where it was forked from and how it compares to the original.
 
 ### Building the game
 
-1. Install [dendrynexus](https://github.com/aucchen/dendrynexus)
+1. Run `npm install` in the root folder.
 
-2. Run `dendrynexus make-html` in this folder. *Note: I recommend using `npm` and the `--pretty` flag to get a result as close to the real one being deployed to `github.io` as possible. I.e. just use `npm run dedrynexus make-html --pretty`.*
-
-To update dendrynexus in `package-lock.json`, run `npm install --upgrade https://github.com/aucchen/dendrynexus`
+2. Run `npm run dendrynexus make-html -- --pretty` in this folder. _Note: the `--pretty` flag gets a result as close to the real one deployed to `github.io` as possible._
