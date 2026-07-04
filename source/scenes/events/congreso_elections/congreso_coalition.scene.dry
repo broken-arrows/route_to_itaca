@@ -603,12 +603,9 @@ on-arrival: {!
     } else {
         Q.next_spanish_election_year = Q.year;
     }
-    if (Q.rubicon) {
-        Q.next_spanish_election_time += 4 * 4;
-    } else {
-        Q.next_spanish_election_time += 4;
-        Q[Q.player_party + "_congreso_catalunya_support"] -= 2.5;
-    }
+
+    Q.next_spanish_election_time += 4;
+    if (!Q.rubicon) Q[Q.player_party + "_congreso_catalunya_support"] -= 2.5;
 
     if (Q.congreso_coalition_left_reach) {
         if (Q.csqp_formed) {

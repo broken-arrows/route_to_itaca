@@ -17,11 +17,8 @@ set-jump: congreso_election.post_election
 new-page: true
 on-arrival: {!
     Q.next_spanish_election_year += 4;
-    if (Q.rubicon) {
-        Q.next_spanish_election_time += 48 * 4;
-    } else {
-        Q.next_spanish_election_time += 48;
-    }
+    Q.next_spanish_election_time += 48;
+
 !}
 on-display: {!
     const data = [];
