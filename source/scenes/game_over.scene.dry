@@ -239,6 +239,25 @@ Note that your achievement progress is stored in your browser. Switching browser
   </div>
 </div>
 
+<div class="achievement !}[? if achievement_y2020 : achievement--unlocked ?][? if not achievement_y2020 : achievement--locked ?]{!" style="display:flex">
+  <div class="achievement-image !}[? if achievement_y2020 : achievement-image--unlocked ?][? if not achievement_y2020 : achievement-image--locked ?]{!">
+    <img src="img/achievements/2020.jpg" style="width:100%;height:100%;object-fit:cover;">
+  </div>
+  <div class="achievement-body">
+    <div class="achievement-title !}[? if achievement_y2020 : achievement-title--unlocked ?][? if not achievement_y2020 : achievement-title--locked ?]{!">
+     <span> Pandemic Year </span>
+        <div class="achievement-stars">
+            <span class="star--filled">★</span>
+            <span class="star--empty">★</span>
+            <span class="star--empty">★</span>
+            <span class="star--empty">★</span>
+            <span class="star--empty">★</span>
+        </div>
+    </div>
+    <div class="achievement-description !}[? if achievement_y2020 : achievement-description--unlocked ?][? if not achievement_y2020 : achievement-description--locked ?]{!"> End the game by reaching the year 2020. </div>
+  </div>
+</div>
+
 <div class="achievement !}[? if achievement_perrosanxe : achievement--unlocked ?][? if not achievement_perrosanxe : achievement--locked ?]{!" style="display:flex">
   <div class="achievement-image !}[? if achievement_perrosanxe : achievement-image--unlocked ?][? if not achievement_perrosanxe : achievement-image--locked ?]{!">
     <img src="img/achievements/perrosanxe.png" style="width:100%;height:100%;object-fit:cover;">

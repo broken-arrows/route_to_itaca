@@ -1,0 +1,11 @@
+title: A New Year
+subtitle: Happy 2019 everyone!
+view-if: year = 2019 and month = 1
+tags: event
+new-page: true
+max-visits: 1
+call: newyearcalc
+
+= A New Year: 2013
+
+- @post_event: TODO

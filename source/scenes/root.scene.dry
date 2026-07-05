@@ -10,7 +10,6 @@ on-arrival: {!
   // TODO: allow via url
   const valid_urls = [
     // "https://broken-arrows.github.io/route_to_itaca",
-    // "https://broken-arrows.github.io/cami_a_itaca"
   ];
 
   var local_file = window.location.protocol === 'file:' || window.location.hostname === 'localhost';

@@ -1,0 +1,14 @@
+title: newyearcalc
+on-arrival: {!
+    var party_resoruces_size = 0;
+    if ((Q.player_party == "erc" && Q.erc_in_jxsi) || (Q.player_party == "cup" && Q.cup_in_jxsi)) {
+        party_resoruces_size = Math.floor(Q.jxsi_parlament_s);
+    } else if ((Q.player_party == "erc" && Q.erc_in_jxcat) || (Q.player_party == "cup" && Q.cup_in_jxcat)) {
+        party_resoruces_size = Math.floor(Q.jxcat_parlament_s);
+    } else {
+        party_resoruces_size = Math.floor(Q[Q.player_party + "_parlament_s"]);
+    }
+    if (party_resoruces_size < 1) party_resoruces_size = 1;
+
+    // TODO: more stuff that happens on a new year (govt budget, etc)
+!}

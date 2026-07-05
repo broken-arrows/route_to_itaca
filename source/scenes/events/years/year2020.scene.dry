@@ -1,0 +1,20 @@
+title: A New Year, an end, an a new beginning?
+subtitle: Happy 2020 everyone!
+view-if: year = 2020 and month = 1
+tags: event
+new-page: true
+max-visits: 1
+on-arrival: {!
+    if (!Q.achievement_y2020) {
+        window.achievementNotif("Pandemic Year", 'img/achievements/2020.jpg', 1);
+    }
+    this.achieve("y2020");
+!}
+
+= A New Year: 2020
+
+After 8 years of *"procés"*, a decade of turmoil and political rollercoaster has come to an end. Now, new challenges arise: the looming threat of climate change, the continued political dissatisfaction, the undeniable rise of the far-right in Western countries... and to top it all, a new highly contagious virus seems to have put China in extreme alert. 
+
+In any case, these are stories for another time.
+
+- @game_over: End Game

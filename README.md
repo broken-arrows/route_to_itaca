@@ -4,9 +4,7 @@
 
 A fork from the original [Petrograd 1917](https://github.com/aucchen/petrograd_1917) by Autumn Chen, with great influence from [Dynamic Social Democracy](https://github.com/originn0/dynamic_social_democracy/) by origin0.
 
-Play it now! [broken-arrows.github.io/route_to_itaca/](https://broken-arrows.github.io/route_to_itaca/)
-
-Or play it in Catalan! [broken-arrows.github.io/cami_a_itaca/](https://broken-arrows.github.io/cami_a_itaca/)
+Play it (not yet)! [broken-arrows.github.io/route_to_itaca/](https://broken-arrows.github.io/route_to_itaca/)
 
 ## Dev info
 
@@ -32,7 +30,7 @@ For how this historical data is tuned into an actual, usable, game engine, consu
 
 _Note: the `d3-parliament` and `d3-linegraph` libraries has been heavily modified for this mod. I severely recommend you don't install the original version if working with this mod's files. Just use the provided one and your life will be easier._
 
-#### Modified Game Engine
+### Modified Game Engine
 
 The Game Engine itself is a first-class part of this repo, and lives in `vendor/dendrynexus/`. It has been heavily modified to fit the needs of this project. Do not assume stuff will work using the original [dendrynexus](https://github.com/aucchen/dendrynexus) library. See `vendor/dendrynexus/VENDORING.md` for more details on where it was forked from and how it compares to the original.
 
