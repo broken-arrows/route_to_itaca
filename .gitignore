@@ -11,5 +11,9 @@ __pycache__
 GEMINI.md
 CLAUDE.md
 .claude/*
-design/*
+/docs/*
 Overview.pdf
+/ui/node_modules
+/ui/dist
+/ui/public/game.*.json
+/out/html/desk/

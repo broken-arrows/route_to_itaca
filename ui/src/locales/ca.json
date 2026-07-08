@@ -1,0 +1,23 @@
+{
+  "app": { "title": "Route to Ítaca — The Desk (beta)" },
+  "debug": {
+    "newGame": "New game",
+    "choices": "Choices",
+    "decks": "Decks",
+    "hand": "Hand ({n}/{max})",
+    "pinned": "Pinned",
+    "draw": "Draw",
+    "play": "Play",
+    "inspector": "Q inspector",
+    "filter": "Filter qualities…",
+    "save": "Save",
+    "load": "Load",
+    "slotName": "Slot name",
+    "loading": "Loading game data…",
+    "loadError": "Could not load game data. Run `npm run sync-game` and reload.",
+    "gameOver": "Game over",
+    "handFull": "No space in hand",
+    "deckEmpty": "No cards available in this deck"
+  },
+  "lang": { "en": "EN", "ca": "CA" }
+}

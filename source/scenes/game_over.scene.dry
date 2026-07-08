@@ -1,5 +1,6 @@
 title: Game Over
 new-page: true
+set-bg: img/3rd_October_2017.jpg
 go-to: eg_menu
 on-arrival: {!
     // Achievements

@@ -20,27 +20,21 @@ Peak, fork, and play around with the code from <a class="link" href="https://git
 
 @on_ai
 
-Artificial Intelligence (AI) tools were used in the form of Large Language Models (LLMs), in limitted form and for very specific tasks, goals, and purposes. These are disclosed herein as an ethically indispensible exercice of transparency and integrity.
+Artificial Intelligence (AI) tools were used in the form of Large Language Models (LLMs), in limited form and for very specific tasks, goals, and purposes. These are disclosed herein as an ethically indispensable exercise of transparency and integrity.
 
-OpenAI's GPT-4 and GPT-4.1 models were used as part of the integrated Copilot within Visual Studio Code as:
+Cladue Code CLI, Perplexity's AI framework, and GitHub Copilot were used as, and for the purposes of:
 
-· Tools for speeding up the programming process. 
+· Tools for speeding up the programming process: boiler-plate code generation and iteration, coding and debugging assistance, etc
 
-· Coding and debugging assistance.
+· Orthographic, grammatical, and typographic review of texts and code.
 
-· Ortographic, grammatical, and typografic review of texts and code.
-
-Perplexity's AI framework (inlcuding the usage of the Claude, Gemini, GPT, and Grok model families) were used for:
-
-· Initial research and data gathering and exploration.
-
-· Boiler-plate code generation and iteration.
+· Initial research, data gathering, and data and UI exploration.
 
 · Data analysis, cleaning, processing, and transformation assistance.
 
 Applying to all of the above:
 
-· All code was human-reviewed, tested, and approved. No fully vibe-coded files exist in this project.
+· All code was human-reviewed, tested, and approved. No fully *"vibe-coded"* files exist in this project.
 
 · All (LLM-provided) sources of information were human-reviewed and cross-checked.
 
@@ -50,11 +44,9 @@ Applying to all of the above:
 
 · Storyline Development
 
-· UI/UX Design
-
 · Text, Image, Video, or Music generation.
 
-The author's stance on the use of AI tools is strictly against AI-generated "Art", including images, videos, text, music, videogames, and other creative works that may apply. Nonetheless, LLM tools can and do provide valuable assistance as specific tools for concrete tasks, and can undoubtedly help by speeding-up of many aspects of the development workflow. Its usage as a tool must be as responsible as it is transparent. If you feel like the usages descrived herein attempt against your intellectual property rights, contact me via <a class="link" href="https://www.reddit.com/user/_BrokenArrows/">Reddit DM</a>.
+The author's stance on the use of AI tools is strictly against AI-generated "Art", including images, videos, text, music, videogames, and other creative works that may apply. Nonetheless, LLM tools can and do provide valuable assistance as specific tools for concrete tasks, and can undoubtedly help by speeding-up of many aspects of the development workflow. Its usage as a tool must be as responsible as it is transparent. If you feel like the usages described herein attempt against your intellectual property rights, contact me via <a class="link" href="https://www.reddit.com/user/_BrokenArrows/">Reddit DM</a>.
 
 - @credits: Back
 
@@ -470,6 +462,8 @@ Seal of Spain 1931-1939 (esp_seal_republic.svg) - By Heralder, CC BY-SA 3.0, <a 
 = Fonts
 
 HK Grotesk - by Hanken Design Co. used under SIL Open Font License (OFL) <a class="link" href="https://hanken.co/products/hk-grotesk?variant=14506990633023">hanken.co/products/hk-grotesk</a> (2021)
+
+Raleway - by the Matt McInerney, Pablo Impallari, Rodrigo Fuenzalida, used under SIL Open Font License (OFL) <a class="link" href="">https://www.theleagueofmoveabletype.com/raleway</a> (2013)
 
 Ubuntu Regular - by Canonical Ltd. used under Ubuntu Font License <a class="link" href="https://design.ubuntu.com/font/">design.ubuntu.com/font/</a> (2010)
 

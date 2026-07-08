@@ -1,0 +1,59 @@
+/* Design tokens — spec: docs/design/desk_ui_plan.md §8.
+   Newsreader (--font-news) and Courier Prime (--font-typed) font FILES are
+   added in phase 2 with the newspaper surfaces; until then those tokens
+   resolve to system fallbacks. Font faces are deliberately swappable —
+   the HK Grotesk single-weight vs Hanken Grotesk variable decision is
+   deferred (spec §12.3). */
+
+@font-face {
+  font-family: 'Raleway';
+  src: url('../assets/fonts/Raleway-VariableFont_wght.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Raleway';
+  src: url('../assets/fonts/Raleway-Italic-VariableFont_wght.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'HK Grotesk';
+  src: url('../assets/fonts/hk-grotesk-regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+:root {
+  /* paper & ink */
+  --paper-0: #faf9f5;
+  --paper-1: #f3efe4;
+  --paper-2: #f6f4ec;
+  --paper-3: #eee9db;
+  --ink-0: #2e2a22;
+  --ink-1: #1c1a15;
+  /* accents */
+  --accent-red: #8c1d1d;
+  --accent-gold: #a9821f;
+  --accent-slate: #4a5b6a;
+  /* fonts */
+  --font-title: 'HK Grotesk', 'Raleway', sans-serif;
+  --font-body: 'Raleway', sans-serif;
+  --font-news: Georgia, 'Times New Roman', serif;
+  --font-typed: 'Courier New', monospace;
+  /* stage */
+  --stage-w: 1512px;
+  --stage-h: 860px;
+}
+
+body {
+  margin: 0;
+  background: var(--paper-3);
+  color: var(--ink-0);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-title);
+}

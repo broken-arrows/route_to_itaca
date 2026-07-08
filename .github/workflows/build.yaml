@@ -40,6 +40,24 @@ jobs:
         run: npm run dendrynexus make-html -- --pretty
       - name: Copy game.json to output
         run: cp out/game.json out/html/
+      - name: Setup node for ui
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install ui deps
+        run: npm ci
+        working-directory: ui
+      - name: Test ui
+        run: npm test
+        working-directory: ui
+      - name: Build ui
+        run: npm run build
+        working-directory: ui
+      - name: Assemble desk beta
+        run: |
+          mkdir -p out/html/desk
+          cp -r ui/dist/. out/html/desk/
+          cp out/game.json out/html/desk/game.en.json
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
