@@ -312,6 +312,18 @@
   var DendryEngine = function(ui, game) {
     this.ui = ui;
     this.game = game;
+    // i18n: inert unless setLocale installs a catalog. No locale ⇒ English
+    // ⇒ old UI unaffected.
+    this.locale = null;
+    this.catalog = null;
+  };
+
+  // Installs a runtime translation overlay. `catalog` maps an English
+  // source string (the key) to its translation. Passing null clears it.
+  DendryEngine.prototype.setLocale = function(locale, catalog) {
+    this.locale = locale || null;
+    this.catalog = catalog || null;
+    return this;
   };
 
   DendryEngine.prototype.displayGameOver = function() {
@@ -621,10 +633,22 @@
       this.displayGameOver();
     } else {
       var scene = this.getCurrentScene();
-      this.choiceCache = this._compileChoices(scene);
+      // On load, re-render content and re-run onDisplay, mirroring normal
+      // scene entry (displaySceneContent shows content, THEN runs onDisplay,
+      // THEN choices are compiled). onArrival is deliberately NOT re-run.
+      // Ordering matters two ways:
+      //  1. displayContent MUST run before onDisplay: onDisplay actions may
+      //     include display-time view code (e.g. d3 drawing into an <svg>
+      //     that the scene's own content emits), which needs those content
+      //     elements present in the DOM — exactly as on normal entry.
+      //  2. onDisplay MUST run before _compileChoices: it can mutate
+      //     qualities a choice's view-if/choose-if depends on, so choices
+      //     must be compiled against post-onDisplay state.
       this.ui.newPage();
       this.ui.removeChoices();
       this.ui.displayContent(this.state.currentContent);
+      this._runActions(scene.onDisplay);
+      this.choiceCache = this._compileChoices(scene);
       this.displayChoices();
       this.ui.setSprites(this.state.sprites);
       this.ui.setBg(this.state.bg);
@@ -731,15 +755,39 @@
     return result;
   };
 
+  // Look up a single source string in the active catalog. Identity if the
+  // key is absent or no catalog is active.
+  DendryEngine.prototype._localizeString = function(s) {
+    var t = this.catalog[s];
+    return (typeof t === 'string') ? t : s;
+  };
+
+  // Localize ONLY a whole single-plain-string content value (a bare string,
+  // or a one-element array whose element is a string). Everything structural
+  // — multi-fragment runs, typed nodes, and anything carrying inserts/
+  // conditionals — is passed through unchanged, deferred to the later
+  // placeholder/per-clause transform (dendrynexus_ten_plan.md §6). Zero
+  // overhead and zero copying when no catalog is active. Placed here, BEFORE
+  // _mergeStateEvals flattens inserts/conditionals, so the deferred transform
+  // slots in without relocating this seam.
+  DendryEngine.prototype._localizePlain = function(v) {
+    if (!this.catalog) { return v; }
+    if (typeof v === 'string') { return this._localizeString(v); }
+    if (Array.isArray(v) && v.length === 1 && typeof v[0] === 'string') {
+      return [this._localizeString(v[0])];
+    }
+    return v;
+  };
+
   DendryEngine.prototype._makeDisplayContent = function(content, useParas) {
     // Raw content can just be returned.
     if (content.content === undefined) {
       if (Array.isArray(content)) {
-        return content;
+        return this._localizePlain(content);
       } else if (useParas) {
-        return [{type:'paragraph', content:content}];
+        return [{type:'paragraph', content:this._localizePlain(content)}];
       } else {
-        return [content];
+        return [this._localizePlain(content)];
       }
     } else if (content.stateDependencies === undefined &&
                content.type !== undefined) {

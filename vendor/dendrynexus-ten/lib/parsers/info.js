@@ -36,6 +36,14 @@
       validate: null
     },
 
+    // Locales this game ships/declares. Parsed as a tag-style list:
+    // `languages: en ca` -> ['en', 'ca']. Drives the language picker and
+    // which content catalogs exist. Backward-compatible (optional).
+    languages: {
+      required: false,
+      validate: validators.validateTagList
+    },
+
     firstScene: {
       required: false,
       validate: validators.validateId

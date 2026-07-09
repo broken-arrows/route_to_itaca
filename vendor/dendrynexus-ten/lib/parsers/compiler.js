@@ -124,6 +124,16 @@
     this.qualities = {};
     this.qdisplays = {};
     this.tagLookup = {};
+    // Whitelisted, game-agnostic manifest emitted into game.json so the
+    // runtime (the Desk adapter) can read it. Nested `info` key is additive;
+    // the old engine's convertJSONToGame ignores unknown top-level keys.
+    // (Achievements registry is deferred to phase-5 prep — see §5.)
+    this.info = {};
+    if (infoDry) {
+      if (infoDry.title !== undefined) { this.info.title = infoDry.title; }
+      if (infoDry.author !== undefined) { this.info.author = infoDry.author; }
+      if (infoDry.languages !== undefined) { this.info.languages = infoDry.languages; }
+    }
   };
 
   Game.prototype._addSceneToScenes = function(scene, parentId, callback) {
@@ -589,7 +599,7 @@
     for(const file of dry_files_contents) {
       const {name:sourcePath, contents} = file;
 
-      if (/(^|\/)info\.dry$/.test(sourcePath)) {
+      if (/(^|[\\/])info\.dry$/.test(sourcePath)) {
         infoParser.parseFromContent(sourcePath, contents, function(err, result) {
           /* istanbul ignore if */
           if (err) {

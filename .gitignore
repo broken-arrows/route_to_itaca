@@ -1,6 +1,5 @@
 /node_modules
-/vendor/dendrynexus/node_modules
-/vendor/dendrynexus/test
+/vendor/dendrynexus-ten/node_modules
 /out/game.json
 /out/html/core.js
 .temp/

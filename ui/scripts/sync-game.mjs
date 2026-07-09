@@ -9,7 +9,7 @@ const dest = resolve(here, '../public/game.en.json');
 if (!existsSync(src)) {
   console.error(
     'out/game.json not found. Build it first from the repo root:\n' +
-    '  npm run dendrynexus make-html'
+    '  npm run dendrynexus-ten make-html'
   );
   process.exit(1);
 }

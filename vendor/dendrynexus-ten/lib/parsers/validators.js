@@ -235,6 +235,31 @@
     };
   };
 
+  // Factory: validates that a property's value is one of `values`.
+  var makeEnsureInList = function(what, values) {
+    var allowed = {};
+    for (var vi = 0; vi < values.length; ++vi) {
+      allowed[values[vi]] = true;
+    }
+    return function(object, propertyName, callback) {
+      assert(
+        callback !== undefined, 'Callback required (wrong number of args?)'
+        );
+      var val = propval(object, propertyName);
+      val = val.trim();
+      if (allowed[val] === true) {
+        return callback(null, val);
+      } else {
+        var err = properr(
+          object, propertyName,
+          what + ' must be one of: ' + values.join(', ') +
+          '; "' + val + '" found instead.'
+          );
+        return callback(err);
+      }
+    };
+  };
+
   // If the property is valid, calls back with a list of tags, stripped of
   // any leading hash symbols. Tags can be whitespace, comma or semicolon
   // separated.
@@ -791,6 +816,7 @@
     validateQualityValue: validateQualityValue,
     makeEnsureInRange: makeEnsureInRange,
     makeEnsureEqualTo: makeEnsureEqualTo,
+    makeEnsureInList: makeEnsureInList,
     makeExcludeIdOrName: makeExcludeIdOrName,
     validateTagList: validateTagList,
 

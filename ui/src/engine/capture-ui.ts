@@ -1,10 +1,10 @@
-import type { RawCard, RawChoice } from 'dendrynexus/lib/engine.js';
-import { convertLine } from 'dendrynexus/lib/ui/content/html.js';
+import type { RawCard, RawChoice } from 'dendrynexus-ten/lib/engine.js';
+import { convertLine } from 'dendrynexus-ten/lib/ui/content/html.js';
 
 /**
  * The engine hands us titles/subtitles as dendry "content" arrays
  * (e.g. ['The Desk']) even though RawChoice/RawCard declare `title: string`
- * — verified against vendor/dendrynexus/lib/engine.js
+ * — verified against vendor/dendrynexus-ten/lib/engine.js
  * (`_makeDisplayContent(title, false)` in `__getChoiceDisplayData`).
  * convertLine flattens content to plain text (and passes an already-plain
  * string through unchanged), so we normalize at this boundary — the one

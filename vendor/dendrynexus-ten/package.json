@@ -1,0 +1,36 @@
+{
+  "name": "dendrynexus-ten",
+  "version": "0.0.1",
+  "description": "Tools to create and build interactive fiction.",
+  "keywords": [
+    "interactive fiction"
+  ],
+  "author": "BrokenArrows",
+  "homepage": "https://github.com/broken-arrows/dendrynexus-ten",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/broken-arrows/dendrynexus-ten.git"
+  },
+  "bugs": "https://github.com/broken-arrows/dendrynexus-ten/issues",
+  "license": "MIT",
+  "main": "lib/engine.js",
+  "dependencies": {
+    "argparse": "1.0.x",
+    "async": "1.x.x",
+    "browserify": "10.x.x",
+    "colors": "1.1.x",
+    "dive": "0.4.x",
+    "handlebars": "3.0.x",
+    "lodash": "3.10.x",
+    "mkdirp": "0.5.x",
+    "prompt": "0.2.x",
+    "terser": "^5.31.0",
+    "wordwrap": "1.0.x"
+  },
+  "engines": {
+    "node": ">= 0.10"
+  },
+  "bin": {
+    "dendrynexus-ten": "lib/cli/main.js"
+  }
+}

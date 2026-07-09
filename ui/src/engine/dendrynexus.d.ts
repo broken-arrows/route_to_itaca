@@ -1,4 +1,4 @@
-declare module 'dendrynexus/lib/engine.js' {
+declare module 'dendrynexus-ten/lib/engine.js' {
   export interface RawChoice {
     id: string;
     title: string;
@@ -36,6 +36,7 @@ declare module 'dendrynexus/lib/engine.js' {
     getExportableState(): object;
     setState(state: object): void;
     isGameOver(): boolean;
+    setLocale(locale: string | null, catalog: Record<string, string> | null): this;
   }
   export function convertJSONToGame(
     json: string,
@@ -43,9 +44,9 @@ declare module 'dendrynexus/lib/engine.js' {
   ): void;
 }
 
-declare module 'dendrynexus/lib/ui/content/html.js' {
+declare module 'dendrynexus-ten/lib/ui/content/html.js' {
   export function convert(paragraphs: unknown[]): string;
-  // Verified against vendor/dendrynexus/lib/ui/content/html.js
+  // Verified against vendor/dendrynexus-ten/lib/ui/content/html.js
   // (module.exports.convertLine = _contentToHTML): the engine's compiled
   // choice/card titles and subtitles are dendry "content" arrays
   // (e.g. ['The Desk']), not plain strings, despite RawChoice/RawCard
@@ -53,4 +54,23 @@ declare module 'dendrynexus/lib/ui/content/html.js' {
   // CaptureUI calls it so everything downstream can trust the declared
   // string types. Also accepts an already-plain string unchanged.
   export function convertLine(content: unknown): string;
+}
+
+declare module 'dendrynexus-ten/lib/parsers/compiler.js' {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export function compileGame(
+    files: { name: string; contents: string }[],
+    callback: (err: Error | null, game: any) => void
+  ): void;
+  // Serializes a compiled Game to JSON text, replacing embedded compiled
+  // functions (insert/predicate stateDependencies) with {$code: source}
+  // markers that convertJSONToGame's reviver turns back into functions.
+  // This is what the real CLI uses (lib/cli/cmd/compile.js) — plain
+  // JSON.stringify silently drops those function-valued properties.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export function convertGameToJSON(
+    game: any,
+    indent: number,
+    callback: (err: Error | null, json: string) => void
+  ): void;
 }

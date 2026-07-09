@@ -92,6 +92,19 @@
       validate: validators.validateTagList
     },
 
+    // Presentation routing: which UI surface renders this scene.
+    // Additive + presentation-only; `default`/absent means "inherit the
+    // previous effective role" — an ADAPTER runtime rule, not compile-time.
+    // The old renderer never reads this, so it is inert there.
+    role: {
+      required: false,
+      validate: validators.makeEnsureInList('role', [
+        'desk', 'deck', 'card', 'pinned-action', 'newspaper', 'event',
+        'info-tab', 'pause-item', 'main-menu-item', 'library-item',
+        'ending', 'default'
+      ])
+    },
+
     maxVisits: {
       required: false,
       validate: validators.makeEnsureInRange(1, undefined)

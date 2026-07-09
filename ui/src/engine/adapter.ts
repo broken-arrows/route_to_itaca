@@ -1,5 +1,5 @@
-import { DendryEngine, convertJSONToGame } from 'dendrynexus/lib/engine.js';
-import { convert as paragraphsToHTML } from 'dendrynexus/lib/ui/content/html.js';
+import { DendryEngine, convertJSONToGame } from 'dendrynexus-ten/lib/engine.js';
+import { convert as paragraphsToHTML } from 'dendrynexus-ten/lib/ui/content/html.js';
 import { CaptureUI, normalizeCard } from './capture-ui';
 import type { Frame, DrawResult } from './types';
 

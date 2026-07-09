@@ -3,7 +3,9 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "engines": { "node": ">=20.19" },
+  "engines": {
+    "node": ">=20.19"
+  },
   "scripts": {
     "dev": "npm run sync-game && vite",
     "build": "vite build",
@@ -14,12 +16,13 @@
     "sync-game": "node scripts/sync-game.mjs"
   },
   "dependencies": {
-    "dendrynexus": "file:../vendor/dendrynexus",
+    "dendrynexus-ten": "file:../vendor/dendrynexus-ten",
     "pinia": "^3.0.0",
     "vue": "^3.5.0",
     "vue-i18n": "^11.0.0"
   },
   "devDependencies": {
+    "@types/node": "^20.19.43",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vue/test-utils": "^2.4.6",
     "jsdom": "^26.0.0",

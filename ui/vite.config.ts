@@ -7,13 +7,13 @@ export default defineConfig({
   plugins: [vue()],
   build: {
     // The dendry engine is a `file:` dependency junctioned into node_modules;
-    // Rollup resolves the junction to its real `vendor/dendrynexus` path, which
+    // Rollup resolves the junction to its real `vendor/dendrynexus-ten` path, which
     // falls outside the default CJS-interop scope (/node_modules/). Widen the
     // include so the engine's CommonJS `module.exports` named exports (e.g.
     // convertLine) are detected in the production build. Dev (esbuild) already
     // handles this via dep pre-bundling.
     commonjsOptions: {
-      include: [/node_modules/, /vendor[\\/]dendrynexus/],
+      include: [/node_modules/, /vendor[\\/]dendrynexus-ten/],
     },
   },
   test: {
