@@ -30,20 +30,15 @@ Pushed forward by the left tri-partite government of PSC, ERC, and ICV-EUiA, the
 
 In a new bid for more autonomy and financial leeway, CiU has already dedicated tons of political capital in trying to achieve at least a fiscal agreement. In it, President Artur Mas hopes to retain in Catalonia some of the taxes that currently go to the central government. However, it seems unlikely that the Spanish Gobierno presided by Mariano Rajoy will agree to such deal, and much less in times of hardship also for the wider Spanish and European economies.
 
-- @intro_menu: Back
-
 @dire_economics
-title: The dire economic situation
+title: A dire economic situation
 view-if: not intros_economics
 on-arrival: intros_seen += 1; intros_economics = true;
 go-to: intro_menu
 
 = Dire Economics
 
-TODO: actual text
-
-- @intro_menu: Back
-
+After the construction bubble popped and the 2008 global economic crash, many countries in the Eurozone are struggling to recover. With the European Central Bank having had to already intervene in Greece, Ireland, Portugal, and now Spain, the public debt situation is only aggravating the situation. Catalonia, traditionally one of the few industrialized regions of Spain is, nonetheless, no exception. Structurally infra-financed and with poor debt standings, it seems like working people are once again the ones suffering the most, thanks in no minor part to the austerity budgets approved by a CiU - PPC alliance.
 
 @current_status
 title: Present landscape
@@ -53,10 +48,9 @@ go-to: intro_menu
 
 = Present Situation
 
-TODO: actual text
+Streets are hot across Europe, and Barcelona is one of the epicenters of that story. After the first General Strike in a decade in 2010, the anti-austerity movement is growing and becoming a force for political change in its own right. Somewhere between 6 and 8 million protestors have joined the movement across Spain, demanding a stop to austerity and a break away from the PP-PSOE two-party system that has ruled the state since the death of Franco. 
 
-- @intro_menu: Back
-
+In parallel to that, the failure to build achieve a new autonomy-based status quo for Catalonia has pushed many towards supporting independence. From a relatively minor political position for the last few decades, now the debate on the topic has already become the front and center of Catalan politics. The organizations behind the movement, spearheaded by the ANC and Omnium Cultural, already made a show of force in 2010, and from then they have only grown in supports and political influence. 
 
 @what_now
 title: What now?

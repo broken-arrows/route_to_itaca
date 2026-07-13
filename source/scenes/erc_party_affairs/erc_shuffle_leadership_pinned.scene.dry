@@ -5,3 +5,4 @@ is-card: true
 is-pinned-card: true
 card-image: img/erc/congres.png
 go-to: erc_shuffle_leadership
+role: pinned-action

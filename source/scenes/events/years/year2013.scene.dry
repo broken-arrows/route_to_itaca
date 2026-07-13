@@ -5,6 +5,7 @@ tags: event
 new-page: true
 max-visits: 1
 call: newyearcalc
+role: event
 
 = A New Year: 2013
 

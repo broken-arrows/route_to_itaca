@@ -11,5 +11,6 @@ on-arrival: {!
     window.spaSupportInject(Q, 'pp',  'all', 8.0, 'cs');
     window.spaSupportInject(Q, 'pp',  'all', 3.0, 'abstain');
 !}
+role: event
 
 - @post_event: TODO

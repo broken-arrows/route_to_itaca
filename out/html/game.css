@@ -564,7 +564,6 @@ div.blank-card {
   vertical-align: top;
 }
 
-/* TODO: unavailable card */
 .unavailable-card {
   color: var(--unavailable-color);
   background-color: var(--unavailable-bg-color) !important;

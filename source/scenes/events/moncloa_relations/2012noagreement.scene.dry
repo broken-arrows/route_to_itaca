@@ -10,6 +10,7 @@ on-arrival: {!
     Q.cat_spa_relations -= 5;
     Q.historical_event = "After Artur Mas' fall-out with the PPC, there's no hope for any agreement on budget, let alone anything else for this legislature. Elections have been scheduled for November.";
 !}
+role: event
 
 = There will be no fiscal agreement
 

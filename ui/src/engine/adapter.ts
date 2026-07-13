@@ -1,11 +1,15 @@
 import { DendryEngine, convertJSONToGame } from 'dendrynexus-ten/lib/engine.js';
 import { convert as paragraphsToHTML } from 'dendrynexus-ten/lib/ui/content/html.js';
 import { CaptureUI, normalizeCard } from './capture-ui';
-import type { Frame, DrawResult } from './types';
+import type { Frame, DrawResult, SceneRole, EffectiveRole, GameInfo } from './types';
 
 export class DendryAdapter {
   readonly engine: DendryEngine;
   private ui: CaptureUI;
+  // Runtime "effective role" tracker: a scene's own non-`default` role becomes
+  // the new effective role; role-less (or `default`) scenes inherit the current
+  // one. The `desk` reset is just this same assignment — no special case.
+  private effective: EffectiveRole = 'page';
 
   private constructor(game: object) {
     this.ui = new CaptureUI();
@@ -26,8 +30,18 @@ export class DendryAdapter {
     return this.engine.state.qualities;
   }
 
+  get info(): GameInfo {
+    const raw = this.engine.game.info ?? {};
+    return { languages: ['en'], ...raw } as GameInfo;
+  }
+
+  setLocale(locale: string | null, catalog: Record<string, string> | null): void {
+    this.engine.setLocale(locale, catalog);
+  }
+
   beginGame(seeds?: number[]): Frame {
     this.ui.resetTransient();
+    this.effective = 'page';
     this.engine.beginGame(seeds);
     return this.buildFrame();
   }
@@ -61,7 +75,7 @@ export class DendryAdapter {
     const result: DrawResult =
       raw.id === null
         ? { id: null, title: raw.title as 'no_space_in_hand' | 'no_card_in_deck' }
-        : { ...normalizeCard(raw), tags: this.tagsFor(raw.id) };
+        : { ...normalizeCard(raw), tags: this.tagsFor(raw.id), role: this.roleFor(raw.id) };
     // engine.drawCard() (engine.js:474) only re-displays the hand; rebuild
     // the rest of the frame by asking the engine to re-fire its own
     // deck/hand/pinned display for the current scene. displayChoices() is a
@@ -91,6 +105,10 @@ export class DendryAdapter {
   importStateJSON(json: string): Frame {
     this.ui.resetTransient();
     this.engine.setState(JSON.parse(json));
+    // Recompute from the loaded scene alone; dossier context (an inherited
+    // effective role from a role-less scene's ancestor) is intentionally NOT
+    // restored across load.
+    this.effective = this.roleFor(this.engine.state.sceneId) ?? 'page';
     return this.buildFrame();
   }
 
@@ -99,12 +117,22 @@ export class DendryAdapter {
     return s?.tags ?? [];
   }
 
+  private roleFor(id: string): SceneRole | undefined {
+    const r = (this.engine.game.scenes[id] as { role?: string } | undefined)?.role;
+    return r && r !== 'default' ? (r as SceneRole) : undefined;
+  }
+
   protected buildFrame(): Frame {
     const sceneId = this.engine.state.sceneId;
     const scene = (this.engine.game.scenes[sceneId] ?? {}) as Record<string, unknown>;
+    const ownRole = this.roleFor(sceneId);
+    if (ownRole) this.effective = ownRole; // 'desk' reset is just this assignment
     return {
       sceneId,
       sceneTags: (scene.tags as string[] | undefined) ?? [],
+      role: ownRole,
+      effectiveRole: this.effective,
+      info: this.info,
       html: paragraphsToHTML(this.ui.paragraphs),
       choices: this.ui.choices.map((c) => ({
         id: c.id,
@@ -112,6 +140,7 @@ export class DendryAdapter {
         subtitle: c.subtitle ?? c.unavailableSubtitle,
         canChoose: !!c.canChoose,
         tags: this.tagsFor(c.id),
+        role: this.roleFor(c.id),
       })),
       isHand: !!scene.isHand,
       decks: this.ui.decks.map((d) => ({
@@ -121,10 +150,23 @@ export class DendryAdapter {
         canChoose: !!d.canChoose,
         image: d.image,
         tags: this.tagsFor(d.id),
+        role: this.roleFor(d.id),
       })),
-      hand: this.ui.hand.map((c) => ({ id: c.id, title: c.title, image: c.image, tags: this.tagsFor(c.id) })),
+      hand: this.ui.hand.map((c) => ({
+        id: c.id,
+        title: c.title,
+        image: c.image,
+        tags: this.tagsFor(c.id),
+        role: this.roleFor(c.id),
+      })),
       maxCards: this.ui.maxCards,
-      pinned: this.ui.pinned.map((c) => ({ id: c.id, title: c.title, image: c.image, tags: this.tagsFor(c.id) })),
+      pinned: this.ui.pinned.map((c) => ({
+        id: c.id,
+        title: c.title,
+        image: c.image,
+        tags: this.tagsFor(c.id),
+        role: this.roleFor(c.id),
+      })),
       gameOver: this.engine.isGameOver(),
       bg: this.ui.bg,
       signals: [...this.ui.signals],

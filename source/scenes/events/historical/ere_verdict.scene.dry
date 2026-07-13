@@ -7,5 +7,6 @@ on-arrival: {!
     // Andalusia ERE corruption verdict against PSOE officials.
     Q.corruption_psoe += 20;
 !}
+role: event
 
 - @post_event: TODO

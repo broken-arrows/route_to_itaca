@@ -13,5 +13,6 @@ on-arrival: {!
     // It does so instead via leader variable!
     // TODO: make it dynamic, un-hardcode!
 !}
+role: event
 
 - @post_event: TODO

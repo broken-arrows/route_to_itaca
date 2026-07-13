@@ -42,5 +42,6 @@ on-arrival: {!
     // TODO: JxCat leader / relations / roadmap / governing inheritance from the carrier
     // TODO: congreso + Barcelona-local un-fold (mirror the parlament split here)
 !}
+role: event
 
 - @post_event: TODO

@@ -12,5 +12,6 @@ on-arrival: {!
     window.spaSupportInject(Q, 'cup', 'catalunya', 3.0, 'fr');
     window.spaSupportInject(Q, 'cup', 'catalunya', 4.0, 'abstain');
 !}
+role: event
 
 - @post_event: TODO

@@ -13,5 +13,6 @@ on-arrival: {!
 
     // TODO: set primaries leadership if not done, make this dynamic ??
 !}
+role: event
 
 - @post_event: TODO

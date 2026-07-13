@@ -14,6 +14,7 @@ on-arrival: {!
         Q.question_of_the_question_countdown = 3;
     }
 !}
+role: event
 
 = The "Right to Decide", debated in the Congreso
 

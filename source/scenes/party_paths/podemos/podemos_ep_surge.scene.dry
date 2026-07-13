@@ -11,5 +11,6 @@ on-arrival: {!
     window.spaSupportInject(Q, 'podemos', 'all', 9.0, 'abstain');
     window.spaSupportInject(Q, 'podemos', 'all', 3.0, 'psoe');
 !}
+role: event
 
 - @post_event: TODO

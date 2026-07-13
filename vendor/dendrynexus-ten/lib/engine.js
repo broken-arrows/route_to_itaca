@@ -64,8 +64,14 @@
       try {
         fn.call(context, state, state.qualities);
       } catch (err) {
-        // Ignore errors. TODO: Log them somehow?
-        console.log('Error:', err);
+        // Scene action code (on-arrival/on-departure/on-display) throws are
+        // SWALLOWED here: the scene still transitions, so a broken action is
+        // invisible without a console. This hid `window.engineTick is not a
+        // function` — the whole monthly simulation dead — for an entire phase.
+        // Warn loudly rather than console.log, but do NOT rethrow: content
+        // relies on the swallow. NB: console.warn, not console.warning (no such
+        // API — a throwing catch handler turns this swallow into a re-throw).
+        console.warn('Scene Action Error:', err);
       }
     });
   };

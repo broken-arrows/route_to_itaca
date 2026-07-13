@@ -10,6 +10,7 @@ on-arrival: {!
     }
     this.achieve("y2020");
 !}
+role: event
 
 = A New Year: 2020
 

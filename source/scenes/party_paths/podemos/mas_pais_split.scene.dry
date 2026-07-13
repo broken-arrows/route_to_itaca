@@ -9,5 +9,6 @@ on-arrival: {!
     Q.spa_up_masq_split = true;
     window.spaSupportInject(Q, 'mpais', 'all', 1.5, 'podemos');
 !}
+role: event
 
 - @post_event: TODO

@@ -5,6 +5,7 @@ on-arrival: cup_media_timer += 3; month_actions += 1
 is-card: true
 card-image: img/cup/seunacional.jpg
 tags: cup_party
+role: card-party
 
 = Media and Propaganda
 What should be our strategy for our newspapers and party organs?

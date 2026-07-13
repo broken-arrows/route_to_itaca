@@ -6,6 +6,7 @@ is-card: true
 card-image: img/parlament_card.jpg
 tags: erc_party cup_party parlament_card
 go-to: parlament_options if not cat_caretaker_gov; parlament_dissolved if cat_caretaker_gov
+role: card-parlament
 # TODO: What happens on art. 155
 
 @parlament_dissolved

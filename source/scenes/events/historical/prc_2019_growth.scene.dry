@@ -8,5 +8,6 @@ on-arrival: {!
     // PRC rebuilds its national vote through regional positioning.
     window.spaSupportInject(Q, 'prc', 'rest', 0.22, 'abstain');
 !}
+role: event
 
 - @post_event: TODO

@@ -5,6 +5,7 @@ card-image: img/cup/quimarrufat.jpg
 face-image: img/cup/quimarrufat.jpg
 view-if: quim_arrufat_advisor = 1
 new-page: true
+role: pinned-action
 
 = Quim Arrufat i Ibáñez
 

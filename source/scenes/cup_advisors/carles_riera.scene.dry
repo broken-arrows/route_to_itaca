@@ -5,6 +5,7 @@ card-image: img/cup/carlesriera.jpg
 face-image: img/cup/carlesriera.jpg
 view-if: carles_riera_advisor = 1
 new-page: true
+role: pinned-action
 
 = Carles Riera i Albert
 

@@ -36,6 +36,20 @@
   --accent-red: #8c1d1d;
   --accent-gold: #a9821f;
   --accent-slate: #4a5b6a;
+  /* THE ONE DOCUMENTED EXCEPTION to the red-reservation rule.
+     The rule: red is reserved for world/Parlament surfaces (event bands,
+     Parlament hovers/accents) — it is a SIGNAL, and nothing else may spend it.
+     This token is not a signal: it is the ink of the red double rule printed on
+     Generalitat ministry stationery, i.e. part of the paper's own anatomy
+     (spec §5.3: "seal, department line, red double rule"), exactly as the seal
+     and the department line are. A Government dossier looks like this in the
+     real world; that is why the exception was ratified (user ruling, phase-2
+     final review I4) rather than repainted in --ink-0.
+     It is a NAMED token precisely so the reservation stays enforceable: the
+     literal it replaces (#b03030) was a *different* red from --accent-red, so it
+     evaded every grep for the rule and the constraint was unauditable. Any NEW
+     red on a non-world surface is a violation — this is the only one. */
+  --paper-rule-ink: rgba(176, 48, 48, 0.55);
   /* fonts */
   --font-title: 'HK Grotesk', 'Raleway', sans-serif;
   --font-body: 'Raleway', sans-serif;

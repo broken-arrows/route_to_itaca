@@ -122,6 +122,7 @@ on-arrival: {!
     Q.dl_formation_countdown = 6;
     Q.countdowns.push("dl_formation");
 !}
+role: event
 
 = The breakup of ​CiU
 

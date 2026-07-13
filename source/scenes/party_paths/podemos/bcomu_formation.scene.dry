@@ -12,3 +12,4 @@ on-arrival: {!
 
     // whatever is missing
 !}
+role: event

@@ -8,5 +8,6 @@ on-arrival: {!
     // no-confidence vote.
     Q.corruption_pp += 25;
 !}
+role: event
 
 - @post_event: TODO

@@ -16,5 +16,6 @@ on-arrival: {!
         Q['iu_congreso_' + c + '_support'] = 0;
     }
 !}
+role: event
 
 - @post_event: TODO

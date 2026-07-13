@@ -7,5 +7,6 @@ max-visits: 1
 on-arrival: {!
     // todo
 !}
+role: event
 
 LOL?

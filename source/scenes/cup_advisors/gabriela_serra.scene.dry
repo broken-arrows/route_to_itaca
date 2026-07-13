@@ -5,6 +5,7 @@ card-image: img/cup/gabrielaserra.jpg
 face-image: img/cup/gabrielaserra.jpg
 view-if: gabriela_serra_advisor = 1
 new-page: true
+role: pinned-action
 
 = Gabriela Serra i Frediani
 

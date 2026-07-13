@@ -5,6 +5,7 @@ tags: event
 new-page: true
 max-visits: 1
 go-to: erc_0 if player_party == "erc"; cup_0 if player_party == "cup"
+role: event
 
 # TODO: united_bcn_local and united_congreso options a few months past the event? or via card???
 # TODO: actual jxsi cards

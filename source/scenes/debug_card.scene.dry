@@ -6,6 +6,7 @@ view-if: debug
 on-arrival: month_actions += 1
 card-image: img/achievements/perrosanxe.png
 go-to: debug_menu
+role: card
 
 
 @debug_menu
@@ -69,9 +70,7 @@ Set Eduardo Madina as PSOE leader.
 @psoe_inject_sanchez_2
 title: Set leader: Pedro Sánchez (post-barones coup)
 on-arrival: psoe_barons_revolted = true
-call: bye_rubalcaba.sanchez
-
-# TODO: inject form the right scene!
+call: psoe_primaries_2017.sanchez_elected
 
 Set Pedro Sánchez as PSOE leader (post-barones coup).
 
@@ -81,8 +80,6 @@ Set Pedro Sánchez as PSOE leader (post-barones coup).
 @psoe_inject_diaz
 title: Set leader: Susana Díaz
 call: psoe_primaries_2017.diaz_elected
-
-# TODO: inject form the right scene!
 
 Set Susana Díaz as PSOE leader.
 

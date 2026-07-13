@@ -5,6 +5,7 @@ card-image: img/erc/rogertorrent.jpg
 face-image: img/erc/rogertorrent.jpg
 view-if: roger_torrent_advisor = 1
 new-page: true
+role: pinned-action
 
 = Roger Torrent i Ramió
 

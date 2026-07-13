@@ -15,5 +15,6 @@ on-arrival: {!
     // TODO: parallel parlament / congreso unionist shift? (calibration only models Barcelona city)
     // make it a hidden event? how to best model this?
 !}
+role: event
 
 - @post_event: TODO

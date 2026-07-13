@@ -5,6 +5,7 @@ card-image: img/erc/laporta.jpg
 face-image: img/erc/laporta.jpg
 view-if: joan_laporta_advisor = 1
 new-page: true
+role: pinned-action
 
 = Joan Laporta i Estruch
 

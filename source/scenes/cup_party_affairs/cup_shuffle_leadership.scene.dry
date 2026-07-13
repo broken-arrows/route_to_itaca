@@ -6,6 +6,7 @@ frequency: 100
 is-card: true
 card-image: img/cup/congres.jpg
 tags: cup_party
+role: card-party
 
 = Shuffle Leadership
 

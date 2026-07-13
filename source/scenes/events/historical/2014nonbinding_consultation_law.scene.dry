@@ -5,3 +5,4 @@ tags: event
 view-if: non_binding_consultation_law_trigger and not parlament_non_binding_consultations and not cat_caretaker_gov
 max-visits: 1
 go-to: parlament_non_binding_consultations
+role: event

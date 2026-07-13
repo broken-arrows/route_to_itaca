@@ -5,3 +5,4 @@ tags: event
 view-if: year >= 2013 and month >= 6 and not parlament_sovereignty_declaration and not cat_caretaker_gov
 max-visits: 1
 go-to: parlament_sovereignty_declaration
+role: event

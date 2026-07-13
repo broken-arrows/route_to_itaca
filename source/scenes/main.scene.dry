@@ -11,6 +11,7 @@ if (Q.advisor_action_timer <= 0) {
 }
 !}
 max-cards: 5
+role: desk
 
 [? if rubicon = 1 and event_rubicon : [+ event_rubicon +] ?]
 [? if historical_event : [+ historical_event +] ?]
@@ -49,6 +50,7 @@ if (Q.advisor_action_timer <= 0) {
 }
 !}
 max-cards: 6
+role: desk
 
 [? if rubicon = 1 and event_rubicon : [+ event_rubicon +] ?]
 [? if historical_event : [+ historical_event +] ?]
@@ -87,6 +89,7 @@ if (Q.advisor_action_timer <= 0) {
 }
 !}
 max-cards: 3
+role: desk
 
 [? if rubicon = 1 and event_rubicon : [+ event_rubicon +] ?]
 [? if historical_event : [+ historical_event +] ?]
@@ -115,6 +118,7 @@ title: Party Affairs
 card-image: img/erc/araerc.jpg
 is-deck: true
 view-if: player_party = "erc"
+role: deck
 
 - #erc_party
 
@@ -123,20 +127,25 @@ title: Party Affairs
 card-image: img/cup/seunacional.jpg
 is-deck: true
 view-if: player_party = "cup"
+role: deck
 
 - #cup_party
 
 @cat_gov
 title: Generalitat
-view-if: (player_party = "erc" and erc_in_gob)
+view-if: (player_party = "erc" and erc_in_gob) or (player_party = 'cup' and cup_in_gob)
 card-image: img/generalitat.jpg
 is-deck: true
+role: deck
+
+- #generalitat
 
 @parlament_deck
 title: Parlament
 view-if: year > 2012
 card-image: img/parlament_card.jpg
 is-deck: true
+role: deck
 
 - #parlament_card
 
@@ -145,5 +154,6 @@ title: DEBUG!
 view-if: debug
 card-image: img/flags/estelada.png
 is-deck: true
+role: deck
 
 - #debug_card

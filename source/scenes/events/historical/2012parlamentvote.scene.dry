@@ -4,6 +4,7 @@ new-page: true
 tags: event
 view-if: year = 2012 and month = 9 and diada2012 and player_party != "cup"
 max-visits: 1
+role: event
 
 After the historic demonstration on September 11, we have a unique chance to push for a parlamentary resultion to define a timeline for a vote on independence. CiU is already in on it after preliminary talks with them, meaning it is almost guaranteed to pass. But depending on the terms and wording ICV-EUiA, SI, and even the PSC could join in for a broader consensus. 
 

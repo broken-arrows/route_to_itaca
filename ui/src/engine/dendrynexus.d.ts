@@ -23,7 +23,11 @@ declare module 'dendrynexus-ten/lib/engine.js' {
       bg: string | null;
       [key: string]: unknown;
     };
-    game: { scenes: Record<string, Record<string, unknown>>; [key: string]: unknown };
+    game: {
+      scenes: Record<string, Record<string, unknown>>;
+      info?: { title?: string; author?: string; languages?: string[] };
+      [key: string]: unknown;
+    };
     beginGame(rndSeeds?: number[]): void;
     choose(choiceIndex: number): void;
     displayChoices(): void;

@@ -5,6 +5,7 @@ card-image: img/erc/forcadell.jpg
 face-image: img/erc/forcadell.jpg
 view-if: carme_forcadell_advisor = 1
 new-page: true
+role: pinned-action
 
 = Carme Forcadell i Lluís
 

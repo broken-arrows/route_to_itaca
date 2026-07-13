@@ -8,5 +8,6 @@ on-arrival: {!
     Q.spa_mes_active = true;
     window.spaSupportInject(Q, 'mes', 'balears', 3.5, 'podemos');
 !}
+role: event
 
 - @post_event: TODO

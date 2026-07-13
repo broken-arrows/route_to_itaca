@@ -5,6 +5,7 @@ card-image: img/cup/davidfernandez.jpg
 face-image: img/cup/davidfernandez.jpg
 view-if: david_fernandez_advisor = 1
 new-page: true
+role: pinned-action
 
 = ​David Fernàndez i Ramos
 

@@ -5,6 +5,7 @@ card-image: img/erc/junqueras.jpg
 face-image: img/erc/junqueras.jpg
 view-if: oriol_junqueras_advisor = 1
 new-page: true
+role: pinned-action
 
 = ​Oriol Junqueras i Vies
 

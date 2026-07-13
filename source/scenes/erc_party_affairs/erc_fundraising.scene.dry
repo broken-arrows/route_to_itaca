@@ -5,6 +5,7 @@ on-arrival: erc_fundraising_timer += 3; month_actions += 1
 is-card: true
 card-image: img/erc/executiva.jpg
 tags: erc_party
+role: card-party
 
 = Fundraising
 Fact is, the party needs resources to work. Where do we get them from?

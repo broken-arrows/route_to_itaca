@@ -15,6 +15,7 @@ on-arrival: {!
 
     console.info("Set new election date for ", Q.next_election_month, Q.next_election_year, ", week", Q.next_election_week)
 !}
+role: event
 
 = New Parlament elections called!
 

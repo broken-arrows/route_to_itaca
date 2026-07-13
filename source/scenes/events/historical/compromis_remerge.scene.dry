@@ -9,5 +9,6 @@ on-arrival: {!
     window.spaSupportInject(Q, 'podemos', 'valencia', 7.0, 'compromis');
     Q.spa_compromis_active = false;
 !}
+role: event
 
 - @post_event: TODO

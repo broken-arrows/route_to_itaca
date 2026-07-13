@@ -8,6 +8,7 @@ card-image: img/erc/campaign.jpeg
 face-image: img/erc/campaign.jpeg
 frequency: 100
 tags: erc_party
+role: card-party
 
 = Campaigning
 

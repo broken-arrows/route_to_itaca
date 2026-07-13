@@ -28,4 +28,16 @@ describe('role scene attribute', () => {
   it('rejects an unknown role with a helpful error', async () => {
     await expect(compile([scene('title: T\nrole: bogus\n\nBody.\n')])).rejects.toThrow(/role/i);
   });
+
+  it.each(['card-gov', 'card-party', 'card-parlament'])(
+    'accepts skin value %s and emits it',
+    async (r) => {
+      const game = await compile([scene(`title: T\nrole: ${r}\n\nBody.\n`)]);
+      expect(game.scenes.t.role).toBe(r);
+    },
+  );
+
+  it('still rejects unknown skin-like values', async () => {
+    await expect(compile([scene('title: T\nrole: card-ministry\n\nBody.\n')])).rejects.toThrow(/role/i);
+  });
 });

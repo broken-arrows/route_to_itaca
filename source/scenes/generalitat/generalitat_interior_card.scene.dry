@@ -1,0 +1,19 @@
+title: Ministry of the Interior
+new-page: true
+view-if: interior_timer <= 0 and (interior_minister_party == player_party)
+on-arrival: month_actions += 1; interior_timer += 3;
+is-card: true
+card-image: img/generalitat/mossos_desquadra.webp
+face-image: img/generalitat/mossos_desquadra.webp
+frequency: 100
+tags: generalitat
+role: card-gov
+
+= Ministry of the Interior
+
+Something something (TODO)
+
+TODO: how do these work in jxsi / jxcat cases?
+
+-@post_event: Ah yes!
+-@easy_discard

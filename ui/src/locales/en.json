@@ -19,5 +19,47 @@
     "handFull": "No space in hand",
     "deckEmpty": "No cards available in this deck"
   },
-  "lang": { "en": "EN", "ca": "CA" }
+  "lang": { "en": "EN", "ca": "CA" },
+  "desk": {
+    "tray": {
+      "government": "GOVERNMENT",
+      "party": "PARTY",
+      "parlament": "PARLAMENT",
+      "out": "OUT",
+      "draw": "DRAW",
+      "empty": "Nothing to draw."
+    },
+    "actions": {
+      "title": "ACTIONS"
+    },
+    "out": {
+      "empty": "Nothing resolved yet.",
+      "resolved": "RESOLVED"
+    },
+    "toast": {
+      "handFull": "Hand is full — play a dossier first",
+      "deckEmpty": "No cards available in this deck",
+      "engineError": "Something went wrong — that action was cancelled"
+    },
+    "dossier": {
+      "locked": "Locked"
+    },
+    "page": {
+      "ended": "ENDED"
+    },
+    "month": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    }
+  }
 }

@@ -5,6 +5,7 @@ face-image: img/erc/ernestmaragall.jpg
 new-page: true
 max-visits: 1
 tags: event
+role: event
 
 = New faces in the party
 

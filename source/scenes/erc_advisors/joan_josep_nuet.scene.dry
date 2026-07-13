@@ -5,6 +5,7 @@ card-image: img/erc/joanjosepnuet.jpg
 face-image: img/erc/joanjosepnuet.jpg
 view-if: joan_josep_nuet_advisor = 1
 new-page: true
+role: pinned-action
 
 = Joan Josep Nuet i Pujals
 

@@ -15,6 +15,7 @@ on-arrival: {!
     Q.consultation_happened = true;
     Q.consultation_pending = false;
 !}
+role: event
 
 = Participative process of [+ month : month +] [+ year +]
 

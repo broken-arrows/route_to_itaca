@@ -6,6 +6,7 @@ frequency: 100
 is-card: true
 card-image: img/erc/congres.jepg
 tags: erc_party
+role: card-party
 
 = Shuffle Leadership
 

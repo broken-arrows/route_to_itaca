@@ -66,6 +66,7 @@ on-arrival: {!
     Q.parlament_coalition_leverage = erc_claim + 3 - Q.psc_tripartite_coalition_phase;
 !}
 go-to: phase_text
+role: event
 
 @phase_text
 new-page: true

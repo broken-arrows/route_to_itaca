@@ -12,5 +12,6 @@ on-arrival: {!
     // TODO: gate on the 1-O / referendum-held flag so this cannot fire in an
     //       alt-history where no referendum took place (the speech was a response to it).
 !}
+role: event
 
 - @post_event: TODO

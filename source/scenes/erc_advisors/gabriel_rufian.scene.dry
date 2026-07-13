@@ -5,6 +5,7 @@ card-image: img/erc/rufian.png
 face-image: img/erc/rufian.png
 view-if: gabriel_rufian_advisor = 1
 new-page: true
+role: pinned-action
 
 = Gabriel Rufián i Romero
 

@@ -7,5 +7,6 @@ on-arrival: {!
     // Leaked texts of Rajoy's own bonus payments confirmed.
     Q.corruption_pp += 15;
 !}
+role: event
 
 - @post_event: TODO

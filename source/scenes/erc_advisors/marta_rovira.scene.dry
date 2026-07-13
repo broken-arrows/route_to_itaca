@@ -5,6 +5,7 @@ card-image: img/erc/martarovira.jpg
 face-image: img/erc/martarovira.jpg
 view-if: marta_rovira_advisor = 1
 new-page: true
+role: pinned-action
 
 = Marta Rovira i Vergés
 

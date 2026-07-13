@@ -38,6 +38,7 @@ on-arrival: {!
 
     console.info("Set new election date for ", Q.next_election_month, Q.next_election_year, ", week", Q.next_election_week);
 !}
+role: event
 
 After a rough legislature that has yet to end, [? if president_gender = "m": President ?][? if president_gender = "f": Presidenta ?][+ president +] is proposing a new way for self-determination. In the proposed "plebiscite-election", all parties would be asked to make their position clear on independence, either for or against, and thus popular vote results could be interpreted as the result of a referendum. The legal basis for one such "plebiscite-election" is shady at least, though. Forcing parties via presidential-called snap-election to take one of two political positions goes against the very idea of free elections, and it is very likely to be struck down by courts. Not only that, but it is also quite unclear that anyone would abide by the results, no matter what they are, since there's also no framework for that.
 

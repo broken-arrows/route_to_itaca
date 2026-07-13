@@ -6,6 +6,7 @@ is-card: true
 card-image: img/erc/media.jpg
 face-image: img/erc/media.jpg
 tags: erc_party
+role: card-party
 
 = Communications and Media
 

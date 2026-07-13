@@ -29,6 +29,7 @@ title: Constituent Assembly elections held!
 view-if: ca_held
 tags: endings
 go-to: eg_menu
+role: ending
 
 The Constituent Assembly elections have been held! So much is riding on this new assembly to solve all of Russia's problems.
 
@@ -37,6 +38,7 @@ title: Red October
 view-if: revolutionary_victory and player_party = "b"
 tags: endings
 go-to: eg_menu
+role: ending
 
 The Bolshevik Revolution has won! Now, it is up to the Bolsheviks to bring forth the true socialist revolution.
 
@@ -45,6 +47,7 @@ title: A junior partner
 view-if: revolutionary_victory and player_party != "b" and join_bolshevik
 tags: endings
 go-to: eg_menu
+role: ending
 
 The Bolsheviks, with our assistance, have won the revolution! Hopefully we will be able to maintain our distinctiveness as a party and preserve democracy.
 
@@ -53,6 +56,7 @@ title: The dustbin of history
 view-if: revolutionary_victory and player_party != "b" and not join_bolshevik
 tags: endings
 go-to: eg_menu
+role: ending
 
 The Bolsheviks have taken over Petrograd, and are consolidating their rule over the rest of the country. To paraphrase Trotsky, our movement is being consigned to "the dustbin of history."
 
@@ -61,6 +65,7 @@ title: The war goes on...
 view-if: not is_armistice and not is_peace
 tags: endings
 go-to: eg_menu
+role: ending
 
 The war continues unabated. [? if revolutionary_victory: Now, it will be the task of the Bolsheviks to end the war. ?][? if ca_held: It will be the task of the Constituent Assembly to end the war. ?]
 
@@ -69,6 +74,7 @@ title: A fragile peace
 view-if: is_armistice and not is_peace
 tags: endings
 go-to: eg_menu
+role: ending
 
 An armistice has been signed with the Central Powers, but it is not a permanent peace treaty. [? if ca_held: It will be the task of the Constituent Assembly to sign the peace. ?][? if revolutionary_victory: It will be the task of the Bolsheviks to sign the peace. ?]
 
@@ -77,6 +83,7 @@ title: An all-socialist government
 view-if: ca_held and in_socialist_coalition
 tags: endings
 go-to: eg_menu
+role: ending
 
 We have formed an all-socialist government that includes the Social Democrats and Socialist-Revolutionaries. This could lay the groundwork for a future socialist Russia at the Constituent Assembly.
 
@@ -85,6 +92,7 @@ title: A peace treaty!
 view-if: is_peace
 tags: endings
 go-to: eg_menu
+role: ending
 
 A peace treaty has been signed with the Central Powers.
 
@@ -93,6 +101,7 @@ title: Victories in the war
 view-if: victory_count >= 1
 tags: endings
 go-to: eg_menu
+role: ending
 
 We have won at least one battle with our democratized army!
 
@@ -101,6 +110,7 @@ title: Hunger stalks the country.
 view-if: hunger >= 35
 tags: endings
 go-to: eg_menu
+role: ending
 
 Over the course of the war and revolution, the problem of hunger has worsened.
 
@@ -109,6 +119,7 @@ title: Hunger has been abated somewhat.
 view-if: hunger < 20 and hunger >= 11
 tags: endings
 go-to: eg_menu
+role: ending
 
 There is still a long way to go, but we have somewhat ameliorated the food shortages.
 
@@ -117,6 +128,7 @@ title: Hunger has been abated greatly!
 view-if: hunger < 11
 tags: endings
 go-to: eg_menu
+role: ending
 
 We have successfully ameliorated the hunger crisis, despite the war and ongoing crises!
 
@@ -125,6 +137,7 @@ title: Inflation has been lowered.
 view-if: monthly_inflation < 3
 tags: endings
 go-to: eg_menu
+role: ending
 
 Inflation is still far too high, but it has been successfully reduced from its peak.
 
@@ -134,6 +147,7 @@ title: Peace, land, bread
 view-if: (is_armistice or is_peace) and hunger < 20 and land_reform_progress >= 3
 tags: endings
 go-to: eg_menu
+role: ending
 
 We have made progress towards the goals of the February Revolution - signing an armistice, redistributing land, and reducing hunger.
 
@@ -143,6 +157,7 @@ title: Kornilov Coup victorious
 view-if: k_coup > 0 and coup_victory = 1
 tags: endings
 go-to: eg_menu
+role: ending
 
 The Kornilov Coup is victorious. The Petrograd Soviet has been dissolved and the Provisional Government rules as a military dictatorship. However, forces loyal to the Soviets are rebelling, and a civil war is on the horizon.
 
@@ -151,6 +166,7 @@ title: Kornilov Coup defeated
 view-if: coup_defeated = 1
 tags: endings
 go-to: eg_menu
+role: ending
 
 We attempted to launch a coup with General Kornilov, but our attempt has failed. The Kadets are no longer a functional party in Russia.
 
@@ -159,6 +175,7 @@ title: A Total Defeat
 view-if: total_defeat = 1
 tags: endings
 go-to: eg_menu
+role: ending
 
 The Germans have taken over Petrograd. The revolution is over. We have lost.
 
@@ -167,6 +184,7 @@ title: Playthrough Achievements
 view-if: achievement_game_completed == 1
 tags: endings
 go-to: eg_menu
+role: ending
 
 = Completed Achievements in this Playthrough
 

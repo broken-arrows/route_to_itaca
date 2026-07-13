@@ -496,6 +496,22 @@ const tooltipList = [
     infoDesc: "Paramilitary Clandestine Organization",
     ideology: "Revolutionary Socialism, Basque Independence",
   },
+  {
+    searchString: ["ANC"],
+    mainText: "Catalan National Assembly",
+    subText: "Assemblea Nacional Catalana",
+    img: "img/parties/anc.webp",
+    infoDesc: "NGO, Political Organization",
+    ideology: "Big tent single-issue, Independence",
+  },
+  {
+    searchString: ["Omnium Cultural", "Omnium"],
+    mainText: "Òmnium Cultural",
+    subText: "Òmnium Cultural",
+    img: "img/parties/logo_omnium.png",
+    infoDesc: "NGO, Cultural Association",
+    ideology: "Transversal Catalanism, Independence",
+  },
   /* LEADERS */
   {
     searchString: ["Lluís Companys"],
@@ -883,6 +899,22 @@ const tooltipList = [
             "<span style='color: var(--jxsi)'>JxSí</span>",
           ];
         }
+      }
+    },
+  },
+  {
+    searchString: ["Pablo Iglesias", "pablo iglesias"],
+    mainText: "Pablo Iglesias Turrión",
+    img: "img/other_leaders/pablo_iglesias.jpg",
+    ideology: "Anti-austerity left, Plurinationalism",
+    allegiances: (Q) => {
+      if (Q.iu_in_up) {
+        return [
+          "<span style='color: var(--podemos)'>Podemos</span>",
+          "<span style='color: var(--up)'>UP</span>",
+        ];
+      } else {
+        return ["<span style='color: var(--podemos)'>Podemos</span>"];
       }
     },
   },
@@ -1294,9 +1326,27 @@ const colourList = [
   },
   {
     words: ["ETA"],
-    colour: "black",
+    colour: "#1e191a",
     style: "font-weight: bold;",
     transform: "ETA",
+  },
+  {
+    words: ["ANC"],
+    colour: "#010202",
+    style: "font-weight: bold;",
+    transform: "ANC",
+  },
+  {
+    words: ["Omnium"],
+    colour: "#e97202",
+    style: "font-weight: bold;",
+    transform: "Òmnium",
+  },
+  {
+    words: ["Omnium Cultural"],
+    colour: "#e97202",
+    style: "font-weight: bold;",
+    transform: "Òmnium Cultural",
   },
   {
     words: ["indp"],

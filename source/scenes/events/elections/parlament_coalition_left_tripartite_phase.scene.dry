@@ -23,6 +23,7 @@ on-arrival: {!
     Q.parlament_coalition_proposal_president = "erc";
 !}
 go-to: phase_text
+role: event
 
 @phase_text
 new-page: true

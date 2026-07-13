@@ -7,6 +7,7 @@ on-arrival: month_actions += 1; international_relations_timer += 6;
 card-image: img/erc/international.jpg
 face-image: img/erc/international.jpg
 max-visits: 25
+role: card-party
 
 Through our representation in the European Parliament, and through our international contacts, we can build our contacts and try to steer opinion in our favour. 
 

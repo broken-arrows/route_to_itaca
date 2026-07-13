@@ -5,6 +5,7 @@ card-image: img/cup/albertbotran.png
 face-image: img/cup/albertbotran.png
 view-if: albert_botran_advisor = 1
 new-page: true
+role: pinned-action
 
 = Albert Botran i Pahissa
 

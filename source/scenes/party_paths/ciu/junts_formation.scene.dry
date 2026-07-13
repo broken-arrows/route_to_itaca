@@ -101,6 +101,7 @@ on-arrival: {!
     Q.junts_split_countdown = 9;
     Q.countdowns.push("junts_split");
 !}
+role: event
 
 = A new era for ​JxCat
 

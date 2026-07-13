@@ -5,6 +5,7 @@ card-image: img/cup/antonio_banos.jpg
 face-image: img/cup/antonio_banos.jpg
 view-if: antonio_banos_advisor = 1
 new-page: true
+role: pinned-action
 
 = Antonio Baños i Boncompain
 

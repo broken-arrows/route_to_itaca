@@ -5,6 +5,7 @@ card-image: img/erc/bassa.jpg
 face-image: img/erc/bassa.jpg
 view-if: dolors_bassa_advisor = 1
 new-page: true
+role: pinned-action
 
 = Dolors Bassa i Coll
 

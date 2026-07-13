@@ -6,6 +6,7 @@ view-if: erc_rally_timer <= 0 and (year > 2012 or month >= 9)
 on-arrival: month_actions += 1; erc_rally_timer = 6 if next_election_time - time > 6 and not (year == 2012); erc_rally_timer = 2 if (year == 2012) or (next_election_time - time <= 6)
 card-image: img/erc/rally.png
 face-image: img/erc/rally.png
+role: card-party
 
 Mass rallies, protests, and student strikes are a common feature of left and pro-independence parties and civic organizataions. ERC is no stranger to these, specially in politically charged times like now. What should these focus on at the current moment?
 

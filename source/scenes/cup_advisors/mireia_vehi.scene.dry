@@ -5,6 +5,7 @@ card-image: img/cup/mireiavehi.jpg
 face-image: img/cup/mireiavehi.jpg
 view-if: mireia_vehi_advisor = 1
 new-page: true
+role: pinned-action
 
 = Mireia Vehí i Cantenys
 

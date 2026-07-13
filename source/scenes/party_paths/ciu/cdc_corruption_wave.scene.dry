@@ -10,5 +10,6 @@ on-arrival: {!
     // TODO: which concrete case (Palau / "3%" financing / Método 3)? + text + vote movement
     Q.corruption_events_ciu += 1;
 !}
+role: event
 
 - @post_event: TODO

@@ -13,5 +13,6 @@ on-arrival: {!
     Q.cat_spa_relations += 1.0;
     Q.social_dissent += 2.0;
 !}
+role: event
 
 - @post_event: TODO

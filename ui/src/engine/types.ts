@@ -1,9 +1,18 @@
+export type SceneRole =
+  | 'desk' | 'deck'
+  | 'card' | 'card-gov' | 'card-party' | 'card-parlament'
+  | 'pinned-action' | 'newspaper' | 'event'
+  | 'info-tab' | 'pause-item' | 'main-menu-item' | 'library-item' | 'ending';
+export type EffectiveRole = SceneRole | 'page';
+export interface GameInfo { title?: string; author?: string; languages: string[] }
+
 export interface ChoiceView {
   id: string;
   title: string;
   subtitle?: string;
   canChoose: boolean;
   tags: string[];
+  role?: SceneRole;
 }
 
 export interface DeckView extends ChoiceView {
@@ -15,6 +24,7 @@ export interface CardView {
   title: string;
   image?: string;
   tags: string[];
+  role?: SceneRole;
 }
 
 export type DrawResult =
@@ -24,6 +34,9 @@ export type DrawResult =
 export interface Frame {
   sceneId: string;
   sceneTags: string[];
+  role?: SceneRole;
+  effectiveRole: EffectiveRole;
+  info: GameInfo;
   html: string;
   choices: ChoiceView[];
   isHand: boolean;
@@ -43,4 +56,5 @@ export interface SaveMeta {
   month: number | null;
   playerParty: string | null;
   sceneId: string;
+  resources: number | null;
 }

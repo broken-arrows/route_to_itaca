@@ -11,6 +11,7 @@ on-arrival: {!
     Q.countdows.push("consultation_day");
     Q.consulation_day_countdown = 3;
 !}
+role: event
 
 = The Question of the Question
 

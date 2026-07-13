@@ -5,3 +5,4 @@ is-card: true
 is-pinned-card: true
 card-image: img/cup/congres.jpg
 go-to: cup_shuffle_leadership
+role: pinned-action

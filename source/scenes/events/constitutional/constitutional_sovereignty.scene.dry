@@ -10,6 +10,7 @@ on-arrival: {!
 
     // TODO: Change if constitutional reform happened
 !}
+role: event
 
 = Constitutional Court rules on the Declaration of Sovereignty
 

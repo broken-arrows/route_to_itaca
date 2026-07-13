@@ -8,6 +8,7 @@ on-arrival: {!
     Q.cat_spa_relations -= 5;
     Q.independence_movement += 5;
 !}
+role: event
 
 = Constitutional Court rules on the Law of non-binding consultations
 

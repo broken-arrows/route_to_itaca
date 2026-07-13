@@ -5,6 +5,7 @@ new-page: true
 set-bg: img/parlament_de_catalunya.jpg
 go-to: election_algorithm.cat_parlament
 set-jump: parlament_election.post_election
+role: event
 
 @post_election
 new-page: true

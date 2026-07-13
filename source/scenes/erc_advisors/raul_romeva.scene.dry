@@ -5,6 +5,7 @@ card-image: img/erc/romeva.jpg
 face-image: img/erc/romeva.jpg
 view-if: raul_romeva_advisor = 1
 new-page: true
+role: pinned-action
 
 = Raül Romeva i Rueda
 

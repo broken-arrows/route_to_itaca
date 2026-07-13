@@ -8,5 +8,6 @@ on-arrival: {!
     // En Marea dissolves; BNG stands again, seeded from the left carrier.
     window.spaSupportInject(Q, 'bng', 'galicia', 3.0, 'podemos');
 !}
+role: event
 
 - @post_event: TODO

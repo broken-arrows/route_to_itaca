@@ -7,5 +7,6 @@ on-arrival: {!
     // Civic platform mobilises interior-province abstainers.
     window.spaSupportInject(Q, 'te', 'rest', 0.22, 'abstain');
 !}
+role: event
 
 - @post_event: TODO

@@ -7,6 +7,7 @@ is-card: true
 card-image: img/erc/nomesfaltestu.jpg
 face-image: img/erc/nomesfaltestu.jpg
 tags: erc_party
+role: card-party
 
 = Choosing our enemies
 

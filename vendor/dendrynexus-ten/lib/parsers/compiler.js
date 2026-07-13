@@ -136,8 +136,31 @@
     }
   };
 
+  // Presentation `role` implies a mechanical boolean when the scene doesn't
+  // set that boolean explicitly (any explicit value, including false, wins).
+  // Keeps hand-authored content ('role:'-only) compatible with the runtime
+  // (engine.js / adapter.ts), which still reads isCard/isDeck/isHand/
+  // isPinnedCard directly off the compiled scene.
+  var ROLE_TO_MECHANIC = {
+    'card': 'isCard',
+    'card-gov': 'isCard',
+    'card-party': 'isCard',
+    'card-parlament': 'isCard',
+    'deck': 'isDeck',
+    'desk': 'isHand',
+    'pinned-action': 'isPinnedCard'
+  };
+
+  var deriveMechanicsFromRole = function(scene) {
+    var flag = ROLE_TO_MECHANIC[scene.role];
+    if (flag !== undefined && scene[flag] === undefined) {
+      scene[flag] = true;
+    }
+  };
+
   Game.prototype._addSceneToScenes = function(scene, parentId, callback) {
     var that = this;
+    deriveMechanicsFromRole(scene);
     var id = scene.id;
     if (parentId !== undefined && id.lastIndexOf(parentId, 0) === -1) {
       // We have a scene id that doesn't include its parent, so add

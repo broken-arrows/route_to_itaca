@@ -1,7 +1,7 @@
 import { computed, markRaw, ref, shallowRef } from 'vue';
 import { defineStore } from 'pinia';
 import { DendryAdapter } from '../engine/adapter';
-import type { DrawResult, Frame, SaveMeta } from '../engine/types';
+import type { DrawResult, EffectiveRole, Frame, GameInfo, SaveMeta } from '../engine/types';
 
 const SAVE_PREFIX = 'rti:desk:save:';
 
@@ -21,6 +21,8 @@ export const useGameStore = defineStore('game', () => {
     void version.value; // tick dependency: Q is mutated in place by the engine
     return adapter.value ? { ...adapter.value.qualities } : {};
   });
+  const info = computed<GameInfo | null>(() => (adapter.value ? adapter.value.info : null));
+  const effectiveRole = computed<EffectiveRole>(() => frame.value?.effectiveRole ?? 'page');
 
   function apply(f: Frame): void {
     frame.value = f;
@@ -43,8 +45,21 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
-  function newGame(): void {
-    apply(adapter.value!.beginGame());
+  // Spec §9: the engine can throw on boot (beginGame -> goToScene(root) asserts
+  // the scene exists). It used to be uncaught inside GameView's async
+  // onMounted, where the rejection was swallowed: the phase stayed 'boot' and
+  // the UI showed "Loading…" forever with loadError still false. Surface it on
+  // the same flag the fetch failure uses — both mean "there is no game to
+  // play" and both render the boot error state.
+  function newGame(): boolean {
+    try {
+      apply(adapter.value!.beginGame());
+      return true;
+    } catch (err) {
+      console.error('newGame failed:', err);
+      loadError.value = true;
+      return false;
+    }
   }
   function choose(i: number): void {
     apply(adapter.value!.choose(i));
@@ -60,7 +75,6 @@ export const useGameStore = defineStore('game', () => {
   function playPinned(cardId: string): void {
     apply(adapter.value!.playPinnedCard(cardId));
   }
-
   function saveSlot(slot: string): void {
     const a = adapter.value!;
     const qs = a.qualities;
@@ -71,6 +85,7 @@ export const useGameStore = defineStore('game', () => {
       month: typeof qs.month === 'number' ? qs.month : null,
       playerParty: typeof qs.player_party === 'string' ? qs.player_party : null,
       sceneId: frame.value?.sceneId ?? '',
+      resources: typeof qs.party_resources === 'number' ? qs.party_resources : null,
     };
     const stored: StoredSave = { meta, state: JSON.parse(a.exportStateJSON()) };
     localStorage.setItem(SAVE_PREFIX + slot, JSON.stringify(stored));
@@ -99,6 +114,8 @@ export const useGameStore = defineStore('game', () => {
     ready,
     frame,
     q,
+    info,
+    effectiveRole,
     loadError,
     initFromText,
     initFromUrl,

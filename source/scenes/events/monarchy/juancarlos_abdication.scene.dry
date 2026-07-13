@@ -25,5 +25,6 @@ on-arrival: {!
 
     // TODO: text and potential path for no abdication?
 !}
+role: event
 
 - @post_event: TODO

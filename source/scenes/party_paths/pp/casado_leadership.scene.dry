@@ -9,5 +9,6 @@ on-arrival: {!
     Q.corruption_pp = Math.max(0, Q.corruption_pp - 15);
     Q.pp_leadership_mult = 1.0;
 !}
+role: event
 
 - @post_event: TODO

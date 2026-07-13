@@ -92,6 +92,7 @@ on-arrival: {!
     Q.parlament_coalition_leverage = ciu_proposal_leverage + 3 - Q.ciu_erc_coalition_phase;
 !}
 go-to: phase_text
+role: event
 
 @phase_text
 new-page: true

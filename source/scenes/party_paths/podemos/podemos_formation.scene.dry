@@ -8,5 +8,15 @@ on-arrival: {!
     Q.podemos_surged = true;
     Q.podemos_channeling = 1;
     Q.social_dissent += 5;
-!}
 
+    // TODO: Give options for Podemos to have different paths
+!}
+role: event
+
+= A new left rises
+
+From the street-filling anti-austerity protests around Spain, a new space in the left seems to have appeared to challenge the dominance of the PSOE. Led by Pablo Iglesias, Podemos so far has broken away from many of the conventions of the traditional Spanish left, advocating for a system-wide re-structuring. 
+
+This goes beyond a move towards a more social-democratic economic paradigm, as their main political points also include openly questioning the monarchy, pushing for radical de-centralization, and even allowing self-determination referendum for historic nationalities like Catalonia and the Basque Country. On paper, many points are pretty aligned with our party's historical positions yet, and while exciting, it is unclear how many supports will such a traditionally-considered "radical" party even rise across Spain.
+
+- @post_event: We'll have to follow this closely

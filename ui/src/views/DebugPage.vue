@@ -62,7 +62,10 @@ function onDraw(deckId: string) {
         :title="c.subtitle"
         @click="store.choose(i)"
       >
-        {{ c.title }} <small v-if="c.subtitle">{{ c.subtitle }}</small>
+        <!-- Engine output (convertLine returns HTML: <em>/<strong>/raw magic
+             blocks), same trust boundary as the prose above — interpolating it
+             showed the player literal tags. -->
+        <span v-html="c.title"></span> <small v-if="c.subtitle" v-html="c.subtitle"></small>
       </button>
     </section>
 

@@ -55,6 +55,7 @@ on-arrival: {!
     }
 !}
 go-to: phase_text
+role: event
 
 @phase_text
 new-page: true

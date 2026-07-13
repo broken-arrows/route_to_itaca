@@ -9,5 +9,6 @@ on-arrival: {!
     window.spaSupportInject(Q, 'erc', 'catalunya', 2.0, 'ciu');
     window.spaSupportInject(Q, 'erc', 'catalunya', 2.0, 'abstain');
 !}
+role: event
 
 - @post_event: TODO

@@ -12,6 +12,7 @@ Q.congreso_s_majority = Math.floor(congreso_size/2) + 1;
 !}
 go-to: election_algorithm.esp_congreso
 set-jump: congreso_election.post_election
+role: event
 
 @post_election
 new-page: true

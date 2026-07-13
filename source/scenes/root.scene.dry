@@ -26,6 +26,7 @@ on-arrival: {!
   Q.month = 8;
   Q.week = 1;
   Q.rubicon = 0;
+  Q.rubicon_time = 0;
   Q.countdowns = [];
 
   // start situation
@@ -2540,6 +2541,7 @@ on-arrival: {!
   Q.timers = [
     "advisor_action",
     "parlament",
+    "interior",
     //erc_party
     'erc_media',
     'erc_shuffle_leadership',
@@ -2676,7 +2678,7 @@ go-to: party_selection
 = <span style="color: #5B9A8D;font-weight: bold;">Easy</span> difficulty
 
 @normal_mode
-subtitle: Normal party resources, challenging interactions and options-
+subtitle: Normal party resources, challenging interactions and options.
 new-page: true
 on-arrival: difficulty = 0; party_resources = 3; max_advisors = 4;
 go-to: party_selection

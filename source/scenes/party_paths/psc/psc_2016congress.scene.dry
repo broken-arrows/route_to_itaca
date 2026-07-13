@@ -5,6 +5,7 @@ face-image: img/events/psc2016.jpg
 new-page: true
 max-visits: 1
 tags: event
+role: event
 
 = ​PSC 2016 Party Congress
 

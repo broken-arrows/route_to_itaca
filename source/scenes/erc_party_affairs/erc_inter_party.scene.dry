@@ -6,6 +6,7 @@ is-card: true
 on-arrival: month_actions += 1; erc_inter_party_relationships_timer = 6;
 card-image: img/parties/frontpopular.jpg
 face-image: img/parties/frontpopular.jpg
+role: card-party
 
 # TODO: Proper weighting of relations for different comuns leaders (just as we did with PSC). Should we do the same with the CUP factions in power?
 

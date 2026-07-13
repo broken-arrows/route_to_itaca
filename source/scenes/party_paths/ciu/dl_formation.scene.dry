@@ -98,6 +98,7 @@ on-arrival: {!
     Q.pdcat_formation_countdown = 6;
     Q.countdowns.push("pdcat_formation");
 !}
+role: event
 
 = ​CDC's identity crisis
 

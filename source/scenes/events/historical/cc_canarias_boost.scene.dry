@@ -8,5 +8,6 @@ on-arrival: {!
     // TODO: un-hardcode this? make it hidden?
     window.spaSupportInject(Q, 'cc', 'rest', 0.38, 'abstain');
 !}
+role: event
 
 - @post_event: TODO

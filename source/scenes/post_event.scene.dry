@@ -206,6 +206,14 @@ if (Q.congreso_coalition_sorpasso && (Q.spanish_pm_party == "podemos" || Q.spani
     this.achieve('asalto_cielos');
 }
 
+// 5. Hidden triggers
+if ((!Q.hidden_vox_surge) && (Q.year == 2019 || (Q.year >= 2017 && Q.next_spanish_election_time - Q.time <= 6))) {
+    Q.hidden_vox_surge = true;
+    Q.vox_active = true;
+    window.spaSupportInject(Q, 'vox', 'all', 4.0, 'pp');
+    window.spaSupportInject(Q, 'vox', 'all', 0.5, 'cs');
+}
+
 Q.has_event = 0;
 // check if there are any cards in #event, and then go to main if not.
 var scene = this.game.scenes['post_event.events_choice'];
@@ -234,10 +242,12 @@ go-to: events_choice if has_event = 1; elections_choice if has_election = 1; mai
 = [+ month : month +] [+ year +][? if rubicon:, Week [+ week +]?]
 
 @events_choice
+role: newspaper
 
 - #event
 
 @elections_choice
+role: newspaper
 
 - #election
 

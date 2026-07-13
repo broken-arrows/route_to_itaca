@@ -99,6 +99,7 @@ on-arrival: {!
     Q.pdcat_split_countdown = 9;
     Q.countdowns.push("pdcat_split");
 !}
+role: event
 
 = ​DL's continued identity crisis
 

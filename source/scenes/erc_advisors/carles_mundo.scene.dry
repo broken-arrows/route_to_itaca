@@ -5,6 +5,7 @@ card-image: img/erc/carlesmundo.jpg
 face-image: img/erc/carlesmundo.jpg
 view-if: carles_mundo_advisor = 1
 new-page: true
+role: pinned-action
 
 = Carles Mundó i Blanch
 
