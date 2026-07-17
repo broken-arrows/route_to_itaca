@@ -6,7 +6,7 @@ max-visits: 1
 on-arrival: {!
     // Galician left consolidates around the re-established BNG between the two 2019 elections.
     // TODO: un-hardcode this / fold it into the podemos tree via potential fork
-    window.spaSupportInject(Q, 'bng', 'galicia', 2.5, 'podemos');
+    G.spaSupportInject(Q, 'bng', 'galicia', 2.5, 'podemos');
 !}
 role: event
 

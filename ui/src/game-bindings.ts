@@ -2,50 +2,73 @@
  * game-bindings.ts — the ONE Route-to-Ítaca-specific module in `ui/`.
  * =============================================================================
  *
- * WHAT THIS IS
- * The compiled game content calls browser globals that the *game*, not the
- * engine, owns:
+ * The game's own code (its macro simulation) lives in `source/lib/` — in the
+ * GAME, not in a UI's web root. Content reaches it as `G` (`G.engineTick(Q)`),
+ * and the engine gets it from whichever UI is running:
  *
- *   window.engineTick(Q)        source/scenes/post_event.scene.dry:73 — the
- *                               monthly macro simulation (GDP, unemployment,
- *                               welfare, cat–spa relations, dissent, the
- *                               parlament vote matrices). Runs on EVERY turn.
- *   window.spaSupportInject(…)  56 calls across the congreso-coalition scenes.
+ *     engine.setGameLib(gameLib)
  *
- * Both are defined by `out/html/cat_engine.js`, a DOM-free IIFE whose last two
- * lines are `window.engineTick = monthPasses; window.spaSupportInject = …`.
- * The old UI installs it with a `<script src="cat_engine.js">` tag
- * (`out/html/index.html:18`). The Vue app has no script tags, so without this
- * side-effect import `window.engineTick` is `undefined` — and dendry's
- * `runActions` (`vendor/dendrynexus-ten/lib/engine.js`) CATCHES the resulting
- * TypeError, so the whole simulation silently never runs while the game looks
- * perfectly alive. (That is exactly how it hid for a full phase; see
- * `docs/design/LEARNINGS.md`, 2026-07-13.)
+ * Nothing here installs a browser global, and nothing in `ui/` outside this file
+ * knows the game is Route to Ítaca. A different dendrynexus game swaps THIS FILE
+ * and nothing else.
  *
- * WHY IT IS A SEPARATE FILE AND NOT A LINE IN `main.ts`
- * (a) `ui/` is meant to become a game-agnostic dendrynexus shell. This file is
- *     the only module in it that knows the game is Route to Ítaca. A different
- *     dendrynexus game swaps THIS FILE and nothing else. Keep it that way:
- *     game-specific coupling belongs here, greppable, in one place.
- * (b) `cat_engine.js` is imported VERBATIM from the old UI's tree — deliberately
- *     not copied. One file, one macro model, both UIs; there is no second copy
- *     to drift. Do not fork it, do not port it "cleanly" without deleting the
- *     original in the same change.
- * (c) BLOCKING AT PHASE 6 (the swap): phase 6 deletes `out/html/`. `cat_engine.js`
- *     must be RELOCATED first (e.g. `shared/sim/cat_engine.js`) and BOTH consumers
- *     updated — this import, and `out/html/index.html`'s script tag while it still
- *     exists. Recorded in `docs/design/desk_ui_plan.md`'s phase-6 section.
- * (d) LONG TERM: the genuinely game-agnostic end state is for a shell to load its
- *     game's runtime scripts from configuration — the app already fetches
- *     `game.json` at runtime, so a `runtimeScripts: [...]` field there (or in a
- *     sibling manifest) is the natural shape. That is a real design task with real
- *     questions (module vs classic script, sandboxing, load order, test harness),
- *     NOT something to improvise. Until it is designed, this file is the seam.
+ * HISTORY, so nobody re-invents the hole: the simulation used to be
+ * `out/html/cat_engine.js`, reached by content as `window.engineTick`. The Vue
+ * app has no script tags, so it was `undefined` — and dendry's `runActions`
+ * SWALLOWS the resulting TypeError. The whole monthly simulation silently never
+ * ran for an entire phase while the calendar kept advancing. See
+ * `docs/design/LEARNINGS.md`, 2026-07-13.
  *
- * Import for side effects only: the module has no exports; evaluating it installs
- * the globals on `window`. `main.ts` imports it once, before the app mounts.
- * Tests that drive the REAL game (`ui/tests/integration.desk-loop.test.ts`) must
- * import it too, and must assert the simulation actually RAN — not merely that
- * the calendar advanced.
- */
-import '../../out/html/cat_engine.js';
+ * The guard that keeps it dead: `ui/tests/integration.desk-loop.test.ts` asserts
+ * an engine-EXCLUSIVE Q value actually moves (`gdp_growth` / `unemployment` /
+ * `welfare_index` — the three nothing else in `source/` writes). Do not weaken
+ * it. `tools/audit-globals.mjs` covers the content side.
+ * ========================================================================== */
+import type { GameLib } from '../../source/lib/index.js';
+
+// `source/lib/*.js` is deliberately plain, dual-consumable CommonJS — no real
+// ES `export` keyword, so the OLD shell can still load it as a classic
+// <script> tag (see cat_engine.js / index.js headers). That file shape gets
+// interop'd into a real default export in TWO of the three places this runs:
+// vitest (vite-node hands it to Node's native `require`, which resolves
+// `module.exports` directly) and the production build (`vite.config.ts`'s
+// `build.commonjsOptions.include` tells Rollup's commonjs plugin to convert
+// it). Vite's DEV SERVER is the one place that does neither: a local relative
+// import is served raw, un-transformed (`optimizeDeps` only redirects BARE/
+// package specifiers to its pre-bundled cache — a relative specifier like this
+// one never qualifies, confirmed by curling the dev server's `/@fs/` response
+// directly and finding no `export` in it). A plain `import gameLib from
+// '...'` (default import) would then fail to even LOAD in a real browser:
+// "does not provide an export named 'default'" — a hard SyntaxError before any
+// of our code runs, not something a runtime try/catch can catch.
+//
+// Fix: a NAMESPACE import (`import * as`) never statically requires a
+// specific binding to exist, so it loads in all three environments; then fall
+// back, at runtime, to the same `window.RTI_GAME_LIB` global `index.js`
+// already publishes for the old shell's benefit — which is exactly what fires
+// when this file's own `typeof module !== 'undefined'` check goes the "no
+// module system" way, i.e. precisely the raw dev-server/browser case this
+// works around. The side-effect import of `cat_engine.js` first is required
+// only for that same raw-browser path: `index.js`'s own `require('./cat_engine.js')`
+// never runs there (no `require`), so without this, `index.js`'s browser
+// fallback (`window.RTI_CAT_ENGINE`) would still be unset when it looks for
+// it. Harmless everywhere else — Node/vite-node dedupes a file required twice
+// via its module cache, so this never double-executes the simulation module.
+// Each lib module is side-effect-imported here so its window.RTI_* global is
+// set before index.js's raw-dev-server branch reads it (see the long note
+// above — this only matters for the un-transformed dev server; vitest and the
+// Rollup build resolve index.js's own `require`s directly). A new lib file adds
+// one line here. The aggregation/typing shape is deferred to phase 6 (§2.5 spec §10.1).
+import '../../source/lib/cat_engine.js';
+import '../../source/lib/allegiances.js';
+import * as gameLibModule from '../../source/lib/index.js';
+
+const gameLib: GameLib =
+  (gameLibModule as { default?: GameLib }).default ??
+  (globalThis as unknown as { RTI_GAME_LIB?: GameLib }).RTI_GAME_LIB!;
+
+export function installGameLib(target: { setGameLib(lib: object): unknown }): void {
+  target.setGameLib(gameLib);
+}
+
+export { gameLib };

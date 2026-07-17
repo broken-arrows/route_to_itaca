@@ -6,7 +6,7 @@ max-visits: 1
 on-arrival: {!
     // TODO: make this conditional?? on what??
     // PRC rebuilds its national vote through regional positioning.
-    window.spaSupportInject(Q, 'prc', 'rest', 0.22, 'abstain');
+    G.spaSupportInject(Q, 'prc', 'rest', 0.22, 'abstain');
 !}
 role: event
 

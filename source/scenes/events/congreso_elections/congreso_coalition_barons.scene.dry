@@ -6,8 +6,8 @@ on-arrival: {!
     Q.psoe_barons_revolted = true; // global flag
     Q.congreso_coalition_grand_ok = true;
     Q.psoe_leadership_mult = -0.5;
-    window.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 1.5, 'psoe');
-    window.spaSupportInject(Q, 'abstain', 'all', 1.0, 'psoe');
+    G.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 1.5, 'psoe');
+    G.spaSupportInject(Q, 'abstain', 'all', 1.0, 'psoe');
 !}
 go-to: happens
 

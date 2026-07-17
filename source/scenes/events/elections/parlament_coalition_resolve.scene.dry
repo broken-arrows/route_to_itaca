@@ -39,5 +39,16 @@ on-arrival: {!
     Q.cat_caretaker_gov = false;
 
     Q.historical_event = "We have a new government in the Generalitat! President " + Q.president + " will lead a " + Q.cat_coalition_disp + " for this legistlature.";
+
+    if (Q.parlament_coalition_concessions_social) {
+        G.registerLaw(Q, {
+            id: "generalitat_concession_social",
+            targets: {
+                welfare_index_growth: 0.1,
+                generalitat_surplus: -0.01
+            },
+            ramp_ticks: 6,
+        });
+    }
 !}
 go-to: post_event

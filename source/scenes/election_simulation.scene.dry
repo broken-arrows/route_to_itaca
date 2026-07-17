@@ -99,7 +99,7 @@ on-arrival: {!
     Q.cs_leader = "Inés Arrimadas";
     Q.ppc_leader = "Xavier García Albiol";
     Q.cup_leader = "Antonio Baños";
-    Q.comuns_name = "icv";
+    Q.parlament_current_icv = "icv";
 
 
     // Parlament support states for other results calculations
@@ -380,7 +380,7 @@ on-arrival: {!
     Q.ppbcn_leader = "Josep Bou";
     Q.cupbcn_leader = "Anna Saliente";
     Q.pp_leader = "Pablo Casado";
-    Q.comuns_name = "ecp";
+    Q.parlament_current_icv = "ecp";
 
     Q.bcomu_local_barcelona_support    = 20.8;
     Q.ciu_local_barcelona_support      =  0;
@@ -1518,7 +1518,7 @@ on-arrival: {!
     Q.congreso_parties_balears = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "mes"];
     Q.congreso_parties_navarra = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "amaiur", "nsuma", "ehbildu", "upn", "gbai"];
     Q.congreso_parties_euskadi = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "ehbildu", "pnv", "amaiur"];
-    Q.congreso_parties_galicia = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "bng", "nos"];
+    Q.congreso_parties_galicia = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "bng"];
     Q.congreso_parties_rest = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "cc", "fac", "prc", "te"];
 
 
@@ -1564,9 +1564,9 @@ on-arrival: {!
     Q.pnv_congreso_pv = 1.33;
     Q.bng_congreso_s = 0;
     Q.bng_congreso_pv = 0;
-    Q.nos_congreso_s = 2; // Was BNG
-    Q.nos_congreso_pv = 0.75;
-    Q.nos_congreso_pv_true = 11.18;
+    Q.bng_congreso_s = 2;
+    Q.bng_congreso_pv = 0.75;
+    Q.bng_congreso_pv_true = 11.18;
     Q.cc_congreso_s = 2;
     Q.cc_congreso_pv = 0.59;
     Q.compromis_congreso_s = 1;
@@ -1620,7 +1620,7 @@ on-arrival: {!
     // Galicia
     Q.abstain_congreso_galicia_support = 27.79;
     Q.cs_congreso_galicia_support = 6.72;
-    Q.nos_congreso_galicia_support = 3.20;
+    Q.bng_congreso_galicia_support = 3.20;
     Q.podemos_congreso_galicia_support = 18.55;
     Q.pp_congreso_galicia_support = 27.49;
     Q.psoe_congreso_galicia_support = 15.81;
@@ -1691,7 +1691,7 @@ on-arrival: {!
     Q.congreso_parties_balears = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "mes"];
     Q.congreso_parties_navarra = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "amaiur", "nsuma", "ehbildu", "upn", "gbai"];
     Q.congreso_parties_euskadi = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "ehbildu", "pnv", "amaiur"];
-    Q.congreso_parties_galicia = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "bng", "nos"];
+    Q.congreso_parties_galicia = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "bng"];
     Q.congreso_parties_rest = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "cc", "fac", "prc", "te"];
 
 
@@ -1744,9 +1744,7 @@ on-arrival: {!
     Q.cc_congreso_s = 1;
     Q.cc_congreso_pv = 0.33;
     Q.bng_congreso_s = 0;
-    Q.bng_congreso_pv = 0;
-    Q.nos_congreso_s = 0;
-    Q.nos_congreso_pv = 0.28;
+    Q.bng_congreso_pv = 0.28;
     Q.fac_congreso_s = 0;
     Q.fac_congreso_pv = 0;
     Q.gbai_congreso_s = 0;
@@ -2193,7 +2191,7 @@ on-arrival: {!
     Q.congreso_parties_balears = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "mes"];
     Q.congreso_parties_navarra = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "amaiur", "nsuma", "ehbildu", "upn", "gbai"];
     Q.congreso_parties_euskadi = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "ehbildu", "pnv", "amaiur"];
-    Q.congreso_parties_galicia = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "bng", "nos"];
+    Q.congreso_parties_galicia = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "bng"];
     Q.congreso_parties_rest = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "cc", "fac", "prc", "te"];
 
 
@@ -2356,7 +2354,7 @@ on-arrival: {!
     Q.congreso_parties_balears = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "mes"];
     Q.congreso_parties_navarra = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "amaiur", "nsuma", "ehbildu", "upn", "gbai"];
     Q.congreso_parties_euskadi = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "ehbildu", "pnv", "amaiur"];
-    Q.congreso_parties_galicia = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "bng", "nos"];
+    Q.congreso_parties_galicia = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "bng"];
     Q.congreso_parties_rest = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "cc", "fac", "prc", "te"];
 
 
@@ -2820,14 +2818,6 @@ if (Q.amaiur_congreso_s) {
         "seats": Q.amaiur_congreso_s,
     });
 }
-if (Q.nos_congreso_s) {
-    data.push({
-        "id": "nos",
-        "legend": "NÓS",
-        "name": "NÓS",
-        "seats": Q.nos_congreso_s,
-    });
-}
 if (Q.bng_congreso_s) {
     data.push({
         "id": "bng",
@@ -3127,7 +3117,6 @@ if (window && d3) {
 [? if fr_congreso_showviz: {!<tr><td><div class="box" style='background-color: #0a0a0a'> </div> !} FR {!</td><td style='text-align: right;'>!}[+ fr_congreso_pv +]% ([+ fr_congreso_pv_cat +]%) {!</td><td>!} [+ fr_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ fr_congreso_s +] {!</td><td>!} [+ fr_congreso_s_delta +] {!</td>!}?]
 [? if cc_congreso_showviz: {!<tr><td><div class="box" style='background-color: #ffcc00; color: black'> </div> !} CC-PNC {!</td><td style='text-align: right;'>!}[+ cc_congreso_pv +]% {!</td><td>!} [+ cc_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ cc_congreso_s +] {!</td><td>!} [+ cc_congreso_s_delta +] {!</td>!}?]
 [? if bng_congreso_showviz: {!<tr><td><div class="box" style='background-color: #a2c7e4; color: white'> </div> !} BNG {!</td><td style='text-align: right;'>!}[+ bng_congreso_pv +]% {!</td><td>!} [+ bng_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ bng_congreso_s +] {!</td><td>!} [+ bng_congreso_s_delta +] {!</td>!}?]
-[? if nos_congreso_showviz: {!<tr><td><div class="box" style='background-color: #ed1c24'> </div> !} NÓS {!</td><td style='text-align: right;'>!}[+ nos_congreso_pv +]% {!</td><td>!} [+ nos_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ nos_congreso_s +] {!</td><td>!} [+ nos_congreso_s_delta +] {!</td>!}?]
 [? if upyd_congreso_showviz: {!<tr><td><div class="box" style='background-color: #e9008c'> </div> !} UPyD {!</td><td style='text-align: right;'>!}[+ upyd_congreso_pv +]% ([+ upyd_congreso_pv_cat +]%) {!</td><td>!} [+ upyd_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ upyd_congreso_s +] {!</td><td>!} [+ upyd_congreso_s_delta +] {!</td>!}?]
 [? if nsuma_congreso_showviz: {!<tr><td><div class="box" style='background-color: #2a52be'> </div> !} nsuma {!</td><td style='text-align: right;'>!}[+ nsuma_congreso_pv +]% {!</td><td>!} [+ nsuma_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ nsuma_congreso_s +] {!</td><td>!} [+ nsuma_congreso_s_delta +] {!</td>!}?]
 [? if compromis_congreso_showviz: {!<tr><td><div class="box" style='background-color: #ec8953; color: black'> </div> !} Compromís {!</td><td style='text-align: right;'>!}[+ compromis_congreso_pv +]% {!</td><td>!} [+ compromis_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ compromis_congreso_s +] {!</td><td>!} [+ compromis_congreso_s_delta +] {!</td>!}?]
@@ -3386,8 +3375,8 @@ on-arrival: {!
 **Red belt holdings**
 
 {!<table style='border-spacing: 0px; margin-right: 1em; margin-left: 1em; width:95%; table-layout: fixed; margin-top:-0.75em;'>!}
-<tr>[? if psc_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ psc_local_rb_pct +]%; height: 2em; background-color: var(--psc); color: white; text-align: center; font-weight: bold; border-radius: 3px 0 0 3px;'>[+ psc_local_rb_pct+]%</td>?][? if erc_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ erc_local_rb_pct +]%; height: 2em; background-color: var(--erc); color: var(--text-color); text-align: center; font-weight: bold;'>[+ erc_local_rb_pct+]%</td>?][? if cs_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ cs_local_rb_pct +]%; height: 2em; background-color: var(--cs); color: white; text-align: center; font-weight: bold;'>[+ cs_local_rb_pct+]%</td>?][? if ciu_local_rb_pct > 0: <td style='overflow:hidden; white-space: nowrap; width: [+ ciu_local_rb_pct +]%; height: 2em; background-color: var(--ciu); color: white; text-align: center; font-weight: bold; '>[+ ciu_local_rb_pct+]%</td>?][? if cdc_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ cdc_local_rb_pct +]%; height: 2em; background-color: var(--cdc); color: white; text-align: center; font-weight: bold;'>[+ cdc_local_rb_pct+]%</td>?][? if jxsi_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ jxsi_local_rb_pct +]%; height: 2em; background-color: var(--jxsi); color: white; text-align: center; font-weight: bold;'>[+ jxsi_local_rb_pct+]%</td>?][? if dl_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ dl_local_rb_pct +]%; height: 2em; background-color: var(--dl); color: white; text-align: center; font-weight: bold;'>[+ dl_local_rb_pct+]%</td>?][? if pdcat_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ pdcat_local_rb_pct +]%; height: 2em; background-color: var(--pdcat); color: white; text-align: center; font-weight: bold;'>[+ pdcat_local_rb_pct+]%</td>?][? if jxcat_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ jxcat_local_rb_pct +]%; height: 2em; background-color: var(--jxcat); color: white; text-align: center; font-weight: bold;;'>[+ jxcat_local_rb_pct+]%</td>?][? if junts_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ junts_local_rb_pct +]%; height: 2em; background-color: var(--junts); color: white; text-align: center; font-weight: bold;'>[+ junts_local_rb_pct+]%</td>?][? if cup_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ cup_local_rb_pct +]%; height: 2em; background-color: var(--cup); color: var(--text-color); text-align: center; font-weight: bold;'>[+ cup_local_rb_pct+]%</td>?][? if pp_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ pp_local_rb_pct +]%; height: 2em; background-color: var(--pp); color: white; text-align: center; font-weight: bold;'>[+ pp_local_rb_pct+]%</td>?][? if comuns_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ comuns_local_rb_pct +]%; height: 2em; [? if comuns_name = "icv": background-color: var(--icv)?][? if comuns_name = "csqp": background-color: var(--csqp)?][? if comuns_name = "cecp": background-color: var(--cecp)?][? if comuns_name = "ecp": background-color: var(--ecp)?]; color: white; text-align: center; font-weight: bold;'>[+ comuns_local_rb_pct+]%</td>?][? if others_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ others_local_rb_pct +]%; height: 2em; background-color: var(--txt); color: white; text-align: center; font-weight: bold; border-radius: 0 3px 3px 0;'>[+ others_local_rb_pct+]%</td>?]</tr> 
-<tr>[? if psc_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ psc_local_rb_pct +]%'>psc</td>?][? if erc_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ erc_local_rb_pct +]%'>erc</td>?][? if cs_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ cs_local_rb_pct +]%'>cs</td>?][? if ciu_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ ciu_local_rb_pct +]%'>ciu</td>?][? if cdc_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ cdc_local_rb_pct +]%'>cdc</td>?][? if jxsi_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ jxsi_local_rb_pct +]%'>jxsi</td>?][? if dl_local_rb_pct > 0: <td style=' white-space: nowrap; width: [+ dl_local_rb_pct +]%'>dl</td>?][? if pdcat_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ pdcat_local_rb_pct +]%'>pdcat</td>?][? if jxcat_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ jxcat_local_rb_pct +]%'>jxcat</td>?][? if junts_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ junts_local_rb_pct +]%'>junts</td>?][? if cup_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ cup_local_rb_pct +]%'>cup</td>?][? if pp_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ pp_local_rb_pct +]%'>pp</td>?][? if comuns_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ comuns_local_rb_pct +]%'>[? if comuns_name = "icv" : ICV-... ?][? if comuns_name != "icv" : [+ comuns_name +]?]</td>?][? if others_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ others_local_rb_pct +]%; color: var(--txt); text-align: right; font-style: italic; font-size: 0.75em;'>others</td>?]</tr>
+<tr>[? if psc_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ psc_local_rb_pct +]%; height: 2em; background-color: var(--psc); color: white; text-align: center; font-weight: bold; border-radius: 3px 0 0 3px;'>[+ psc_local_rb_pct+]%</td>?][? if erc_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ erc_local_rb_pct +]%; height: 2em; background-color: var(--erc); color: var(--text-color); text-align: center; font-weight: bold;'>[+ erc_local_rb_pct+]%</td>?][? if cs_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ cs_local_rb_pct +]%; height: 2em; background-color: var(--cs); color: white; text-align: center; font-weight: bold;'>[+ cs_local_rb_pct+]%</td>?][? if ciu_local_rb_pct > 0: <td style='overflow:hidden; white-space: nowrap; width: [+ ciu_local_rb_pct +]%; height: 2em; background-color: var(--ciu); color: white; text-align: center; font-weight: bold; '>[+ ciu_local_rb_pct+]%</td>?][? if cdc_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ cdc_local_rb_pct +]%; height: 2em; background-color: var(--cdc); color: white; text-align: center; font-weight: bold;'>[+ cdc_local_rb_pct+]%</td>?][? if jxsi_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ jxsi_local_rb_pct +]%; height: 2em; background-color: var(--jxsi); color: white; text-align: center; font-weight: bold;'>[+ jxsi_local_rb_pct+]%</td>?][? if dl_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ dl_local_rb_pct +]%; height: 2em; background-color: var(--dl); color: white; text-align: center; font-weight: bold;'>[+ dl_local_rb_pct+]%</td>?][? if pdcat_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ pdcat_local_rb_pct +]%; height: 2em; background-color: var(--pdcat); color: white; text-align: center; font-weight: bold;'>[+ pdcat_local_rb_pct+]%</td>?][? if jxcat_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ jxcat_local_rb_pct +]%; height: 2em; background-color: var(--jxcat); color: white; text-align: center; font-weight: bold;;'>[+ jxcat_local_rb_pct+]%</td>?][? if junts_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ junts_local_rb_pct +]%; height: 2em; background-color: var(--junts); color: white; text-align: center; font-weight: bold;'>[+ junts_local_rb_pct+]%</td>?][? if cup_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ cup_local_rb_pct +]%; height: 2em; background-color: var(--cup); color: var(--text-color); text-align: center; font-weight: bold;'>[+ cup_local_rb_pct+]%</td>?][? if pp_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ pp_local_rb_pct +]%; height: 2em; background-color: var(--pp); color: white; text-align: center; font-weight: bold;'>[+ pp_local_rb_pct+]%</td>?][? if comuns_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ comuns_local_rb_pct +]%; height: 2em; [? if parlament_current_icv = "icv": background-color: var(--icv)?][? if parlament_current_icv = "csqp": background-color: var(--csqp)?][? if parlament_current_icv = "cecp": background-color: var(--cecp)?][? if parlament_current_icv = "ecp": background-color: var(--ecp)?]; color: white; text-align: center; font-weight: bold;'>[+ comuns_local_rb_pct+]%</td>?][? if others_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ others_local_rb_pct +]%; height: 2em; background-color: var(--txt); color: white; text-align: center; font-weight: bold; border-radius: 0 3px 3px 0;'>[+ others_local_rb_pct+]%</td>?]</tr> 
+<tr>[? if psc_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ psc_local_rb_pct +]%'>psc</td>?][? if erc_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ erc_local_rb_pct +]%'>erc</td>?][? if cs_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ cs_local_rb_pct +]%'>cs</td>?][? if ciu_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ ciu_local_rb_pct +]%'>ciu</td>?][? if cdc_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ cdc_local_rb_pct +]%'>cdc</td>?][? if jxsi_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ jxsi_local_rb_pct +]%'>jxsi</td>?][? if dl_local_rb_pct > 0: <td style=' white-space: nowrap; width: [+ dl_local_rb_pct +]%'>dl</td>?][? if pdcat_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ pdcat_local_rb_pct +]%'>pdcat</td>?][? if jxcat_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ jxcat_local_rb_pct +]%'>jxcat</td>?][? if junts_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ junts_local_rb_pct +]%'>junts</td>?][? if cup_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ cup_local_rb_pct +]%'>cup</td>?][? if pp_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ pp_local_rb_pct +]%'>pp</td>?][? if comuns_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ comuns_local_rb_pct +]%'>[? if parlament_current_icv = "icv" : ICV-... ?][? if parlament_current_icv != "icv" : [+ parlament_current_icv +]?]</td>?][? if others_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ others_local_rb_pct +]%; color: var(--txt); text-align: right; font-style: italic; font-size: 0.75em;'>others</td>?]</tr>
 {!</table>!}
 
 **Holdings beyond the metropolitan area**

@@ -45,6 +45,25 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 export const GAME_IMG_DIR = path.resolve(here, '..', 'out', 'html', 'img');
 
 /**
+ * The game's i18n catalogs — `source/locales/<loc>/{ui,content}.json` (§3.4 of
+ * `docs/superpowers/specs/2026-07-13-content-ui-decoupling-and-the-brief-design.md`).
+ *
+ * Deliberate deviation from the engine plan: the compiler does NOT copy these
+ * next to `game.json`. The Desk is the ONLY consumer (the old shell is
+ * English-only and never reads a catalog), and this plugin already owns
+ * exactly this job for `game.json`/`img/` — serving `source/locales/**`
+ * straight off disk is the same mechanism, one fewer engine change, and it
+ * moves cleanly when the old shell dies at phase 6.
+ *
+ * `ui/src/i18n.ts` fetches `/locales/<loc>/ui.json` at boot and deep-merges it
+ * OVER the bundled `ui/src/locales/<loc>.json` defaults (the game wins on any
+ * key collision) — `ui/src/locales` is a fallback layer, not a fence. A
+ * missing catalog is NOT an error: i18n.ts treats a 404 as "no override
+ * shipped" and the UI's defaults simply stand.
+ */
+export const GAME_LOCALES_DIR = path.resolve(here, '..', 'source', 'locales');
+
+/**
  * The compiled game, straight from the compiler's output.
  *
  * This used to be a HAND-COPIED `ui/public/game.en.json` (gitignored), which
@@ -119,6 +138,31 @@ export function gameAssets(): Plugin {
         );
         createReadStream(file).pipe(res);
       });
+
+      // Serve the game's locale catalogs straight off `source/locales/**`.
+      // Same shape as `/img` above, same reasoning, same trap: a MISS MUST
+      // 404, never `next()`. Falling through hands the request to Vite's SPA
+      // fallback, which answers `200 text/html` — `ui/src/i18n.ts` would then
+      // JSON.parse the index page and die on a baffling parse error instead of
+      // cleanly treating "no override for this locale" as the unauthored,
+      // default-case state it actually is.
+      server.middlewares.use('/locales', (req, res) => {
+        const rel = decodeURIComponent((req.url ?? '').split('?')[0]);
+        const file = path.join(GAME_LOCALES_DIR, rel);
+
+        if (!file.startsWith(GAME_LOCALES_DIR + path.sep)) {
+          res.statusCode = 403;
+          return res.end('Forbidden');
+        }
+
+        if (!existsSync(file) || !statSync(file).isFile()) {
+          res.statusCode = 404;
+          return res.end('Not found');
+        }
+
+        res.setHeader('Content-Type', 'application/json');
+        createReadStream(file).pipe(res);
+      });
     },
 
     // Make a built app self-contained: `dist/game.en.json` + `dist/img/**` mirror
@@ -137,6 +181,14 @@ export function gameAssets(): Plugin {
         cpSync(GAME_IMG_DIR, path.join(dist, 'img'), { recursive: true });
       } else {
         this.warn(`game art not found at ${GAME_IMG_DIR} — built app will show placeholders`);
+      }
+
+      if (existsSync(GAME_LOCALES_DIR)) {
+        cpSync(GAME_LOCALES_DIR, path.join(dist, 'locales'), { recursive: true });
+      } else {
+        this.warn(
+          `no locale catalogs found at ${GAME_LOCALES_DIR} — built app will use only ui/'s own defaults`,
+        );
       }
     },
   };

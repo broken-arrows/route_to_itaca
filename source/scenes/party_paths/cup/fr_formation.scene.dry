@@ -1,15 +1,26 @@
-title: Front Republicà
-view-if: year = 2019 and month = 2
+title: A new pro-independence force in the Congreso?
+view-if: next_spanish_election_time - time <= 4 and cecp_leader != "Arcadi Oliveres" and cecp_leader != "Jaume Asens" and cecp_formed and not spa_cup_active and erc_roadmap < 3
+face-image: img/events/fr_formation.jpg
 tags: event
 new-page: true
 max-visits: 1
 on-arrival: {!
-    // TODO: un-hardcode this
-    // Anti-capitalist pro-independence list for Apr 2019, from the CiU-bloc fringe + abstention.
+    // TODO: Check if the triggers are really enough for this to even make sense, maybe remove Jaume Asens gate??
+    // TODO: remove/activate dynamically after this!
+    Q.fr_formed = true;
     Q.spa_fr_active = true;
-    window.spaSupportInject(Q, 'fr', 'catalunya', 1.0, 'ciu');
-    window.spaSupportInject(Q, 'fr', 'catalunya', 1.5, 'abstain');
+    G.spaSupportInject(Q, 'fr', 'catalunya', 1.0, 'ciu');
+    G.spaSupportInject(Q, 'fr', 'catalunya', 1.5, 'abstain');
+    
+    Q.fr_leader = "Albano Dante Fachin";
+    Q.fr_leader_gender = "m";
+    Q.fr_ideology = "Anticapitalism, Unilateralism";
 !}
-role: event
 
-- @post_event: TODO
+= A new pro-independence force in the Congreso?
+
+[? if player_party != "cup": With the CUP refusing to run for the upcoming Congreso Elections,?][? if player_party == "cup": After our party has taken the position not to run for a foreign country's election, and thus refusing to partake in the upcoming Congreso ones,?] a void seems to exist for the left, unilateral independence positioning. Some CUP factions, namely those demanding a stronger party push to occupy institutional positions, seem to have gathered around a new proposal launched by former leader of Podemos in Catalonia, Albano Dante Fachin.
+
+After him leaving his position within CSQP, he's now betting on a union of all the pro-independence, left, and protest blocks. From pro-independence civil organizations to disgruntled members of the federal left, and of course, from other pro-independence parties, the FR may very well stand a chance. If it does happen, the stated aim is for the FR to "make Spain impossible to govern", and help force in this way a better negotiating position for Catalonia.
+
+- @post_event: We'll have to see how they fare, I guess?

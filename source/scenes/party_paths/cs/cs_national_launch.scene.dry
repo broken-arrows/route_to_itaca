@@ -6,8 +6,8 @@ max-visits: 1
 on-arrival: {!
     // Cs runs state-wide for the first time, drawing anti-corruption PP voters + abstainers.
     Q.spa_cs_active = true;
-    window.spaSupportInject(Q, 'cs', 'all', 9.0, 'pp');
-    window.spaSupportInject(Q, 'cs', 'all', 2.0, 'abstain');
+    G.spaSupportInject(Q, 'cs', 'all', 9.0, 'pp');
+    G.spaSupportInject(Q, 'cs', 'all', 2.0, 'abstain');
 !}
 role: event
 

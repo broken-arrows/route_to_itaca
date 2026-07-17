@@ -24,31 +24,16 @@ d3.linegraph = function (
 ) {
   /* params */
   if (!parties) {
-    parties = ["spd", "kpd", "ddp", "z", "dvp", "dnvp", "nsdap", "other"];
+    console.error("No parties defined for line graph!");
+    return;
   }
   if (!partyColors) {
-    partyColors = {
-      spd: "#E3000F",
-      kpd: "#8B0000",
-      ddp: "#DCCA4A",
-      z: "#000",
-      dvp: "#D5AC27",
-      dnvp: "#3f7bc1",
-      nsdap: "#954B00",
-      other: "#a0a0a0",
-    };
+    console.error("No partyColors defined for line graph!");
+    return;
   }
   if (!partyNames) {
-    partyNames = {
-      spd: "SPD",
-      kpd: "KPD",
-      ddp: "DDP",
-      z: "Z + BVP",
-      dvp: "DVP",
-      dnvp: "DNVP",
-      nsdap: "NSDAP",
-      other: "Others",
-    };
+    console.error("No partyNames defined for line graph!");
+    return;
   }
   if (!additionalMonths) {
     additionalMonths = 10;
@@ -69,7 +54,7 @@ d3.linegraph = function (
       const series = parties.map((party) =>
         data
           .map((d) =>
-            d[party] != null && d[party] != undefined
+            d[party] != null && d[party] != undefined && Number(d[party]) !== 0
               ? { x: new Date(d.date), y: d[party], series: party }
               : null,
           )
@@ -135,7 +120,12 @@ d3.linegraph = function (
       const partyLine = (party) =>
         d3
           .line()
-          .defined((d) => d[party] != null && d[party] !== undefined)
+          .defined(
+            (d) =>
+              d[party] != null &&
+              d[party] !== undefined &&
+              Number(d[party]) !== 0,
+          )
           .x((d) => xScale(new Date(d.date)))
           .y((d) => yScale(d[party]));
 

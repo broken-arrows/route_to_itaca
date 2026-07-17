@@ -1,0 +1,19 @@
+title: Ministry of Education
+new-page: true
+view-if: education_timer <= 0 and (education_minister_party == player_party)
+on-arrival: month_actions += 1; education_timer += 3;
+is-card: true
+card-image: img/education_icon.svg
+face-image: img/education_icon.svg
+frequency: 100
+tags: generalitat
+role: card-gov
+
+= Ministry of the Education
+
+Something something (TODO)
+
+TODO: how do these work in jxsi / jxcat cases?
+
+-@post_event: Ah yes!
+-@easy_discard

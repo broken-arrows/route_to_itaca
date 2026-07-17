@@ -4,7 +4,7 @@ You should not be here? Report a bug if you see this text.
 
 @pp_cs
 title: <span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Right</span> Coalition (PP - csspa)
-subtitle: A PP + csspa cabinet, backed by the centralist-right and other smaller partie. [? if congreso_coalition_pp_cs_talks: It leans on tolerations they'll have to negotiate. ?]
+subtitle: A PP + csspa cabinet, backed by the centralist-right and other smaller parties. [? if congreso_coalition_pp_cs_talks: It leans on tolerations they'll have to negotiate. ?]
 view-if: congreso_coalition_pp_cs_s > congreso_s_majority - 50
 choose-if: congreso_coalition_pp_cs_reach
 unavailable-subtitle: PP and Cs fall short of investiture, even with the smaller parties they could win over.

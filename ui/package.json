@@ -7,13 +7,12 @@
     "node": ">=20.19"
   },
   "scripts": {
-    "dev": "npm run sync-game && vite",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "sync-game": "node scripts/sync-game.mjs"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "dendrynexus-ten": "file:../vendor/dendrynexus-ten",

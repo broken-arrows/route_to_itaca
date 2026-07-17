@@ -19,8 +19,26 @@ describe('app shell', () => {
     // rejects the request, which logs a real console.error and flips the
     // store's loadError — assert that path is handled cleanly instead of
     // letting it leak as incidental stderr noise.
+    //
+    // "Route to Ítaca" is no longer in ui/'s own bundled default (it names
+    // THIS game, so it now lives in source/locales/<loc>/ui.json — see
+    // i18n.ts's initGameLocale/mergeLocaleMessage). App's onMounted fetches
+    // that override at `/locales/<loc>/ui.json`; the game-data fetch
+    // (game.en.json) must keep rejecting so the loadError assertion below
+    // still exercises that path.
     const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('no network in test'))));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((url: string) =>
+        typeof url === 'string' && url.includes('/locales/')
+          ? Promise.resolve({
+              ok: true,
+              json: () =>
+                Promise.resolve({ app: { title: 'Route to Ítaca — The Desk (beta)' } }),
+            })
+          : Promise.reject(new Error('no network in test')),
+      ),
+    );
 
     const wrapper = mount(App, { global: { plugins: [createPinia(), i18n] } });
     await flushPromises();

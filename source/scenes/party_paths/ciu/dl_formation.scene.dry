@@ -5,6 +5,8 @@ new-page: true
 max-visits: 1
 tags: event
 on-arrival: {!
+    Q.parlament_current_ciu = "dl";
+
     Q.dl_formed = true;
 
     Q.dl_roadmap = Q.cdc_roadmap

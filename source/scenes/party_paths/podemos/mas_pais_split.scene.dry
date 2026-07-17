@@ -6,8 +6,8 @@ max-visits: 1
 on-arrival: {!
     // TODO: un-hardcode this and maybe fold into podemos event tree?
     // Errejón breaks from Podemos for Nov 2019; Más País draws from the left carrier.
-    Q.spa_up_masq_split = true;
-    window.spaSupportInject(Q, 'mpais', 'all', 1.5, 'podemos');
+    Q.spa_mpais_active = true;
+    G.spaSupportInject(Q, 'mpais', 'all', 1.5, 'podemos');
 !}
 role: event
 

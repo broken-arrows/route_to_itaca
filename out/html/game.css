@@ -847,7 +847,6 @@ table {
   --compromis: #ec8953;
   --mes: #d8de40;
   --bng: #a2c7e4;
-  --nos: #ed1c24;
   --amaiur: #0198b3;
   --upyd: #e9008c;
   --mpais: #027665;
@@ -1068,12 +1067,6 @@ table {
 }
 .box.bng {
   background-color: var(--bng);
-}
-.seat.nos {
-  fill: var(--nos);
-}
-.box.nos {
-  background-color: var(--nos);
 }
 .seat.amaiur {
   fill: var(--amaiur);

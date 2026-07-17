@@ -1,6 +1,7 @@
 import { DendryEngine, convertJSONToGame } from 'dendrynexus-ten/lib/engine.js';
 import { convert as paragraphsToHTML } from 'dendrynexus-ten/lib/ui/content/html.js';
 import { CaptureUI, normalizeCard } from './capture-ui';
+import { installGameLib } from '../game-bindings';
 import type { Frame, DrawResult, SceneRole, EffectiveRole, GameInfo } from './types';
 
 export class DendryAdapter {
@@ -14,6 +15,10 @@ export class DendryAdapter {
   private constructor(game: object) {
     this.ui = new CaptureUI();
     this.engine = new DendryEngine(this.ui, game);
+    // The game's own code, handed to the engine — see game-bindings.ts. Must
+    // happen BEFORE beginGame: content's on-arrival calls G.* on the very first
+    // scene.
+    installGameLib(this.engine);
   }
 
   static fromJSONText(text: string): DendryAdapter {
@@ -37,6 +42,10 @@ export class DendryAdapter {
 
   setLocale(locale: string | null, catalog: Record<string, string> | null): void {
     this.engine.setLocale(locale, catalog);
+  }
+
+  setGameLib(lib: object): void {
+    this.engine.setGameLib(lib);
   }
 
   beginGame(seeds?: number[]): Frame {

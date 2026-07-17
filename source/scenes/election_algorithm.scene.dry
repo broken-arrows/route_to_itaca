@@ -434,7 +434,7 @@ var REST_PROVINCE_LEAN = {
     "madrid":             { bias: "urban",   lean: { pp: 1.15, podemos: 1.20, cs: 1.15, vox: 1.10 } },
     "andalusia":          { bias: "rural",   lean: { psoe: 1.45, podemos: 1.10, vox: 1.05 } },
     "extremadura":        { bias: "rural",   lean: { psoe: 1.60, pp: 1.05 } },
-    "castilla_la_mancha": { bias: "rural",   lean: { pp: 1.25, psoe: 1.20 } },
+    "castile_la_mancha":  { bias: "rural",   lean: { pp: 1.25, psoe: 1.20 } },
     "castile_and_leon":   { bias: "rural",   lean: { pp: 1.45 } },
     "murcia":             { bias: "neutral", lean: { pp: 1.40, vox: 1.25 } },
     "la_rioja":           { bias: "rural",   lean: { pp: 1.40 } },
@@ -555,6 +555,13 @@ let _activeIcr = "ciu";
 for (let p of ["ciu","cdc","dl","jxcat","junts","jxsi","pdcat"]) {
     if (Q[p + "_local_barcelona_support"] > 0) {
         _activeIcr = p;
+        break;
+    }
+}
+let _activeComuns = "icv";
+for (let p of ["icv","csqp","cecp","ecp"]) {
+    if (Q[p + "_parlament_s"] > 0) {
+        _activeComuns = p;
         break;
     }
 }
@@ -835,7 +842,7 @@ for (var loc of LOCS_RB) {
             dominant = cs_rb > erc_rb + 20 ? cs_rb : erc_rb;
             winner   = cs_rb > erc_rb + 20 ? "cs"   : "erc";
         } else if (primary === "comuns") {
-            dominant = comuns_rb; winner = "bcomu";
+            dominant = comuns_rb; winner = _activeComuns;
         } else if (primary === "cup") {
             dominant = cup_rb; winner = "cup";
         } else if (primary === "ciu") {
@@ -984,7 +991,7 @@ for (var com of _rbComarques) {
     } else {
         // cs primary: also check comuns and cup as possible challengers
         dominant = cs_rb; dWinner = "cs";
-        if (comuns_rb > dominant) { dominant = comuns_rb; dWinner = "bcomu"; }
+        if (comuns_rb > dominant) { dominant = comuns_rb; dWinner = _activeComuns; }
         if (cup_rb    > dominant) { dominant = cup_rb;    dWinner = "cup";   }
     }
     var comarca_winner = dominant < com.res ? "psc" : dWinner;

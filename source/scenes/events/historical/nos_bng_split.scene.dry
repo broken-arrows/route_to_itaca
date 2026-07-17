@@ -6,7 +6,7 @@ max-visits: 1
 on-arrival: {!
     // TODO: make this conditional? on what?
     // En Marea dissolves; BNG stands again, seeded from the left carrier.
-    window.spaSupportInject(Q, 'bng', 'galicia', 3.0, 'podemos');
+    G.spaSupportInject(Q, 'bng', 'galicia', 3.0, 'podemos');
 !}
 role: event
 

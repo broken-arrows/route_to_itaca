@@ -9,13 +9,15 @@ face-image: img/erc/nomesfaltestu.jpg
 tags: erc_party
 role: card-party
 
+# TODO: proper revision of conditionals for CiU party variants, there's a mess here
+
 = Choosing our enemies
 
 In our media and campaign materials, who should we consider as our main opponents?
 
 [? if erc_enemies != 0 : Previously, we had considered the [+ erc_enemies +] as our prior enemies. Is a change of direction necessary? ?]
 
-- @right_parties: All right-wing parties, no matter the nation: [? if not unio_split: CiU?][? if pdcat_formed and not pdcat_split: pdcat?][? if cdc_formed: CDC?][? if dl_formed: DL?][?if not erc_in_jxcat and jxcat_formed: JxCat?][? if erc_in_jxcat and jxcat_formed: CDC?][? if junts_formed: Junts ?][? if unio_split: , UDC?][? if pdcat_split: , pdcat?], PP/PPC, Cs, [? if vox_formed: VOX, ?][? if not pxc_dissolved: PxC, ?][? if fnc_formed: FNC, ?]...
+- @right_parties: All right-wing parties, no matter the nation: [? if not unio_split: CiU?][? if pdcat_formed and not pdcat_split: pdcat?][? if unio_split: CDC?][? if dl_formed: DL?][?if not erc_in_jxcat and jxcat_formed: JxCat?][? if erc_in_jxcat and jxcat_formed: CDC?][? if junts_formed: Junts ?][? if unio_split: , UDC?][? if pdcat_split: , pdcat?], PP/PPC, Cs, [? if vox_formed: VOX, ?][? if not pxc_dissolved: PxC, ?][? if fnc_formed: FNC, ?]...
 - @spanish_right: The Spanish right, the cornerstone of the regime of '78: PP/PPC, [? if vox_formed: VOX, ?]and Cs.
 - @all_spanish: Those parties against or unwilling to commit to true reform and self-determination, whether right or left: PP/PPC, [? if psc_leader != 'Àngel Ros' and psc_leader != 'Montserrat Tura': PSC/?]PSOE, [? if ecp_formed: ECP, ?][? if vox_formed: VOX, ?][? if not pxc_dissolved: PxC, ?]and Cs.
 - @extremes: Both extremes, the far-right: [? if vox_formed: VOX, and ?][? if not pxc_dissolved: PxC?][? if fnc_formed: FNC?]; and the far-left: CUP [? if csqp_leader = "Arcadi Oliveres": and CSQP ?][? if cecp_leader = "Arcadi Oliveres": and CECP?].
@@ -43,7 +45,7 @@ on-arrival: {!
         Q.pdcat_parlament_girona_middle_support -= 5;
         Q.pdcat_parlament_lleida_middle_support -= 5;
     }
-    if (Q.cdc_formed) {
+    if (Q.unio_split) {
         Q.cdc_relations -= 10;
         Q.cdc_parlament_barcelona_middle_support -= 5; 
     }
@@ -104,7 +106,7 @@ on-arrival: {!
     }
 !}
 
-We have Republican and Left in our name, and this is the general approach we have always taken. Nonetheless, at a moment of high tide for the independence movement, this may prove an added challenge when building national unity with [? if not unio_split: CiU?][? if pdcat_formed and not pdcat_split: pdcat?][? if cdc_formed: CDC?][? if dl_formed: DL?][?if not erc_in_jxcat and jxcat_formed: JxCat?][? if erc_in_jxcat and jxcat_formed: CDC?][? if junts_formed: Junts?].
+We have Republican and Left in our name, and this is the general approach we have always taken. Nonetheless, at a moment of high tide for the independence movement, this may prove an added challenge when building national unity with [? if not unio_split: CiU?][? if pdcat_formed and not pdcat_split: pdcat?][? if unio_split: CDC?][? if dl_formed: DL?][?if not erc_in_jxcat and jxcat_formed: JxCat?][? if erc_in_jxcat and jxcat_formed: CDC?][? if junts_formed: Junts?].
 
 @spanish_right
 on-arrival: {!
@@ -140,7 +142,7 @@ on-arrival: {!
     if (Q.pdcat_formed && !Q.pdcat_split) {
         Q.pdcat_relations += 5;
     }
-    if (Q.cdc_formed) {
+    if (Q.unio_split) {
         Q.cdc_relations += 5;
     }
     if (Q.dl_formed) {

@@ -30,6 +30,275 @@
     2019: 1.3,
   };
 
+  const parlament_NONLIN_DEMO_SCALE = {
+    buss: {
+      dissent: 0.4,
+      welfare: 0.6,
+      cat_spa: 1.2,
+      cup_trust: 0.5,
+      channeling: 0.25,
+    },
+    ind: {
+      dissent: 1.6,
+      welfare: 0.8,
+      cat_spa: 0.8,
+      cup_trust: 0.8,
+      channeling: 1.1,
+    },
+    middle: {
+      dissent: 1.0,
+      welfare: 1.0,
+      cat_spa: 1.0,
+      cup_trust: 1.0,
+      channeling: 0.85,
+    },
+    young: {
+      dissent: 1.8,
+      welfare: 1.4,
+      cat_spa: 0.9,
+      cup_trust: 1.6,
+      channeling: 1.4,
+    },
+    retired: {
+      dissent: 0.4,
+      welfare: 1.8,
+      cat_spa: 0.6,
+      cup_trust: 0.4,
+      channeling: 0.2,
+    },
+    rural: {
+      dissent: 0.8,
+      welfare: 0.7,
+      cat_spa: 1.5,
+      cup_trust: 0.6,
+      channeling: 0.45,
+    },
+    unemployed: {
+      dissent: 2.0,
+      welfare: 0.5,
+      cat_spa: 1.0,
+      cup_trust: 0.9,
+      channeling: 1.3,
+    },
+  };
+
+  const parlament_NONLIN_PROV_SCALE = {
+    barcelona: {
+      dissent: 1.0,
+      welfare: 1.0,
+      cat_spa: 1.0,
+      cup_trust: 1.0,
+      channeling: 1.2,
+    },
+    girona: {
+      dissent: 1.1,
+      welfare: 0.9,
+      cat_spa: 1.4,
+      cup_trust: 1.2,
+      channeling: 0.65,
+    },
+    lleida: {
+      dissent: 0.8,
+      welfare: 0.9,
+      cat_spa: 1.1,
+      cup_trust: 0.8,
+      channeling: 0.45,
+    },
+    tarragona: {
+      dissent: 1.0,
+      welfare: 1.1,
+      cat_spa: 0.8,
+      cup_trust: 0.9,
+      channeling: 0.85,
+    },
+  };
+
+  const PARLAMENT_MATRICES = {
+    BASE_T: [
+      [0.06, 0.04, 0.0, 0.0, 0.0, -0.03, 0.0],
+      [0.22, 0.12, 0.0, 0.0, 0.0, 0.0, 0.0],
+      [0.02, -0.015, 0.0, 0.0, 0.0, 0.0, 0.0],
+      [0.008, 0.015, 0.0, 0.0, 0.0, 0.0, 0.0],
+      [0.01, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+      [-0.02, 0.0, 0.0, 0.0, 0.0, 0.025, 0.0],
+      [-0.004, 0.0, 0.0, 0.0, 0.0, -0.02, 0.0],
+      [-0.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      [-0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      [-0.008, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      [0.005, -0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
+      [-0.231, -0.16, 0.0, 0.0, 0.0, 0.025, 0.0],
+    ],
+    _DELTA_T: {
+      buss: [
+        [-0.011999999999999997, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.154, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0016, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.03, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.016, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.1784, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      ],
+      ind: [
+        [-0.036, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.11, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.02, 0.0, 0.0, 0.0, 0.0, 0.0125, 0.0],
+        [0.002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.016, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.17999999999999997, 0.0, 0.0, 0.0, 0.0, -0.0125, 0.0],
+      ],
+      middle: [
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      ],
+      young: [
+        [-0.03, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.17600000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.18600000000000003, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      ],
+      retired: [
+        [0.018000000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.08800000000000001, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.07200000000000001, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      ],
+      rural: [
+        [0.036000000000000004, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.17600000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0028, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.018000000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.036000000000000004, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.26880000000000004, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      ],
+      unemployed: [
+        [-0.036, 0.0, 0.0, 0.0, 0.0, -0.03, 0.0],
+        [-0.08800000000000001, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.02, 0.0, 0.0, 0.0, 0.0, 0.0125, 0.0],
+        [-0.002, 0.0, 0.0, 0.0, 0.0, -0.01, 0.0],
+        [-0.016, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.162, 0.0, 0.0, 0.0, 0.0, 0.027499999999999997, 0.0],
+      ],
+    },
+    _DELTA_PROV: {
+      barcelona: [
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      ],
+      girona: [
+        [0.023999999999999994, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.06600000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.010000000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.012000000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.09800000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      ],
+      lleida: [
+        [0.03, 0.0, 0.0, 0.0, 0.0, -0.011999999999999997, 0.0],
+        [-0.04399999999999999, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, -0.0075000000000000015, 0.0],
+        [0.0125, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.006000000000000001, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.005499999999999989, 0.0, 0.0, 0.0, 0.0, 0.019499999999999997, 0.0],
+      ],
+      tarragona: [
+        [-0.011999999999999997, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.021999999999999995, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0075000000000000015, 0.0],
+        [
+          -0.0075000000000000015, 0.0, 0.0, 0.0, 0.0, -0.007999999999999998,
+          0.0,
+        ],
+        [0.008, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.03349999999999999, 0.0, 0.0, 0.0, 0.0, 0.000499999999999997, 0.0],
+      ],
+    },
+  };
+
+  const federalLeftChannelMultiplier = {
+    icv: 0.2,
+    "icv-euia": 0.2,
+    csqp: 1.0,
+    cecp: 0.8,
+    ecp: 0.65,
+  };
+
   // --- UTILS ---
 
   function gaussianRandom(mean = 0, stdev = 1) {
@@ -132,10 +401,151 @@
     return "";
   }
 
+  // ===========================================================================
+  // POLICY MODIFIER LAYER  ("laws & executive actions" plug-in point)
+  //
+  // A law is plain data:
+  //
+  //   {
+  //     id: "rent_control_2015",
+  //     targets: {
+  //       welfare_index_growth: 0.15,    // added into welfare_delta each tick
+  //       gdp_growth:          -0.10,    // added into gdp_target each tick
+  //       social_dissent_eq:   -3.0,     // added into dissent equilibrium
+  //     },
+  //     ramp_ticks: 6,                   // optional: linear ramp-in (0/undef = instant)
+  //     expires: { year: 2019 },         // optional: auto-deactivate (sunset clause)
+  //   }
+  //
+  // Registering:   G.registerLaw(Q, RENT_CONTROL_LAW)
+  // Repealing:     G.deactivateLaw(Q, "rent_control_2015", "repealed")
+  // Court strike:  G.deactivateLaw(Q, "rent_control_2015", "struck_down)
+  //
+  // RECOMMENDED BALANCE:
+  // | Modifier              | Feeds into                                      | Existing per-tick scale                                          | Minor action | Moderate law | Landmark law |
+  // | --------------------- | ----------------------------------------------- | ---------------------------------------------------------------- | ------------ | ------------ | ------------ |
+  // | gdp_growth            | gdp_target (then AR-blended, damped ~28-72%)    | noise σ=0.28; qe_strip=-0.4; indy_drag up to -1.2 cat_engine.js  | ±0.05–0.15   | ±0.15–0.35   | ±0.35–0.8    |
+  // | unemployment_recovery | u_delta directly                                | natural u_delta ≈ -0.9 to +0.6/tick cat_engine.js                | ±0.02–0.08   | ±0.08–0.2    | ±0.2–0.4     |
+  // | welfare_index_growth  | welfare_delta, pre-cap                          | delta capped to [-1.2, +0.8]/tick cat_engine.js                  | ±0.05–0.15   | ±0.15–0.4    | ±0.4–0.8     |
+  // | welfare_index_abs     | level directly, uncapped                        | no natural analog — new lever                                    | ±0.02–0.05   | ±0.05–0.15   | ±0.15–0.3    |
+  // | generalitat_surplus   | surplus drift                                   | base_drift≈0.02; gdp effect≈0.035; noise σ=0.1 cat_engine.js     | ±0.01–0.03   | ±0.03–0.08   | ±0.08–0.15   |
+  // | cat_spa_relations     | cat_spa_drift                                   | normal ±0.15; ART155 shock=-2.0; noise σ=0.6 cat_engine.js       | ±0.1–0.3     | ±0.3–0.8     | ±0.8–2.0     |
+  // | independence_trust    | trust_drift                                     | normal +0.06; ART155 penalty=-1.8; noise σ=0.4 cat_engine.js     | ±0.1–0.3     | ±0.3–0.8     | ±0.8–1.8     |
+  // | social_dissent_eq     | dissent equilibrium (eq), approached at 4%/tick | unemp_contrib up to ~70; welfare_contrib up to ~28 cat_engine.js | ±1–3         | ±3–8         | ±8–15        |
+  //
+  // ===========================================================================
+
+  const VALID_TARGETS = new Set([
+    "gdp_growth",
+    "unemployment_recovery",
+    "welfare_index_growth",
+    "welfare_index_abs",
+    "social_dissent_eq",
+    "generalitat_surplus",
+    "cat_spa_relations",
+    "independence_trust",
+  ]);
+
+  function registerLaw(Q, lawDef) {
+    Q.active_mods = Q.active_mods || {};
+    Q.mod_log = Q.mod_log || [];
+    Q.active_mods[lawDef.id] = {
+      def: lawDef,
+      status: "active", // "active" | "repealed" | "struck_down" | "expired"
+      ticks_active: 0,
+      // live_effect is recomputed every tick by resolveMods(); UI reads this
+      // to show "current contribution" per target without recalculating.
+      live_effect: {},
+    };
+    Q.mod_log.push({
+      tick: `${Q.year}-${Q.month}`,
+      id: lawDef.id,
+      action: "enacted",
+    });
+  }
+
+  function deactivateLaw(Q, lawId, reason = "repealed") {
+    if (!Q.active_mods || !Q.active_mods[lawId]) return;
+    const entry = Q.active_mods[lawId];
+    if (entry.status !== "active") return;
+    entry.status = reason;
+    Q.mod_log = Q.mod_log || [];
+    Q.mod_log.push({
+      tick: `${Q.year}-${Q.month}`,
+      id: lawId,
+      action: reason,
+    });
+  }
+
+  // Sums the live, ramp-scaled contribution of every active law for one
+  // target key. Called from inside the tick formulas below.
+  function mod(Q, targetKey) {
+    if (!Q.active_mods) return 0;
+    let total = 0;
+    for (const id in Q.active_mods) {
+      const entry = Q.active_mods[id];
+      if (entry.status !== "active") continue;
+      const def = entry.def;
+      const rawVal = def.targets ? def.targets[targetKey] : undefined;
+      if (rawVal === undefined) continue;
+
+      const scale =
+        def.ramp_ticks && def.ramp_ticks > 0
+          ? clamp(entry.ticks_active / def.ramp_ticks, 0, 1)
+          : 1.0;
+      const contrib = rawVal * scale;
+      total += contrib;
+      entry.live_effect[targetKey] = contrib; // UI-readable snapshot
+    }
+    return total;
+  }
+
+  // Advances lifecycle bookkeeping once per tick: ticks_active, sunset expiry.
+  // Call at the START of monthPasses(), before any formula reads mod(Q, ...).
+  function advanceMods(Q) {
+    if (!Q.active_mods) return;
+    for (const id in Q.active_mods) {
+      const entry = Q.active_mods[id];
+      if (entry.status !== "active") continue;
+      entry.ticks_active += 1;
+      const exp = entry.def.expires;
+      if (exp && exp.year != null && exp.month != null) {
+        if (
+          Q.year > exp.year ||
+          (Q.year === exp.year && Q.month >= exp.month)
+        ) {
+          deactivateLaw(Q, id, "expired");
+        }
+      } else if (exp && exp.year != null && Q.year >= exp.year) {
+        deactivateLaw(Q, id, "expired");
+      }
+    }
+  }
+
+  // UI helper: flat array of currently active laws with their live per-target
+  // contributions, ready to render in a "current policies" panel.
+  function getActiveLawsForUI(Q) {
+    if (!Q.active_mods) return [];
+    return Object.keys(Q.active_mods)
+      .map((id) => {
+        const entry = Q.active_mods[id];
+        return {
+          id,
+          status: entry.status,
+          ticks_active: entry.ticks_active,
+          effects: { ...entry.live_effect },
+        };
+      })
+      .filter((e) => e.status === "active");
+  }
+
   // --- ENGINE ---
 
   function monthPasses(Q) {
     console.log("Running engine tick for", Q.month, Q.year);
+
+    // Advance policy-modifier lifecycle BEFORE any formula reads mod(Q, ...).
+    advanceMods(Q);
 
     const PROVINCES = Q.parlament_constituencies;
     const DEMOS = Q.parlament_demographics;
@@ -165,8 +575,15 @@
       1.2;
 
     const qe_strip = !Q.ecb_qe && Q.year >= 2015 ? -0.4 : 0.0;
+    const law_mod_gdp = mod(Q, "gdp_growth"); // <-- policy hook
     const gdp_target =
-      struc + gob_mod_gdp + gen_mod_gdp + spa_adj + indy_drag + qe_strip;
+      struc +
+      gob_mod_gdp +
+      gen_mod_gdp +
+      spa_adj +
+      indy_drag +
+      qe_strip +
+      law_mod_gdp;
     const ar = gen_key === "ART155" ? 0.6 : 0.72;
     Q.gdp_growth =
       ar * Q.gdp_growth + (1 - ar) * gdp_target + gaussianRandom(0, 0.28);
@@ -180,7 +597,9 @@
       1.5 *
       (Q.GEN_UNEMP_MOD[gen_key] || 1.0) *
       (Q.GOB_UNEMP_MOD[gob_key] || 1.0);
-    const u_delta = gdp_m < 0 ? -gdp_m * 0.3 : -gdp_m * recover;
+    const law_mod_unemp = mod(Q, "unemployment_recovery"); // <-- policy hook
+    const u_delta =
+      (gdp_m < 0 ? -gdp_m * 0.3 : -gdp_m * recover) + law_mod_unemp;
     Q.unemployment = clamp(Q.unemployment + u_delta, 10, 36);
     Q.unemployment_change = getArrowBadUp(prev_unemployment, Q.unemployment);
 
@@ -195,12 +614,13 @@
       if (Q.fla_escalated) fla_bonus += SURPLUS_FLA_ESCALATION_BONUS;
     }
 
-    // Then include fla_bonus in the surplus update:
+    const law_mod_surplus = mod(Q, "generalitat_surplus"); // <-- policy hook
     Q.generalitat_surplus = clamp(
       Q.generalitat_surplus +
         base_drift +
         fla_bonus +
         gdp_surplus_effect +
+        law_mod_surplus +
         gaussianRandom(0, 0.1),
       -5,
       2,
@@ -222,13 +642,22 @@
     // 4. WELFARE
     const spending_pressure = Q.WELFARE_SPENDING_BY_GEN[gen_key] || 0;
     const gdp_welfare_boost = gdp_m * 0.1;
+    const law_mod_welfare_growth = mod(Q, "welfare_index_growth"); // <-- policy hook
     let welfare_delta =
-      spending_pressure + gdp_welfare_boost + gaussianRandom(0, 0.2);
+      spending_pressure +
+      gdp_welfare_boost +
+      law_mod_welfare_growth +
+      gaussianRandom(0, 0.2);
     welfare_delta =
       welfare_delta > 0
         ? Math.min(welfare_delta, 0.8)
         : Math.max(welfare_delta, -1.2);
-    Q.welfare_index = clamp(Q.welfare_index + welfare_delta, 20, 100);
+    const law_mod_welfare_abs = mod(Q, "welfare_index_abs"); // <-- policy hook (direct level nudge)
+    Q.welfare_index = clamp(
+      Q.welfare_index + welfare_delta + law_mod_welfare_abs,
+      20,
+      100,
+    );
 
     // 5. CAT-SPA RELATIONS
     const CAT_SPA_POST155_FLOOR = 18.0;
@@ -258,8 +687,12 @@
         cat_spa_drift = Math.min(cat_spa_drift, CAT_SPA_POST155_RECOVERY_CAP);
       }
     }
+    const law_mod_catspa = mod(Q, "cat_spa_relations"); // <-- policy hook
     Q.cat_spa_relations = clamp(
-      Q.cat_spa_relations + cat_spa_drift + gaussianRandom(0, 0.6),
+      Q.cat_spa_relations +
+        cat_spa_drift +
+        law_mod_catspa +
+        gaussianRandom(0, 0.6),
       5,
       80,
     );
@@ -268,14 +701,11 @@
     const imov_reversion = 0.035 * (52.0 - Q.independence_movement);
     const phase = (Q.month - 1) * ((2 * Math.PI) / 12);
 
-    // In constants block (alongside the other INDY_ constants):
-    const AMPLITUDE_MOV_WEIGHT = 4.0; // tune upward to widen the range
-    const AMPLITUDE_TRUST_WEIGHT = 0.5; // 0 = trust has no effect, 1 = full effect
+    const AMPLITUDE_MOV_WEIGHT = 4.0;
+    const AMPLITUDE_TRUST_WEIGHT = 0.5;
 
-    // Replace the seasonal_amplitude line:
     const mov_norm = clamp((Q.independence_movement - 25) / (95 - 25), 0, 1);
     const trust_inv = clamp(1 - (Q.independence_trust - 15) / (60 - 15), 0, 1);
-    // trust_inv = 1 when trust is at floor (15), 0 when at ceiling (60)
 
     const seasonal_amplitude = clamp(
       1.0 +
@@ -296,7 +726,8 @@
       95,
     );
 
-    const trust_drift = gen_key === "ART155" ? -1.8 : 0.06;
+    const law_mod_trust = mod(Q, "independence_trust"); // <-- policy hook
+    const trust_drift = (gen_key === "ART155" ? -1.8 : 0.06) + law_mod_trust;
     Q.independence_trust = clamp(
       Q.independence_trust + trust_drift + gaussianRandom(0, 0.4),
       15,
@@ -310,17 +741,20 @@
     } else {
       unemp_contrib = Math.max(0, (Q.unemployment - 10) * 3.0);
     }
+
     const welfare_contrib = (100 - Q.welfare_index) * 0.35;
     const gob_mod_diss = Q.GOB_DISSENT_MOD[gob_key] || 0;
     const gen_mod_diss = Q.GEN_DISSENT_MOD[gen_key] || 0;
     const channeling_discount = (Q.podemos_channeling || 0) * 12.0;
+    const law_mod_dissent_eq = mod(Q, "social_dissent_eq"); // <-- policy hook
 
     let eq =
       unemp_contrib +
       welfare_contrib +
       gob_mod_diss +
       gen_mod_diss -
-      channeling_discount;
+      channeling_discount +
+      law_mod_dissent_eq;
     eq = clamp(eq, 15, 92);
 
     const gap = eq - Q.social_dissent;
@@ -361,7 +795,7 @@
     const d_welfare = Q.welfare_index - prev_welfare;
     const d_cat_spa = Q.cat_spa_relations - prev_cat_spa;
 
-    const matrices = Q.PARLAMENT_MATRICES;
+    const matrices = PARLAMENT_MATRICES;
     if (!matrices) return;
 
     for (const prov of PROVINCES) {
@@ -384,8 +818,8 @@
         }
 
         // Nonlinear Scaling
-        const nl_d = Q.parlament_NONLIN_DEMO_SCALE[demo];
-        const nl_p = Q.parlament_NONLIN_PROV_SCALE[prov];
+        const nl_d = parlament_NONLIN_DEMO_SCALE[demo];
+        const nl_p = parlament_NONLIN_PROV_SCALE[prov];
 
         // Simplified Nonlinear Handlers
         if (d_dissent > 0) {
@@ -408,6 +842,46 @@
           delta_vec[FAMILIES.indexOf("cs")] += total_in;
           delta_vec[FAMILIES.indexOf("icr")] -= total_in;
         }
+
+        const FL = FAMILIES.indexOf("fl");
+        const PSC = FAMILIES.indexOf("psc");
+        const ABS = FAMILIES.indexOf("abs");
+        const IL = FAMILIES.indexOf("il");
+        const CUP = FAMILIES.indexOf("cup");
+
+        const activeFederalLeft = [
+          "ecp",
+          "cecp",
+          "csqp",
+          "icv-euia",
+          "icv",
+        ].find((p) => (Q[`${p} parlament ${prov} ${demo} support`] || 0) > 0);
+
+        const partyMultiplier =
+          federalLeftChannelMultiplier[activeFederalLeft] ?? 0.0;
+
+        const channelScale = nld.channeling * nlp.channeling;
+        const indySqueeze =
+          1 - 0.7 * clamp((Q.independencemovement - 55) / 30, 0, 1);
+
+        const potentialFlow =
+          0.05 * (Q.podemoschanneling || 0) * channelScale * partyMultiplier;
+
+        const federalFlow = potentialFlow * indySqueeze;
+        const squeezedFlow = potentialFlow * (1 - indySqueeze);
+
+        deltavec[FL] += federalFlow;
+
+        deltavec[PSC] -= (federalFlow + squeezedFlow) * 0.3;
+        deltavec[ABS] -= (federalFlow + squeezedFlow) * 0.7;
+
+        const lowTrust = clamp((38 - Q.independencetrust) / 20, 0, 1);
+        const toCup = 0.15 + 0.35 * lowTrust;
+        const toIl = 0.8 - toCup;
+
+        deltavec[IL] += squeezedFlow * toIl;
+        deltavec[CUP] += squeezedFlow * toCup;
+        // The remaining 20% of squeezedFlow stays with PSC/abstention.
 
         // ── TRUST DISENGAGEMENT ──────────────────────────────────────────
         // Falling indytrust at high indymov → icr+il bleed into abs
@@ -469,13 +943,15 @@
         }
 
         // ── ART155 BACKLASH
-        // PPC and PSC supported 155 → penalised while gen=ART155
+        // PPC and PSC supported 155 → penalized while gen=ART155
         if (gen_key === "ART155") {
           const punishment = 0.55;
           delta_vec[FAMILIES.indexOf("ppc")] -= punishment * 0.4;
           delta_vec[FAMILIES.indexOf("psc")] -= punishment * 0.6;
-          delta_vec[FAMILIES.indexOf("fl")] += punishment * 0.5;
-          delta_vec[FAMILIES.indexOf("il")] += punishment * 0.5;
+          delta_vec[FAMILIES.indexOf("fl")] += punishment * 0.05;
+          delta_vec[FAMILIES.indexOf("il")] += punishment * 0.4;
+          delta_vec[FAMILIES.indexOf("icr")] += punishment * 0.4;
+          delta_vec[FAMILIES.indexOf("cup")] += punishment * 0.15;
         }
 
         // ── PSC RECOVERY
@@ -661,7 +1137,8 @@
         Q[key] = bcnMatrices.BCN_BASELINE[matrixKey] || 0.0;
       }
 
-      const sens = bcnMatrices.BCN_SENSITIVITY[matrixKey] || new Array(7).fill(0);
+      const sens =
+        bcnMatrices.BCN_SENSITIVITY[matrixKey] || new Array(7).fill(0);
       let delta = 0;
       for (let i = 0; i < 7; i++) delta += sens[i] * bcn_d[i];
 
@@ -674,7 +1151,11 @@
           const coeff = party === "erc" ? 0.35 : 0.22;
           delta += coeff * imSurplus * trustFactor;
         } else if (party === "cup" || party === "primaries") {
-          const frustrationFactor = clamp((38 - Q.independence_trust) / 20, 0, 1);
+          const frustrationFactor = clamp(
+            (38 - Q.independence_trust) / 20,
+            0,
+            1,
+          );
           delta += 0.18 * imSurplus * frustrationFactor;
         }
       }
@@ -711,7 +1192,7 @@
   // defined in root.scene.dry — there is no separate "family" namespace.
   //
   // Behaviour mirrors monthPasses() in cat_engine.js: it runs once per month
-  // (called from post_event.scene.dry AFTER window.engineTick), reads the
+  // (called from post_event.scene.dry AFTER the monthly engineTick), reads the
   // Catalan macro variables on Q, derives Spanish-level deltas, and evolves
   // every constituency's party support, renormalising to 100 (abstain included).
   //
@@ -751,35 +1232,35 @@
   // Values carried over verbatim from spa_vote_model.py ECON_BASE_DEFAULT.
   const ECON = {
     //               g(gdp)  u(unemp) w(welfare) d(dissent)
-    pp:        { g:  0.06, u: -0.05, w:  0.03, d: -0.04 },
-    psoe:      { g:  0.06, u: -0.04, w:  0.04, d: -0.03 },
-    psc:       { g:  0.06, u: -0.04, w:  0.04, d: -0.03 }, // PSC mirrors PSOE econ
-    podemos:   { g: -0.04, u:  0.06, w: -0.04, d:  0.07 },
-    cs:        { g: -0.02, u:  0.03, w: -0.01, d:  0.02 },
-    vox:       { g: -0.01, u:  0.01, w: -0.01, d:  0.02 },
-    iu:        { g: -0.03, u:  0.04, w: -0.03, d:  0.05 },
-    mpais:     { g: -0.02, u:  0.03, w: -0.02, d:  0.04 },
-    abstain:   { g: -0.02, u:  0.02, w: -0.02, d:  0.03 },
-    nsuma:     { g:  0.05, u: -0.04, w:  0.03, d: -0.03 },
-    upn:       { g:  0.01, u:  0.00, w:  0.01, d: -0.01 },
-    gbai:      { g:  0.00, u:  0.01, w: -0.01, d:  0.02 },
-    pnv:       { g:  0.01, u:  0.00, w:  0.01, d: -0.01 },
-    ehbildu:   { g: -0.01, u:  0.01, w: -0.01, d:  0.01 },
-    bng:       { g:  0.00, u:  0.01, w: -0.01, d:  0.01 },
-    compromis: { g: -0.02, u:  0.03, w: -0.02, d:  0.05 },
-    mes:       { g: -0.01, u:  0.02, w: -0.01, d:  0.04 },
+    pp: { g: 0.06, u: -0.05, w: 0.03, d: -0.04 },
+    psoe: { g: 0.06, u: -0.04, w: 0.04, d: -0.03 },
+    psc: { g: 0.06, u: -0.04, w: 0.04, d: -0.03 }, // PSC mirrors PSOE econ
+    podemos: { g: -0.04, u: 0.06, w: -0.04, d: 0.07 },
+    cs: { g: -0.02, u: 0.03, w: -0.01, d: 0.02 },
+    vox: { g: -0.01, u: 0.01, w: -0.01, d: 0.02 },
+    iu: { g: -0.03, u: 0.04, w: -0.03, d: 0.05 },
+    mpais: { g: -0.02, u: 0.03, w: -0.02, d: 0.04 },
+    abstain: { g: -0.02, u: 0.02, w: -0.02, d: 0.03 },
+    nsuma: { g: 0.05, u: -0.04, w: 0.03, d: -0.03 },
+    upn: { g: 0.01, u: 0.0, w: 0.01, d: -0.01 },
+    gbai: { g: 0.0, u: 0.01, w: -0.01, d: 0.02 },
+    pnv: { g: 0.01, u: 0.0, w: 0.01, d: -0.01 },
+    ehbildu: { g: -0.01, u: 0.01, w: -0.01, d: 0.01 },
+    bng: { g: 0.0, u: 0.01, w: -0.01, d: 0.01 },
+    compromis: { g: -0.02, u: 0.03, w: -0.02, d: 0.05 },
+    mes: { g: -0.01, u: 0.02, w: -0.01, d: 0.04 },
     // Catalan independence space — driven by cat_spa, not national economics
-    erc:       { g:  0.00, u:  0.00, w:  0.00, d:  0.00 },
-    ciu:       { g:  0.00, u:  0.00, w:  0.00, d:  0.00 },
-    cup:       { g:  0.00, u:  0.00, w:  0.00, d:  0.00 },
-    fr:        { g:  0.00, u:  0.00, w:  0.00, d:  0.00 },
+    erc: { g: 0.0, u: 0.0, w: 0.0, d: 0.0 },
+    ciu: { g: 0.0, u: 0.0, w: 0.0, d: 0.0 },
+    cup: { g: 0.0, u: 0.0, w: 0.0, d: 0.0 },
+    fr: { g: 0.0, u: 0.0, w: 0.0, d: 0.0 },
     // Rest minors — zero econ sensitivity, driven by reversion + noise
-    cc:        { g:  0.00, u:  0.00, w:  0.00, d:  0.00 },
-    prc:       { g:  0.00, u:  0.00, w:  0.00, d:  0.00 },
-    te:        { g:  0.00, u:  0.00, w:  0.00, d:  0.00 },
-    fac:       { g:  0.00, u:  0.00, w:  0.00, d:  0.00 },
+    cc: { g: 0.0, u: 0.0, w: 0.0, d: 0.0 },
+    prc: { g: 0.0, u: 0.0, w: 0.0, d: 0.0 },
+    te: { g: 0.0, u: 0.0, w: 0.0, d: 0.0 },
+    fac: { g: 0.0, u: 0.0, w: 0.0, d: 0.0 },
     // UPyD — collapses over 2012-2015; mild econ, real action is the decay term
-    upyd:      { g:  0.02, u: -0.01, w:  0.01, d: -0.02 },
+    upyd: { g: 0.02, u: -0.01, w: 0.01, d: -0.02 },
   };
 
   // Minor "rest" regional parties: mean-revert toward a stable base instead of
@@ -856,11 +1337,18 @@
       const p = ("" + party).toLowerCase();
       if (canonical === "pp" && ["pp", "ppc", "nsuma"].includes(p)) return true;
       if (canonical === "nsuma" && ["nsuma", "pp"].includes(p)) return true;
-      if ((canonical === "psoe" || canonical === "psc") &&
-          ["psoe", "psc"].includes(p)) return true;
-      if (canonical === "podemos" &&
-          ["podemos", "up", "unidas_podemos"].includes(p)) return true;
-      if (canonical === "iu" && ["iu", "unidas_podemos"].includes(p)) return true;
+      if (
+        (canonical === "psoe" || canonical === "psc") &&
+        ["psoe", "psc"].includes(p)
+      )
+        return true;
+      if (
+        canonical === "podemos" &&
+        ["podemos", "up", "unidas_podemos"].includes(p)
+      )
+        return true;
+      if (canonical === "iu" && ["iu", "unidas_podemos"].includes(p))
+        return true;
       if (canonical === "cs" && p === "cs") return true;
       if (canonical === p) return true;
     }
@@ -884,14 +1372,20 @@
       const kPp = "pp_hold_" + c;
       Q[kPp] = Q[kPp] == null ? 1.0 : Q[kPp];
       Q[kPp] = clamp(
-        Q[kPp] + (csS > ppS ? -P.hold_decay : P.hold_recovery), 0, 1);
+        Q[kPp] + (csS > ppS ? -P.hold_decay : P.hold_recovery),
+        0,
+        1,
+      );
 
       if (Q.vox_active) {
         const voxS = sup(Q, "vox", c);
         const kV = "pp_vox_hold_" + c;
         Q[kV] = Q[kV] == null ? 1.0 : Q[kV];
         Q[kV] = clamp(
-          Q[kV] + (voxS > ppS ? -P.hold_decay : P.hold_recovery), 0, 1);
+          Q[kV] + (voxS > ppS ? -P.hold_decay : P.hold_recovery),
+          0,
+          1,
+        );
       }
 
       const psoeS = sup(Q, psoeKey(Q, c), c);
@@ -899,7 +1393,10 @@
       const kPs = "psoe_hold_" + c;
       Q[kPs] = Q[kPs] == null ? 1.0 : Q[kPs];
       Q[kPs] = clamp(
-        Q[kPs] + (podS > psoeS ? -P.hold_decay : P.hold_recovery), 0, 1);
+        Q[kPs] + (podS > psoeS ? -P.hold_decay : P.hold_recovery),
+        0,
+        1,
+      );
     }
   }
 
@@ -917,7 +1414,8 @@
     const spa_welfare = Q.welfare_index + (Q.spa_welfare_offset || 0);
 
     const prev_gdp = Q._prev_spa_gdp == null ? spa_gdp : Q._prev_spa_gdp;
-    const prev_unemp = Q._prev_spa_unemp == null ? spa_unemp : Q._prev_spa_unemp;
+    const prev_unemp =
+      Q._prev_spa_unemp == null ? spa_unemp : Q._prev_spa_unemp;
     const prev_welfare =
       Q._prev_spa_welfare == null ? spa_welfare : Q._prev_spa_welfare;
     const prev_dissent =
@@ -942,13 +1440,19 @@
     // 2. Passive corruption decay (decay rates are event-set).
     if (Q.corruption_pp != null) {
       Q.corruption_pp = clamp(
-        Q.corruption_pp * (Q.corruption_pp_decay == null ? 1.0 : Q.corruption_pp_decay),
-        0, 100);
+        Q.corruption_pp *
+          (Q.corruption_pp_decay == null ? 1.0 : Q.corruption_pp_decay),
+        0,
+        100,
+      );
     }
     if (Q.corruption_psoe != null) {
       Q.corruption_psoe = clamp(
-        Q.corruption_psoe * (Q.corruption_psoe_decay == null ? 1.0 : Q.corruption_psoe_decay),
-        0, 100);
+        Q.corruption_psoe *
+          (Q.corruption_psoe_decay == null ? 1.0 : Q.corruption_psoe_decay),
+        0,
+        100,
+      );
     }
     const corr_pp = Q.corruption_pp || 0;
     const corr_psoe = Q.corruption_psoe || 0;
@@ -975,8 +1479,10 @@
         const coeff = ECON[coeffKey(p)];
         if (!coeff) continue;
         let d =
-          coeff.g * d_gdp + coeff.u * d_unemp +
-          coeff.w * d_welfare + coeff.d * d_dissent;
+          coeff.g * d_gdp +
+          coeff.u * d_unemp +
+          coeff.w * d_welfare +
+          coeff.d * d_dissent;
         if (d_gdp > 0 && isIncumbent(coeffKey(p), Q)) {
           d += P.gov_gdp_boost * d_gdp;
         }
@@ -985,10 +1491,11 @@
 
       // 4b. PP corruption bleed → CS + abstain (UPN takes it when run as rival).
       if (corr_pp > 0 && has(ppF)) {
-        const to_cs = corr_pp * (urban ? P.corr_pp_cs_urban : P.corr_pp_cs_base);
+        const to_cs =
+          corr_pp * (urban ? P.corr_pp_cs_urban : P.corr_pp_cs_base);
         const to_abs = corr_pp * P.corr_pp_abs;
         deltas[ppF] -= to_cs + to_abs;
-        const upnRival = has("upn") && Q.spa_upn_independent;
+        const upnRival = has("upn") && !Q.upn_in_pp;
         if (upnRival && has("cs")) {
           deltas["upn"] += to_cs * 0.7;
           deltas["cs"] += to_cs * 0.3;
@@ -1074,13 +1581,19 @@
       // 4g. Leadership recovery — sustained monthly pull from abstain.
       const psoeLm = Q.psoe_leadership_mult || 0;
       if (psoeLm > 0 && has(psoeF) && has(ABSTAIN)) {
-        const pull = Math.min(P.psoe_leadership_rate * psoeLm, sup(Q, ABSTAIN, c) * 0.02);
+        const pull = Math.min(
+          P.psoe_leadership_rate * psoeLm,
+          sup(Q, ABSTAIN, c) * 0.02,
+        );
         deltas[psoeF] += pull;
         deltas[ABSTAIN] -= pull;
       }
       const ppLm = Q.pp_leadership_mult || 0;
       if (ppLm > 0 && has(ppF) && has(ABSTAIN)) {
-        const pull = Math.min(P.pp_leadership_rate * ppLm, sup(Q, ABSTAIN, c) * 0.02);
+        const pull = Math.min(
+          P.pp_leadership_rate * ppLm,
+          sup(Q, ABSTAIN, c) * 0.02,
+        );
         deltas[ppF] += pull;
         deltas[ABSTAIN] -= pull;
       }
@@ -1099,14 +1612,19 @@
       if (c === "rest") {
         for (const p of fams) {
           if (MINOR_REST.has(p)) {
-            deltas[p] += P.minor_reversion_rate * ((MINOR_REST_TARGETS[p] || 0) - sup(Q, p, c));
+            deltas[p] +=
+              P.minor_reversion_rate *
+              ((MINOR_REST_TARGETS[p] || 0) - sup(Q, p, c));
           }
         }
       }
 
       // 4j. Gaussian noise (scaled down for minor rest parties).
       for (const p of fams) {
-        const sd = c === "rest" && MINOR_REST.has(p) ? P.noise_stdev_minor : P.noise_stdev;
+        const sd =
+          c === "rest" && MINOR_REST.has(p)
+            ? P.noise_stdev_minor
+            : P.noise_stdev;
         deltas[p] += gaussianRandom(0, sd);
       }
 
@@ -1136,17 +1654,22 @@
   // once Unidos Podemos exists, regardless of the player's timeline.
   //
   // Usage in a scene's on-arrival block:
-  //   window.spaSupportInject(Q, 'cs', 'all', 9.0, 'pp');
+  //   G.spaSupportInject(Q, 'cs', 'all', 9.0, 'pp');
   // ===========================================================================
 
   // Resolve a bloc-alias key to the live carrier in constituency c.
   function resolveBloc(Q, c, key) {
     switch (key) {
-      case "pp": return ppKey(Q, c);
-      case "podemos": return podKey(Q, c);
-      case "psoe": return psoeKey(Q, c);
-      case "ciu": return convKey(Q, c);
-      default: return key;
+      case "pp":
+        return ppKey(Q, c);
+      case "podemos":
+        return podKey(Q, c);
+      case "psoe":
+        return psoeKey(Q, c);
+      case "ciu":
+        return convKey(Q, c);
+      default:
+        return key;
     }
   }
 
@@ -1165,6 +1688,20 @@
     }
   }
 
-  window.engineTick = monthPasses;
-  window.spaSupportInject = spaSupportInject;
+  // Exported through source/lib/index.js. NOT installed on `window`: content
+  // reaches this through the engine (`G.engineTick(Q)`), so the simulation no
+  // longer depends on a browser, and therefore no longer depends on a UI.
+  // Adding a new G.* helper = add one line to this `api` object; index.js
+  // forwards the whole thing, so it needs no edit.
+  var api = {
+    engineTick: monthPasses,
+    spaSupportInject: spaSupportInject,
+    registerLaw: registerLaw,
+    deactivateLaw: deactivateLaw,
+  };
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = api; // Vite / vitest
+  } else {
+    window.RTI_CAT_ENGINE = api; // the old shell: no bundler, script tag only
+  }
 })();

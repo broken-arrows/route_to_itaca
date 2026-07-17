@@ -5,7 +5,8 @@ new-page: true
 max-visits: 1
 on-arrival: {!
     // Civic platform mobilises interior-province abstainers.
-    window.spaSupportInject(Q, 'te', 'rest', 0.22, 'abstain');
+    G.spaSupportInject(Q, 'te', 'rest', 0.22, 'abstain');
+    Q.spa_te_active = true;
 !}
 role: event
 

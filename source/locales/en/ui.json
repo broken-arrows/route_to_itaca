@@ -1,0 +1,10 @@
+{
+  "app": { "title": "Route to Ítaca — The Desk (beta)" },
+  "desk": {
+    "tray": {
+      "government": "GOVERNMENT",
+      "party": "PARTY",
+      "parlament": "PARLAMENT"
+    }
+  }
+}

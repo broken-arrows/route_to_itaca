@@ -7,7 +7,7 @@ max-visits: 1
 tags: event
 on-arrival: {!
     // TODO: create the countdown for the trigger
-
+    Q.parlament_current_ciu = "junts";
     Q.junts_formed = true;
 
     Q.junts_roadmap = Q.jxcat_roadmap

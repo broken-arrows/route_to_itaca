@@ -41,6 +41,12 @@ declare module 'dendrynexus-ten/lib/engine.js' {
     setState(state: object): void;
     isGameOver(): boolean;
     setLocale(locale: string | null, catalog: Record<string, string> | null): this;
+    // Installs the game's own code namespace (source/lib/*), handed to
+    // compiled content as a third `G` parameter alongside `state`/`Q` in
+    // on-arrival/on-departure/on-display, predicates, and expression inserts.
+    // See vendor/dendrynexus-ten/lib/engine.js DendryEngine.prototype.setGameLib.
+    gameLib: Record<string, unknown>;
+    setGameLib(lib: object): this;
   }
   export function convertJSONToGame(
     json: string,

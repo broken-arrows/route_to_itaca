@@ -384,10 +384,18 @@
     return "#cccccc";
   }
 
+  // Registry colours are bare tokens ("ciu") or, for parties the old palette
+  // never had a CSS var for, a raw hex kept verbatim by the harvester.
+  function tokenColour(token) {
+    return token.startsWith("#") ? token : `var(--${token})`;
+  }
+
   function getPartyLabel(party) {
     if (!party) return "<span>—</span>";
-    const colour = colourList.find((c) => c.words.includes(party));
-    return colour ? colour.transform : party.toUpperCase();
+    const t = window
+      .glossary()
+      .terms.find((x) => x.colour && x.match.includes(party));
+    return t ? t.display : party.toUpperCase();
   }
 
   // ─── SVG HELPERS ──────────────────────────────────────────────────────────
@@ -467,14 +475,19 @@
   function showTooltip(e, name, winner, svg) {
     hideTooltip(svg);
 
-    const colour =
-      colourList && colourList.find((c) => c.words.includes(winner));
-    const tipData =
-      tooltipList && tooltipList.find((t) => t.searchString.includes(winner));
+    const glossaryTerms = window.glossary().terms;
+    const colourTerm = glossaryTerms.find(
+      (t) => t.colour && t.match.includes(winner),
+    );
+    const tipTerm = glossaryTerms.find(
+      (t) => t.tooltip && t.match.includes(winner),
+    );
 
-    const partyLabel = (colour && colour.transform) || winner.toUpperCase();
-    const partyColor = (colour && colour.colour) || getPartyColor(winner);
-    const imgSrc = tipData && tipData.img;
+    const partyLabel =
+      (colourTerm && colourTerm.display) || winner.toUpperCase();
+    const partyColor =
+      (colourTerm && tokenColour(colourTerm.colour)) || getPartyColor(winner);
+    const imgSrc = tipTerm && tipTerm.tooltip.img;
 
     const fo = document.createElementNS(
       "http://www.w3.org/2000/svg",
@@ -972,7 +985,7 @@
           style="stroke-width:0.59456152;stroke-linecap:square;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
         />
         <path
-          id="castilla_la_mancha"
+          id="castile_la_mancha"
           class="fil0 str0"
           style="stroke-width:1;stroke-linecap:square;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
           transform="translate(107.36589 .018361) scale(.59456)"
@@ -1122,7 +1135,7 @@
     "madrid",
     "andalusia",
     "extremadura",
-    "castilla_la_mancha",
+    "castile_la_mancha",
     "castile_and_leon",
     "murcia",
     "la_rioja",
@@ -1327,4 +1340,613 @@
   }
 
   window.initCongresoMap = initCongresoMap;
+
+  // ─── CONGRESO PARTY TOUR MAP ──────────────────────────────
+
+  const PARTY_LOGO_SRC = {
+    psoe: "img/parties/logo_psoe.png",
+    psc: "img/parties/logo_psc.svg",
+    pp: "img/parties/logo_pp.png",
+    csspa: "img/parties/logo_cs.svg",
+    vox: "img/parties/logo_vox.svg",
+    up: "img/parties/up_logo.png",
+    podemos: "img/parties/logo_podemos.svg",
+    iu: "img/parties/logo_iu.svg",
+    mpais: "img/parties/logo_mpais.svg",
+    nsuma: "img/parties/logo_nsuma.png",
+    upyd: "img/parties/logo_upyd.svg",
+
+    erc: "img/parties/logo_erc.svg",
+    ciu: "img/parties/logo_ciu.png",
+    cdc: "img/parties/logo_cdc_png",
+    dl: "img/parties/logo_dl.png",
+    jxcat: "img/parties/logo_jxcat.svg",
+    jxsi: "img/parties/logo_jxsi.png",
+    junts: "img/parties/logo_junts.svg",
+    pdcat: "img/parties/logo_pdecat.svg",
+    unio: "img/parties/logo_unio.png",
+    cup: "img/parties/logo_cup.svg",
+    fr: "img/parties/logo_fr.svg",
+
+    compromis: "img/parties/logo_compromis.svg",
+    mesm: "img/parties/logo_mes.png",
+
+    amaiur: "img/parties/logo_amaiur.svg",
+    pnv: "img/parties/logo_pnv.svg",
+    ehbildu: "img/parties/logo_ehbildu.png",
+    upn: "img/parties/logo_upn.svg",
+    gbai: "img/parties/logo_gbai.svg",
+
+    bng: "img/parties/logo_bng.svg",
+    fac: "img/parties/logo_fac.svg",
+    prc: "img/parties/logo_prc.png",
+    texiste: "img/parties/logo_te.jpg",
+    cc: "img/parties/logo_ccpnc.svg",
+  };
+
+  function renderCongresoPartyTour(containerId, Q) {
+    const root = document.getElementById(containerId);
+
+    if (!root) {
+      return;
+    }
+
+    // Remove a prior map before rendering again.
+    root.replaceChildren();
+
+    const parser = new DOMParser();
+    const svg = parser.parseFromString(
+      getSVGContentCongreso(),
+      "image/svg+xml",
+    ).documentElement;
+
+    const TOP_PADDING = 50;
+    const viewBox = svg.viewBox.baseVal;
+
+    if (viewBox && viewBox.width && viewBox.height) {
+      svg.setAttribute(
+        "viewBox",
+        `${viewBox.x} ${viewBox.y - TOP_PADDING} ${viewBox.width} ${
+          viewBox.height + TOP_PADDING
+        }`,
+      );
+    }
+
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    svg.classList.add("congreso-party-tour-map");
+    svg.setAttribute("width", "100%");
+    svg.setAttribute("height", "auto");
+    svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+    root.appendChild(svg);
+
+    const highlightedRegion = Q.congreso_party_tour_highlight;
+    const leftParty = Q.iu_in_up === true ? "up" : "podemos";
+    const spaParties = () => {
+      const parties = ["psoe", "pp", leftParty, "csspa"];
+      if (Q.spa_cs_active) {
+        parties.push("csspa");
+      }
+      if (!Q.iu_in_up) {
+        parties.push("iu");
+      }
+      if (Q.spa_mpais_active) {
+        parties.push("mpais");
+      }
+      if (Q.vox_active) {
+        parties.push("vox");
+      }
+      if (Q.upyd_congreso_s > 0) {
+        parties.push("upyd");
+      }
+      return parties;
+    };
+
+    const partiesFor = {
+      rest() {
+        return spaParties();
+      },
+
+      catalonia() {
+        const parties = [];
+
+        if (Q.junts_formed) {
+          parties.push("junts");
+        } else if (Q.jxcat_formed) {
+          parties.push("jxcat");
+        } else if (Q.pdcat_formed && !Q.pdcat_split) {
+          parties.push("pdcat");
+        } else if (Q.dl_formed) {
+          parties.push("dl");
+        } else if (Q.unio_split) {
+          parties.push("cdc");
+        } else if (!Q.jxsi_in_congreso) {
+          parties.push("ciu");
+        }
+
+        if (Q.jxsi_in_congreso) {
+          parties.push("jxsi");
+        }
+        if (!Q.erc_in_jxcat && !Q.jxsi_in_congreso) {
+          parties.push("erc");
+        }
+
+        if (Q.psc_split) parties.push("psc");
+        if (Q.spa_cup_active) parties.push("cup");
+        if (Q.spa_fr_active) parties.push("fr");
+
+        if (Q.pdcat_split && Q.pdcat_congreso_catalunya_support > 0) {
+          parties.push("pdcat");
+        }
+        if (Q.unio_split && Q.unio_congreso_catalunya_support > 0) {
+          parties.push("unio");
+        }
+
+        return parties;
+      },
+
+      ppcc() {
+        const parties = [];
+
+        if (Q.spa_compromis_active) parties.push("compromis");
+        if (Q.spa_mes_active) parties.push("mesm");
+
+        return parties;
+      },
+
+      eh() {
+        const parties = ["pnv"];
+
+        if (!Q.spa_nsuma_formed && Q.upn_in_pp === false) {
+          parties.push("upn");
+        }
+        if (Q.spa_nsuma_formed) {
+          parties.push("nsuma");
+        }
+        if (Q.spa_ehbildu_active) {
+          parties.push("ehbildu");
+          parties.push("gbai");
+        } else {
+          parties.push("amaiur");
+        }
+
+        return parties;
+      },
+
+      galicia() {
+        const parties = [];
+
+        if (Q.spa_bng_active) parties.push("bng");
+
+        return parties;
+      },
+
+      others() {
+        const parties = [];
+        if (Q.spa_foro_active) parties.push("fac");
+        if (Q.spa_te_active) parties.push("texiste");
+        parties.push("prc", "cc");
+
+        return parties;
+      },
+    };
+
+    const GROUP_ANCHORS = {
+      rest: [{ x: 180, y: 120, maxPerRow: 3, tray: false }],
+
+      catalonia: [{ x: 410, y: 50, maxPerRow: 2, tray: true }],
+
+      ppcc: [
+        {
+          x: 380,
+          y: 235,
+          maxPerRow: 2,
+          tray: false,
+          sub: { valencia: ["compromis"] },
+          line: [
+            { x: 370, y: 180 },
+            { x: 400, y: 230 },
+          ],
+        },
+        {
+          x: 490,
+          y: 180,
+          maxPerRow: 2,
+          tray: false,
+          sub: ["mesm"],
+        },
+      ],
+
+      eh: [
+        {
+          x: 250,
+          y: -40,
+          maxPerRow: 2,
+          tray: false,
+          sub: ["pnv", "ehbildu", "amaiur"],
+          line: [
+            { x: 310, y: 35 },
+            { x: 290, y: 5 },
+          ],
+        },
+        {
+          x: 340,
+          y: -30,
+          maxPerRow: 3,
+          tray: false,
+          sub: ["gbai", "nsuma", "ehbildu", "amaiur", "upn"],
+          line: [
+            { x: 335, y: 50 },
+            { x: 395, y: 15 },
+          ],
+        },
+      ],
+
+      galicia: [
+        {
+          x: 60,
+          y: 25,
+          maxPerRow: 2,
+          tray: false,
+          line: [
+            { x: 150, y: 40 },
+            { x: 90, y: 45 },
+          ],
+        },
+      ],
+
+      others: [
+        { x: 330, y: 90, maxPerRow: 1, sub: ["texiste"], tray: true },
+        {
+          x: 150,
+          y: -50,
+          maxPerRow: 1,
+          sub: ["fac"],
+          tray: false,
+          line: [
+            { x: 210, y: 20 },
+            { x: 180, y: -10 },
+          ],
+        },
+        {
+          x: 120,
+          y: 100,
+          maxPerRow: 1,
+          sub: ["prc"],
+          tray: false,
+          line: [
+            { x: 260, y: 30 },
+            { x: 155, y: 100 },
+          ],
+        },
+        { x: 100, y: 310, maxPerRow: 1, sub: ["cc"], tray: false },
+      ],
+    };
+
+    var REGION_SELECTORS = {
+      rest: [
+        "#andalusia",
+        "#castile_and_leon",
+        "#castile_la_mancha",
+        "#extremadura",
+        "#galicia",
+        "#la_rioja",
+        "#madrid",
+        "#murcia",
+        "#ceuta",
+        "#melilla",
+      ],
+
+      catalonia: ["#catalonia"],
+
+      ppcc: ["#valencia", "#balearic_islands"],
+
+      eh: ["#basque_country", "#navarre"],
+
+      galicia: ["#galicia"],
+
+      others: ["#cantabria", "#asturias", "#canary_islands"],
+    };
+
+    if (Q.spa_te_active) {
+      REGION_SELECTORS.others.push("#aragon");
+    } else {
+      REGION_SELECTORS.rest.push("#aragon");
+    }
+
+    const highlightStyle = {
+      fill: "var(--bg-color)",
+      stroke: "var(--text-color)",
+      strokeWidth: "1.5",
+      filter: "drop-shadow(0 0 2px #431)",
+    };
+
+    const hiddenStyle = {
+      fill: "var(--unavailable-color)",
+      stroke: "var(--card-border-color)",
+      strokeWidth: "0.5",
+    };
+
+    const seenStyle = {
+      fill: "var(--card-bg-color)",
+      stroke: "var(--card-border-color)",
+      strokeWidth: "0.5",
+    };
+
+    function colorInterestRegion(interestRegion, chosenStyle) {
+      (REGION_SELECTORS[interestRegion] || []).forEach((selector) => {
+        svg.querySelectorAll(selector).forEach((element) => {
+          element.style.fill = chosenStyle.fill;
+          element.style.stroke = chosenStyle.stroke;
+          element.style.strokeWidth = chosenStyle.strokeWidth;
+          element.style.filter = chosenStyle.filter;
+        });
+      });
+    }
+
+    function addTrayConnector(group, linePoints) {
+      if (!Array.isArray(linePoints) || linePoints.length < 2) {
+        return;
+      }
+
+      const points = linePoints.map(({ x, y }) => `${x},${y}`).join(" ");
+
+      const connector = document.createElementNS(SVG_NS, "polyline");
+      connector.setAttribute("points", points);
+      connector.setAttribute("fill", "none");
+      connector.setAttribute("stroke", "var(--text-color)");
+      connector.setAttribute("stroke-width", "1.25");
+      connector.setAttribute("stroke-linecap", "round");
+      connector.setAttribute("stroke-linejoin", "round");
+      connector.style.pointerEvents = "none";
+
+      const regionEnd = linePoints[0];
+      const endCircle = document.createElementNS(SVG_NS, "circle");
+      endCircle.setAttribute("cx", regionEnd.x);
+      endCircle.setAttribute("cy", regionEnd.y);
+      endCircle.setAttribute("r", "2.5");
+      endCircle.setAttribute("fill", "var(--text-color)");
+      endCircle.style.pointerEvents = "none";
+
+      group.appendChild(connector);
+      group.appendChild(endCircle);
+    }
+
+    function addLogoStrip(anchor, partyIds, interestRegion) {
+      var partiesInRegion = partyIds;
+
+      if (anchor.sub != undefined) {
+        partiesInRegion = partyIds.filter((id) =>
+          Object.values(anchor.sub).flat().includes(id),
+        );
+      }
+      if (!partiesInRegion || partiesInRegion[0] == undefined) return;
+
+      const group = document.createElementNS(SVG_NS, "g");
+      group.classList.add("congreso-party-tour-logos");
+      group.dataset.interestRegion = interestRegion;
+
+      const logoSize = 24;
+      const logoRadius = 3;
+      const columnGap = 6;
+      const rowGap = 11;
+      const labelGap = 3;
+      const labelFontSize = 11;
+      const labelHeight = 14;
+      const padding = 7;
+
+      const getLabelWidth = (partyId) => {
+        const chars = String(partyId).length;
+        return Math.max(30, Math.min(72, chars * 6.2 + 12));
+      };
+
+      const getItemWidth = (partyId) =>
+        Math.max(logoSize, getLabelWidth(partyId));
+
+      const rowCount = Math.ceil(partiesInRegion.length / anchor.maxPerRow);
+
+      const columnWidths = Array.from(
+        { length: Math.min(partiesInRegion.length, anchor.maxPerRow) },
+        (_, column) => {
+          const idsInColumn = partiesInRegion.filter(
+            (_, index) => index % anchor.maxPerRow === column,
+          );
+
+          return Math.max(...idsInColumn.map(getItemWidth));
+        },
+      );
+
+      const stripWidth =
+        columnWidths.reduce((total, width) => total + width, 0) +
+        Math.max(0, columnWidths.length - 1) * columnGap;
+
+      const itemHeight = logoSize + labelGap + labelHeight;
+      const stripHeight = rowCount * itemHeight + (rowCount - 1) * rowGap;
+
+      const gradientId =
+        `congreso-party-tray-${interestRegion}-${anchor.x}-${anchor.y}`.replace(
+          /[^a-zA-Z0-9_-]/g,
+          "-",
+        );
+
+      const defs = document.createElementNS(SVG_NS, "defs");
+
+      if (anchor.tray) {
+        const gradient = document.createElementNS(SVG_NS, "radialGradient");
+
+        gradient.setAttribute("id", gradientId);
+        gradient.setAttribute("gradientUnits", "userSpaceOnUse");
+        gradient.setAttribute("cx", anchor.x + stripWidth / 2);
+        gradient.setAttribute("cy", anchor.y + stripHeight / 2);
+        gradient.setAttribute("r", Math.max(stripWidth, stripHeight) * 0.72);
+
+        const centreStop = document.createElementNS(SVG_NS, "stop");
+        centreStop.setAttribute("offset", "0%");
+        centreStop.setAttribute("stop-color", "#d4d4d4");
+        centreStop.setAttribute("stop-opacity", "0.54");
+
+        const middleStop = document.createElementNS(SVG_NS, "stop");
+        middleStop.setAttribute("offset", "60%");
+        middleStop.setAttribute("stop-color", "#e4e4e4");
+        middleStop.setAttribute("stop-opacity", "0.27");
+
+        const edgeStop = document.createElementNS(SVG_NS, "stop");
+        edgeStop.setAttribute("offset", "100%");
+        edgeStop.setAttribute("stop-color", "#eeeeee");
+        edgeStop.setAttribute("stop-opacity", "0");
+
+        gradient.appendChild(centreStop);
+        gradient.appendChild(middleStop);
+        gradient.appendChild(edgeStop);
+        defs.appendChild(gradient);
+      }
+      group.appendChild(defs);
+
+      if (anchor.line != undefined) addTrayConnector(group, anchor.line);
+
+      const background = document.createElementNS(SVG_NS, "rect");
+      background.setAttribute("x", anchor.x - padding);
+      background.setAttribute("y", anchor.y - padding);
+      background.setAttribute("width", stripWidth + padding * 2);
+      background.setAttribute("height", stripHeight + padding * 2);
+
+      if (anchor.tray) {
+        background.setAttribute("fill", `url(#${gradientId})`);
+      } else {
+        background.setAttribute("fill", `transparent`);
+      }
+
+      background.style.pointerEvents = "none";
+      group.appendChild(background);
+
+      partiesInRegion.forEach((partyId, index) => {
+        const src = PARTY_LOGO_SRC[partyId];
+
+        if (!src) {
+          console.warn(`No PARTY_LOGO_SRC configured for "${partyId}"`);
+          return;
+        }
+
+        const column = index % anchor.maxPerRow;
+        const row = Math.floor(index / anchor.maxPerRow);
+
+        const columnStart =
+          columnWidths
+            .slice(0, column)
+            .reduce((total, width) => total + width, 0) +
+          column * columnGap;
+
+        const columnWidth = columnWidths[column];
+
+        const x = anchor.x + columnStart + (columnWidth - logoSize) / 2;
+        const y = anchor.y + row * (itemHeight + rowGap);
+
+        const labelWidth = getLabelWidth(partyId);
+
+        const clipId =
+          `congreso-party-logo-${interestRegion}-${partyId}-${index}`.replace(
+            /[^a-zA-Z0-9_-]/g,
+            "-",
+          );
+
+        const clipPath = document.createElementNS(SVG_NS, "clipPath");
+        clipPath.setAttribute("id", clipId);
+
+        const clipRect = document.createElementNS(SVG_NS, "rect");
+        clipRect.setAttribute("x", x);
+        clipRect.setAttribute("y", y);
+        clipRect.setAttribute("width", logoSize);
+        clipRect.setAttribute("height", logoSize);
+        clipRect.setAttribute("rx", logoRadius);
+        clipRect.setAttribute("ry", logoRadius);
+
+        clipPath.appendChild(clipRect);
+        group.appendChild(clipPath);
+
+        const image = document.createElementNS(SVG_NS, "image");
+        image.setAttribute("href", src);
+        image.setAttribute("x", x);
+        image.setAttribute("y", y);
+        image.setAttribute("width", logoSize);
+        image.setAttribute("height", logoSize);
+        image.setAttribute("preserveAspectRatio", "xMidYMid meet");
+        image.setAttribute("clip-path", `url(#${clipId})`);
+        image.style.pointerEvents = "none";
+
+        group.appendChild(image);
+
+        const labelBox = document.createElementNS(SVG_NS, "foreignObject");
+        labelBox.setAttribute("x", x + logoSize / 2 - labelWidth / 2);
+        labelBox.setAttribute("y", y + logoSize + labelGap);
+        labelBox.setAttribute("width", labelWidth);
+        labelBox.setAttribute("height", labelHeight);
+
+        labelBox.style.pointerEvents = "all";
+        labelBox.style.overflow = "visible";
+
+        const labelWrap = document.createElementNS(
+          "http://www.w3.org/1999/xhtml",
+          "div",
+        );
+
+        labelWrap.style.width = "100%";
+        labelWrap.style.height = "100%";
+        labelWrap.style.display = "flex";
+        labelWrap.style.alignItems = "flex-start";
+        labelWrap.style.justifyContent = "center";
+        labelWrap.style.textAlign = "center";
+        labelWrap.style.whiteSpace = "nowrap";
+        labelWrap.style.overflow = "visible";
+        labelWrap.style.fontFamily = "Arial, sans-serif";
+        labelWrap.style.fontSize = `${labelFontSize}px`;
+        labelWrap.style.lineHeight = "1.1";
+        labelWrap.style.color = "#444";
+        labelWrap.style.cursor = "help";
+
+        labelWrap.innerHTML = window.applyWholesome(partyId);
+
+        labelBox.appendChild(labelWrap);
+        group.appendChild(labelBox);
+      });
+
+      svg.appendChild(group);
+    }
+
+    Object.keys(partiesFor).forEach((interestRegion) => {
+      if (!Q[`congreso_party_tour_viewed_${interestRegion}`]) {
+        if (interestRegion != "others") {
+          colorInterestRegion(interestRegion, hiddenStyle);
+        } else {
+          colorInterestRegion(interestRegion, seenStyle);
+        }
+        return;
+      }
+
+      colorInterestRegion(interestRegion, seenStyle);
+
+      const uniqueParties = [...new Set(partiesFor[interestRegion]())];
+
+      if (GROUP_ANCHORS[interestRegion])
+        GROUP_ANCHORS[interestRegion].forEach((anchor) => {
+          addLogoStrip(anchor, uniqueParties, interestRegion);
+        });
+    });
+
+    if (
+      highlightedRegion &&
+      Object.prototype.hasOwnProperty.call(REGION_SELECTORS, highlightedRegion)
+    ) {
+      if (highlightedRegion == "rest") {
+        Object.keys(partiesFor).forEach((interestRegion) => {
+          colorInterestRegion(interestRegion, seenStyle);
+        });
+      } else {
+        colorInterestRegion(highlightedRegion, highlightStyle);
+      }
+    }
+
+    return svg;
+  }
+
+  window.initCongresoPartyTour = renderCongresoPartyTour;
 })();

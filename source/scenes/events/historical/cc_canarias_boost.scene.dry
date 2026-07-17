@@ -6,7 +6,7 @@ max-visits: 1
 on-arrival: {!
     // Migration-crisis salience lifts Coalición Canaria before Apr 2019.
     // TODO: un-hardcode this? make it hidden?
-    window.spaSupportInject(Q, 'cc', 'rest', 0.38, 'abstain');
+    G.spaSupportInject(Q, 'cc', 'rest', 0.38, 'abstain');
 !}
 role: event
 

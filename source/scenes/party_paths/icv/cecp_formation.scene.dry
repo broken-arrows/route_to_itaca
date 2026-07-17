@@ -1,0 +1,148 @@
+title: The new shape of ​CSQP
+view-if: cecp_formation_trigger and next_election_time - time <= 3
+face-image: img/events/cecp_formation.png
+tags: event
+new-page: true
+max-visits: 1
+on-arrival: {!
+    Q.cecp_formed = true;
+    Q.parlament_current_icv = "cecp";
+    Q.cecp_parlament_s = Q.csqp_parlament_s;
+    Q.cecp_parlament_pv = Q.csqp_parlament_pv;
+    Q.csqp_parlament_s = 0;
+    Q.csqp_parlament_pv = 0;
+
+    Q.cecp_relations = Q.csqp_relations;
+    Q.cecp_leader = "???";
+    Q.cecp_leader_gender = "f";
+    Q.cecp_ideology = "Left Social Democracy, Federalism";
+
+    for(var prov of Q.parlament_constituencies){
+        for(var demo of Q.parlament_demographics){
+            Q["cecp_parlament_" + prov + "_" + demo + "_support"] = Q["csqp_parlament_" + prov + "_" + demo + "_support"] * 0.95;
+            Q["csqp_parlament_" + prov + "_" + demo + "_support"] = 0;
+        }
+    }
+
+
+    // governing stuff
+    if  (Q.president_party == "csqp") {
+        Q.president_party = "cecp";
+    }
+
+    if (Q.vicepresident_party == "csqp") {
+        Q.vicepresident_party = "cecp"
+    }
+
+    if (Q.economy_minister_party == "csqp") {
+        Q.economy_minister_party = "cecp";
+    }
+
+    if (Q.interior_minister_party == "csqp") {
+        Q.interior_minister_party = "cecp";
+    }
+
+    if (Q.health_minister_party == "csqp") {
+        Q.health_minister_party = "cecp";
+    }
+
+    if (Q.education_minister_party == "csqp") {
+        Q.education_minister_party = "cecp";
+    }
+
+    if (Q.territory_minister_party == "csqp") {
+        Q.territory_minister_party = "cecp";
+    }
+
+    if (Q.foreign_minister_party == "csqp") {
+        Q.foreign_minister_party = "cecp";
+    }
+
+    if (Q.bnl_minister_party == "csqp") {
+        Q.bnl_minister_party = "cecp";
+    }
+
+    if (Q.speaker_party == "csqp") {
+        Q.speaker_party = "cecp";
+    }
+
+    if (Q.cat_coalition.includes("csqp")) {
+        Q.cat_coalition = Q.cat_coalition.map(item => item === "csqp" ? "cecp" : item);
+        Q.cat_coalition_disp = Q.cat_coalition_disp.replaceAll("CSQP", "CECP").replaceAll("csqp", "cecp");
+    }
+
+    Q.ecp_formation_countdown = 12;
+    Q.countdowns.push("ecp_formation");   
+!}
+
+= The new shape of ​CSQP
+
+After now quite some time operating in the Parlament, CSQP is hardly what it once was. The newly-born Podemos and bcomu were teaming up with a bleeding ICV-EUiA. But these are no toddlers anymore. With a more formed party structure, they are now trying to bet on a more permanent electoral coalition and a new form for the Catalan plurinational left: CECP. 
+
+[? if csqp_leader == "Arcadi Oliveres": Arcadi Oliveres will try his best to keep the ship he captains together, but its unclear if his coalition partners are eager enough to keep his powers within the executive. ?][? if csqp_leader != "Arcadi Oliveres": CSQP figurehead Lluís Rabell will hardly seek re-election for a post he never really wanted. ?]There are different names being debated for a new leadership.
+
+- @arcadi_keeps
+- @domenech_leads
+- @coscubiela_leads
+- @asens_leads
+
+@arcadi_keeps
+title: Arcadi Oliveres keeps the leadership
+view-if: csqp_leader == "Arcadi Oliveres"
+choose-if: podemos_congreso_s < psoe_congreso_s and up_congreso_s < psoe_congreso_s and ((podemos_congreso_catalunya_support < 16 and up_congreso_catalunya_support < 16) or (cecp_relations >= 55 and party_resources > 0)) and (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25)
+subtitle: [? if (podemos_congreso_catalunya_support >= 16 or up_congreso_catalunya_support >= 16) : He'll need a bit of a push to do that, given the momentum Podemos enjoys at the moment. [-1 resources]?]
+unavailable-subtitle: [? if (podemos_congreso_catalunya_support >= 25 or up_congreso_catalunya_support >= 25): Podemos enjoys too much momentum at the moment for him to keep his position. ?][? if (podemos_congreso_catalunya_support >= 16 or up_congreso_catalunya_support >= 16) and (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25): [? if cecp_relations < 55: We don't have good enough relations with CSQP (now CECP). ?][? if party_resources < 1: Not enough resources.?] ?]
+on-arrival: {!
+    Q.cecp_leader = "Arcadi Oliveres";
+    Q.cecp_leader_gender = "m";
+    Q.cecp_ideology = "Anticapitalism, Plurinationalism";
+!}
+
+Despite somewhat challenging odds, Arcadi Oliveres seems to have managed to renew his leadership, now at the forefront of the new CECP brand. Despite having had to give some concessions to the forming parties, the new coalition looks like it will maintain the spirit of the streets.
+
+- @post_event: Let's hope to see more of him!
+
+@domenech_leads
+title: Xavier Domènech wins the leadership
+choose-if: (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25) or (cecp_relations >= 55 and party_resources > 0)
+subtitle: [? if (podemos_congreso_catalunya_support >= 25 or up_congreso_catalunya_support >= 25): He'll need a bit of a push to do that, given the momentum Podemos enjoys at the moment. [-1 resources] ?][? if (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25): Not a very surprising outcome. ?]
+unavailable-subtitle: [? if (podemos_congreso_catalunya_support >= 25 or up_congreso_catalunya_support >= 25): [? if cecp_relations < 55: We don't have good enough relations with CSQP (now CECP). ?][? if party_resources < 1: Not enough resources.?] ?]
+on-arrival: {!
+    Q.cecp_leader = "Xavier Domènech";
+    Q.cecp_leader_gender = "m";
+    Q.cecp_ideology = "Anti-austerity Left, Federalism";
+!}
+
+Not very surprisingly, the hardly controversial figure of Xavier Domènech has been able to secure the support of all groups and parties that make up CECP. While more moderate, at least he seems to conserve a bit o the federalist spirit that CSQP embodied...
+
+- @post_event: We'll have to see how that goes.
+
+@coscubiela_leads
+title: Joan Coscubiela wins the leadership
+view-if: csqp_leader != "Arcadi Oliveres"
+choose-if: podemos_congreso_s > psoe_congreso_s or up_congreso_s > psoe_congreso_s and (podemos_congreso_catalunya_support >= 25 or up_congreso_catalunya_support >= 25)
+unavailable-subtitle: The most conservative forces in ICV-EUiA and Podemos lack the strength to make this happen.
+on-arrival: {!
+    Q.cecp_leader = "Joan Coscubiela";
+    Q.cecp_leader_gender = "m";
+    Q.cecp_ideology = "Social Democracy, Federalism";
+!}
+
+Somehow, the other forces in the CECP coalition have not been able to stop the most conservative forces in the old ICV-EUiA. Unexpectedly, Joan Coscubiela will take the helm after all...
+
+- @post_event: There's no way this is good...
+
+@asens_leads
+title: Jaume Asens wins the leadership
+choose-if: local_barcelona_wp == "bcomu" and podemos_congreso_s < psoe_congreso_s and up_congreso_s < psoe_congreso_s and (podemos_congreso_catalunya_support < 20 and up_congreso_catalunya_support < 20) or (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25 and party_resources > 0 and cecp_relations > 55)
+subtitle: [? if (podemos_congreso_catalunya_support >= 20 or up_congreso_catalunya_support >= 20) and (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25): He'll need a bit of a push to do that, given the momentum Podemos enjoys at the moment. [-1 resources] ?]
+unavailable-subtitle: [? if (podemos_congreso_catalunya_support >= 20 or up_congreso_catalunya_support >= 20) and (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25): [? if cecp_relations < 55: We don't have good enough relations with CSQP (now CECP). ?][? if party_resources < 1: Not enough resources.?] ?][? if podemos_congreso_catalunya_support >= 25 or up_congreso_catalunya_support >= 25 or local_barcelona_wp != "bcomu" or podemos_congreso_s > psoe_congreso_s or up_congreso_s > psoe_congreso_s: BComu does not have a strong enough position. ?]
+on-arrival: {!
+    Q.cecp_leader = "Joan Coscubiela";
+    Q.cecp_leader_gender = "m";
+    Q.cecp_ideology = "Anti-austerity left, Plurinationalism";
+!}
+
+From the street protests of Barcelona, to the town hall with BComu and Ada Colau, now Jaume Asens will take the reigns of a renewed CECP. At least he seems to conserve a bit o the federalist spirit that CSQP embodied...
+
+- @post_event: We'll have to see how that goes.

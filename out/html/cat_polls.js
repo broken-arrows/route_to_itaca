@@ -378,7 +378,7 @@
       const labelDiv = document.createElement("div");
       labelDiv.style = "overflow:visible; justify-content:center;";
       if (party === "icv") {
-        labelDiv.innerHTML = window.applyWholesome("ICV-…");
+        labelDiv.innerHTML = window.applyWholesome("_ICV-…");
       } else {
         labelDiv.innerHTML = window.applyWholesome(party);
       }
@@ -479,10 +479,10 @@
         if (p === "icv") {
           html += "<th> ICV-… </th>";
         } else {
-          const transform = colourList.find((c) => c.words.includes(p));
-          const transformedP = transform
-            ? transform.transform
-            : p.toUpperCase();
+          const term = window
+            .glossary()
+            .terms.find((t) => t.colour && t.match.includes(p));
+          const transformedP = term ? term.display : p.toUpperCase();
           html += "<th>" + transformedP + "</th>";
         }
       }

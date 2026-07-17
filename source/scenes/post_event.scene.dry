@@ -70,7 +70,7 @@ if (Q.month >= 13) {
 
 if (has_time_passed) {
     console.info("Time has passed. Current date: ", Q.year, Q.month, Q.week);
-    window.engineTick(Q);
+    G.engineTick(Q);
     // 2.1. Timers
     for (timer of Q.rubicon_timers) {
         if (Q[timer+'_timer'] && Q[timer+'_timer'] > 0) {
@@ -210,8 +210,14 @@ if (Q.congreso_coalition_sorpasso && (Q.spanish_pm_party == "podemos" || Q.spani
 if ((!Q.hidden_vox_surge) && (Q.year == 2019 || (Q.year >= 2017 && Q.next_spanish_election_time - Q.time <= 6))) {
     Q.hidden_vox_surge = true;
     Q.vox_active = true;
-    window.spaSupportInject(Q, 'vox', 'all', 4.0, 'pp');
-    window.spaSupportInject(Q, 'vox', 'all', 0.5, 'cs');
+    G.spaSupportInject(Q, 'vox', 'all', 4.0, 'pp');
+    G.spaSupportInject(Q, 'vox', 'all', 0.5, 'cs');
+}
+if ((!Q.podemos_hidden_surge) && (Q.year == 2014 && Q.month == 5)) {
+    Q.podemos_hidden_surge = true;
+    G.spaSupportInject(Q, 'podemos', 'all', 6.0, 'iu');
+    G.spaSupportInject(Q, 'podemos', 'all', 9.0, 'abstain');
+    G.spaSupportInject(Q, 'podemos', 'all', 3.0, 'psoe');
 }
 
 Q.has_event = 0;

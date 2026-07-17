@@ -6,8 +6,8 @@ You should not be here? Report a bug if you see this text.
 title: <span style="color: var(--psoe); font-style: italic;">Progressist</span> <span style="color: var(--up); font-style: italic;">Coalition</span> (PSOE - [? if congreso_left_carrier == "up": UP?][?if congreso_left_carrier != "up": [+ congreso_left_carrier +]?])
 subtitle: A difficult arithmetic made possible by kingmaker smaller parties. [? if congreso_coalition_progressive_talks: Given the numbers, we have a chance to negotiate the conditions to make this possible. ?]
 view-if: congreso_coalition_progressive_s > congreso_s_majority - 50
-choose-if: congreso_coalition_progressive_reach and not congreso_coalition_psoe_cs_wtf and psoe_leader != "???"
-unavailable-subtitle: [? if not congreso_coalition_progressive_reach : The numbers don't add up, not even with every abstention that can be realistically negotiated. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +] ?][? if psoe_leader == "???": The PSOE has no clear leadership at the moment. ?]
+choose-if: congreso_coalition_progressive_reach and not congreso_coalition_psoe_cs_wtf and psoe_leader != "???" and not congreso_coalition_grand_preferred
+unavailable-subtitle: [? if not congreso_coalition_progressive_reach : The numbers don't add up, not even with every abstention that can be realistically negotiated. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +] ?][? if psoe_leader == "???": The PSOE has no clear leadership at the moment. ?][? if congreso_coalition_grand_preferred: The PSOE would rather work on a Grand Coalition. ?]
 on-arrival: congreso_coalition_lead_party = "psoe"
 set-jump: progressive_resolve
 go-to: progressive_resolve if not congreso_coalition_progressive_talks; congreso_coalition_negotiation if congreso_coalition_progressive_talks

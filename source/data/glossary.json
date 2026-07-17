@@ -1,0 +1,1563 @@
+{
+  "terms": [
+    {
+      "id": "_ngel_ros",
+      "match": ["Àngel Ros", "Angel Ros", "angel ros"],
+      "display": "Àngel Ros",
+      "colour": "psc",
+      "tooltip": {
+        "title": "Àngel Ros i Domingo",
+        "img": "img/other_leaders/angel_ros.jpg",
+        "q": {
+          "ideology": "Centrist Social Democracy, Plurinationalism"
+        }
+      }
+    },
+    {
+      "id": "_te_",
+      "match": ["¡TE!", "texiste"],
+      "display": "¡TE!",
+      "colour": "te",
+      "bold": true,
+      "tooltip": {
+        "title": "Teruel Exists!",
+        "subtitle": "¡Teruel Existe!",
+        "img": "img/parties/logo_te.jpg",
+        "q": {
+          "ledBy": "te_leader",
+          "ideology": "te_ideology"
+        }
+      }
+    },
+    {
+      "id": "ada_colau",
+      "match": ["Ada Colau"],
+      "colour": "bcomu",
+      "tooltip": {
+        "title": "Ada Colau i Ballano",
+        "img": "img/other_leaders/ada_colau.jpg",
+        "q": {
+          "ideology": "Anti-austerity Left, Plurinationalism"
+        }
+      }
+    },
+    {
+      "id": "jaume_asens",
+      "match": ["Jaume Asens"],
+      "colour": "bcomu",
+      "tooltip": {
+        "title": "Jaume Asens i Llodrà",
+        "img": "img/other_leaders/jaume_asens.jpg",
+        "q": {
+          "ideology": "Anti-austerity Left, Plurinationalism"
+        }
+      }
+    },
+    {
+      "id": "al_cia_s_nchez_camacho",
+      "match": ["Alícia Sánchez-Camacho"],
+      "colour": "ppc",
+      "tooltip": {
+        "title": "Alícia Sánchez-Camacho Pérez",
+        "img": "img/other_leaders/alicia_sanchezcamacho.jpg",
+        "q": {
+          "ideology": "Conservatism, Centralism"
+        }
+      }
+    },
+    {
+      "id": "albert_rivera",
+      "match": ["Albert Rivera", "Albert Rivera Díaz"],
+      "colour": "cs",
+      "tooltip": {
+        "title": "Albert Rivera Díaz",
+        "img": "img/other_leaders/albert_rivera.jpg",
+        "q": {
+          "ideology": "Neo-liberalism, Centralism"
+        }
+      }
+    },
+    {
+      "id": "alfons_l_pez_tena",
+      "match": ["Alfons López Tena"],
+      "colour": "si",
+      "tooltip": {
+        "title": "Alfons López Tena",
+        "img": "img/other_leaders/alfons_lopeztena.jpg",
+        "q": {
+          "ideology": "Centerist regeneration, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "alfredo_p_rez_rubalcaba",
+      "match": ["Alfredo Pérez Rubalcaba", "Rubalcaba"],
+      "colour": "psoe",
+      "tooltip": {
+        "title": "Alfredo Pérez Rubalcaba",
+        "img": "img/other_leaders/rubalcaba.jpg",
+        "q": {
+          "ideology": "Centrist Social Democracy, Autonomism"
+        }
+      }
+    },
+    {
+      "id": "amaiur",
+      "match": ["Amaiur", "amaiur"],
+      "display": "Amaiur",
+      "colour": "amaiur",
+      "bold": true,
+      "tooltip": {
+        "title": "Amaiur",
+        "subtitle": "Amaiur",
+        "img": "img/parties/logo_amaiur.svg",
+        "q": {
+          "ledBy": "amaiur_leader",
+          "ideology": "amaiur_ideology"
+        }
+      }
+    },
+    {
+      "id": "anc",
+      "match": ["ANC"],
+      "display": "ANC",
+      "colour": "#010202",
+      "bold": true,
+      "tooltip": {
+        "title": "Catalan National Assembly",
+        "subtitle": "Assemblea Nacional Catalana",
+        "img": "img/parties/anc.webp",
+        "infoDesc": "NGO, Political Organization",
+        "q": {
+          "ideology": "Big tent single-issue, Independence"
+        }
+      }
+    },
+    {
+      "id": "artur_mas",
+      "match": ["Artur Mas", "Artur Mas i Gavarró", "artur mas"],
+      "colour": "cdc",
+      "tooltip": {
+        "title": "Artur Mas i Gavarró",
+        "img": "img/ciu/arturmas.jpg",
+        "q": {
+          "ideology": "Center-right Liberalism, Pact-Pragmatism"
+        }
+      }
+    },
+    {
+      "id": "bcomu",
+      "match": ["BComu", "bcomu", "Barcelona en Comú", "BComú"],
+      "display": "BComú",
+      "colour": "bcomu",
+      "bold": true,
+      "tooltip": {
+        "title": "Barcelona in Common",
+        "subtitle": "Barcelona en Comú",
+        "img": "img/parties/logo_bcomu.png",
+        "q": {
+          "ledBy": "bcomu_leader",
+          "ideology": "bcomu_ideology"
+        }
+      }
+    },
+    {
+      "id": "bng",
+      "match": ["BNG", "bng"],
+      "display": "BNG",
+      "colour": "bng",
+      "bold": true,
+      "tooltip": {
+        "title": "Galician Nationalist Bloc",
+        "subtitle": "Bloque Nacionalista Galego",
+        "img": "img/parties/logo_bng.svg",
+        "q": {
+          "ledBy": "bng_leader",
+          "ideology": "bng_ideology"
+        }
+      }
+    },
+    {
+      "id": "carles_puigdemont",
+      "match": [
+        "Carles Puigdemont",
+        "Carles Puigdemont i Casamajó",
+        "carles puigdemont"
+      ],
+      "colour": "jxsi",
+      "tooltip": {
+        "title": "Carles Puigdemont i Casamajó",
+        "img": "img/ciu/carlespuigdemont.jpg",
+        "q": {
+          "ideology": "Center-right Liberalism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "cc_pnc",
+      "match": ["CC-PNC", "cc-pnc", "cc"],
+      "display": "CC-PNC",
+      "colour": "cc",
+      "bold": true,
+      "tooltip": {
+        "title": "Canarian Coalition - Canarian Nationalist Party",
+        "subtitle": "Coalición Canaria - Partido Nacionalista Canario",
+        "img": "img/parties/logo_ccpnc.svg",
+        "q": {
+          "ledBy": "ccpnc_leader",
+          "ideology": "ccpnc_ideology"
+        }
+      }
+    },
+    {
+      "id": "cda_pna",
+      "match": ["cda-pna", "CDA-PNA", "CDA", "cda"],
+      "display": "CDA-PNA",
+      "colour": "cda-pna",
+      "bold": true,
+      "tooltip": {
+        "title": "Aranese Democratic Convergence - Aranese Nationalist Party",
+        "subtitle": "Convergéncia Democratica Aranesa - Partit Nacionalista Aranés",
+        "img": "img/parties/logo_cda.svg",
+        "q": {
+          "ledBy": "cda_pna_leader",
+          "ideology": "cda_pna_ideology"
+        }
+      }
+    },
+    {
+      "id": "cdc",
+      "match": ["CDC", "cdc"],
+      "display": "CDC",
+      "colour": "cdc",
+      "bold": true,
+      "tooltip": {
+        "title": "Democratic Convergence of Catalonia",
+        "subtitle": "Convergència Democràtica de Catalunya",
+        "img": "img/parties/logo_cdc.png",
+        "q": {
+          "ledBy": "cdc_leader",
+          "ideology": "cdc_ideology"
+        }
+      }
+    },
+    {
+      "id": "cdcbcn",
+      "match": ["cdcbcn", "cdc_bcn"],
+      "display": "CDC",
+      "colour": "cdc",
+      "bold": true,
+      "tooltip": {
+        "title": "Democratic Convergence of Catalonia (Barcelona)",
+        "subtitle": "Convergència Democràtica de Catalunya",
+        "img": "img/parties/logo_cdc.png",
+        "q": {
+          "ledBy": "cdcbcn_leader",
+          "ideology": "cdc_ideology"
+        }
+      }
+    },
+    {
+      "id": "cecp",
+      "match": ["CECP", "cecp"],
+      "display": "CECP",
+      "colour": "cecp",
+      "bold": true,
+      "tooltip": {
+        "title": "Catalonia In Common We Can",
+        "subtitle": "Catalunya En Comú Podem",
+        "img": "img/parties/logo_cecp.svg",
+        "q": {
+          "ledBy": "cecp_leader",
+          "ideology": "cecp_ideology"
+        }
+      }
+    },
+    {
+      "id": "ciu",
+      "match": ["CiU", "ciu"],
+      "display": "CiU",
+      "colour": "ciu",
+      "bold": true,
+      "tooltip": {
+        "title": "Convergence and Union",
+        "subtitle": "Convergència i Unió",
+        "img": "img/parties/logo_ciu.png",
+        "q": {
+          "ledBy": "ciu_leader",
+          "ideology": "ciu_ideology"
+        }
+      }
+    },
+    {
+      "id": "ciubcn",
+      "match": ["ciubcn", "ciu_bcn"],
+      "display": "CiU",
+      "colour": "ciu",
+      "bold": true,
+      "tooltip": {
+        "title": "Convergence and Union (Barcelona)",
+        "subtitle": "Convergència i Unió",
+        "img": "img/parties/logo_ciu.png",
+        "q": {
+          "ledBy": "ciubcn_leader",
+          "ideology": "ciu_ideology"
+        }
+      }
+    },
+    {
+      "id": "comprom_s",
+      "match": ["Compromís", "compromis"],
+      "display": "Compromís",
+      "colour": "compromis",
+      "bold": true,
+      "tooltip": {
+        "title": "Commitment Coalition",
+        "subtitle": "Coalició Compromís",
+        "img": "img/parties/logo_compromis.svg",
+        "q": {
+          "ledBy": "compromis_leader",
+          "ideology": "compromis_ideology"
+        }
+      }
+    },
+    {
+      "id": "cs",
+      "match": ["Cs", "cs", "Ciutadans"],
+      "display": "Cs",
+      "colour": "cs",
+      "bold": true,
+      "tooltip": {
+        "title": "Citizens - Party of the Citizenry",
+        "subtitle": "Ciutadans - Partido de la Ciudadanía",
+        "img": "img/parties/logo_cs.svg",
+        "q": {
+          "ledBy": "cs_leader",
+          "ideology": "cs_ideology"
+        }
+      }
+    },
+    {
+      "id": "csbcn",
+      "match": ["csbcn", "cs_bcn"],
+      "display": "Cs",
+      "colour": "cs",
+      "bold": true,
+      "tooltip": {
+        "title": "Citizens - Party of the Citizenry (Barcelona)",
+        "subtitle": "Ciutadans - Partido de la Ciudadanía",
+        "img": "img/parties/logo_cs.svg",
+        "q": {
+          "ledBy": "csbcn_leader",
+          "ideology": "cs_ideology"
+        }
+      }
+    },
+    {
+      "id": "csqp",
+      "match": ["CSQP", "csqp"],
+      "display": "CSQP",
+      "colour": "csqp",
+      "bold": true,
+      "tooltip": {
+        "title": "Catalonia Yes We Can",
+        "subtitle": "Catalunya Sí que es Pot",
+        "img": "img/parties/logo_csqp.png",
+        "q": {
+          "ledBy": "csqp_leader",
+          "ideology": "csqp_ideology"
+        }
+      }
+    },
+    {
+      "id": "csspa",
+      "match": ["csspa", "cs_spa", "Ciudadanos"],
+      "display": "Cs",
+      "colour": "cs",
+      "bold": true,
+      "tooltip": {
+        "title": "Citizens - Party of the Citizenry",
+        "subtitle": "Ciudadanos - Partido de la Ciudadanía",
+        "img": "img/parties/logo_cs.svg",
+        "q": {
+          "ledBy": "csspa_leader",
+          "ideology": "cs_ideology"
+        }
+      }
+    },
+    {
+      "id": "cup",
+      "match": ["CUP", "cup"],
+      "display": "CUP",
+      "colour": "#b8a12b",
+      "bold": true,
+      "tooltip": {
+        "title": "Popular Unity Candidacy",
+        "subtitle": "Candidatura d'Unitat Popular",
+        "img": "img/parties/logo_cup.svg",
+        "q": {
+          "ledBy": "cup_leader",
+          "ideology": "cup_ideology"
+        }
+      }
+    },
+    {
+      "id": "cupbcn",
+      "match": ["cupbcn", "cup_bcn"],
+      "display": "CUP",
+      "colour": "#b8a12b",
+      "bold": true,
+      "tooltip": {
+        "title": "Popular Unity Candidacy (Barcelona)",
+        "subtitle": "Candidatura d'Unitat Popular",
+        "img": "img/parties/logo_cup.svg",
+        "q": {
+          "ledBy": "cupbcn_leader",
+          "ideology": "cup_ideology"
+        }
+      }
+    },
+    {
+      "id": "david_fern_ndez",
+      "match": ["David Fernàndez", "David Fernàndez i Ramos"],
+      "colour": "#b8a12b",
+      "tooltip": {
+        "title": "David Fernàndez i Ramos",
+        "img": "img/cup/davidfernandez.jpg",
+        "q": {
+          "ideology": "Anti-capitalism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "dl",
+      "match": ["DL", "DiL", "dil", "dl"],
+      "display": "DL",
+      "colour": "dl",
+      "bold": true,
+      "tooltip": {
+        "title": "Democracy and Liberty",
+        "subtitle": "Democràcia i Llibertat",
+        "img": "img/parties/logo_dl.png",
+        "q": {
+          "ledBy": "dl_leader",
+          "ideology": "dl_ideology"
+        }
+      }
+    },
+    {
+      "id": "dl_bcn",
+      "match": ["dl_bcn", "dlbcn"],
+      "display": "DL",
+      "colour": "dl",
+      "bold": true,
+      "tooltip": {
+        "title": "Democracy and Liberty (Barcelona)",
+        "subtitle": "Democràcia i Llibertat",
+        "img": "img/parties/logo_dl.png",
+        "q": {
+          "ledBy": "dlbcn_leader",
+          "ideology": "dl_ideology"
+        }
+      }
+    },
+    {
+      "id": "eaj_pnv",
+      "match": ["EAJ-PNV", "PNV", "pnv"],
+      "display": "EAJ-PNV",
+      "colour": "pnv",
+      "bold": true,
+      "tooltip": {
+        "title": "Basque Nationalist Party",
+        "subtitle": "Euzko Alderdi Jeltzalea - Partido Nacionalista Vasco",
+        "img": "img/parties/logo_pnv.svg",
+        "q": {
+          "ledBy": "pnv_leader",
+          "ideology": "pnv_ideology"
+        }
+      }
+    },
+    {
+      "id": "ecp",
+      "match": ["ECP", "ecp"],
+      "display": "ECP",
+      "colour": "ecp",
+      "bold": true,
+      "tooltip": {
+        "title": "In Common We Can",
+        "subtitle": "En Comú Podem",
+        "img": "img/parties/logo_ecp.svg",
+        "q": {
+          "ledBy": "ecp_leader",
+          "ideology": "ecp_ideology"
+        }
+      }
+    },
+    {
+      "id": "eduardo_madina",
+      "match": ["Eduardo Madina"],
+      "colour": "psoe",
+      "tooltip": {
+        "title": "Eduardo Madina Muñoz",
+        "img": "img/other_leaders/madina.jpg",
+        "q": {
+          "ideology": "Centrist Social Democracy, Republican Autonomism"
+        }
+      }
+    },
+    {
+      "id": "eh_bildu",
+      "match": ["EH Bildu", "ehbildu", "bildu"],
+      "display": "EH Bildu",
+      "colour": "ehbildu",
+      "bold": true,
+      "tooltip": {
+        "title": "Basque Country Unite",
+        "subtitle": "Euskal Herria Bildu",
+        "img": "img/parties/logo_ehbildu.png",
+        "q": {
+          "ledBy": "ehbildu_leader",
+          "ideology": "ehbildu_ideology"
+        }
+      }
+    },
+    {
+      "id": "erc",
+      "match": ["ERC", "erc"],
+      "display": "ERC",
+      "colour": "erc",
+      "bold": true,
+      "tooltip": {
+        "title": "Republican Left of Catalonia",
+        "subtitle": "Esquerra Republicana de Catalunya",
+        "img": "img/parties/logo_erc.svg",
+        "q": {
+          "ledBy": "erc_leader",
+          "ideology": "erc_ideology"
+        }
+      }
+    },
+    {
+      "id": "ercbcn",
+      "match": ["ercbcn", "erc_bcn"],
+      "display": "ERC",
+      "colour": "erc",
+      "bold": true,
+      "tooltip": {
+        "title": "Republican Left of Catalonia (Barcelona)",
+        "subtitle": "Esquerra Republicana de Catalunya",
+        "img": "img/parties/logo_erc.svg",
+        "q": {
+          "ledBy": "ercbcn_leader",
+          "ideology": "erc_ideology"
+        }
+      }
+    },
+    {
+      "id": "ernest_maragall",
+      "match": ["Ernest Maragall", "ernest maragall"],
+      "display": "Ernest Maragall",
+      "colour": "erc",
+      "tooltip": {
+        "title": "Ernest Maragall i Mira",
+        "img": "img/erc/ernestmaragall.jpg",
+        "q": {
+          "ideology": "Social Democracy, Pragmatic Independence"
+        }
+      }
+    },
+    {
+      "id": "eta",
+      "match": ["ETA"],
+      "display": "ETA",
+      "colour": "#1e191a",
+      "bold": true,
+      "tooltip": {
+        "title": "Basque Homeland and Liberty",
+        "subtitle": "Euskadi Ta Askatasuna",
+        "img": "img/parties/eta.webp",
+        "infoDesc": "Paramilitary Clandestine Organization",
+        "q": {
+          "ideology": "Revolutionary Socialism, Basque Independence"
+        }
+      }
+    },
+    {
+      "id": "fac",
+      "match": ["FAC", "fac"],
+      "display": "FAC",
+      "colour": "fac",
+      "bold": true,
+      "tooltip": {
+        "title": "Asturian Citizen Forum",
+        "subtitle": "Foro Asturias de Ciudadaions",
+        "img": "img/parties/logo_fac.svg",
+        "q": {
+          "ledBy": "fac_leader",
+          "ideology": "fac_ideology"
+        }
+      }
+    },
+    {
+      "id": "felipe_gonz_lez",
+      "match": ["Felipe González"],
+      "colour": "psoe",
+      "tooltip": {
+        "title": "Felipe González Márquez ",
+        "img": "img/other_leaders/fgonzalez.jpg",
+        "q": {
+          "ideology": "Centrist Social Democracy, Autonomism"
+        }
+      }
+    },
+    {
+      "id": "fnc",
+      "match": ["FNC", "fnc"],
+      "display": "FNC",
+      "colour": "fnc",
+      "bold": true,
+      "tooltip": {
+        "title": "Catalan National Front",
+        "subtitle": "Front Nacional de Catalunya",
+        "img": "img/parties/logo_fnc.png",
+        "q": {
+          "ledBy": "fnc_leader",
+          "ideology": "fnc_ideology"
+        }
+      }
+    },
+    {
+      "id": "fncbcn",
+      "match": ["fncbcn"],
+      "display": "FNC",
+      "colour": "fnc",
+      "bold": true
+    },
+    {
+      "id": "fr",
+      "match": ["FR", "fr"],
+      "display": "FR",
+      "colour": "fr",
+      "bold": true,
+      "tooltip": {
+        "title": "Republican Front",
+        "subtitle": "Front Republicà",
+        "img": "img/parties/logo_fr.svg",
+        "q": {
+          "ledBy": "fr_leader",
+          "ideology": "fr_ideology"
+        }
+      }
+    },
+    {
+      "id": "francisco_franco",
+      "match": ["Francisco Franco", "Franco"],
+      "colour": "#3e3e3e",
+      "tooltip": {
+        "title": "Francisco Franco Bahamonde",
+        "img": "img/other_leaders/franco.jpg",
+        "q": {
+          "ideology": "Fascism, National Catholicism"
+        }
+      }
+    },
+    {
+      "id": "gabriel_rufian",
+      "match": [
+        "Gabriel Rufian",
+        "gabriel rufian",
+        "Grabriel Rufián",
+        "Gabriel Rufián"
+      ],
+      "display": "Gabriel Rufián",
+      "colour": "erc",
+      "tooltip": {
+        "title": "Gabriel Rufian i Romero",
+        "img": "img/erc/rufian.png",
+        "q": {
+          "ideology": "Left Social Democracy, Independence"
+        }
+      }
+    },
+    {
+      "id": "gbai",
+      "match": ["GBai", "gbai"],
+      "display": "GBai",
+      "colour": "gbai",
+      "bold": true,
+      "tooltip": {
+        "title": "Yes to the Future",
+        "subtitle": "Geroa Bai",
+        "img": "img/parties/logo_gbai.svg",
+        "q": {
+          "ledBy": "gbai_leader",
+          "ideology": "gbai_ideology"
+        }
+      }
+    },
+    {
+      "id": "icv_euia",
+      "match": ["ICV-EUiA", "icv"],
+      "display": "ICV-EUiA",
+      "colour": "icv",
+      "bold": true,
+      "tooltip": {
+        "title": "Initiative for Catalonia Greens - United and Alternative Left",
+        "subtitle": "Iniciativa per Catalunya Verds - Esquerra Unida i Alternativa",
+        "img": "img/parties/logo_icv.svg",
+        "q": {
+          "ledBy": "icv_leader",
+          "ideology": "icv_ideology"
+        }
+      }
+    },
+    {
+      "id": "icv",
+      "match": ["_ICV"],
+      "display": "ICV",
+      "colour": "icv",
+      "bold": true,
+      "tooltip": {
+        "title": "Initiative for Catalonia Greens - United and Alternative Left",
+        "subtitle": "Iniciativa per Catalunya Verds - Esquerra Unida i Alternativa",
+        "img": "img/parties/logo_icv.svg",
+        "q": {
+          "ledBy": "icv_leader",
+          "ideology": "icv_ideology"
+        }
+      }
+    },
+    {
+      "id": "indp",
+      "match": ["indp"],
+      "colour": "#464646",
+      "bold": true
+    },
+    {
+      "id": "iu",
+      "match": ["IU", "iu"],
+      "display": "IU",
+      "colour": "iu",
+      "bold": true,
+      "tooltip": {
+        "title": "United Left - Popular Unity",
+        "subtitle": "Izquierda Unida - Unidad Popular",
+        "img": "img/parties/logo_iu.svg",
+        "q": {
+          "ledBy": "iu_leader",
+          "ideology": "iu_ideology"
+        }
+      }
+    },
+    {
+      "id": "joan_herrera",
+      "match": ["Joan Herrera", "Joan Herrera i Torres"],
+      "colour": "icv",
+      "tooltip": {
+        "title": "Joan Herrera i Torres",
+        "img": "img/other_leaders/joan_herrera.jpg",
+        "q": {
+          "ideology": "Green Left, Plurinationalism"
+        }
+      }
+    },
+    {
+      "id": "elisenda_alamany",
+      "match": ["Elisenda Alamany", "elisenda alamany"],
+      "colour": "cecp",
+      "tooltip": {
+        "title": "Elisenda Alamany i Gutiérrez",
+        "img": "img/erc/elisendaalamany.jpg",
+        "q": {
+          "ideology": "Left Social Democracy, Independence"
+        }
+      }
+    },
+    {
+      "id": "albano_dantefachin",
+      "match": ["Albano Dante Fachin", "albano dante fachin"],
+      "colour": "podemos",
+      "tooltip": {
+        "title": "Albano Dante Fachin Pozzi",
+        "img": "img/other_leaders/arcadi_oliveres.jpg",
+        "q": {
+          "ideology": "Anticapitalism, Independence"
+        }
+      }
+    },
+    {
+      "id": "arcadi_oliveres",
+      "match": ["Arcadi Oliveres", "arcadi oliveres"],
+      "colour": "csqp",
+      "tooltip": {
+        "title": "Arcadi Oliveres i Boadella",
+        "img": "img/other_leaders/arcadi_oliveres.jpg",
+        "q": {
+          "ideology": "Anticapitalism, Independence"
+        }
+      }
+    },
+    {
+      "id": "joan_coscubiela",
+      "match": ["Joan Coscubiela", "joan coscubiela"],
+      "colour": "icv",
+      "tooltip": {
+        "title": "Joan Coscubiela i Conesa",
+        "img": "img/other_leaders/joan_coscubiela.jpg",
+        "q": {
+          "ideology": "Social Democracy, Federalism"
+        }
+      }
+    },
+    {
+      "id": "xavier_domenech",
+      "match": ["Xavier Domènech", "xavier domenech"],
+      "colour": "cecp",
+      "tooltip": {
+        "title": "Xavier Domènech i Sampere",
+        "img": "img/other_leaders/xavier_domenech.jpg",
+        "q": {
+          "ideology": "Anti-austerity Left, Federalism"
+        }
+      }
+    },
+    {
+      "id": "lluis_rabell",
+      "match": ["Lluís Rabell", "lluis rabell"],
+      "colour": "csqp",
+      "tooltip": {
+        "title": "Josep Lluís Franco Rabell",
+        "img": "img/other_leaders/lluis_rabell.jpg",
+        "q": {
+          "ideology": "Anti-austerity Left, Plurinationalism"
+        }
+      }
+    },
+    {
+      "id": "joan_laporta_i_estruch",
+      "match": ["Joan Laporta i Estruch", "Joan Laporta"],
+      "colour": "si",
+      "tooltip": {
+        "title": "Joan Laporta i Estruch",
+        "img": "img/erc/laporta.jpg",
+        "q": {
+          "ideology": "Centerist regeneration, Independence"
+        }
+      }
+    },
+    {
+      "id": "jordi_pujol",
+      "match": ["Jordi Pujol"],
+      "colour": "ciu",
+      "tooltip": {
+        "title": "Jordi Pujol i Soley",
+        "img": "img/ciu/jordipujol.jpg",
+        "q": {
+          "ideology": "Center-right Liberalism, Catalan Nationalism"
+        }
+      }
+    },
+    {
+      "id": "josep_antoni_duran_i_lleida",
+      "match": ["Josep Antoni Duran i Lleida", "Duran i Lleida"],
+      "colour": "unio",
+      "tooltip": {
+        "title": "Josep Antoni Duran i Lleida",
+        "img": "img/ciu/jaduranilleida.jpg",
+        "q": {
+          "ideology": "Christian Democracy, Pact-Pragmatism"
+        }
+      }
+    },
+    {
+      "id": "junts",
+      "match": ["Junts", "junts"],
+      "display": "Junts",
+      "colour": "junts",
+      "bold": true,
+      "tooltip": {
+        "title": "Together",
+        "subtitle": "Junts",
+        "img": "img/parties/logo_junts.png",
+        "q": {
+          "ledBy": "junts_leader",
+          "ideology": "junts_ideology"
+        }
+      }
+    },
+    {
+      "id": "junts_bcn",
+      "match": ["junts_bcn", "juntsbcn"],
+      "display": "Junts",
+      "colour": "junts",
+      "bold": true,
+      "tooltip": {
+        "title": "Together (Barcelona)",
+        "subtitle": "Junts",
+        "img": "img/parties/logo_junts.png",
+        "q": {
+          "ledBy": "juntsbcn_leader",
+          "ideology": "junts_ideology"
+        }
+      }
+    },
+    {
+      "id": "jxcat",
+      "match": ["JxCat", "jxcat"],
+      "display": "JxCat",
+      "colour": "jxcat",
+      "bold": true,
+      "tooltip": {
+        "title": "Together for Catalonia",
+        "subtitle": "Junts per Catalunya",
+        "img": "img/parties/logo_jxcat.svg",
+        "q": {
+          "ledBy": "jxcat_leader",
+          "ideology": "jxcat_ideology"
+        }
+      }
+    },
+    {
+      "id": "jxcat_bcn",
+      "match": ["jxcat_bcn", "jxcatbcn"],
+      "display": "JxCat",
+      "colour": "jxcat",
+      "bold": true,
+      "tooltip": {
+        "title": "Together for Catalonia (Barcelona)",
+        "subtitle": "Junts per Catalunya",
+        "img": "img/parties/logo_jxcat.svg",
+        "q": {
+          "ledBy": "jxcatbcn_leader",
+          "ideology": "jxcat_ideology"
+        }
+      }
+    },
+    {
+      "id": "jxs_",
+      "match": ["JxSí", "jxsi", "JxSi"],
+      "display": "JxSí",
+      "colour": "jxsi",
+      "bold": true,
+      "tooltip": {
+        "title": "Together for the \"Yes\"",
+        "subtitle": "Junts pel Sí",
+        "img": "img/parties/logo_jxsi.png",
+        "q": {
+          "ledBy": "jxsi_leader",
+          "ideology": "jxsi_ideology"
+        }
+      }
+    },
+    {
+      "id": "jxsi_bcn",
+      "match": ["jxsi_bcn", "jxsibcn"],
+      "display": "JxSí",
+      "colour": "jxsi",
+      "bold": true,
+      "tooltip": {
+        "title": "Together for the \"Yes\" (Barcelona)",
+        "subtitle": "Junts pel Sí",
+        "img": "img/parties/logo_jxsi.png",
+        "q": {
+          "ledBy": "jxsibcn_leader",
+          "ideology": "jxsi_ideology"
+        }
+      }
+    },
+    {
+      "id": "llu_s_companys",
+      "match": ["Lluís Companys", "Companys"],
+      "colour": "erc",
+      "tooltip": {
+        "title": "Lluís Companys i Jover",
+        "img": "img/erc/lluiscompanys.jpg",
+        "q": {
+          "ideology": "Left-wing Republicanism, Catalan Nationalism"
+        }
+      }
+    },
+    {
+      "id": "m_s",
+      "match": ["MÉS", "MES", "mesm"],
+      "display": "MÉS",
+      "colour": "mes",
+      "bold": true,
+      "tooltip": {
+        "title": "More for Mallorca",
+        "subtitle": "Més per Mallorca",
+        "img": "img/parties/logo_mes.png",
+        "q": {
+          "ledBy": "mes_leader",
+          "ideology": "mes_ideology"
+        }
+      }
+    },
+    {
+      "id": "m_s_pa_s",
+      "match": ["Más País", "mpais"],
+      "display": "Más País",
+      "colour": "mpais",
+      "bold": true,
+      "tooltip": {
+        "title": "More Country",
+        "subtitle": "Más País",
+        "img": "img/parties/logo_mpais.svg",
+        "q": {
+          "ledBy": "mpais_leader",
+          "ideology": "mpais_ideology"
+        }
+      }
+    },
+    {
+      "id": "mariano_rajoy",
+      "match": ["Mariano Rajoy", "Rajoy", "rajoy"],
+      "colour": "pp",
+      "tooltip": {
+        "title": "Mariano Rajoy Brey",
+        "img": "img/other_leaders/rajoy.jpg",
+        "q": {
+          "ideology": "Conservatism, Centralism"
+        }
+      }
+    },
+    {
+      "id": "miquel_iceta",
+      "match": ["Miquel Iceta", "miquel iceta"],
+      "display": "Miquel Iceta",
+      "colour": "psc",
+      "tooltip": {
+        "title": "Miquel Iceta i Llorens",
+        "img": "img/other_leaders/miquel_iceta.jpg",
+        "q": {
+          "ideology": "Centrist Social Democracy, Autonomism"
+        }
+      }
+    },
+    {
+      "id": "montserrat_tura",
+      "match": ["Montserrat Tura", "montserrat tura"],
+      "display": "Montserrat Tura",
+      "colour": "psc",
+      "tooltip": {
+        "title": "Montserrat Tura i Camafreita",
+        "img": "img/other_leaders/montserrat_tura.jpg",
+        "q": {
+          "ideology": "Social Democracy, Plurinationalism"
+        }
+      }
+    },
+    {
+      "id": "n_ria_parlon",
+      "match": ["Núria Parlon", "Nuria Parlon", "nuria parlon"],
+      "display": "Núria Parlon",
+      "colour": "psc",
+      "tooltip": {
+        "title": "Núria Parlon i Gil",
+        "img": "img/other_leaders/nuria_parlon.jpg",
+        "q": {
+          "ideology": "Centrist Social Democracy, Federalism"
+        }
+      }
+    },
+    {
+      "id": "na_",
+      "match": ["NA+", "na+", "nsuma"],
+      "display": "NA+",
+      "colour": "nsuma",
+      "bold": true,
+      "tooltip": {
+        "title": "Sum Navarre",
+        "subtitle": "Navarra Suma",
+        "img": "img/parties/logo_nsuma.png",
+        "q": {
+          "ledBy": "nsuma_leader",
+          "ideology": "nsuma_ideology"
+        }
+      }
+    },
+    {
+      "id": "omnium",
+      "match": ["Omnium"],
+      "display": "Òmnium",
+      "colour": "#e97202",
+      "bold": true,
+      "tooltip": {
+        "title": "Òmnium Cultural",
+        "subtitle": "Òmnium Cultural",
+        "img": "img/parties/logo_omnium.png",
+        "infoDesc": "NGO, Cultural Association",
+        "q": {
+          "ideology": "Transversal Catalanism, Independence"
+        }
+      }
+    },
+    {
+      "id": "omnium_cultural",
+      "match": ["Omnium Cultural"],
+      "display": "Òmnium Cultural",
+      "colour": "#e97202",
+      "bold": true,
+      "tooltip": {
+        "title": "Òmnium Cultural",
+        "subtitle": "Òmnium Cultural",
+        "img": "img/parties/logo_omnium.png",
+        "infoDesc": "NGO, Cultural Association",
+        "q": {
+          "ideology": "Transversal Catalanism, Independence"
+        }
+      }
+    },
+    {
+      "id": "oriol_junqueras",
+      "match": ["Oriol Junqueras", "Oriol Junqueras i Vies"],
+      "colour": "erc",
+      "tooltip": {
+        "title": "Oriol Junqueras i Vies",
+        "img": "img/erc/junqueras.jpg",
+        "q": {
+          "ideology": "Left-wing Republicanism, Independence"
+        }
+      }
+    },
+    {
+      "id": "pablo_iglesias",
+      "match": ["Pablo Iglesias", "pablo iglesias"],
+      "colour": "podemos",
+      "tooltip": {
+        "title": "Pablo Iglesias Turrión",
+        "img": "img/other_leaders/pablo_iglesias.jpg",
+        "q": {
+          "ideology": "Anti-austerity left, Plurinationalism"
+        }
+      }
+    },
+    {
+      "id": "pasqual_maragall",
+      "match": ["Pasqual Maragall", "pasqual maragall"],
+      "display": "Pasqual Maragall",
+      "colour": "psc",
+      "tooltip": {
+        "title": "Pasqual Maragall i Mira",
+        "img": "img/other_leaders/pasqual_maragall.jpg",
+        "q": {
+          "ideology": "Social Democracy, Pragmatic Independence"
+        }
+      }
+    },
+    {
+      "id": "pdcat_bcn",
+      "match": ["pdcat_bcn", "pdcatbcn", "pdecatbcn", "pdecat_bcn"],
+      "display": "PDeCAT",
+      "colour": "pdcat",
+      "bold": true,
+      "tooltip": {
+        "title": "Catalan European Democratic Party (Barcelona)",
+        "subtitle": "Partit Demòcrata Europeu Català",
+        "img": "img/parties/logo_pdecat.svg",
+        "q": {
+          "ledBy": "pdcatbcn_leader",
+          "ideology": "pdcat_ideology"
+        }
+      }
+    },
+    {
+      "id": "pdecat",
+      "match": ["PDeCAT", "pdcat"],
+      "display": "PDeCAT",
+      "colour": "pdcat",
+      "bold": true,
+      "tooltip": {
+        "title": "Catalan European Democratic Party",
+        "subtitle": "Partit Demòcrata Europeu Català",
+        "img": "img/parties/logo_pdecat.svg",
+        "q": {
+          "ledBy": "pdcat_leader",
+          "ideology": "pdcat_ideology"
+        }
+      }
+    },
+    {
+      "id": "pedro_s_nchez",
+      "match": ["Pedro Sánchez"],
+      "colour": "psoe",
+      "tooltip": {
+        "title": "Pedro Sánchez Pérez-Castejón",
+        "img": "img/other_leaders/pedro_sanchez.jpg",
+        "q": {
+          "ideology": "Centrist Social Democracy, Reformist Autonomism"
+        }
+      }
+    },
+    {
+      "id": "pere_navarro",
+      "match": ["Pere Navarro", "Pere Navarro i Morera"],
+      "colour": "psc",
+      "tooltip": {
+        "title": "Pere Navarro i Morera",
+        "img": "img/other_leaders/pere_navarro.jpg",
+        "q": {
+          "ideology": "Centrist Social Democracy, Federalism"
+        }
+      }
+    },
+    {
+      "id": "podemos",
+      "match": ["Podemos", "podemos"],
+      "display": "Podemos",
+      "colour": "podemos",
+      "bold": true,
+      "tooltip": {
+        "title": "We Can",
+        "subtitle": "Podemos",
+        "img": "img/parties/logo_podemos.svg",
+        "q": {
+          "ledBy": "podemos_leader",
+          "ideology": "podemos_ideology"
+        }
+      }
+    },
+    {
+      "id": "pp",
+      "match": ["PP", "pp"],
+      "display": "PP",
+      "colour": "pp",
+      "bold": true,
+      "tooltip": {
+        "title": "People's Party",
+        "subtitle": "Partido Popular",
+        "img": "img/parties/logo_pp.png",
+        "q": {
+          "ledBy": "pp_leader",
+          "ideology": "pp_ideology"
+        }
+      }
+    },
+    {
+      "id": "ppbcn",
+      "match": ["ppbcn", "pp_bcn"],
+      "display": "PP",
+      "colour": "ppc",
+      "bold": true,
+      "tooltip": {
+        "title": "People's Party (Barcelona)",
+        "subtitle": "Partit Popular",
+        "img": "img/parties/logo_pp.png",
+        "q": {
+          "ledBy": "ppbcn_leader",
+          "ideology": "ppc_ideology"
+        }
+      }
+    },
+    {
+      "id": "ppc",
+      "match": ["PPC", "ppc"],
+      "display": "PPC",
+      "colour": "ppc",
+      "bold": true,
+      "tooltip": {
+        "title": "People's Party of Catalonia",
+        "subtitle": "Partit Popular de Catalunya",
+        "img": "img/parties/logo_pp.png",
+        "q": {
+          "ledBy": "ppc_leader",
+          "ideology": "ppc_ideology"
+        }
+      }
+    },
+    {
+      "id": "prc",
+      "match": ["PRC", "prc"],
+      "display": "PRC",
+      "colour": "prc",
+      "bold": true,
+      "tooltip": {
+        "title": "Regionalist Party of Cantabria",
+        "subtitle": "Partido Regionalista de Cantabria",
+        "img": "img/parties/logo_prc.png",
+        "q": {
+          "ledBy": "prc_leader",
+          "ideology": "prc_ideology"
+        }
+      }
+    },
+    {
+      "id": "primariesbcn",
+      "match": ["primariesbcn", "primaries_bcn"],
+      "display": "Primàries",
+      "colour": "primaries",
+      "bold": true,
+      "tooltip": {
+        "title": "Barcelona is Capital - Primaries",
+        "subtitle": "Primàries - Barcelona és Capital",
+        "img": "img/parties/logo_primaries.svg",
+        "q": {
+          "ledBy": "primaries_leader",
+          "ideology": "primaries_ideology"
+        }
+      }
+    },
+    {
+      "id": "psc",
+      "match": ["PSC", "psc"],
+      "display": "PSC",
+      "colour": "psc",
+      "bold": true,
+      "tooltip": {
+        "title": "Socialist Party of Catalonia",
+        "subtitle": "Partit dels Socialistes de Catalunya",
+        "img": "img/parties/logo_psc.svg",
+        "q": {
+          "ledBy": "psc_leader",
+          "ideology": "psc_ideology"
+        }
+      }
+    },
+    {
+      "id": "pscbcn",
+      "match": ["pscbcn", "psc_bcn"],
+      "display": "PSC",
+      "colour": "psc",
+      "bold": true,
+      "tooltip": {
+        "title": "Socialist Party of Catalonia (Barcelona)",
+        "subtitle": "Partit dels Socialistes de Catalunya",
+        "img": "img/parties/logo_psc.svg",
+        "q": {
+          "ledBy": "pscbcn_leader",
+          "ideology": "psc_ideology"
+        }
+      }
+    },
+    {
+      "id": "psoe",
+      "match": ["PSOE", "psoe"],
+      "display": "PSOE",
+      "colour": "psoe",
+      "bold": true,
+      "tooltip": {
+        "title": "Spanish Socialist Workers' Party",
+        "subtitle": "Partido Socialista Obrero Español",
+        "img": "img/parties/logo_psoe.png",
+        "q": {
+          "ledBy": "psoe_leader",
+          "ideology": "psoe_ideology"
+        }
+      }
+    },
+    {
+      "id": "pxc",
+      "match": ["PxC", "pxc"],
+      "display": "PxC",
+      "colour": "pxc",
+      "bold": true,
+      "tooltip": {
+        "title": "Platform for Catalonia",
+        "subtitle": "Plataforma per Catalunya",
+        "img": "img/parties/logo_pxc.gif",
+        "q": {
+          "ledBy": "pxc_leader",
+          "ideology": "pxc_ideology"
+        }
+      }
+    },
+    {
+      "id": "pxcbcn",
+      "match": ["pxcbcn"],
+      "display": "PxC",
+      "colour": "pxc",
+      "bold": true
+    },
+    {
+      "id": "ra_l_romeva",
+      "match": [
+        "Raül Romeva",
+        "Raul Romeva",
+        "Raül Romeva i Rueda",
+        "raul romeva"
+      ],
+      "display": "Raül Romeva",
+      "colour": "jxsi",
+      "tooltip": {
+        "title": "Raül Romeva i Rueda",
+        "img": "img/erc/romeva.jpg",
+        "q": {
+          "ideology": "Social Democracy, Independence"
+        }
+      }
+    },
+    {
+      "id": "si",
+      "match": ["SI"],
+      "display": "SI",
+      "colour": "si",
+      "bold": true,
+      "tooltip": {
+        "title": "Catalan Solidarity for Independence",
+        "subtitle": "Solidaritat Catalana per la Independència",
+        "img": "img/parties/logo_si.jpg",
+        "q": {
+          "ledBy": "si_leader",
+          "ideology": "si_ideology"
+        }
+      }
+    },
+    {
+      "id": "soraya_s_enz_de_santamar_a",
+      "match": ["Soraya Sáenz de Santamaría", "soraya saenz de santamaria"],
+      "colour": "pp",
+      "tooltip": {
+        "title": "Soraya Sáenz de Santamaría",
+        "img": "img/other_leaders/soraya.jpg",
+        "q": {
+          "ideology": "Conservatism, Centralism"
+        }
+      }
+    },
+    {
+      "id": "sumar",
+      "match": ["Sumar", "sumar"],
+      "display": "Sumar",
+      "colour": "sumar",
+      "bold": true
+    },
+    {
+      "id": "susana_d_az",
+      "match": ["Susana Díaz", "Susana Diaz"],
+      "colour": "psoe",
+      "tooltip": {
+        "title": "Susana Díaz Pacheco",
+        "img": "img/other_leaders/susanadiaz.jpg",
+        "q": {
+          "ideology": "Centrist Social Democracy, Autonomism"
+        }
+      }
+    },
+    {
+      "id": "txt",
+      "match": ["txt"],
+      "display": "TxT",
+      "colour": "txt",
+      "bold": true,
+      "tooltip": {
+        "title": "Everything for Terrassa",
+        "subtitle": "Tot per Terrassa",
+        "img": "img/parties/logo_txt.png",
+        "q": {
+          "ledBy": "txt_leader",
+          "ideology": "txt_ideology"
+        }
+      }
+    },
+    {
+      "id": "ua_psc",
+      "match": ["ua-psc", "UA", "UA-PSC"],
+      "display": "UA-PSC",
+      "colour": "ua-psc",
+      "bold": true,
+      "tooltip": {
+        "title": "Aran Unity - Socialist Party of Catalonia",
+        "subtitle": "Unitat d'Aran - Partit dels Socialistes de Catalunya",
+        "img": "img/parties/logo_ua.svg",
+        "q": {
+          "ledBy": "ua_psc_leader",
+          "ideology": "ua_psc_ideology"
+        }
+      }
+    },
+    {
+      "id": "udc",
+      "match": ["UDC", "udc", "unio"],
+      "display": "UDC",
+      "colour": "unio",
+      "bold": true,
+      "tooltip": {
+        "title": "Democratic Union of Catalonia",
+        "subtitle": "Unió Democràtica de Catalunya",
+        "img": "img/parties/logo_unio.png",
+        "q": {
+          "ledBy": "unio_leader",
+          "ideology": "unio_ideology"
+        }
+      }
+    },
+    {
+      "id": "uniobcn",
+      "match": ["uniobcn", "udcbcn"],
+      "display": "UDC",
+      "colour": "unio",
+      "bold": true
+    },
+    {
+      "id": "up",
+      "match": ["UP"],
+      "display": "UP",
+      "colour": "up",
+      "bold": true,
+      "tooltip": {
+        "title": "United We Can",
+        "subtitle": "Unidas Podemos",
+        "img": "img/parties/logo_up.svg",
+        "q": {
+          "ledBy": "up_leader",
+          "ideology": "up_ideology"
+        }
+      }
+    },
+    {
+      "id": "upn",
+      "match": ["UPN", "upn"],
+      "display": "UPN",
+      "colour": "upn",
+      "bold": true,
+      "tooltip": {
+        "title": "Navarrese People's Union",
+        "subtitle": "Unión del Pueblo Navarro",
+        "img": "img/parties/logo_upn.svg",
+        "q": {
+          "ledBy": "upn_leader",
+          "ideology": "upn_ideology"
+        }
+      }
+    },
+    {
+      "id": "upyd",
+      "match": ["UPyD", "upyd"],
+      "display": "UPyD",
+      "colour": "upyd",
+      "bold": true,
+      "tooltip": {
+        "title": "Union, Progress, and Democracy",
+        "subtitle": "Unión Progreso y Democracia",
+        "img": "img/parties/logo_upyd.svg",
+        "q": {
+          "ledBy": "upyd_leader",
+          "ideology": "upyd_ideology"
+        }
+      }
+    },
+    {
+      "id": "vox",
+      "match": ["VOX", "Vox", "vox"],
+      "display": "VOX",
+      "colour": "vox",
+      "bold": true,
+      "tooltip": {
+        "title": "VOX",
+        "subtitle": "VOX",
+        "img": "img/parties/logo_vox.svg",
+        "q": {
+          "ledBy": "vox_leader",
+          "ideology": "vox_ideology"
+        }
+      }
+    },
+    {
+      "id": "vox_bcn",
+      "match": ["vox_bcn", "voxbcn"],
+      "display": "VOX",
+      "colour": "vox",
+      "bold": true
+    }
+  ]
+}

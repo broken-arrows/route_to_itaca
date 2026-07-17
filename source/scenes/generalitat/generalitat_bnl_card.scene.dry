@@ -1,0 +1,18 @@
+title: Ministry of Business and Labour
+view-if: bnl_timer <= 0 and (bnl_minister_party == player_party)
+on-arrival: month_actions += 1; bnl_timer += 3;
+is-card: true
+card-image: img/labour_icon.svg
+face-image: img/labour_icon.svg
+frequency: 100
+tags: generalitat
+role: card-gov
+
+= Ministry of Business and Labour
+
+Something something (TODO)
+
+TODO: how do these work in jxsi / jxcat cases?
+
+-@post_event: Ah yes!
+-@easy_discard

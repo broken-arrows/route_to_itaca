@@ -6,6 +6,7 @@ new-page: true
 max-visits: 1
 tags: event
 on-arrival: {!
+    Q.parlament_current_ciu = "pdcat";
     Q.pdcat_formed = true;
 
     Q.pdcat_roadmap = Q.dl_roadmap

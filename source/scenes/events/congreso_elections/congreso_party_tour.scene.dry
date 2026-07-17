@@ -1,0 +1,168 @@
+title: Who's running for the Congreso?
+subtitle: Elections are just around the corne
+view-if: next_spanish_election_time - time <= 3  and congreso_party_tour_timer = 0
+tags: event
+new-page: true
+on-arrival: {!
+    Q.congreso_party_tour_timer = 3;
+    
+    Q.congreso_party_tour_viewed_rest = false;
+    Q.congreso_party_tour_viewed_catalonia = false;
+    Q.congreso_party_tour_viewed_eh = false;
+    Q.congreso_party_tour_viewed_ppcc = false;
+    Q.congreso_party_tour_viewed_galicia = false;
+    Q.congreso_party_tour_viewed_others = false;
+!}
+go-to: rest
+role: event
+
+@rest
+on-arrival: {!
+    Q.congreso_party_tour_viewed_rest = true;
+    Q.congreso_party_tour_highlight = "rest";
+!}
+go-to: show_map
+set-jump: rest_desc
+
+@rest_desc
+go-to: choices
+
+Across Spain many parties are running in every constituency. We can count on the classics, PP and PSOE[? if psc_split: , though the latter will not be running in Catalonia after the split with the PSC?].
+[? if not iu_in_up or upyd_congreso_s > 0: There's also the traditional minor [? if not iu_in_up and upyd_congreso_s > 0: parties: UPyD and IU.?][? if iu_in_up and upyd_congreso_s > 0: right party of UPyD.?][? if not iu_in_up and upyd_congreso_s < 1: left party of IU. ?]?]
+
+[? if spa_cs_active: The new liberal right, Cs, will also be running with [+ csspa_leader +] at the forefront.?] Meanwhile, the new left[? if not iu_in_up: , Podemos, will also be striving for a spot. ?][?if iu_in_up: will be running as UP: a broad coalition, uniting Podemos and IU among others. ?][? if spa_mpais_active: [+ mpais_leader +], on the flip side, will be running against the odds with mpais. ?]
+
+[? if vox_active: Last but not least, let's not forget about the renewed far-right, VOX.?]
+
+However there's many other smaller parties running only in their home turfs, including us.
+
+@show_map
+new-page: true
+go-to: jumpScene
+
+= Who's running for the Congreso?
+
+{!<div id="congreso-party-tour-widget" style="width: 95%; margin: 0 auto;"></div>!}
+
+@choices
+
+-@cat
+-@ppcc
+-@eh
+-@galicia
+-@others
+-@skip
+-@continue
+
+@cat
+title: Catalonia
+view-if: not congreso_party_tour_viewed_catalonia
+on-arrival: {!
+    Q.congreso_party_tour_viewed_catalonia = true;
+    Q.congreso_party_tour_highlight = "catalonia";
+!}
+go-to: show_map
+set-jump: cat_desc
+
+@cat_desc
+go-to: choices
+
+Here in **Catalonia**, [? if player_party == "erc": [? if not (jxsi_in_congreso and erc_in_jxsi) and not (erc_in_jxcat): we'll of course be in the fight! ?][? if jxsi_in_congreso and erc_in_jxsi: as agreed, we'll be running in the unprecedented joint coalition of JxSí.?][? if erc_in_jxcat: we'll be standing together as part of our agreed JxCat coalition.?]?][? if player_party == "cup": [? if spa_cup_active: we'll of course be running!?][? if not spa_cup_active: our party will not be running for such a foreign election!?] ERC, on their end, will be [? if erc_in_jxcat: running as part of the JxCat coalition.?][? if erc_in_jxsi and jxsi_in_congreso: running as part of the JxSí coalition.?][? if not erc_in_jxcat and not (erc_in_jxsi and jxsi_in_congreso): running as always.?]?] [? if not (jxsi_in_congreso and not erc_in_jxcat): Besides us, [+ parlament_current_ciu +] will also be fighting for their spot. ?]
+
+[? if spa_fr_active: Since [? if player_party == "cup": we're not running,?][? if player_party != "cup": the CUP is not running,?] it looks like FR will be taking their natural spot. ?][+ parlament_current_icv +], on their end, will be running as part of [? if iu_in_up: UP. ?][? if not iu_in_up: Podemos. ?][? if psc_split: The PSC will, after everything, be running independently. ?][? if unio_split and unio_congreso_catalunya_support > 0: Meanwhile, after their split, UDC will also try to retain their spot. ?][? if pdcat_split and pdcat_congreso_catalunya_support > 0: Meanwhile, after their split, the pdcat will also try to retain their spot. ?]
+
+@ppcc
+title: Valencia and the Balearic Islands
+view-if: not congreso_party_tour_viewed_ppcc
+on-arrival: {!
+    Q.congreso_party_tour_viewed_ppcc = true;
+    Q.congreso_party_tour_highlight = "ppcc";
+!}
+go-to: show_map
+set-jump: ppcc_desc
+
+@ppcc_desc
+go-to: choices
+
+In **Valencia**, Compromis [? if spa_compromis_active: will be also chasing representation to defend the interests of the Valencian people. ?][? if not spa_compromis_active: will be running as a part of the broad left coalition, within [? if iu_in_up: UP. ?][? if not iu_in_up: Podemos. ?]?]
+
+To the east, in the **Balearic Islands**, MES will [? if spa_mes_active: [? if spa_compromis_active: also ?] be running on its own! ?][? if not spa_mes_active: [? if not spa_compromis_active: also?] be running within [? if iu_in_up: UP. ?][? if not iu_in_up: Podemos. ?]?]
+
+@eh
+title: Basque Country and Navarre
+view-if: not congreso_party_tour_viewed_eh
+on-arrival: {!
+    Q.congreso_party_tour_viewed_eh = true;
+    Q.congreso_party_tour_highlight = "eh";
+!}
+go-to: show_map
+set-jump: eh_desc
+
+@eh_desc
+go-to: choices
+
+In the **Basque Country**, the EAJ-PNV will be, as always, present alongside with [? if spa_ehbildu_active: ehbildu.?][? if not spa_ehbildu_active: the alternative civic list of Amaiur.?]
+
+On their end, in **Navarre**, UPN will be running [? if spa_nsuma_formed: alonside the PP and Cs as part of the nsuma coalition.?][? if upn_in_pp: with the PP once again.?] To their left, [? if spa_ehbildu_active: gbai and ehbildu ?][? if not spa_ehbildu_active: Amaiur?].
+
+# TODO: change the conditions when we manage to fold gbai into amaiur if it is ever reformed.
+
+@galicia
+title: Galicia
+view-if: not congreso_party_tour_viewed_galicia
+on-arrival: {!
+    Q.congreso_party_tour_viewed_galicia = true;
+    Q.congreso_party_tour_highlight = "galicia";
+!}
+go-to: show_map
+set-jump: galicia_desc
+
+@galicia_desc
+go-to: choices
+
+In **Galicia**, the BNG will [? if spa_bng_active: be running on their own, to defend their explicitly left-sovereignty stance!?][? if not spa_bng_active: will be joining up efforts with the broad UP coalition.?]
+
+@others
+title: Other parties
+view-if: not congreso_party_tour_viewed_others
+on-arrival: {!
+    Q.congreso_party_tour_viewed_others = true;
+    Q.congreso_party_tour_highlight = "others";
+!}
+go-to: show_map
+set-jump: others_desc
+
+@others_desc
+go-to: choices
+
+In **Asturias**, the fac will [? if spa_foro_active: not be repeating its association with the PP and running on their own. ?][? if not spa_foro_active: be repeating its association with the PP.?]
+
+To their east, **Cantabria** will see the PRC running as their regional party. [? if spa_te_active: And, in**Aragon**, texiste will be representing their very own province in their fight not to be forgotten. ?]
+
+Finally, in the **Canary Islands**, cc-pnc will of course be there to fight for their seats.
+
+@skip
+title: Skip to the end of the tour
+view-if: not (congreso_party_tour_viewed_galicia and congreso_party_tour_viewed_ppcc and congreso_party_tour_viewed_eh and congreso_party_tour_viewed_catalonia and congreso_party_tour_viewed_rest and congreso_party_tour_viewed_others)
+on-arrival: {!
+    Q.congreso_party_tour_viewed_rest = true;
+    Q.congreso_party_tour_viewed_catalonia = true;
+    Q.congreso_party_tour_viewed_eh = true;
+    Q.congreso_party_tour_viewed_ppcc = true;
+    Q.congreso_party_tour_viewed_galicia = true;
+    Q.congreso_party_tour_viewed_others = true;
+    Q.congreso_party_tour_highlight = null;
+!}
+go-to: show_map
+set-jump: skip_desc
+
+@skip_desc
+
+Who even needs presentations for the parties that are running? You know that better than whoever is writing these texts anyway.
+
+- @continue
+
+@continue
+title: Continue...
+view-if: congreso_party_tour_viewed_galicia and congreso_party_tour_viewed_ppcc and congreso_party_tour_viewed_eh and congreso_party_tour_viewed_catalonia and congreso_party_tour_viewed_rest and congreso_party_tour_viewed_others
+go-to: post_event

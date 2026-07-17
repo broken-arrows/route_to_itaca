@@ -1,5 +1,5 @@
 title: Primàries splits the radical-left Barcelona vote
-view-if: year = 2019 and month = 4
+view-if: year = 2019 and month = 4 and 1==0
 tags: event
 new-page: true
 max-visits: 1
@@ -11,7 +11,7 @@ on-arrival: {!
     Q.cup_local_barcelona_support = (Q.cup_local_barcelona_support || 0) - _t;
     Q.primaries_local_barcelona_support = (Q.primaries_local_barcelona_support || 0) + _t;
 
-    // TODO: set primaries leadership if not done, make this dynamic ??
+    // TODO: set primaries leadership if not done, make this dynamic ?? + are we even doing this?
 !}
 role: event
 

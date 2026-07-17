@@ -618,7 +618,8 @@
     var scenes = [prevScene, prevTopScene, jumpScene, backSpecialScene, returnScene];
     var qualities = [];
     var qdisplays = [];
-    
+    var data = {};
+
     for(const file of dry_files_contents) {
       const {name:sourcePath, contents} = file;
 
@@ -656,6 +657,22 @@
           qdisplays.push(result);
         });
         continue;
+      } else if (/(^|[\\/])data[\\/][^\\/]+\.json$/.test(sourcePath)) {
+        // Game registries (glossary, achievements, …). The compiler is
+        // deliberately GENERIC here: it attaches the parsed JSON under its
+        // basename and never learns what the payload means, so a new registry
+        // costs zero engine work. Additive top-level key ⇒ the old UI's
+        // convertJSONToGame ignores it.
+        var registryName = sourcePath
+          .split(/[\\/]/).pop()
+          .replace(/\.json$/, '');
+        try {
+          data[registryName] = JSON.parse(contents);
+        } catch (e) {
+          return callback(new Error(
+            'Malformed registry ' + sourcePath + ': ' + e.message));
+        }
+        continue;
       } else {
         // Skip this file.
         continue;
@@ -665,6 +682,9 @@
       /* istanbul ignore if */
       if (err) {
         return callback(err);
+      }
+      if (Object.keys(data).length > 0) {
+        game.data = data;
       }
       callback(null, game);
     });

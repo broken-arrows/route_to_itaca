@@ -20,8 +20,8 @@ on-arrival: {!
     // crystallised the republican-left vs "régimen del 78" divide — PP/PSOE closed
     // ranks behind Felipe VI; IU/Podemos pushed a republic referendum. Kept SMALL,
     // and it OVERLAPS the May-2014 Podemos EP surge, so tune or remove.
-    window.spaSupportInject(Q, 'podemos', 'all', 1.5, 'psoe');        // anti-casta / republican leak
-    window.spaSupportInject(Q, 'erc', 'catalunya', 1.0, 'abstain');  // republican energy in Catalonia
+    G.spaSupportInject(Q, 'podemos', 'all', 1.5, 'psoe');        // anti-casta / republican leak
+    G.spaSupportInject(Q, 'erc', 'catalunya', 1.0, 'abstain');  // republican energy in Catalonia
 
     // TODO: text and potential path for no abdication?
 !}

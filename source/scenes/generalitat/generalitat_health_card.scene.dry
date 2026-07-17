@@ -1,0 +1,19 @@
+title: Ministry of Health
+new-page: true
+view-if: health_timer <= 0 and (health_minister_party == player_party)
+on-arrival: month_actions += 1; health_timer += 3;
+is-card: true
+card-image: img/health_icon.svg
+face-image: img/health_icon.svg
+frequency: 100
+tags: generalitat
+role: card-gov
+
+= Ministry of Health
+
+Something something (TODO)
+
+TODO: how do these work in jxsi / jxcat cases?
+
+-@post_event: Ah yes!
+-@easy_discard

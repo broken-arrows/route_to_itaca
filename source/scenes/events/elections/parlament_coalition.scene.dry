@@ -23,7 +23,7 @@ on-arrival: {!
             }
         }
     }
-
+º
     // Reset stuffs
     Q.parlament_coalition_leverage = 0;
     Q.parlament_coalition_concessions = false;
@@ -52,6 +52,7 @@ on-arrival: {!
     Q.parlament_coalition_proposal_bnl = null;
     Q.parlament_coalition_proposal_territory = null;
 
+    Q.parlament_coalition_no_possible_majority = false;
     Q.parlament_coalition_erc_critical = false;
     Q.parlament_coalition_cup_critical = false;
 
@@ -136,38 +137,65 @@ on-arrival: {!
         }
     }
 
+    // Case no possible majority
     if (
-        (Q.parlament_current_ciu_s < Q.parlament_s_majority) &&
-        (Q.cs_parlament_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_cs_ppc_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_ppc_cs_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_cs_ppc_vox_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_cs_psc_ppc_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_psc_cs_ppc_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_cs_psc_ppc_vox_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_cs_psc_unio_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_psc_cs_unio_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_ciu_ppc_unio_s < Q.parlament_s_majority)
-    ) { Q.parlament_coalition_erc_critical = true; }
-    if (
-        (Q.parlament_current_ciu_s < Q.parlament_s_majority) &&
-        (Q.erc_parlament_s < Q.parlament_s_majority) &&
-        (Q.cs_parlament_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_cs_ppc_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_ppc_cs_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_cs_ppc_vox_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_cs_psc_ppc_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_psc_cs_ppc_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_cs_psc_ppc_vox_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_cs_psc_unio_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_psc_cs_unio_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_ciu_ppc_unio_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_psc_erc_icv_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_erc_psc_icv_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_majority_s < Q.parlament_s_majority) &&
         (Q.parlament_coalition_ciu_erc_s < Q.parlament_s_majority) &&
         (Q.parlament_coalition_erc_ciu_s < Q.parlament_s_majority) &&
-        (Q.parlament_coalition_ciu_erc_pdcat_s < Q.parlament_s_majority)
-    ) { Q.parlament_coalition_cup_critical = true; }
+        (Q.parlament_coalition_ciu_erc_cup_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_erc_ciu_cup_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_jxsi_cup_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_erc_cup_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_psc_erc_icv_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_erc_psc_icv_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_psc_icv_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_erc_icv_cup_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_cs_ppc_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_ppc_cs_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_cs_ppc_vox_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_cs_psc_ppc_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_cs_psc_ppc_vox_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_psc_cs_ppc_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_ciu_erc_pdcat_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_cs_psc_unio_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_psc_cs_unio_s < Q.parlament_s_majority) &&
+        (Q.parlament_coalition_erc_psc_icv_cup_s < Q.parlament_s_majority)
+    ) {
+        Q.parlament_coalition_no_possible_majority = true;
+    } else {
+        if (
+            (Q.parlament_current_ciu_s < Q.parlament_s_majority) &&
+            (Q.cs_parlament_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_cs_ppc_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_ppc_cs_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_cs_ppc_vox_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_cs_psc_ppc_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_psc_cs_ppc_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_cs_psc_ppc_vox_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_cs_psc_unio_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_psc_cs_unio_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_ciu_ppc_unio_s < Q.parlament_s_majority)
+        ) { Q.parlament_coalition_erc_critical = true; }
+        if (
+            (Q.parlament_current_ciu_s < Q.parlament_s_majority) &&
+            (Q.erc_parlament_s < Q.parlament_s_majority) &&
+            (Q.cs_parlament_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_cs_ppc_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_ppc_cs_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_cs_ppc_vox_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_cs_psc_ppc_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_psc_cs_ppc_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_cs_psc_ppc_vox_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_cs_psc_unio_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_psc_cs_unio_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_ciu_ppc_unio_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_psc_erc_icv_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_erc_psc_icv_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_ciu_erc_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_erc_ciu_s < Q.parlament_s_majority) &&
+            (Q.parlament_coalition_ciu_erc_pdcat_s < Q.parlament_s_majority)
+        ) { Q.parlament_coalition_cup_critical = true; }
+    }
 
     // Store config for initCatCoalitions (called from game.js after render)
     window._cvParlement = {
@@ -299,7 +327,7 @@ on-arrival: {!
             },
             {
                 label:   "Soft-Sovereignty Government",
-                condition: function(s) { return s("ciu_alias") >= s("erc") && s("pdcat") > 0; },
+                condition: function(s) { return s("ciu_alias") >= s("erc") && s("pdcat") > 0 && Q.pdcat_split; },
                 members: [
                     { party: "ciu_alias", type: "government" },
                     { party: "erc",       type: "government" },
@@ -525,7 +553,7 @@ Given the election results, different coalition arithmetics can be imagined. Now
 
 {!<div id="parlament-coalition-widget"></div>!}
 
-[? if parlament_current_ciu_s > 40 and parlament_coalition_ciu_erc_s > parlament_s_majority : [+ parlament_current_ciu_leader +] is asking for [? if player_party = "erc" : our?][?if player_party != "erc" : ERC's ?] support to form a [+ parlament_current_ciu +] <span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">minority government</span>. [? if player_party = "erc" : Some policy concessions are expected to be negotiatied in exchange. There's always the alternative to propose a different arithmetic, but given the results that may hinder our leverage. ?] ?]
+[? if parlament_current_ciu_s > 40 and parlament_coalition_ciu_erc_s > parlament_s_majority : [+ parlament_current_ciu_leader +] is asking for [? if player_party = "erc" : our?][?if player_party != "erc" : ERC's ?] support to form a [+ parlament_current_ciu +] <span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">minority government</span>. [? if player_party = "erc" : Some policy concessions are expected to be negotiated in exchange. There's always the alternative to propose a different arithmetic, but given the results that may hinder our leverage. ?] ?]
 
 - @parlament_coalition_majority
 - @parlament_coalition_ciu_minority.erc
@@ -548,10 +576,64 @@ Given the election results, different coalition arithmetics can be imagined. Now
 - @parlament_coalition_unionist.cs_psc_ppc_vox
 - @parlament_coalition_unionist.cs_psc_unio
 - @parlament_coalition_unionist.psc_cs_unio
+- @parlament_no_majority
 - @refuse_negotiations
+
+@parlament_no_majority
+title: There's no possible majority
+choose-if: parlament_coalition_no_possible_majority
+view-if: parlament_coalition_no_possible_majority
+on-arrival: {!
+    // This should consolidate votes towards larger parties
+    Q.independence_trust -= 5;
+    if (Q.erc_parlament_s <= Q.parlament_current_ciu_s) {
+        for (var c of Q.parlament_constituencies) {
+            for (var d of Q.parlament_demographics){
+                Q["erc_parlament_" + c + "_" + d + "_support"] -= 1;
+                Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"] += 1.;
+            }
+        }
+    } else {
+        for (var c of Q.parlament_constituencies) {
+            for (var d of Q.parlament_demographics){
+                Q["erc_parlament_" + c + "_" + d + "_support"] += 1.25;
+                Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"] -= 1;
+                Q["cup_parlament_" + c + "_" + d + "_support"] -= 0.25;
+            }
+        }
+    }
+    if (Q.cat_spa_relations < 40) {
+        for (var c of Q.parlament_constituencies) {
+            if (Q.psc_leader != "Àngel Ros" && Q.psc_leader != "Montserrat Tura") {
+                Q["cs_parlament_" + c + "_unemployed_support"] += 2;
+                Q["ppc_parlament_" + c + "_unemployed_support"] -= 1.25;
+                Q["psc_parlament_" + c + "_unemployed_support"] -= 0.75;
+            } else {
+                Q["cs_parlament_" + c + "_unemployed_support"] += 1.5;
+                Q["ppc_parlament_" + c + "_unemployed_support"] -= 1.25;
+                Q["psc_parlament_" + c + "_unemployed_support"] -= 0.25;
+                Q["cs_parlament_" + c + "_ind_support"] += 3;
+                Q["ppc_parlament_" + c + "_ind_support"] -= 1;
+                Q["psc_parlament_" + c + "_ind_support"] -= 1;
+            }
+            for (var d of Q.parlament_demographics){
+                if (d == "unemployed" || d == "ind") continue;
+                Q["cs_parlament_" + c + "_" + d + "_support"] += 1;
+                Q["ppc_parlament_" + c + "_" + d + "_support"] -= 0.8;
+                Q["psc_parlament_" + c + "_" + d + "_support"] -= 0.2;
+            } 
+        }
+    }
+!}
+call: snap_election
+
+An ungovernable Catalonia will see another election round in a couple months. 
+
+- @post_event: Let's hope this is for the better...
 
 @refuse_negotiations
 title: Refuse to negotiate at all
+view-if: not parlament_coalition_no_possible_majority
 choose-if: (parlament_coalition_erc_critical and player_party == "erc") or (parlament_coalition_cup_critical and player_party == "cup")
 subtitle: This will be disliked by pretty much everyone, and will most probably result in new elections.
 unavailable-subtitle: Sadly, we're not that critical. There are coalition options without our votes.
@@ -564,7 +646,7 @@ on-arrival: {!
 !}
 call: snap_election
 
-No one is thrilled about another election round, and the general public seems to think that governent formation was in our hands. We'll have to do some level of reconvincing before the next elections.
+No one is thrilled about another election round, and the general public seems to think that government formation was in our hands. We'll have to do some level of reconvening before the next elections.
 
 - @post_event: Let's hope this was for the better...
 

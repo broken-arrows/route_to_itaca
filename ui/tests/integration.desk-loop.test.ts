@@ -2,13 +2,22 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-// The game's runtime globals (window.engineTick / window.spaSupportInject).
-// The app installs these from `main.ts`; a test that drives the REAL content
-// must install them too, or the whole macro simulation silently does not run —
-// dendry's runActions swallows the `window.engineTick is not a function`
-// TypeError, so the loop keeps working and the calendar keeps moving while
-// nothing simulates. That is precisely the bug this file now guards.
-import '../src/game-bindings';
+// The game's own code (source/lib/), reached by compiled scene code as
+// `G.engineTick` / `G.spaSupportInject`. `DendryAdapter`'s constructor installs
+// it on every engine via `installGameLib` (game-bindings.ts), before
+// `beginGame` runs — so constructing the adapter (which `game.initFromText`
+// below does) wires it; nothing here touches `window` any more.
+//
+// HISTORY (phase-2.5 Task 3 changed this): this used to be
+// `window.engineTick`/`window.spaSupportInject`, reachable only because
+// `game-bindings.ts` side-effect-imported `out/html/cat_engine.js` onto
+// `window`. The Vue app has no script tags, so without that import
+// `window.engineTick` was `undefined` — and dendry's `runActions` SWALLOWS the
+// resulting TypeError, so the loop kept working and the calendar kept moving
+// while nothing simulated. That is precisely the bug this file guards against;
+// only the MECHANISM changed (`window.*` -> `G.*` via `engine.setGameLib`), not
+// the property being asserted. See `docs/design/LEARNINGS.md`, 2026-07-13.
+import { gameLib } from '../src/game-bindings';
 import { mount } from '@vue/test-utils';
 import { useGameStore } from '../src/stores/game';
 import { useDeskStore, setAnimationsForTest } from '../src/stores/desk';
@@ -77,15 +86,15 @@ describe('integration: the real game through the desk loop', () => {
     setAnimationsForTest(false);
   });
 
-  // The content calls `window.engineTick` / `window.spaSupportInject` from
-  // compiled scene code; `src/game-bindings.ts` is what installs them. Without
-  // it the calls throw a TypeError that dendry's `runActions` SWALLOWS, so the
+  // Compiled scene code calls `G.engineTick` / `G.spaSupportInject` (`G` is
+  // `engine.gameLib`, installed by `DendryAdapter`'s constructor — see
+  // game-bindings.ts). If this ever stops exporting real functions, every
+  // `G.*` call throws a TypeError that dendry's `runActions` SWALLOWS, so the
   // game keeps playing and simulates nothing. This is the cheap canary; the
   // test below is the one that proves the sim actually ran.
-  it('the game runtime globals are installed on window', () => {
-    const w = window as unknown as Record<string, unknown>;
-    expect(typeof w.engineTick).toBe('function');
-    expect(typeof w.spaSupportInject).toBe('function');
+  it('the game lib exports the functions content calls as G.*', () => {
+    expect(typeof gameLib.engineTick).toBe('function');
+    expect(typeof gameLib.spaSupportInject).toBe('function');
   });
 
   // Not seeded: `newGame()` calls `beginGame()` with no seeds, so the engine

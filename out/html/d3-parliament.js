@@ -255,30 +255,42 @@ d3.parliament = function () {
             return p.id === partyId;
           })[0].seats;
 
-          let colour = colourList.find((t) => t.words.includes(partyId));
+          var glossaryTerms = window.glossary().terms;
+          let colour = glossaryTerms.find(
+            (t) => t.colour && t.match.includes(partyId),
+          );
           if (!colour) {
-            colour = colourList.find((t) =>
-              t.words.includes(partyId.toUpperCase()),
+            colour = glossaryTerms.find(
+              (t) => t.colour && t.match.includes(partyId.toUpperCase()),
             );
           }
-          let img = tooltipList.find((t) => t.searchString.includes(partyId));
+          let img = glossaryTerms.find(
+            (t) => t.tooltip && t.match.includes(partyId),
+          );
           if (!img) {
-            img = tooltipList.find((t) =>
-              t.searchString.includes(partyId.toUpperCase()),
+            img = glossaryTerms.find(
+              (t) => t.tooltip && t.match.includes(partyId.toUpperCase()),
             );
           }
+          // Registry colours are bare tokens ("ciu") or a raw hex (kept
+          // verbatim by the harvester where the old palette had no token).
+          const partyColour = colour
+            ? colour.colour.startsWith("#")
+              ? colour.colour
+              : `var(--${colour.colour})`
+            : "black";
           tooltip
             .html(
               `<div style="display:flex; align-items:center;">
-                <img src="${img.img}" alt="${img.mainText}" style="height:42px; width:auto; margin-right:10px; max-width: 120px; object-fit: contain; flex-shrink: 0;">
+                <img src="${img.tooltip.img}" alt="${img.tooltip.title}" style="height:42px; width:auto; margin-right:10px; max-width: 120px; object-fit: contain; flex-shrink: 0;">
                 <div>
-                  <span style="color:${colour.colour || "black"}; font-weight:bold;">${colour.transform || partyId}</span><br>
+                  <span style="color:${partyColour}; font-weight:bold;">${(colour && colour.display) || partyId}</span><br>
                   <span>${nSeatsInParty} seat${nSeatsInParty !== 1 ? "s" : ""}</span>
                 </div>
               </div>`,
             )
             .classed("visible", true);
-          tooltip.style("border-color", colour.colour || "black");
+          tooltip.style("border-color", partyColour);
         }
       });
 

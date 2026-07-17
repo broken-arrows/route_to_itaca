@@ -1,0 +1,84 @@
+title: The final form of ​CECP?
+view-if: ecp_formation_trigger and next_election_time - time <= 6 and cecp_leader != "Arcadi Oliveres" and cecp_leader != "Jaume Asens" and not constitution_reformed
+face-image: img/events/ecp_formation.jpg
+tags: event
+new-page: true
+max-visits: 1
+on-arrival: {!
+    // TODO: more conditions for this trigger?
+    // TODO: constituion_reformed is not fired by anything
+    Q.ecp_formed = true;
+    Q.parlament_current_icv = "ecp";
+
+    Q.ecp_parlament_s = Q.csqp_parlament_s;
+    Q.ecp_parlament_pv = Q.csqp_parlament_pv;
+    Q.csqp_parlament_s = 0;
+    Q.csqp_parlament_pv = 0;
+
+    Q.ecp_relations = Q.csqp_relations;
+    Q.ecp_leader = "Jéssica Albiach";
+    Q.ecp_leader_gender = "f";
+    Q.ecp_ideology = "Social Democracy, Autonomism";
+
+    for(var prov of Q.parlament_constituencies){
+        for(var demo of Q.parlament_demographics){
+            Q["ecp_parlament_" + prov + "_" + demo + "_support"] = Q["cecp_parlament_" + prov + "_" + demo + "_support"] * 0.95;
+            Q["cecp_parlament_" + prov + "_" + demo + "_support"] = 0;
+        }
+    }
+
+
+    // governing stuff
+    if  (Q.president_party == "cecp") {
+        Q.president_party = "ecp";
+    }
+
+    if (Q.vicepresident_party == "cecp") {
+        Q.vicepresident_party = "ecp"
+    }
+
+    if (Q.economy_minister_party == "cecp") {
+        Q.economy_minister_party = "ecp";
+    }
+
+    if (Q.interior_minister_party == "cecp") {
+        Q.interior_minister_party = "ecp";
+    }
+
+    if (Q.health_minister_party == "cecp") {
+        Q.health_minister_party = "ecp";
+    }
+
+    if (Q.education_minister_party == "cecp") {
+        Q.education_minister_party = "ecp";
+    }
+
+    if (Q.territory_minister_party == "cecp") {
+        Q.territory_minister_party = "ecp";
+    }
+
+    if (Q.foreign_minister_party == "cecp") {
+        Q.foreign_minister_party = "ecp";
+    }
+
+    if (Q.bnl_minister_party == "cecp") {
+        Q.bnl_minister_party = "ecp";
+    }
+
+    if (Q.speaker_party == "cecp") {
+        Q.speaker_party = "ecp";
+    }
+
+    if (Q.cat_coalition.includes("cecp")) {
+        Q.cat_coalition = Q.cat_coalition.map(item => item === "cecp" ? "ecp" : item);
+        Q.cat_coalition_disp = Q.cat_coalition_disp.replaceAll("CECP", "ECP").replaceAll("cecp", "ecp");
+    }
+!}
+
+= The final form of ​CECP?
+
+The latest re-branding of the federal left will, rather poetically, see the "C" for Catalonia dropped to become simply ECP. Having arguably abandoned the idea of plurinationalism all together, the coalition of parties and organizations have either seen leave or all-but-in-name purged most profiles that leaned in that direction. From the original Arcadi Oliveres to Albano Dante Fachin and now also Elisenda Alamany, the political space now feels like a far cry from the deeply transformative, break-with-the-system coalition that once existed.
+
+- @post_event: One wonders if it could've been any different...
+
+

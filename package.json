@@ -4,7 +4,8 @@
   "description": "Building the game:",
   "main": "out/html/index.html",
   "scripts": {
-    "dendrynexus-ten": "dendrynexus-ten"
+    "dendrynexus-ten": "dendrynexus-ten",
+    "build:old-ui": "dendrynexus-ten make-html --pretty && node -e \"require('fs').cpSync('source/lib','out/html/lib',{recursive:true})\""
   },
   "repository": {
     "type": "git",

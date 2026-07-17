@@ -20,11 +20,11 @@ on-arrival: {!
     Q.spanish_coalition_disp = "PSOE <span style='font-style: italic; color: var(--psoe);'>minority government</span>";
 
     // supporters shed votes
-    window.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');
-    window.spaSupportInject(Q, 'cs', 'all', 0.5, 'psoe');
-    window.spaSupportInject(Q, 'abstain', 'all', 1.0, 'pp');
-    window.spaSupportInject(Q, 'cs', 'all', 1.0, 'pp');
-    window.spaSupportInject(Q, 'vox', 'all', 0.5, 'pp');
+    G.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');
+    G.spaSupportInject(Q, 'cs', 'all', 0.5, 'psoe');
+    G.spaSupportInject(Q, 'abstain', 'all', 1.0, 'pp');
+    G.spaSupportInject(Q, 'cs', 'all', 1.0, 'pp');
+    G.spaSupportInject(Q, 'vox', 'all', 0.5, 'pp');
 !}
 
 In [? if congreso_coalition_grand_toleration_happened: yet another ?][? if not congreso_coalition_grand_toleration_happened: a ?] set of events hard to even imagine a decade ago, the bipartidist rivalry seems to have stepped aside to bring a joining of parties thought to be ideologically opposed. [? if spanish_pm_gender == "m": Presidente ?][? if spanish_pm_gender == "f": Presidenta ?][+ spanish_pm +] will be sworn in thanks to the support of the PP.
@@ -47,10 +47,10 @@ on-arrival: {!
     Q.spanish_coalition_disp = "PP <span style='font-style: italic; color: var(--pp);'>minority government</span>";
 
     // supporters shed votes
-    window.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');
-    window.spaSupportInject(Q, 'abstain', 'all', 1.0, 'psoe');
-    window.spaSupportInject(Q, 'cs', 'all', 0.5, 'psoe');
-    window.spaSupportInject(Q, 'vox', 'all', 0.5, 'pp');
+    G.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');
+    G.spaSupportInject(Q, 'abstain', 'all', 1.0, 'psoe');
+    G.spaSupportInject(Q, 'cs', 'all', 0.5, 'psoe');
+    G.spaSupportInject(Q, 'vox', 'all', 0.5, 'pp');
 !}
 
 In [? if congreso_coalition_grand_toleration_happened: yet another ?][? if not congreso_coalition_grand_toleration_happened: a ?] set of events hard to even imagine a decade ago, the bipartidist rivalry seems to have stepped aside to bring a joining of parties thought to be ideologically opposed. [? if spanish_pm_gender == "m": Presidente ?][? if spanish_pm_gender == "f": Presidenta ?][+ spanish_pm +] will be sworn in thanks to the support of the PSOE.
@@ -73,11 +73,11 @@ on-arrival: {!
     Q.spanish_coalition_disp = "PP <span style='font-style: italic; color: var(--pp);'>minority government</span>";
 
     // supporters shed votes
-    window.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');
-    window.spaSupportInject(Q, 'abstain', 'all', 1.0, 'psoe');
-    window.spaSupportInject(Q, 'pp', 'all', 1.0, 'cs');
-    window.spaSupportInject(Q, 'vox', 'all', 0.5, 'pp');
-    window.spaSupportInject(Q, 'abstain', 'all', 0.5, 'cs');
+    G.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');
+    G.spaSupportInject(Q, 'abstain', 'all', 1.0, 'psoe');
+    G.spaSupportInject(Q, 'pp', 'all', 1.0, 'cs');
+    G.spaSupportInject(Q, 'vox', 'all', 0.5, 'pp');
+    G.spaSupportInject(Q, 'abstain', 'all', 0.5, 'cs');
 !}
 
 After a set of events truly unbelievable just a few years ago, the ongoing civil war within the PSOE has left a bizarre sight within the walls of the Congreso. The century-old party, historical pillar of the post-Franco era and bipartidism, now just torn into pieces. Some MPs have voted against the investiture, some have followed the line and abstained, some have not even showed up. In any case, the majority was there despite everything, and [+ spanish_pm +] will be [? if spanish_pm_gender == "m": Presidente?][? if spanish_pm_gender == "f": Presidenta?] after all. 

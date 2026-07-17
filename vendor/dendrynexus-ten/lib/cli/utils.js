@@ -247,14 +247,28 @@
     });
   };
 
+  // Only these are game CONTENT. Everything else under source/ is shipped, not
+  // compiled: `lib/` is handed to the engine via setGameLib, `img/` is served by
+  // each UI's web root, `locales/` is fetched at runtime.
+  //
+  // This filter is NOT cosmetic. Before it, fetchContent walked source/ with no
+  // pattern at all and `.toString()`d EVERY file into memory — so moving the
+  // 101 MB art tree into source/img/ (phase 6) would have made every compile
+  // slurp it as UTF-8. `desk_ui_plan.md` claimed the walk already filtered on
+  // /\.dry$/; that filter is only on getLatestMTime (above).
+  var CONTENT_PATTERN = /(\.dry|[\\/]data[\\/][^\\/]+\.json)$/;
+
   var fetchContent = function(diry, callback) {
     var files = [];
     walkDir(diry, {}, function(sourcePath, done) {
+      if (!CONTENT_PATTERN.test(sourcePath)) {
+        return done();
+      }
       fs.readFile(sourcePath, function(err, content) {
         if (err) {
           return done(err);
         }
-        
+
         files.push({
           name: sourcePath,
           contents: content.toString()

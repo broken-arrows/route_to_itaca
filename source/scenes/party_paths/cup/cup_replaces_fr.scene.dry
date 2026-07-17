@@ -7,10 +7,10 @@ on-arrival: {!
     // TODO: un-hardcode this, fold into CUP's event tree
     // Nov 2019: CUP contests the Congreso for the first time, replacing FR and
     // mobilising abstainers strongly.
-    Q.spa_cup_spa_active = true;
+    Q.spa_cup_active = true;
     Q.spa_fr_active = false;
-    window.spaSupportInject(Q, 'cup', 'catalunya', 3.0, 'fr');
-    window.spaSupportInject(Q, 'cup', 'catalunya', 4.0, 'abstain');
+    G.spaSupportInject(Q, 'cup', 'catalunya', 3.0, 'fr');
+    G.spaSupportInject(Q, 'cup', 'catalunya', 4.0, 'abstain');
 !}
 role: event
 

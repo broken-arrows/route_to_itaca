@@ -3,7 +3,7 @@ view-if: year = 2014 and month = 7
 tags: event
 new-page: true
 max-visits: 1
-face-image: "source/scenes/party_paths/psoe/bye_rubalcaba.jpg"
+face-image: "img/events/bye_rubalcaba.jpg"
 on-arrival: {!
     Q.psoe_leadership_sanchez_default = 1;
     Q.psoe_leadership_madina_default = 0;
@@ -61,8 +61,8 @@ on-arrival: {!
     Q.psoe_ideology = "Centrist Social Democracy, Republican Autonomism";
 
     // Remove votes
-    window.spaSupportInject(Q, 'podemos', 'all', 2, 'psoe');
-    window.spaSupportInject(Q, 'cs', 'all', 1.5, 'psoe');
+    G.spaSupportInject(Q, 'podemos', 'all', 2, 'psoe');
+    G.spaSupportInject(Q, 'cs', 'all', 1.5, 'psoe');
 !}
 
 In a rather predictable turn of events, the party-favourite Eduardo Madina will take the helm of the PSOE. His leadership will have to make a difficult balance between following the classical party line and the general political dissatisfaction that has seen it bleed votes to new parties.

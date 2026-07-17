@@ -1,0 +1,19 @@
+title: Ministry of the Vice-Presidency
+new-page: true
+view-if: vp_timer <= 0 and (vicepresident_party == player_party)
+on-arrival: month_actions += 1; vp_timer += 3;
+is-card: true
+card-image: img/cat_seal.svg
+face-image: img/cat_seal.svg
+frequency: 100
+tags: generalitat
+role: card-gov
+
+= Ministry of the Vice-Presidency
+
+Something something (TODO)
+
+TODO: how do these work in jxsi / jxcat cases?
+
+-@post_event: Ah yes!
+-@easy_discard

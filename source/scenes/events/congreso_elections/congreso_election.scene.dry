@@ -56,14 +56,6 @@ on-display: {!
             "seats": Q.amaiur_congreso_s,
         });
     }
-    if (Q.nos_congreso_s) {
-        data.push({
-            "id": "nos",
-            "legend": "NÓS",
-            "name": "NÓS",
-            "seats": Q.nos_congreso_s,
-        });
-    }
     if (Q.bng_congreso_s) {
         data.push({
             "id": "bng",
@@ -339,8 +331,8 @@ on-display: {!
         console.log(Q.congreso_parties);
         var lines_spa = d3.linegraph(true, true,
             Q.congreso_parties,
-            {'ciu': 'var(--ciu)', 'erc': 'var(--erc)', 'cs': 'var(--cs)', 'psc': 'var(--psc)', 'pp': 'var(--pp)', 'vox': 'var(--vox)', 'cup': 'var(--cup)', 'unio': 'var(--unio)', 'jxsi': 'var(--jxsi)', 'jxcat': 'var(--jxcat)', 'junts': 'var(--junts)', 'cdc': 'var(--cdc)', 'dl': 'var(--dl)', 'pdcat': 'var(--pdcat)', 'psoe': 'var(--psoe)', 'iu': 'var(--iu)', 'up': 'var(--up)', 'sumar': 'var(--sumar)', 'mpais': 'var(--mpais)', 'pnv': 'var(--pnv)', 'ehbildu': 'var(--ehbildu)', 'amaiur': 'var(--amaiur)', 'bng': 'var(--bng)', 'nos': 'var(--nos)', 'mes': 'var(--mes)', 'gbai': 'var(--gbai)', 'compromis': 'var(--compromis)', 'cc': 'var(--cc)', 'fac': 'var(--fac)', 'prc': 'var(--prc)', 'te': 'var(--te)'},
-            {'ciu': 'CiU', 'erc': 'ERC', 'cs': 'Cs', 'psc': 'PSC', 'pp': 'PP', 'vox': 'Vox', 'cup': 'CUP','unio': 'UDC', 'jxsi': 'JxSí', 'jxcat': 'JxCat', 'junts': 'Junts', 'cdc': 'CDC', 'dl': 'DL', 'pdcat': 'PDeCAT', 'psoe': 'PSOE', 'iu': 'IU', 'up': 'UP', 'sumar': 'Sumar', 'mpais': 'Más País', 'pnv': 'EAJ-PNV', 'ehbildu': 'EH Bildu', 'amaiur': 'Amaiur', 'bng': 'BNG', 'nos': 'NÓS', 'mes': 'MES', 'gbai': 'GBai', 'compromis': 'Compromís', 'cc': 'CC-PNC', 'fac': 'FAC', 'prc': 'PRC', 'te': '¡TE!'});
+            {'ciu': 'var(--ciu)', 'erc': 'var(--erc)', 'cs': 'var(--cs)', 'psc': 'var(--psc)', 'pp': 'var(--pp)', 'vox': 'var(--vox)', 'cup': 'var(--cup)', 'unio': 'var(--unio)', 'jxsi': 'var(--jxsi)', 'jxcat': 'var(--jxcat)', 'junts': 'var(--junts)', 'cdc': 'var(--cdc)', 'dl': 'var(--dl)', 'pdcat': 'var(--pdcat)', 'psoe': 'var(--psoe)', 'iu': 'var(--iu)', 'up': 'var(--up)', 'podemos': 'var(--podemos)', 'sumar': 'var(--sumar)', 'mpais': 'var(--mpais)', 'pnv': 'var(--pnv)', 'ehbildu': 'var(--ehbildu)', 'amaiur': 'var(--amaiur)', 'bng': 'var(--bng)', 'mes': 'var(--mes)', 'gbai': 'var(--gbai)', 'compromis': 'var(--compromis)', 'cc': 'var(--cc)', 'fac': 'var(--fac)', 'prc': 'var(--prc)', 'te': 'var(--te)'},
+            {'ciu': 'CiU', 'erc': 'ERC', 'cs': 'Cs', 'psc': 'PSC', 'pp': 'PP', 'vox': 'Vox', 'cup': 'CUP','unio': 'UDC', 'jxsi': 'JxSí', 'jxcat': 'JxCat', 'junts': 'Junts', 'cdc': 'CDC', 'dl': 'DL', 'pdcat': 'PDeCAT', 'psoe': 'PSOE', 'iu': 'IU', 'up': 'UP', 'podemos': 'Podemos', 'sumar': 'Sumar', 'mpais': 'Más País', 'pnv': 'EAJ-PNV', 'ehbildu': 'EH Bildu', 'amaiur': 'Amaiur', 'bng': 'BNG', 'mes': 'MES', 'gbai': 'GBai', 'compromis': 'Compromís', 'cc': 'CC-PNC', 'fac': 'FAC', 'prc': 'PRC', 'te': '¡TE!'});
         lines_spa.width(width).height(400);
         d3.select("#party_support_history").datum(Q.party_spa_support_records).call(lines_spa);
         console.log("party_spa_support_records", Q.party_spa_support_records);
@@ -380,7 +372,6 @@ on-display: {!
 [? if fr_congreso_showviz: {!<tr><td><div class="box" style='background-color: #0a0a0a'> </div> !} FR {!</td><td style='text-align: right;'>!}[+ fr_congreso_pv +]% ([+ fr_congreso_pv_cat +]%) {!</td><td>!} [+ fr_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ fr_congreso_s +] {!</td><td>!} [+ fr_congreso_s_delta +] {!</td>!}?]
 [? if cc_congreso_showviz: {!<tr><td><div class="box" style='background-color: #ffcc00; color: black'> </div> !} CC-PNC {!</td><td style='text-align: right;'>!}[+ cc_congreso_pv +]% {!</td><td>!} [+ cc_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ cc_congreso_s +] {!</td><td>!} [+ cc_congreso_s_delta +] {!</td>!}?]
 [? if bng_congreso_showviz: {!<tr><td><div class="box" style='background-color: #a2c7e4; color: white'> </div> !} BNG {!</td><td style='text-align: right;'>!}[+ bng_congreso_pv +]% {!</td><td>!} [+ bng_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ bng_congreso_s +] {!</td><td>!} [+ bng_congreso_s_delta +] {!</td>!}?]
-[? if nos_congreso_showviz: {!<tr><td><div class="box" style='background-color: #ed1c24'> </div> !} NÓS {!</td><td style='text-align: right;'>!}[+ nos_congreso_pv +]% {!</td><td>!} [+ nos_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ nos_congreso_s +] {!</td><td>!} [+ nos_congreso_s_delta +] {!</td>!}?]
 [? if upyd_congreso_showviz: {!<tr><td><div class="box" style='background-color: #e9008c'> </div> !} UPyD {!</td><td style='text-align: right;'>!}[+ upyd_congreso_pv +]% ([+ upyd_congreso_pv_cat +]%) {!</td><td>!} [+ upyd_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ upyd_congreso_s +] {!</td><td>!} [+ upyd_congreso_s_delta +] {!</td>!}?]
 [? if nsuma_congreso_showviz: {!<tr><td><div class="box" style='background-color: #2a52be'> </div> !} nsuma {!</td><td style='text-align: right;'>!}[+ nsuma_congreso_pv +]% {!</td><td>!} [+ nsuma_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ nsuma_congreso_s +] {!</td><td>!} [+ nsuma_congreso_s_delta +] {!</td>!}?]
 [? if compromis_congreso_showviz: {!<tr><td><div class="box" style='background-color: #ec8953; color: black'> </div> !} Compromís {!</td><td style='text-align: right;'>!}[+ compromis_congreso_pv +]% {!</td><td>!} [+ compromis_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ compromis_congreso_s +] {!</td><td>!} [+ compromis_congreso_s_delta +] {!</td>!}?]

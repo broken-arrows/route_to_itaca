@@ -1,0 +1,19 @@
+title: Ministry of Territory
+new-page: true
+view-if: territory_timer <= 0 and (territory_minister_party == player_party)
+on-arrival: month_actions += 1; territory_timer += 3;
+is-card: true
+card-image: img/territory_icon.svg
+face-image: img/territory_icon.svg
+frequency: 100
+tags: generalitat
+role: card-gov
+
+= Ministry of Territory
+
+Something something (TODO)
+
+TODO: how do these work in jxsi / jxcat cases?
+
+-@post_event: Ah yes!
+-@easy_discard

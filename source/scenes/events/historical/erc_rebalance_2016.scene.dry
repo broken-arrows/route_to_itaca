@@ -6,8 +6,8 @@ max-visits: 1
 on-arrival: {!
     // TODO: un-hardcode this? make it hidden??
     // Between Dec 2015 and Jun 2016 ERC strengthens at the CiU-bloc's expense.
-    window.spaSupportInject(Q, 'erc', 'catalunya', 2.0, 'ciu');
-    window.spaSupportInject(Q, 'erc', 'catalunya', 2.0, 'abstain');
+    G.spaSupportInject(Q, 'erc', 'catalunya', 2.0, 'ciu');
+    G.spaSupportInject(Q, 'erc', 'catalunya', 2.0, 'abstain');
 !}
 role: event
 

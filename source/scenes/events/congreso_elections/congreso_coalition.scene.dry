@@ -111,7 +111,7 @@ on-arrival: {!
         // small regional / plurinational minors — vote YES for a progressive bloc.
         // PNV included: historically it gave Sánchez an actual YES (2018/2020/2023),
         // so it's a willing supporter courted ahead of the abstaining nationalist-left.
-        compromis:"support", mes:"support", gbai:"support", nos:"support",
+        compromis:"support", mes:"support", gbai:"support",
         bng:"support", te:"support", prc:"support", pnv:"support",
         // pragmatic dealmaker — merely tolerates
         cc:"abstain",
@@ -127,7 +127,7 @@ on-arrival: {!
     // The Catalan right carrier is excluded too — handled live on its descriptor.
     var TRUELEFT_POSTURE = {
         // genuine plurinational / regional left — vote YES for a radical-left front
-        compromis:"support", mes:"support", gbai:"support", nos:"support",
+        compromis:"support", mes:"support", gbai:"support",
         bng:"support", te:"support", prc:"support",
         // the big nationalist left + a split PSC — enable by abstaining, stay out
         ehbildu:"abstain", amaiur:"abstain", erc:"abstain", psc:"abstain",
@@ -140,7 +140,7 @@ on-arrival: {!
     var RIGHT_POSTURE = {           // a *moderate* right core (PP / PP+Cs)
         upn:"support", nsuma:"support", fac:"support", upyd:"support",
         cc:"abstain", prc:"abstain", te:"abstain", pnv:"abstain",
-        compromis:"oppose", mes:"oppose", gbai:"oppose", nos:"oppose",
+        compromis:"oppose", mes:"oppose", gbai:"oppose",
         bng:"oppose", fr:"oppose", ehbildu:"oppose", amaiur:"oppose",
         erc:"oppose", cup:"oppose", psc:"oppose"
     };
@@ -162,12 +162,12 @@ on-arrival: {!
     // A true-left front additionally hard-excludes the pragmatic nationalists CC/PNV
     // (they never prop up a radical-left cabinet — unlike a moderate progressive one).
     var HARD_TRUELEFT = { upn:1, nsuma:1, fac:1, upyd:1, cc:1, pnv:1 };
-    var HARD_RIGHT = { compromis:1, mes:1, gbai:1, nos:1, bng:1, fr:1, ehbildu:1, amaiur:1, erc:1, cup:1, psc:1 };
+    var HARD_RIGHT = { compromis:1, mes:1, gbai:1, bng:1, fr:1, ehbildu:1, amaiur:1, erc:1, cup:1, psc:1 };
 
     // ── Courting order ───────────────────────────────────────────────────────
     var COURT_ORDER = [
         "upn", "fac", "nsuma", "upyd",                                            // centralist-right allies
-        "compromis", "mes", "te", "prc", "cc", "nos", "gbai", "bng", "psc",       // small regional minors
+        "compromis", "mes", "te", "prc", "cc", "gbai", "bng", "psc",              // small regional minors
         "pnv", "ehbildu", "amaiur", "erc",                                        // PNV (a willing YES) → the nationalist-left, courted up to support before the Catalan right
         "@player", "@catright", "cup", "fr"                                       // player lever + anti-regime left + the Catalan sovereigntist right (roadmap-driven posture), dead last
     ];
@@ -449,6 +449,9 @@ on-arrival: {!
         || Q.congreso_coalition_pp_min_reach      || Q.congreso_coalition_psoe_cs_gov_reach
         || ((Q.congreso_coalition_grand_s_pp >= maj || Q.congreso_coalition_grand_s_psoe >= maj) && Q.congreso_coalition_grand_ok)
         || Q.congreso_coalition_grand_s_ppcs >= maj;
+    
+    Q.congreso_coalition_grand_preferred = Q.congreso_coalition_grand_ok && (Q.congreso_coalition_grand_s_pp >= maj || Q.congreso_coalition_grand_s_psoe >= maj || congreso_coalition_grand_s_ppcs >= maj) ? 1 : 0;
+    
     // Pivotal ⇔ a cabinet wants the player's votes, yet none can govern without them.
     Q.congreso_coalition_force_elections = (Q.congreso_player_s > 0) && someGovWithPlayer && !govFormsWithoutPlayer;
 
@@ -596,7 +599,7 @@ subtitle: We are the kingmakers with this arithmetics after all
 choose-if: congreso_coalition_force_elections
 unavailable-subtitle: This is out of our control
 on-arrival: {!
-    Q.next_spanish_election_month += 4;
+    Q.next_spanish_election_month += 5;
     if (Q.next_spanish_election_month >= 12) {
         Q.next_spanish_election_month = Q.next_spanish_election_month % 12;
         Q.next_spanish_election_year = Q.year + 1;
@@ -604,7 +607,7 @@ on-arrival: {!
         Q.next_spanish_election_year = Q.year;
     }
 
-    Q.next_spanish_election_time += 4;
+    Q.next_spanish_election_time = Q.time + 5;
     if (!Q.rubicon) Q[Q.player_party + "_congreso_catalunya_support"] -= 2.5;
 
     if (Q.congreso_coalition_left_reach) {

@@ -6,7 +6,7 @@ max-visits: 1
 on-arrival: {!
     // TODO: make this conditional and depending on podemos event tree
     Q.spa_mes_active = true;
-    window.spaSupportInject(Q, 'mes', 'balears', 3.5, 'podemos');
+    G.spaSupportInject(Q, 'mes', 'balears', 3.5, 'podemos');
 !}
 role: event
 

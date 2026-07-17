@@ -1,0 +1,126 @@
+title: A Catalan "Yes We Can"?
+view-if: podemos_surged and next_election_time - time <= 4
+face-image: img/events/csqp_formation.jpg
+tags: event
+new-page: true
+max-visits: 1
+on-arrival: {!
+    Q.csqp_formed = true;
+    Q.parlament_current_icv = "csqp";
+    Q.csqp_parlament_s = Q.icv_parlament_s;
+    Q.csqp_parlament_pv = Q.icv_parlament_pv;
+    Q.icv_parlament_s = 0;
+    Q.icv_parlament_pv = 0;
+
+    Q.csqp_relations = Q.icv_relations;
+    Q.csqp_leader = "???";
+    Q.csqp_leader_gender = "f";
+    Q.csqp_ideology = "Anti-austerity left, Plurinationalism";
+
+    for(var prov of Q.parlament_constituencies){
+        for(var demo of Q.parlament_demographics){
+            Q["csqp_parlament_" + prov + "_" + demo + "_support"] = Q["icv_parlament_" + prov + "_" + demo + "_support"] * 0.95;
+            Q["icv_parlament_" + prov + "_" + demo + "_support"] = 0;
+        }
+    }
+
+
+    // governing stuff
+    if  (Q.president_party == "icv") {
+        Q.president_party = "csqp";
+    }
+
+    if (Q.vicepresident_party == "icv") {
+        Q.vicepresident_party = "csqp"
+    }
+
+    if (Q.economy_minister_party == "icv") {
+        Q.economy_minister_party = "csqp";
+    }
+
+    if (Q.interior_minister_party == "icv") {
+        Q.interior_minister_party = "csqp";
+    }
+
+    if (Q.health_minister_party == "icv") {
+        Q.health_minister_party = "csqp";
+    }
+
+    if (Q.education_minister_party == "icv") {
+        Q.education_minister_party = "csqp";
+    }
+
+    if (Q.territory_minister_party == "icv") {
+        Q.territory_minister_party = "csqp";
+    }
+
+    if (Q.foreign_minister_party == "icv") {
+        Q.foreign_minister_party = "csqp";
+    }
+
+    if (Q.bnl_minister_party == "icv") {
+        Q.bnl_minister_party = "csqp";
+    }
+
+    if (Q.speaker_party == "icv") {
+        Q.speaker_party = "csqp";
+    }
+
+    if (Q.cat_coalition.includes("icv")) {
+        Q.cat_coalition = Q.cat_coalition.map(item => item === "icv" ? "csqp" : item);
+        Q.cat_coalition_disp = Q.cat_coalition_disp.replaceAll("ICV-EUiA", "CSQP").replaceAll("icv", "csqp");
+    }
+
+    Q.cecp_formation_countdown = 12;
+    Q.countdowns.push("cecp_formation");   
+!}
+role: event
+
+= A Catalan "Yes We Can"?
+
+With the rise of Podemos in Spain, the tide of new left parties throughout Europe, and Catalan elections right around the corner, it seems the time has come here as well. After a slow bleeding of supports and a general view of the party as outdated, ICV-EUiA has fused with new rising forces. They look to be working together with the Catalan branches of Podemos, as well as new spaces built by social movements, such as Ada Colau's BComu in Barcelona. All in all, we may be very well be witnessing a re-birth of the federal left in Catalonia. 
+
+However, the ties between groups are fuzzy, the direction and leadership that CSQP may take are very unclear. If there's any sort of consensus figure, that is clearly in Arcadi Oliveres, an economist and long-time star of the social justice and people's rights movements in Catalonia. He's led for some time a movement demanding a "Constituent Process", a popular proceeding by which Catalans should not only decide their relationship with Spain, but also their economic system and governance.
+
+Despite his popularity, the fact is that Arcadi Oliveres is asking for a level of control over the CSQP coalition that not many are willing to give away, and may end up blocking his proposal.
+
+- @oliveres_lead
+- @rabell_lead
+
+@oliveres_lead
+title: Arcadi Oliveres has it his way
+subtitle: With our support, he can gather enough momentum to make this work [? if csqp_relations <65: [-2 resources]?][? if csqp_relations >= 65: [-1 resources] ?]
+choose-if: ((csqp_relations >= 65 and party_resources >= 1) or (csqp_relations >= 55 and party_resources >= 2)) and (podemos_congreso_catalunya_support < 12 and up_congreso_catalunya_support < 12)
+unavailable-subtitle: [? if podemos_congreso_catalunya_support > 12 or up_congreso_catalunya_support > 12: Podemos has too much influence already, and is not willing to let go of this amount of party powers. ?][? if csqp_relations < 55: Our relations with ICV-EUiA (now CSQP) are not good enough. ?][? if (csqp_relations >= 65 and party_resources < 1) or (csqp_relations >= 55 and csqp_relations < 65 and party_resources < 2): Not enough resources. ?]
+on-arrival: {!
+    Q.csqp_leader = "Arcadi Oliveres";
+    Q.csqp_leader_gender = "f";
+    Q.csqp_ideology = "Anticapitalism, Plurinationalism";
+    
+    Q.cup_parlament_barcelona_ind_support -= 1.5;
+    Q.csqp_parlament_barcelona_ind_support += 1.5;
+    Q.cup_parlament_barcelona_middle_support -= 0.7;
+    Q.csqp_parlament_barcelona_middle_support += 0.7;
+    Q.cup_parlament_barcelona_young_support -= 1;
+    Q.csqp_parlament_barcelona_young_support += 1;
+    Q.cup_parlament_barcelona_unemployed_support -= 0.75;
+    Q.csqp_parlament_barcelona_unemployed_support += 0.75; 
+!}
+
+Thanks to some push from our end, Arcadi Oliveres has managed to secure his position at the top of the ballots for CSQP. 
+
+- @post_event: Truly a new dawn for the Left in Catalonia
+
+@rabell_lead
+title: An unclear leadership
+subtitle: Without a unifying figure, no one really has any clue as to who can even lead CSQP
+on-arrival: {!
+    Q.csqp_leader = "Lluís Rabell";
+    Q.csqp_leader_gender = "m";
+    Q.csqp_ideology = "Anti-austerity left, Plurinationalism";
+    // TODO: CUP option to recruit Oliveres instead?
+!}
+
+The inter-party and organizational fights within the coalition have ended up leaving no room for Arcadi Oliveres and his proposals. Nonetheless, the new coalition of parties does need a figurehead for the elections. Maybe because he's a less-known figure, or maybe just because he's one of the few not vetoed by anyone, Lluís Rabell seems to be the one that will end up filling that role. The long time ecologist activist and translator is now filling quite a big role.
+
+- @post_event: Who's this guy again?

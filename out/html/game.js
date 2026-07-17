@@ -15,6 +15,11 @@
     ui = dendryUI;
     game = ui.game;
 
+    // The game's own code (source/lib/), reached by content as `G`. Without this,
+    // every G.* call throws into runActions' swallow and the macro simulation
+    // silently never runs — see docs/design/LEARNINGS.md, 2026-07-13.
+    dendryUI.dendryEngine.setGameLib(window.RTI_GAME_LIB);
+
     // I want these settings on by default, but the engine does not have a way to set them and I don't fancy touching that sht.
     if (!window.dendryUI.dendryEngine.touchedSettings) {
       window.dendryUI.animate = true;
@@ -162,13 +167,40 @@
     return applyWholesome(text);
   };
 
-  function applyWholesome(str) {
-    const allWords = new Set([
-      ...tooltipList.map((t) => t.searchString).flat(),
-      ...colourList.map((c) => c.words).flat(),
-    ]);
+  // The glossary used to be two hand-parallel tables (tooltipList/colourList)
+  // baked into this file's web root as data.js. It is now compiled game data,
+  // reachable as game.json.data.glossary, see source/data/glossary.json and
+  // tools/harvest-glossary.mjs (which explains, in its header comment, why a
+  // couple of ids like "icv"/"icv_euia" and "omnium"/"omnium_cultural" stayed
+  // split rather than merging into one term).
+  function glossary() {
+    return (
+      (window.dendryUI.game.data && window.dendryUI.game.data.glossary) || {
+        terms: [],
+      }
+    );
+  }
 
-    const regex = new RegExp(`\\b(${[...allWords].join("|")})\\b`, "g");
+  // Registry colours are bare tokens ("ciu") or, where the old palette never
+  // had a CSS var for a party (CUP, ETA, ANC, \u00D2mnium\u2026), a raw hex kept
+  // verbatim by the harvester. Only the token form needs the var(--x) wrap.
+  function cssColour(token) {
+    return token.startsWith("#") ? token : `var(--${token})`;
+  }
+
+  function applyWholesome(str) {
+    const terms = glossary().terms;
+    const byWord = {};
+    const allWords = [];
+    terms.forEach((t) => {
+      t.match.forEach((w) => {
+        byWord[w] = t;
+        allWords.push(w);
+      });
+    });
+    if (allWords.length === 0) return str;
+
+    const regex = new RegExp(`\\b(${allWords.join("|")})\\b`, "g");
 
     return str.replace(
       /(<(?:span|strong)[^>]*>.*?<\/(?:span|strong)>|<[^>]+>|[^<]+)/g,
@@ -176,17 +208,7 @@
         if (segment.startsWith("<")) return segment;
 
         return segment.replace(regex, (match) => {
-          const tooltipIdx = tooltipList.findIndex((t) =>
-            t.searchString.includes(match),
-          );
-          const tooltip = tooltipIdx !== -1 ? tooltipList[tooltipIdx] : null;
-          const colour = colourList.find((c) => c.words.includes(match));
-          let textColor;
-          if (colour && colour.colour) {
-            textColor = colour.colour;
-          } else {
-            textColor = "inherit";
-          }
+          const t = byWord[match];
 
           // skip if preceded by zero-width space
           const zwspIndex = segment.indexOf("\u200B" + match);
@@ -203,18 +225,18 @@
             return match;
           }
 
-          let style = colour && colour.style ? colour.style : "";
-          let innerText = match;
+          const textColor = t.colour ? cssColour(t.colour) : "inherit";
+          const style = t.bold ? "font-weight: bold;" : "";
+          const innerText = match;
 
-          if (tooltip) {
+          if (t.tooltip) {
             // Lightweight trigger only. The tooltip body is built on demand at
             // hover time against the shared singleton (see renderTipContent and
-            // addTooltipEventListeners); data-tooltip-idx keys into tooltipList.
-            const displayText =
-              colour && colour.transform ? colour.transform : innerText;
-            return `<span class='mytooltip' style='--mytooltip-color:${textColor}; ${style}' data-tooltip-idx='${tooltipIdx}'>${displayText}</span>`;
-          } else if (colour) {
-            return `<span style='color: ${textColor}; ${style}'>${colour.transform ? colour.transform : innerText}</span>`;
+            // addTooltipEventListeners); data-term keys into glossary().terms.
+            const displayText = t.display || innerText;
+            return `<span class='mytooltip' style='--mytooltip-color:${textColor}; ${style}' data-term='${t.id}'>${displayText}</span>`;
+          } else if (t.colour) {
+            return `<span style='color: ${textColor}; ${style}'>${t.display || innerText}</span>`;
           }
 
           return match;
@@ -224,6 +246,7 @@
   }
 
   window.applyWholesome = applyWholesome;
+  window.glossary = glossary;
 
   // This function allows you to do something in response to signals.
   window.handleSignal = function (signal, event, scene_id) {};
@@ -252,6 +275,10 @@
     initCatCoalitions(
       "parlament-coalition-widget",
       window._cvParlement,
+      dendryUI.dendryEngine.state.qualities,
+    );
+    initCongresoPartyTour(
+      "congreso-party-tour-widget",
       dendryUI.dendryEngine.state.qualities,
     );
     addTooltipEventListeners();
@@ -295,6 +322,10 @@
       window._cvParlement,
       dendryUI.dendryEngine.state.qualities,
     );
+    initCongresoPartyTour(
+      "congreso-party-tour-widget",
+      dendryUI.dendryEngine.state.qualities,
+    );
     addTooltipEventListeners();
   };
 
@@ -336,6 +367,10 @@
       window._cvParlement,
       dendryUI.dendryEngine.state.qualities,
     );
+    initCongresoPartyTour(
+      "congreso-party-tour-widget",
+      dendryUI.dendryEngine.state.qualities,
+    );
     addTooltipEventListeners();
   };
 
@@ -361,6 +396,10 @@
     initCatCoalitions(
       "parlament-coalition-widget",
       window._cvParlement,
+      dendryUI.dendryEngine.state.qualities,
+    );
+    initCongresoPartyTour(
+      "congreso-party-tour-widget",
       dendryUI.dendryEngine.state.qualities,
     );
     addTooltipEventListeners();
@@ -545,6 +584,10 @@
       window._cvParlement,
       dendryUI.dendryEngine.state.qualities,
     );
+    initCongresoPartyTour(
+      "congreso-party-tour-widget",
+      dendryUI.dendryEngine.state.qualities,
+    );
     addTooltipEventListeners();
   };
 
@@ -558,39 +601,56 @@
   let _tipInited = false;
   let _tipPinned = false; // true once a click pins the tooltip open (sticky)
 
-  // Builds the inner HTML of the tooltip for a given tooltipList entry. This is
+  // Builds the inner HTML of the tooltip for a given glossary term. This is
   // the exact body applyWholesome used to bake inline, just parameterised on
-  // the live qualities and the matched label.
-  function renderTipContent(tooltip, qualities, label) {
+  // the live qualities and the matched label. `term.tooltip` is the compiled
+  // registry shape (title/subtitle/img/infoDesc/q); allegiances (if any) come
+  // from the game lib (window.RTI_GAME_LIB.allegiances, source/lib/allegiances.js),
+  // keyed by the same term id, as {colour, label, note?} entries this UI wraps.
+  function renderTipContent(term, qualities, label) {
+    const tooltip = term.tooltip;
+    const q = tooltip.q || {};
     const imgHtml = tooltip.img
       ? `<img src='${tooltip.img}' alt='${label} image'/>`
       : "";
-    const subText = tooltip.subText
-      ? `<br/><span class='mytooltip-sub-text'>${tooltip.subText}</span>`
+    const subText = tooltip.subtitle
+      ? `<br/><span class='mytooltip-sub-text'>${tooltip.subtitle}</span>`
       : "";
     let ledBy = "";
     let ideology = "";
     let allegiances = "";
-    if (tooltip.ledBy && qualities.hasOwnProperty(tooltip.ledBy)) {
-      ledBy = `<br/>Leader: <span class='mytooltip-ledby'>${qualities[tooltip.ledBy]}</span>`;
+    if (q.ledBy && qualities.hasOwnProperty(q.ledBy)) {
+      ledBy = `<br/>Leader: <span class='mytooltip-ledby'>${qualities[q.ledBy]}</span>`;
     } else if (tooltip.infoDesc) {
       ledBy = `<br/>${tooltip.infoDesc}`;
     }
-    if (tooltip.ideology) {
+    if (q.ideology) {
       ideology = `<br/><span class='mytooltip-ideology'>${
-        qualities.hasOwnProperty(tooltip.ideology)
-          ? qualities[tooltip.ideology]
-          : tooltip.ideology
+        qualities.hasOwnProperty(q.ideology)
+          ? qualities[q.ideology]
+          : q.ideology
       }</span>`;
     }
-    if (tooltip.allegiances) {
-      const al = tooltip.allegiances(qualities);
-      allegiances = `<br/><span class='mytooltip-allegiances'>`;
-      allegiances += al.length > 1 ? "Allegiances: " : "Allegiance: ";
-      allegiances += al.join(", ");
-      allegiances += `</span>`;
+    const allegianceMap =
+      (window.RTI_GAME_LIB && window.RTI_GAME_LIB.allegiances) || {};
+    const allegiancesFn = allegianceMap[term.id];
+    if (allegiancesFn) {
+      const al = allegiancesFn(qualities);
+      if (al && al.length) {
+        allegiances = `<br/><span class='mytooltip-allegiances'>`;
+        allegiances += al.length > 1 ? "Allegiances: " : "Allegiance: ";
+        // Entries are presentation-neutral {colour, label, note?}; THIS UI wraps
+        // them (colour token -> CSS via cssColour, "(note)" as trailing text).
+        allegiances += al
+          .map((e) => {
+            const span = `<span style='color: ${cssColour(e.colour)}'>${e.label}</span>`;
+            return e.note ? `${span} (${e.note})` : span;
+          })
+          .join(", ");
+        allegiances += `</span>`;
+      }
     }
-    return `<span class='mytooltip-content'>${imgHtml}<span class='mytooltip-text'><span class='mytooltip-main-text'>${tooltip.mainText}</span>${subText}${ledBy}${ideology}${allegiances}</span></span>`;
+    return `<span class='mytooltip-content'>${imgHtml}<span class='mytooltip-text'><span class='mytooltip-main-text'>${tooltip.title}</span>${subText}${ledBy}${ideology}${allegiances}</span></span>`;
   }
 
   // Position the singleton over an anchor, clamped/flipped to stay on screen.
@@ -628,14 +688,11 @@
   }
 
   function showTipFor(anchor) {
-    const idx = parseInt(anchor.getAttribute("data-tooltip-idx"), 10);
-    if (isNaN(idx) || !tooltipList[idx]) return;
+    const termId = anchor.getAttribute("data-term");
+    const term = glossary().terms.find((t) => t.id === termId);
+    if (!term || !term.tooltip) return;
     const qualities = window.dendryUI.dendryEngine.state.qualities;
-    _tipEl.innerHTML = renderTipContent(
-      tooltipList[idx],
-      qualities,
-      anchor.textContent,
-    );
+    _tipEl.innerHTML = renderTipContent(term, qualities, anchor.textContent);
     // The trigger no longer wraps the tooltip, so carry its colour across.
     _tipEl.style.setProperty(
       "--mytooltip-color",

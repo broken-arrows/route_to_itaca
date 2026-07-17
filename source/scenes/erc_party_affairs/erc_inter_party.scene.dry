@@ -9,10 +9,11 @@ face-image: img/parties/frontpopular.jpg
 role: card-party
 
 # TODO: Proper weighting of relations for different comuns leaders (just as we did with PSC). Should we do the same with the CUP factions in power?
+# TODO: proper use of party labels. there's a mess of conditionals here
 
 = Inter-Party Relationships
 
-ERC cannot govern by itself yet. Because we do not have an electoral majority, we need the support of other parties. Up until 2010, we were part of a tripartite coalition with PSC and ICV-EUiA [? if csqp_formed: (now part of CSQP)?][? if cecp_formed: (now part of CECP)?][? if ecp_formed: (now part of ECP)?], but its failures have left us with strained relations, specially with the PSC. The new surge of support for independence also opens new avenues of cooperation through shared national lines, namely with [? if not unio_split: CiU?][? if pdcat_formed and not pdcat_split: pdcat?][? if cdc_formed: CDC?][? if dl_formed: DL?][?if not erc_in_jxcat and jxcat_formed: JxCat?][? if erc_in_jxcat and jxcat_formed: CDC?][? if junts_formed: Junts ?][? if si_parlament_s> 0: , SI?] and the CUP.
+ERC cannot govern by itself yet. Because we do not have an electoral majority, we need the support of other parties. Up until 2010, we were part of a tripartite coalition with PSC and ICV-EUiA [? if csqp_formed: (now part of CSQP)?][? if cecp_formed: (now part of CECP)?][? if ecp_formed: (now part of ECP)?], but its failures have left us with strained relations, specially with the PSC. The new surge of support for independence also opens new avenues of cooperation through shared national lines, namely with [? if not unio_split: CiU?][? if pdcat_formed and not pdcat_split: pdcat?][? if unio_split: CDC?][? if dl_formed: DL?][?if not erc_in_jxcat and jxcat_formed: JxCat?][? if erc_in_jxcat and jxcat_formed: CDC?][? if junts_formed: Junts ?][? if si_parlament_s> 0: , SI?] and the CUP.
 
 - @jxsi_relations: We need to work on national unity within JxSi!
 - @jxcat_relations: We need to work on national unity within JxCat!
@@ -170,7 +171,7 @@ on-arrival: {!
 @cdc_relations
 subtitle: -1 resources
 choose-if: party_resources >= 1 
-view-if: cdc_formed and not cdc_in_jxsi and not cdc_in_jxcat
+view-if: unio_split and not cdc_in_jxsi and not cdc_in_jxcat
 unavailable-subtitle: Not enough resources
 on-arrival: {!
     Q.party_resources -= 1;
@@ -319,7 +320,7 @@ on-arrival: {!
 @icv_relations
 subtitle: -1 resources
 choose-if: party_resources >= 1
-view-if: not csqp_formed and not ceccp_formed and not ecp_formed
+view-if: not csqp_formed and not cecp_formed and not ecp_formed
 unavailable-subtitle: Not enough resources
 on-arrival: {!
     Q.party_resources -= 1;
@@ -337,7 +338,7 @@ on-arrival: {!
         Q.jxcat_relations -= 2;
     } else if (Q.dl_formed) {
         Q.dl_relations -= 2;
-    } else if (Q.cdc_formed) {
+    } else if (Q.unio_split) {
         Q.cdc_relations -= 2;
     } else if (Q.pdcat_formed) {
         Q.pdcat_relations -= 2;
@@ -374,7 +375,7 @@ on-arrival: {!
         Q.jxcat_relations -= 2;
     } else if (Q.dl_formed) {
         Q.dl_relations -= 2;
-    } else if (Q.cdc_formed) {
+    } else if (Q.unio_split) {
         Q.cdc_relations -= 2;
     } else if (Q.pdcat_formed) {
         Q.pdcat_relations -= 2;
@@ -414,7 +415,7 @@ on-arrival: {!
     if (Q.dl_formed) {
         Q.dl_relations -= 2;
     }
-    if (Q.cdc_formed) {
+    if (Q.unio_split) {
         Q.cdc_relations -= 2;
     }
     if (Q.pdcat_formed) {
@@ -452,7 +453,7 @@ on-arrival: {!
         Q.jxcat_relations -= 2;
     } else if (Q.dl_formed) {
         Q.dl_relations -= 2;
-    } else if (Q.cdc_formed) {
+    } else if (Q.unio_split) {
         Q.cdc_relations -= 2;
     } else if (Q.pdcat_formed) {
         Q.pdcat_relations -= 2;
@@ -481,7 +482,7 @@ on-arrival: {!
         Q.jxcat_relations -= 2;
     } else if (Q.dl_formed) {
         Q.dl_relations -= 2; 
-    } else if (Q.cdc_formed) {
+    } else if (Q.unio_split) {
         Q.cdc_relations -= 2;
     } else if (Q.pdcat_formed) {
         Q.pdcat_relations -= 2;
@@ -597,7 +598,7 @@ on-arrival: {!
         Q.jxcat_relations -= 2;
     } else if (Q.dl_formed) {
         Q.dl_relations -= 2;
-    } else if (Q.cdc_formed) {
+    } else if (Q.unio_split) {
         Q.cdc_relations -= 2;
     } else if (Q.pdcat_formed) {
         Q.pdcat_relations -= 2;
@@ -638,7 +639,7 @@ on-arrival: {!
         Q.jxcat_relations -= 2;
     } else if (Q.dl_formed) {
         Q.dl_relations -= 2;
-    } else if (Q.cdc_formed) {
+    } else if (Q.unio_split) {
         Q.cdc_relations -= 2;
     } else if (Q.pdcat_formed) {
         Q.pdcat_relations -= 2;

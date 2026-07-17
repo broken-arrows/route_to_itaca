@@ -6,8 +6,8 @@ max-visits: 1
 on-arrival: {!
     // TODO: is this even required? post-155 is not covered by the game
     // ERC's moderation attracts pro-independence voters wary of JxCat maximalism.
-    window.spaSupportInject(Q, 'erc', 'catalunya', 1.5, 'ciu');
-    window.spaSupportInject(Q, 'erc', 'catalunya', 2.0, 'abstain');
+    G.spaSupportInject(Q, 'erc', 'catalunya', 1.5, 'ciu');
+    G.spaSupportInject(Q, 'erc', 'catalunya', 2.0, 'abstain');
 !}
 role: event
 

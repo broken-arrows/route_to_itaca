@@ -3,7 +3,7 @@ subtitle: The non-binding consultation calls millions to the polls
 face-image: img/events/9n.jpg
 new-page: true
 tags: event
-view-if: consulation_day_trigger
+view-if: consultation_day_trigger
 max-visits: 1
 on-arrival: {!
     // TODO: How does the preparation event affect this?

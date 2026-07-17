@@ -9,7 +9,7 @@ on-arrival: {!
     // TODO: Reach this from the Presidency card
 
     Q.countdows.push("consultation_day");
-    Q.consulation_day_countdown = 3;
+    Q.consultation_day_countdown = 3;
 !}
 role: event
 
@@ -56,11 +56,11 @@ A single, clear-cut question on independence. Just as a referendum should be jus
 - @post_event: Time to campaign
 
 @double
-title: A double question on statehood and Independenes
-subtitle: This may gather extra favour amongst those hoping for a Constitutional reform rather than outright independence. [? if president_party != player_party and president_party != "cup" and parlamment_coalition_concessions_indy: The preferred option of [? if president_gender == "m": President?][? if president_gender == "f": Presidenta?] [+ president +]. ?][? if president_party != player_party and president_party != "cup" and not parlamment_coalition_concessions_indy: [-1 resources] ?]
+title: A double question on statehood and Independence
+subtitle: This may gather extra favour amongst those hoping for a Constitutional reform rather than outright independence. [? if president_party != player_party and president_party != "cup" and parlament_coalition_concessions_indy: The preferred option of [? if president_gender == "m": President?][? if president_gender == "f": Presidenta?] [+ president +]. ?][? if president_party != player_party and president_party != "cup" and not parlament_coalition_concessions_indy: [-1 resources] ?]
 choose-if: party_resources >= 1 or parlament_coalition_concessions_indy or president_party == "cup" or president_party == player_party
 on-arrival: {!
-    if (Q.player_party != Q.president_party && Q.president_party != "cup" && !Q.parlamment_coalition_concessions_indy) {
+    if (Q.player_party != Q.president_party && Q.president_party != "cup" && !Q.parlament_coalition_concessions_indy) {
         Q.party_resources -= 1;
     }
     Q.consultation_question = 2;
@@ -85,7 +85,7 @@ A question opening the door to a federal or confederal reform of Spain will alwa
 
 @complex
 title: We don't need to ask on independence explicitly, right? Let's keep it vague enough
-subtitle: We *may* avoid some of the legal repercussions of holding such a consultation if we are careful enough with the wording and have plausible deniability. [? if president_party != player_party and president_party != "cup" and not parlamment_coalition_concessions_indy: The preferred option of [? if president_gender == "m": President?][? if president_gender == "f": Presidenta?] [+ president +]. ?]
+subtitle: We *may* avoid some of the legal repercussions of holding such a consultation if we are careful enough with the wording and have plausible deniability. [? if president_party != player_party and president_party != "cup" and not parlament_coalition_concessions_indy: The preferred option of [? if president_gender == "m": President?][? if president_gender == "f": Presidenta?] [+ president +]. ?]
 choose-if: not parlament_coalition_concessions_indy
 unavailable-subtitle: [? if president_gender == "m": President?][? if president_gender == "f": Presidenta?] [+ president +] has already taken a clear compromise to push for independence as part of coalition negotiations.
 on-arrival: {!

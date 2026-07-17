@@ -24,6 +24,8 @@ on-arrival: {!
         Q.position_disp = "<span style='font-style: italic'>Government Support</span>";
     }
 
+    G.deactivateLaw(Q, "generalitat_concession_social", "expired");
+
     // ── deadlock / refusal vote shift ──────────────────────────────────────
     // A collapsed coalition negotiation (or a flat refusal) reshapes the re-run
     // board: the party blamed for it (the player, as the active negotiator) sheds

@@ -18,7 +18,7 @@ on-arrival: {!
     Q.psoe_congreso_s -= Math.ceil(Q.psoe_congreso_s / 10);
     Q.psoe_congreso_pv_cat = 0.0;
 
-    window.spaSupportInject(Q, 'psoe', 'rest', 0.5, 'pp');
+    G.spaSupportInject(Q, 'psoe', 'rest', 0.5, 'pp');
 !}
 role: event
 

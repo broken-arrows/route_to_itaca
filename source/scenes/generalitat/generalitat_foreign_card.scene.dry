@@ -1,0 +1,19 @@
+title: Ministry of Foreign Affairs
+new-page: true
+view-if: foreign_timer <= 0 and (foreign_minister_party == player_party)
+on-arrival: month_actions += 1; foreign_timer += 3;
+is-card: true
+card-image: img/international_icon.svg
+face-image: img/international_icon.svg
+frequency: 100
+tags: generalitat
+role: card-gov
+
+= Ministry of Foreign Affairs
+
+Something something (TODO)
+
+TODO: how do these work in jxsi / jxcat cases?
+
+-@post_event: Ah yes!
+-@easy_discard

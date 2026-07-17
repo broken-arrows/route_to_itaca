@@ -7,6 +7,6 @@ max-visits: 1
 call: newyearcalc
 role: event
 
-= A New Year: 2013
+= A New Year: 2019
 
 - @post_event: TODO

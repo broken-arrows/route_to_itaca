@@ -44,3 +44,39 @@ git subtree split --prefix=vendor/dendrynexus-ten -b dendrynexus-ten-split
 ```
 
 (or `git filter-repo --path vendor/dendrynexus-ten` for a cleaner rewrite).
+
+## Local changes (not upstream)
+
+Kept deliberately minimal — touch only the lines that must change, never a
+whole-file reformat, so this list stays the complete upstream diff.
+
+- **`lib/parsers/compiler.js`** (`compileGame`) — routes any
+  `source/data/*.json` file to a generic registry keyed by its basename,
+  attached at `game.json.data.<basename>` (e.g. `source/data/glossary.json` →
+  `game.data.glossary`). Absent when there are no `data/*.json` files.
+  Malformed registry JSON fails the compile with an error naming the file,
+  rather than being silently skipped. Additive top-level key; the old UI's
+  `convertJSONToGame` ignores unknown keys.
+- **`lib/cli/utils.js`** (`fetchContent`) — added a `CONTENT_PATTERN` read
+  filter (`/(\.dry|[\\/]data[\\/][^\\/]+\.json)$/`) so only actual game
+  content is read and `.toString()`'d into memory. Previously `fetchContent`
+  walked `source/` with no pattern at all, reading and stringifying every
+  file it found (including binaries) before `compileGame` silently skipped
+  unrecognised ones. Prerequisite for `source/lib/` and `source/img/`
+  existing alongside compiled content without every compile slurping them.
+- **`lib/engine.js`** (2026-07-13, `engine.setGameLib(lib)`) — compiled
+  `$code` gains a third parameter, `G`: `makeFunctionFromSource` now does
+  `new Function('state', 'Q', 'G', source)` (was `'state', 'Q'`), and the
+  three call sites (`runActions`, `runPredicate`, `runExpression`) pass
+  `context.gameLib` as that third argument. `DendryEngine` gets a `gameLib`
+  instance property (default `{}`, never `undefined`) and
+  `setGameLib(lib)` to install it — same shape as `setLocale`: a UI hands
+  the engine the game's own code (`source/lib/*`), and neither UI knows what
+  is in it. `beginGame()` prints one `console.warn` if `setGameLib` was
+  never called, so a UI that forgets it fails loudly instead of reproducing
+  the swallowed-`TypeError` bug this API exists to kill (content calling
+  `G.engineTick(Q)` instead of the browser-only `window.engineTick(Q)`).
+  Purely additive: content that never mentions `G` is unaffected. See
+  `lib/engine.js` around lines 50-105 (`makeFunctionFromSource`/
+  `runActions`/`runPredicate`/`runExpression`), ~318-340 (constructor +
+  `setGameLib`), and `beginGame`'s first statement.

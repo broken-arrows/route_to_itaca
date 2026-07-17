@@ -13,8 +13,8 @@ on-arrival: {!
     Q.spanish_pm_party = "psoe";
     Q.spanish_pm_gender = "m";
     Q.corruption_psoe = Math.max(0, Q.corruption_psoe - 8);
-    window.spaSupportInject(Q, 'psoe', 'all', 5.0, 'podemos');
-    window.spaSupportInject(Q, 'psoe', 'all', 4.0, 'abstain');
+    G.spaSupportInject(Q, 'psoe', 'all', 5.0, 'podemos');
+    G.spaSupportInject(Q, 'psoe', 'all', 4.0, 'abstain');
 !}
 role: event
 

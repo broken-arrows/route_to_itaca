@@ -50,7 +50,11 @@
   var makeFunctionFromSource = function(source) {
     source = source.trim();
     /*jshint -W054 */
-    var fn = new Function('state', 'Q', source);
+    // 'G' is the GAME LIB (see DendryEngine.setGameLib): the game's own code,
+    // handed to the engine by whichever UI is running it. Content calls
+    // `G.engineTick(Q)` instead of `window.engineTick(Q)` — so a scene never
+    // depends on a browser global, and therefore never depends on a UI.
+    var fn = new Function('state', 'Q', 'G', source);
     /*jshint +W054 */
     fn.source = source;
     return fn;
@@ -62,7 +66,7 @@
     }
     each(actions, function(fn) {
       try {
-        fn.call(context, state, state.qualities);
+        fn.call(context, state, state.qualities, context.gameLib);
       } catch (err) {
         // Scene action code (on-arrival/on-departure/on-display) throws are
         // SWALLOWED here: the scene still transitions, so a broken action is
@@ -82,7 +86,7 @@
       return result;
     }
     try {
-      result = !!predicate.call(context, state, state.qualities);
+      result = !!predicate.call(context, state, state.qualities, context.gameLib);
     } catch (err) {
       // Ignore errors. TODO: Log them somehow?
       console.log('Error:', err);
@@ -96,7 +100,7 @@
       return result;
     }
     try {
-      result = expression.call(context, state, state.qualities);
+      result = expression.call(context, state, state.qualities, context.gameLib);
     } catch (err) {
       // Ignore errors. TODO: Log them somehow?
       console.log('Error in expression', expression, ':', err);
@@ -318,10 +322,23 @@
   var DendryEngine = function(ui, game) {
     this.ui = ui;
     this.game = game;
+    // The game's own code namespace, exposed to compiled content as `G`.
+    // Empty (never undefined) so a UI that forgets setGameLib fails as
+    // "G.engineTick is not a function" rather than a TypeError on undefined.
+    this.gameLib = {};
+    this._warnedNoGameLib = false;
     // i18n: inert unless setLocale installs a catalog. No locale ⇒ English
     // ⇒ old UI unaffected.
     this.locale = null;
     this.catalog = null;
+  };
+
+  // Installs the game's own code (the sim, derivations — whatever `source/lib/`
+  // exports). Same shape as setLocale: each UI hands the engine the game's
+  // stuff, and NEITHER UI knows what is in it.
+  DendryEngine.prototype.setGameLib = function(lib) {
+    this.gameLib = lib || {};
+    return this;
   };
 
   // Installs a runtime translation overlay. `catalog` maps an English
@@ -524,6 +541,18 @@
   };
 
   DendryEngine.prototype.beginGame = function(rndSeeds) {
+    // A UI that forgets setGameLib reproduces the exact bug this API exists to
+    // kill: content's calls into the game lib throw, runActions SWALLOWS the
+    // throw, and the game plays on over a dead simulation. The audit guard
+    // cannot catch this (it is a UI omission, not a content one), so say it out
+    // loud, once.
+    if (!this._warnedNoGameLib && Object.keys(this.gameLib).length === 0) {
+      this._warnedNoGameLib = true;
+      console.warn(
+        'dendrynexus: no game lib installed (engine.setGameLib was never called). ' +
+        'Any content calling G.* will throw into a swallowed catch and the ' +
+        'game will look fine while nothing runs.');
+    }
     this.random = rndSeeds ? Random.fromSeeds(rndSeeds) : Random.fromUnique();
     this.state = {
       sceneId: null,

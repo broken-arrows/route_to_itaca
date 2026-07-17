@@ -52,8 +52,8 @@ face-image: img/events/rivera_sanchez.jpg
 on-arrival: {!
     Q.congreso_coalition_psoe_cs_wtf_happened = true;
     
-    Q.next_spanish_election_time += 5;
-    Q.next_spanish_election_month += 5;
+    Q.next_spanish_election_time = Q.time + 5;
+    Q.next_spanish_election_month = Q.month + 5;
     if (Q.next_spanish_election_month > 12 ) {
         Q.next_spanish_election_year = Q.year + 1;
         Q.next_spanish_election_month = Q.next_spanish_election_month % 12;
@@ -61,12 +61,12 @@ on-arrival: {!
         Q.next_spanish_election_year = Q.year;
     }
 
-    window.spaSupportInject(Q, 'pp',      'all', 2.5, 'cs');
-    window.spaSupportInject(Q, 'abstain', 'all', 2.0, 'cs');
-    window.spaSupportInject(Q, 'abstain', 'all', 1.0, 'psoe');
+    G.spaSupportInject(Q, 'pp',      'all', 2.5, 'cs');
+    G.spaSupportInject(Q, 'abstain', 'all', 2.0, 'cs');
+    G.spaSupportInject(Q, 'abstain', 'all', 1.0, 'psoe');
 
     if (Q[Q.congreso_left_carrier + "_congreso_s"] > Q.psoe_congreso_s) {
-        window.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 2.0, 'psoe');
+        G.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 2.0, 'psoe');
     }
 !}
 

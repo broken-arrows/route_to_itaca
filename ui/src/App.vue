@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import type { AppLocale } from './i18n';
+import { initGameLocale, type AppLocale } from './i18n';
 import { useSettingsStore } from './stores/settings';
 import DebugPage from './views/DebugPage.vue';
 import GameView from './views/GameView.vue';
@@ -8,6 +9,13 @@ import GameView from './views/GameView.vue';
 const { t, locale } = useI18n();
 const settings = useSettingsStore();
 const locales: AppLocale[] = ['en', 'ca'];
+
+// Boot-load the game's locale overrides (source/locales/<loc>/ui.json) once,
+// for both locales, so `setLocale` (called at every settings-store
+// construction) never itself needs to touch the network — see i18n.ts.
+onMounted(async () => {
+  await initGameLocale();
+});
 
 // Language changes go through the SETTINGS STORE, never i18n's setLocale
 // directly: the store is the single source of truth (it persists the settings

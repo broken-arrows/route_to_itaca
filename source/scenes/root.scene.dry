@@ -124,6 +124,9 @@ on-arrival: {!
 
   Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si', 'cdc', 'unio', 'dl', 'jxsi', 'junts', 'jxcat', 'pdcat', 'csqp', 'cecp', 'ecp', 'vox', 'fnc', 'pxc'];
 
+  Q.parlament_current_ciu = "ciu";
+  Q.parlament_current_icv = "icv";
+
   Q.ciu_parlament_pv = 40;
   Q.ciu_parlament_s = 62;
   Q.psc_parlament_pv = 18.4;
@@ -210,7 +213,6 @@ on-arrival: {!
   Q.icv_leader = "Joan Herrera";
   Q.icv_leader_gender = "m";
   Q.icv_ideology = "Green Left, Plurinationalism";
-  Q.comuns_name = "icv";
 
   // Initial ideologies for all parties, also future ones, just in case
   Q.pdcat_leader = "Artur Mas";
@@ -241,11 +243,11 @@ on-arrival: {!
   Q.csqp_ideology = "Anti-austerity left, Plurinationalism";
   Q.cecp_leader = "Xavier Domènech";
   Q.cecp_leader_gender = "m";
-  Q.cecp_ideology = "Left Social Democracy, Autonomism";
+  Q.cecp_ideology = "Left Social Democracy, Federalism";
   Q.ecp_leader = "Jéssica Albiach";
   Q.ecp_leader_gender = "f";
   Q.ecp_ideology = "Social democracy, Autonomism";
-  Q.fr_leader = "Albano Dante Fachín";
+  Q.fr_leader = "Albano Dante Fachin";
   Q.fr_leader_gender = "m";
   Q.fr_ideology = "Anticapitalism, Unilateralism";
 
@@ -292,7 +294,7 @@ on-arrival: {!
 
   Q.gbai_leader = "Uxue Barkos";
   Q.gbai_leader_gender = "f";
-  Q.gbai_ideology = "Social Democracy, Navarrese Independence";
+  Q.gbai_ideology = "Centre Social Democracy, Basque Independence";
   Q.upn_leader = "Yolanda Barcina";
   Q.upn_ideology = "Conservatism, Navarrese Regionalism";
   Q.upn_leader_gender = "f";
@@ -312,15 +314,12 @@ on-arrival: {!
   Q.bng_leader = "Ana Pontón";
   Q.bng_leader_gender = "f";
   Q.bng_ideology = "Social Democracy, Galician Independence";
-  Q.nos_leader = "Carlos Morais";
-  Q.nos_leader_gender = "m";
-  Q.nos_ideology = "Social Democracy, Galician Independence";
   Q.fac_leader = "Cristina Coto";
   Q.fac_leader_gender = "f";
   Q.fac_ideology = "Liberal Conservatism, Asturian Regionalism";
   Q.prc_leader = "Miguel Ángel Revilla";
   Q.prc_leader_gender = "m";
-  Q.prc_ideology = "Centrist Social Democracy, Cantabrian Regionalism";
+  Q.prc_ideology = "Centrism, Cantabrian Regionalism";
   Q.te_leader = "Tomás Guitarte"
   Q.te_leader_gender = "m";
   Q.te_ideology = "Transversal single-issue, Teruel Regionalism";
@@ -503,14 +502,14 @@ on-arrival: {!
       "rest": 216
   };
   Q.congreso_constituencies = ["catalunya", "valencia", "balears", "navarra", "euskadi", "galicia", "rest"];
-  Q.congreso_parties_left = ["podemos", "iu", "mpais", "sumar", "up", "csqp", "cecp", "ecp", "fr", "erc", "cup", "ehbildu", "amaiur", "bng", "nos", "compromis", "mes"];
+  Q.congreso_parties_left = ["podemos", "iu", "mpais", "sumar", "up", "csqp", "cecp", "ecp", "fr", "erc", "cup", "ehbildu", "amaiur", "bng", "compromis", "mes"];
 
   Q.congreso_parties_catalunya = ["ciu", "psoe", "psc", "erc", "pp", "cs", "podemos", "iu", "cup", "fr", "dl", "pdcat", "jxsi", "cdc", "unio", "junts", "upyd", "vox", "mpais", "up", "sumar", "jxcat"];
   Q.congreso_parties_valencia = ["pp", "psoe", "podemos", "cs", "iu", "compromis", "vox", "up", "sumar", "upyd", "mpais"];
   Q.congreso_parties_balears = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "mes"];
   Q.congreso_parties_navarra = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "amaiur", "nsuma", "ehbildu", "upn", "gbai"];
   Q.congreso_parties_euskadi = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "ehbildu", "pnv", "amaiur"];
-  Q.congreso_parties_galicia = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "bng", "nos"];
+  Q.congreso_parties_galicia = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "bng"];
   Q.congreso_parties_rest = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "cc", "fac", "prc", "te"];
 
   Q.congreso_parties = [];
@@ -752,1405 +751,6 @@ on-arrival: {!
     'PSOE_min': -5, 'PSOE_maj': -10, 'Podemos': -8,
     'PP_VOX': 15, 'Cs': 3
   };
-
-
-  Q.parlament_NONLIN_DEMO_SCALE = {
-      "buss": {
-        "dissent": 0.4,
-        "welfare": 0.6,
-        "cat_spa": 1.2,
-        "cup_trust": 0.5
-      },
-      "ind": {
-        "dissent": 1.6,
-        "welfare": 0.8,
-        "cat_spa": 0.8,
-        "cup_trust": 0.8
-      },
-      "middle": {
-        "dissent": 1.0,
-        "welfare": 1.0,
-        "cat_spa": 1.0,
-        "cup_trust": 1.0
-      },
-      "young": {
-        "dissent": 1.8,
-        "welfare": 1.4,
-        "cat_spa": 0.9,
-        "cup_trust": 1.6
-      },
-      "retired": {
-        "dissent": 0.4,
-        "welfare": 1.8,
-        "cat_spa": 0.6,
-        "cup_trust": 0.4
-      },
-      "rural": {
-        "dissent": 0.8,
-        "welfare": 0.7,
-        "cat_spa": 1.5,
-        "cup_trust": 0.6
-      },
-      "unemployed": {
-        "dissent": 2.0,
-        "welfare": 0.5,
-        "cat_spa": 1.0,
-        "cup_trust": 0.9
-      }
-    },
-  Q.parlament_NONLIN_PROV_SCALE = {
-      "barcelona": {
-        "dissent": 1.0,
-        "welfare": 1.0,
-        "cat_spa": 1.0,
-        "cup_trust": 1.0
-      },
-      "girona": {
-        "dissent": 1.1,
-        "welfare": 0.9,
-        "cat_spa": 1.4,
-        "cup_trust": 1.2
-      },
-      "lleida": {
-        "dissent": 0.8,
-        "welfare": 0.9,
-        "cat_spa": 1.1,
-        "cup_trust": 0.8
-      },
-      "tarragona": {
-        "dissent": 1.0,
-        "welfare": 1.1,
-        "cat_spa": 0.8,
-        "cup_trust": 0.9
-      }
-    }
-
-  Q.PARLAMENT_MATRICES = {
-    "BASE_T": [
-      [
-        0.06,
-        0.04,
-        0.0,
-        0.0,
-        0.0,
-        -0.03,
-        0.0
-      ],
-      [
-        0.22,
-        0.12,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        0.02,
-        -0.015,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        0.008,
-        0.015,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        0.01,
-        0.01,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.02,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.025,
-        0.15
-      ],
-      [
-        -0.004,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        -0.02,
-        -0.04
-      ],
-      [
-        -0.02,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.04,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.008,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        0.005,
-        -0.01,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0
-      ],
-      [
-        -0.231,
-        -0.16,
-        0.0,
-        0.0,
-        0.0,
-        0.025,
-        -0.10999999999999999
-      ]
-    ],
-    "_DELTA_T": {
-      "buss": [
-        [
-          -0.011999999999999997,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.154,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0016,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.03,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.016,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.1784,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ]
-      ],
-      "ind": [
-        [
-          -0.036,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.11,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.02,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0125,
-          0.0
-        ],
-        [
-          0.002,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.016,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.17999999999999997,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          -0.0125,
-          0.0
-        ]
-      ],
-      "middle": [
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ]
-      ],
-      "young": [
-        [
-          -0.03,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.17600000000000002,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.04,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.18600000000000003,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ]
-      ],
-      "retired": [
-        [
-          0.018000000000000002,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.08800000000000001,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.002,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.07200000000000001,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ]
-      ],
-      "rural": [
-        [
-          0.036000000000000004,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.17600000000000002,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0028,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.018000000000000002,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.036000000000000004,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.26880000000000004,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ]
-      ],
-      "unemployed": [
-        [
-          -0.036,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          -0.03,
-          0.0
-        ],
-        [
-          -0.08800000000000001,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.02,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0125,
-          0.0
-        ],
-        [
-          -0.002,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          -0.01,
-          0.0
-        ],
-        [
-          -0.016,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.162,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.027499999999999997,
-          0.0
-        ]
-      ]
-    },
-    "_DELTA_PROV": {
-      "barcelona": [
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ]
-      ],
-      "girona": [
-        [
-          0.023999999999999994,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.06600000000000002,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.01,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.010000000000000002,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.012000000000000002,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.09800000000000002,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ]
-      ],
-      "lleida": [
-        [
-          0.03,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          -0.011999999999999997,
-          0.0
-        ],
-        [
-          -0.04399999999999999,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.01,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          -0.0075000000000000015,
-          0.0
-        ],
-        [
-          0.0125,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.006000000000000001,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.005499999999999989,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.019499999999999997,
-          0.0
-        ]
-      ],
-      "tarragona": [
-        [
-          -0.011999999999999997,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          -0.021999999999999995,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0075000000000000015,
-          0.0
-        ],
-        [
-          -0.0075000000000000015,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          -0.007999999999999998,
-          0.0
-        ],
-        [
-          0.008,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.0
-        ],
-        [
-          0.03349999999999999,
-          0.0,
-          0.0,
-          0.0,
-          0.0,
-          0.000499999999999997,
-          0.0
-        ]
-      ]
-    }
-  }
 
   Q.ciu_parlament_barcelona_buss_support = 23.5;
   Q.ciu_parlament_barcelona_ind_support = 19.19;
@@ -2443,16 +1043,16 @@ on-arrival: {!
   Q.upyd_congreso_navarra_support = 0.3;
   Q.abstain_congreso_navarra_support = 35.7;
 
-  // Euskadi — abertzale left = Amaiur (→ EH Bildu later).
+  // Euskadi —  Amaiur → EH Bildu later).
   Q.pnv_congreso_euskadi_support = 21.0;
-  Q.amaiur_congreso_euskadi_support = 16.0;
+  Q.ehbildu_congreso_euskadi_support = 16.0;
   Q.psoe_congreso_euskadi_support = 14.0;
   Q.pp_congreso_euskadi_support = 11.0;
   Q.iu_congreso_euskadi_support = 3.0;
   Q.upyd_congreso_euskadi_support = 0.2;
   Q.abstain_congreso_euskadi_support = 34.8;
 
-  // Galicia — BNG runs on its own (En Marea / NOS dynamics come later).
+  // Galicia
   Q.pp_congreso_galicia_support = 31.0;
   Q.psoe_congreso_galicia_support = 20.0;
   Q.bng_congreso_galicia_support = 5.0;
@@ -2484,23 +1084,20 @@ on-arrival: {!
   // Spanish party-system flags (IRL defaults; flipped by formation scenes)
   Q.spa_cs_active = false;
   Q.vox_active = false;
-  Q.spa_nsuma_formed = false;
-  Q.spa_upn_independent = false;
-  Q.spa_upn_defect = false;
-  Q.spa_foro_active = false;
-  Q.spa_compromis_active = false;
-  Q.spa_mes_active = false;
+  Q.spa_nsuma_formed = false;        // if formed, cs, pp and upn will go together - TODO: gates!
+  Q.spa_foro_active = false;         // if true, FAC will run separate from the PP - TODO: gates!
+  Q.spa_compromis_active = false;    // if false, will go with either UP or Podemos, whatver is running - TODO: gates!
+  Q.spa_mes_active = false;          // if false, will go with either UP or Podemos, whatver is running - TODO: gates!
   Q.spa_fr_active = false;
-  Q.spa_cup_spa_active = false;
-  Q.spa_up_masq_split = false;
-
-  // Congreso coalition membership (alt-history toggles)
-  Q.upn_in_pp = true;        // UPN runs within PP lists for general elections
-  Q.cs_in_nsuma = false;
-  Q.iu_in_up = false;
-  Q.compromis_in_up = false;
-  Q.mes_in_up = false;
+  Q.spa_cup_active = false;
+  Q.spa_mpais_active = false;        // if true, más país will run separate from Podemos and UP - TODO: gates!
+  Q.upn_in_pp = true;                // if false, UPN will go separate from PP - TODO: gates!
+  Q.iu_in_up = false;                // equivalent to "UP active" flag - TODO: gates!
+  Q.spa_bng_active = true;                // if false will run as part of UP - TODO: gates!
+  Q.spa_te_active = false;   
+  Q.spa_ehbildu_active = true;       // if false, amaiur will run again (only if ehbildu is ever banned) + amaiur should also includ gbai if reformed! (TODO!)
   Q.psc_split = false;
+  Q.jxsi_in_congreso = false;  // TODO: make this a possibility + block it if CUP is in JxSí
 
   // BCN & Local supports
   Q.icv_local_barcelona_support = 29.0;
@@ -2539,6 +1136,7 @@ on-arrival: {!
 
   // these get _timer and _rubicon_timer appended
   Q.timers = [
+    "congreso_party_tour",
     "advisor_action",
     "parlament",
     "interior",
@@ -2560,6 +1158,7 @@ on-arrival: {!
   // Zero Timers
   for (timer of Q.timers) {
     Q[timer+'_timer'] = 0;
+    Q[timer+'_rubicon_timer'] = 0;
   }
   for (timer of Q.rubicon_timers) {
     Q[timer+'_rubicon_timer'] = 0;
@@ -2690,7 +1289,7 @@ go-to: party_selection
 = <span style="color: #C4B156;font-weight: bold;">Normal</span> difficulty
 
 @hard_mode
-subtitle: Little party resources, hard interactions, more limitted options.
+subtitle: Little party resources, hard interactions, more limited options.
 new-page: true
 on-arrival: difficulty = 1; party_resources = 2; max_advisors = 3;
 go-to: party_selection
@@ -2718,8 +1317,6 @@ go-to: party_selection
  - [+ random_seed_author +]
 
 = <span style="color: rgb(69, 23, 2);font-weight: bold;">Historical</span> difficulty
-
-Careful! Re-loading this page will result in a loss of playthrough progress. 
 
 @party_selection
 
@@ -2792,6 +1389,10 @@ on-arrival: {!
   Q.erc_pragmatic_dissent = 10;
   Q.erc_civic_strength = 30;
   Q.erc_civic_dissent = 15;
+
+  // Resources
+  Q.party_income = 1;
+  Q.party_resources_mult = 1;
 !}
 go-to: intros
 
@@ -2827,6 +1428,8 @@ The far-left, anti-capitalist, eco-socialist platform demands direct democracy, 
 
 @cup_2
 subtitle: Start the game as CUP.
+choose-if: 1==0
+unavailable-subtitle: Too much in WIP for now!
 on-arrival: {!
   Q.player_party = "cup";
   Q.position_disp = "Non-existence";
@@ -2874,6 +1477,10 @@ on-arrival: {!
   Q.cup_poblelliure_dissent = 15;
   Q.cup_thirdsector_strength = 20;
   Q.cup_thirdsector_dissent = 10;
+
+  // Resources
+  Q.party_income = 0;
+  Q.party_resources_mult = 1;
 !}
 go-to: intros
 
