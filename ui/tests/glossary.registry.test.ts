@@ -32,4 +32,41 @@ describe('game.json.data.glossary', () => {
         seen.set(w, t.id);
       }
   });
+
+  // Task 5 (§5 of its brief): the Desk needs a party colour token in
+  // tokens.css for every TOKEN (not raw hex — those pass through
+  // colourValue() verbatim, see useGlossary.ts) either the glossary OR
+  // source/lib/allegiances.js can hand it. An id missing here renders
+  // unstyled with zero test signal (jsdom doesn't apply CSS) — this is the
+  // one guard that actually catches that class of miss.
+  const tokensCss = readFileSync(resolve(__dirname, '../src/styles/tokens.css'), 'utf8');
+
+  it('every colour token in the glossary exists in tokens.css', () => {
+    for (const t of terms) {
+      if (!t.colour || t.colour.startsWith('#')) continue;
+      expect(tokensCss, `--${t.colour} missing from tokens.css (glossary term ${t.id})`).toContain(
+        `--${t.colour}:`,
+      );
+    }
+  });
+
+  it('every colour token in source/lib/allegiances.js exists in tokens.css too', () => {
+    const allegiancesSrc = readFileSync(
+      resolve(__dirname, '../../source/lib/allegiances.js'),
+      'utf8',
+    );
+    const tokens = new Set(
+      [...allegiancesSrc.matchAll(/colour:\s*'([^']+)'/g)]
+        .map((m) => m[1])
+        .filter((c) => !c.startsWith('#')),
+    );
+    // Sanity on the scan itself — a change to the source's quoting style
+    // (e.g. double quotes) would silently make this test vacuous otherwise.
+    expect(tokens.size).toBeGreaterThan(0);
+    for (const token of tokens) {
+      expect(tokensCss, `--${token} missing from tokens.css (source/lib/allegiances.js)`).toContain(
+        `--${token}:`,
+      );
+    }
+  });
 });

@@ -4,6 +4,7 @@
 // InTray (reused for 3 different kinds), this component is always the same
 // single tray, so it self-labels with the fixed desk.tray.out chrome key.
 import { useI18n } from 'vue-i18n';
+import Prose from '../Prose.vue';
 
 defineProps<{
   entry: { title: string } | null;
@@ -18,7 +19,11 @@ const { t } = useI18n();
     <div class="tray-well">
       <p v-if="!entry" class="tray-note">{{ t('desk.out.empty') }}</p>
       <div v-else class="slip" data-test="out-entry">
-        <p class="slip-title">{{ entry.title }}</p>
+        <!-- entry.title = the resolved card's title (stores/desk.ts's
+             outTray, set from openCard.title) — same already-marked
+             convertLine/window.displayText output as OpenDossier's cover
+             title; same fix, same reason (see the longer comment there). -->
+        <p class="slip-title"><Prose tag="span" :html="entry.title" /></p>
         <span class="stamp" aria-hidden="true">{{ t('desk.out.resolved') }}</span>
       </div>
     </div>

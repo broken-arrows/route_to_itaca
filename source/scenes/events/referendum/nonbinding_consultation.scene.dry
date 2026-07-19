@@ -8,9 +8,6 @@ max-visits: 1
 on-arrival: {!
     // TODO: How does the preparation event affect this?
     // TODO: Roadmap updating if required?
-    if (!Q.achievement_calcotada) {
-        window.achievementNotif('Calçotada Popular', 'img/achievements/calcotada.png', 1);
-    }
     this.achieve("calcotada");
     Q.consultation_happened = true;
     Q.consultation_pending = false;
@@ -242,10 +239,7 @@ After the celebration, it is clear what the question on everyone's mind right is
 @after_no
 title: This is no short of unexpected...
 on-arrival: {!
-    if (!Q.achievement_majoria_no_silenciosa) {
-        window.achievementNotif('Majoria No Silenciosa', 'img/achievements/majoria_silenciosa.jpg', 5);
-    }
-    this.achieve("majoria_no_sileciosa");
+    this.achieve("majoria_no_silenciosa");
 
     Q.independence_movement -= 30;
     Q.independence_trust -= 30;

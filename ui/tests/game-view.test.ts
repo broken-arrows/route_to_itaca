@@ -186,6 +186,53 @@ describe('GameView phase routing', () => {
   });
 });
 
+// Toast lives at the GameView phase-router level (phase 2.5 Task 8), not
+// nested inside DeskView — an achievement can unlock on ANY frame,
+// including the ending/page surfaces PaperPage renders (game_over.scene.dry
+// is reached as ordinary content, not a desk phase), so the toast must stay
+// visible across the whole router. See desk.dossier.test.ts's DeskView
+// describe block for the negative half of this same move.
+describe('Toast (mounted at the GameView router, both surfaces)', () => {
+  it('is visible while DeskView is showing', async () => {
+    const { desk, wrapper } = mountAtHub();
+    expect(desk.phase).toBe('idle');
+    desk.toastKey = 'desk.toast.handFull';
+    await nextTick();
+    expect(wrapper.find('[data-test="toast"]').exists()).toBe(true);
+  });
+
+  it('is visible while PaperPage is showing (e.g. an ending page)', async () => {
+    const { desk, wrapper } = mountAtHub();
+    desk.phase = 'page';
+    await nextTick();
+    expect(wrapper.findComponent(DeskView).exists()).toBe(false);
+    expect(wrapper.findComponent(PaperPage).exists()).toBe(true);
+
+    desk.toastKey = 'desk.toast.engineError';
+    await nextTick();
+    expect(wrapper.find('[data-test="toast"]').exists()).toBe(true);
+    expect(wrapper.text()).toContain(i18n.global.t('desk.toast.engineError'));
+  });
+
+  it('shows an achievement toast (dynamic content, not an i18n key) over PaperPage too', async () => {
+    const { desk, wrapper } = mountAtHub();
+    desk.phase = 'page';
+    await nextTick();
+    desk.achievementToast = { name: 'Calçotada Popular', image: 'img/x.png', stars: 2 };
+    await nextTick();
+    expect(wrapper.find('[data-test="toast-achievement"]').exists()).toBe(true);
+    expect(wrapper.text()).toContain('Calçotada Popular');
+  });
+
+  it('renders nothing during boot', () => {
+    vi.stubGlobal('fetch', vi.fn(() => new Promise(() => {})));
+    const wrapper = mount(GameView, withPlugins());
+    expect(wrapper.find('[data-test="toast"]').exists()).toBe(false);
+    expect(wrapper.find('[data-test="toast-achievement"]').exists()).toBe(false);
+    vi.unstubAllGlobals();
+  });
+});
+
 // PaperPage fixture: a plain (role-less, hence 'page') scene with one
 // choosable and one chooseIf-locked option — chooseIf keeps the option
 // VISIBLE with canChoose:false (distinct from viewIf, which would drop it),

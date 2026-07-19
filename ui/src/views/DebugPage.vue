@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGameStore } from '../stores/game';
+import Prose from '../components/Prose.vue';
 
 const { t } = useI18n();
 const store = useGameStore();
@@ -49,7 +50,7 @@ function onDraw(deckId: string) {
 
     <section class="scene">
       <!-- Engine-authored prose; trusted content from our own game.json -->
-      <div class="prose" v-html="store.frame?.html"></div>
+      <Prose class="prose" :html="store.frame?.html ?? ''" />
     </section>
 
     <section v-if="store.frame && !store.frame.isHand" class="choices">
@@ -65,12 +66,19 @@ function onDraw(deckId: string) {
         <!-- Engine output (convertLine returns HTML: <em>/<strong>/raw magic
              blocks), same trust boundary as the prose above — interpolating it
              showed the player literal tags. -->
-        <span v-html="c.title"></span> <small v-if="c.subtitle" v-html="c.subtitle"></small>
+        <Prose tag="span" class="choice-title" :html="c.title" />
+        <Prose v-if="c.subtitle" tag="span" class="choice-subtitle" :html="c.subtitle" />
       </button>
     </section>
 
     <section v-if="store.frame?.isHand" class="hand-area">
       <h2>{{ t('debug.decks') }}</h2>
+      <!-- d.title/card.title/p.title are all engine output too (same
+           CaptureUI normalization as choice titles above) — Prose so a
+           deck/hand/pinned title the engine marked as a glossary term (e.g.
+           a pinned advisor card whose own name matches one, see
+           OpenDossier's cover-title fix) renders as an element rather than
+           literal tag text. -->
       <button
         v-for="d in store.frame.decks"
         :key="d.id"
@@ -78,7 +86,7 @@ function onDraw(deckId: string) {
         :disabled="!d.canChoose"
         @click="onDraw(d.id)"
       >
-        {{ d.title }} — {{ t('debug.draw') }}
+        <Prose tag="span" :html="d.title" /> — {{ t('debug.draw') }}
       </button>
 
       <h2>{{ t('debug.hand', { n: store.frame.hand.length, max: store.frame.maxCards }) }}</h2>
@@ -88,7 +96,7 @@ function onDraw(deckId: string) {
         data-test="hand-card"
         @click="store.play(card.id)"
       >
-        {{ card.title }} — {{ t('debug.play') }}
+        <Prose tag="span" :html="card.title" /> — {{ t('debug.play') }}
       </button>
 
       <h2>{{ t('debug.pinned') }}</h2>
@@ -98,7 +106,7 @@ function onDraw(deckId: string) {
         data-test="pinned"
         @click="store.playPinned(p.id)"
       >
-        {{ p.title }}
+        <Prose tag="span" :html="p.title" />
       </button>
     </section>
 

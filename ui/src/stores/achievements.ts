@@ -1,52 +1,39 @@
-// Cross-save achievement ledger. Unlike settings/game saves this is NOT a
-// pinia store: it's a plain read-modify-write over one localStorage blob,
-// called from the desk store's autosave hook (and, later, wherever
-// achievements are displayed). Achievement qualities are `Q.achievement_*`,
-// truthy when unlocked, and reset per playthrough — this module is what
-// makes an unlock permanent across saves/newGame.
-
-const STORAGE_KEY = 'rti:desk:achievements';
+/**
+ * Achievement unlock DETECTION. There is no ledger here on purpose.
+ *
+ * The ENGINE already owns achievements (engine.js:1133 `achieve`, :588
+ * `_loadAchievements`): `achieve(x)` sets Q.achievement_x AND
+ * Q.game_achievement_x and persists the set to
+ * localStorage[game.title + '_achievements']; boot restores Q.achievement_*
+ * from it. So:
+ *
+ *   Q.achievement_x       = ever unlocked, ACROSS SAVES (pre-seeded at boot)
+ *   Q.game_achievement_x  = unlocked in THIS playthrough
+ *
+ * Phase 2 built a SECOND ledger (`rti:desk:achievements`) next to the engine's,
+ * because dendrynexus_ten_plan.md §8 had the two qualities backwards. Deleted.
+ *
+ * A notification is therefore a frame-to-frame diff of `achievement_*`:
+ * falsy -> truthy WITHIN a session means first time ever, which reproduces
+ * content's existing `if (!Q.achievement_game_completed)` guards exactly.
+ *
+ * The `achievement_` PREFIX guard below already excludes `game_achievement_*`
+ * on its own (that key starts with `game_`, not `achievement_`) — there is
+ * no separate check needed to keep the per-playthrough ledger out of this
+ * diff.
+ */
 const PREFIX = 'achievement_';
 
-export interface AchievementRecord {
-  unlockedAt: string; // ISO
-  inGame: { year: number | null; month: number | null };
-}
-
-export type AchievementsBlob = Record<string, AchievementRecord>;
-
-function persist(blob: AchievementsBlob): void {
-  if (typeof localStorage === 'undefined') return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(blob));
-}
-
-export function listUnlocked(): AchievementsBlob {
-  if (typeof localStorage === 'undefined') return {};
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return {};
-  try {
-    return JSON.parse(raw) as AchievementsBlob;
-  } catch {
-    return {};
-  }
-}
-
-// Diffs truthy achievement_* keys in `q` against the stored set, records the
-// new ones with the current wall-clock + in-game time, and returns the ids
-// that were newly unlocked by THIS call (empty when nothing changed).
-export function recordUnlocks(
-  q: Record<string, unknown>,
-  inGame: { year: number | null; month: number | null },
+export function newlyUnlocked(
+  prev: Record<string, unknown>,
+  next: Record<string, unknown>,
 ): string[] {
-  const stored = listUnlocked();
-  const newly: string[] = [];
-  for (const key of Object.keys(q)) {
+  const out: string[] = [];
+  for (const key of Object.keys(next)) {
     if (!key.startsWith(PREFIX)) continue;
-    if (!q[key]) continue;
-    if (stored[key]) continue;
-    stored[key] = { unlockedAt: new Date().toISOString(), inGame };
-    newly.push(key);
+    if (!next[key]) continue;
+    if (prev[key]) continue;
+    out.push(key.slice(PREFIX.length));
   }
-  if (newly.length > 0) persist(stored);
-  return newly;
+  return out;
 }

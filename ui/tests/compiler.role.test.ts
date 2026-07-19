@@ -29,7 +29,7 @@ describe('role scene attribute', () => {
     await expect(compile([scene('title: T\nrole: bogus\n\nBody.\n')])).rejects.toThrow(/role/i);
   });
 
-  it.each(['card-gov', 'card-party', 'card-parlament'])(
+  it.each(['card-gov', 'card-party', 'card-parliament'])(
     'accepts skin value %s and emits it',
     async (r) => {
       const game = await compile([scene(`title: T\nrole: ${r}\n\nBody.\n`)]);

@@ -47,7 +47,7 @@ function onClick(): void {
     @keydown.enter.prevent="onClick"
     @keydown.space.prevent="onClick"
   >
-    <span v-if="skin.key === 'parlament'" class="rule-accent" aria-hidden="true"></span>
+    <span v-if="skin.key === 'parliament'" class="rule-accent" aria-hidden="true"></span>
     <div class="card-art">
       <img v-if="imgSrc && !imgBroken" :src="imgSrc" alt="" @error="imgBroken = true" />
       <div v-else class="art-placeholder" aria-hidden="true"></div>

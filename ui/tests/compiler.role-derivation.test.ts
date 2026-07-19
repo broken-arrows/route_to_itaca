@@ -19,7 +19,7 @@ async function adapterFor(files: { name: string; contents: string }[]): Promise<
 const scene = (body: string) => ({ name: 't.scene.dry', contents: body });
 
 describe('role -> mechanical boolean derivation', () => {
-  it.each(['card', 'card-gov', 'card-party', 'card-parlament'])(
+  it.each(['card', 'card-gov', 'card-party', 'card-parliament'])(
     'role: %s derives isCard: true when is-card is absent',
     async (role) => {
       const game = await compile([scene(`title: T\nrole: ${role}\n\nBody.\n`)]);

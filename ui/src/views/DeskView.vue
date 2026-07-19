@@ -18,7 +18,6 @@ import DeskMonth from '../components/desk/DeskMonth.vue';
 import OutTray from '../components/desk/OutTray.vue';
 import FlyingCard from '../components/desk/FlyingCard.vue';
 import OpenDossier from '../components/desk/OpenDossier.vue';
-import Toast from '../components/desk/Toast.vue';
 
 const { t } = useI18n();
 const gameStore = useGameStore();
@@ -31,7 +30,7 @@ const deskYear = computed(() => (typeof gameStore.q.year === 'number' ? gameStor
 
 // The deck SCENE's own `role` is mechanically always 'deck' (role: deck ->
 // isDeck derivation, see compiler.role-derivation.test.ts) — it carries no
-// gov/party/parlament distinction. main.scene.dry's hub only ever offers
+// gov/party/parliament distinction. main.scene.dry's hub only ever offers
 // THESE known deck ids for the three tray kinds (party_erc/party_cup are
 // mutually exclusive via view-if on player_party), so DeskView is the one
 // place allowed to know them by id: it supplies the fixed chrome label AND
@@ -50,7 +49,7 @@ const deskYear = computed(() => (typeof gameStore.q.year === 'number' ? gameStor
 interface TrayKind {
   ids: string[];
   labelKey: string;
-  skinRole: 'card-gov' | 'card-party' | 'card-parlament';
+  skinRole: 'card-gov' | 'card-party' | 'card-parliament';
 }
 const TRAY_KINDS: TrayKind[] = [
   { ids: ['main.cat_gov'], labelKey: 'desk.tray.government', skinRole: 'card-gov' },
@@ -59,7 +58,7 @@ const TRAY_KINDS: TrayKind[] = [
     labelKey: 'desk.tray.party',
     skinRole: 'card-party',
   },
-  { ids: ['main.parlament_deck'], labelKey: 'desk.tray.parlament', skinRole: 'card-parlament' },
+  { ids: ['main.parlament_deck'], labelKey: 'desk.tray.parliament', skinRole: 'card-parliament' },
 ];
 
 // The desk's furniture comes from the desk store's `deskView`, NOT from the
@@ -162,8 +161,6 @@ function cardDimmed(card: CardView): boolean {
     <Transition name="dossier">
       <OpenDossier v-if="deskStore.phase === 'dossierOpen' || deskStore.phase === 'resolving'" />
     </Transition>
-
-    <Toast :text-key="deskStore.toastKey" />
   </div>
 </template>
 

@@ -58,9 +58,9 @@ describe('app shell', () => {
 
   // REGRESSION (I2): the header switcher called i18n's setLocale() DIRECTLY,
   // bypassing the settings store entirely. settings.language went stale, and
-  // setLocale only writes the legacy `rti:desk:locale` key — which the
-  // settings blob outranks the moment anything writes one, so header language
-  // changes would silently stop persisting. One source of truth: the store.
+  // setLocale only writes the loose `dnt:locale` key — which the settings
+  // blob outranks the moment anything writes one, so header language changes
+  // would silently stop persisting. One source of truth: the store.
   it('the header language switcher goes through the settings store', async () => {
     const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('no network in test'))));
@@ -78,8 +78,8 @@ describe('app shell', () => {
 
     expect(settings.language).toBe('ca'); // the store is the source of truth
     expect(i18n.global.locale.value).toBe('ca'); // ...and it drove i18n
-    // ...and it persisted as the settings BLOB, not just the legacy key.
-    expect(JSON.parse(localStorage.getItem('rti:desk:settings')!).language).toBe('ca');
+    // ...and it persisted as the settings BLOB, not just the loose key.
+    expect(JSON.parse(localStorage.getItem('dnt:settings')!).language).toBe('ca');
 
     errSpy.mockRestore();
     vi.unstubAllGlobals();

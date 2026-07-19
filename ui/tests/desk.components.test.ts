@@ -24,7 +24,7 @@ describe('skinFor', () => {
   it.each([
     ['card-gov', 'gov', '#f4f1e6', '#c9bfa4'],
     ['card-party', 'party', '#e3d3a8', '#c2ad72'],
-    ['card-parlament', 'parlament', '#f6f4ec', '#4a5b6a'],
+    ['card-parliament', 'parliament', '#f6f4ec', '#4a5b6a'],
   ] as const)('role %s resolves to the %s skin', (role, key, bg, bd) => {
     const skin = skinFor(role);
     expect(skin.key).toBe(key);
@@ -97,7 +97,7 @@ describe('HandCard', () => {
   it.each([
     ['card-gov', 'skin-gov'],
     ['card-party', 'skin-party'],
-    ['card-parlament', 'skin-parlament'],
+    ['card-parliament', 'skin-parliament'],
     [undefined, 'skin-neutral'],
   ] as const)('applies the right skin class for role %s', (role, expectedClass) => {
     const wrapper = mount(HandCard, withI18n({ props: { card: cardWith(role), index: 0 } }));
@@ -214,7 +214,18 @@ describe('OutTray', () => {
   });
 
   it('shows the resolved entry title and stamp when an entry is present', () => {
-    const wrapper = mount(OutTray, withI18n({ props: { entry: { title: 'Card One' } } }));
+    // Task 5: the slip title now renders through <Prose> (same fix as
+    // OpenDossier's cover title — a resolved card's title can arrive
+    // already glossary-marked; see tests/desk.dossier.test.ts's "OutTray —
+    // a marked title" for the regression itself), which calls
+    // useGameStore() internally — needs an active pinia, unlike the empty-
+    // state test above (that branch never mounts <Prose> at all).
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const wrapper = mount(OutTray, {
+      global: { plugins: [pinia, i18n] },
+      props: { entry: { title: 'Card One' } },
+    });
     expect(wrapper.text()).toContain('Card One');
     expect(wrapper.text()).toContain(i18n.global.t('desk.out.resolved'));
   });
@@ -333,9 +344,9 @@ describe('DeskView', () => {
   it('renders the government, party and parlament trays with the fixed chrome labels', () => {
     const { wrapper } = mountDesk();
     const text = wrapper.text();
-    expect(text).toContain(i18n.global.t('desk.tray.government'));
-    expect(text).toContain(i18n.global.t('desk.tray.party'));
-    expect(text).toContain(i18n.global.t('desk.tray.parlament'));
+    // Assert the literal rendered captions — NOT t('desk.tray.*'), which is
+    // vacuous here: the component renders those same keys through the same
+    // i18n instance, so expected and actual would match even if the key moved.
     expect(text).toContain('Generalitat');
     expect(text).toContain('Party Affairs');
     expect(text).toContain('Parlament');

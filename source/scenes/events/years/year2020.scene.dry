@@ -5,9 +5,6 @@ tags: event
 new-page: true
 max-visits: 1
 on-arrival: {!
-    if (!Q.achievement_y2020) {
-        window.achievementNotif("Pandemic Year", 'img/achievements/2020.jpg', 1);
-    }
     this.achieve("y2020");
 !}
 role: event

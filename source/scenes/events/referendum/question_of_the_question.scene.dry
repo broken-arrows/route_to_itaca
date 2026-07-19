@@ -90,9 +90,6 @@ choose-if: not parlament_coalition_concessions_indy
 unavailable-subtitle: [? if president_gender == "m": President?][? if president_gender == "f": Presidenta?] [+ president +] has already taken a clear compromise to push for independence as part of coalition negotiations.
 on-arrival: {!
     Q.consultation_question = 3;
-    if (!Q.achievement_je_me_souviens) {
-        window.achievementNotif('Je me Souviens', 'img/achievements/quebec.svg', 2);
-    }
     this.achieve("je_me_souviens");
     
 

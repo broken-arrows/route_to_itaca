@@ -2,9 +2,22 @@ import { computed, ref, watch } from 'vue';
 import { defineStore } from 'pinia';
 import { useGameStore } from './game';
 import { useSettingsStore } from './settings';
-import { recordUnlocks } from './achievements';
+import { newlyUnlocked } from './achievements';
 import type { CardView, ChoiceView, DeckView, EffectiveRole } from '../engine/types';
 import { DELAYS, after } from '../components/desk/motion';
+import type { AchievementToastPayload } from '../components/desk/Toast.vue';
+
+// The Desk's own achievement-unlock toast payload (phase 2.5 Task 8 — a
+// parity gap since phase 2: the old shell has always had achievementNotif,
+// the Desk never had an equivalent). Deliberately NOT an i18n key like
+// `toastKey` below — the name/image/stars are dynamic, per-achievement game
+// content (game.data.achievements), not a fixed string the catalogs can
+// hold. `toastKey` stays exactly as it is for the fixed-copy nudges
+// (engineError/handFull/deckEmpty); this is a second, parallel channel.
+// Type itself lives in Toast.vue (the component whose props define the
+// contract) and is re-exported here for every other consumer — was
+// declared byte-identically in both files.
+export type { AchievementToastPayload };
 
 // The desk's own furniture. Kept as a store-owned snapshot rather than read
 // live off the frame — see `deskView` below for why.
@@ -62,6 +75,7 @@ export const useDeskStore = defineStore('desk', () => {
   const openCard = ref<CardView | null>(null);
   const outTray = ref<{ title: string } | null>(null);
   const toastKey = ref<string | null>(null);
+  const achievementToast = ref<AchievementToastPayload | null>(null);
   const shakeIdx = ref(-1);
   // Snapshot of the dossier's cover prose + papers, taken by pickPaper just
   // BEFORE the resolving pick's engine call and published for the whole
@@ -115,9 +129,68 @@ export const useDeskStore = defineStore('desk', () => {
   // otherwise loading a save (which immediately routes to idle) would
   // clobber the auto-1/auto-2 rotation before the player has done anything
   // new. Every later idle-entry whose stamp differs from the last-seen one
-  // rotates the slot and records any newly-unlocked achievements against the
-  // in-game clock at that moment.
+  // rotates the slot.
   let autosaveStamp: string | null = null;
+
+  // Achievement-unlock detection: a frame-to-frame diff of Q.achievement_*
+  // (see stores/achievements.ts's newlyUnlocked). Deliberately NOT hung off
+  // maybeAutosave() — an unlock that happens between two turn boundaries
+  // (mid-dossier, mid-event) would otherwise toast late, or not at all if the
+  // player never crosses another month.
+  //
+  // `seeded` gates the FIRST call where a real frame exists (not the
+  // pre-boot call, where game.frame/game.q are still empty — there is
+  // nothing to seed from yet). The engine pre-seeds Q.achievement_* from
+  // localStorage at beginGame() time, so that first real frame's Q already
+  // carries every achievement ever unlocked, in any previous save, in
+  // either UI. Diffing it against an empty prevQ would read every one of
+  // those as "just unlocked" and burst them all as toasts — exactly the
+  // bug this store's OWN prior `rti:desk:achievements` ledger had (see
+  // docs/design/LEARNINGS.md 2026-07-13 §8, finding 3) and exactly what the
+  // old shell's `window.justLoaded` gate (out/html/game.js) exists to
+  // avoid. Seed-without-diffing on that first real frame; diff normally
+  // from the second real frame onward.
+  let prevQ: Record<string, unknown> = {};
+  let seeded = false;
+  let achievementQueue: AchievementToastPayload[] = [];
+  let achievementToastTimer: ReturnType<typeof setTimeout> | undefined;
+
+  function showNextAchievementToast(): void {
+    const next = achievementQueue.shift();
+    achievementToast.value = next ?? null;
+    if (!next) return;
+    achievementToastTimer = after(DELAYS.achievementToast, () => {
+      achievementToastTimer = undefined;
+      showNextAchievementToast();
+    });
+  }
+
+  function enqueueAchievementToast(payload: AchievementToastPayload): void {
+    achievementQueue.push(payload);
+    // A toast is already showing (and its timer already scheduled) — it
+    // will pick up the queue when it dismisses. Otherwise start showing now.
+    if (achievementToast.value === null && achievementToastTimer === undefined) {
+      showNextAchievementToast();
+    }
+  }
+
+  function checkAchievements(): void {
+    if (!game.frame) return; // pre-boot: nothing real to seed from yet
+    const q = game.q;
+    if (!seeded) {
+      prevQ = q;
+      seeded = true;
+      return;
+    }
+    const ids = newlyUnlocked(prevQ, q);
+    prevQ = q;
+    if (ids.length === 0) return;
+    for (const id of ids) {
+      const entry = game.achievements.find((a) => a.id === id);
+      if (!entry) continue; // registry gap — nothing to show, not a crash
+      enqueueAchievementToast({ name: entry.name, image: entry.image, stars: entry.stars });
+    }
+  }
 
   // Which of the two rotation slots to overwrite next. Derived from what is
   // actually STORED, never from an in-memory toggle: a closure variable is
@@ -145,10 +218,6 @@ export const useDeskStore = defineStore('desk', () => {
     if (stamp === autosaveStamp) return;
     autosaveStamp = stamp;
     game.saveSlot(nextAutoSlot());
-    recordUnlocks(game.q, {
-      year: typeof year === 'number' ? year : null,
-      month: typeof month === 'number' ? month : null,
-    });
   }
 
   // --- Engine error handling (spec §9, docs/design/desk_ui_plan.md:329-332).
@@ -188,6 +257,11 @@ export const useDeskStore = defineStore('desk', () => {
   // one is in flight (there isn't one today, but the guard is what makes
   // that safe to add later) must not be able to stomp on it.
   function syncFromFrame(): void {
+    // Runs on EVERY frame change regardless of phase — achievements are
+    // content-driven, independent of the desk's own choreography, and must
+    // not be skipped just because a fly-out/resolve animation happens to be
+    // in flight (see checkAchievements's own comment).
+    checkAchievements();
     if (phase.value === 'drawing' || phase.value === 'resolving') return;
     const f = game.frame;
     const next = f ? routePhase(game.effectiveRole) : 'boot';
@@ -315,6 +389,7 @@ export const useDeskStore = defineStore('desk', () => {
     openCard,
     outTray,
     toastKey,
+    achievementToast,
     shakeIdx,
     resolveView,
     deskView,

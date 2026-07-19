@@ -20,6 +20,7 @@ import { computed, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { ChoiceView } from '../../engine/types';
 import { useDeskStore } from '../../stores/desk';
+import Prose from '../Prose.vue';
 
 const props = defineProps<{
   choice: ChoiceView;
@@ -81,12 +82,14 @@ function onKeyActivate(): void {
     <!-- Engine output, NOT user input: title/subtitle come out of
          convertLine (_contentToHTML), which emits <em>/<strong> and passes
          `magic` blocks through raw — exactly the same trust boundary as the
-         prose, which already renders with v-html. Interpolating them escaped
-         the markup and showed the player literal tags (e.g. root.start's
-         `<span style="font-size: 1.1em;">Start game</span>` on the very
-         first screen). -->
-    <p class="option-title" v-html="choice.title"></p>
-    <p v-if="choice.subtitle" class="option-subtitle" v-html="choice.subtitle"></p>
+         prose, which already renders through <Prose>. Interpolating them
+         escaped the markup and showed the player literal tags (e.g.
+         root.start's `<span style="font-size: 1.1em;">Start game</span>` on
+         the very first screen). convertLine also passes through
+         window.displayText per text run (same as the prose paragraphs), so a
+         party name in a card title gets the same live colour/tooltip here. -->
+    <Prose class="option-title" :html="choice.title" />
+    <Prose v-if="choice.subtitle" class="option-subtitle" :html="choice.subtitle" />
     <span v-if="locked" class="lock-chip">{{ t('desk.dossier.locked') }}</span>
   </div>
 </template>

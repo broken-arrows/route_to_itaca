@@ -1,16 +1,18 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
 import { i18n } from '../src/i18n';
 import PaperOption from '../src/components/desk/PaperOption.vue';
 import OpenDossier from '../src/components/desk/OpenDossier.vue';
+import OutTray from '../src/components/desk/OutTray.vue';
 import FlyingCard from '../src/components/desk/FlyingCard.vue';
 import Toast from '../src/components/desk/Toast.vue';
 import DeskView from '../src/views/DeskView.vue';
 import { useGameStore } from '../src/stores/game';
 import { useDeskStore, setAnimationsForTest } from '../src/stores/desk';
 import { DELAYS } from '../src/components/desk/motion';
+import { markGlossary, type GlossaryTerm } from '../src/glossary/mark';
 import type { ChoiceView, CardView } from '../src/engine/types';
 
 // Repo convention (per task brief): register BOTH plugins for new test
@@ -111,12 +113,45 @@ describe('Toast', () => {
   it('renders nothing when textKey is null', () => {
     const wrapper = mount(Toast, withPlugins({ props: { textKey: null } }));
     expect(wrapper.find('[data-test="toast"]').exists()).toBe(false);
+    expect(wrapper.find('[data-test="toast-achievement"]').exists()).toBe(false);
   });
 
   it('renders the translated text for the given key', () => {
     const wrapper = mount(Toast, withPlugins({ props: { textKey: 'desk.toast.deckEmpty' } }));
     expect(wrapper.find('[data-test="toast"]').exists()).toBe(true);
     expect(wrapper.text()).toContain(i18n.global.t('desk.toast.deckEmpty'));
+  });
+
+  // Achievement toasts (phase 2.5 Task 8) carry DYNAMIC game content
+  // (name/image/stars from game.data.achievements) — not an i18n key, per
+  // the task brief's ambiguity resolution 1. This is a second, independent
+  // channel from textKey.
+  describe('achievement payload', () => {
+    const achievement = { name: 'Calçotada Popular', image: 'img/achievements/calcotada.png', stars: 3 };
+
+    it('renders the achievement name, image and star count instead of textKey', () => {
+      const wrapper = mount(
+        Toast,
+        withPlugins({ props: { textKey: 'desk.toast.deckEmpty', achievement } }),
+      );
+      expect(wrapper.find('[data-test="toast-achievement"]').exists()).toBe(true);
+      expect(wrapper.find('[data-test="toast"]').exists()).toBe(false); // achievement wins
+      expect(wrapper.text()).toContain('Calçotada Popular');
+      expect(wrapper.text()).toContain(i18n.global.t('desk.toast.achievementUnlocked'));
+      // Registry paths are web-root-relative; the component resolves them
+      // against BASE_URL ('/' under vitest), same as HandCard/GlossaryTerm.
+      expect(wrapper.get('.toast-achievement-image').attributes('src')).toBe(
+        `${import.meta.env.BASE_URL}img/achievements/calcotada.png`,
+      );
+      expect(wrapper.findAll('.star--filled')).toHaveLength(3);
+      expect(wrapper.findAll('.star--empty')).toHaveLength(2);
+    });
+
+    it('renders nothing when neither textKey nor achievement is set', () => {
+      const wrapper = mount(Toast, withPlugins({ props: { textKey: null, achievement: null } }));
+      expect(wrapper.find('[data-test="toast"]').exists()).toBe(false);
+      expect(wrapper.find('[data-test="toast-achievement"]').exists()).toBe(false);
+    });
   });
 });
 
@@ -273,6 +308,70 @@ describe('OpenDossier', () => {
   });
 });
 
+// REGRESSION found by this task's own work, not pre-existing: turning on
+// window.displayText (Task 5, main.ts) means CardView.title — which reaches
+// the Desk through CaptureUI.normalizeCard's convertLine, exactly like the
+// prose — can arrive already wrapped in a glossary `<span data-term=...>`.
+// 4 of the 6 real pinned advisor cards (source/scenes) have no
+// zero-width-space escape on their own name (see docs/design/LEARNINGS.md),
+// so opening one used to show the literal `<span class="term"...>` text in
+// the dossier's cover title (plain `{{ }}` interpolation). Fixed by routing
+// it through <Prose tag="span"> like the prose already does. This test
+// installs the REAL window.displayText hook (main.ts's own wiring, not a
+// stand-in) so it exercises the actual engine -> convertLine -> marked-title
+// path, not just Prose's own known-safe v-html rendering.
+describe('OpenDossier — a card title the engine itself marked as a glossary term', () => {
+  const TERMS: GlossaryTerm[] = [
+    { id: 'ernest_maragall', match: ['Ernest Maragall'], display: 'Ernest Maragall', colour: 'psc' },
+  ];
+  const markedDossierGame = {
+    ...dossierGame,
+    scenes: { ...dossierGame.scenes, card_a: { ...dossierGame.scenes.card_a, title: 'Ernest Maragall' } },
+    data: { glossary: { terms: TERMS } },
+  };
+
+  beforeEach(() => {
+    window.displayText = (text: string) => markGlossary(text, TERMS);
+  });
+  afterEach(() => {
+    delete (window as { displayText?: unknown }).displayText;
+  });
+
+  it('renders the marked title as a coloured element, never as literal tag text', () => {
+    const game = useGameStore();
+    const desk = useDeskStore();
+    game.initFromText(JSON.stringify(markedDossierGame));
+    game.newGame();
+    game.choose(0); // root -> hub
+    desk.playPinned(game.frame!.pinned[0]); // hub -> card_a ("Ernest Maragall"), opens the dossier
+    const wrapper = mount(OpenDossier, withPlugins());
+
+    const cover = wrapper.get('.cover-title');
+    expect(cover.text()).toBe('Ernest Maragall'); // not the raw markup
+    const term = cover.get('[data-term="ernest_maragall"]');
+    expect(term.attributes('style')).toContain('var(--psc)');
+    expect(wrapper.html()).not.toContain('&lt;span'); // nothing escaped through
+  });
+});
+
+// Same regression, same fix, the OTHER call site: stores/desk.ts sets
+// outTray.title from openCard.title verbatim (see the comment above),
+// so the OUT tray's slip needs the identical safety. Tested directly on the
+// component (its own contract is a plain `{title}` prop, no engine needed).
+describe('OutTray — a marked title', () => {
+  it('renders as an element rather than showing the literal tag text', () => {
+    const wrapper = mount(
+      OutTray,
+      withPlugins({
+        props: { entry: { title: '<span class="term" data-term="x">Ernest Maragall</span>' } },
+      }),
+    );
+    expect(wrapper.get('[data-test="out-entry"]').text()).toContain('Ernest Maragall');
+    expect(wrapper.find('[data-term="x"]').exists()).toBe(true);
+    expect(wrapper.html()).not.toContain('&lt;span');
+  });
+});
+
 // Review fix round, Important: PaperOption's Enter/Space handler used to
 // call the emit path directly — dead, because OpenDossier listens on a
 // wrapper element's native click (so locked clicks reach the store), not
@@ -412,12 +511,17 @@ describe('DeskView phase wiring', () => {
     expect(wrapper.find('[data-test="open-dossier"]').exists()).toBe(false);
   });
 
-  it('renders the toast when toastKey is set, nothing when null', async () => {
-    const { desk, wrapper } = mountDesk();
-    expect(wrapper.find('[data-test="toast"]').exists()).toBe(false);
-
-    desk.toastKey = 'desk.toast.handFull';
-    await nextTick();
-    expect(wrapper.find('[data-test="toast"]').exists()).toBe(true);
+  // Toast moved OUT of DeskView in phase 2.5 Task 8 — up to GameView's own
+  // template, alongside the DeskView/PaperPage phase router, rather than
+  // nested inside just one of the two surfaces it routes between. Reason:
+  // an achievement can unlock on ANY frame (e.g. game_over.scene.dry, which
+  // renders as PaperPage's 'ending' variant, not DeskView), so the toast
+  // must stay visible across that whole router, not just its desk branch.
+  // See game-view.test.ts's "Toast" describe block for the real coverage;
+  // this is the negative half of that move, kept here so the two together
+  // read as one deliberate relocation rather than a silently dropped test.
+  it('no longer renders its own Toast — that lives in GameView now', () => {
+    const { wrapper } = mountDesk();
+    expect(wrapper.findComponent(Toast).exists()).toBe(false);
   });
 });

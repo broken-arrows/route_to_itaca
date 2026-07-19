@@ -1,0 +1,95 @@
+{
+  "achievements": [
+    {
+      "id": "game_completed",
+      "name": "El Procés",
+      "description": "Finish the game.",
+      "stars": 1,
+      "image": "img/flags/estelada.png"
+    },
+    {
+      "id": "calcotada",
+      "name": "Calçotada Popular",
+      "description": "Hold a non-referendum, non-binding, consultative participative process on independence.",
+      "stars": 1,
+      "image": "img/achievements/calcotada.png"
+    },
+    {
+      "id": "jxsi",
+      "name": "Junts pel Sí",
+      "description": "Form the Junts pel Sí electoral coalition.",
+      "stars": 1,
+      "image": "img/parties/logo_jxsi.png"
+    },
+    {
+      "id": "y2020",
+      "name": "Pandemic Year",
+      "description": "End the game by reaching the year 2020.",
+      "stars": 1,
+      "image": "img/achievements/2020.jpg"
+    },
+    {
+      "id": "perrosanxe",
+      "name": "Más sabe por Perro que por Sanxe",
+      "description": "After being ousted from the PSOE and winning back its leadership, have Pedro Sánchez become Presidente.",
+      "stars": 2,
+      "image": "img/achievements/perrosanxe.png"
+    },
+    {
+      "id": "je_me_souviens",
+      "name": "Je me Souviens",
+      "description": "Have an independence consultation with an almost incomprehensible question.",
+      "stars": 2,
+      "image": "img/achievements/quebec.svg"
+    },
+    {
+      "id": "psoed",
+      "name": "You've been PSOE'd",
+      "description": "Negotiate and make possible a PSOE-led Gobierno, only for the agreements to go unfulfilled.",
+      "stars": 2,
+      "image": "img/achievements/psoed.jpg"
+    },
+    {
+      "id": "mas_o_marc",
+      "name": "Mas o Març",
+      "description": "Playing as a party part of the JxSí coalition, refuse to give up Artur Mas' leadership, resulting in new elections.",
+      "stars": 3,
+      "image": "img/achievements/mas_o_marc.webp"
+    },
+    {
+      "id": "paperera_de_la_historia",
+      "name": "La Paperera de la Història",
+      "description": "Playing as the CUP and while not being part of the JxSí coalition, force Artur Mas to step aside.",
+      "stars": 3,
+      "image": "img/achievements/paperera_de_la_historia.png"
+    },
+    {
+      "id": "asalto_cielos",
+      "name": "Asalto a los Cielos",
+      "description": "Have Podemos or Unidas Podemos surpass the PSOE in seats at the Congreso and reach the presidency.",
+      "stars": 3,
+      "image": "img/achievements/asalto_cielos.avif"
+    },
+    {
+      "id": "barones",
+      "name": "Barones del PSOE",
+      "description": "Have the Barons of the PSOE successfully oust Pedro Sánchez and keep him away from the leadership for the rest of the game.",
+      "stars": 4,
+      "image": "img/achievements/barones.webp"
+    },
+    {
+      "id": "jxsi_de_debo",
+      "name": "Junts (de debò) pel Sí",
+      "description": "Include the CUP into the JxSí electoral coalition or, as the CUP, join into the JxSí coaltion.",
+      "stars": 4,
+      "image": "img/achievements/jxsi_dedebo.jpg"
+    },
+    {
+      "id": "majoria_no_silenciosa",
+      "name": "Majoria No Silenciosa",
+      "description": "Somehow, manage to lose a non-agreement referndum or non-binding consultation to the \"No\" option.",
+      "stars": 5,
+      "image": "img/achievements/majoria_silenciosa.jpg"
+    }
+  ]
+}

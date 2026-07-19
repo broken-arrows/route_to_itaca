@@ -2,7 +2,8 @@ import { DendryEngine, convertJSONToGame } from 'dendrynexus-ten/lib/engine.js';
 import { convert as paragraphsToHTML } from 'dendrynexus-ten/lib/ui/content/html.js';
 import { CaptureUI, normalizeCard } from './capture-ui';
 import { installGameLib } from '../game-bindings';
-import type { Frame, DrawResult, SceneRole, EffectiveRole, GameInfo } from './types';
+import type { Frame, DrawResult, SceneRole, EffectiveRole, GameInfo, AchievementEntry } from './types';
+import type { GlossaryTerm } from '../glossary/mark';
 
 export class DendryAdapter {
   readonly engine: DendryEngine;
@@ -38,6 +39,25 @@ export class DendryAdapter {
   get info(): GameInfo {
     const raw = this.engine.game.info ?? {};
     return { languages: ['en'], ...raw } as GameInfo;
+  }
+
+  /** Game registries compiled from `source/data/*.json` (see the §2.5 spec
+   *  §3.2 and compiler.data-registry.test.ts). `game.data` is undefined
+   *  when source/data/ carries no registries — never throw on that. */
+  get data(): Record<string, unknown> {
+    return (this.engine.game as { data?: Record<string, unknown> }).data ?? {};
+  }
+
+  get glossary(): GlossaryTerm[] {
+    const g = this.data.glossary as { terms?: GlossaryTerm[] } | undefined;
+    return g?.terms ?? [];
+  }
+
+  /** game.json.data.achievements.achievements — see AchievementEntry. Never
+   *  throws when source/data/ carries no achievements registry. */
+  get achievements(): AchievementEntry[] {
+    const a = this.data.achievements as { achievements?: AchievementEntry[] } | undefined;
+    return a?.achievements ?? [];
   }
 
   setLocale(locale: string | null, catalog: Record<string, string> | null): void {

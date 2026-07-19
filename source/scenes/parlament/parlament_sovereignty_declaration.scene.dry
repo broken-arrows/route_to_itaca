@@ -1,6 +1,6 @@
 title: Sovereignty Declaration
 new-page: true
-on-arrival: {! //  TODO: CUP's case
+on-arrival: {!
     if (Q.coming_from_parlament) {
         Q.party_resources -= 1;
     } else if (Q.player_party == "erc") {

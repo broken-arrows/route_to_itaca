@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { useSettingsStore } from '../src/stores/settings';
-import { recordUnlocks, listUnlocked } from '../src/stores/achievements';
 import { i18n } from '../src/i18n';
 
 describe('settings store', () => {
@@ -36,8 +35,8 @@ describe('settings store', () => {
     expect(restored.eventImages).toBe(false);
   });
 
-  it('falls back to the legacy rti:desk:locale key when no settings blob exists yet', () => {
-    localStorage.setItem('rti:desk:locale', 'ca');
+  it('falls back to a loose locale key (dnt:locale) when no settings blob exists yet', () => {
+    localStorage.setItem('dnt:locale', 'ca');
     const store = useSettingsStore();
     expect(store.language).toBe('ca');
     // the fallback only concerns language; the other two keep their defaults.
@@ -45,22 +44,38 @@ describe('settings store', () => {
     expect(store.eventImages).toBe(true);
   });
 
-  it('the legacy key is ignored once a real settings blob exists', () => {
+  it('falls back to the pre-rename rti:desk:locale key too', () => {
     localStorage.setItem('rti:desk:locale', 'ca');
+    const store = useSettingsStore();
+    expect(store.language).toBe('ca');
+  });
+
+  it('reads a pre-rename rti:desk:settings blob when no dnt:settings blob exists', () => {
+    localStorage.setItem(
+      'rti:desk:settings',
+      JSON.stringify({ language: 'ca', animations: false, eventImages: true }),
+    );
+    const store = useSettingsStore();
+    expect(store.language).toBe('ca');
+    expect(store.animations).toBe(false);
+  });
+
+  it('the loose locale key is ignored once a real settings blob exists', () => {
+    localStorage.setItem('dnt:locale', 'ca');
     const store = useSettingsStore();
     store.setAnimations(false); // forces a persisted blob with language 'ca'
     store.setLanguage('en');
 
     setActivePinia(createPinia());
     const restored = useSettingsStore();
-    expect(restored.language).toBe('en'); // blob wins, not the stale legacy key
+    expect(restored.language).toBe('en'); // blob wins, not the stale loose key
   });
 
-  it('persists all three keys as one JSON blob at rti:desk:settings', () => {
+  it('persists all three keys as one JSON blob at dnt:settings', () => {
     const store = useSettingsStore();
     store.setLanguage('ca');
 
-    const raw = localStorage.getItem('rti:desk:settings');
+    const raw = localStorage.getItem('dnt:settings');
     expect(raw).not.toBeNull();
     expect(JSON.parse(raw!)).toEqual({ language: 'ca', animations: true, eventImages: true });
   });
@@ -70,24 +85,24 @@ describe('settings store', () => {
     store.setLanguage('ca');
     store.setAnimations(false);
 
-    expect(JSON.parse(localStorage.getItem('rti:desk:settings')!)).toEqual({
+    expect(JSON.parse(localStorage.getItem('dnt:settings')!)).toEqual({
       language: 'ca',
       animations: false,
       eventImages: true,
     });
 
     store.setEventImages(false);
-    expect(JSON.parse(localStorage.getItem('rti:desk:settings')!)).toEqual({
+    expect(JSON.parse(localStorage.getItem('dnt:settings')!)).toEqual({
       language: 'ca',
       animations: false,
       eventImages: false,
     });
   });
 
-  it('setLanguage also drives the i18n setLocale seam (legacy key updates too)', () => {
+  it('setLanguage also drives the i18n setLocale seam (loose locale key updates too)', () => {
     const store = useSettingsStore();
     store.setLanguage('ca');
-    expect(localStorage.getItem('rti:desk:locale')).toBe('ca');
+    expect(localStorage.getItem('dnt:locale')).toBe('ca');
   });
 
   // REGRESSION (I2): the store is the single source of truth for the UI
@@ -96,7 +111,7 @@ describe('settings store', () => {
   // own legacy key, which the blob is allowed to outrank).
   it('applies its persisted language to i18n at creation (a ca blob boots in Catalan)', () => {
     localStorage.setItem(
-      'rti:desk:settings',
+      'dnt:settings',
       JSON.stringify({ language: 'ca', animations: true, eventImages: true }),
     );
     expect(i18n.global.locale.value).toBe('en'); // before the store exists
@@ -106,55 +121,22 @@ describe('settings store', () => {
     expect(i18n.global.locale.value).toBe('ca'); // the store drove i18n
   });
 
-  it('applies the legacy-key fallback language to i18n at creation too', () => {
-    localStorage.setItem('rti:desk:locale', 'ca');
+  it('applies the loose-key fallback language to i18n at creation too', () => {
+    localStorage.setItem('dnt:locale', 'ca');
     const store = useSettingsStore();
     expect(store.language).toBe('ca');
     expect(i18n.global.locale.value).toBe('ca');
   });
 });
 
-describe('achievements module (cross-save, rti:desk:achievements)', () => {
-  beforeEach(() => {
-    localStorage.clear();
-  });
-
-  it('records newly-unlocked achievement_* qualities with both clocks and returns their ids', () => {
-    const q = { achievement_foo: true, achievement_bar: false, unrelated_quality: true };
-    const newly = recordUnlocks(q, { year: 2015, month: 3 });
-    expect(newly).toEqual(['achievement_foo']);
-
-    const stored = listUnlocked();
-    expect(Object.keys(stored)).toEqual(['achievement_foo']);
-    expect(stored.achievement_foo.inGame).toEqual({ year: 2015, month: 3 });
-    expect(() => new Date(stored.achievement_foo.unlockedAt).toISOString()).not.toThrow();
-  });
-
-  it('a second call for an already-recorded id returns [] and does not overwrite it', () => {
-    const q = { achievement_foo: true };
-    recordUnlocks(q, { year: 2015, month: 3 });
-    const second = recordUnlocks(q, { year: 2015, month: 4 });
-    expect(second).toEqual([]);
-    expect(listUnlocked().achievement_foo.inGame).toEqual({ year: 2015, month: 3 }); // unchanged
-  });
-
-  it('respects a pre-existing stored set seeded before recordUnlocks is ever called', () => {
-    localStorage.setItem(
-      'rti:desk:achievements',
-      JSON.stringify({
-        achievement_preexisting: {
-          unlockedAt: '2020-01-01T00:00:00.000Z',
-          inGame: { year: 2011, month: 1 },
-        },
-      }),
-    );
-    const newly = recordUnlocks(
-      { achievement_preexisting: true, achievement_new: true },
-      { year: 2016, month: 6 },
-    );
-    expect(newly).toEqual(['achievement_new']);
-    const stored = listUnlocked();
-    expect(stored.achievement_preexisting.inGame).toEqual({ year: 2011, month: 1 }); // untouched
-    expect(stored.achievement_new.inGame).toEqual({ year: 2016, month: 6 });
-  });
-});
+// The old "achievements module (cross-save, rti:desk:achievements)" describe
+// block that used to live here tested `recordUnlocks`/`listUnlocked` — a
+// SECOND, duplicate achievement ledger next to the engine's own
+// (localStorage[game.title + '_achievements'], engine.js:1141). Deleted in
+// phase 2.5 Task 8, per the task brief's Step 4 (see
+// docs/design/LEARNINGS.md 2026-07-13 §7-8: the engine already IS the
+// cross-save ledger — a second one duplicated it and had gotten its own two
+// qualities backwards). The replacement is a stateless diff, not a ledger —
+// see ui/tests/achievements.test.ts (the pure `newlyUnlocked` predicate) and
+// ui/tests/store.desk.achievements.test.ts (the real wiring, through the
+// desk store).

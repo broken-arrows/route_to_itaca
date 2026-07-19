@@ -197,8 +197,13 @@ on-arrival: {!
         ) { Q.parlament_coalition_cup_critical = true; }
     }
 
-    // Store config for initCatCoalitions (called from game.js after render)
-    window._cvParlement = {
+    // Store config for the widget protocol (data-widget="coalitions", marker
+    // below points at this key via configFrom) — a Q object the UI reads,
+    // not a value pushed through a browser global. See
+    // docs/design/desk_ui_plan.md §6 ("the widget protocol") and
+    // out/html/widgets.js (old shell) / WidgetHost.vue (Desk), both of which
+    // resolve `configFrom` against Q.
+    Q.parlament_coalition_config = {
         totalSeats:        135,
         majoritySeats:     Q.parlament_s_majority || 68,
         nearMissThreshold: 20,
@@ -551,7 +556,7 @@ on-arrival: {!
 
 Given the election results, different coalition arithmetics can be imagined. Now might be the time to make a decision on which direction should the government formation negotiations take.
 
-{!<div id="parlament-coalition-widget"></div>!}
+{!<div id="parlament-coalition-widget" data-widget="coalitions" data-props='{"configFrom":"parlament_coalition_config"}'></div>!}
 
 [? if parlament_current_ciu_s > 40 and parlament_coalition_ciu_erc_s > parlament_s_majority : [+ parlament_current_ciu_leader +] is asking for [? if player_party = "erc" : our?][?if player_party != "erc" : ERC's ?] support to form a [+ parlament_current_ciu +] <span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">minority government</span>. [? if player_party = "erc" : Some policy concessions are expected to be negotiated in exchange. There's always the alternative to propose a different arithmetic, but given the results that may hinder our leverage. ?] ?]
 

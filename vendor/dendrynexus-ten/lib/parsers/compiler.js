@@ -145,7 +145,7 @@
     'card': 'isCard',
     'card-gov': 'isCard',
     'card-party': 'isCard',
-    'card-parlament': 'isCard',
+    'card-parliament': 'isCard',
     'deck': 'isDeck',
     'desk': 'isHand',
     'pinned-action': 'isPinnedCard'

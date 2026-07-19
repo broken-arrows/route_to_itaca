@@ -1,6 +1,6 @@
 title: A United National Concentration list?
 face-image: img/events/jxsi_formation.jpg
-view-if: unio_split and next_election_time - time < 9 and next_election_time - time > 3 and (cdc_roadmap > 1 or dl_roadmap > 1 or pdcat_roadmap > 1) and (player_party == "cup" or (player_party == "erc" and (cdc_relations >= 30 or dl_relations >= 30 or pdcat_relations >= 30))) and not consultation_pending and not referendum_pending and not referendum_happened
+view-if: unio_split and next_election_time - time < 9 and next_election_time - time >= 3 and (cdc_roadmap > 1 or dl_roadmap > 1 or pdcat_roadmap > 1) and (player_party == "cup" or (player_party == "erc" and (cdc_relations >= 30 or dl_relations >= 30 or pdcat_relations >= 30))) and not consultation_pending and not referendum_pending and not referendum_happened
 tags: event
 new-page: true
 max-visits: 1
@@ -158,9 +158,6 @@ This decision is highly disappointing not only for the leadership at [? if cdc_p
 
 @erc_jxsi_formation
 on-arrival: {!
-    if (!Q.achievement_jxsi) {
-        window.achievementNotif('Junts pel Sí', 'img/parties/logo_jxsi.png', 1);
-    }
     this.achieve("jxsi");
 
     Q.jxsi_roadmap = 2;
@@ -272,9 +269,6 @@ Seems like National unity will have to do without the CUP for now. Even without 
 
 @cup_0
 on-arrival: {!
-    if (!Q.achievement_jxsi) {
-        window.achievementNotif('Junts pel Sí', 'img/parties/logo_jxsi.png', 1);
-    }
     this.achieve("jxsi");
 
     Q.jxsi_formed = true;
@@ -397,11 +391,8 @@ subtitle: This will not please everyone in the party
 choose-if: cup_poblelliure_strength > cup_endavant_strength + 5 and cup_poblelliure_dissent <= 15 and cup_thirdsector_dissent <= 15 and erc_relations >= 55 and ((cdc_relations >= 55 and cdc_parlament_s > 0) or (dl_relations >= 55 and dl_parlament_s > 0) or (pdcat_relations >= 55 and pdcat_parlament_s > 0))
 unavailable-subtitle: [? if cup_poblelliure_strength <= cup_endavant_strength + 5: Poble Lliure is not strong enough as a party faction to push for this. ?][? if erc_relations < 55: We don't have good enough relations with ERC. ?][? if ((cdc_relations < 55 and cdc_parlament_s > 0) or (dl_relations < 55 and dl_parlament_s > 0) or (pdcat_relations < 55 and pdcat_parlament_s > 0)): We don't have good enough relations with [? if cdc_parlament_s > 0: CDC?][? if dl_parlament_s > 0: DL?][? if pdcat_parlament_s > 0: the PDeCAT?]. ?]
 on-arrival: {!
-    if (!Q.achievement_jxsi_de_debo) {
-        window.achievementNotif('Junts (de debò) pel Sí', 'img/achievements/jxsi_dedebo.jpg', 4);
-    }
     this.achieve("jxsi_de_debo");
-    
+
     Q.cup_in_jxsi = true;
     Q.player_in_jxsi = true;
     const _activeCiu = Q.cdc_parlament_s > 0 ? "cdc" : Q.dl_parlament_s > 0 ? "dl" : "pdcat";
@@ -481,9 +472,6 @@ title: Let's join in Romeva's jxsi!
 choose-if: cup_poblelliure_strength > cup_endavant_strength + 5 and cup_poblelliure_dissent <= 15 and cup_thirdsector_dissent <= 15
 unavailable-subtitle: [? if cup_poblelliure_strength <= cup_endavant_strength + 5: Poble Lliure is not strong enough as a party faction to push for this. ?][? if cup_poblelliure_dissent > 15 or cup_thirdsector_dissent > 15: The factions in our party are too divided to agree to join jxsi. ?]
 on-arrival: {!
-    if (!Q.achievement_jxsi_de_debo) {
-        window.achievementNotif('Junts (de debò) pel Sí', 'img/achievements/jxsi_dedebo.jpg', 4);
-    }
     this.achieve("jxsi_de_debo");
 
     Q.cup_in_jxsi = true;

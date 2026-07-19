@@ -99,7 +99,7 @@
     role: {
       required: false,
       validate: validators.makeEnsureInList('role', [
-        'desk', 'deck', 'card', 'card-gov', 'card-party', 'card-parlament', 'pinned-action', 'newspaper', 'event',
+        'desk', 'deck', 'card', 'card-gov', 'card-party', 'card-parliament', 'pinned-action', 'newspaper', 'event',
         'info-tab', 'pause-item', 'main-menu-item', 'library-item',
         'ending', 'default'
       ])

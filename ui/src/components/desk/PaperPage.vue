@@ -25,6 +25,7 @@ import { useI18n } from 'vue-i18n';
 import { useGameStore } from '../../stores/game';
 import type { ChoiceView } from '../../engine/types';
 import PaperOption from './PaperOption.vue';
+import Prose from '../Prose.vue';
 
 const props = defineProps<{ variant: 'page' | 'event' | 'ending' }>();
 
@@ -47,8 +48,8 @@ function onPick(i: number, choice: ChoiceView): void {
         {{ t('desk.page.ended') }}
       </span>
       <!-- Engine-authored prose; trusted content from our own game.json
-           (same trust boundary as DebugPage/OpenDossier's v-html). -->
-      <div class="prose" v-html="game.frame?.html ?? ''"></div>
+           (same trust boundary as DebugPage/OpenDossier's Prose). -->
+      <Prose class="prose" :html="game.frame?.html ?? ''" />
       <div v-if="choices.length" class="options">
         <div v-for="(choice, i) in choices" :key="choice.id" class="paper-slot" @click="onPick(i, choice)">
           <PaperOption :choice="choice" :index="i" :shaking="false" />

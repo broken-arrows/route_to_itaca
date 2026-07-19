@@ -211,7 +211,7 @@ on-arrival: {!
 
 <span style="font-size:0.85em; line-height: 20%;"> Per-province results, if the elections were held today... </span>
 
-<div id="cat-polls-widget"></div>
+<div id="cat-polls-widget" data-widget="poll-map"></div>
 
 = Street sentiment
 

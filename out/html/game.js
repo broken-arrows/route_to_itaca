@@ -188,8 +188,23 @@
     return token.startsWith("#") ? token : `var(--${token})`;
   }
 
-  function applyWholesome(str) {
-    const terms = glossary().terms;
+  // Word matching, kept in lockstep with the Desk's ui/src/glossary/mark.ts:
+  // - metachars in match words are escaped ("NA+" used to be a live regex
+  //   operator here);
+  // - the boundary is a Unicode lookaround pair, not `\b` — `\b` is ASCII-only,
+  //   so words starting/ending with accented letters or punctuation
+  //   ("Àngel Ros", "JxSí", "BComú", "¡TE!") silently never matched;
+  // - longest match word wins when one is a prefix of another;
+  // - the compiled regex/word map is cached per glossary terms array (this runs
+  //   on every rendered text run via window.displayText).
+  function escapeRegex(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  }
+
+  var _wholesomeTerms = null;
+  var _wholesomeCompiled = null;
+  function compileWholesome(terms) {
+    if (_wholesomeTerms === terms) return _wholesomeCompiled;
     const byWord = {};
     const allWords = [];
     terms.forEach((t) => {
@@ -198,9 +213,28 @@
         allWords.push(w);
       });
     });
-    if (allWords.length === 0) return str;
+    _wholesomeTerms = terms;
+    _wholesomeCompiled =
+      allWords.length === 0
+        ? null
+        : {
+            byWord: byWord,
+            regex: new RegExp(
+              `(?<![\\p{L}\\p{N}_])(${allWords
+                .sort((a, b) => b.length - a.length)
+                .map(escapeRegex)
+                .join("|")})(?![\\p{L}\\p{N}_])`,
+              "gu",
+            ),
+          };
+    return _wholesomeCompiled;
+  }
 
-    const regex = new RegExp(`\\b(${allWords.join("|")})\\b`, "g");
+  function applyWholesome(str) {
+    const compiled = compileWholesome(glossary().terms);
+    if (!compiled) return str;
+    const byWord = compiled.byWord;
+    const regex = compiled.regex;
 
     return str.replace(
       /(<(?:span|strong)[^>]*>.*?<\/(?:span|strong)>|<[^>]+>|[^<]+)/g,
@@ -251,37 +285,67 @@
   // This function allows you to do something in response to signals.
   window.handleSignal = function (signal, event, scene_id) {};
 
+  // Achievements are now PULLED, not pushed (phase 2.5 Task 8 — see
+  // docs/design/LEARNINGS.md 2026-07-13 §7-8). Content only ever calls
+  // this.achieve('x'), an engine API that sets BOTH Q.achievement_x (ever
+  // unlocked, cross-save — the engine pre-seeds it at boot from
+  // localStorage) and Q.game_achievement_x (this playthrough). A
+  // falsy->truthy transition on Q.achievement_x WITHIN a session means
+  // FIRST TIME EVER, which reproduces the old hand-written
+  // `if (!Q.achievement_x) { notif(...) }` guards exactly — see
+  // window._achievementsSeen below, which IS that guard, centralised.
+  window._achievementsSeen = {};
+
+  function checkAchievements() {
+    var q = window.dendryUI.dendryEngine.state.qualities;
+    var reg =
+      ((window.dendryUI.game.data || {}).achievements || {}).achievements ||
+      [];
+    reg.forEach(function (a) {
+      var key = "achievement_" + a.id;
+      if (q[key] && !window._achievementsSeen[key]) {
+        window._achievementsSeen[key] = true;
+        window.achievementNotif(a.name, a.image, a.stars);
+      }
+    });
+  }
+
   // This function runs on a new page
   window.onNewPage = function () {
     var scene = window.dendryUI.dendryEngine.state.sceneId;
     console.log("New page: " + scene);
-    initCataloniaPolls(
-      "cat-polls-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCataloniaPolls(
-      "cat-polls-widget-wide",
-      dendryUI.dendryEngine.state.qualities,
-      true,
-    );
-    initCatLocalMap(
-      "catalonia-local-map",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCongresoMap(
-      "congreso-map-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCatCoalitions(
-      "parlament-coalition-widget",
-      window._cvParlement,
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCongresoPartyTour(
-      "congreso-party-tour-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
+    // Widget protocol host (out/html/widgets.js): scans for [data-widget]
+    // and dispatches to the renderers above by name — replaces what used to
+    // be this exact five-call sequence, duplicated across five call sites
+    // (onNewPage / updateSidebar / changeTab / onDisplayContent / onload).
+    // See docs/design/desk_ui_plan.md §6 and
+    // .superpowers/sdd/p25-task-6-report.md.
+    mountWidgets(document, dendryUI.dendryEngine.state.qualities);
     addTooltipEventListeners();
+    // window.justLoaded is true for exactly the FIRST onNewPage of a
+    // session (boot's initial goToScene). setState() (Save/Load, quick
+    // load, import) re-runs newPage()/displayChoices() through this same
+    // window.onNewPage hook (vendor/dendrynexus-ten/lib/engine.js:682's
+    // setState calls this.ui.newPage()), but _loadAchievements() always
+    // re-seeds Q.achievement_* from the SAME single localStorage key
+    // (game.title + '_achievements') regardless of which save is loaded —
+    // so the achievement set never differs between "boot" and "any later
+    // load" unless a genuine new this.achieve() ran in between. Seeding
+    // once here, before the first real check, is therefore sufficient: it
+    // is what stops every achievement ever unlocked from bursting as
+    // notifications on the very first page (the bug the Desk's now-deleted
+    // rti:desk:achievements ledger had), and no later load can reintroduce
+    // that burst because the set it re-seeds is provably unchanged.
+    if (window.justLoaded) {
+      var q0 = window.dendryUI.dendryEngine.state.qualities;
+      for (var key in q0) {
+        if (q0[key] && key.indexOf("achievement_") === 0) {
+          window._achievementsSeen[key] = true;
+        }
+      }
+    } else {
+      checkAchievements();
+    }
     if (scene != "root" && !window.justLoaded) {
       window.dendryUI.autosave();
     }
@@ -300,32 +364,13 @@
       true,
     );
     $("#qualities").append(dendryUI.contentToHTML.convert(displayContent));
-    initCataloniaPolls(
-      "cat-polls-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCataloniaPolls(
-      "cat-polls-widget-wide",
-      dendryUI.dendryEngine.state.qualities,
-      true,
-    );
-    initCatLocalMap(
-      "catalonia-local-map",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCongresoMap(
-      "congreso-map-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCatCoalitions(
-      "parlament-coalition-widget",
-      window._cvParlement,
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCongresoPartyTour(
-      "congreso-party-tour-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
+    // Widget protocol host (out/html/widgets.js): scans for [data-widget]
+    // and dispatches to the renderers above by name — replaces what used to
+    // be this exact five-call sequence, duplicated across five call sites
+    // (onNewPage / updateSidebar / changeTab / onDisplayContent / onload).
+    // See docs/design/desk_ui_plan.md §6 and
+    // .superpowers/sdd/p25-task-6-report.md.
+    mountWidgets(document, dendryUI.dendryEngine.state.qualities);
     addTooltipEventListeners();
   };
 
@@ -345,63 +390,25 @@
     tabButton.className += " active";
     window.statusTab = newTab;
     window.updateSidebar();
-    initCataloniaPolls(
-      "cat-polls-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCataloniaPolls(
-      "cat-polls-widget-wide",
-      dendryUI.dendryEngine.state.qualities,
-      true,
-    );
-    initCatLocalMap(
-      "catalonia-local-map",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCongresoMap(
-      "congreso-map-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCatCoalitions(
-      "parlament-coalition-widget",
-      window._cvParlement,
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCongresoPartyTour(
-      "congreso-party-tour-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
+    // Widget protocol host (out/html/widgets.js): scans for [data-widget]
+    // and dispatches to the renderers above by name — replaces what used to
+    // be this exact five-call sequence, duplicated across five call sites
+    // (onNewPage / updateSidebar / changeTab / onDisplayContent / onload).
+    // See docs/design/desk_ui_plan.md §6 and
+    // .superpowers/sdd/p25-task-6-report.md.
+    mountWidgets(document, dendryUI.dendryEngine.state.qualities);
     addTooltipEventListeners();
   };
 
   window.onDisplayContent = function () {
     window.updateSidebar();
-    initCataloniaPolls(
-      "cat-polls-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCataloniaPolls(
-      "cat-polls-widget-wide",
-      dendryUI.dendryEngine.state.qualities,
-      true,
-    );
-    initCatLocalMap(
-      "catalonia-local-map",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCongresoMap(
-      "congreso-map-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCatCoalitions(
-      "parlament-coalition-widget",
-      window._cvParlement,
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCongresoPartyTour(
-      "congreso-party-tour-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
+    // Widget protocol host (out/html/widgets.js): scans for [data-widget]
+    // and dispatches to the renderers above by name — replaces what used to
+    // be this exact five-call sequence, duplicated across five call sites
+    // (onNewPage / updateSidebar / changeTab / onDisplayContent / onload).
+    // See docs/design/desk_ui_plan.md §6 and
+    // .superpowers/sdd/p25-task-6-report.md.
+    mountWidgets(document, dendryUI.dendryEngine.state.qualities);
     addTooltipEventListeners();
   };
 
@@ -562,32 +569,13 @@
     window.pinnedCardsDescription =
       "Advisor cards - actions are only usable once per 6 months.";
 
-    initCataloniaPolls(
-      "cat-polls-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCataloniaPolls(
-      "cat-polls-widget-wide",
-      dendryUI.dendryEngine.state.qualities,
-      true,
-    );
-    initCatLocalMap(
-      "catalonia-local-map",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCongresoMap(
-      "congreso-map-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCatCoalitions(
-      "parlament-coalition-widget",
-      window._cvParlement,
-      dendryUI.dendryEngine.state.qualities,
-    );
-    initCongresoPartyTour(
-      "congreso-party-tour-widget",
-      dendryUI.dendryEngine.state.qualities,
-    );
+    // Widget protocol host (out/html/widgets.js): scans for [data-widget]
+    // and dispatches to the renderers above by name — replaces what used to
+    // be this exact five-call sequence, duplicated across five call sites
+    // (onNewPage / updateSidebar / changeTab / onDisplayContent / onload).
+    // See docs/design/desk_ui_plan.md §6 and
+    // .superpowers/sdd/p25-task-6-report.md.
+    mountWidgets(document, dendryUI.dendryEngine.state.qualities);
     addTooltipEventListeners();
   };
 

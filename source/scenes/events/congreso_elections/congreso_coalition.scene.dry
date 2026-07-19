@@ -456,7 +456,10 @@ on-arrival: {!
     Q.congreso_coalition_force_elections = (Q.congreso_player_s > 0) && someGovWithPlayer && !govFormsWithoutPlayer;
 
     // ── Widget config ────────────────────────────────────────────────────────
-    window._cvParlement = {
+    // A Q object the UI reads (the marker below points at it via configFrom),
+    // not a global content pushes through the browser — see
+    // parlament_coalition.scene.dry's matching comment.
+    Q.congreso_coalition_config = {
         totalSeats:        congresoTotal,
         majoritySeats:     Q.congreso_s_majority || 176,
         majorityMarkAt:    0.55,
@@ -567,7 +570,7 @@ go-to: coalition_list if congreso_coalition_barons_flag != 1; barons_intervene i
 
 [? if not congreso_coalition_majority_party : Many arithmetics seem possible right now in Madrid... ?][? if congreso_coalition_majority_party: Given the majority enjoyed by [+congreso_coalition_majority_party +], it does not look like there will be much negotiation to do.?]
 
-{!<div id="parlament-coalition-widget"></div>!}
+{!<div id="parlament-coalition-widget" data-widget="coalitions" data-props='{"configFrom":"congreso_coalition_config"}'></div>!}
 
 
 @coalition_list

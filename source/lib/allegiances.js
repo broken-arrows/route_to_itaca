@@ -295,7 +295,10 @@
       }
       if (Q.ecp_formed) {
         var list = [{ colour: 'cecp', label: 'CECP', note: 'former' }];
-        if (Q.year >= 2019 && Q.month >= 5) {
+        // "From May 2019 onward" — NOT `year >= 2019 && month >= 5`, which is
+        // false for Jan–Apr of every later year (masked today only because
+        // reaching 2020 ends the game).
+        if (Q.year > 2019 || (Q.year == 2019 && Q.month >= 5)) {
           list.push({ colour: 'erc', label: 'ERC' });
         } else {
           list.push({ colour: 'indp', label: 'indp.' });

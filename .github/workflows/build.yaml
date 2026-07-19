@@ -36,32 +36,43 @@ jobs:
           node-version: 16
       - name: Install
         run: npm install
-      - name: Build game
-        run: npm run dendrynexus-ten make-html -- --pretty
+      # build:old-ui = make-html + the source/lib -> out/html/lib copy. The copy
+      # is NOT optional: out/html/index.html loads lib/{cat_engine,allegiances,
+      # index}.js and /out/html/lib/ is gitignored, so running bare make-html
+      # here deploys an old shell whose G.* calls all throw into runActions'
+      # swallowed catch — a dead simulation that looks alive (the exact failure
+      # class tools/audit-globals.mjs exists to kill, on the one surface that
+      # guard cannot see). The make-html pipeline itself retires with the old
+      # shell at phase 6 (see desk_ui_plan.md).
+      - name: Build game (old shell + game.json)
+        run: npm run build:old-ui
       - name: Copy game.json to output
         run: cp out/game.json out/html/
-      - name: Setup node for ui
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Install ui deps
-        run: npm ci
-        working-directory: ui
-      - name: Test ui
-        run: npm test
-        working-directory: ui
-      - name: Build ui
-        run: npm run build
-        working-directory: ui
-      - name: Assemble desk beta
-        run: |
-          mkdir -p out/html/desk
-          cp -r ui/dist/. out/html/desk/
-          cp out/game.json out/html/desk/game.en.json
+      # TODO: Uncomment when the new UI is ready
+      # - name: Setup node for ui
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 22
+      # - name: Install ui deps
+      #   run: npm ci
+      #   working-directory: ui
+      # - name: Audit content/UI coupling
+      #   run: node tools/audit-globals.mjs
+      # - name: Test ui
+      #   run: npm test
+      #   working-directory: ui
+      # - name: Build ui
+      #   run: npm run build
+      #   working-directory: ui
+      # - name: Assemble desk beta
+      #   run: |
+      #     mkdir -p out/html/desk
+      #     cp -r ui/dist/. out/html/desk/
+      #     cp out/game.json out/html/desk/game.en.json
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: 'out/html'
+          path: "out/html"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

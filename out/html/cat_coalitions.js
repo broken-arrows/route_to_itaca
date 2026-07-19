@@ -4,9 +4,13 @@
  *
  * ── Usage ────────────────────────────────────────────────────────────────────
  *
+ *   The config is a Q object, not a browser global — content computes it,
+ *   the widget protocol's marker names the Q key, out/html/widgets.js reads
+ *   it (see docs/design/desk_ui_plan.md §6 "the widget protocol").
+ *
  *   on-arrival:
  *   {!
- *     window._cvParlement = {
+ *     Q.parlament_coalition_config = {
  *       totalSeats:        135,
  *       majoritySeats:     Q.parlament_s_majority || 68,
  *       majorityMarkAt:    0.6,    // 0–1, where the majority line sits in the bar
@@ -32,11 +36,11 @@
  *   !}
  *
  *   scene body:
- *   {!<div id="parlament-coalition-widget"></div>!}
+ *   {!<div id="parlament-coalition-widget" data-widget="coalitions"
+ *        data-props='{"configFrom":"parlament_coalition_config"}'></div>!}
  *
- *   game.js:
- *   initCatCoalitions("parlament-coalition-widget", window._cvParlement,
- *                     dendryUI.dendryEngine.state.qualities);
+ *   out/html/widgets.js dispatches "coalitions" to:
+ *   initCatCoalitions(el.id, Q[props.configFrom], Q);
  *
  * ── Member types ─────────────────────────────────────────────────────────────
  *   "government"  solid bar — party IS in government
@@ -157,9 +161,24 @@
     if (def.seatsVar != null) {
       if (!alwaysShow && !(Q && +Q[def.seatsVar] > 0)) return null;
     } else {
+      // A missing `condition` on a non-seatsVar entry defaults to HIDE
+      // (false), not show. `Q.{parlament,congreso}_coalition_config`'s
+      // `condition` values are `function(s){}` closures — `JSON.stringify`
+      // drops functions on save, and `setState` does not re-run
+      // on-arrival on load, so a save resumed exactly on a coalition scene
+      // loads with `condition === undefined` for every non-seatsVar entry.
+      // Every non-seatsVar entry in normal play legitimately HAS a
+      // `condition` (verified against both scene files — Task 6 fix round
+      // 1, I2 safety check), so `undefined` here only ever means "this
+      // config came from a stale/deserialized load", never "intentionally
+      // always-shown". Hiding it is a loud, visible failure (an entry that
+      // should be there silently isn't) instead of the old `true` default,
+      // which rendered a WRONG coalition unconditionally. The proper fix —
+      // move conditions into source/lib/ so Q stays data-only — is
+      // deferred to phase 4 (see LEARNINGS.md 2026-07-17).
       var condOk =
         def.condition == null
-          ? true
+          ? false
           : typeof def.condition === "function"
             ? def.condition(seats)
             : !!def.condition;

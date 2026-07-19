@@ -64,6 +64,12 @@ whole-file reformat, so this list stays the complete upstream diff.
   file it found (including binaries) before `compileGame` silently skipped
   unrecognised ones. Prerequisite for `source/lib/` and `source/img/`
   existing alongside compiled content without every compile slurping them.
+- **`lib/parsers/scene.js` + `lib/parsers/compiler.js`** (2026-07-19) — the
+  `card-parlament` role renamed to **`card-parliament`** in the role enum and
+  the role→mechanics map. "Parlament" is Route to Ítaca's chamber; the role
+  vocabulary is engine surface shared by any game, so it uses the generic
+  English word. One string, no behaviour change; `source/` and `ui/` renamed in
+  the same pass.
 - **`lib/engine.js`** (2026-07-13, `engine.setGameLib(lib)`) — compiled
   `$code` gains a third parameter, `G`: `makeFunctionFromSource` now does
   `new Function('state', 'Q', 'G', source)` (was `'state', 'Q'`), and the

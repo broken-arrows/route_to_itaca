@@ -36,10 +36,16 @@
     "toast": {
       "handFull": "Hand is full — play a dossier first",
       "deckEmpty": "No cards available in this deck",
-      "engineError": "Something went wrong — that action was cancelled"
+      "engineError": "Something went wrong — that action was cancelled",
+      "achievementUnlocked": "Achievement Unlocked"
     },
     "dossier": {
       "locked": "Locked"
+    },
+    "glossary": {
+      "leader": "Leader:",
+      "allegiance": "Allegiance:",
+      "allegiances": "Allegiances:"
     },
     "page": {
       "ended": "ENDED"

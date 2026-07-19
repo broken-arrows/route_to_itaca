@@ -1,0 +1,17 @@
+import type { Component } from 'vue';
+import { WIDGET_NAMES } from './widget-names.mjs';
+import Hemicycle from './Hemicycle.vue';
+import AchievementGallery from './AchievementGallery.vue';
+
+export type WidgetName = (typeof WIDGET_NAMES)[number];
+
+// A partial Record here (not every WidgetName has a component yet — 'poll-map'
+// and 'coalitions' are declared by content per §2.5's widget protocol but
+// arrive in phase 3/4; WidgetHost renders the placeholder for those by
+// design). What IS a typecheck error: registering a component under a key
+// that isn't a WidgetName at all — see widget.registry.test.ts's "WIDGETS
+// keys ⊆ WIDGET_NAMES" guard for the runtime equivalent against real content.
+export const WIDGETS: Partial<Record<WidgetName, Component>> = {
+  hemicycle: Hemicycle,
+  'achievement-gallery': AchievementGallery,
+};

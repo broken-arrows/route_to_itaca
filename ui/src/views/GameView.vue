@@ -22,6 +22,7 @@ import { useDeskStore } from '../stores/desk';
 import StageScaler from '../components/StageScaler.vue';
 import DeskView from './DeskView.vue';
 import PaperPage from '../components/desk/PaperPage.vue';
+import Toast from '../components/desk/Toast.vue';
 
 const { t } = useI18n();
 const game = useGameStore();
@@ -55,6 +56,14 @@ const pageVariant = computed<'page' | 'event' | 'ending'>(() => {
     </div>
     <DeskView v-else-if="showDesk" />
     <PaperPage v-else :variant="pageVariant" />
+    <!-- Mounted at the phase-router level, not inside DeskView: an
+         achievement unlock (or an engine-error nudge) must stay visible
+         regardless of which surface is currently showing — including the
+         ending/page surfaces PaperPage renders (phase 2.5 Task 8; see
+         docs/design/LEARNINGS.md). Both channels are no-ops (render
+         nothing) while their own state is null, so this is safe during
+         'boot' too. -->
+    <Toast v-if="desk.phase !== 'boot'" :text-key="desk.toastKey" :achievement="desk.achievementToast" />
   </StageScaler>
 </template>
 

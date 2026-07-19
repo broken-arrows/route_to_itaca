@@ -1,6 +1,6 @@
 export type SceneRole =
   | 'desk' | 'deck'
-  | 'card' | 'card-gov' | 'card-party' | 'card-parlament'
+  | 'card' | 'card-gov' | 'card-party' | 'card-parliament'
   | 'pinned-action' | 'newspaper' | 'event'
   | 'info-tab' | 'pause-item' | 'main-menu-item' | 'library-item' | 'ending';
 export type EffectiveRole = SceneRole | 'page';
@@ -57,4 +57,16 @@ export interface SaveMeta {
   playerParty: string | null;
   sceneId: string;
   resources: number | null;
+}
+
+// game.json.data.achievements = { achievements: AchievementEntry[] } —
+// harvested from source/data/achievements.json (phase 2.5 Task 8). `id` is
+// the bare name passed to `this.achieve(id)`, matching Q.achievement_<id> /
+// Q.game_achievement_<id>.
+export interface AchievementEntry {
+  id: string;
+  name: string;
+  description: string;
+  stars: number;
+  image: string;
 }

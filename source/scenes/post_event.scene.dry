@@ -193,25 +193,47 @@ for (var p of Q.parties) {
 if (Q.spanish_pm == "Pedro Sánchez") {
     Q.psoe_sanchez_president_ever = true;
     if (Q.psoe_barons_revolted ) {
-        if (!Q.achievement_perrosanxe) {
-            window.achievementNotif('Más sabe por Perro que por Sanxe', 'img/achievements/perrosanxe.png', 2);
-        }
         this.achieve('perrosanxe');
     }
 }
 if (Q.congreso_coalition_sorpasso && (Q.spanish_pm_party == "podemos" || Q.spanish_pm_party == "up")) {
-    if (!Q.achievement_asalto_cielos) {
-        window.achievementNotif('Asalto a los Cielos', 'img/achievements/asalto_cielos.avif', 3);
-    }
     this.achieve('asalto_cielos');
 }
 
 // 5. Hidden triggers
+if ((!Q.hidden_cc_surge) && (Q.year == 2019 && Q.month == 2) ||(Q.social_dissent > 90)) {
+    // TBD: More/different options to trigger this?
+    Q.hidden_cc_surge = true;
+    G.spaSupportInject(Q, 'cc', 'rest', 0.38, 'abstain');
+}
 if ((!Q.hidden_vox_surge) && (Q.year == 2019 || (Q.year >= 2017 && Q.next_spanish_election_time - Q.time <= 6))) {
     Q.hidden_vox_surge = true;
     Q.vox_active = true;
     G.spaSupportInject(Q, 'vox', 'all', 4.0, 'pp');
     G.spaSupportInject(Q, 'vox', 'all', 0.5, 'cs');
+}
+if ((!Q.hidden_bng_surge) && (Q.year == 2019)) {
+    // TODO: More ways to trigger this! (maybe trigger in the congreso_tour scene instead?)
+    // maybe split in two as it was originally (3 first, then 2.5)
+    if (!Q.iu_in_up) {
+        G.spaSupportInject(Q, 'bng', 'galicia', 5.5, 'podemos');
+    } else {
+        G.spaSupportInject(Q, 'bng', 'galicia', 5.5, 'up');
+    }
+}
+if ((!Q.spa_te_active) && (Q.year == 2018)) {
+    // TBD: More options to trigger this?
+    Q.spa_te_active = true;
+    G.spaSupportInject(Q, 'te', 'rest', 0.22, 'abstain');
+}
+if ((!Q.spa_mes_active) && (Q.year == 2015 && Q.month == 2) ) {
+    // TODO: More ways to trigger this! (maybe trigger in the congreso_tour scene instead?)
+    Q.spa_mes_active = true;
+    if (!Q.iu_in_up) {
+        G.spaSupportInject(Q, 'mes', 'balears', 3.5, 'podemos');
+    } else {
+        G.spaSupportInject(Q, 'mes', 'balears', 3.5, 'up');
+    }
 }
 if ((!Q.podemos_hidden_surge) && (Q.year == 2014 && Q.month == 5)) {
     Q.podemos_hidden_surge = true;

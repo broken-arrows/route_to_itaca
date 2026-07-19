@@ -25,14 +25,18 @@
 // choices) before the fly-out starts — rendering live would blank the
 // dossier mid-animation (review fix round, Critical).
 //
-// Prose safety: v-html only ever receives frame.html content — either the
+// Prose safety: <Prose> only ever receives frame.html content — either the
 // live game.frame.html or the store's verbatim pre-pick snapshot of it
 // (engine contentToHTML output, same trust level as phase 1's debug page).
+// <Prose> renders it via v-html internally (same trust boundary as before)
+// and additionally colours/tooltips any glossary term window.displayText
+// already marked in that HTML — see components/Prose.vue.
 import { computed } from 'vue';
 import { useDeskStore } from '../../stores/desk';
 import { useGameStore } from '../../stores/game';
 import { skinFor } from './skins';
 import PaperOption from './PaperOption.vue';
+import Prose from '../Prose.vue';
 
 const desk = useDeskStore();
 const game = useGameStore();
@@ -78,8 +82,18 @@ function onPick(i: number): void {
       <span v-if="skin.key === 'gov'" class="cover-seal" aria-hidden="true"></span>
       <span v-if="skin.key === 'gov'" class="cover-rule" aria-hidden="true"></span>
       <span v-if="skin.key === 'party'" class="cover-tie" aria-hidden="true"></span>
-      <h2 class="cover-title">{{ desk.openCard?.title }}</h2>
-      <div class="cover-prose" v-html="proseHtml"></div>
+      <!-- desk.openCard.title is the SAME CardView.title that reaches here
+           via CaptureUI.normalizeCard's convertLine (see capture-ui.ts) — it
+           passes through window.displayText exactly like the prose does, so
+           a card whose title itself names a glossary term (e.g. a pinned
+           advisor card: 4 of the 6 today have no zero-width-space escape —
+           see docs/design/LEARNINGS.md) arrives already marked. Rendering it
+           with plain `{{ }}` would show the literal `<span data-term=...>`
+           text on screen instead of the name — this was reachable simply by
+           opening one of those advisor cards, before this fix. tag="span" so
+           it still nests validly inside this <h2>. -->
+      <h2 class="cover-title"><Prose tag="span" :html="desk.openCard?.title ?? ''" /></h2>
+      <Prose class="cover-prose" :html="proseHtml" />
     </div>
     <div class="papers">
       <div class="papers-list">

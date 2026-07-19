@@ -16,6 +16,14 @@ export const DELAYS = {
   resolve: 620,
   cancel: 420,
   toast: 1700,
+  // Achievement unlock toast dwell time (phase 2.5 Task 8) — NOT part of the
+  // Draw-to-Dossier prototype `toast` above (that one is a short key-based
+  // nudge). Ported from the old shell's own achievementNotif dwell
+  // (out/html/game.js's `}, 4500);`) rather than invented, so an unlock
+  // reads for the same real-world duration in both UIs. Like `toast`, this
+  // is information delivery, not motion: the desk store does not scale it
+  // through animMs().
+  achievementToast: 4500,
 } as const;
 
 // Runs `fn` after `ms` milliseconds, or synchronously right away when

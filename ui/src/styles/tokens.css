@@ -58,6 +58,74 @@
   /* stage */
   --stage-w: 1512px;
   --stage-h: 860px;
+
+  /* Party/person colour tokens — glossary.mark.ts/useGlossary.ts's
+     colourValue() maps a glossary/allegiance `colour` TOKEN (e.g. "ciu") to
+     `var(--ciu)`; a raw hex (e.g. "#b8a12b" for CUP) passes through
+     unchanged and needs no entry here. Values are the old shell's own
+     palette (out/html/game.css:813-860) — same colours, so a party doesn't
+     visually change identity between the two UIs. Completeness is asserted
+     by ui/tests/glossary.registry.test.ts against BOTH
+     source/data/glossary.json and source/lib/allegiances.js (the old shell
+     only ever needed the glossary's own tokens; allegiances.js adds exactly
+     one more — see --indp below). */
+  --ciu: #002782;
+  --cdc: #002782;
+  --cup: #ffed00;
+  --unio: #0052a3;
+  --erc: #ffb232;
+  --jxsi: #3ab6a5;
+  --jxcat: #ed5975;
+  --pdcat: #0081c2;
+  --junts: #20c0b2;
+  --cs: #eb6109;
+  --ppc: #007fff;
+  --psc: #e73b39;
+  --icv: #67af2f;
+  --si: #000000;
+  --csqp: #c3113b;
+  --cecp: #be3882;
+  --bcomu: #d51e73;
+  --primaries: #ec4c5e;
+  --ua-psc: #d00c3c;
+  --cda-pna: #24346c;
+  --txt: #7c7c7c;
+  --ecp: #6e236e;
+  --vox: #63be21;
+  --pxc: #00ffff;
+  --fnc: #55a0d9;
+  --pp: #1d84ce;
+  --psoe: #da291c;
+  --podemos: #9269f5;
+  --iu: #732021;
+  --dl: #292a6b;
+  --pnv: #4aae4a;
+  --ehbildu: #00c19f;
+  --cc: #ffd700;
+  --compromis: #ec8953;
+  --mes: #d8de40;
+  --bng: #a2c7e4;
+  --amaiur: #0198b3;
+  --upyd: #e9008c;
+  --mpais: #027665;
+  --fac: #0082ca;
+  --prc: #b7bf10;
+  --sumar: #ef4b91;
+  --up: #5a205a;
+  --fr: #0a0a0a;
+  --gbai: #f75e42;
+  --upn: #00599b;
+  --nsuma: #2a52be;
+  --te: #007351;
+  /* Not in the old shell's own palette: source/lib/allegiances.js uses
+     colour: 'indp' for a person's independent/no-party-affiliation state
+     (e.g. lluis_rabell before CSQP forms, or montserrat_tura/ernest_maragall
+     once the PSC implosion timer lapses). The old shell's `var(--indp)` was
+     always unset there too — a guaranteed-invalid custom-property reference
+     computes as unstyled/inherited text, which is the same "no party
+     colour" reading a neutral grey gives on purpose here (same tone as
+     --txt) rather than leaving it silently uncoloured. */
+  --indp: #7c7c7c;
 }
 
 body {

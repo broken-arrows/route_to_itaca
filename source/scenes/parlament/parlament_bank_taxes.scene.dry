@@ -1,2 +1,13 @@
 title: Parlament Bank Taxes
 new-page: true
+on-arrival: {!
+
+!}
+go-to: pre2014options if year <= 2014; post2014options if year > 2014
+
+= Bank Taxation Law
+
+@pre2014options
+
+@post2014options
+

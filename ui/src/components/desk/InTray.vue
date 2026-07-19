@@ -4,7 +4,7 @@
 // no counts). The FIXED chrome caption ("GOVERNMENT"/"PARTY"/"PARLAMENT")
 // is NOT rendered here: this component is reused for all three tray kinds,
 // and the deck scene's own `role` is mechanically always 'deck' (see
-// compiler.role-derivation.test.ts), so it carries no gov/party/parlament
+// compiler.role-derivation.test.ts), so it carries no gov/party/parliament
 // distinction. DeskView (which knows the concrete deck ids) renders that
 // label above the tray and re-tags the `deck` prop's `role` to the visual
 // card-* role so skinFor resolves the right paper here. What IS rendered
@@ -55,7 +55,7 @@ function onActivate(): void {
              a Generalitat folder says CONFIDENCIAL whatever the UI language. -->
         <span v-if="skin.key === 'gov'" class="folder-stamp" aria-hidden="true">CONFIDENCIAL</span>
         <span v-if="skin.key === 'party'" class="folder-tie" aria-hidden="true"></span>
-        <span v-if="skin.key === 'parlament'" class="folder-accent" aria-hidden="true"></span>
+        <span v-if="skin.key === 'parliament'" class="folder-accent" aria-hidden="true"></span>
       </div>
       <p v-if="empty" class="tray-note">{{ t('desk.tray.empty') }}</p>
     </div>
@@ -198,7 +198,7 @@ function onActivate(): void {
 /* Red stays reserved for Parlament/world surfaces (binding style rule) —
    every other tray's hover uses --accent-slate above; only the Parlament
    tray itself gets the red hover the prototype used for all of them. */
-.in-tray.skin-parlament:not(.is-disabled):hover .draw-chip {
+.in-tray.skin-parliament:not(.is-disabled):hover .draw-chip {
   background: var(--accent-red);
 }
 </style>
