@@ -1,11 +1,12 @@
 title: Who's running for the Congreso?
-subtitle: Elections are just around the corne
+subtitle: Elections are just around the corner
 view-if: next_spanish_election_time - time <= 3  and congreso_party_tour_timer = 0
 tags: event
 new-page: true
 on-arrival: {!
     Q.congreso_party_tour_timer = 3;
     
+    Q.congreso_party_tour_highlight = [];
     Q.congreso_party_tour_viewed_rest = false;
     Q.congreso_party_tour_viewed_catalonia = false;
     Q.congreso_party_tour_viewed_eh = false;
@@ -19,7 +20,7 @@ role: event
 @rest
 on-arrival: {!
     Q.congreso_party_tour_viewed_rest = true;
-    Q.congreso_party_tour_highlight = "rest";
+    Q.congreso_party_tour_highlight = ["rest"];
 !}
 go-to: show_map
 set-jump: rest_desc
@@ -59,7 +60,7 @@ title: Catalonia
 view-if: not congreso_party_tour_viewed_catalonia
 on-arrival: {!
     Q.congreso_party_tour_viewed_catalonia = true;
-    Q.congreso_party_tour_highlight = "catalonia";
+    Q.congreso_party_tour_highlight = ["catalonia"];
 !}
 go-to: show_map
 set-jump: cat_desc
@@ -76,7 +77,7 @@ title: Valencia and the Balearic Islands
 view-if: not congreso_party_tour_viewed_ppcc
 on-arrival: {!
     Q.congreso_party_tour_viewed_ppcc = true;
-    Q.congreso_party_tour_highlight = "ppcc";
+    Q.congreso_party_tour_highlight = ["ppcc"];
 !}
 go-to: show_map
 set-jump: ppcc_desc
@@ -93,7 +94,7 @@ title: Basque Country and Navarre
 view-if: not congreso_party_tour_viewed_eh
 on-arrival: {!
     Q.congreso_party_tour_viewed_eh = true;
-    Q.congreso_party_tour_highlight = "eh";
+    Q.congreso_party_tour_highlight = ["eh"];
 !}
 go-to: show_map
 set-jump: eh_desc
@@ -112,7 +113,7 @@ title: Galicia
 view-if: not congreso_party_tour_viewed_galicia
 on-arrival: {!
     Q.congreso_party_tour_viewed_galicia = true;
-    Q.congreso_party_tour_highlight = "galicia";
+    Q.congreso_party_tour_highlight = ["galicia"];
 !}
 go-to: show_map
 set-jump: galicia_desc
@@ -127,7 +128,7 @@ title: Other parties
 view-if: not congreso_party_tour_viewed_others
 on-arrival: {!
     Q.congreso_party_tour_viewed_others = true;
-    Q.congreso_party_tour_highlight = "others";
+    Q.congreso_party_tour_highlight =  ["others"];
 !}
 go-to: show_map
 set-jump: others_desc
@@ -151,7 +152,7 @@ on-arrival: {!
     Q.congreso_party_tour_viewed_ppcc = true;
     Q.congreso_party_tour_viewed_galicia = true;
     Q.congreso_party_tour_viewed_others = true;
-    Q.congreso_party_tour_highlight = null;
+    Q.congreso_party_tour_highlight = [];
 !}
 go-to: show_map
 set-jump: skip_desc

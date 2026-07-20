@@ -14,6 +14,12 @@ import { useDeskStore, setAnimationsForTest } from '../src/stores/desk';
 import { DELAYS } from '../src/components/desk/motion';
 import { markGlossary, type GlossaryTerm } from '../src/glossary/mark';
 import type { ChoiceView, CardView } from '../src/engine/types';
+import uiEn from '../../source/locales/en/ui.json';
+
+// Every DeskView mount below now also mounts ClipboardFrame, which reads
+// `brief.tab.*` — GAME chrome sourced from source/locales/<loc>/ui.json (see
+// i18n.ts's initGameLocale, and the same fix in desk.components.test.ts).
+i18n.global.mergeLocaleMessage('en', uiEn as never);
 
 // Repo convention (per task brief): register BOTH plugins for new test
 // files, like tests/debug-page.test.ts does — unlike desk.components.test.ts's
@@ -234,6 +240,28 @@ function mountDossierScene() {
   return { game, desk, wrapper };
 }
 
+// Task 7 (Wave 2): a variant of mountDossierScene whose card_a.content is
+// swappable — 110 real scene files lead with a `=` heading (e.g.
+// erc_campaigning -> visible double "Campaigning", confirmed live via the
+// erc_enemies card: "Choosing Our Enemies" cover-title h2 stacked directly
+// above the content's own "Choosing our enemies" h1). card_a.title stays
+// 'Card A' throughout, distinct from any heading text put in the content,
+// so a test can tell the two title sources apart.
+function mountDossierSceneWithCardContent(content: unknown[]) {
+  const gameJson = {
+    ...dossierGame,
+    scenes: { ...dossierGame.scenes, card_a: { ...dossierGame.scenes.card_a, content } },
+  };
+  const game = useGameStore();
+  const desk = useDeskStore();
+  game.initFromText(JSON.stringify(gameJson));
+  game.newGame();
+  game.choose(0); // root -> hub
+  desk.playPinned(game.frame!.pinned[0]); // hub -> card_a, opens the dossier
+  const wrapper = mount(OpenDossier, withPlugins());
+  return { game, desk, wrapper };
+}
+
 describe('OpenDossier', () => {
   it('renders one PaperOption per choice', () => {
     const { wrapper } = mountDossierScene();
@@ -246,6 +274,39 @@ describe('OpenDossier', () => {
   it('renders the cover prose via v-html of frame.html', () => {
     const { wrapper } = mountDossierScene();
     expect(wrapper.html()).toContain('Decide wisely.');
+  });
+
+  // Task 7 (Wave 2): 110 scene files lead their content with a `=` heading
+  // — dendry compiles that to a leading <h1> — and OpenDossier used to ALSO
+  // render card.title as a separate <h2 class="cover-title"> above it,
+  // stacking two titles (confirmed live: opening the real erc_enemies card
+  // showed "Choosing Our Enemies" then "Choosing our enemies" right below
+  // it). The content h1 IS the title now: when the prose leads with one,
+  // the separate cover-title element must not render at all.
+  it('renders exactly one title when the prose leads with an <h1> — the content heading IS the title', () => {
+    const { wrapper } = mountDossierSceneWithCardContent([
+      { type: 'heading', content: ['Card A Real Title'] },
+      { type: 'paragraph', content: ['Decide wisely.'] },
+    ]);
+    expect(wrapper.find('.cover-title').exists()).toBe(false);
+    const proseHeading = wrapper.find('.cover-prose h1');
+    expect(proseHeading.exists()).toBe(true);
+    expect(proseHeading.text()).toBe('Card A Real Title');
+    // No duplicate anywhere: exactly one heading-level element in the cover.
+    expect(wrapper.findAll('h1, h2')).toHaveLength(1);
+    expect(wrapper.text()).toContain('Decide wisely.');
+  });
+
+  // The other half of the same fix: a scene whose content has no leading
+  // heading (card_a's default fixture, plain paragraph) must keep rendering
+  // the card.title fallback exactly as before — this is NOT a regression,
+  // just confirming the gate goes the other way too.
+  it('renders the card.title fallback when the prose has no leading <h1>', () => {
+    const { wrapper } = mountDossierScene();
+    const title = wrapper.find('.cover-title');
+    expect(title.exists()).toBe(true);
+    expect(title.text()).toBe('Card A');
+    expect(wrapper.find('.cover-prose h1').exists()).toBe(false);
   });
 
   // Fix wave 3, Job 1: the dismiss affordance is GONE (user decision,

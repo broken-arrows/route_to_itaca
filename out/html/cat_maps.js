@@ -1420,7 +1420,7 @@
 
     root.appendChild(svg);
 
-    const highlightedRegion = Q.congreso_party_tour_highlight;
+    const highlightedRegions = Q.congreso_party_tour_highlight || [];
     const leftParty = Q.iu_in_up === true ? "up" : "podemos";
     const spaParties = () => {
       const parties = ["psoe", "pp", leftParty, "csspa"];
@@ -1488,8 +1488,9 @@
       ppcc() {
         const parties = [];
 
-        if (Q.spa_compromis_active) parties.push("compromis");
-        if (Q.spa_mes_active) parties.push("mesm");
+        if (Q.spa_compromis_active || Q.party_reaching_out_map)
+          parties.push("compromis");
+        if (Q.spa_mes_active || Q.party_reaching_out_map) parties.push("mesm");
 
         return parties;
       },
@@ -1516,7 +1517,7 @@
       galicia() {
         const parties = [];
 
-        if (Q.spa_bng_active) parties.push("bng");
+        if (Q.spa_bng_active || Q.party_reaching_out_map) parties.push("bng");
 
         return parties;
       },
@@ -1914,11 +1915,7 @@
 
     Object.keys(partiesFor).forEach((interestRegion) => {
       if (!Q[`congreso_party_tour_viewed_${interestRegion}`]) {
-        if (interestRegion != "others") {
-          colorInterestRegion(interestRegion, hiddenStyle);
-        } else {
-          colorInterestRegion(interestRegion, seenStyle);
-        }
+        colorInterestRegion(interestRegion, hiddenStyle);
         return;
       }
 
@@ -1932,16 +1929,21 @@
         });
     });
 
-    if (
-      highlightedRegion &&
-      Object.prototype.hasOwnProperty.call(REGION_SELECTORS, highlightedRegion)
-    ) {
-      if (highlightedRegion == "rest") {
-        Object.keys(partiesFor).forEach((interestRegion) => {
-          colorInterestRegion(interestRegion, seenStyle);
-        });
-      } else {
-        colorInterestRegion(highlightedRegion, highlightStyle);
+    for (var highlightedRegion of highlightedRegions) {
+      if (
+        highlightedRegion &&
+        Object.prototype.hasOwnProperty.call(
+          REGION_SELECTORS,
+          highlightedRegion,
+        )
+      ) {
+        if (highlightedRegion == "rest") {
+          Object.keys(partiesFor).forEach((interestRegion) => {
+            colorInterestRegion(interestRegion, seenStyle);
+          });
+        } else {
+          colorInterestRegion(highlightedRegion, highlightStyle);
+        }
       }
     }
 

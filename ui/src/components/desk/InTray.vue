@@ -1,14 +1,13 @@
 <script setup lang="ts">
-// In-tray: a face-down draw folder. Spec: prototype-draw-to-dossier-NOTES.md
-// "Trays" (172x196, label above, face-down top folder, DRAW chip, blind —
-// no counts). The FIXED chrome caption ("GOVERNMENT"/"PARTY"/"PARLAMENT")
-// is NOT rendered here: this component is reused for all three tray kinds,
-// and the deck scene's own `role` is mechanically always 'deck' (see
-// compiler.role-derivation.test.ts), so it carries no gov/party/parliament
-// distinction. DeskView (which knows the concrete deck ids) renders that
-// label above the tray and re-tags the `deck` prop's `role` to the visual
-// card-* role so skinFor resolves the right paper here. What IS rendered
-// here is `deck.title` — the deck's own (game-content) name.
+// In-tray: a face-down draw folder. Geometry/colours: docs/design/reference/
+// desk-frames.md §3 "In-trays" (172×212 well, 2px #c3b893 border, blind —
+// no counts, top dossier with a peek sheet behind, DRAW chip overhanging
+// bottom-right). The FIXED chrome caption ("GOVERNMENT"/"PARTY"/"PARLAMENT")
+// is NOT rendered here: this component is reused for all three tray kinds.
+// The deck scene's `role` (deck-gov, deck-party, or deck-parliament; plain
+// 'deck' = neutral fallback) flows from the adapter; skinFor maps it to the
+// paper skin. What IS rendered here is `deck.title` — the deck's own
+// (game-content) name.
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { DeckView } from '../../engine/types';
@@ -49,14 +48,22 @@ function onActivate(): void {
   >
     <p class="tray-label">{{ deck.title }}</p>
     <div class="tray-well">
-      <div class="folder">
-        <span v-if="skin.key === 'gov'" class="folder-seal" aria-hidden="true"></span>
-        <!-- Diegetic stationery text, not UI chrome — intentionally not i18n:
-             a Generalitat folder says CONFIDENCIAL whatever the UI language. -->
-        <span v-if="skin.key === 'gov'" class="folder-stamp" aria-hidden="true">CONFIDENCIAL</span>
-        <span v-if="skin.key === 'party'" class="folder-tie" aria-hidden="true"></span>
-        <span v-if="skin.key === 'parliament'" class="folder-accent" aria-hidden="true"></span>
-      </div>
+      <template v-if="!empty">
+        <!-- Sliver of a second sheet peeking behind the top dossier — the
+             "there is a stack in here" tell that replaces any count. -->
+        <span class="peek" aria-hidden="true"></span>
+        <div class="folder">
+          <span v-if="skin.key === 'gov'" class="folder-clip" aria-hidden="true"></span>
+          <span v-if="skin.key === 'gov'" class="folder-seal" aria-hidden="true"></span>
+          <!-- Diegetic stationery text, not UI chrome — intentionally not i18n:
+               a Generalitat folder says CONFIDENCIAL whatever the UI language.
+               Ink-toned, NOT the canvas's red — red stays reserved for
+               world/Parlament signals (tokens.css --paper-rule-ink comment). -->
+          <span v-if="skin.key === 'gov'" class="folder-stamp" aria-hidden="true">CONFIDENCIAL</span>
+          <span v-if="skin.key === 'party'" class="folder-tie" aria-hidden="true"></span>
+          <span v-if="skin.key === 'parliament'" class="folder-accent" aria-hidden="true"></span>
+        </div>
+      </template>
       <p v-if="empty" class="tray-note">{{ t('desk.tray.empty') }}</p>
     </div>
     <span v-if="!empty" class="draw-chip">{{ t('desk.tray.draw') }} &#9656;</span>
@@ -64,9 +71,11 @@ function onActivate(): void {
 </template>
 
 <style scoped>
+/* Tray hexes are design-canvas literals (desk-frames.md §3), kept literal
+   like skins.ts does; token vars used where an exact token exists. */
 .in-tray {
+  position: relative;
   width: 172px;
-  height: 196px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -77,86 +86,117 @@ function onActivate(): void {
   cursor: not-allowed;
   opacity: 0.6;
 }
+/* Caption above-left — desk-frames §3: 800 8.5px letter-spacing .12em
+   #6f5f3e. The face behind --font-title is swappable (user, 2026-07-20);
+   weight/tracking/case carry to whatever face lands there. */
 .tray-label {
   margin: 0;
-  font-family: var(--font-typed);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: var(--ink-0);
-  opacity: 0.75;
+  font-family: var(--font-title);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6f5f3e;
 }
+/* Tray base: border 2px #c3b893, radius 10, translucent paper fill, soft
+   inset — the canvas's tray-base recipe, shared with OutTray. */
 .tray-well {
   position: relative;
-  flex: 1;
-  border-radius: 4px;
-  background: var(--paper-3);
-  box-shadow: inset 0 3px 8px rgba(46, 42, 34, 0.28);
-  padding: 10px;
+  height: 212px;
+  border: 2px solid #c3b893;
+  border-radius: 10px;
+  background: rgba(250, 249, 245, 0.4);
+  box-shadow: inset 0 3px 8px rgba(60, 45, 20, 0.14);
   display: flex;
   align-items: center;
   justify-content: center;
 }
+.peek {
+  position: absolute;
+  width: 132px;
+  height: 164px;
+  background: #efe9da;
+  border: 1px solid #ddd5c2;
+  border-radius: 3px;
+  transform: rotate(1.6deg) translate(4px, 3px);
+}
+.in-tray.skin-party .peek {
+  transform: rotate(-1.8deg) translate(-3px, 3px);
+}
 .folder {
   position: relative;
-  width: 128px;
-  height: 148px;
+  width: 136px;
+  height: 168px;
   background: var(--tray-bg);
   border: 1px solid var(--tray-bd);
   border-radius: 3px;
-  box-shadow: 0 3px 6px rgba(46, 42, 34, 0.25);
+  box-shadow: 0 5px 11px rgba(60, 45, 20, 0.2);
+  transform: rotate(var(--folder-rot, 0deg));
   transition: transform 0.15s ease;
 }
+.in-tray.skin-gov .folder { --folder-rot: -1deg; }
+.in-tray.skin-party .folder { --folder-rot: 1deg; }
 .in-tray:not(.is-disabled):hover .folder {
-  transform: translateY(-2px);
+  transform: translateY(-2px) rotate(var(--folder-rot, 0deg));
 }
+/* Paperclip detail, top edge — 13×28 outline, #b0a488. */
+.folder-clip {
+  position: absolute;
+  top: -9px;
+  left: 16px;
+  width: 13px;
+  height: 28px;
+  border: 2px solid #b0a488;
+  border-radius: 6px;
+  background: transparent;
+}
+/* Generalitat seal watermark 44×52 at opacity .13. */
 .folder-seal {
   position: absolute;
-  top: 18px;
+  top: 22px;
   left: 50%;
   transform: translateX(-50%);
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 52px;
   border-radius: 50%;
   border: 3px solid var(--ink-0);
   opacity: 0.13;
 }
 .folder-stamp {
   position: absolute;
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%) rotate(-8deg);
-  width: 84px;
-  height: 24px;
-  border: 1.5px solid var(--ink-0);
+  bottom: 18px;
+  left: 10px;
+  transform: rotate(-4deg);
+  border: 2px solid var(--ink-0);
   border-radius: 3px;
   opacity: 0.22;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 2px 6px;
   font-family: var(--font-typed);
-  font-size: 10px;
+  font-size: 9.5px;
   letter-spacing: 0.08em;
   color: var(--ink-0);
 }
+/* Elastic tie: 14px disc + 54px string at 28°, #a58f56 (desk-frames §3). */
 .folder-tie {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 10px;
-  height: 10px;
+  top: 12px;
+  right: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: var(--ink-0);
-  opacity: 0.35;
+  border: 2px solid #a58f56;
+  background: rgba(165, 143, 86, 0.25);
 }
 .folder-tie::after {
   content: '';
   position: absolute;
-  top: 9px;
+  top: 11px;
   left: 4px;
   width: 2px;
-  height: 30px;
-  background: var(--ink-0);
-  opacity: 0.35;
+  height: 54px;
+  background: #a58f56;
+  transform: rotate(28deg);
+  transform-origin: top center;
 }
 .folder-accent {
   position: absolute;
@@ -181,16 +221,26 @@ function onActivate(): void {
   color: var(--ink-0);
   opacity: 0.55;
 }
+/* DRAW chip: dark, overhanging the tray's bottom-right corner, slight
+   rotation (∓2° gov/party) — desk-frames §3. */
 .draw-chip {
-  align-self: flex-end;
-  font-family: var(--font-typed);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  color: var(--paper-0);
-  background: var(--ink-0);
-  padding: 3px 8px;
-  border-radius: 2px;
+  position: absolute;
+  right: -8px;
+  bottom: -6px;
+  background: #2e2a22;
+  color: var(--paper-1);
+  border-radius: 4px;
+  padding: 3px 9px;
+  font-family: var(--font-title);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  transform: rotate(-2deg);
+  box-shadow: 0 3px 6px rgba(46, 42, 34, 0.35);
   transition: background-color 0.15s ease;
+}
+.in-tray.skin-party .draw-chip {
+  transform: rotate(2deg);
 }
 .in-tray:not(.is-disabled):hover .draw-chip {
   background: var(--accent-slate);

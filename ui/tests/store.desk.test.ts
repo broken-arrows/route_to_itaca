@@ -103,6 +103,31 @@ const FILES_AUTOSAVE = [
   { name: 'c1_next.scene.dry', contents: 'title: After\non-arrival: month += 1;\n\nOutcome.\n\n- @hub: Back\n' },
 ];
 
+// Variant for Task 4 (typed note): hub's own prose is distinctive so the
+// snapshot's `html` field is unambiguously assertable against `c1`'s own
+// ("Card prose.", reused as-is) once the dossier is open. `new-page: true`
+// on both is required here — without it dendry's CaptureUI never clears its
+// paragraph buffer between scenes (only `scene.newPage` does, see
+// engine.js's displaySceneContent), so each scene's prose would otherwise
+// leak into the next one's html (real convention, confirmed against actual
+// content: root.scene.dry:2 and every real card scene, e.g.
+// generalitat_economy_card.scene.dry:2, set new-page: true).
+const FILES_NOTE = [
+  FILES[0],
+  FILES[1],
+  {
+    name: 'hub.scene.dry',
+    contents: 'title: Hub\nnew-page: true\nrole: desk\nis-hand: true\nmax-cards: 3\n\nNovember brief.\n\n- @gov_deck\n',
+  },
+  FILES[3],
+  {
+    name: 'c1.scene.dry',
+    contents:
+      'title: Card One\nnew-page: true\nrole: card-party\ntags: gcard\n\nCard prose.\n\n- @c1_next\n',
+  },
+  FILES[5],
+];
+
 // Variant for I1: c1's outcome routes OFF the desk, to a `role: event`
 // scene. This is the STANDARD monthly path in the real game — a card's
 // outcome go-to's post_event, which go-to's events_choice (role: event)
@@ -527,6 +552,23 @@ describe('desk store', () => {
     expect(desk.deskView.decks.map((d) => d.id)).toEqual(['gov_deck']);
     expect(desk.deskView.pinned.map((p) => p.id)).toEqual(['pin1']);
     expect(desk.deskView.maxCards).toBe(3);
+  });
+
+  // Task 4 (typed note): the desk scene's own prose (frame.html — dropped on
+  // the floor since phase 2, see docs/design/desk_ui_plan.md §5.1) must be
+  // snapshotted like the rest of the furniture, and must keep showing the
+  // DESK's prose (not the open card's) for the whole dossierOpen window —
+  // same continuity duty deskSnapshot already owns for hand/decks/pinned.
+  it('deskView.html carries the desk scene prose and survives the dossier window', async () => {
+    const { game, desk } = await boot(FILES_NOTE);
+    game.choose(0); // -> hub, role: desk, is-hand
+    expect(desk.deskView.html).toBe('<p>November brief.</p>');
+
+    desk.drawFrom('gov_deck');
+    desk.playFromHand(game.frame!.hand[0]); // -> c1: furniture-less card frame
+    expect(desk.phase).toBe('dossierOpen');
+    expect(game.frame!.html).toBe('<p>Card prose.</p>'); // the live frame really is the card's
+    expect(desk.deskView.html).toBe('<p>November brief.</p>'); // snapshot, not the card's
   });
 
   // REGRESSION (I1): pickPaper only had two branches — "lands on role: desk"

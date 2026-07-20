@@ -1,5 +1,5 @@
 export type SceneRole =
-  | 'desk' | 'deck'
+  | 'desk' | 'deck' | 'deck-gov' | 'deck-party' | 'deck-parliament'
   | 'card' | 'card-gov' | 'card-party' | 'card-parliament'
   | 'pinned-action' | 'newspaper' | 'event'
   | 'info-tab' | 'pause-item' | 'main-menu-item' | 'library-item' | 'ending';

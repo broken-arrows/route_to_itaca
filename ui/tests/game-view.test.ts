@@ -11,6 +11,12 @@ import PaperPage from '../src/components/desk/PaperPage.vue';
 import StageScaler from '../src/components/StageScaler.vue';
 import { useGameStore } from '../src/stores/game';
 import { useDeskStore, setAnimationsForTest } from '../src/stores/desk';
+import uiEn from '../../source/locales/en/ui.json';
+
+// Every DeskView mount below now also mounts ClipboardFrame, which reads
+// `brief.tab.*` — GAME chrome sourced from source/locales/<loc>/ui.json (see
+// i18n.ts's initGameLocale, and the same fix in desk.components.test.ts).
+i18n.global.mergeLocaleMessage('en', uiEn as never);
 
 let pinia: ReturnType<typeof createPinia>;
 beforeEach(() => {

@@ -9,6 +9,8 @@ face-image: img/erc/international.jpg
 max-visits: 25
 role: card-party
 
+= International Relations
+
 Through our representation in the European Parliament, and through our international contacts, we can build our contacts and try to steer opinion in our favour. 
 
 # TODO: brexit modifiers for EU relations, extra resources from contacting Russia? That second bit is a bit iffy and may make more sense at the institutional level + actually do something with _reach variables lol

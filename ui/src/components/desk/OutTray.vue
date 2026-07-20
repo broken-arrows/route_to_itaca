@@ -1,8 +1,10 @@
 <script setup lang="ts">
-// OUT tray: bottom-right, 210x100, same inset-well styling as the in-trays.
-// Spec: prototype-draw-to-dossier-NOTES.md "Other desk objects". Unlike
-// InTray (reused for 3 different kinds), this component is always the same
-// single tray, so it self-labels with the fixed desk.tray.out chrome key.
+// OUT tray: bottom-right, 210×104 tray base + resolved slip. Geometry/
+// colours: docs/design/reference/desk-frames.md §3 "Out tray" (same
+// tray-base recipe as the in-trays: 2px #c3b893, radius 10, inset shadow).
+// Unlike InTray (reused for 3 different kinds), this component is always
+// the same single tray, so it self-labels with the fixed desk.tray.out
+// chrome key.
 import { useI18n } from 'vue-i18n';
 import Prose from '../Prose.vue';
 
@@ -31,28 +33,31 @@ const { t } = useI18n();
 </template>
 
 <style scoped>
+/* Tray hexes are design-canvas literals (desk-frames.md §3). */
 .out-tray {
   width: 210px;
-  height: 100px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
+/* Label above-left — desk-frames §3: 800 8.5px letter-spacing, #8a7a58. */
 .tray-label {
   margin: 0;
-  font-family: var(--font-typed);
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  color: var(--ink-0);
-  opacity: 0.75;
+  font-family: var(--font-title);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a7a58;
 }
 .tray-well {
   position: relative;
-  flex: 1;
-  border-radius: 4px;
-  background: var(--paper-3);
-  box-shadow: inset 0 3px 8px rgba(46, 42, 34, 0.28);
-  padding: 8px;
+  height: 104px;
+  border: 2px solid #c3b893;
+  border-radius: 10px;
+  background: rgba(250, 249, 245, 0.4);
+  box-shadow: inset 0 3px 8px rgba(60, 45, 20, 0.14);
+  padding: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,14 +70,17 @@ const { t } = useI18n();
   opacity: 0.55;
   text-align: center;
 }
+/* Resolved slip: manila note, slight counter-rotation (desk-frames §3:
+   #e6d8b2 on #cbb87e, rotate(-1.6deg)). */
 .slip {
   position: relative;
   width: 100%;
   height: 100%;
-  background: var(--accent-gold);
-  background: color-mix(in srgb, var(--accent-gold) 25%, var(--paper-0));
-  border: 1px solid var(--accent-gold);
+  background: #e6d8b2;
+  border: 1px solid #cbb87e;
   border-radius: 3px;
+  transform: rotate(-1.6deg);
+  box-shadow: 0 2px 6px rgba(60, 45, 20, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,20 +90,21 @@ const { t } = useI18n();
 .slip-title {
   margin: 0;
   font-family: var(--font-title);
-  font-size: 12px;
+  font-size: 11.5px;
+  font-weight: 700;
   text-align: center;
-  color: var(--ink-0);
+  color: #6b655a;
 }
 .stamp {
   /* Ink, not red: an OUT-tray entry can be a resolved government or party
      dossier too, not only a Parlament/world one — red stays reserved for
      Parlament/world surfaces per the binding style rule. */
   position: absolute;
-  top: 8px;
-  right: -14px;
-  transform: rotate(-18deg);
+  bottom: 5px;
+  right: 4px;
+  transform: rotate(-8deg);
   font-family: var(--font-typed);
-  font-size: 10px;
+  font-size: 9.5px;
   letter-spacing: 0.08em;
   color: var(--ink-0);
   border: 1.5px solid var(--ink-0);

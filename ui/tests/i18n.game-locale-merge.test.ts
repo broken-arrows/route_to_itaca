@@ -62,9 +62,9 @@ describe('game-locale merge (source/locales/<loc>/ui.json wins over ui/ defaults
   });
 
   it('deep-merges a nested override without discarding untouched sibling keys', async () => {
-    // Only desk.tray.government is overridden; desk.tray.out (a ui/-owned
-    // sibling one level down) must survive the merge untouched — this is
-    // what distinguishes a real deep merge from a shallow Object.assign that
+    // Only desk.tray.draw is overridden; desk.tray.out (a ui/-owned sibling
+    // one level down) must survive the merge untouched — this is what
+    // distinguishes a real deep merge from a shallow Object.assign that
     // would wipe out the rest of `desk.tray` the moment the game overrides
     // any one key in it.
     vi.stubGlobal(
@@ -72,14 +72,14 @@ describe('game-locale merge (source/locales/<loc>/ui.json wins over ui/ defaults
       vi.fn(() =>
         Promise.resolve({
           ok: true,
-          json: () => Promise.resolve({ desk: { tray: { government: 'GAME-OWNED LABEL' } } }),
+          json: () => Promise.resolve({ desk: { tray: { draw: 'GAME-OWNED LABEL' } } }),
         }),
       ),
     );
     const { i18n, initGameLocale } = await import('../src/i18n');
 
     await initGameLocale();
-    expect(i18n.global.t('desk.tray.government')).toBe('GAME-OWNED LABEL');
+    expect(i18n.global.t('desk.tray.draw')).toBe('GAME-OWNED LABEL');
     expect(i18n.global.t('desk.tray.out')).toBe('OUT'); // sibling key, untouched
   });
 });

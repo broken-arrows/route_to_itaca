@@ -10,6 +10,8 @@ role: card-party
 
 = Communications and Media
 
+# TODO: Actual effects on congreso & local elections
+
 What should be our strategy for all our party media and communication efforts?
 
 - @donations
@@ -27,11 +29,19 @@ What should be our strategy for all our party media and communication efforts?
 title: We could use a fundraising campaign.
 subtitle: This may have mixed effects depending on the public, but it would certainly help with our finances.
 on-arrival: {!
- Q.party_resources += 1; 
- Q.erc_parlament_barcelona_middle_support += 4*(1-Q.erc_dissent/100);    
- Q.erc_parlament_girona_middle_support += 4*(1-Q.erc_dissent/100);
- Q.erc_parlament_lleida_middle_support += 4*(1-Q.erc_dissent/100);
- Q.erc_parlament_tarragona_middle_support += 4*(1-Q.erc_dissent/100);
+ Q.party_resources += 1;
+ Q.erc_parlament_barcelona_unemployed_support -= 1; 
+ Q.erc_parlament_girona_unemployed_support -= 1;
+ Q.erc_parlament_lleida_unemployed_support -= 1;
+ Q.erc_parlament_tarragona_unemployed_support -= 1;
+ Q.erc_parlament_barcelona_ind_support -= 1;
+ Q.erc_parlament_lleida_ind_support -= 1;
+ Q.erc_parlament_girona_ind_support -= 1;
+ Q.erc_parlament_tarragona_ind_support -= 1;
+ Q.erc_parlament_barcelona_middle_support += 3*(1-Q.erc_dissent/100);    
+ Q.erc_parlament_girona_middle_support += 3*(1-Q.erc_dissent/100);
+ Q.erc_parlament_lleida_middle_support += 3*(1-Q.erc_dissent/100);
+ Q.erc_parlament_tarragona_middle_support += 2*(1-Q.erc_dissent/100);
  Q.erc_parlament_barcelona_buss_support += 1*(1-Q.erc_dissent/100);
  Q.erc_parlament_girona_buss_support += 1*(1-Q.erc_dissent/100);
  Q.erc_parlament_lleida_buss_support += 1*(1-Q.erc_dissent/100);

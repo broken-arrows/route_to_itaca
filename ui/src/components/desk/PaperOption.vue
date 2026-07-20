@@ -88,8 +88,14 @@ function onKeyActivate(): void {
          the very first screen). convertLine also passes through
          window.displayText per text run (same as the prose paragraphs), so a
          party name in a card title gets the same live colour/tooltip here. -->
-    <Prose class="option-title" :html="choice.title" />
-    <Prose v-if="choice.subtitle" class="option-subtitle" :html="choice.subtitle" />
+    <!-- Caller-owned wrappers, NOT `<Prose class="option-title">`: Prose is
+         a multi-root (fragment) component, so this component's scope id
+         never lands on it and the scoped .option-title/.option-subtitle
+         rules matched nothing (both rendered as inherited 16px body text,
+         confirmed live 2026-07-20 — see OpenDossier.vue's cover-prose
+         comment for the full mechanism). -->
+    <p class="option-title"><Prose tag="span" :html="choice.title" /></p>
+    <p v-if="choice.subtitle" class="option-subtitle"><Prose tag="span" :html="choice.subtitle" /></p>
     <span v-if="locked" class="lock-chip">{{ t('desk.dossier.locked') }}</span>
   </div>
 </template>
@@ -97,17 +103,20 @@ function onKeyActivate(): void {
 <style scoped>
 .paper-option {
   position: relative;
-  background: var(--paper-0);
-  border: 1px solid var(--ink-0);
-  border-radius: 3px;
-  padding: 10px 12px;
+  /* White slip floating on the folder (desk_ui_dossier_open.png): near-white,
+     no hard border, soft drop shadow, generous padding, rounded. */
+  background: #fdfcfb;
+  border: 1px solid rgba(90, 70, 40, 0.1);
+  border-radius: 6px;
+  padding: 13px 16px;
   cursor: pointer;
+  box-shadow: 0 2px 6px rgba(60, 45, 20, 0.16);
   transform: rotate(var(--rotate));
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .paper-option:not(.locked):hover {
   transform: translateX(7px) rotate(var(--rotate));
-  box-shadow: 0 4px 10px rgba(46, 42, 34, 0.25);
+  box-shadow: 0 6px 14px rgba(46, 42, 34, 0.24);
 }
 .paper-option.locked {
   border-style: dashed;
@@ -135,15 +144,17 @@ function onKeyActivate(): void {
 .option-title {
   margin: 0;
   font-family: var(--font-title);
-  font-size: 14px;
+  font-size: 14.5px;
+  font-weight: 700;
   color: var(--ink-0);
 }
 .option-subtitle {
   margin: 4px 0 0;
   font-family: var(--font-body);
   font-size: 12px;
+  line-height: 1.35;
   color: var(--ink-0);
-  opacity: 0.75;
+  opacity: 0.7;
 }
 .lock-chip {
   display: inline-block;

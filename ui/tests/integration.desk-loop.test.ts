@@ -25,6 +25,12 @@ import { i18n } from '../src/i18n';
 import DeskView from '../src/views/DeskView.vue';
 import InTray from '../src/components/desk/InTray.vue';
 import type { CardView } from '../src/engine/types';
+import uiEn from '../../source/locales/en/ui.json';
+
+// Every DeskView mount below now also mounts ClipboardFrame, which reads
+// `brief.tab.*` — GAME chrome sourced from source/locales/<loc>/ui.json (see
+// i18n.ts's initGameLocale, and the same fix in desk.components.test.ts).
+i18n.global.mergeLocaleMessage('en', uiEn as never);
 
 // The REAL compiled game, not a fixture. It is gitignored build output, so the
 // test skips when it is absent (fresh clone, no compile yet) rather than
@@ -267,18 +273,30 @@ describe('integration: the real game through the desk loop', () => {
     for (const view of [...final.decks, ...final.hand, ...final.pinned]) {
       expect(view.role, `${view.id} surfaced on the desk without a role`).toBeDefined();
     }
-    for (const deck of final.decks) expect(deck.role).toBe('deck');
+    // Task 2 gave the deck scenes themselves a specific deck-* role (gov/
+    // party/parliament, or plain `deck` for the neutral-skin fallback like
+    // `main.debug_deck`) instead of the uniform `deck` every deck used to
+    // carry — assert the family, not the old single literal.
+    for (const deck of final.decks) expect(deck.role!.startsWith('deck')).toBe(true);
     for (const pin of final.pinned) expect(pin.role).toBe('pinned-action');
     for (const card of final.hand) expect(card.role!.startsWith('card')).toBe(true);
   });
 
   // REGRESSION (2026-07-13): the desk rendered ZERO in-trays against the real
   // game, so no card could ever be drawn — while every component test passed.
-  // DeskView matches decks to tray chrome by scene id, and dendry prefixes a
-  // section scene with its FILE id: main.scene.dry's `@party_erc` compiles to
-  // `main.party_erc`, not `party_erc`. The component tests fixtured the bare id
-  // — the same wrong id the component assumed — so the fixture encoded the bug
-  // and could not catch it. Only the real game.json can. Mount the real thing.
+  // DeskView used to match decks to tray chrome by a hardcoded scene-id table,
+  // and dendry prefixes a section scene with its FILE id: main.scene.dry's
+  // `@party_erc` compiles to `main.party_erc`, not `party_erc`. The component
+  // tests fixtured the bare id — the same wrong id the component assumed — so
+  // the fixture encoded the bug and could not catch it. Only the real
+  // game.json can. Mount the real thing.
+  //
+  // Task 2 (2026-07-19) deleted that id table: DeskView now renders one InTray
+  // per `deskStore.deskView.decks` entry, generically, in option order — so
+  // this test's job shifts from "does the id table know these ids" to "does
+  // the real compiled game still carry a role on every deck it offers" (a
+  // missing/unmapped role is what would silently produce a neutral-skinned or
+  // absent tray now). Kept as a real-game guard, not deleted.
   it.skipIf(!HAVE_GAME)('renders a real in-tray at the desk (real deck ids, not fixtures)', () => {
     const game = useGameStore();
     const desk = useDeskStore();
@@ -300,7 +318,7 @@ describe('integration: the real game through the desk loop', () => {
       `the real desk offers decks [${game
         .frame!.decks.map((d) => d.id)
         .join(', ')}] but DeskView rendered ${trays.length} in-trays — ` +
-        'TRAY_KINDS does not know these ids, so the player cannot draw',
+        'the generic deskView.decks -> InTray loop should render exactly one per deck',
     ).toBeGreaterThanOrEqual(1);
 
     // Every PLAYABLE deck the real desk offers must map to tray chrome, or it is
@@ -312,5 +330,11 @@ describe('integration: the real game through the desk loop', () => {
       const rendered = trays.some((t) => (t.props('deck') as { id: string }).id === deck.id);
       expect(rendered, `deck ${deck.id} is offered by the desk but has no in-tray`).toBe(true);
     }
+
+    // Tray derivation against the real compiled game: party deck present with
+    // its compiled deck-party role driving the skin — no UI-side id table.
+    const ercTray = wrapper.find('[data-test="in-tray-main.party_erc"]');
+    expect(ercTray.exists()).toBe(true);
+    expect(ercTray.classes()).toContain('skin-party');
   });
 });

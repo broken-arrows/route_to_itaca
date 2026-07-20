@@ -15,6 +15,16 @@ import DeskView from '../src/views/DeskView.vue';
 import { useGameStore } from '../src/stores/game';
 import { useDeskStore, setAnimationsForTest } from '../src/stores/desk';
 import type { DeckView, CardView } from '../src/engine/types';
+import uiEn from '../../source/locales/en/ui.json';
+
+// Every DeskView mount below now also mounts ClipboardFrame, which reads
+// `brief.tab.*` — GAME chrome sourced from source/locales/<loc>/ui.json, not
+// ui/'s own bundled defaults (see i18n.ts's initGameLocale). Production
+// merges this at boot via a fetch; these tests never mount App.vue's
+// onMounted, so merge the real catalog directly (same source `brief.clipboard
+// .test.ts` uses) rather than let every DeskView mount print
+// `[intlify] Not found 'brief.tab.*'` noise.
+i18n.global.mergeLocaleMessage('en', uiEn as never);
 
 function withI18n(extra: Record<string, unknown> = {}) {
   return { global: { plugins: [i18n] }, ...extra };
@@ -45,6 +55,15 @@ describe('skinFor', () => {
   it('never throws, even for unexpected input', () => {
     expect(() => skinFor(undefined)).not.toThrow();
     expect(() => skinFor('literally anything')).not.toThrow();
+  });
+
+  it.each([
+    ['deck-gov', 'gov'],
+    ['deck-party', 'party'],
+    ['deck-parliament', 'parliament'],
+    ['deck', 'neutral'],
+  ] as const)('skinFor(%s) -> %s skin', (role, key) => {
+    expect(skinFor(role).key).toBe(key);
   });
 });
 
@@ -172,19 +191,33 @@ describe('ActionsTray', () => {
     { id: 'p3', title: 'Advisor Three', tags: [], role: 'pinned-action' },
   ];
 
+  // Every advisor name now renders through <Prose> (same glossary-safety fix
+  // as OutTray's slip title and OpenDossier's cover title — an advisor card's
+  // title can arrive already glossary-marked, and 4 of the 6 real ones name a
+  // party/person term; see LEARNINGS 2026-07-17). Prose calls useGlossary()
+  // internally, so an active pinia is required for every mount here.
+  let pinia: ReturnType<typeof createPinia>;
+  beforeEach(() => {
+    pinia = createPinia();
+    setActivePinia(pinia);
+  });
+
   it('renders one entry per pinned card', () => {
-    const wrapper = mount(ActionsTray, withI18n({ props: { pinned } }));
+    const wrapper = mount(ActionsTray, { global: { plugins: [pinia, i18n] }, props: { pinned } });
     expect(wrapper.findAll('[data-test="pinned-card"]')).toHaveLength(3);
   });
 
   it('emits play with the clicked card', async () => {
-    const wrapper = mount(ActionsTray, withI18n({ props: { pinned } }));
+    const wrapper = mount(ActionsTray, { global: { plugins: [pinia, i18n] }, props: { pinned } });
     await wrapper.findAll('[data-test="pinned-card"]')[1].trigger('click');
     expect(wrapper.emitted('play')).toEqual([[pinned[1]]]);
   });
 
   it('does not emit when disabled', async () => {
-    const wrapper = mount(ActionsTray, withI18n({ props: { pinned, disabled: true } }));
+    const wrapper = mount(ActionsTray, {
+      global: { plugins: [pinia, i18n] },
+      props: { pinned, disabled: true },
+    });
     await wrapper.findAll('[data-test="pinned-card"]')[0].trigger('click');
     expect(wrapper.emitted('play')).toBeUndefined();
   });
@@ -204,6 +237,34 @@ describe('DeskMonth', () => {
 
   it('does not throw when month/year are null', () => {
     expect(() => mount(DeskMonth, withI18n({ props: { month: null, year: null } }))).not.toThrow();
+  });
+
+  // Task 7 (Wave 2): the desk month title now comes from CONTENT — the
+  // extracted leading <h1> from post_event.scene.dry's own heading
+  // (`= [+ month : month +] [+ year +][? if rubicon:, Week [+ week +]?]`),
+  // not a UI-hardcoded Q.month/Q.year read. DeskMonth renders it via
+  // <Prose tag="span"> (glossary/insert-safe, same as every other engine
+  // title reaching this app) and ignores month/year entirely while present
+  // — the two must never stack (that would be the double-title bug this
+  // whole task exists to kill, one level down).
+  it('renders titleHtml via Prose when present, ignoring month/year entirely', () => {
+    const pinia = createPinia();
+    setActivePinia(pinia);
+    const wrapper = mount(DeskMonth, {
+      global: { plugins: [pinia, i18n] },
+      props: { month: 3, year: 2014, titleHtml: 'Novembre 2012, Week 2' },
+    });
+    expect(wrapper.text()).toContain('Novembre 2012, Week 2');
+    expect(wrapper.text()).not.toContain('2014');
+    expect(wrapper.text()).not.toContain(i18n.global.t('desk.month.3'));
+  });
+
+  // The boot case (spec: "no post_event has run, no h1 exists yet") — the
+  // Q-based rendering this component always had stays the fallback.
+  it('falls back to the Q-based month/year rendering when titleHtml is absent', () => {
+    const wrapper = mount(DeskMonth, withI18n({ props: { month: 3, year: 2014, titleHtml: null } }));
+    expect(wrapper.text()).toContain(i18n.global.t('desk.month.3'));
+    expect(wrapper.text()).toContain('2014');
   });
 });
 
@@ -232,8 +293,14 @@ describe('OutTray', () => {
 });
 
 // Light integration smoke test: DeskView assembles the six static components
-// from the real stores (mirrors main.scene.dry's known deck ids so the
-// government/party/parlament tray-matching table is exercised for real).
+// from the real stores. The tray-rendering tests deliberately use ARBITRARY
+// deck ids (not the game's `main.*` ones) — Task 2 killed DeskView's old
+// per-id tray-matching table, so tray derivation is now generic (render one
+// InTray per deskView.decks entry, in that order, skinned by its own role);
+// using ids that don't look like the real game proves no id table crept back in.
+// The real compiled ids are still exercised for real — see
+// tests/integration.desk-loop.test.ts's real-game tray assertion, which is
+// the guard that actually holds this honest.
 describe('DeskView', () => {
   const deskGame = {
     scenes: {
@@ -255,37 +322,30 @@ describe('DeskView', () => {
         maxCards: 4,
         role: 'desk',
         content: [{ type: 'paragraph', content: ['Hub.'] }],
-        options: [
-          { id: '@main.cat_gov' },
-          { id: '@main.party_erc' },
-          { id: '@main.parlament_deck' },
-          { id: '@pin1' },
-        ],
+        options: [{ id: '@x.alpha' }, { id: '@x.beta' }, { id: '@x.gamma' }, { id: '@pin1' }],
       },
-      // NB the `main.` prefix: dendry compiles a `@section` of `main.scene.dry`
-      // to the scene id `main.<section>`. These fixtures once used the bare
-      // names, which is exactly the id DeskView's TRAY_KINDS wrongly matched on
-      // — so the fixture agreed with the bug and the desk rendered no in-trays
-      // against the real game while these tests stayed green. Keep fixture ids
-      // shaped like the real compiled ones.
-      'main.cat_gov': {
-        id: 'main.cat_gov',
+      // decks fixture used by the DeskView mount — ids are arbitrary (NOT the
+      // game's), roles are differentiated to exercise the skin routing:
+      // deck-gov / deck-party / plain deck (the neutral-skin fallback
+      // @debug_deck also uses in the real content).
+      'x.alpha': {
+        id: 'x.alpha',
         type: 'scene',
-        title: 'Generalitat',
+        title: 'Alpha',
         isDeck: true,
-        role: 'deck',
+        role: 'deck-gov',
         content: [],
         options: [],
       },
       // The one deck with a card in it, so the hand can be filled for real.
-      // main.cat_gov stays empty on purpose — the "empty deck -> toast" test
-      // below depends on it.
-      'main.party_erc': {
-        id: 'main.party_erc',
+      // x.alpha stays empty on purpose — the "empty deck -> toast" test below
+      // depends on it.
+      'x.beta': {
+        id: 'x.beta',
         type: 'scene',
-        title: 'Party Affairs',
+        title: 'Beta',
         isDeck: true,
-        role: 'deck',
+        role: 'deck-party',
         content: [],
         options: [{ id: '#pcard' }],
       },
@@ -300,10 +360,10 @@ describe('DeskView', () => {
         content: [{ type: 'paragraph', content: ['Party prose.'] }],
         options: [{ id: '@hub' }],
       },
-      'main.parlament_deck': {
-        id: 'main.parlament_deck',
+      'x.gamma': {
+        id: 'x.gamma',
         type: 'scene',
-        title: 'Parlament',
+        title: 'Gamma',
         isDeck: true,
         role: 'deck',
         content: [],
@@ -341,15 +401,38 @@ describe('DeskView', () => {
     return { game, desk, wrapper };
   }
 
-  it('renders the government, party and parlament trays with the fixed chrome labels', () => {
+  // Task 4 (typed note): builds a variant of deskGame whose hub.content is
+  // swapped out for the given raw dendry content array, so the compiled
+  // frame.html — and therefore the store's snapshot, deskStore.deskView.html
+  // — carries an exact, controllable prose string. deskGame's other scenes
+  // are reused via shallow spread (only hub.content is replaced).
+  function mountDeskWithHubContent(content: unknown[]) {
+    const gameJson = {
+      ...deskGame,
+      scenes: { ...deskGame.scenes, hub: { ...deskGame.scenes.hub, content } },
+    };
+    const game = useGameStore();
+    const desk = useDeskStore();
+    game.initFromText(JSON.stringify(gameJson));
+    game.newGame();
+    game.choose(0); // root -> hub
+    const wrapper = mount(DeskView, withI18n());
+    return { game, desk, wrapper };
+  }
+
+  it('renders one tray per deck, in deck order, skinned by the deck role', () => {
     const { wrapper } = mountDesk();
-    const text = wrapper.text();
-    // Assert the literal rendered captions — NOT t('desk.tray.*'), which is
-    // vacuous here: the component renders those same keys through the same
-    // i18n instance, so expected and actual would match even if the key moved.
-    expect(text).toContain('Generalitat');
-    expect(text).toContain('Party Affairs');
-    expect(text).toContain('Parlament');
+    const trays = wrapper.findAll('.in-tray');
+    expect(trays).toHaveLength(3);
+    expect(trays[0].classes()).toContain('skin-gov');
+    expect(trays[1].classes()).toContain('skin-party');
+    expect(trays[2].classes()).toContain('skin-neutral');
+    expect(trays[0].text()).toContain('Alpha'); // caption = deck.title, no chrome label
+  });
+
+  it('renders no fixed chrome caption above trays', () => {
+    const { wrapper } = mountDesk();
+    expect(wrapper.find('.tray-kind-label').exists()).toBe(false);
   });
 
   it('renders the actions tray with the pinned advisor and the month/out tray chrome', () => {
@@ -364,7 +447,7 @@ describe('DeskView', () => {
   it('clicking a tray dispatches to the desk store (empty deck -> toast, no crash)', async () => {
     const { desk, wrapper } = mountDesk();
     expect(desk.phase).toBe('idle');
-    await wrapper.find('[data-test="in-tray-main.cat_gov"]').trigger('click');
+    await wrapper.find('[data-test="in-tray-x.alpha"]').trigger('click');
     expect(desk.toastKey).toBe('desk.toast.deckEmpty');
   });
 
@@ -378,7 +461,7 @@ describe('DeskView', () => {
   it('keeps the hand, in-trays and actions tray on the desk while a dossier is open', async () => {
     const { game, desk, wrapper } = mountDesk();
 
-    desk.drawFrom('main.party_erc');
+    desk.drawFrom('x.beta');
     await nextTick();
     expect(wrapper.find('[data-test="hand-card-pc1"]').exists()).toBe(true);
     expect(wrapper.find('[data-test="hand-card-pc1"]').classes()).not.toContain('dimmed');
@@ -392,10 +475,129 @@ describe('DeskView', () => {
     const card = wrapper.find('[data-test="hand-card-pc1"]');
     expect(card.exists()).toBe(true);
     expect(card.classes()).toContain('dimmed'); // cardDimmed() is live code now
-    expect(wrapper.find('[data-test="in-tray-main.cat_gov"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="in-tray-main.party_erc"]').exists()).toBe(true);
-    expect(wrapper.find('[data-test="in-tray-main.parlament_deck"]').exists()).toBe(true);
+    expect(wrapper.find('[data-test="in-tray-x.alpha"]').exists()).toBe(true);
+    expect(wrapper.find('[data-test="in-tray-x.beta"]').exists()).toBe(true);
+    expect(wrapper.find('[data-test="in-tray-x.gamma"]').exists()).toBe(true);
     expect(wrapper.findAll('[data-test="pinned-card"]')).toHaveLength(1);
     expect(wrapper.text()).toContain(i18n.global.t('desk.actions.title'));
+  });
+
+  it('dossier dim covers the desk region only — never the Brief (user rule 2026-07-19)', async () => {
+    const { game, desk, wrapper } = mountDesk();
+    desk.drawFrom('x.beta');
+    await nextTick();
+    desk.playFromHand(game.frame!.hand[0]);
+    await nextTick();
+    expect(desk.phase).toBe('dossierOpen');
+
+    const dim = wrapper.find('[data-test="desk-dim"]');
+    expect(dim.exists()).toBe(true);
+    // Structural guarantee: the overlay is inside .desk-region (inset:0 there),
+    // and the clipboard is its sibling, outside it.
+    expect(wrapper.find('.desk-region [data-test="desk-dim"]').exists()).toBe(true);
+    expect(wrapper.find('.clipboard-frame [data-test="desk-dim"]').exists()).toBe(false);
+    expect(wrapper.find('.clipboard-frame').exists()).toBe(true);
+  });
+
+  // Task 4 (spec §5.1 regression): DeskView never rendered frame.html, so
+  // the desk scene's own monthly prose ([+ month : events2012 +],
+  // historical_event, event_rubicon in main.scene.dry) was dropped on the
+  // floor. The note reads the STORE's snapshot (deskStore.deskView.html),
+  // not the live frame, for the same continuity reason as the rest of the
+  // furniture — see stores/desk.ts's deskView comment.
+  it('renders the desk prose as a typed note; hides it when empty', () => {
+    const { wrapper } = mountDeskWithHubContent([
+      { type: 'paragraph', content: ['Something moved this month.'] },
+    ]);
+    const note = wrapper.find('[data-test="desk-note"]');
+    expect(note.exists()).toBe(true);
+    expect(note.text()).toContain('Something moved this month.');
+  });
+
+  it('renders no note element when the desk prose is empty', () => {
+    const empty = mountDeskWithHubContent([]);
+    expect(empty.wrapper.find('[data-test="desk-note"]').exists()).toBe(false);
+
+    // Whitespace-only/empty-tag HTML (e.g. every conditional insert on the
+    // real scene suppressed for the current month) must not render an empty
+    // paper scrap either — a run of tags with nothing but whitespace inside.
+    const whitespace = mountDeskWithHubContent([{ type: 'paragraph', content: ['  \n  '] }]);
+    expect(whitespace.wrapper.find('[data-test="desk-note"]').exists()).toBe(false);
+  });
+
+  // Review finding (fix round 1), REVERSED by user ruling 2026-07-19 Wave 2:
+  // on the standard monthly path, dendry's paragraph buffer only clears on
+  // `new-page: true`, and the desk hub scenes don't set it — so frame.html
+  // carries a leftover `<h1>[month] [year]</h1>` heading from the PREVIOUS
+  // page (post_event.scene.dry) ahead of the desk's own prose. That h1 IS
+  // the desk's month+year title (translatable, carries the Rubicon week) —
+  // fix round 1 stripped and discarded it; Task 7 EXTRACTS it instead, to
+  // DeskMonth, rather than dropping it on the floor. A `heading`-type
+  // content node is exactly what a `=` line in the .dry source compiles to
+  // (vendor/dendrynexus-ten/lib/ui/content/html.js's `_paragraphsToHTML`,
+  // case 'heading' -> '<h1>...</h1>'), so this fixture is the real compiled
+  // shape, not a hand-written HTML string.
+  it('extracts a leading <h1> heading as the desk title (DeskMonth), instead of stripping it from the note', () => {
+    const { wrapper } = mountDeskWithHubContent([
+      { type: 'heading', content: ['Novembre 2012'] },
+      { type: 'paragraph', content: ['Events happened.'] },
+    ]);
+
+    // The content heading IS the title now — DeskMonth shows it, and the
+    // Q-based month/year fallback must not ALSO render alongside it (that
+    // would just move the double-title bug one level down).
+    const month = wrapper.find('.pos-month');
+    expect(month.text()).toContain('Novembre 2012');
+    expect(month.find('.month').exists()).toBe(false);
+    expect(month.find('.year').exists()).toBe(false);
+
+    // The note keeps only the body prose — the heading is gone from it
+    // (moved, not duplicated).
+    const note = wrapper.find('[data-test="desk-note"]');
+    expect(note.exists()).toBe(true);
+    expect(note.text()).toContain('Events happened.');
+    expect(note.text()).not.toContain('Novembre 2012');
+  });
+
+  it('renders no note element when the desk prose is only a leading heading — the heading becomes the title instead of vanishing', () => {
+    const { wrapper } = mountDeskWithHubContent([{ type: 'heading', content: ['Novembre 2012'] }]);
+    expect(wrapper.find('[data-test="desk-note"]').exists()).toBe(false);
+    expect(wrapper.find('.pos-month').text()).toContain('Novembre 2012');
+  });
+
+  it('preserves a non-leading <h1> heading in mid-prose', () => {
+    const { wrapper } = mountDeskWithHubContent([
+      { type: 'paragraph', content: ['Intro.'] },
+      { type: 'heading', content: ['Mid heading'] },
+      { type: 'paragraph', content: ['More.'] },
+    ]);
+    const note = wrapper.find('[data-test="desk-note"]');
+    expect(note.exists()).toBe(true);
+    expect(note.text()).toContain('Intro.');
+    expect(note.text()).toContain('Mid heading');
+    expect(note.text()).toContain('More.');
+  });
+
+  // Regression (Task 7, Wave 2): when frame.html carries multiple leading
+  // <h1> tags (first from post_event.scene.dry, second as accidental duplicate),
+  // the while-loop at DeskView.vue:124 must drop all but the first. The first
+  // becomes DeskMonth's title, the rest are removed, and body prose stays intact.
+  it('drops duplicate leading <h1> headings; only the first becomes the title', () => {
+    const { wrapper } = mountDeskWithHubContent([
+      { type: 'heading', content: ['Setembre 2012'] },
+      { type: 'heading', content: ['Duplicate'] },
+      { type: 'paragraph', content: ['Body.'] },
+    ]);
+
+    // Only the first heading becomes the title
+    const month = wrapper.find('.pos-month');
+    expect(month.text()).toContain('Setembre 2012');
+
+    // The note shows only the body, not either heading
+    const note = wrapper.find('[data-test="desk-note"]');
+    expect(note.exists()).toBe(true);
+    expect(note.text()).toContain('Body.');
+    expect(note.text()).not.toContain('Setembre 2012');
+    expect(note.text()).not.toContain('Duplicate');
   });
 });

@@ -1,7 +1,7 @@
 title: Campaigning
 new-page: true
 view-if: not rubicon or campaigning_timer <= 0
-on-arrival: month_actions += 1; campaigning_timer +=2 if rubicon
+on-arrival: month_actions += 1; campaigning_timer =2 if rubicon
 max-visits: 36
 is-card: true
 card-image: img/erc/campaign.jpeg
@@ -13,6 +13,8 @@ role: card-party
 = Campaigning
 
 Whether or not we are in an electoral campaign, the party is always trying to broaden its voter base. Who should we focus our campaign efforts on?
+
+# TODO: Actual effects on congreso & local elections
 
 - @workers: The industrial working class, including factory workers, construction workers, and service workers.
 - @redbelt: The working class in the metropolitan area of Barcelona, the traditional stronghold of the PSC.

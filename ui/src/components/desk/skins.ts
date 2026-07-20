@@ -20,13 +20,16 @@ const SKINS: Record<Skin['key'], Skin> = {
   parliament: { key: 'parliament', bg: '#f6f4ec', bd: '#4a5b6a' },
 };
 
-// Role -> desk paper skin. Never throws: any role outside the three
-// card-* skin roles (including undefined, empty string, or an unrecognized
-// value) falls back to neutral paper — the "misfiled folder" fallback the
-// plan calls for when a role/tag is unmapped.
+// Role -> desk paper skin. A HandCard's resolved role is `card-*` (the card
+// scene's own role); an InTray's is the deck scene's own compiled role,
+// `deck-*` (Task 1's engine-side addition) — both route to the same paper.
+// Never throws: any role outside those six (including undefined, empty
+// string, plain `deck` (the misfiled-folder fallback, e.g. `debug_deck`), or
+// an unrecognized value) falls back to neutral paper — the "misfiled folder"
+// fallback the plan calls for when a role/tag is unmapped.
 export function skinFor(role?: string): Skin {
-  if (role === 'card-gov') return SKINS.gov;
-  if (role === 'card-party') return SKINS.party;
-  if (role === 'card-parliament') return SKINS.parliament;
+  if (role === 'card-gov' || role === 'deck-gov') return SKINS.gov;
+  if (role === 'card-party' || role === 'deck-party') return SKINS.party;
+  if (role === 'card-parliament' || role === 'deck-parliament') return SKINS.parliament;
   return SKINS.neutral;
 }

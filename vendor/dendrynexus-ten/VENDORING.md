@@ -86,3 +86,7 @@ whole-file reformat, so this list stays the complete upstream diff.
   `lib/engine.js` around lines 50-105 (`makeFunctionFromSource`/
   `runActions`/`runPredicate`/`runExpression`), ~318-340 (constructor +
   `setGameLib`), and `beginGame`'s first statement.
+- **`deck-gov` / `deck-party` / `deck-parliament` role variants**: `lib/parsers/scene.js` role enum + `lib/parsers/compiler.js`
+  `ROLE_TO_MECHANIC` (all derive `isDeck`, mirroring the `card-*` family). Lets a deck
+  scene carry its paper skin so no UI needs a deck-id table. Generic vocabulary — no
+  game names.

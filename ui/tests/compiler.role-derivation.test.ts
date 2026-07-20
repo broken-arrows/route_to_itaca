@@ -27,9 +27,17 @@ describe('role -> mechanical boolean derivation', () => {
     },
   );
 
-  it('role: deck derives isDeck: true when is-deck is absent', async () => {
-    const game = await compile([scene('title: T\nrole: deck\n\nBody.\n')]);
-    expect(game.scenes.t.isDeck).toBe(true);
+  it.each(['deck', 'deck-gov', 'deck-party', 'deck-parliament'])(
+    'role: %s derives isDeck: true when is-deck is absent',
+    async (role) => {
+      const game = await compile([scene(`title: T\nrole: ${role}\n\nBody.\n`)]);
+      expect(game.scenes.t.isDeck).toBe(true);
+    },
+  );
+
+  it('deck-* variant is preserved as the scene role (skin routing reads it)', async () => {
+    const game = await compile([scene('title: T\nrole: deck-gov\n\nBody.\n')]);
+    expect(game.scenes.t.role).toBe('deck-gov');
   });
 
   it('role: desk derives isHand: true when is-hand is absent', async () => {

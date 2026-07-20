@@ -147,6 +147,9 @@
     'card-party': 'isCard',
     'card-parliament': 'isCard',
     'deck': 'isDeck',
+    'deck-gov': 'isDeck',
+    'deck-party': 'isDeck',
+    'deck-parliament': 'isDeck',
     'desk': 'isHand',
     'pinned-action': 'isPinnedCard'
   };

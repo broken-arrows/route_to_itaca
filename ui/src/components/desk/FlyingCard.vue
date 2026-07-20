@@ -50,10 +50,10 @@ const drawMs = computed(() => `${desk.animMs('draw')}ms`);
 <style scoped>
 .flying-card {
   position: absolute;
-  left: 460px;
-  top: 300px;
+  left: 426px;
+  top: 290px;
   width: 186px;
-  height: 250px;
+  height: 264px; /* matches HandCard's 186×264 (desk-frames §3) */
   perspective: 1200px;
   pointer-events: none;
   z-index: 60;

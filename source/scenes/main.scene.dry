@@ -118,7 +118,7 @@ title: Party Affairs
 card-image: img/erc/araerc.jpg
 is-deck: true
 view-if: player_party = "erc"
-role: deck
+role: deck-party
 
 - #erc_party
 
@@ -127,7 +127,7 @@ title: Party Affairs
 card-image: img/cup/seunacional.jpg
 is-deck: true
 view-if: player_party = "cup"
-role: deck
+role: deck-party
 
 - #cup_party
 
@@ -136,7 +136,7 @@ title: Generalitat
 view-if: (player_party = "erc" and erc_in_gob) or (player_party = 'cup' and cup_in_gob)
 card-image: img/generalitat.jpg
 is-deck: true
-role: deck
+role: deck-gov
 
 - #generalitat
 
@@ -145,7 +145,7 @@ title: Parlament
 view-if: year > 2012
 card-image: img/parlament_card.jpg
 is-deck: true
-role: deck
+role: deck-parliament
 
 - #parlament_card
 

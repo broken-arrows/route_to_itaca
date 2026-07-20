@@ -8,7 +8,11 @@ card-image: img/erc/rally.png
 face-image: img/erc/rally.png
 role: card-party
 
+= Political Rally
+
 Mass rallies, protests, and student strikes are a common feature of left and pro-independence parties and civic organizataions. ERC is no stranger to these, specially in politically charged times like now. What should these focus on at the current moment?
+
+# TODO: Actual effects on congreso & local elections
 
 - @independence: The struggle for Catalan independence and self-determination.
 - @welfare: Política Social - the maintenance and expansion of social welfare programs.

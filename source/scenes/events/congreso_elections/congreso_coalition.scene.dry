@@ -31,13 +31,7 @@ on-arrival: {!
 
     // Catalan right-sovereigntist carrier — the first live one that
     // isn't the player's own vehicle. Its roadmap drives the whole bucket's stance.
-    var catRightCarrier = null;
-    var catRightList = ["junts", "jxcat", "jxsi", "pdcat", "dl", "cdc", "ciu"];
-    for (var i = 0; i < catRightList.length; i++) {
-        if (!catRightCarrier && catRightList[i] !== playerVehicle && S(catRightList[i]) > 0) catRightCarrier = catRightList[i];
-    }
-    Q.congreso_cat_right_carrier = catRightCarrier;
-    var catRightRoadmap = catRightCarrier ? (Q[catRightCarrier + "_roadmap"] || 0) : 0;
+    var catRightRoadmap = Q[Q.parlament_current_ciu + "_roadmap"];
 
     // ── Government cores ─────────────────────────────────────────────────────
     // PSOE core already absorbs PSC (folded → 0 seats) unless a split casts PSC
@@ -182,8 +176,8 @@ on-arrival: {!
     // The Catalan sovereigntist carrier deals transactionally — but a hardened
     // roadmap (>=2) rules out backing a Spanish right government even under talks;
     // it never props up a PSOE–Cs cabinet either (Catalan party, hard oppose).
-    var catDesc = (catRightCarrier && catRightCarrier !== playerVehicle && S(catRightCarrier) > 0)
-        ? { party: catRightCarrier, seats: S(catRightCarrier), left: catRightVsLeft, trueLeft: "oppose", right: catRightVsRight, rightvox: catRightVsRight, psoecs: "oppose",
+    var catDesc = (Q.parlament_current_ciu && Q.parlament_current_ciu !== playerVehicle && S(Q.parlament_current_ciu) > 0)
+        ? { party: Q.parlament_current_ciu, seats: S(Q.parlament_current_ciu), left: catRightVsLeft, trueLeft: "oppose", right: catRightVsRight, rightvox: catRightVsRight, psoecs: "oppose",
             negLeft: true, negTrueLeft: false, negRight: catRightRoadmap <= 1, negPsoeCs: false }
         : null;
 
@@ -194,7 +188,7 @@ on-arrival: {!
         var key = COURT_ORDER[ci];
         if (key === "@player")   { if (playerDesc) candidates.push(playerDesc); continue; }
         if (key === "@catright") { if (catDesc)    candidates.push(catDesc);    continue; }
-        if (key === playerVehicle || key === catRightCarrier) continue; // already placed as a descriptor
+        if (key === playerVehicle || key === Q.parlament_current_ciu) continue; // already placed as a descriptor
         var ks = S(key);
         if (ks <= 0) continue;
         candidates.push({

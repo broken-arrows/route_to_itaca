@@ -1,0 +1,109 @@
+title: Reaching Out
+new-page: true
+view-if: erc_reach_out_timer <= 0
+on-arrival: {! 
+    Q.month_actions += 1; 
+    Q.erc_reach_out_timer = 9; 
+    Q.party_reaching_out_map = 1;
+
+    Q.congreso_party_tour_viewed_rest = false;
+    Q.congreso_party_tour_viewed_catalonia = false;
+    Q.congreso_party_tour_viewed_eh = true;
+    Q.congreso_party_tour_viewed_ppcc = true;
+    Q.congreso_party_tour_viewed_galicia = true;
+    Q.congreso_party_tour_viewed_others = false;
+    Q.congreso_party_tour_highlight = ["galicia", "ppcc", "eh", "catalonia"];
+!}
+on-departure: {!
+    Q.party_reaching_out_map = 0;
+!}
+max-visits: 36
+is-card: true
+card-image: img/erc/ararepubliques.jpg
+# face-image: img/erc/ararepubliques.jpg
+frequency: 100
+tags: erc_party
+role: card-party
+
+= Reaching Out
+
+Across the Spanish state, many share in our struggle. Be others also fighting for independence or, more broadly, for decentralization and republicanism, we're hardly alone. It's always a good idea to reach out and help each other.
+
+{!<div id="congreso-party-tour-widget" style="width: 95%; margin: 0 auto;"></div>!}
+
+- @bng_reach
+- @pnv_reach
+- @ehbildu_reach
+- @gbai_reach
+- @amaiur_reach
+- @compromis_reach
+- @mes_reach
+- @return: We don't need to reach out to any of them at the moment
+- @easy_discard
+- @cancel_advisor_action
+
+@bng_reach
+title: Reach out to the BNG
+subtitle: [-1 resources]
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+
+!}
+
+@pnv_reach
+title: Reach out to EAJ-PNV
+subtitle: [-1 resources]
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+
+!}
+
+
+@ehbildu_reach
+title: Reach out to ehbildu
+subtitle: [-1 resources]
+choose-if: party_resources >= 1
+view-if: spa_ehbildu_active
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+
+!}
+
+@gbai_reach
+title: Reach out to gbai
+subtitle: [-1 resources]
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+
+!}
+
+@amaiur_reach
+title: Reach out to amaiur
+subtitle: [-1 resources]
+choose-if: party_resources >= 1
+view-if: not spa_ehbildu_active
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+
+!}
+
+@compromis_reach
+title: Reach out to compromis
+subtitle: [-1 resources]
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+
+!}
+
+@mes_reach
+title: Reach out to MES
+subtitle: [-1 resources]
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+
+!}

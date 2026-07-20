@@ -837,6 +837,7 @@
         }
 
         if (d_cat_spa < 0) {
+          // TODO: What the hell is going on here, worth re-thinking
           const total_in =
             Math.abs(d_cat_spa) * 0.06 * nl_d.cat_spa * nl_p.cat_spa;
           delta_vec[FAMILIES.indexOf("cs")] += total_in;
@@ -860,27 +861,27 @@
         const partyMultiplier =
           federalLeftChannelMultiplier[activeFederalLeft] ?? 0.0;
 
-        const channelScale = nld.channeling * nlp.channeling;
+        const channelScale = nl_d.channeling * nl_p.channeling;
         const indySqueeze =
-          1 - 0.7 * clamp((Q.independencemovement - 55) / 30, 0, 1);
+          1 - 0.7 * clamp((Q.independence_movement - 55) / 30, 0, 1);
 
         const potentialFlow =
-          0.05 * (Q.podemoschanneling || 0) * channelScale * partyMultiplier;
+          0.05 * (Q.podemos_channeling || 0) * channelScale * partyMultiplier;
 
         const federalFlow = potentialFlow * indySqueeze;
         const squeezedFlow = potentialFlow * (1 - indySqueeze);
 
-        deltavec[FL] += federalFlow;
+        delta_vec[FL] += federalFlow;
 
-        deltavec[PSC] -= (federalFlow + squeezedFlow) * 0.3;
-        deltavec[ABS] -= (federalFlow + squeezedFlow) * 0.7;
+        delta_vec[PSC] -= (federalFlow + squeezedFlow) * 0.3;
+        delta_vec[ABS] -= (federalFlow + squeezedFlow) * 0.7;
 
-        const lowTrust = clamp((38 - Q.independencetrust) / 20, 0, 1);
+        const lowTrust = clamp((38 - Q.independence_trust) / 20, 0, 1);
         const toCup = 0.15 + 0.35 * lowTrust;
         const toIl = 0.8 - toCup;
 
-        deltavec[IL] += squeezedFlow * toIl;
-        deltavec[CUP] += squeezedFlow * toCup;
+        delta_vec[IL] += squeezedFlow * toIl;
+        delta_vec[CUP] += squeezedFlow * toCup;
         // The remaining 20% of squeezedFlow stays with PSC/abstention.
 
         // ── TRUST DISENGAGEMENT ──────────────────────────────────────────

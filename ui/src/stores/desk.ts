@@ -26,8 +26,9 @@ export interface DeskFurniture {
   decks: DeckView[];
   pinned: CardView[];
   maxCards: number;
+  html: string; // the desk scene's own prose — the typed note (phase 3a)
 }
-const EMPTY_DESK: DeskFurniture = { hand: [], decks: [], pinned: [], maxCards: 0 };
+const EMPTY_DESK: DeskFurniture = { hand: [], decks: [], pinned: [], maxCards: 0, html: '' };
 
 export type DeskPhase =
   | 'boot'
@@ -105,7 +106,7 @@ export const useDeskStore = defineStore('desk', () => {
   const deskView = computed<DeskFurniture>(() => {
     const f = game.frame;
     if (phase.value === 'idle' && f?.isHand) {
-      return { hand: f.hand, decks: f.decks, pinned: f.pinned, maxCards: f.maxCards };
+      return { hand: f.hand, decks: f.decks, pinned: f.pinned, maxCards: f.maxCards, html: f.html };
     }
     return deskSnapshot.value ?? EMPTY_DESK;
   });
@@ -269,7 +270,7 @@ export const useDeskStore = defineStore('desk', () => {
     // is-hand scene), so the dossier/event windows — where the frame carries
     // none — always have a last-known-good desk to render behind them.
     if (f?.isHand) {
-      deskSnapshot.value = { hand: f.hand, decks: f.decks, pinned: f.pinned, maxCards: f.maxCards };
+      deskSnapshot.value = { hand: f.hand, decks: f.decks, pinned: f.pinned, maxCards: f.maxCards, html: f.html };
     }
     phase.value = next;
     if (next === 'idle') maybeAutosave();

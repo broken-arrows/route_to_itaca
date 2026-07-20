@@ -1,10 +1,14 @@
 {
   "app": { "title": "Route to Ítaca — The Desk (beta)" },
-  "desk": {
-    "tray": {
-      "government": "GOVERNMENT",
+  "brief": {
+    "tab": {
+      "overview": "OVERVIEW",
       "party": "PARTY",
-      "parliament": "PARLAMENT"
+      "chamber": "CHAMBER",
+      "economy": "ECONOMY",
+      "world": "WORLD",
+      "polls": "POLLS",
+      "library": "▤ LIBRARY"
     }
   }
 }
