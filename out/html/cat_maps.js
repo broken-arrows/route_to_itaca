@@ -1219,15 +1219,31 @@
   // Per-constituency seat bars (no table) — same bar system as cat_polls. The
   // constituency title is floated to the top-right and lifted ~3em to reclaim
   // vertical space over the map.
+  function congresoGlossaryTerm(party) {
+    const terms = (window.glossary && window.glossary().terms) || [];
+    return (
+      terms.find((t) => (t.match || []).includes(party)) ||
+      terms.find((t) => t.colour === party && t.tooltip && t.display) ||
+      null
+    );
+  }
+
   function renderCongresoBars(panel, constituency, Q) {
     const parties = Q["congreso_parties_" + constituency] || [];
     const rows = [];
     for (const p of parties) {
       const s = Q[p + "_congreso_s_" + constituency] || 0;
-      if (s > 0) rows.push({ party: p, seats: s });
+      if (s > 0)
+        rows.push({
+          party: p,
+          seats: s,
+          pv: Q[p + "_congreso_" + constituency + "_support"] || 0,
+        });
     }
-    rows.sort((a, b) => b.seats - a.seats);
-    const maxSeats = rows.length ? rows[0].seats : 1;
+    rows.sort((a, b) => b.pv - a.pv || b.seats - a.seats);
+    const maxSeats = rows.length
+      ? rows.reduce((m, r) => Math.max(m, r.seats), 0)
+      : 1;
     const totalSeats =
       (Q.congreso_seats && Q.congreso_seats[constituency]) || 0;
     const name = CONGRESO_NAMES[constituency] || constituency;
@@ -1243,9 +1259,19 @@
     for (const r of rows) {
       const h = Math.max(3, Math.round((r.seats / maxSeats) * 70));
       const color = getPartyColor(r.party);
+
+      const term = congresoGlossaryTerm(r.party);
+      const display =
+        r.party == "up"
+          ? "UP"
+          : r.party == "te"
+            ? "¡TE!"
+            : r.party == "mes"
+              ? "MES"
+              : r.party;
       const label = window.applyWholesome
-        ? window.applyWholesome(r.party == "up" ? "UP" : r.party)
-        : r.party.toUpperCase();
+        ? window.applyWholesome(display)
+        : display.toUpperCase();
       bars +=
         `<div class="cong-col">` +
         `<div class="cong-label">${label}</div>` +

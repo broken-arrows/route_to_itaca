@@ -436,14 +436,14 @@ for (var constituency of Q.congreso_constituencies) {
 // Design: docs/superpowers/specs/2026-07-20-congreso-rest-map-painting-design.md
 var REST_COMMUNITY_CHAR = {
     madrid:            { char: { pp: 1.15, psoe: 0.85, vox: 1.05, podemos: 1.15, cs: 1.20 } },
-    andalusia:         { char: { pp: 0.90, psoe: 1.35, vox: 1.00, podemos: 1.05, cs: 0.90 } },
-    extremadura:       { char: { pp: 0.95, psoe: 1.55, vox: 0.80, podemos: 0.80, cs: 0.80 } },
+    andalusia:         { char: { pp: 0.90, psoe: 1.30, vox: 1.00, podemos: 1.05, cs: 0.90 } },
+    extremadura:       { char: { pp: 0.95, psoe: 1.30, vox: 0.80, podemos: 0.80, cs: 0.80 } },
     castile_la_mancha: { char: { pp: 1.20, psoe: 1.20, vox: 0.95, podemos: 0.85, cs: 0.90 } },
     castile_and_leon:  { char: { pp: 1.40, psoe: 0.95, vox: 1.05, podemos: 0.80, cs: 0.95 } },
     murcia:            { char: { pp: 1.35, psoe: 0.90, vox: 1.80, podemos: 0.85, cs: 1.05 } },
     la_rioja:          { char: { pp: 1.35, psoe: 1.00, vox: 1.00, cs: 1.00 } },
     aragon:            { char: { pp: 1.25, psoe: 1.00, podemos: 0.95 }, minor: { party: "te",  factor: 10 } },
-    asturias:          { char: { pp: 0.95, psoe: 1.30, vox: 0.80, podemos: 1.20, iu: 1.50 }, minor: { party: "fac", factor: 34 } },
+    asturias:          { char: { pp: 0.95, psoe: 1.20, vox: 0.80, podemos: 1.20, iu: 1.50 }, minor: { party: "fac", factor: 34 } },
     cantabria:         { char: { pp: 1.20, psoe: 1.00, vox: 0.95 }, minor: { party: "prc", factor: 55 } },
     canary_islands:    { char: { pp: 1.00, psoe: 1.10, podemos: 1.00, cs: 0.95 }, minor: { party: "cc", factor: 15 } },
     ceuta:             { char: { pp: 1.50, psoe: 0.72, vox: 2.00, podemos: 0.55, cs: 1.00 } },
