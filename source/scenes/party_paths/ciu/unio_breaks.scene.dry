@@ -43,7 +43,9 @@ on-arrival: {!
         }
     }
     Q.cdc_congreso_catalunya_support = Q.ciu_congreso_catalunya_support * 0.9;
-    Q.unio_congreso_catalunya_support = Q.ciu_congreso_catalunya_support * 0.1;
+    Q.unio_congreso_catalunya_support = Q.ciu_congreso_catalunya_support * 0.025;
+    Q.erc_congreso_catalunya_support += Q.ciu_congreso_catalunya_support * 0.025;
+    Q.abstain_congreso_catalunya_support += Q.ciu_congreso_catalunya_support * 0.05;
     Q.ciu_congreso_catalunya_support = 0;
 
     // transferring support

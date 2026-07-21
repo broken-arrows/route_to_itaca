@@ -1,6 +1,6 @@
 title: Who's running for the Congreso?
 subtitle: The Spanish General Election is just around the corner
-view-if: next_spanish_election_time - time <= 3 and congreso_party_tour_timer = 0
+view-if: next_spanish_election_time - time <= 3 and congreso_party_tour_timer <= 0
 tags: event
 new-page: true
 on-arrival: {!
@@ -91,7 +91,7 @@ set-jump: ppcc_desc
 @ppcc_desc
 go-to: choices
 
-In **Valencia**, Compromis [? if spa_compromis_active: will be also chasing representation to defend the interests of the Valencian people. ?][? if not spa_compromis_active: will be running as a part of the broad left coalition, within [? if iu_in_up: UP. ?][? if not iu_in_up: Podemos. ?]?]
+In **Valencia**, compromis [? if spa_compromis_active: will be also chasing representation to defend the interests of the Valencian people. ?][? if not spa_compromis_active: will be running as a part of the broad left coalition, within [? if iu_in_up: UP. ?][? if not iu_in_up: Podemos. ?]?]
 
 To the east, in the **Balearic Islands**, MES will [? if spa_mes_active: [? if spa_compromis_active: also ?] be running on its own! ?][? if not spa_mes_active: [? if not spa_compromis_active: also?] be running within [? if iu_in_up: UP. ?][? if not iu_in_up: Podemos. ?]?]
 

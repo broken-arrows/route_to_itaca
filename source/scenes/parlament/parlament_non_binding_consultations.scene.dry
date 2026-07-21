@@ -50,7 +50,7 @@ on-arrival: {!
     }
 !}
 unavailable-subtitle: [? if parlament_non_binding_consultations : Already approved! ?][? if (not parlament_non_binding_consultations) and (roadmap == 3) : Our roadmap to independence is about unilateralism, this is too chill of a path for the party. ?][? if (not parlament_non_binding_consultations) and (not parlament_sovereignty_declaration) : A parlamentary Declaration of Sovereignty is required first. ?][? if not (speaker_party == "ciu" or speaker_party == "cdc" or speaker_party == "junts" or speaker_party == "erc" or speaker_party == "cup" or speaker_party == "dl" or speaker_party == "jxsi" or speaker_party == "pdcat" or speaker_party == "jxcat" or speaker_party == "icv" or speaker_party == "csqp" or speaker_party == "cecp"): Speaker of the House [+ speaker +] ([+ speaker_party +]) will not allow debating this. ?][? if (speaker_party == "ciu" or speaker_party == "cdc" or speaker_party == "icv" or speaker_party == "csqp" or speaker_party == "cecp") and not congreso_decidir_trigger: Speaker of the House [+ speaker +] ([+ speaker_party +]) want to wait for the Congreso to vote on Catalonia's "Right to Decide" before passing our own laws. ?][? if (not parlament_non_binding_consultations) and (party_resources < 1) : Not enough resources. ?]
-subtitle: [? if coming_from_parlament : -1 resources ?]
+subtitle: [? if coming_from_parlament : \[-1 resources\] ?]
 
 = Law on Non-Binding Consultations and other forms of Political Particiption
 

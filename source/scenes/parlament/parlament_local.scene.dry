@@ -2,5 +2,5 @@ title: Law on Local Governance
 new-page: true
 choose-if: party_resources > 0 and not parlament_local_law
 unavailable-subtitle: [? if parlament_local_law : Already approved! ?][? if (not parlament_local_law) and (party_resources < 1) : Not enough resources.?]
-subtitle: -1 resources
+subtitle: \[-1 resources\]
 on-arrival: party_resources -= 1;

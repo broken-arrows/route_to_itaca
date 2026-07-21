@@ -41,7 +41,7 @@ Across the Spanish state, many share in our struggle. Be others also fighting fo
 
 @bng_reach
 title: Reach out to the BNG
-subtitle: [-1 resources]
+subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: party_resources -= 1
@@ -127,7 +127,7 @@ We've tried our best to highlight the need to have different political opinions 
 
 @pnv_reach
 title: Campaing with EAJ-PNV
-subtitle: [-1 resources]
+subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
@@ -160,7 +160,7 @@ Campaigning with EAJ-PNV is an unusual move from our end. We do not really share
 
 @ehbildu_reach
 title: Campaign with ehbildu
-subtitle: [-1 resources]
+subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 view-if: spa_ehbildu_active
 unavailable-subtitle: Not enough resources.
@@ -195,7 +195,7 @@ Building bridges across state-less nations is always something that draws people
 
 @gbai_reach
 title: Campaign with gbai
-subtitle: [-1 resources]
+subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
@@ -227,7 +227,7 @@ The gbai coalition is a mix of regionalist and pro-independence parties in Navar
 
 @amaiur_reach
 title: Campaign with amaiur
-subtitle: [-1 resources]
+subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 view-if: not spa_ehbildu_active
 unavailable-subtitle: Not enough resources.
@@ -260,7 +260,7 @@ Campaiging together against the political repression and persecution of the Span
 
 @compromis_reach
 title: Reach out to compromis
-subtitle: [-1 resources]
+subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: party_resources -= 1
@@ -346,7 +346,7 @@ We've tried our best to highlight the need to have different political opinions 
 
 @mes_reach
 title: Reach out to MES
-subtitle: [-1 resources]
+subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: party_resources -= 1

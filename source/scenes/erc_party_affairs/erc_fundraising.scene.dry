@@ -91,7 +91,7 @@ In times of economic uncertainty, it's never popular to increase public subsidie
 
 @lower_allocation
 title: Lobby for a reduction of party subsidies
-subtitle: [-1 resources]
+subtitle: \[-1 resources\]
 choose-if: party_resources_mult > 0 and erc_pragmatic_strength < 30 and party_resources > 0
 unavailable-subtitle: [? if party_resources_mult <= 0: Party subsidies are already virtually non-existing. ?][? if erc_left_strength >= 30: The Pragmatics oppose this, and they are too strong at the moment. ?][? if party_resources < 1: Not enough resources. ?]
 on-arrival: {!
@@ -161,7 +161,7 @@ Party dues have not really represented an important share of the party's income 
 
 @lower_rates
 title: Lower party dues
-subtitle: [? if party_income = 2: [-1 resources]?]
+subtitle: [? if party_income = 2: \[-1 resources\]?]
 choose-if: party_income >= 1 and (party_resources > 0 or party_income < 2)
 unavailable-subtitle: [? if party_income < 1: Dues are already as low as they can be. ?][? if party_resources < 1 and party_income == 2: Not enough resources. ?]
 on-arrival: {!

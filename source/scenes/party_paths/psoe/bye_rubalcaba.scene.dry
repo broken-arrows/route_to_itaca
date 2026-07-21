@@ -31,7 +31,7 @@ Two main candidates are at the very top of the race. On one hand, from Madrid, P
 
 @sanchez
 title: Pedro Sánchez wins the primary
-subtitle: [? if not psoe_leadership_sanchez_default: We'd need to support his candidacy, that lacks critical supports after the PSC went its separate way. [-1 resources]?]
+subtitle: [? if not psoe_leadership_sanchez_default: We'd need to support his candidacy, that lacks critical supports after the PSC went its separate way. \[-1 resources\]?]
 choose-if: psoe_leadership_sanchez_default = 1 or (player_party == "erc" and party_resources > 0 and psc_relations >= 40)
 unavailable-subtitle: [? if player_party != "erc": There's little our party can do to influence the outcome. ?][? if player_party == "erc" and psc_relations < 40: Our relations with the PSC are not good enough. ?][? if player_party == "erc" and party_resources < 1: Not enough resources. ?]
 on-arrival: {!
@@ -49,7 +49,7 @@ After an unexpected campaign against most of the party leadership's wishes, Pedr
 
 @madina
 title: Eduardo Madina wins the primary
-subtitle: [? if not psoe_leadership_madina_default: We'd need to support his candidacy so it can surpass the pull Pedro Sánchez currently has on the militancy. [-1 resources]?]
+subtitle: [? if not psoe_leadership_madina_default: We'd need to support his candidacy so it can surpass the pull Pedro Sánchez currently has on the militancy. \[-1 resources\]?]
 choose-if: psoe_leadership_madina_default = 1 or (player_party == "erc" and party_resources > 0 and psc_relations >= 40)
 unavailable-subtitle: [? if player_party != "erc": There's little our party can do to influence the outcome. ?][? if player_party == "erc" and psc_relations < 40: Our relations with the PSC are not good enough. ?][? if player_party == "erc" and party_resources < 1: Not enough resources. ?]
 on-arrival: {!

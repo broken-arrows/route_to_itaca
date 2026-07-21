@@ -1,5 +1,5 @@
 title: Plebiscite-elections?
-view-if: (plebiscite_election_trigger or (not cat_caretaker_gov and year > 2013 and not rubicon and not consultation_pending and not referendum_happened and next_election_time - time <= 18 and next_election_time >= 14)) and not referendum_pending and not cat_caretaker_gov and not president_party = player_party
+view-if: (plebiscite_election_trigger or (not cat_caretaker_gov and year > 2013 and not rubicon and not consultation_pending and not referendum_happened and next_election_time - time <= 18 and next_election_time >= 14)) and not referendum_pending and not cat_caretaker_gov and not president_party = player_party and independence_movement >= 65
 face-image: img/events/snapelection.jpg
 tags: event
 new-page: true

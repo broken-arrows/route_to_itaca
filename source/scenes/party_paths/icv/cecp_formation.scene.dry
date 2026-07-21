@@ -90,7 +90,7 @@ After now quite some time operating in the Parlament, CSQP is hardly what it onc
 title: Arcadi Oliveres keeps the leadership
 view-if: csqp_leader == "Arcadi Oliveres"
 choose-if: podemos_congreso_s < psoe_congreso_s and up_congreso_s < psoe_congreso_s and ((podemos_congreso_catalunya_support < 16 and up_congreso_catalunya_support < 16) or (cecp_relations >= 55 and party_resources > 0)) and (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25)
-subtitle: [? if (podemos_congreso_catalunya_support >= 16 or up_congreso_catalunya_support >= 16) : He'll need a bit of a push to do that, given the momentum Podemos enjoys at the moment. [-1 resources]?]
+subtitle: [? if (podemos_congreso_catalunya_support >= 16 or up_congreso_catalunya_support >= 16) : He'll need a bit of a push to do that, given the momentum Podemos enjoys at the moment. \[-1 resources\]?]
 unavailable-subtitle: [? if (podemos_congreso_catalunya_support >= 25 or up_congreso_catalunya_support >= 25): Podemos enjoys too much momentum at the moment for him to keep his position. ?][? if (podemos_congreso_catalunya_support >= 16 or up_congreso_catalunya_support >= 16) and (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25): [? if cecp_relations < 55: We don't have good enough relations with CSQP (now CECP). ?][? if party_resources < 1: Not enough resources.?] ?]
 on-arrival: {!
     Q.cecp_leader = "Arcadi Oliveres";
@@ -105,7 +105,7 @@ Despite somewhat challenging odds, Arcadi Oliveres seems to have managed to rene
 @domenech_leads
 title: Xavier Domènech wins the leadership
 choose-if: (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25) or (cecp_relations >= 55 and party_resources > 0)
-subtitle: [? if (podemos_congreso_catalunya_support >= 25 or up_congreso_catalunya_support >= 25): He'll need a bit of a push to do that, given the momentum Podemos enjoys at the moment. [-1 resources] ?][? if (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25): Not a very surprising outcome. ?]
+subtitle: [? if (podemos_congreso_catalunya_support >= 25 or up_congreso_catalunya_support >= 25): He'll need a bit of a push to do that, given the momentum Podemos enjoys at the moment. \[-1 resources\] ?][? if (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25): Not a very surprising outcome. ?]
 unavailable-subtitle: [? if (podemos_congreso_catalunya_support >= 25 or up_congreso_catalunya_support >= 25): [? if cecp_relations < 55: We don't have good enough relations with CSQP (now CECP). ?][? if party_resources < 1: Not enough resources.?] ?]
 on-arrival: {!
     Q.cecp_leader = "Xavier Domènech";
@@ -135,7 +135,7 @@ Somehow, the other forces in the CECP coalition have not been able to stop the m
 @asens_leads
 title: Jaume Asens wins the leadership
 choose-if: local_barcelona_wp == "bcomu" and podemos_congreso_s < psoe_congreso_s and up_congreso_s < psoe_congreso_s and (podemos_congreso_catalunya_support < 20 and up_congreso_catalunya_support < 20) or (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25 and party_resources > 0 and cecp_relations > 55)
-subtitle: [? if (podemos_congreso_catalunya_support >= 20 or up_congreso_catalunya_support >= 20) and (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25): He'll need a bit of a push to do that, given the momentum Podemos enjoys at the moment. [-1 resources] ?]
+subtitle: [? if (podemos_congreso_catalunya_support >= 20 or up_congreso_catalunya_support >= 20) and (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25): He'll need a bit of a push to do that, given the momentum Podemos enjoys at the moment. \[-1 resources\] ?]
 unavailable-subtitle: [? if (podemos_congreso_catalunya_support >= 20 or up_congreso_catalunya_support >= 20) and (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25): [? if cecp_relations < 55: We don't have good enough relations with CSQP (now CECP). ?][? if party_resources < 1: Not enough resources.?] ?][? if podemos_congreso_catalunya_support >= 25 or up_congreso_catalunya_support >= 25 or local_barcelona_wp != "bcomu" or podemos_congreso_s > psoe_congreso_s or up_congreso_s > psoe_congreso_s: BComu does not have a strong enough position. ?]
 on-arrival: {!
     Q.cecp_leader = "Joan Coscubiela";

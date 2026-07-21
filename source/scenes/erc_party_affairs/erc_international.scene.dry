@@ -25,7 +25,7 @@ Through our representation in the European Parliament, and through our internati
 - @cancel_advisor_action
 
 @minor_countries_partyreach
-subtitle: -1 resources
+subtitle: \[-1 resources\]
 choose-if: minor_party_reach < 5 and party_resources > 0
 unavailable-subtitle: [? if minor_party_reach >= 5: We have already built our contacts enough with minor countries. ?][? if party_resources <= 0: We do not have enough resources. ?]
 on-arrival: party_resources -=1; minor_contries_reach += 1 + 0.5*raul_romeva_advisor; erc_civic_strength += 5;
@@ -33,7 +33,7 @@ on-arrival: party_resources -=1; minor_contries_reach += 1 + 0.5*raul_romeva_adv
 National liberation parties from Scotland, Québec, Galicia, the Basque Country, and even the Irish Sinn Féin have always been our comrades anf frontline fighters for self-determination and the freedom of all peoples. Building up that relation can only make us stronger, but is also an action that can only give us so much in terms of actual international standing.
 
 @european_community_partyreach
-subtitle: -1 resources
+subtitle: \[-1 resources\]
 choose-if: european_community_reach < 5 and party_resources > 0
 unavailable-subtitle: [? if european_community_reach >= 5: We have already built our contacts enough within the European Community. ?][? if party_resources <= 0: We do not have enough resources. ?]
 on-arrival: party_resources -=1; european_community_reach += 1 + 0.5*raul_romeva_advisor; erc_civic_strength += 3; erc_core_strength += 2;
@@ -41,7 +41,7 @@ on-arrival: party_resources -=1; european_community_reach += 1 + 0.5*raul_romeva
 The European Union is torn on the topic of self-determination. It's a Pandora's box that no one really wants to open. If and went we force that opening, we at least are paving the way for the debate to be a bit more in our favour.
 
 @russia_partyreach
-subtitle: -1 resources
+subtitle: \[-1 resources\]
 choose-if: russia_reach < 5 and party_resources > 0
 unavailable-subtitle: [? if russia_reach >= 5: We have already built our contacts enough with Russia. ?][? if party_resources <= 0: We do not have enough resources. ?]
 on-arrival: party_resources -=1; russia_reach += 1 + 0.5*raul_romeva_advisor; erc_left_dissent += 3; erc_pragmatic_strength += 2; erc_core_dissent += 1;
@@ -49,7 +49,7 @@ on-arrival: party_resources -=1; russia_reach += 1 + 0.5*raul_romeva_advisor; er
 Russia is always willing to support movements that they see as destabilizing for the West. Portraying ourselves as such does have potential benefits, but if this connection is every unveiled it can fastly bomb our credibility. We better thread carefully.
 
 @usa_partyreach
-subtitle: -1 resources
+subtitle: \[-1 resources\]
 choose-if: usa_reach < 5 and party_resources > 0
 unavailable-subtitle: [? if usa_reach >= 5: We have already built our contacts enough with the USA. ?][? if party_resources <= 0: We do not have enough resources. ?]
 on-arrival: party_resources -=1; usa_reach += 1 + 0.5*raul_romeva_advisor - 0.75*pere_aragones_advisor; erc_civic_strength += 3; erc_core_strength += 2; erc_pragmatic_strength += 1; erc_left_dissent += 1;
@@ -57,7 +57,7 @@ on-arrival: party_resources -=1; usa_reach += 1 + 0.5*raul_romeva_advisor - 0.75
 The USA will hardly support a movement explicitly against a NATO ally like Spain, but the battle is not lost yet. Our movement does naturally generate some sympathy, and we may be able to sway some if we play our cards right. [? if pere_aragones_advisor: Pere Aragonès' may not be the most helpful advisor here though. His statements on potential Catalan opposition to becoming a NATO member, while true, are not the best diplomatic play to make. ?]
 
 @china_partyreach
-subtitle: -1 resources
+subtitle: \[-1 resources\]
 choose-if: china_reach < 5 and party_resources > 0
 unavailable-subtitle: [? if china_reach >= 5: We have already built our contacts enough with China. ?][? if party_resources <= 0: We do not have enough resources. ?]
 on-arrival: party_resources -=1; china_reach += 1 + 0.5*raul_romeva_advisor; erc_pragmatic_strength += 1; erc_core_strength += 1;

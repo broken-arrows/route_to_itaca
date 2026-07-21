@@ -76,7 +76,7 @@ title: <span style="color: var(--psc); font-style: italic;">New</span> <span sty
 view-if: parlament_coalition_psc_erc_icv_s and player_party == "cup"
 choose-if: parlament_coalition_psc_erc_icv_s >= parlament_s_majority and (erc_roadmap < 1 or erc_relations > 55 or (erc_relations > 40 and erc_relations <= 55 and party_resources > 1))
 unavailable-subtitle: [? if parlament_coalition_psc_erc_icv_s < parlament_s_majority: Not enough parliamentary support. ?][? if erc_roadmap >= 1 and erc_relations <= 55: ERC is pushing for independence, and thus uninterested in a new tripartite. [? if erc_relations <= 40: We lack good enough relations with them to push them into this. ?][? if party_resources < 1 and erc_relations > 40: Not enough resources. ?] ?]
-subtitle: [? if erc_roadmap < 1: ERC having abandoned any plans for independence does help in forming such a coalition.?][? if erc_roadmap >= 1 and erc_relations > 40: We'll have to push ERC into this arrangement. [? if erc_relations < 55: [-1 resources]?]?]
+subtitle: [? if erc_roadmap < 1: ERC having abandoned any plans for independence does help in forming such a coalition.?][? if erc_roadmap >= 1 and erc_relations > 40: We'll have to push ERC into this arrangement. [? if erc_relations < 55: \[-1 resources\]?]?]
 on-arrival: {!
     Q.month_actions += 1;
     Q.cat_coalition_disp = "<span style='color: var(--psc); font-style: italic;'>New</span> <span style='color: var(--erc); font-style: italic;'>Tri</span><span style='color: var(--" + Q.parlament_current_icv + "); font-style: italic;'>partite</span> Government";

@@ -18,7 +18,7 @@ Against it, there's the underdog coming back, Pedro Sánchez. After leaving the 
 
 @madina_elected
 title: Eduardo Madina wins the primary
-subtitle: [? if not (up_congreso_s > psoe_congreso_s or podemos_congreso_s > psoe_congreso_s): We'd have to support his candidacy, as he is set to lose against a rising Pedro Sánchez. [-1 resources] ?]
+subtitle: [? if not (up_congreso_s > psoe_congreso_s or podemos_congreso_s > psoe_congreso_s): We'd have to support his candidacy, as he is set to lose against a rising Pedro Sánchez. \[-1 resources\] ?]
 unavailable-subtitle: [? if player_party != "erc": There's little our party can do to influence the outcome. ?][? if player_party == "erc" and psc_relations < 40: Our relations with the PSC are not good enough. ?][? if player_party == "erc" and party_resources < 1: Not enough resources. ?]
 view-if: psoe_leader == "Eduardo Madina"
 choose-if: (up_congreso_s > psoe_congreso_s or podemos_congreso_s > psoe_congreso_s) or (party_resources > 0 and psc_relations >= 40 and player_party == "erc")
@@ -35,7 +35,7 @@ After quite a tense primary election, it has been the incumbent, Eduardo Madina,
 
 @diaz_elected
 title: Susana Díaz wins the primary
-subtitle: [? if not (up_congreso_s > psoe_congreso_s or podemos_congreso_s > psoe_congreso_s): We'd have to support her candidacy, as she is set to lose against a rising Pedro Sánchez. [-1 resources] ?]
+subtitle: [? if not (up_congreso_s > psoe_congreso_s or podemos_congreso_s > psoe_congreso_s): We'd have to support her candidacy, as she is set to lose against a rising Pedro Sánchez. \[-1 resources\] ?]
 unavailable-subtitle: [? if player_party != "erc": There's little our party can do to influence the outcome. ?][? if player_party == "erc" and psc_relations < 40: Our relations with the PSC are not good enough. ?][? if player_party == "erc" and party_resources < 1: Not enough resources. ?]
 view-if: psoe_leader != "Eduardo Madina"
 choose-if: (up_congreso_s > psoe_congreso_s or podemos_congreso_s > psoe_congreso_s) or (party_resources > 0 and psc_relations >= 40 and player_party == "erc")
@@ -52,7 +52,7 @@ After quite a tense primary election, it has been the baroness, Susana Díaz, wh
 
 @sanchez_elected
 title: Pedro Sánchez wins the primary
-subtitle: [? if not (up_congreso_s <= psoe_congreso_s and podemos_congreso_s <= psoe_congreso_s): Given the dire state of the party, we'd have to support his candidacy for him to win. [-1 resources] ?]
+subtitle: [? if not (up_congreso_s <= psoe_congreso_s and podemos_congreso_s <= psoe_congreso_s): Given the dire state of the party, we'd have to support his candidacy for him to win. \[-1 resources\] ?]
 unavailable-subtitle: [? if player_party != "erc": There's little our party can do to influence the outcome. ?][? if player_party == "erc" and psc_relations < 40: Our relations with the PSC are not good enough. ?][? if player_party == "erc" and party_resources < 1: Not enough resources. ?]
 choose-if: (up_congreso_s <= psoe_congreso_s and podemos_congreso_s <= psoe_congreso_s) or (party_resources > 0 and psc_relations >= 40 and player_party == "erc")
 on-arrival: {!

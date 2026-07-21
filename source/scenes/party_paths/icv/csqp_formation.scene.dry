@@ -89,7 +89,7 @@ Despite his popularity, the fact is that Arcadi Oliveres is asking for a level o
 
 @oliveres_lead
 title: Arcadi Oliveres has it his way
-subtitle: With our support, he can gather enough momentum to make this work [? if csqp_relations <65: \[-2 resources\]?][? if csqp_relations >= 65: [-1 resources] ?]
+subtitle: With our support, he can gather enough momentum to make this work [? if csqp_relations <65: \[-2 resources\] ?][? if csqp_relations >= 65: \[-1 resources\] ?]
 choose-if: ((csqp_relations >= 65 and party_resources >= 1) or (csqp_relations >= 55 and party_resources >= 2)) and (podemos_congreso_catalunya_support < 12 and up_congreso_catalunya_support < 12)
 unavailable-subtitle: [? if podemos_congreso_catalunya_support > 12 or up_congreso_catalunya_support > 12: Podemos has too much influence already, and is not willing to let go of this amount of party powers. ?][? if csqp_relations < 55: Our relations with ICV-EUiA (now CSQP) are not good enough. ?][? if (csqp_relations >= 65 and party_resources < 1) or (csqp_relations >= 55 and csqp_relations < 65 and party_resources < 2): Not enough resources. ?]
 on-arrival: {!

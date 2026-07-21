@@ -9,4 +9,4 @@ on-arrival: {!
     }
 !}
 unavailable-subtitle: [? if parlament_referendum_law : Already approved! ?][? if (not parlament_referendum_law) and (roadmap == 1) : Our roadmap to independence is about achieving an agreement with the Spanish government. ?][? if (not parlament_referendum_law) and (not parlament_sovereignty_declaration) : A parlamentary Declaration of Sovereignty is required first. ?][? if (not parlament_referendum_law) and (party_resources < 1) : Not enough resources. ?][? if (not parlament_referendum_law) and not (speaker_party = "jxsi" or speaker_party = "erc" or speaker_party = "cup" or speaker_party = "jxcat" or speaker_party = "junts" or speaker_party = "dl" or speaker_party = "pdecat" or speaker_party = "cdc" or (speaker_party = "csqp" and csqp_leader = "Arcadi Oliveres") or (speaker_party = "cecp" and cecp_leader = "Arcadi Oliveres") or (speaker_party = "cecp" and cecp_leader = "jaume asens")) : Speaker of the House [+ speaker +] ([+ speaker_party +]) will not allow debating this.?]
-subtitle: [? if coming_from_parlament : -1 resources ?]
+subtitle: [? if coming_from_parlament : \[-1 resources\] ?]

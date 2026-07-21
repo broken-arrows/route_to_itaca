@@ -1265,9 +1265,13 @@
   };
 
   // Minor "rest" regional parties: mean-revert toward a stable base instead of
-  // following national trends, with scaled-down noise so they don't walk to 0.
+  // following national trends.
   const MINOR_REST = new Set(["cc", "prc", "te", "fac"]);
   const MINOR_REST_TARGETS = { cc: 1.0, prc: 0.12, te: 0.08, fac: 0.4 };
+
+  // sqrt(p(1-p)) at p=0.25 — the reference share at which step 4j's noise keeps
+  // `noise_stdev` unchanged. Everything smaller gets proportionally less.
+  const NOISE_REF_SD = Math.sqrt(0.25 * 0.75);
 
   // Named scalar constants (from spa_vote_model.py DEFAULTS).
   const P = {
@@ -1285,7 +1289,6 @@
     hold_decay: 0.0088,
     hold_recovery: 0.0051,
     noise_stdev: 0.164,
-    noise_stdev_minor: 0.008,
     minor_reversion_rate: 0.008,
     channeling_rate: 0.0024,
     psoe_recover_rate: 0.0027,
@@ -1408,6 +1411,9 @@
 
     const constituencies = Q.congreso_constituencies;
     if (!constituencies) return;
+
+    // 0. Make the ballot match the gate flags before anything else moves.
+    reconcileCongresoLineup(Q);
 
     // 1. Effective Spanish macro variables (Catalan values + scenario offsets).
     const spa_gdp = Q.gdp_growth + (Q.spa_gdp_offset || 0);
@@ -1620,13 +1626,21 @@
         }
       }
 
-      // 4j. Gaussian noise (scaled down for minor rest parties).
+      // 4j. Gaussian noise
       for (const p of fams) {
+        const share = sup(Q, p, c) / 100;
+        // Normalised so a 25%-share party keeps the original sigma
         const sd =
-          c === "rest" && MINOR_REST.has(p)
-            ? P.noise_stdev_minor
-            : P.noise_stdev;
-        deltas[p] += gaussianRandom(0, sd);
+          (P.noise_stdev * Math.sqrt(Math.max(0, share * (1 - share)))) /
+          NOISE_REF_SD;
+        // Carried in a mean-reverting deviation, and only the CHANGE applied,
+        // so noise cannot accumulate the way a random walk does. 0.03 ~= 33
+        // months of memory; stationary spread is ~sd/sqrt(2*0.03).
+        const devKey = "_noise_" + p + "_" + c;
+        const prev = Q[devKey] || 0;
+        const next = prev * 0.97 + gaussianRandom(0, sd);
+        Q[devKey] = next;
+        deltas[p] += next - prev;
       }
 
       // 4k. Apply deltas.
@@ -1689,6 +1703,270 @@
     }
   }
 
+  // ===========================================================================
+  // CONGRESO LINEUP GATES
+  //
+  // The engine's ONLY notion of "this party is on the ballot" is `support > 0`
+  // (see `activeParties`). The `spa_*_active` / `upn_in_pp` flags that content
+  // sets are a second, purely declarative notion of the same fact — this is
+  // what reconciles them, by MOVING support so the vote matches the flags.
+  // Without it a flag is inert: BNG kept winning Galicia seats while
+  // `spa_bng_active` was false, and UPN won none while running separately.
+  //
+  // Two relations, deliberately distinct:
+  //   • GATES      — a regional party drains from, or returns to, a MIX of
+  //                  national donors (UPN out of the PP bloc, BNG out of the
+  //                  left bloc). The mix is weighted, and constituency-specific
+  //                  for free, because a donor that is not live cannot donate.
+  //   • SUCCESSORS — one party's vote simply BECOMES another's, 100% and with
+  //                  no mix (Amaiur → EH Bildu; PP+Cs+UPN → Navarra Suma).
+  //
+  // Support is only ever MOVED: a constituency total is invariant across a
+  // reconcile. Nothing is conjured for a party that starts running, and nothing
+  // evaporates when one stops.
+  //
+  // Acts on flag TRANSITIONS only (tracked in `<gate>_applied`), so it is safe
+  // to call every tick and safe to call twice — including after a save/load,
+  // where `on-arrival` never re-runs. The one-time structural move happens
+  // once; the continuous monthly dynamics (4b's PP→UPN corruption bleed, etc.)
+  // take over from there.
+  // ===========================================================================
+
+  // How much of what a donor holds it may give up in a single split. This is
+  // the negative-support guard, NOT a balance knob — `share` below does the
+  // real sizing. (Deliberately looser than spaSupportInject's 0.5: that is a
+  // nudge primitive, this is a structural split, and UPN genuinely is most of
+  // the PP's Navarra vote.)
+  const DONOR_MAX_DRAIN = 0.9;
+
+  // How far a driver may shift a mix away from its anchor donor.
+  const DONOR_SHIFT_MAX = 0.3;
+
+  // `share` = fraction of the live donor pool the party takes when its gate
+  // first turns on with nothing stashed. Once it has folded at least once, the
+  // stashed magnitude wins, so a flip-flop round trip cannot resize the party.
+  const LINEUP_GATES = [
+    // Right-regionalist: drain the PP bloc, Cs/Vox taking a slice when live.
+    {
+      party: "upn",
+      where: ["navarra"],
+      side: "right",
+      gate: "upn_in_pp",
+      invert: true,
+      share: 0.75,
+    },
+    {
+      party: "fac",
+      where: ["rest"],
+      side: "right",
+      gate: "spa_foro_active",
+      share: 0.0125,
+    },
+    // Peripheral left: drain the Podemos family, PSOE a bit, IU when separate.
+    {
+      party: "bng",
+      where: ["galicia"],
+      side: "left",
+      gate: "spa_bng_active",
+      share: 0.2,
+    },
+    {
+      party: "compromis",
+      where: ["valencia"],
+      side: "left",
+      gate: "spa_compromis_active",
+      share: 0.22,
+    },
+    {
+      party: "mes",
+      where: ["balears"],
+      side: "left",
+      gate: "spa_mes_active",
+      share: 0.18,
+    },
+  ];
+
+  const LINEUP_SUCCESSORS = [
+    // EH Bildu carries the abertzale left; Amaiur is the pre-2012 label whose
+    // vote it inherits. `Q.amaiur_congreso_s` (the Nov-2011 seat count) is a
+    // historical record of an election that happened before the game opens, and
+    // is deliberately NOT touched by this.
+    {
+      from: ["amaiur"],
+      to: "ehbildu",
+      where: ["navarra", "euskadi"],
+      gate: "spa_ehbildu_active",
+    },
+    // Navarra Suma: PP, Cs and UPN contest Navarra on a single list.
+    {
+      from: ["pp", "cs", "upn"],
+      to: "nsuma",
+      where: ["navarra"],
+      gate: "spa_nsuma_formed",
+    },
+  ];
+
+  function inLineup(Q, p, c) {
+    const l = Q["congreso_parties_" + c];
+    return !!l && l.indexOf(p) !== -1;
+  }
+
+  // Live donors for `side` in c, as [key, weight] with weights summing to 1.
+  // Every modifier here reuses a dial the engine already uses for the SAME
+  // causal claim elsewhere — that is the only reason these numbers mean
+  // anything rather than being invented.
+  function donorMix(Q, c, side) {
+    let base;
+    if (side === "right") {
+      // PP sheds to Cs/Vox as corruption mounts: the same variable, and the
+      // same claim, as step 4b's PP→Cs bleed.
+      const t = clamp((Q.corruption_pp || 0) / 100, 0, 1) * DONOR_SHIFT_MAX;
+      base = [
+        ["pp", 0.75 - t],
+        ["cs", 0.15 + t * 0.6],
+        ["vox", 0.1 + t * 0.4],
+      ];
+    } else {
+      // The peripheral left sits where the discontent sits. `podemos_channeling`
+      // is step 4f's own PSOE⇄Podemos dial, and ECON already gives compromis
+      // (+0.05) and mes (+0.04) positive dissent coefficients against PSOE's
+      // negative one (-0.03).
+      const t =
+        clamp(
+          0.6 * (Q.podemos_channeling || 0) +
+            0.4 * ((Q.social_dissent || 0) / 100),
+          0,
+          1,
+        ) * DONOR_SHIFT_MAX;
+      base = [
+        ["podemos", 0.7 + t],
+        ["psoe", 0.3 - t],
+      ];
+      // IU funds its own share only while it runs separately from UP.
+      if (!Q.iu_in_up) base.push(["iu", 0.15]);
+    }
+
+    const live = [];
+    const seen = {};
+    let sum = 0;
+    for (const entry of base) {
+      const alias = entry[0];
+      const w = entry[1];
+      if (w <= 0) continue;
+      // 'podemos' must land on whichever key currently carries the bloc. podKey
+      // only knows up/podemos, so sumar is checked ahead of it here, matching
+      // what congreso_coalition.scene.dry treats as the left carrier.
+      const key =
+        alias === "podemos"
+          ? liveAmong(Q, c, ["sumar", "up", "podemos"], "podemos")
+          : resolveBloc(Q, c, alias);
+      if (seen[key] || sup(Q, key, c) <= 0) continue;
+      seen[key] = true;
+      live.push([key, w]);
+      sum += w;
+    }
+    return sum > 0 ? live.map((kw) => [kw[0], kw[1] / sum]) : [];
+  }
+
+  function distribute(Q, c, mix, amount, sign) {
+    for (const kw of mix) {
+      setSup(Q, kw[0], c, sup(Q, kw[0], c) + sign * amount * kw[1]);
+    }
+  }
+
+  // Empty `p` into its donors, remembering how much so a later re-activation
+  // restores the same party rather than a fresh share of a drifted pool.
+  function foldParty(Q, p, c, side) {
+    const amount = sup(Q, p, c);
+    if (amount <= 0) return;
+    const mix = donorMix(Q, c, side);
+    if (!mix.length) return; // nowhere sensible to put it — leave it standing
+    Q[p + "_congreso_" + c + "_stashed"] = amount;
+    setSup(Q, p, c, 0);
+    distribute(Q, c, mix, amount, 1);
+  }
+
+  function splitParty(Q, p, c, side, share) {
+    const mix = donorMix(Q, c, side);
+    if (!mix.length) return;
+    const stash = Q[p + "_congreso_" + c + "_stashed"] || 0;
+    let pool = 0;
+    for (const kw of mix) pool += sup(Q, kw[0], c);
+    let amount = stash > 0 ? stash : pool * share;
+    for (const kw of mix) {
+      amount = Math.min(amount, (sup(Q, kw[0], c) * DONOR_MAX_DRAIN) / kw[1]);
+    }
+    if (amount <= 0) return;
+    distribute(Q, c, mix, amount, -1);
+    setSup(Q, p, c, sup(Q, p, c) + amount);
+    Q[p + "_congreso_" + c + "_stashed"] = 0;
+  }
+
+  function foldSuccessor(Q, from, to, c) {
+    let moved = 0;
+    for (const f of from) {
+      const amount = sup(Q, f, c);
+      if (amount <= 0) continue;
+      Q[f + "_congreso_" + c + "_stashed"] = amount;
+      setSup(Q, f, c, 0);
+      moved += amount;
+    }
+    if (moved > 0) setSup(Q, to, c, sup(Q, to, c) + moved);
+  }
+
+  function splitSuccessor(Q, from, to, c) {
+    const held = sup(Q, to, c);
+    let stashTotal = 0;
+    for (const f of from)
+      stashTotal += Q[f + "_congreso_" + c + "_stashed"] || 0;
+    if (held <= 0 || stashTotal <= 0) return;
+    // Hand back in the proportions they went in, scaled to whatever the joint
+    // list actually holds now — it will have drifted since the merge.
+    for (const f of from) {
+      const stash = Q[f + "_congreso_" + c + "_stashed"] || 0;
+      if (stash <= 0) continue;
+      setSup(Q, f, c, sup(Q, f, c) + held * (stash / stashTotal));
+      Q[f + "_congreso_" + c + "_stashed"] = 0;
+    }
+    setSup(Q, to, c, 0);
+  }
+
+  function reconcileCongresoLineup(Q) {
+    if (!Q || !Q.congreso_constituencies) return;
+
+    for (const row of LINEUP_GATES) {
+      const key = row.gate + "_applied";
+      // A first run ADOPTS whatever the save already looks like, so a party
+      // that is already live is never "activated" a second time.
+      if (Q[key] == null) {
+        Q[key] = row.where.some((c) => sup(Q, row.party, c) > 0);
+      }
+      const want = row.invert ? !Q[row.gate] : !!Q[row.gate];
+      if (Q[key] === want) continue;
+      for (const c of row.where) {
+        if (!inLineup(Q, row.party, c)) continue;
+        if (want) splitParty(Q, row.party, c, row.side, row.share);
+        else foldParty(Q, row.party, c, row.side);
+      }
+      Q[key] = want;
+    }
+
+    for (const row of LINEUP_SUCCESSORS) {
+      const key = row.gate + "_applied";
+      if (Q[key] == null) {
+        Q[key] = !row.where.some((c) => row.from.some((f) => sup(Q, f, c) > 0));
+      }
+      const want = !!Q[row.gate];
+      if (Q[key] === want) continue;
+      for (const c of row.where) {
+        if (!inLineup(Q, row.to, c)) continue;
+        if (want) foldSuccessor(Q, row.from, row.to, c);
+        else splitSuccessor(Q, row.from, row.to, c);
+      }
+      Q[key] = want;
+    }
+  }
+
   // Exported through source/lib/index.js. NOT installed on `window`: content
   // reaches this through the engine (`G.engineTick(Q)`), so the simulation no
   // longer depends on a browser, and therefore no longer depends on a UI.
@@ -1697,6 +1975,7 @@
   var api = {
     engineTick: monthPasses,
     spaSupportInject: spaSupportInject,
+    reconcileCongresoLineup: reconcileCongresoLineup,
     registerLaw: registerLaw,
     deactivateLaw: deactivateLaw,
   };

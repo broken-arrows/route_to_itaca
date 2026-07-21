@@ -23,7 +23,7 @@ role: event
 
 @short
 title: A single, short, and unequivocal question on Independences
-subtitle: [? if president_party != player_party: This will take some convincing [-1 resources] ?][? if president_party == player_party: Independence, yes or no. Why is this even a debate? ?]
+subtitle: [? if president_party != player_party: This will take some convincing \[-1 resources\] ?][? if president_party == player_party: Independence, yes or no. Why is this even a debate? ?]
 choose-if: (party_resources >= 1 or president_party == player_party) and ((player_party == "erc" and (erc_in_gob or erc_supporting)) or (player_party == "cup" and (cup_in_gob or cup_supporting)))
 unavailable-subtitle: [? if (player_party == "erc" and not (erc_in_gob or erc_supporting)) or (player_party == "cup" and not (cup_in_gob or cup_supporting)): We are in no position to push [? if president_gender == "m": President?][? if president_gender == "f": Presidenta?] [+ president +]. ?][? if party_resources < 1:  Not enough resources. ?]
 on-arrival: {!
@@ -57,7 +57,7 @@ A single, clear-cut question on independence. Just as a referendum should be jus
 
 @double
 title: A double question on statehood and Independence
-subtitle: This may gather extra favour amongst those hoping for a Constitutional reform rather than outright independence. [? if president_party != player_party and president_party != "cup" and parlament_coalition_concessions_indy: The preferred option of [? if president_gender == "m": President?][? if president_gender == "f": Presidenta?] [+ president +]. ?][? if president_party != player_party and president_party != "cup" and not parlament_coalition_concessions_indy: [-1 resources] ?]
+subtitle: This may gather extra favour amongst those hoping for a Constitutional reform rather than outright independence. [? if president_party != player_party and president_party != "cup" and parlament_coalition_concessions_indy: The preferred option of [? if president_gender == "m": President?][? if president_gender == "f": Presidenta?] [+ president +]. ?][? if president_party != player_party and president_party != "cup" and not parlament_coalition_concessions_indy: \[-1 resources\] ?]
 choose-if: party_resources >= 1 or parlament_coalition_concessions_indy or president_party == "cup" or president_party == player_party
 on-arrival: {!
     if (Q.player_party != Q.president_party && Q.president_party != "cup" && !Q.parlament_coalition_concessions_indy) {

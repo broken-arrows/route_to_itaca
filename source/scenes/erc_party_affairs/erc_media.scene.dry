@@ -85,7 +85,7 @@ This represents a deviation of what our party media has been doing in the last f
 
 @social_media_1
 title: We need to modernize our media presence, let's get into this social media thing!
-subtitle: -2 resources
+subtitle: \[-2 resources\]
 choose-if: party_resources >= 2
 unavailable-subtitle: Not enough resources
 view-if: social_media = 0

@@ -26,7 +26,7 @@ Whether or not we are in an electoral campaign, the party is always trying to br
 - @easy_discard
 
 @workers
-subtitle: -1 resources
+subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
@@ -52,7 +52,7 @@ on-arrival: {!
 We have increased our campaigning among industrial workers across Catalonia, but such a generalized campaign will have a hard time breaking through Barcelona's red belt. [? if gabriel_rufian_advisor: The figure of Gabriel Rufian seems to be functioning greatly for these campaigns. ?][? if unemployed >= 20 and (erc_supporting = 1 or erc_in_gob = 1): The high levels of unemployment make our campaign more difficult, since we are associated with the government that enacted cuts, and our campaign may even backfire. ?][? if broken_roadmap = 1: We have been unable to follow through with our roadmap to independence, and that makes our campaign more notoriously more difficult. ?]
 
 @redbelt
-subtitle: -1 resources
+subtitle: \[-1 resources\]
 view-if: gabriel_rufian_advisor = 1 or erc_break_red_belt = 1
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
@@ -73,7 +73,7 @@ on-arrival: {!
 We have increased our campaigning efforts among industrial workers, specially around Barcelona's red belt, the traditional stronghold of the PSC. [? if gabriel_rufian_advisor: The figure of Gabriel Rufian seems to be functioning greatly for these campaigns. ?][? if unemployed >= 20 and (erc_supporting = 1 or erc_in_gob = 1): The high levels of unemployment make our campaign more difficult, since we are associated with the government that enacted cuts, and our campaign may even backfire. ?][? if broken_roadmap = 1: We have been unable to follow through with our roadmap to independence, and that makes our campaign more notoriously more difficult. ?]
 
 @middle
-subtitle: -1 resources
+subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
@@ -99,7 +99,7 @@ on-arrival: {!
 We have increased our campaigning among the middle class. [? if unemployed >= 20 and (erc_supporting = 1 or erc_in_gob = 1): The high levels of unemployment make our campaign more difficult, since we are associated with the government that enacted cuts, and our campaign may even backfire. ?][? if broken_roadmap = 1: We have been unable to follow through with our roadmap to independence, and that makes our campaign more notoriously more difficult. ?]
 
 @business
-subtitle: -1 resources
+subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
@@ -125,7 +125,7 @@ on-arrival: {!
 We have increased our campaigning among the business community. [? if erc_pragmatic_strength < 40 or erc_roadmap > 2: However, our general party lines are not the most appealing to this group, who may prefer more pragmatic approaches to politics. ?][? if broken_roadmap = 1: We have been unable to follow through with our roadmap to independence, and that makes our campaign somewhat more difficult. ?]
 
 @rural
-subtitle: -1 resources
+subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
@@ -152,7 +152,7 @@ on-arrival: {!
 We have increased our campaigning efforts in rural Catalonia. [? if unemployment >= 20 and (erc_supporting = 1 or erc_in_gob = 1): The high levels of unemployment make our campaign more difficult, since we are associated with the government that enacted cuts, and our campaign may even backfire. ?][? if broken_roadmap = 1: We have been unable to follow through with our roadmap to independence, and that makes our campaign specially difficult. ?]
 
 @unemployed
-subtitle: -1 resources
+subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: {!

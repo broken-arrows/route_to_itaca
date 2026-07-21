@@ -237,7 +237,7 @@ The jxsi coalition has been formed! It now counts with ample support from civil 
 
 @jxsi_cup_in
 title: Push the CUP to join in!
-subtitle: Despite some heavy criticisms of the role of [? if cdc_in_jxsi > 0: CDC?][? if dl_in_jxsi > 0: DL?][? if pdcat_in_jxsi > 0: the PDeCAT?] within jxsi, it seems like they can be convinced after all with a bit of a push. [-1 resources]
+subtitle: Despite some heavy criticisms of the role of [? if cdc_in_jxsi > 0: CDC?][? if dl_in_jxsi > 0: DL?][? if pdcat_in_jxsi > 0: the PDeCAT?] within jxsi, it seems like they can be convinced after all with a bit of a push. \[-1 resources\]
 choose-if: cup_relations >= 65 and jxsi_formation_num == 50 and party_resouces >= 1
 unavailable-subtitle: [? if cup_relations >= 65: We don't have good enough relations with the CUP. ?][? if jxsi_formation_num != 40: There's no way they can accept a [? if cdc_in_jxsi > 0: CDC?][? if dl_in_jxsi > 0: DL?][? if pdcat_in_jxsi > 0: PDeCAT?] leadership. ?][? if party_resources < 1: Not enough resources.?]
 on-arrival: {!
@@ -296,7 +296,7 @@ With [? if cdc_parlament_s > 0: [+ cdc_leader +]?][? if dl_parlament_s > 0: [+ d
 
 @cup_romeva
 title: The neutral candidate, Raül Romeva, takes the helm
-subtitle: Neither from ERC nor from [? if cdc_parlament_s > 0: CDC?][? if dl_parlament_s > 0: DL?][? if pdcat_parlament_s > 0: the PDeCAT?], he left ICV-EUiA a few months ago. [-1 resources]
+subtitle: Neither from ERC nor from [? if cdc_parlament_s > 0: CDC?][? if dl_parlament_s > 0: DL?][? if pdcat_parlament_s > 0: the PDeCAT?], he left ICV-EUiA a few months ago. \[-1 resources\]
 choose-if: erc_relations >= 65 and ((cdc_relations >= 65 and cdc_parlament_s > 0) or (dl_relations >= 65 and dl_parlament_s > 0) or (pdcat_relations >= 65 and pdcat_parlament_s > 0)) and party_resources >= 1
 on-arrival: jxsi_formation_num = 50; party_resources -= 1;
 

@@ -50,7 +50,7 @@ on-arrival: {!
     }
 !}
 choose-if: party_resources > 0 and not parlament_sovereignty_declaration and speaker_party != 'ppc' and speaker_party != 'cs' and speaker_party != 'unio' and speaker_party != 'psc' and speaker_party != 'ecp'
-subtitle: [? if coming_from_parlament : -1 resources ?]
+subtitle: [? if coming_from_parlament : \[-1 resources\] ?]
 unavailable-subtitle: [? if parlament_sovereignty_declaration : Already approved! ?][? if (not parlament_sovereignty_declaration) and (speaker_party == 'ppc' or speaker_party == 'cs' or speaker_party == 'unio' or speaker_party == 'psc' or speaker_party == 'ecp') : Speaker of the House [+ speaker +] ([+ speaker_party +]) will not allow debating this.?][? if (not parlament_sovereignty_declaration) and (party_resources < 1) : Not enough resources.?]
 go-to: decisions_erc if coming_from_parlament and player_party == "erc"; decisions_cup if player_party == "cup"; no_parlament if not coming_from_parlament
 

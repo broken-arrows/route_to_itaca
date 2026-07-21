@@ -74,17 +74,18 @@ on-arrival: {!
   Q.spain_is_republic = 0; // lol
   Q.constitution_reformed = 0;
 
-  Q.next_election_week = 1;
+  Q.next_election_week = 4;
   Q.next_election_month = 12;
   Q.next_election_year = 2014;
   Q.next_election_time = 16; // in time steps, months for non-rubicon case, weeks when rubicon
-  Q.next_spanish_election_week = 1;
+  Q.next_spanish_election_week = 3;
   Q.next_spanish_election_month = 12;
   Q.next_spanish_election_year = 2015;
-  Q.next_spanish_election_time = 40;
+  Q.next_spanish_election_time = 36;
+  Q.next_local_election_week = 4;
   Q.next_local_election_month = 5;
   Q.next_local_election_year = 2015;
-  Q.next_local_election_time = 32;
+  Q.next_local_election_time = 29;
 
   Q.independence_trust = 28;
   Q.independence_movement = 65;
@@ -1073,7 +1074,7 @@ on-arrival: {!
   Q.upyd_congreso_rest_support = 0.8;
   Q.prc_congreso_rest_support = 0.12;
   Q.te_congreso_rest_support = 0.05;
-  Q.abstain_congreso_rest_support = 39.5;
+  Q.abstain_congreso_rest_support = 39.8;
 
   // ── Spanish (Congreso) engine state ──────────────────────────────────────────
   Q.spa_unemp_offset = 5.0;   // Spain-wide unemployment runs ~5pp above Catalunya
@@ -1099,7 +1100,7 @@ on-arrival: {!
   Q.spa_mes_active = false;          // if false, will go with either UP or Podemos, whatver is running
   Q.spa_fr_active = false;           // TODO: Pending trigger!
   Q.spa_cup_active = false;          // TODO: Pending trigger!
-  Q.spa_mpais_active = false;        // if true, más país will run separate from Podemos and UP
+  Q.spa_mpais_active = false;        // if true, más país will run separate from Podemos and UP - TODO: Pending trigger!
   Q.upn_in_pp = true;                // if false, UPN will go separate from PP
   Q.iu_in_up = false;                // equivalent to "UP active" flag - TODO: Pending trigger!
   Q.spa_bng_active = true;           // if false will run as part of UP

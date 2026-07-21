@@ -70,6 +70,7 @@ if (Q.month >= 13) {
 
 if (has_time_passed) {
     console.info("Time has passed. Current date: ", Q.year, Q.month, Q.week);
+    console.log("Debug DELETE ME TODO: time to next spanish election: ", Q.next_spanish_election_time - Q.time);
     G.engineTick(Q);
     // 2.1. Timers
     for (timer of Q.rubicon_timers) {
@@ -120,7 +121,7 @@ if (has_time_passed) {
         } else {
             if ((Q.year <= 2016 || Q.constitution_reformed) && Q.party_reaching_out_compromis < 1) {
                 Q.spa_compromis_active = false;
-            } else if (Q.party_reaching_out_compromis > -1 && !(Q.psoe_congreso_valencia_support <= Q.podemos_valencia_support + Q.up_valencia_support + Q.compromis_valencia_support|| Q.congreso_coalition_sorpasso)) {
+            } else if (Q.party_reaching_out_compromis > -1 && !(Q.psoe_congreso_valencia_support <= Q.podemos_congreso_valencia_support + Q.up_congreso_valencia_support + Q.compromis_congreso_valencia_support || Q.congreso_coalition_sorpasso)) {
                 Q.spa_compromis_active = true;
             } else {
                 Q.spa_compromis_active = false;
@@ -133,7 +134,7 @@ if (has_time_passed) {
         } else {
             if (Q.iu_in_up && Q.party_reaching_out_mes < 1 && (Q.year < 2019 || Q.constitution_reformed)) {
                 Q.spa_mes_active = false;
-            } else if (Q.party_reaching_out_mes > -1 && !(Q.psoe_congreso_valencia_support <= Q.podemos_valencia_support + Q.up_valencia_support + Q.compromis_valencia_support || (Q.congreso_coalition_sorpasso && Q.constitution_reformed))) {
+            } else if (Q.party_reaching_out_mes > -1 && !(Q.psoe_congreso_balears_support <= Q.podemos_congreso_balears_support + Q.up_congreso_balears_support + Q.mes_congreso_balears_support || (Q.congreso_coalition_sorpasso && Q.constitution_reformed))) {
                 Q.spa_mes_active = true;
             } else {
                 Q.spa_mes_active = false;
@@ -322,6 +323,13 @@ if ((!Q.podemos_hidden_surge) && (Q.year == 2014 && Q.month == 5)) {
     G.spaSupportInject(Q, 'podemos', 'all', 6.0, 'iu');
     G.spaSupportInject(Q, 'podemos', 'all', 9.0, 'abstain');
     G.spaSupportInject(Q, 'podemos', 'all', 3.0, 'psoe');
+}
+if (Q.amaiur_congreso_s > 0 && Q.spa_ehbildu_active && Q.year == 2015 && Q.month == 10) {
+    // So that deltas dont look weird on the first election
+    Q.ehbildu_congreso_s = Q.amaiur_congreso_s;
+    Q.ehbildu_congreso_pv = Q.amaiur_congreso_pv;
+    Q.amaiur_congreso_s = 0;
+    Q.amaiur_congreso_pv = 0;
 }
 
 // Silent leadership changes
