@@ -90,9 +90,9 @@ on-arrival: {!
     Q.independence_trust -= 3;
 
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "cup", "calaunya", "1", "erc");
+        G.spaSupportInject(Q, "cup", "catalunya", "1", "erc");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "fr", "calaunya", "1", "erc");
+        G.spaSupportInject(Q, "fr", "catalunya", "1", "erc");
     }
 !}
 
@@ -114,9 +114,9 @@ on-arrival: {!
     
     Q.independence_trust += 1;
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "erc", "calaunya", "0.5", "cup");
+        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "cup");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "erc", "calaunya", "0.5", "fr");
+        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "fr");
     }
 !}
 
@@ -133,7 +133,7 @@ unavailable-subtitle: Not enough resources.
 on-arrival: {!
     Q.party_resources -= 1
     if (Q.podemos_surged) {
-        G.spaSupportInject(Q, "pnv", "eusakdi", "2", "podemos");
+        G.spaSupportInject(Q, "pnv", "euskadi", "2", "podemos");
         G.spaSupportInject(Q, "podemos", "catalunya", "1", "erc");
         G.spaSupportInject(Q, "gbai", "navarra", "1", "podemos");
     } else {
@@ -168,7 +168,7 @@ on-arrival: {!
     // TODO: path for them joining UP? or too implausible?
     Q.party_resources -= 1;
     if (Q.podemos_surged) {
-        G.spaSupportInject(Q, "ehbildu", "eusakdi", "3", "podemos");
+        G.spaSupportInject(Q, "ehbildu", "euskadi", "3", "podemos");
         G.spaSupportInject(Q, "erc", "catalunya", "2", "podemos");
         G.spaSupportInject(Q, "ehbildu", "navarra", "1", "podemos");
 
@@ -202,7 +202,7 @@ on-arrival: {!
     // TODO: path for them joining UP? or too implausible?
     Q.party_resources -= 1
     if (Q.podemos_surged) {
-        G.spaSupportInject(Q, "pnv", "eusakdi", "1", "podemos");
+        G.spaSupportInject(Q, "pnv", "euskadi", "1", "podemos");
         G.spaSupportInject(Q, "gbai", "navarra", "3", "podemos");
     } else {
         G.spaSupportInject(Q, "pnv", "euskadi", "1", "iu");
@@ -234,7 +234,7 @@ unavailable-subtitle: Not enough resources.
 on-arrival: {!
     Q.party_resources -= 1;
     if (Q.podemos_surged) {
-        G.spaSupportInject(Q, "amaiur", "eusakdi", "4", "podemos");
+        G.spaSupportInject(Q, "amaiur", "euskadi", "4", "podemos");
         G.spaSupportInject(Q, "erc", "catalunya", "4", "podemos");
         G.spaSupportInject(Q, "amaiur", "navarra", "3", "podemos");
     } else {
@@ -265,7 +265,7 @@ choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: party_resources -= 1
 
-compromis is a relatively new coalition of broadly regionalist, federalist, republican, social-democratic, left parties in València. While not explicitly pro-independece, the shared language, struggle against Spanish centralization and nationalism, and a long etc does bring us close together. What should we focus on in our reaching out?
+compromis is a relatively new coalition of broadly regionalist, federalist, republican, social-democratic, left parties in Valencia. While not explicitly pro-independece, the shared language, struggle against Spanish centralization and nationalism, and a long etc does bring us close together. What should we focus on in our reaching out?
 
 -@campaign_compromis
 -@push_compromis
@@ -281,7 +281,7 @@ on-arrival: {!
         G.spaSupportInject(Q, "compromis", "valencia", "3", "iu");
         G.spaSupportInject(Q, "erc", "catalunya", "3", "iu");
     }
-    G.spaSupportInject(Q, "compromis", "valencia", "2,5", "psoe");
+    G.spaSupportInject(Q, "compromis", "valencia", "2.5", "psoe");
     G.spaSupportInject(Q, "compromis", "valencia", "1", "pp");  
     if (Q.psc_split) {
         G.spaSupportInject(Q, "erc", "catalunya", "1", "psc");
@@ -290,7 +290,7 @@ on-arrival: {!
     }
 !}
 
-Campaigning in València is never easy, as the right is relentless in calling for a defence against the supposed "pancatalanist" "hypernationalist" threat. Nonethless, the overall feeling is positive. 
+Campaigning in Valencia is never easy, as the right is relentless in calling for a defence against the supposed "pancatalanist" "hypernationalist" threat. Nonethless, the overall feeling is positive. 
 
 - @clean_map
 
@@ -309,9 +309,9 @@ on-arrival: {!
     Q.independence_trust -= 3;
 
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "cup", "calaunya", "1", "erc");
+        G.spaSupportInject(Q, "cup", "catalunya", "1", "erc");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "fr", "calaunya", "1", "erc");
+        G.spaSupportInject(Q, "fr", "catalunya", "1", "erc");
     }
 !}
 
@@ -333,9 +333,9 @@ on-arrival: {!
     
     Q.independence_trust += 1;
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "erc", "calaunya", "0.5", "cup");
+        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "cup");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "erc", "calaunya", "0.5", "fr");
+        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "fr");
     }
 !}
 
@@ -395,9 +395,9 @@ on-arrival: {!
     Q.independence_trust -= 3;
 
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "cup", "calaunya", "1", "erc");
+        G.spaSupportInject(Q, "cup", "catalunya", "1", "erc");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "fr", "calaunya", "1", "erc");
+        G.spaSupportInject(Q, "fr", "catalunya", "1", "erc");
     }
 !}
 
@@ -418,9 +418,9 @@ on-arrival: {!
     
     Q.independence_trust += 1;
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "erc", "calaunya", "0.5", "cup");
+        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "cup");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "erc", "calaunya", "0.5", "fr");
+        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "fr");
     }
 !}
 

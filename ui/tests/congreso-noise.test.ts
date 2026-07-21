@@ -88,30 +88,34 @@ const TRIALS = 40;
 const MONTHS = 85; // Aug 2012 -> 2019, the game's full span
 
 describe('congreso noise', () => {
-  it('does not accumulate — a mid-size party stays near its structural level', () => {
+  // Bands are RELATIVE to each party's own starting support. Absolutes would
+  // re-break on every calibration change (they did, when turnout was rescaled
+  // and BNG's start moved 5.0 -> 5.50); the property under test is that noise
+  // does not accumulate, not what the current numbers happen to be.
+  const finalsFor = (party: string, c: string) => {
+    const start = sup(quietGame(), party, c);
     const finals: number[] = [];
     for (let t = 0; t < TRIALS; t++) {
       const q = quietGame();
       tick(q, MONTHS);
-      finals.push(sup(q, 'bng', 'galicia'));
+      finals.push(sup(q, party, c));
     }
-    // BNG starts at 5.0 with no macro movement to explain any drift. As a
-    // random walk this measured [1.38, 9.37] over 200 trials; bounded, it must
-    // stay in a narrow band around its start.
-    expect(Math.min(...finals)).toBeGreaterThan(4.0);
-    expect(Math.max(...finals)).toBeLessThan(6.5);
+    return { start, finals };
+  };
+
+  it('does not accumulate — a mid-size party stays near its structural level', () => {
+    const { start, finals } = finalsFor('bng', 'galicia');
+    // No macro movement, so any drift is noise. As a random walk this measured
+    // [1.38, 9.37] from a 5.0 start — i.e. -72%/+87%, far outside this band.
+    expect(Math.min(...finals)).toBeGreaterThan(start * 0.75);
+    expect(Math.max(...finals)).toBeLessThan(start * 1.25);
   });
 
   it('is unbiased — it must not push a party systematically up or down', () => {
-    const finals: number[] = [];
-    for (let t = 0; t < TRIALS; t++) {
-      const q = quietGame();
-      tick(q, MONTHS);
-      finals.push(sup(q, 'pnv', 'euskadi'));
-    }
+    const { start, finals } = finalsFor('pnv', 'euskadi');
     const mean = finals.reduce((a, b) => a + b, 0) / finals.length;
-    expect(mean).toBeGreaterThan(20.0);
-    expect(mean).toBeLessThan(22.0);
+    expect(mean).toBeGreaterThan(start * 0.95);
+    expect(mean).toBeLessThan(start * 1.05);
   });
 
   it('never walks a small party into the absorbing zero', () => {

@@ -199,9 +199,9 @@ var VIRTUAL_REST_STRUCTURE = {
 };
 
 var PROTECTED_MINORS = {
-    'cc': 0.3,   // Coalicion Canaria
+    'cc': 0.26,   // Coalicion Canaria
     'prc': 0.25,  // Partido Regionalista de Cantabria
-    'te': 0.22,   // Teruel Existe
+    'te': 0.20,   // Teruel Existe
 };
 
 // 00. Store old results and get a list of all possible parties involved
@@ -343,11 +343,11 @@ for (var constituency of Q.congreso_constituencies) {
         var protected_seats_awarded = 0;
         var rest_seats = {};
 
-        // Protected Minors Check against VALID votes of the Rest region
+        // Protected Minors Check, against CENSUS not valid votes
         for (var minor in PROTECTED_MINORS) {
             if (working_votes[minor] !== undefined) {
                 var threshold = PROTECTED_MINORS[minor];
-                var share = (working_votes[minor] / region_valid_total) * 100;
+                var share = (working_votes[minor] / region_census) * 100;
                 
                 console.log(`Protected minor check for ${minor}: share ${share.toFixed(2)}% threshold ${threshold*100}%`);
                 while (share >= threshold) {

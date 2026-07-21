@@ -1018,63 +1018,67 @@ on-arrival: {!
   // is IU; the abertzale left is Amaiur (rebrands to EH Bildu later).
 
   // Catalunya — CiU bloc runs as "ciu"; ERC separate; left space = IU.
-  Q.ciu_congreso_catalunya_support = 22.0;
-  Q.psoe_congreso_catalunya_support = 14.0;
-  Q.pp_congreso_catalunya_support = 9.0;
-  Q.iu_congreso_catalunya_support = 7.5;
-  Q.erc_congreso_catalunya_support = 6.0;
-  Q.upyd_congreso_catalunya_support = 1.0;
-  Q.abstain_congreso_catalunya_support = 40.5;
+  Q.ciu_congreso_catalunya_support = 24.66;
+  Q.psoe_congreso_catalunya_support = 15.69;
+  Q.pp_congreso_catalunya_support = 10.09;
+  Q.iu_congreso_catalunya_support = 8.41;
+  Q.erc_congreso_catalunya_support = 6.73;
+  Q.upyd_congreso_catalunya_support = 1.12;
+  Q.abstain_congreso_catalunya_support = 33.30;
 
   // Valencia
-  Q.pp_congreso_valencia_support = 35.0;
-  Q.psoe_congreso_valencia_support = 20.0;
-  Q.iu_congreso_valencia_support = 5.0;
-  Q.upyd_congreso_valencia_support = 0.5;
-  Q.abstain_congreso_valencia_support = 39.5;
+  Q.pp_congreso_valencia_support = 41.42;
+  Q.psoe_congreso_valencia_support = 23.67;
+  Q.iu_congreso_valencia_support = 5.92;
+  Q.upyd_congreso_valencia_support = 0.59;
+  Q.abstain_congreso_valencia_support = 28.40;
 
   // Balears
-  Q.pp_congreso_balears_support = 32.0;
-  Q.psoe_congreso_balears_support = 22.0;
-  Q.iu_congreso_balears_support = 5.0;
-  Q.upyd_congreso_balears_support = 0.3;
-  Q.abstain_congreso_balears_support = 40.7;
+  Q.pp_congreso_balears_support = 35.62;
+  Q.psoe_congreso_balears_support = 24.49;
+  Q.iu_congreso_balears_support = 5.56;
+  Q.upyd_congreso_balears_support = 0.33;
+  Q.abstain_congreso_balears_support = 34.00;
 
   // Navarra — UPN folded into PP by default; abertzale left = Amaiur.
-  Q.pp_congreso_navarra_support = 21.0;
-  Q.psoe_congreso_navarra_support = 18.0;
-  Q.amaiur_congreso_navarra_support = 13.0;
-  Q.gbai_congreso_navarra_support = 9.0;
-  Q.iu_congreso_navarra_support = 3.0;
-  Q.upyd_congreso_navarra_support = 0.3;
-  Q.abstain_congreso_navarra_support = 35.7;
+  Q.pp_congreso_navarra_support = 23.29;
+  Q.psoe_congreso_navarra_support = 19.96;
+  Q.amaiur_congreso_navarra_support = 14.42;
+  Q.gbai_congreso_navarra_support = 9.98;
+  Q.iu_congreso_navarra_support = 3.33;
+  Q.upyd_congreso_navarra_support = 0.33;
+  Q.abstain_congreso_navarra_support = 28.69;
 
   // Euskadi —  Amaiur → EH Bildu later).
-  Q.pnv_congreso_euskadi_support = 21.0;
-  Q.ehbildu_congreso_euskadi_support = 16.0;
-  Q.psoe_congreso_euskadi_support = 14.0;
-  Q.pp_congreso_euskadi_support = 11.0;
-  Q.iu_congreso_euskadi_support = 3.0;
-  Q.upyd_congreso_euskadi_support = 0.2;
-  Q.abstain_congreso_euskadi_support = 34.8;
+  Q.pnv_congreso_euskadi_support = 21.10;
+  Q.ehbildu_congreso_euskadi_support = 16.07;
+  Q.psoe_congreso_euskadi_support = 14.06;
+  Q.pp_congreso_euskadi_support = 11.05;
+  Q.iu_congreso_euskadi_support = 3.01;
+  Q.upyd_congreso_euskadi_support = 0.20;
+  Q.abstain_congreso_euskadi_support = 34.51;
 
   // Galicia
-  Q.pp_congreso_galicia_support = 31.0;
-  Q.psoe_congreso_galicia_support = 20.0;
-  Q.bng_congreso_galicia_support = 5.0;
-  Q.iu_congreso_galicia_support = 3.0;
-  Q.upyd_congreso_galicia_support = 0.4;
-  Q.abstain_congreso_galicia_support = 40.6;
+  Q.pp_congreso_galicia_support = 34.08;
+  Q.psoe_congreso_galicia_support = 21.99;
+  Q.bng_congreso_galicia_support = 5.50;
+  Q.iu_congreso_galicia_support = 3.30;
+  Q.upyd_congreso_galicia_support = 0.44;
+  Q.abstain_congreso_galicia_support = 34.69;
 
   // Rest (virtual-province aggregate) — CC/PRC/TE are protected regional minors.
-  Q.pp_congreso_rest_support = 32.0;
-  Q.psoe_congreso_rest_support = 22.0;
-  Q.iu_congreso_rest_support = 4.5;
-  Q.cc_congreso_rest_support = 1.0;
-  Q.upyd_congreso_rest_support = 0.8;
-  Q.prc_congreso_rest_support = 0.12;
-  Q.te_congreso_rest_support = 0.05;
-  Q.abstain_congreso_rest_support = 39.8;
+  // Abstention across all 7 constituencies is set to real Nov-2011 regional turnout,
+  // census-weighting to the 31.06% national figure recorded above. Abstention has no
+  // level anchor and drifts only ~1pt over a full game, so the starting value IS what
+  // an election sees — this stands in for an election-day mobilisation model.
+  Q.pp_congreso_rest_support = 37.28;
+  Q.psoe_congreso_rest_support = 25.63;
+  Q.iu_congreso_rest_support = 5.24;
+  Q.cc_congreso_rest_support = 0.47;
+  Q.upyd_congreso_rest_support = 0.93;
+  Q.prc_congreso_rest_support = 0.14;
+  Q.te_congreso_rest_support = 0.06;
+  Q.abstain_congreso_rest_support = 30.25;
 
   // ── Spanish (Congreso) engine state ──────────────────────────────────────────
   Q.spa_unemp_offset = 5.0;   // Spain-wide unemployment runs ~5pp above Catalunya

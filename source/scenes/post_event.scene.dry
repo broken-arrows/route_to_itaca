@@ -141,7 +141,7 @@ if (has_time_passed) {
             }
         }
         
-        if ((Q.pp_congreso_navarra_support*0.9 <= Q.cs_congreso_navarra_support) || (Q.pp_congreso_navarra_support*0.9 <= Q.podemos_congreso_navarra_support) || (Q.pp_congreso_navarra_support*0.9 <= Q.psoe_congreso_navarra_support) || (Q.pp_congreso_navarra_support*0.9 <= Q.up_congreso_navarra_support)) {
+        if ((Q.pp_congreso_navarra_support*0.95 <= Q.cs_congreso_navarra_support) || (Q.pp_congreso_navarra_support*0.95 <= Q.podemos_congreso_navarra_support) || (Q.pp_congreso_navarra_support*0.95 <= Q.psoe_congreso_navarra_support) || (Q.pp_congreso_navarra_support*0.95 <= Q.up_congreso_navarra_support)) {
             Q.upn_in_pp = false;
         } else {
             Q.upn_in_pp = true;
@@ -298,10 +298,14 @@ if (Q.congreso_coalition_sorpasso && (Q.spanish_pm_party == "podemos" || Q.spani
 }
 
 // 5. Hidden triggers
-if ((!Q.hidden_cc_surge) && (Q.year == 2019 && Q.month == 2) ||(Q.social_dissent > 90)) {
+if (!Q.hidden_cc_surge && ((Q.year == 2019 && Q.month == 2) || (Q.social_dissent > 90))) {
     // TBD: More/different options to trigger this?
     Q.hidden_cc_surge = true;
-    G.spaSupportInject(Q, 'cc', 'rest', 0.38, 'abstain');
+    G.spaSupportInject(Q, 'cc', 'rest', 0.28, 'abstain');
+}
+if (!Q.hidden_prc_surge && (Q.year == 2019 && Q.month == 2) || (Q.year > 2015 && (!Q.upn_in_pp || Q.spa_foro_active) )) {
+    Q.hidden_prc_surge = true;
+    G.spaSupportInject(Q, 'prc', 'rest', 0.22, 'abstain');
 }
 if ((!Q.hidden_vox_surge) && (Q.year == 2019 || (Q.year >= 2017 && Q.next_spanish_election_time - Q.time <= 6))) {
     Q.hidden_vox_surge = true;
@@ -310,8 +314,7 @@ if ((!Q.hidden_vox_surge) && (Q.year == 2019 || (Q.year >= 2017 && Q.next_spanis
     G.spaSupportInject(Q, 'vox', 'all', 0.5, 'cs');
 }
 if ((!Q.hidden_bng_surge) && (Q.year == 2019)) {
-    // TODO: More ways to trigger this! (maybe trigger in the congreso_tour scene instead?)
-    // maybe split in two as it was originally (3 first, then 2.5)
+    Q.hidden_bng_surge = true;  
     if (!Q.iu_in_up) {
         G.spaSupportInject(Q, 'bng', 'galicia', 5.5, 'podemos');
     } else {

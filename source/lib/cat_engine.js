@@ -1267,7 +1267,7 @@
   // Minor "rest" regional parties: mean-revert toward a stable base instead of
   // following national trends.
   const MINOR_REST = new Set(["cc", "prc", "te", "fac"]);
-  const MINOR_REST_TARGETS = { cc: 1.0, prc: 0.12, te: 0.08, fac: 0.4 };
+  const MINOR_REST_TARGETS = { cc: 0.4, prc: 0.12, te: 0.08, fac: 0.4 };
 
   // sqrt(p(1-p)) at p=0.25 — the reference share at which step 4j's noise keeps
   // `noise_stdev` unchanged. Everything smaller gets proportionally less.
@@ -1689,14 +1689,49 @@
   }
 
   function spaSupportInject(Q, family, c, delta, from) {
-    const cs = c === "all" ? Q.congreso_constituencies : [c];
+    // Every way this call can fail used to fail SILENTLY: a misspelled
+    // constituency ("calaunya") just skipped the loop, and a decimal-comma
+    // delta ("2,5") made Math.min return NaN, which sails past `<= 0` and
+    // writes NaN into both parties' support for the rest of the save.
+    const amount = Number(delta);
+    if (!Number.isFinite(amount)) {
+      console.error(
+        "spaSupportInject: delta is not a number (" +
+          JSON.stringify(delta) +
+          ") injecting " + family + " from " + from + " in " + c +
+          " — call skipped. A decimal COMMA does this.",
+      );
+      return;
+    }
+    const everywhere = c === "all";
+    const known = Q.congreso_constituencies || [];
+    if (!everywhere && known.indexOf(c) === -1) {
+      console.error(
+        'spaSupportInject: unknown constituency "' + c + '" injecting ' +
+          family + " from " + from + " — nothing injected. Known: " +
+          known.join(", "),
+      );
+      return;
+    }
+    const cs = everywhere ? known : [c];
     for (const cc of cs) {
       const toKey = resolveBloc(Q, cc, family);
       const fromKey = resolveBloc(Q, cc, from);
       const lineup = (Q["congreso_parties_" + cc] || []).concat([ABSTAIN]);
-      if (!lineup.includes(toKey) || !lineup.includes(fromKey)) continue;
+      if (!lineup.includes(toKey) || !lineup.includes(fromKey)) {
+        // Skipping is CORRECT for 'all' — not every party runs everywhere. But
+        // if a specific constituency was named, the call did nothing at all.
+        if (!everywhere) {
+          console.error(
+            "spaSupportInject: " +
+              (lineup.includes(toKey) ? fromKey : toKey) +
+              " is not in the " + cc + " lineup — nothing injected.",
+          );
+        }
+        continue;
+      }
       const fromCur = sup(Q, fromKey, cc);
-      const actual = Math.min(delta, fromCur * 0.5);
+      const actual = Math.min(amount, fromCur * 0.5);
       if (actual <= 0) continue;
       setSup(Q, fromKey, cc, fromCur - actual);
       setSup(Q, toKey, cc, sup(Q, toKey, cc) + actual);

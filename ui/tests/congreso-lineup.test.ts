@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { gameLib } from '../src/game-bindings';
 
 // ---------------------------------------------------------------------------
@@ -68,6 +68,65 @@ const total = (q: Q, c: string) =>
   PARTIES[c].concat(['abstain']).reduce((a, p) => a + sup(q, p, c), 0);
 
 const reconcile = (q: Q) => (gameLib as any).reconcileCongresoLineup(q);
+
+describe('spaSupportInject guards', () => {
+  // Every way this call could fail used to fail silently, and both real bugs
+  // shipped: a misspelled constituency skipped the loop, and a decimal-comma
+  // delta wrote NaN into two parties' support for the rest of the save.
+  let errors: string[];
+  const origError = console.error;
+  beforeEach(() => {
+    errors = [];
+    console.error = (...a: unknown[]) => errors.push(a.join(' '));
+  });
+  afterEach(() => {
+    console.error = origError;
+  });
+  const inject = (...a: unknown[]) => (gameLib as any).spaSupportInject(...a);
+
+  it('refuses a non-numeric delta instead of writing NaN', () => {
+    const q = makeQ();
+    inject(q, 'compromis', 'valencia', '2,5', 'psoe'); // decimal comma
+    expect(sup(q, 'psoe', 'valencia')).toBe(20.0);
+    expect(Number.isNaN(sup(q, 'compromis', 'valencia'))).toBe(false);
+    expect(errors.join(' ')).toMatch(/not a number/);
+  });
+
+  it('reports an unknown constituency rather than silently doing nothing', () => {
+    const q = makeQ();
+    inject(q, 'bng', 'galcia', 1, 'psoe'); // misspelled
+    expect(errors.join(' ')).toMatch(/unknown constituency/);
+  });
+
+  it('reports a party that is not in the named lineup', () => {
+    const q = makeQ();
+    inject(q, 'bng', 'valencia', 1, 'psoe'); // BNG does not run in Valencia
+    expect(errors.join(' ')).toMatch(/not in the valencia lineup/);
+  });
+
+  it('stays silent on a valid call, and still moves the vote', () => {
+    const q = makeQ();
+    inject(q, 'bng', 'galicia', 1, 'psoe');
+    expect(sup(q, 'psoe', 'galicia')).toBeCloseTo(19.0, 6);
+    expect(sup(q, 'bng', 'galicia')).toBeCloseTo(6.0, 6);
+    expect(errors).toEqual([]);
+  });
+
+  it("stays silent on 'all' where some lineups legitimately lack the party", () => {
+    const q = makeQ();
+    // 'compromis' only exists in the valencia lineup of this fixture
+    inject(q, 'compromis', 'all', 1, 'psoe');
+    expect(errors).toEqual([]);
+    expect(sup(q, 'compromis', 'valencia')).toBeGreaterThan(0);
+  });
+
+  it('coerces a numeric string exactly as before — only the comma is fatal', () => {
+    const q = makeQ();
+    inject(q, 'bng', 'galicia', '1.5', 'psoe');
+    expect(sup(q, 'bng', 'galicia')).toBeCloseTo(6.5, 6);
+    expect(errors).toEqual([]);
+  });
+});
 
 describe('reconcileCongresoLineup', () => {
   it('is exported for content to call as G.*', () => {

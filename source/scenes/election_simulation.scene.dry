@@ -1639,7 +1639,7 @@ on-arrival: {!
     Q.upyd_congreso_navarra_support = 0.31;
 
     // Rest
-    Q.abstain_congreso_rest_support = 26.97;
+    Q.abstain_congreso_rest_support = 26.98;
     Q.cc_congreso_rest_support = 0.41;
     Q.cs_congreso_rest_support = 11.40;
     Q.iu_congreso_rest_support = 3.73;
@@ -1805,7 +1805,7 @@ on-arrival: {!
     Q.upyd_congreso_navarra_support = 0.12;
 
     // Rest
-    Q.abstain_congreso_rest_support = 30.04;
+    Q.abstain_congreso_rest_support = 30.05;
     Q.cc_congreso_rest_support = 0.40;
     Q.cs_congreso_rest_support = 10.44;
     Q.pp_congreso_rest_support = 27.22;
@@ -2477,7 +2477,7 @@ on-arrival: {!
     Q.vox_congreso_navarra_support = 3.87;
 
     // Rest
-    Q.abstain_congreso_rest_support = 34.17;
+    Q.abstain_congreso_rest_support = 34.16;
     Q.cc_congreso_rest_support = 0.58;
     Q.cs_congreso_rest_support = 5.23;
     Q.mpais_congreso_rest_support = 2.21;
