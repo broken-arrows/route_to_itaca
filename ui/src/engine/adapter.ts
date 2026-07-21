@@ -68,6 +68,36 @@ export class DendryAdapter {
     this.engine.setGameLib(lib);
   }
 
+  /**
+   * Renders a scene's content tree against CURRENT Q, out of band — no scene
+   * transition, no choice compilation, no autosave. This is how the Brief's
+   * tab sheets render (spec §2): the same three calls the old shell's
+   * updateSidebar has made in production since phase 2.5, minus its
+   * `_runActions(scene.onArrival)` — that side-effecting re-run is exactly
+   * what phase 3b deletes.
+   */
+  renderView(sceneId: string): string {
+    const scene = this.engine.game.scenes[sceneId] as { content?: unknown } | undefined;
+    if (!scene || scene.content === undefined) {
+      if (!scene) console.warn(`renderView: no scene "${sceneId}"`);
+      return '';
+    }
+    return paragraphsToHTML(this.engine._makeDisplayContent(scene.content, true));
+  }
+
+  /** Catalog lookup for strings built outside the content tree — see
+   *  source/lib/brief.js's LABELS tables. */
+  translate(s: string): string {
+    return this.engine.translate(s);
+  }
+
+  /** Classify a raw quality value through one of the game's qdisplays. Row
+   *  view-models carry {value, qdisplay} rather than a pre-computed band, so
+   *  source/qdisplays/*.dry stays the ONLY place a threshold is written. */
+  qdisplay(value: unknown, qdisplayId: string): string {
+    return this.engine.qdisplay(value, qdisplayId);
+  }
+
   beginGame(seeds?: number[]): Frame {
     this.ui.resetTransient();
     this.effective = 'page';

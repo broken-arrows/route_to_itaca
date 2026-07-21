@@ -205,13 +205,36 @@
     },
   ];
 
+  // A widget the shell has no bespoke handler for still gets its data resolved
+  // here; Part 2 of phase 3b adds the generic fallback RENDERER that consumes
+  // it. Until then an unhandled marker stays an empty div, exactly as before.
+  function resolveProps(el, Q) {
+    var props = readDataProps(el);
+    if (typeof props.configFrom === "string") {
+      var cfg = Q[props.configFrom];
+      delete props.configFrom;
+      if (cfg) {
+        for (var k in cfg) {
+          if (Object.prototype.hasOwnProperty.call(cfg, k)) props[k] = cfg[k];
+        }
+      }
+    }
+    if (typeof props.deriveFrom === "string") {
+      var lib = window.RTI_GAME_LIB || {};
+      var fn = lib.brief && lib.brief[props.deriveFrom];
+      delete props.deriveFrom;
+      props.rows = typeof fn === "function" ? fn(Q) : [];
+    }
+    return props;
+  }
+  window.resolveWidgetProps = resolveProps;
+
   window.mountWidgets = function mountWidgets(root, Q) {
     if (!root || !Q) return;
     var marked = root.querySelectorAll("[data-widget]");
     for (var i = 0; i < marked.length; i++) {
       var el = marked[i];
-      var name = el.getAttribute("data-widget");
-      var handler = HANDLERS[name];
+      var handler = HANDLERS[el.getAttribute("data-widget")];
       if (!handler) continue;
       handler(el, Q);
     }

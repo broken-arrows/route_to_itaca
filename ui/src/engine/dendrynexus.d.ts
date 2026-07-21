@@ -41,6 +41,24 @@ declare module 'dendrynexus-ten/lib/engine.js' {
     setState(state: object): void;
     isGameOver(): boolean;
     setLocale(locale: string | null, catalog: Record<string, string> | null): this;
+    // Public catalog lookup for non-content strings (source/lib row labels).
+    translate(s: string): string;
+    // Public wrapper for the engine's private _getQDisplay (engine.js:901).
+    // Classifies a raw quality value through one of the built-in displays
+    // ('cardinal'/'ordinal'/'number'/'fudge', each returning a word/ordinal
+    // string) or a game-authored qdisplay (source/qdisplays/*.dry), whose
+    // `content` ranges likewise resolve to plain-text `output` strings in
+    // this codebase (no markup is used in any qdisplay's output lines) —
+    // see getUserQDisplay/getCardinalNumber/getOrdinalNumber/getFudgeDisplay,
+    // all of which return `string`. Row view-models (source/lib/brief.js)
+    // carry {value, qdisplay} rather than a pre-computed band so the
+    // qdisplay files stay the only place a threshold is written.
+    qdisplay(value: unknown, qDisplayId: string): string;
+    // Evaluates a content tree against current state and returns display
+    // content. Private by name, but it is the engine's only out-of-band render
+    // primitive and the old shell has called it in production since phase 2.5
+    // (out/html/game.js:361, updateSidebar). Declared so renderView can use it.
+    _makeDisplayContent(content: unknown, useParas: boolean): unknown[];
     // Installs the game's own code namespace (source/lib/*), handed to
     // compiled content as a third `G` parameter alongside `state`/`Q` in
     // on-arrival/on-departure/on-display, predicates, and expression inserts.

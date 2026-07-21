@@ -14,6 +14,7 @@ import { storeToRefs } from 'pinia';
 import { useGameStore } from '../../stores/game';
 import { WIDGETS } from './registry';
 import type { WidgetName } from './registry';
+import { gameLib } from '../../game-bindings';
 
 const props = defineProps<{ name: string; props?: Record<string, unknown> }>();
 
@@ -42,15 +43,51 @@ onErrorCaptured((err) => {
   return false;
 });
 
-// `{"configFrom": "someQKey"}` — content computed a view-model into Q and the
-// marker points at it, rather than pushing it through a global. This is how
-// window._cvParlement dies.
+// Two ways content can point at data, and the widget can tell them apart from
+// neither: it just receives props.
+//   configFrom — content computed real STATE into Q; the marker names the key.
+//   deriveFrom — a pure VIEW the game's lib builds on demand (spec §3.2).
+//                Never persisted, so it can never go stale in a save.
 const resolved = computed<Record<string, unknown>>(() => {
   const p = { ...(props.props ?? {}) };
   const from = p.configFrom;
   if (typeof from === 'string') {
     delete p.configFrom;
     Object.assign(p, (q.value[from] as Record<string, unknown>) ?? {});
+  }
+  const derive = p.deriveFrom;
+  if (typeof derive === 'string') {
+    delete p.deriveFrom;
+    // `GameLib` (source/lib/index.d.ts) doesn't declare `brief` yet — that
+    // module ships in Wave 2 (tasks 3-5, source/lib/brief.js). Double-cast
+    // through `unknown` rather than widen the shared interface here on a
+    // guess at its eventual shape; `builder?.[derive]` below is what makes
+    // this safe when the field is genuinely absent, pre-Wave-2 or on a typo.
+    const builder = (gameLib as unknown as Record<string, unknown>).brief as
+      | Record<string, (q: Record<string, unknown>) => unknown[]>
+      | undefined;
+    const fn = builder?.[derive];
+    if (typeof fn !== 'function') {
+      // Unknown derivation: placeholder, never a throw. The audit guard is what
+      // is supposed to catch this at build time; this is the runtime backstop.
+      console.warn(`widget "${props.name}": unknown deriveFrom "${derive}"`);
+      failed.value = true;
+      return p;
+    }
+    // `onErrorCaptured` below CANNOT see a throw from this call: it walks up
+    // from `instance.parent` (runtime-core's `handleError`), which only ever
+    // reaches DESCENDANT components' errors, never the throwing instance's
+    // own. `fn` is game-lib code invoked directly in our own computed, not a
+    // child component — so without this try/catch a bad derivation would
+    // escape WidgetHost entirely and blank the whole sheet. Guard it here,
+    // same placeholder path as the unknown-name branch above.
+    try {
+      p.rows = fn(q.value);
+    } catch (err) {
+      console.warn(`widget "${props.name}": deriveFrom "${derive}" threw:`, err);
+      failed.value = true;
+      return p;
+    }
   }
   return p;
 });

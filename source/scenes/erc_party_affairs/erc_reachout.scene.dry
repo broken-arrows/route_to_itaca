@@ -126,7 +126,7 @@ We've tried our best to highlight the need to have different political opinions 
 
 
 @pnv_reach
-title: Campaing with EAJ-PNV
+title: Campaign with EAJ-PNV
 subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.

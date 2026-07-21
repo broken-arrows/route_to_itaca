@@ -61,6 +61,7 @@ import type { GameLib } from '../../source/lib/index.js';
 // one line here. The aggregation/typing shape is deferred to phase 6 (§2.5 spec §10.1).
 import '../../source/lib/cat_engine.js';
 import '../../source/lib/allegiances.js';
+import '../../source/lib/brief.js';
 import * as gameLibModule from '../../source/lib/index.js';
 
 const gameLib: GameLib =

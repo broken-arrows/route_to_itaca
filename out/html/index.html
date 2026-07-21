@@ -16,6 +16,12 @@
     <script src="cat_polls.js"></script>
     <script src="lib/cat_engine.js"></script>
     <script src="lib/allegiances.js"></script>
+    <script src="lib/brief.js"></script>
+    <!-- lib/index.js MUST load last: it has no bundler here, so its browser
+         branch reads each module's window.RTI_* global at load time. A missing
+         one is NOT an error — Object.assign skips undefined sources — so the
+         lib would silently come up short a namespace rather than failing
+         loudly. Add a module's tag ABOVE this line, never below. -->
     <script src="lib/index.js"></script>
     <script src="cat_maps.js"></script>
     <script src="cat_coalitions.js"></script>

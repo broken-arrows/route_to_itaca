@@ -524,6 +524,27 @@
     return this;
   };
 
+  // Public catalog lookup for strings that are NOT content nodes — e.g. row
+  // labels built by the game's own lib (source/lib/brief.js), which never pass
+  // through _localizePlain because they were never in a content tree. Same
+  // English-as-key contract as the content catalog. Identity when no catalog is
+  // installed, which is what keeps the old shell (locale === null) English.
+  DendryEngine.prototype.translate = function(s) {
+    if (!this.catalog || typeof s !== 'string') { return s; }
+    return this._localizeString(s);
+  };
+
+  // Public wrapper for _getQDisplay: lets a derived view-model (e.g.
+  // source/lib/brief.js's row builders) carry a raw quality VALUE plus the
+  // NAME of the qdisplay that classifies it, instead of pre-computing the
+  // band itself. brief.js only ever gets `Q` — it cannot reach `this.game`,
+  // so it cannot read source/qdisplays/*.dry directly — but it can name one.
+  // That keeps every threshold written in exactly one place (the qdisplay
+  // file) instead of being duplicated into JS wherever a row needs a band.
+  DendryEngine.prototype.qdisplay = function(value, qDisplayId) {
+    return this._getQDisplay(value, qDisplayId);
+  };
+
   DendryEngine.prototype.displayGameOver = function() {
     this.ui.displayGameOver();
     return this;

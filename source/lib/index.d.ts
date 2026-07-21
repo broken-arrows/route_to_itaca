@@ -26,6 +26,9 @@ export interface GameLib {
   /** Q-conditional party history per glossary term id (see allegiances.js).
    *  Called by each UI's tooltip renderer. */
   allegiances: Record<string, (Q: Record<string, unknown>) => AllegianceEntry[]>;
+  /** The Brief's pure row derivations — see source/lib/brief.js. Keys must
+   *  match DERIVE_NAMES in ui/src/components/viz/widget-names.mjs. */
+  brief: Record<string, (q: Record<string, unknown>) => unknown[]>;
   // NB: registerLaw / deactivateLaw are exported too but omitted here — content
   // (compiled .dry, not TS-checked) is their only caller, so a precise type
   // buys nothing. The `source/lib/` aggregation/typing shape is deferred to

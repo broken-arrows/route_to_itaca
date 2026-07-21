@@ -18,3 +18,20 @@
  *   marker's `data-props` names a Q key (`configFrom`) instead of a global.
  */
 export const WIDGET_NAMES = ['hemicycle', 'achievement-gallery', 'poll-map', 'coalitions'];
+
+/**
+ * The derivations content may name via `data-props='{"deriveFrom":"…"}'`.
+ * Must match the keys of `G.brief` in source/lib/brief.js. Checked by
+ * tools/audit-globals.mjs, so a typo fails the BUILD rather than rendering an
+ * empty widget forever — same contract as WIDGET_NAMES above.
+ */
+export const DERIVE_NAMES = [
+  'benches',
+  'composition',
+  'cabinet',
+  'control',
+  'chancelleries',
+  'factions',
+  'street',
+  'trails',
+];
