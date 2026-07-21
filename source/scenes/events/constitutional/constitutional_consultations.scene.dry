@@ -12,6 +12,6 @@ role: event
 
 = Constitutional Court rules on the Law of non-binding consultations
 
-In yet another non-surprising case of the Constitutional Court ruling on a law from the Parlament, the *"Law on non-binding popular consultations and other forms of citizen participation"* has been struck down. The Court's decision is based on the fact that the law allows for the President to call for a consultation without needing approval from the Congreso, the Gobierno, and the King, which is seen as a violation of the Spanish Constitution. We'll have to see if, despite this ruling, [? if president_gender == "m": President ?][? if president_gender == "f": Presidenta ?][+ president +] still pushe ahead with the plans on a non-binding consultation regarding independence.
+In yet another non-surprising case of the Constitutional Court ruling on a law from the Parlament, the *"Law on non-binding popular consultations and other forms of citizen participation"* has been struck down. The Court's decision is based on the fact that the law allows for the President to call for a consultation without needing approval from the Congreso, the Gobierno, and the King, which is seen as a violation of the Spanish Constitution. We'll have to see if, despite this ruling, [? if president_gender == "m": President ?][? if president_gender == "f": Presidenta ?][+ president +] still push ahead with the plans on a non-binding consultation regarding independence.
 
 - @post_event: Continue...

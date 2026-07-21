@@ -60,7 +60,187 @@
     return fn;
   };
 
-  var runActions = function(actions, context, state) {
+  // ── Scene-code error reporting ──────────────────────────────────────────
+  // The three swallow sites below (actions / predicates / expressions) all
+  // still swallow — a single broken block must NOT crash the whole game — but
+  // they no longer hide WHAT broke. `logCodeError` resolves the throw back to
+  // the exact line of the block's OWN source, prints it with a caret, and
+  // drops the fixed engine/jQuery frames below it, which carry no information.
+  // Before this, a runtime throw in a scene block was an anonymous
+  // `console.warn` with no scene id; then (2026-07-20) a named message that
+  // still pointed at the whole block — useless for a 556-line `on-arrival`.
+  //
+  // Everything here runs INSIDE a catch handler, so it must never throw: a
+  // throwing catch handler turns the swallow into a re-throw. `logCodeError`
+  // wraps its whole body and degrades to the previous flat message on any
+  // internal failure.
+
+  // Stack frames that sit inside a `new Function` body. Anchored on purpose:
+  // V8 embeds the DEFINING location in the same frame — "at eval (eval at
+  // makeFunctionFromSource (…/engine.js:57:14), <anonymous>:83:28)" — and a
+  // Windows path carries a drive-letter colon, so a bare /:(\d+):(\d+)/ would
+  // silently resolve every error to the same wrong line. Firefox's shape is
+  // "anonymous@…/core.js line 58 > Function:83:28".
+  var GENERATED_FRAME_RE =
+    /(?:<anonymous>|Function code|Function):(\d+):(\d+)/g;
+
+  // Lines of a stack that look like frames. V8 puts "Error: message" on line
+  // 0 and SpiderMonkey doesn't; rather than sniff for it, we rebuild the
+  // header ourselves and keep only frame-shaped lines.
+  var stackFrames = function(stack) {
+    var lines = String(stack || '').split('\n');
+    var frames = [];
+    for (var i = 0; i < lines.length; ++i) {
+      if (/^\s*at\s/.test(lines[i]) || lines[i].indexOf('@') >= 0) {
+        frames.push(lines[i].trim());
+      }
+    }
+    return frames;
+  };
+
+  // The innermost frame inside a generated function. Stacks are
+  // innermost-first in both V8 and SpiderMonkey, so that is the first match;
+  // within a frame we take the LAST match, guarding the embedded-location
+  // shape above from the other direction.
+  var findCodeFrame = function(stack) {
+    var frames = stackFrames(stack);
+    for (var i = 0; i < frames.length; ++i) {
+      var match, last = null;
+      GENERATED_FRAME_RE.lastIndex = 0;
+      while ((match = GENERATED_FRAME_RE.exec(frames[i])) !== null) {
+        last = match;
+      }
+      if (last) {
+        return {
+          frames: frames,
+          frameIndex: i,
+          line: parseInt(last[1], 10),
+          column: parseInt(last[2], 10)
+        };
+      }
+    }
+    return null;
+  };
+
+  // How many lines the `new Function` wrapper adds above the body — PROBED at
+  // load, not hardcoded, because the wrapper's shape ("function
+  // anonymous(state,Q,G" / ") {" / body…) is a runtime implementation detail,
+  // not a spec guarantee. The probe is built through makeFunctionFromSource
+  // itself, so it is constructed exactly like every real block. V8 and
+  // SpiderMonkey both report line 3 for a throw on source line 1 ⇒ offset 2.
+  var BODY_LINE_OFFSET = (function() {
+    try {
+      makeFunctionFromSource('throw new Error("dendry-probe");')();
+    } catch (err) {
+      var frame = findCodeFrame(err && err.stack);
+      if (frame && frame.line > 0) {
+        return frame.line - 1;
+      }
+    }
+    return 2;
+  }());
+
+  var repeat = function(str, n) {
+    var out = '';
+    for (var i = 0; i < n; ++i) {
+      out += str;
+    }
+    return out;
+  };
+
+  var padStart = function(value, width) {
+    var str = String(value);
+    return (str.length >= width) ? str : repeat(' ', width - str.length) + str;
+  };
+
+  // The failing line with ±1 line of context and a caret under the column.
+  // Returns null when the line is out of range, which routes logCodeError to
+  // its fallback rather than printing a confidently wrong excerpt.
+  var MAX_EXCERPT_LINE = 200;
+  var excerpt = function(source, line, column) {
+    var lines = String(source).split('\n');
+    if (!(line >= 1 && line <= lines.length)) {
+      return null;
+    }
+    var first = Math.max(1, line - 1);
+    var last = Math.min(lines.length, line + 1);
+    var width = String(last).length;
+    var out = [];
+    for (var n = first; n <= last; ++n) {
+      var failing = (n === line);
+      var text = lines[n - 1];
+      var col = column;
+      if (text.length > MAX_EXCERPT_LINE) {
+        // Window around the column on the failing line, from the left
+        // elsewhere: a logic property compiles to one long generated line.
+        var start = failing ? Math.max(0, col - (MAX_EXCERPT_LINE >> 1)) : 0;
+        var tail = (text.length > start + MAX_EXCERPT_LINE) ? '…' : '';
+        text = (start > 0 ? '…' : '') +
+          text.substr(start, MAX_EXCERPT_LINE) + tail;
+        col = col - start + (start > 0 ? 1 : 0);
+      }
+      // The caret indent is derived from the gutter STRING, not a duplicated
+      // width constant, so the two cannot drift apart.
+      var gutter = (failing ? '  > ' : '    ') + padStart(n, width) + ' | ';
+      out.push(gutter + text);
+      if (failing && col >= 1) {
+        out.push(repeat(' ', gutter.length + col - 1) + '^');
+      }
+    }
+    return out.join('\n');
+  };
+
+  var describeError = function(err) {
+    if (err && err.name && err.message) {
+      return err.name + ': ' + err.message;
+    }
+    return String((err && err.message) || err);
+  };
+
+  var MAX_FRAMES_ABOVE = 8;
+
+  var logCodeError = function(label, phase, state, fn, err) {
+    var scene = (state && state.sceneId) ? state.sceneId : '(unknown scene)';
+    var heading = phase ?
+      label + ' — ' + phase + ' of "' + scene + '"' :
+      label + ' — "' + scene + '"';
+    try {
+      var frame = (fn && fn.source) ? findCodeFrame(err && err.stack) : null;
+      var sourceLine = frame ? frame.line - BODY_LINE_OFFSET : 0;
+      var body = frame ? excerpt(fn.source, sourceLine, frame.column) : null;
+      if (body) {
+        var parts = [heading, '  ' + describeError(err)];
+        // Frames ABOVE the block are where it actually broke (typically inside
+        // the game lib, reached via G.*). Frames BELOW are always runActions →
+        // _runActions → __changeScene → goToScene → choose → jQuery dispatch:
+        // fixed, known, and the bulk of what made the old message unreadable.
+        var above = frame.frames.slice(0, frame.frameIndex);
+        for (var i = 0; i < above.length && i < MAX_FRAMES_ABOVE; ++i) {
+          parts.push('    ' + above[i]);
+        }
+        // "block source line" names the coordinate system rather than implying
+        // a .dry file line — and stays honest for a logic property, whose
+        // $code is compiler-GENERATED source, not what the author typed.
+        parts.push((above.length ? '  reached from block' : '  block') +
+          ' source line ' + sourceLine + ', col ' + frame.column + ':');
+        parts.push('');
+        parts.push(body);
+        console.error(parts.join('\n'));
+        return;
+      }
+    } catch (ignored) {
+      // Fall through to the flat message. This helper runs inside a catch
+      // handler; it must never itself be the thing that throws.
+    }
+    var src = (fn && fn.source) ?
+      String(fn.source).replace(/\s+/g, ' ').trim().slice(0, 200) : '';
+    console.error(
+      heading + ': ' + ((err && err.stack) || err) +
+      (src ? '\n    source: ' + src : '')
+    );
+  };
+
+  var runActions = function(actions, context, state, phase) {
     if (actions === undefined) {
       return;
     }
@@ -68,14 +248,7 @@
       try {
         fn.call(context, state, state.qualities, context.gameLib);
       } catch (err) {
-        // Scene action code (on-arrival/on-departure/on-display) throws are
-        // SWALLOWED here: the scene still transitions, so a broken action is
-        // invisible without a console. This hid `window.engineTick is not a
-        // function` — the whole monthly simulation dead — for an entire phase.
-        // Warn loudly rather than console.log, but do NOT rethrow: content
-        // relies on the swallow. NB: console.warn, not console.warning (no such
-        // API — a throwing catch handler turns this swallow into a re-throw).
-        console.warn('Scene Action Error:', err);
+        logCodeError('Scene action error', phase, state, fn, err);
       }
     });
   };
@@ -88,8 +261,10 @@
     try {
       result = !!predicate.call(context, state, state.qualities, context.gameLib);
     } catch (err) {
-      // Ignore errors. TODO: Log them somehow?
-      console.log('Error:', err);
+      // Swallowed (a bad predicate falls back to `default_`) but named — see
+      // logCodeError. Predicates run often; a genuinely broken one repeats,
+      // which is the point: it should be seen, not hidden.
+      logCodeError('Scene predicate error', undefined, state, predicate, err);
     }
     return result;
   };
@@ -102,8 +277,8 @@
     try {
       result = expression.call(context, state, state.qualities, context.gameLib);
     } catch (err) {
-      // Ignore errors. TODO: Log them somehow?
-      console.log('Error in expression', expression, ':', err);
+      // Swallowed (falls back to `default_`) but named — see logCodeError.
+      logCodeError('Scene expression error', undefined, state, expression, err);
     }
     return result;
   };
@@ -442,7 +617,7 @@
       this.state.currentContent = this.state.currentContent.concat(displayContent);
       this.ui.displayContent(displayContent, faceImage);
     }
-    this._runActions(scene.onDisplay);
+    this._runActions(scene.onDisplay, 'on-display');
 
     return this;
   };
@@ -524,6 +699,12 @@
       }
     }
     this.state.lastPlayedCard = this.game.scenes[cardId];
+    // Shallow snapshot of Q taken BEFORE the card's on-arrival runs, so a
+    // later "return card to hand" (content: easy_discard) can revert whatever
+    // cooldown timer the card set — by *_timer key, independent of how the
+    // card names it. Generic mechanism, like lastPlayedCard itself; the engine
+    // attaches no meaning to it. (See docs/design/LEARNINGS.md 2026-07-20.)
+    this.state.lastPlayedCardQ = Object.assign({}, this.state.qualities);
     delete this.choiceCache;
     this.goToScene(cardId);
   };
@@ -598,6 +779,8 @@
       // last drawn card
       lastDrawnCard: null,
       lastPlayedCard: null,
+      // Q snapshot at the moment lastPlayedCard was played (see playCard).
+      lastPlayedCardQ: null,
 
       enableTranscript: false,
       // whether or not to disable saves
@@ -682,7 +865,7 @@
       this.ui.newPage();
       this.ui.removeChoices();
       this.ui.displayContent(this.state.currentContent);
-      this._runActions(scene.onDisplay);
+      this._runActions(scene.onDisplay, 'on-display');
       this.choiceCache = this._compileChoices(scene);
       this.displayChoices();
       this.ui.setSprites(this.state.sprites);
@@ -903,8 +1086,8 @@
     });
   };
 
-  DendryEngine.prototype._runActions = function(actions) {
-    runActions(actions, this, this.state);
+  DendryEngine.prototype._runActions = function(actions, phase) {
+    runActions(actions, this, this.state, phase);
   };
 
   DendryEngine.prototype._runPredicate = function(predicate, default_) {
@@ -964,7 +1147,7 @@
         this.state.prevSpecialSceneId = fromId;
       }
       var from = this.getCurrentScene();
-      this._runActions(from.onDeparture);
+      this._runActions(from.onDeparture, 'on-departure');
       var fromSignal = from.signal || this.game.sceneSignal;
       if (fromSignal !== undefined) {
         this.ui.signal({signal:fromSignal,
@@ -996,11 +1179,11 @@
     if (!restorePage && !this.state.justReturned) {
         // If we go back from a special scene (e.g. the stats page),
         // we probably don't want to run the scene actions again.
-        this._runActions(scene.onArrival);
+        this._runActions(scene.onArrival, 'on-arrival');
         // TODO: After running onArrival, we should run call if call has
         if (scene.call) {
           var callScene = this.game.scenes[scene.call];
-          this._runActions(callScene.onArrival);
+          this._runActions(callScene.onArrival, 'on-arrival (call)');
         }
     }
     var sceneSignal = scene.signal || this.game.sceneSignal;

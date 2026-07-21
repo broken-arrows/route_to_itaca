@@ -225,8 +225,8 @@ title: Independence won!
 subtitle: ... what now?
 view-if: consultation_yes_pc > consultation_no_pc
 on-arrival: {!
-    Q.countdows.push("unio_breakup");
-    Q.countdows.push("jxsi_formation");
+    Q.countdowns.push("unio_breakup");
+    Q.countdowns.push("jxsi_formation");
     Q.unio_breakup_countdown = 5;
     Q.jxsi_formation_countdown = 6;
     Q.plebiscite_election_countdown = 3;

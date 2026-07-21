@@ -264,12 +264,22 @@ d3.parliament = function () {
               (t) => t.colour && t.match.includes(partyId.toUpperCase()),
             );
           }
+          if (!colour) {
+            colour = glossaryTerms.find(
+              (t) => t.bold && t.colour === partyId,
+            );
+          }
           let img = glossaryTerms.find(
             (t) => t.tooltip && t.match.includes(partyId),
           );
           if (!img) {
             img = glossaryTerms.find(
               (t) => t.tooltip && t.match.includes(partyId.toUpperCase()),
+            );
+          }
+          if (!img) {
+            img = glossaryTerms.find(
+              (t) => t.tooltip && t.bold && t.colour === partyId,
             );
           }
           // Registry colours are bare tokens ("ciu") or a raw hex (kept
@@ -279,10 +289,18 @@ d3.parliament = function () {
               ? colour.colour
               : `var(--${colour.colour})`
             : "black";
+          // Guard the logo: some tokens resolve to no term, or to a term
+          // with no tooltip (sumar, indp, the *bcn municipals) — render the
+          // name + seat count without an image rather than crashing on
+          // img.tooltip.img.
+          const imgSrc = img && img.tooltip && img.tooltip.img;
+          const imgHtml = imgSrc
+            ? `<img src="${imgSrc}" alt="${img.tooltip.title || ""}" style="height:42px; width:auto; margin-right:10px; max-width: 120px; object-fit: contain; flex-shrink: 0;">`
+            : "";
           tooltip
             .html(
               `<div style="display:flex; align-items:center;">
-                <img src="${img.tooltip.img}" alt="${img.tooltip.title}" style="height:42px; width:auto; margin-right:10px; max-width: 120px; object-fit: contain; flex-shrink: 0;">
+                ${imgHtml}
                 <div>
                   <span style="color:${partyColour}; font-weight:bold;">${(colour && colour.display) || partyId}</span><br>
                   <span>${nSeatsInParty} seat${nSeatsInParty !== 1 ? "s" : ""}</span>

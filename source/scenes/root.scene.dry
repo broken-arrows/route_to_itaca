@@ -69,9 +69,10 @@ on-arrival: {!
   Q.spanish_pm = "Mariano Rajoy";
   Q.spanish_pm_gender = "m";
   Q.spanish_pm_party = "pp";
-  Q.spanish_coalition = ["pp", "ppc"];
+  Q.spanish_coalition = ["pp"];
   Q.spanish_coalition_disp = "PP <span style='color: var(--pp);'>majority government</span>";
   Q.spain_is_republic = 0; // lol
+  Q.constitution_reformed = 0;
 
   Q.next_election_week = 1;
   Q.next_election_month = 12;
@@ -186,10 +187,12 @@ on-arrival: {!
   Q.unio_leader_gender = "m";
   Q.unio_ideology = "Christian Democracy, Pact-Pragmatism";
 
+  // TODO: Handle leadership changes (both for player-erc and non-player-erc)
   Q.erc_ideology = "Social Democracy, Independence";
   Q.erc_leader = "Oriol Junqueras";
   Q.erc_leader_gender = "m";
 
+  // TODO: Handle leadership changes (both for player-cup and non-player-cup)
   Q.cup_ideology = "Anticapitalism, Unilateralism";
   Q.cup_leader = "David Fernàndez";
   Q.cup_leader_gender = "m";
@@ -266,11 +269,12 @@ on-arrival: {!
   Q.upyd_leader_gender = "f";
   Q.upyd_ideology = "Liberal reformism, Hypercentralism";
 
+  // TODO: Podemos + IU + UP leaders and party paths
   Q.podemos_leader = "Pablo Iglesias";
   Q.podemos_ideology = "Anti-austerity left, Plurinationalism";
   Q.podemod_leader_gender = "m";
   Q.iu_leader = "Cayo Lara";
-  Q.i_leader_gender = "m";
+  Q.iu_leader_gender = "m";
   Q.iu_ideology = "Left Social Democracy, Federalism";
   Q.mpais_leader = "Íñigo Errejón";
   Q.mpais_leader_gender = "m";
@@ -285,8 +289,8 @@ on-arrival: {!
   Q.pnv_leader = "Íñigo Urkullu";
   Q.pnv_leader_gender = "m";
   Q.pnv_ideology = "Christian Democracy, Basque Pact-Pragmatism";
-  Q.ehbildu_leader = "Arnaldo Otegi";
-  Q.ehbildu_leader_gender = "m";
+  Q.ehbildu_leader = "Laura Mintegi";
+  Q.ehbildu_leader_gender = "f";
   Q.ehbildu_ideology = "Left Social Democracy, Basque Independence";
   Q.amaiur_leader = "Maite Aristegi";
   Q.amaiur_leader_gender = "f";
@@ -311,11 +315,11 @@ on-arrival: {!
   Q.mes_leader = "Biel Barceló";
   Q.mes_leader_gender = "m";
   Q.mes_ideology = "Left Social Democracy, Balearic Regionalism";
-  Q.bng_leader = "Ana Pontón";
-  Q.bng_leader_gender = "f";
+  Q.bng_leader = "Francisco Jorquera";
+  Q.bng_leader_gender = "m";
   Q.bng_ideology = "Social Democracy, Galician Independence";
-  Q.fac_leader = "Cristina Coto";
-  Q.fac_leader_gender = "f";
+  Q.fac_leader = "Francisco Álvarez-Cascos";
+  Q.fac_leader_gender = "m";
   Q.fac_ideology = "Liberal Conservatism, Asturian Regionalism";
   Q.prc_leader = "Miguel Ángel Revilla";
   Q.prc_leader_gender = "m";
@@ -327,6 +331,7 @@ on-arrival: {!
   // Initial values for bcn parties as well
   Q.parties_bcn = ['bcomu', 'cup', 'psc', 'erc', 'ciu', 'cdc', 'dl', 'jxcat', 'junts', 'jxsi', 'primaries', 'cs', 'pp', "icv"];
 
+  // TODO dynamic barcelona leader names!
   Q.bcomu_leader = "Ada Colau";
   Q.bcomu_ideology = "Anti-austerity left, Plurinationalism";
   Q.bcomu_leader_gender = "f";
@@ -1082,18 +1087,22 @@ on-arrival: {!
   Q.pp_leadership_mult = 0;
 
   // Spanish party-system flags (IRL defaults; flipped by formation scenes)
+  Q.party_reaching_out_bng = 0;
+  Q.party_reaching_out_compromis = 0;
+  Q.party_reaching_out_mes = 0;
+
   Q.spa_cs_active = false;
   Q.vox_active = false;
-  Q.spa_nsuma_formed = false;        // if formed, cs, pp and upn will go together - TODO: gates!
-  Q.spa_foro_active = false;         // if true, FAC will run separate from the PP - TODO: gates!
-  Q.spa_compromis_active = false;    // if false, will go with either UP or Podemos, whatver is running - TODO: gates!
-  Q.spa_mes_active = false;          // if false, will go with either UP or Podemos, whatver is running - TODO: gates!
-  Q.spa_fr_active = false;
-  Q.spa_cup_active = false;
-  Q.spa_mpais_active = false;        // if true, más país will run separate from Podemos and UP - TODO: gates!
-  Q.upn_in_pp = true;                // if false, UPN will go separate from PP - TODO: gates!
-  Q.iu_in_up = false;                // equivalent to "UP active" flag - TODO: gates!
-  Q.spa_bng_active = true;                // if false will run as part of UP - TODO: gates!
+  Q.spa_nsuma_formed = false;        // if formed, cs, pp and upn will go together
+  Q.spa_foro_active = false;         // if true, FAC will run separate from the PP
+  Q.spa_compromis_active = false;    // if false, will go with either UP or Podemos, whatver is running
+  Q.spa_mes_active = false;          // if false, will go with either UP or Podemos, whatver is running
+  Q.spa_fr_active = false;           // TODO: Pending trigger!
+  Q.spa_cup_active = false;          // TODO: Pending trigger!
+  Q.spa_mpais_active = false;        // if true, más país will run separate from Podemos and UP
+  Q.upn_in_pp = true;                // if false, UPN will go separate from PP
+  Q.iu_in_up = false;                // equivalent to "UP active" flag - TODO: Pending trigger!
+  Q.spa_bng_active = true;           // if false will run as part of UP
   Q.spa_te_active = false;   
   Q.spa_ehbildu_active = true;       // if false, amaiur will run again (only if ehbildu is ever banned) + amaiur should also includ gbai if reformed! (TODO!)
   Q.psc_split = false;
@@ -1140,22 +1149,31 @@ on-arrival: {!
     "congreso_party_tour",
     "advisor_action",
     "parlament",
-    "interior",
+    //generalitat (each card's timer = <card_id minus _card>_timer)
+    "generalitat_bnl",
+    "generalitat_economy",
+    "generalitat_education",
+    "generalitat_foreign",
+    "generalitat_health",
+    "generalitat_interior",
+    "generalitat_presidency",
+    "generalitat_territory",
+    "generalitat_vp",
     //erc_party
     'erc_media',
     'erc_shuffle_leadership',
-    'erc_inter_party_relationships',
-    'international_relations',
+    'erc_inter_party',
+    'erc_international',
     'erc_disunity',
     'erc_rally',
-    'enemies_timer',
+    'erc_enemies',
+    'erc_reachout'
   ];
   Q.rubicon_timers = [
     //erc_party
     'erc_campaigning',
     'erc_base',
-    'erc_reach_out'
-  ]; 
+  ];
   Q.advisor_action_timer = 0;
 
   // Zero Timers

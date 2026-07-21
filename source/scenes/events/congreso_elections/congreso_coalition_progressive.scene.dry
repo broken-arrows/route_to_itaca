@@ -5,7 +5,7 @@ You should not be here? Report a bug if you see this text.
 @progressive
 title: <span style="color: var(--psoe); font-style: italic;">Progressist</span> <span style="color: var(--up); font-style: italic;">Coalition</span> (PSOE - [? if congreso_left_carrier == "up": UP?][?if congreso_left_carrier != "up": [+ congreso_left_carrier +]?])
 subtitle: A difficult arithmetic made possible by kingmaker smaller parties. [? if congreso_coalition_progressive_talks: Given the numbers, we have a chance to negotiate the conditions to make this possible. ?]
-view-if: congreso_coalition_progressive_s > congreso_s_majority - 50
+view-if: congreso_coalition_progressive_s > 0
 choose-if: congreso_coalition_progressive_reach and not congreso_coalition_psoe_cs_wtf and psoe_leader != "???" and not congreso_coalition_grand_preferred
 unavailable-subtitle: [? if not congreso_coalition_progressive_reach : The numbers don't add up, not even with every abstention that can be realistically negotiated. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +] ?][? if psoe_leader == "???": The PSOE has no clear leadership at the moment. ?][? if congreso_coalition_grand_preferred: The PSOE would rather work on a Grand Coalition. ?]
 on-arrival: congreso_coalition_lead_party = "psoe"
@@ -32,12 +32,12 @@ The recently appointed [+ spanish_coalition_disp +] Gobierno will be lead by [? 
 @psoe_minority
 title: PSOE <span style="color: var(--psoe); font-style: italic;">Minority Government</span>
 subtitle: PSOE governs alone, tolerated from the outside. [? if congreso_coalition_psoe_min_talks: Given the numbers, we have a chance to negotiate the conditions to make this possible. ?]
-view-if: congreso_coalition_psoe_min_s > congreso_s_majority - 50
+view-if: congreso_coalition_psoe_min_s > 0
 choose-if: congreso_coalition_psoe_min_reach and not congreso_coalition_psoe_cs_wtf and psoe_leader != "???"
-unavailable-subtitle: [? if congreso_coalition_psoe_min_s < congreso_s_majority: Even with outside support that could be negotiated, PSOE falls short of investiture. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +]. ?][? if psoe_leader == "???": The PSOE has no clear leadership at the moment. ?]
+unavailable-subtitle: [? if not congreso_coalition_psoe_min_reach: Even with outside support that could be negotiated, PSOE falls short of investiture. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +]. ?][? if psoe_leader == "???": The PSOE has no clear leadership at the moment. ?]
 on-arrival: congreso_coalition_lead_party = "psoe"
 set-jump: psoe_minority_resolve
-go-to: psoe_minority_resolve if not congreso_coalition_psoe_min_talks; congreso_coalition_negotiation if congreso_coalition_psoe
+go-to: psoe_minority_resolve if not congreso_coalition_psoe_min_talks; congreso_coalition_negotiation if congreso_coalition_psoe_min_talks
 
 @psoe_minority_resolve
 on-arrival: {!

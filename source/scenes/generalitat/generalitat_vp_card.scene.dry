@@ -1,7 +1,7 @@
 title: Ministry of the Vice-Presidency
 new-page: true
-view-if: vp_timer <= 0 and (vicepresident_party == player_party)
-on-arrival: month_actions += 1; vp_timer += 3;
+view-if: generalitat_vp_timer <= 0 and (vicepresident_party == player_party)
+on-arrival: month_actions += 1; generalitat_vp_timer += 3;
 is-card: true
 card-image: img/cat_seal.svg
 face-image: img/cat_seal.svg

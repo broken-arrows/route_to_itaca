@@ -211,52 +211,53 @@ title: Finalize negotiations
 on-arrival: {!
     // Set timers
     if (Q.congreso_coalition_negotiated_funding && !Q.congreso_coalition_lead_party == "psoe") {
-        Q.countdows.push("negotiated_funding");
+        Q.countdowns.push("negotiated_funding");
         Q.negotiated_founding_countdown = 12;
     } else if (Q.congreso_coalition_negotiated_funding && Q.congreso_coalition_lead_party == "psoe") {
-        Q.countdows.push("negotiated_funding_psoe");
+        Q.countdowns.push("negotiated_funding_psoe");
         Q.negotiated_founding_psoe_countdown = 12;
     }
     if (Q.congreso_coalition_negotiated_cash) {
-        Q.countdows.push("negotiated_cash");
+        Q.countdowns.push("negotiated_cash");
         Q.negotiated_cash_countdown = 8;
     }
     if (Q.congreso_coalition_negotiated_renfe && !Q.congreso_coalition_lead_party == "psoe") {
-        Q.countdows.push("negotiated_renfe");
+        Q.countdowns.push("negotiated_renfe");
         Q.negotiated_renfe_countdown = 12;
     } else if (Q.congreso_coalition_negotiated_renfe && Q.congreso_coalition_lead_party == "psoe") {
-        Q.countdows.push("negotiated_renfe_psoe");
+        Q.countdowns.push("negotiated_renfe_psoe");
         Q.negotiated_renfe_psoe_countdown = 12;
     }
     if (Q.congreso_coalition_negotiated_ports && !Q.congreso_coalition_lead_party == "psoe") {
-        Q.countdows.push("negotiated_ports");
+        Q.countdowns.push("negotiated_ports");
         Q.negotiated_ports_countdown = 12;
     } else if (Q.congreso_coalition_negotiated_ports && Q.congreso_coalition_lead_party == "psoe") {
-        Q.countdows.push("negotiated_ports_psoe");
+        Q.countdowns.push("negotiated_ports_psoe");
         Q.negotiated_ports_psoe_countdown = 12;
     }
     if (Q.congreso_coalition_negotiated_education) {
-        Q.countdows.push("negotiated_education");
+        Q.countdowns.push("negotiated_education");
         Q.negotiated_education_countdown = 12;
     }
     if (Q.congreso_coalition_negotiated_police && !Q.congreso_coalition_lead_party == "psoe") {
-        Q.countdows.push("negotiated_police");
+        Q.countdowns.push("negotiated_police");
         Q.negotiated_police_countdown = 12;
     } else if (Q.congreso_coalition_negotiated_police && Q.congreso_coalition_lead_party == "psoe") {
-        Q.countdows.push("negotiated_police_psoe");
+        Q.countdowns.push("negotiated_police_psoe");
         Q.negotiated_police_psoe_countdown = 12;
     }
     if (Q.congreso_coalition_negotiated_borders && !Q.congreso_coalition_lead_party == "psoe") {
-        Q.countdows.push("negotiated_borders");
+        Q.countdowns.push("negotiated_borders");
         Q.negotiated_borders_countdown = 12;
     } else if (Q.congreso_coalition_negotiated_borders && Q.congreso_coalition_lead_party == "psoe") {
-        Q.countdows.push("negotiated_borders_psoe");
+        Q.countdowns.push("negotiated_borders_psoe");
         Q.negotiated_borders_psoe_countdown = 12;
     }
     if (Q.congreso_coalition_negotiated_amnesty) {
-        Q.countdows.push("negotiated_amnesty");
+        Q.countdowns.push("negotiated_amnesty");
         Q.negotiated_amnesty_countdown = 12;
     }
+    // TODO: Actual events triggered by these!
 !}
 go-to: jumpScene
 

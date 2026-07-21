@@ -13,9 +13,22 @@ Q.month_actions -= 1;
     } else if (Q.difficulty < 0) {
         this.state.currentHands['main.main_easy'].push(card);
     }
-    // reset the timer...
-    if (Q[card.id + "_timer"]) {
-        Q[card.id + "_timer"] = 0;
+    // Restore every cooldown timer to its pre-play value. The engine snapshots
+    // Q into state.lastPlayedCardQ before running the card's on-arrival; no
+    // time passes between playing a card and discarding it, so the only *_timer
+    // that changed is this card's own cooldown. Reverting it (whatever the card
+    // named it) is what lets the returned card pass its own view-if again
+    // instead of being filtered straight back out of the hand. We iterate the
+    // CURRENT timers, not the snapshot's: a timer the card CREATED (its var was
+    // undefined before play, so the snapshot has no such key) must be reset to
+    // 0 = "available", not left at its cooldown value.
+    var preplay = this.state.lastPlayedCardQ;
+    if (preplay) {
+        for (var k in Q) {
+            if (k.slice(-6) == "_timer") {
+                Q[k] = (preplay[k] !== undefined) ? preplay[k] : 0;
+            }
+        }
     }
     // reduce visit count
     if (this.state.visits[card.id]) {

@@ -1,7 +1,7 @@
 title: Ministry of the Interior
 new-page: true
-view-if: interior_timer <= 0 and (interior_minister_party == player_party)
-on-arrival: month_actions += 1; interior_timer += 3;
+view-if: generalitat_economy_timer <= 0 and (interior_minister_party == player_party)
+on-arrival: month_actions += 1; generalitat_economy_timer += 3;
 is-card: true
 card-image: img/economy_icon.svg
 face-image: img/economy_icon.svg

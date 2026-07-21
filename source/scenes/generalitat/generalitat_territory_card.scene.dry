@@ -1,7 +1,7 @@
 title: Ministry of Territory
 new-page: true
-view-if: territory_timer <= 0 and (territory_minister_party == player_party)
-on-arrival: month_actions += 1; territory_timer += 3;
+view-if: generalitat_territory_timer <= 0 and (territory_minister_party == player_party)
+on-arrival: month_actions += 1; generalitat_territory_timer += 3;
 is-card: true
 card-image: img/territory_icon.svg
 face-image: img/territory_icon.svg

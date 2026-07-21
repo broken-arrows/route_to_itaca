@@ -11,20 +11,18 @@
  *   on-arrival:
  *   {!
  *     Q.parlament_coalition_config = {
- *       totalSeats:        135,
- *       majoritySeats:     Q.parlament_s_majority || 68,
- *       majorityMarkAt:    0.6,    // 0–1, where the majority line sits in the bar
- *       nearMissThreshold: 10,     // seats within which a short coalition still shows
- *       seatsKey:          "{party}_parlament_s",
+ *       totalSeats:     135,
+ *       majoritySeats:  Q.parlament_s_majority || 68,
+ *       majorityMarkAt: 0.6,       // 0–1, where the majority line sits in the bar
+ *       seatsKey:       "{party}_parlament_s",
  *       partyAliases: {
  *         "ciu_alias": Q.parlament_current_ciu,
  *         "icv_alias": Q.parlament_current_icv
  *       },
  *       coalitions: [
  *         {
- *           label:      "Sovereignty Government",
- *           alwaysShow: true,          // show even if far short (default: false)
- *           condition:  function(s) { return s("ciu_alias") > s("erc"); },
+ *           label:    "Sovereignty Government",
+ *           seatsVar: "parlament_coalition_ciu_erc_cup_s",
  *           members: [
  *             { party: "ciu_alias", type: "government", label: "CiU" },
  *             { party: "erc",       type: "government", label: "ERC" },
@@ -56,20 +54,23 @@
  *   kingmaker minors are bucketed (plurinational left / pact-pragmatists / …).
  *
  * ── Visibility ───────────────────────────────────────────────────────────────
- *   PREFERRED — single source of truth: give the entry a `seatsVar` naming a
- *   precomputed coalition-total quality (e.g. "parlament_coalition_ciu_erc_s").
- *   That is the SAME variable the matching option scene reads in its `view-if`,
- *   so the bar and the clickable option can never disagree. The row renders iff
- *     Q[seatsVar] > 0   (|| def.alwaysShow || Q.debug)
- *   The total is 0 when the coalition is structurally inapplicable (wrong
- *   who-leads ordering, a party absent), matching `view-if`. The members list is
- *   then used ONLY to draw the coloured per-party segments + count.
+ *   Every entry names a `seatsVar`: a precomputed coalition-total quality (e.g.
+ *   "parlament_coalition_ciu_erc_s"). The row renders iff
+ *     Q[seatsVar] > 0
+ *   For a coalition that also has a clickable option, that is the SAME variable
+ *   the option scene reads in its `view-if`, so bar and option can never
+ *   disagree. The total is 0 when the coalition is structurally inapplicable (a
+ *   party absent, the wrong who-leads ordering, or — for display-only landscape
+ *   bars — the scene's own near-miss gate). The members list is then used ONLY
+ *   to draw the coloured per-party segments + count.
  *
- *   LEGACY — display-only landscape bars with no corresponding option may omit
- *   `seatsVar` and keep a self-contained `condition`; those render when ANY of:
- *     effectiveSeats >= majority
- *     delta >= -nearMissThreshold
- *     def.alwaysShow === true
+ *   There is deliberately no `condition`/`alwaysShow`/`nearMissThreshold` here.
+ *   Those were the old escape hatch for landscape bars with no option, and they
+ *   took `function(s){…}` closures in Q — which JSON.stringify drops on save, so
+ *   a game resumed on a coalition scene silently lost every such bar. Both
+ *   scenes now precompute a named quality instead (see parlament_coalition's
+ *   `barSeats`), which keeps Q data-only as the widget protocol requires and is
+ *   what lets the Desk render this at all.
  */
 
 (function (global) {
@@ -146,48 +147,17 @@
   // ── render one coalition entry ─────────────────────────────────────────────
 
   function renderEntry(def, config, seats, Q) {
-    var alwaysShow = !!def.alwaysShow; // || !!(Q && Q.debug);
-
     // ── visibility gate (single source of truth) ────────────────────────────
-    // When an entry names a `seatsVar`, its visibility is driven by that
-    // precomputed coalition-total quality — the SAME variable the matching
-    // option scene reads in its `view-if`. The total is 0 when the coalition is
-    // structurally inapplicable (wrong who-leads ordering, a party absent), so
-    // `> 0` means "this coalition is on the table", exactly mirroring `view-if`
+    // Visibility is driven entirely by the precomputed coalition-total quality
+    // the entry names. For a coalition with a clickable option that is the SAME
+    // variable the option scene reads in its `view-if`, so the two can never
+    // disagree; for a display-only landscape bar the scene has already folded
+    // its own condition and near-miss gate into the total. Either way `> 0`
+    // means "this coalition is on the table", exactly mirroring `view-if`
     // (which shows the option — greyed — regardless of distance to majority).
-    // Entries WITHOUT a seatsVar keep a self-contained `condition` plus the
-    // legacy near-miss distance gate: the display-only landscape bars that have
-    // no corresponding option (yet).
-    if (def.seatsVar != null) {
-      if (!alwaysShow && !(Q && +Q[def.seatsVar] > 0)) return null;
-    } else {
-      // A missing `condition` on a non-seatsVar entry defaults to HIDE
-      // (false), not show. `Q.{parlament,congreso}_coalition_config`'s
-      // `condition` values are `function(s){}` closures — `JSON.stringify`
-      // drops functions on save, and `setState` does not re-run
-      // on-arrival on load, so a save resumed exactly on a coalition scene
-      // loads with `condition === undefined` for every non-seatsVar entry.
-      // Every non-seatsVar entry in normal play legitimately HAS a
-      // `condition` (verified against both scene files — Task 6 fix round
-      // 1, I2 safety check), so `undefined` here only ever means "this
-      // config came from a stale/deserialized load", never "intentionally
-      // always-shown". Hiding it is a loud, visible failure (an entry that
-      // should be there silently isn't) instead of the old `true` default,
-      // which rendered a WRONG coalition unconditionally. The proper fix —
-      // move conditions into source/lib/ so Q stays data-only — is
-      // deferred to phase 4 (see LEARNINGS.md 2026-07-17).
-      var condOk =
-        def.condition == null
-          ? false
-          : typeof def.condition === "function"
-            ? def.condition(seats)
-            : !!def.condition;
-      if (!condOk) return null;
-    }
+    if (!(Q && +Q[def.seatsVar] > 0)) return null;
 
     var majority = +config.majoritySeats;
-    var near =
-      config.nearMissThreshold != null ? +config.nearMissThreshold : 12;
     var markAt = config.majorityMarkAt != null ? +config.majorityMarkAt : 0.55;
     var aliases = config.partyAliases || {};
 
@@ -225,17 +195,6 @@
     });
     var yesSeats = govSeats + supportSeats;
     var effectiveSeats = Math.floor(yesSeats + abstainSeats / 2);
-    var delta = effectiveSeats - majority;
-
-    // legacy near-miss gate — only for display-only (condition-based) entries;
-    // seatsVar entries were already gated above to mirror their option's view-if.
-    if (
-      def.seatsVar == null &&
-      !alwaysShow &&
-      effectiveSeats < majority &&
-      delta < -near
-    )
-      return null;
 
     // status
     var countClass, countText;

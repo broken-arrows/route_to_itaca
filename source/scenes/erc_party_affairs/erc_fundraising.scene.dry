@@ -4,12 +4,13 @@ view-if: erc_fundraising_timer <= 0
 on-arrival: erc_fundraising_timer = 12; month_actions += 1
 is-card: true
 card-image: img/erc/executiva.jpg
+face-image: img/erc/executiva.jpg
 tags: erc_party
 role: card-party
 
 = Fundraising
 
-Fact is, the party needs resources to work. Where do we get them from?
+Fact is, the party needs resources to work. [? if party_income < 2: Right now, the vast majority of our funding comes from public subsidies, which are dependant on our electoral results. ?][? if party_income > 2: Despite a part of our funding still coming from public subsidies, our recent party affiliation rates hike means we are less dependant on those than what we used to be. ?] We can, of course, move to change the structure of this funding.
 
 # TODO: effects on local and general elections too
 

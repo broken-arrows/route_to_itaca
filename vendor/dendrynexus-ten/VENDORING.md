@@ -50,6 +50,47 @@ git subtree split --prefix=vendor/dendrynexus-ten -b dendrynexus-ten-split
 Kept deliberately minimal — touch only the lines that must change, never a
 whole-file reformat, so this list stays the complete upstream diff.
 
+- **`lib/engine.js`** (2026-07-20) — two additive changes:
+  1. **Loud, findable swallow.** The three scene-code swallow sites
+     (`runActions`, `runPredicate`, `runExpression`) still swallow (a broken
+     block must not crash the game) but now report via a shared `logCodeError`
+     helper — `console.error` naming the exact scene, the phase, and the
+     offending source line, instead of an anonymous `console.warn`/`console.log`
+     with no scene id. `runActions`/`_runActions` gained a `phase` param, threaded
+     from the five call sites (`'on-arrival'`, `'on-departure'`, `'on-display'`,
+     `'on-arrival (call)'`). Purely diagnostic; no behaviour change, still
+     swallows. Fixes the "faulty JS in a scene block silently stops running"
+     DX gap (a half-run on-arrival was previously invisible without a console).
+     To name the failing **statement** rather than the
+     block — pointing at a 556-line `on-arrival` is barely better than not
+     pointing at all. `logCodeError` now resolves the throw back to the exact
+     line of the block's own source and prints it with ±1 line of context and
+     a caret, then drops the fixed engine/jQuery frames below it (frames
+     _above_ are kept: that is where a `G.*` call actually broke). Four new
+     module-private helpers — `findCodeFrame`, `BODY_LINE_OFFSET`, `excerpt`,
+     `describeError`. Two non-obvious points:
+     - The `new Function` wrapper's line offset is **probed at load**, not
+       hardcoded: a throwaway block built through `makeFunctionFromSource`
+       itself throws on source line 1 and the reported line gives the offset
+       (2 on V8 and SpiderMonkey). The wrapper's shape is a runtime detail,
+       not a spec guarantee.
+     - The generated-frame regex is **anchored** on `<anonymous>`/`Function`
+       because V8 embeds the _defining_ location in the same frame
+       (`at eval (eval at makeFunctionFromSource (…:57:14), <anonymous>:83:28)`)
+       and Windows paths carry a drive-letter colon — a bare `/:(\d+):(\d+)/`
+       resolves every error to the same wrong line.
+       Still swallows, still no behaviour change; the whole formatter is wrapped
+       in its own try/catch that degrades to the previous flat message, since it
+       runs inside a catch handler and must never be the thing that throws.
+       Covered by `ui/tests/engine.code-errors.test.ts` (7 cases).
+  2. **`state.lastPlayedCardQ`** — `playCard` now shallow-snapshots
+     `Object.assign({}, this.state.qualities)` **before** running the played
+     card's on-arrival (added to the initial state as `null`). A generic
+     mechanism like `lastPlayedCard` itself; the engine attaches no meaning to
+     it. Consumed by `source/scenes/easy_discard.scene.dry` to revert the
+     card's own cooldown timer on "return to hand" (the engine's hand re-filter
+     — `displayChoices` → `__filterViewable` — otherwise drops the returned card
+     the instant its own view-if cooldown fails).
 - **`lib/parsers/compiler.js`** (`compileGame`) — routes any
   `source/data/*.json` file to a generic registry keyed by its basename,
   attached at `game.json.data.<basename>` (e.g. `source/data/glossary.json` →

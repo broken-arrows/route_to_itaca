@@ -4,7 +4,7 @@ You should not be here? Report a bug if you see this text.
 
 @party
 title: [? if congreso_coalition_majority_party == "cs": csspa ?][? if congreso_coalition_majority_party != "cs": [+ congreso_coalition_majority_party +]?] Majority Government
-subtitle: custom title??
+subtitle: With these results, what other option is even there?
 view-if: congreso_coalition_majority_s > 0
 choose-if: congreso_coalition_majority_reach
 unavailable-subtitle: No single party reached an absolute majority on its own.

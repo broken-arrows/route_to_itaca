@@ -2,8 +2,8 @@ title: International Relations
 new-page: true
 is-card: true
 tags: erc_party
-view-if: international_relations_timer <= 0
-on-arrival: month_actions += 1; international_relations_timer += 6;
+view-if: erc_international_timer <= 0
+on-arrival: month_actions += 1; erc_international_timer += 6;
 card-image: img/erc/international.jpg
 face-image: img/erc/international.jpg
 max-visits: 25

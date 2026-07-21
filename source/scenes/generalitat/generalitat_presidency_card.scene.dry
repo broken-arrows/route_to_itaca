@@ -1,7 +1,7 @@
 title: Ministry of the Presidency
 new-page: true
-view-if: presidency_timer <= 0 and (president_party == player_party)
-on-arrival: month_actions += 1; presidency_timer += 3;
+view-if: generalitat_presidency_timer <= 0 and (president_party == player_party)
+on-arrival: month_actions += 1; generalitat_presidency_timer += 3;
 is-card: true
 card-image: img/cat_seal.svg
 face-image: img/cat_seal.svg

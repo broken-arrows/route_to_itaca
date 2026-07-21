@@ -8,6 +8,11 @@ on-arrival: {!
     Q.spa_cs_active = true;
     G.spaSupportInject(Q, 'cs', 'all', 9.0, 'pp');
     G.spaSupportInject(Q, 'cs', 'all', 2.0, 'abstain');
+
+    Q.cs_leader = "Inés Arrimadas";
+    Q.cs_leader_gender = "f";
+    Q.csspa_leader = "Albert Rivera";
+    Q.csspa_leader_gender = "m";
 !}
 role: event
 

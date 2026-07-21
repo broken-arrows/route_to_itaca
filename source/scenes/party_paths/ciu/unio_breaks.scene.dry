@@ -1,6 +1,6 @@
 title: CiU breaks up
 subtitle: Unthinkable just a few years ago, it seems like UDC and CDC will go on their separate ways.
-view-if: (ciu_roadmap > 1 or unio_breakup_trigger or (year>=2016 and ciu_roadmap != 0)) and player_party != "ciu"
+view-if: (ciu_roadmap > 1 or unio_breakup_trigger or (year>=2016 and ciu_roadmap != 0)) and player_party != "ciu" 
 face-image: img/events/unio_breakup.jpg
 new-page: true
 max-visits: 1

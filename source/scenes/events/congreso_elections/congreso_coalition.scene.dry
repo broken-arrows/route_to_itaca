@@ -3,6 +3,7 @@ new-page: true
 on-arrival: {!
     // ── Reset flags ──────────────────────────────────────────────────────────
     Q.congreso_coalition_psoe_cs_wtf = false;
+    Q.congreso_coalition_psoe_cs_wtf_s = 0;
     Q.congreso_coalition_barons_flag = 0;
     Q.congreso_coalition_sorpasso = false;
 
@@ -60,16 +61,25 @@ on-arrival: {!
     Q.congreso_coalition_progressive_s = (S("psoe") > 0 && (S(leftCarrier) >= 10 || iuSupport > 0)) && S("psoe") > S(leftCarrier) ? progCore : 0;
     Q.congreso_coalition_left_s = (S(leftCarrier) > S("psoe") && leftCore >= Q.congreso_s_majority * 0.7) ? leftCore : 0;
     Q.congreso_coalition_change_s = (S("psoe") > 0 && S(leftCarrier) > S("psoe")) ? progCore : 0;
-    Q.congreso_coalition_psoe_min_s    = S("psoe") > 0 && (S(leftCarrier) < 10) ? psoeCore : 0;
+    // A party that clears 176 on its own is a MAJORITY government, not a minority one —
+    // it already has its own bar, and the same seats must not render twice under two
+    // contradictory labels (nor offer two clickable options for one identical cabinet).
+    Q.congreso_coalition_psoe_min_s    = S("psoe") > 0 && (S(leftCarrier) < 10) && psoeCore < (Q.congreso_s_majority || 176) ? psoeCore : 0;
     Q.congreso_coalition_pp_vox_s      = (S("pp") > 0 && S("vox") > 0) ? ppVoxCore : 0;
     // Liberal right (PP+Cs) — split by who leads, like the grand coalition. The
     // arithmetic is identical either way; the bigger party takes the presidency.
     Q.congreso_coalition_pp_cs_s       = (S("pp") > 0 && S("cs") >= 15 && S("pp") >= S("cs")) ? ppCsCore : 0;
     Q.congreso_coalition_cs_pp_s       = (S("pp") > 0 && S("cs") >= 15 && S("cs") >  S("pp")) ? ppCsCore : 0;
-    Q.congreso_coalition_pp_min_s      = S("pp") > 0 && S("cs") < 15 ? S("pp") : 0;
-    Q.congreso_coalition_grand_s_pp    = (S("pp") > 0 && S("psoe") > 0) && S("pp") > S("psoe") ? S("pp") + psoeCore : 0;
-    Q.congreso_coalition_grand_s_psoe    = (S("pp") > 0 && S("psoe") > 0) && S("pp") <= S("psoe") ? S("pp") + psoeCore : 0;
-    Q.congreso_coalition_grand_s_ppcs = (S("pp") > 0 && S("psoe") > 0 && S("cs") > 0) && S("pp") > S("psoe") && !Q.congreso_coalition_grand_toleration_happened ? S("pp") + psoeCore : 0;
+    Q.congreso_coalition_pp_min_s      = S("pp") > 0 && S("cs") < 15 && S("pp") < (Q.congreso_s_majority || 176) ? S("pp") : 0;
+    if (Q.congreso_coalition_majority_s >= (Q.congreso_s_majority || 176)) {
+        Q.congreso_coalition_grand_s_pp = 0;
+        Q.congreso_coalition_grand_s_psoe = 0;
+        Q.congreso_coalition_grand_s_ppcs = 0;
+    } else {
+        Q.congreso_coalition_grand_s_pp    = (S("pp") > 0 && S("psoe") > 0) && S("pp") > S("psoe") ? S("pp") + psoeCore : 0;
+        Q.congreso_coalition_grand_s_psoe    = (S("pp") > 0 && S("psoe") > 0) && S("pp") <= S("psoe") ? S("pp") + psoeCore : 0;
+        Q.congreso_coalition_grand_s_ppcs = (S("pp") > 0 && S("psoe") > 0 && S("cs") > 0) && S("pp") > S("psoe") && !Q.congreso_coalition_grand_toleration_happened ? S("pp") + psoeCore : 0;
+    }
 
     // Raw PSOE+Cs total — the wtf-flop vs real-government split is resolved later
     // (in the reach-flags block), once we know whether the whitelisted regionalists
@@ -81,7 +91,7 @@ on-arrival: {!
     var catRightVsRight = (catRightRoadmap <= 1) ? "abstain" : "oppose";
 
     // The player's own default posture, by which bucket they belong to.
-    var playerIsCatRight = catRightList.indexOf(playerVehicle) >= 0;
+    var playerIsCatRight = Q.player_party == Q.parlament_current_ciu;
     var playerRoadmap = Q[playerVehicle + "_roadmap"] || 0;
     var playerVsLeft, playerVsRight;
     if (playerIsCatRight) {
@@ -242,7 +252,10 @@ on-arrival: {!
         if (mode === "psoecs")   return c.negPsoeCs   ? "support" : c.psoecs;
         return c.rightvox;
     };
-    var fill = function (core, mode, cands) {
+    // noEscalate: stop after phase 1, i.e. "does this bloc clear investiture with
+    // everyone at their NATURAL stance?" — used by the does-the-right-need-the-PSOE
+    // test, where the normal escalating reach is far too optimistic an answer.
+    var fill = function (core, mode, cands, noEscalate) {
         cands = cands || candidates;
         var members = core.slice();
         var yes = 0, abst = 0;
@@ -266,7 +279,7 @@ on-arrival: {!
         }
 
         // Phase 2 — climb one rank at a time, earliest-courted partner with headroom.
-        while (!enough()) {
+        while (!noEscalate && !enough()) {
             var moved = false;
             for (var s2 = 0; s2 < slots.length; s2++) {
                 var t = slots[s2];
@@ -409,7 +422,16 @@ on-arrival: {!
     //    the National-Right choose-if as "pp_vox_reach and not pp_cs_reach").
     Q.congreso_coalition_grand_ok = (Q.psoe_leader !== "Pedro Sánchez");
 
-    if ((Q.congreso_coalition_psoe_cs_wtf_happened || !Q.congreso_coalition_psoe_cs_wtf) && Q.psoe_leader == "Pedro Sánchez" && !Q.psoe_barons_revolted && (Q.congreso_coalition_grand_s_ppcs >= Q.congreso_s_majority || Q.congreso_coalition_grand_s_pp >= Q.congreso_s_majority)) {
+    // ── Barons revolt: only out of a genuine deadlock ────────────────────────
+    var rightGovernsAlone =
+           ((S("pp") > 0 && S("cs") > 0)  && effOf(fill(rightSeed,    "right",    candidates, true)) >= maj)
+        || ((S("pp") > 0 && S("vox") > 0) && effOf(fill(natRightSeed, "rightvox", candidates, true)) >= maj)
+        || ( S("pp") > 0                  && effOf(fill(ppMinSeed,    "right",    candidates, true)) >= maj);
+    Q.congreso_coalition_right_alone = rightGovernsAlone;
+
+    if ((Q.congreso_coalition_psoe_cs_wtf_happened || !Q.congreso_coalition_psoe_cs_wtf) && Q.psoe_leader == "Pedro Sánchez" && !Q.psoe_barons_revolted
+        && !Q.congreso_coalition_majority_reach && !rightGovernsAlone
+        && (Q.congreso_coalition_grand_s_ppcs >= Q.congreso_s_majority || Q.congreso_coalition_grand_s_pp >= Q.congreso_s_majority)) {
         Q.congreso_coalition_barons_flag = 1;
     }
 
@@ -444,7 +466,7 @@ on-arrival: {!
         || ((Q.congreso_coalition_grand_s_pp >= maj || Q.congreso_coalition_grand_s_psoe >= maj) && Q.congreso_coalition_grand_ok)
         || Q.congreso_coalition_grand_s_ppcs >= maj;
     
-    Q.congreso_coalition_grand_preferred = Q.congreso_coalition_grand_ok && (Q.congreso_coalition_grand_s_pp >= maj || Q.congreso_coalition_grand_s_psoe >= maj || congreso_coalition_grand_s_ppcs >= maj) ? 1 : 0;
+    Q.congreso_coalition_grand_preferred = Q.congreso_coalition_grand_ok && (Q.congreso_coalition_grand_s_pp >= maj || Q.congreso_coalition_grand_s_psoe >= maj || Q.congreso_coalition_grand_s_ppcs >= maj) ? 1 : 0;
     
     // Pivotal ⇔ a cabinet wants the player's votes, yet none can govern without them.
     Q.congreso_coalition_force_elections = (Q.congreso_player_s > 0) && someGovWithPlayer && !govFormsWithoutPlayer;
@@ -457,7 +479,6 @@ on-arrival: {!
         totalSeats:        congresoTotal,
         majoritySeats:     Q.congreso_s_majority || 176,
         majorityMarkAt:    0.55,
-        nearMissThreshold: 50,
         seatsKey:          "{party}_congreso_s",
         partyAliases: {
             "majority_alias": Q.congreso_coalition_majority_party
@@ -595,8 +616,9 @@ title: Force new elections!
 subtitle: We are the kingmakers with this arithmetics after all
 choose-if: congreso_coalition_force_elections
 unavailable-subtitle: This is out of our control
-on-arrival: {!
-    Q.next_spanish_election_month += 5;
+on-arrival: {!    
+    Q.next_spanish_election_time = Q.time + 6;
+    Q.next_spanish_election_month = Q.month + 6;
     if (Q.next_spanish_election_month >= 12) {
         Q.next_spanish_election_month = Q.next_spanish_election_month % 12;
         Q.next_spanish_election_year = Q.year + 1;
@@ -604,7 +626,6 @@ on-arrival: {!
         Q.next_spanish_election_year = Q.year;
     }
 
-    Q.next_spanish_election_time = Q.time + 5;
     if (!Q.rubicon) Q[Q.player_party + "_congreso_catalunya_support"] -= 2.5;
 
     if (Q.congreso_coalition_left_reach) {

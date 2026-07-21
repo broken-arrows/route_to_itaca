@@ -1,9 +1,9 @@
 title: Inter-Party Relationships
 new-page: true
-view-if: erc_inter_party_relationships_timer <= 0
+view-if: erc_inter_party_timer <= 0
 tags: erc_party
 is-card: true
-on-arrival: month_actions += 1; erc_inter_party_relationships_timer = 6;
+on-arrival: month_actions += 1; erc_inter_party_timer = 6;
 card-image: img/parties/frontpopular.jpg
 face-image: img/parties/frontpopular.jpg
 role: card-party

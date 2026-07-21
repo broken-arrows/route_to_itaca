@@ -5,7 +5,7 @@ You should not be here? Report a bug if you see this text.
 @change
 title: <span style="color: var(--up); font-style: italic;">Change</span> <span style="color: var(--psoe); font-style: italic;">Coalition</span> ([? if congreso_left_carrier == "up": UP?][?if congreso_left_carrier != "up": [+ congreso_left_carrier +]?] - PSOE [? if iu_congreso_s > 0: - IU?])
 subtitle: A difficult arithmetic made possible by kingmaker smaller parties. [? if congreso_coalition_change_talks: Given the numbers, we have a chance to negotiate the conditions to make this possible. ?]
-view-if: congreso_coalition_change_s > congreso_s_majority - 50
+view-if: congreso_coalition_change_s > 0
 choose-if: congreso_coalition_change_reach and not congreso_coalition_psoe_cs_wtf and not congreso_coalition_grand_preferred
 unavailable-subtitle: [? if not congreso_coalition_change_reach : The numbers don't add up, not even with every abstention that can be realistically negotiated. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +] ?][? if congreso_coalition_grand_preferred: The PSOE would rather work on a Grand Coalition. ?]
 on-arrival: congreso_coalition_lead_party = congreso_left_carrier
@@ -33,7 +33,7 @@ The recently appointed [+ spanish_coalition_disp +] Gobierno will be lead by [? 
 @left
 title: <span style="color: var(--up); font-style: italic;">Left</span> <span style="color: var(--iu); font-style: italic;">Front</span> Government ([? if congreso_left_carrier == "up": UP?][?if congreso_left_carrier != "up": [+ congreso_left_carrier +]?][? if iu_congreso_s > 0:  - IU?])
 subtitle: A difficult arithmetic made possible by kingmaker smaller parties.  [? if congreso_coalition_left_talks: Given the numbers, we have a chance to negotiate the conditions to make this possible. ?]
-view-if: congreso_coalition_left_s > congreso_s_majority - 50
+view-if: congreso_coalition_left_s > 0
 choose-if: congreso_coalition_left_reach
 unavailable-subtitle: [? if not congreso_coalition_left_reach : The numbers don't add up, not even with every abstention that can be realistically negotiated. ?]
 on-arrival: congreso_coalition_lead_party = congreso_left_carrier

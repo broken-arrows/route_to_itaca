@@ -7,7 +7,7 @@ You should not be here? Report a bug if you see this text.
 @psoe_led
 title: PSOE-led <span style="color: var(--psoe); font-style: italic;">Grand</span> <span style="color: var(--pp); font-style: italic;">Coalition</span> (PSOE - PP)
 subtitle: Is this the new normal?
-view-if: congreso_coalition_grand_s_psoe > congreso_s_majority - 50 and psoe_leader != "???"
+view-if: congreso_coalition_grand_s_psoe > 0 and psoe_leader != "???"
 choose-if: congreso_coalition_grand_s_psoe >= congreso_s_majority and congreso_coalition_grand_ok and not congreso_coalition_psoe_cs_wtf and (congreso_coalition_grand_toleration_happened or congreso_coalition_grand_s_ppcs < congreso_s_majority)
 unavailable-subtitle: [? if congreso_coalition_grand_s_psoe < congreso_s_majority: PSOE and PP don't have enough seats, even together, ?][? if not congreso_coalition_grand_ok: [+ psoe_leader +] has ruled out any pact with the PP. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +] ?][? if congreso_coalition_psoe_cs_wtf_happened and not congreso_coalition_grand_toleration_happened: This may still be a bit too much to ask from the PP. ?][? if psoe_leader == "???": The PSOE has no clear leadership at the moment. ?]
 on-arrival: {!
@@ -34,7 +34,7 @@ In [? if congreso_coalition_grand_toleration_happened: yet another ?][? if not c
 @pp_led
 title: PP-led <span style="color: var(--pp); font-style: italic;">Grand</span> <span style="color: var(--psoe); font-style: italic;">Coalition</span> (PP - PSOE)
 subtitle: Is this the new normal?
-view-if: congreso_coalition_grand_s_pp > congreso_s_majority - 50 
+view-if: congreso_coalition_grand_s_pp > 0
 choose-if: congreso_coalition_grand_s_pp >= congreso_s_majority and congreso_coalition_grand_ok and not congreso_coalition_psoe_cs_wtf and (congreso_coalition_grand_toleration_happened or congreso_coalition_grand_s_ppcs < congreso_s_majority)
 unavailable-subtitle: [? if congreso_coalition_grand_s_pp < congreso_s_majority: PP and PSOE don't have enough seats, even together, ?][? if not congreso_coalition_grand_ok: [+ psoe_leader +] has ruled out any pact with the PP. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +] ?][? if congreso_coalition_psoe_cs_wtf_happened and not congreso_coalition_grand_toleration_happened: This may still be a bit too much to ask from the PSOE. ?]
 on-arrival: {!
@@ -60,7 +60,7 @@ In [? if congreso_coalition_grand_toleration_happened: yet another ?][? if not c
 @toleration
 title: <span style="color: var(--pp); font-style: italic;">Grand</span> <span style="color: var(--cs); font-style: italic;">Tole</span><span style="color: var(--psoe); font-style: italic;">ration</span> (PP - csspa - PSOE)
 subtitle: Truly, what even is going on?
-view-if: congreso_coalition_grand_s_ppcs > congreso_s_majority - 50 and not congreso_coalition_grand_toleration_happened
+view-if: congreso_coalition_grand_s_ppcs > 0 and not congreso_coalition_grand_toleration_happened
 choose-if: congreso_coalition_grand_s_ppcs >= congreso_s_majority and congreso_coalition_grand_ok and not congreso_coalition_psoe_cs_wtf and not congreso_coalition_grand_toleration_happened
 unavailable-subtitle: [? if congreso_coalition_grand_s_ppcs < congreso_s_majority: PP, Cs, and PSOE don't have enough seats, even together. ?][? if not congreso_coalition_grand_ok: [+ psoe_leader +] has ruled out any pact with the PP. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +] ?]
 on-arrival: {!

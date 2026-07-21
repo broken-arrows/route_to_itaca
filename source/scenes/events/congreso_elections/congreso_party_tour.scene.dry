@@ -1,11 +1,15 @@
 title: Who's running for the Congreso?
-subtitle: Elections are just around the corner
-view-if: next_spanish_election_time - time <= 3  and congreso_party_tour_timer = 0
+subtitle: The Spanish General Election is just around the corner
+view-if: next_spanish_election_time - time <= 3 and congreso_party_tour_timer = 0
 tags: event
 new-page: true
 on-arrival: {!
-    Q.congreso_party_tour_timer = 3;
-    
+    Q.congreso_party_tour_timer = 5;
+
+    Q.spanish_pm_coalition = [Q.spanish_pm_party];
+    Q.spa_caretaker_gov = true;
+    Q.spanish_coalition_disp = Q.spanish_pm_party + "<span style=\"font-style:italic;\"> caretaker gov.</span>";
+
     Q.congreso_party_tour_highlight = [];
     Q.congreso_party_tour_viewed_rest = false;
     Q.congreso_party_tour_viewed_catalonia = false;
@@ -27,6 +31,8 @@ set-jump: rest_desc
 
 @rest_desc
 go-to: choices
+
+With [? if spanish_pm_gender == "m": Presidente?][? if spanish_pm_gender == "f": Presidenta?] [+ spanish_pm +] having dissolved the Congreso, and the Gobierno left with only caretaker powers, the upcoming General Election is all the talk. 
 
 Across Spain many parties are running in every constituency. We can count on the classics, PP and PSOE[? if psc_split: , though the latter will not be running in Catalonia after the split with the PSC?].
 [? if not iu_in_up or upyd_congreso_s > 0: There's also the traditional minor [? if not iu_in_up and upyd_congreso_s > 0: parties: UPyD and IU.?][? if iu_in_up and upyd_congreso_s > 0: right party of UPyD.?][? if not iu_in_up and upyd_congreso_s < 1: left party of IU. ?]?]
@@ -104,7 +110,7 @@ go-to: choices
 
 In the **Basque Country**, the EAJ-PNV will be, as always, present alongside with [? if spa_ehbildu_active: ehbildu.?][? if not spa_ehbildu_active: the alternative civic list of Amaiur.?]
 
-On their end, in **Navarre**, UPN will be running [? if spa_nsuma_formed: alonside the PP and Cs as part of the nsuma coalition.?][? if upn_in_pp: with the PP once again.?] To their left, [? if spa_ehbildu_active: gbai and ehbildu ?][? if not spa_ehbildu_active: Amaiur?].
+On their end, in **Navarre**, UPN will be running [? if spa_nsuma_formed: alonside the PP and Cs as part of the nsuma coalition.?][? if not spa_nsuma_formed and upn_in_pp: with the PP once again.?][? if not upn_in_pp: this time independently from the PP.?] To their left, [? if spa_ehbildu_active: gbai and ehbildu ?][? if not spa_ehbildu_active: Amaiur?].
 
 # TODO: change the conditions when we manage to fold gbai into amaiur if it is ever reformed.
 

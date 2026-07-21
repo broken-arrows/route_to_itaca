@@ -88,13 +88,108 @@ if (has_time_passed) {
     if (Q.roadmap_year > 0 && Q.year > Q.roadmap_year) {
         Q.broken_roadmap = 1;
     }
+
+    if (Q.time + 5 == Q.next_spanish_election_time || Q.time + 12 == Q.next_spanish_election_time) {
+        // Resolve parties that actually run
+        // It's a double check to allow "last minute" coalitions + allow coalition re-forming on failed elections (e.g 2015-2016 changes)
+        if (Q.party_reaching_out_bng == 2) {
+            Q.spa_bng_active = true;
+        } else if (Q.party_reaching_out_bng == -2) {
+            Q.spa_bng_active = false;
+        } else {
+            if (Q.iu_in_up) {
+                if ((Q.year <= 2016 || Q.constitution_reformed) && Q.party_reaching_out_bng < 1) {
+                    Q.spa_bng_active = false;
+                } else if (Q.party_reaching_out_bng > -1 && !(Q.psoe_congreso_galicia_support <= Q.up_congreso_galicia_support + Q.bng_congreso_galicia_support || Q.congreso_coalition_sorpasso)) {
+                    Q.spa_bng_active = true;
+                } else {
+                    Q.spa_bng_active = false;
+                }
+            } else {
+                if ((Q.psoe_congreso_galicia_support <= Q.podemos_congreso_galicia_support + Q.bng_congreso_galicia_support || (Q.congreso_coalition_sorpasso && Q.constitution_reformed))) {
+                    Q.spa_bng_active = true;
+                } else {
+                    Q.spa_bng_active = false;
+                }
+            }
+        }
+        if (Q.party_reaching_out_compromis == 2) {
+            Q.spa_compromis_active = true;
+        } else if (Q.party_reaching_out_compromis == -2) {
+            Q.spa_compromis_active = false;
+        } else {
+            if ((Q.year <= 2016 || Q.constitution_reformed) && Q.party_reaching_out_compromis < 1) {
+                Q.spa_compromis_active = false;
+            } else if (Q.party_reaching_out_compromis > -1 && !(Q.psoe_congreso_valencia_support <= Q.podemos_valencia_support + Q.up_valencia_support + Q.compromis_valencia_support|| Q.congreso_coalition_sorpasso)) {
+                Q.spa_compromis_active = true;
+            } else {
+                Q.spa_compromis_active = false;
+            }
+        }
+        if (Q.party_reaching_out_mes == 2) {
+            Q.spa_mes_active = true;
+        } else if (Q.party_reaching_out_mes == -2) {
+            Q.spa_mes_active = false;
+        } else {
+            if (Q.iu_in_up && Q.party_reaching_out_mes < 1 && (Q.year < 2019 || Q.constitution_reformed)) {
+                Q.spa_mes_active = false;
+            } else if (Q.party_reaching_out_mes > -1 && !(Q.psoe_congreso_valencia_support <= Q.podemos_valencia_support + Q.up_valencia_support + Q.compromis_valencia_support || (Q.congreso_coalition_sorpasso && Q.constitution_reformed))) {
+                Q.spa_mes_active = true;
+            } else {
+                Q.spa_mes_active = false;
+            }
+        }
+        
+        if ((Q.pp_congreso_navarra_support*0.9 <= Q.cs_congreso_navarra_support) || (Q.pp_congreso_navarra_support*0.9 <= Q.podemos_congreso_navarra_support) || (Q.pp_congreso_navarra_support*0.9 <= Q.psoe_congreso_navarra_support) || (Q.pp_congreso_navarra_support*0.9 <= Q.up_congreso_navarra_support)) {
+            Q.upn_in_pp = false;
+        } else {
+            Q.upn_in_pp = true;
+            if (Q.year > 2016 && Q.pp_congreso_navarra_support*0.7 >= Q.cs_congreso_navarra_support) {
+                Q.spa_nsuma_formed = true;
+            }
+        }
+        if (Q.year > 2016) {
+            var foro_weight_sum = 0;
+            for (var r of Q.congreso_constituencies) {
+                if (Q["cs_congreso_" + r + "_support"] * 0.9 >= Q["pp_congreso_" + r + "_support"]) {
+                    foro_weight_sum += 1;
+                    if (r == "res") {
+                        foro_weight_sum += 1;
+                    }
+                }
+            }
+            if (!Q.upn_in_pp) {
+                foro_weight_sum += 1;
+            }
+            if (Q.prc_congreso_rest_support >= 0.4) {
+                foro_weight_sum += 1;
+            }
+            if (Q.cc_congreso_res_support >= 0.7){
+                foro_weight_sum += 1;
+            }
+            if (foro_weight_sum > 3) {
+                Q.spa_foro_active = true;
+            } else {
+                Q.spa_foro_active = false;
+            }
+        }
+        if ((!Q.spa_te_active) && (Q.year > 2017)) {
+            // TBD: More options to trigger this?
+            Q.spa_te_active = true;
+            G.spaSupportInject(Q, 'te', 'rest', 0.22, 'abstain');
+        }
+    }
+    
+
     // 2.3. Ripple effects from time passing.
     if (Q.unemployment >= 20 && (Q.erc_supporting == 1 || Q.erc_in_gob == 1)) {
-        Q.erc_left_dissent += 1;
+        Q.erc_left_dissent += 0.5;
     }
     if (Q.broken_roadmap == 1) {
         Q.erc_civic_dissent += 1;
     }
+    // TODO: Ripple effect for CUP
+
     // 2.4. Historical records
     // Parlament
     if (!Q.historical_mode || (Q.month % 4 == 0 && Q.week == 1) || (Q.year == Q.next_election_year && Q.month == Q.next_election_month && Q.week == Q.next_election_week)) {
@@ -143,7 +238,7 @@ if (has_time_passed) {
         'date': new Date(Q.year, Q.month-1, Q.week*7),
         'independence_movement': Q.independence_movement,
         'independence_trust': Q.independence_trust,
-        'social_dissent': Q.social_dissnet,
+        'social_dissent': Q.social_dissent,
         'cat_spa_relations': Q.cat_spa_relations,
         'podemos_channeling': Q.podemos_channeling,
         'welfare_index': Q.welfare_index
@@ -155,13 +250,14 @@ if (has_time_passed) {
         if (Q[countdown + "_countdown"] >= 0) {
             Q[countdown + "_countdown"] -= 1;
             // countdowns at -1 are actually usefull for visualizations
+        } else {
+            if (Q[countdown + "_countdown"] == 0) {
+                Q[countdown + "_countdown"] = -1;
+                console.info("Countdown for " + countdown + " reached trigger.");
+                Q[countdown + '_trigger'] = 1;
+            }
+            console.log("Countdown " + countdown + ": " + Q[countdown + "_countdown"] + " ticks remaining.");
         }
-        if (Q[countdown + "_countdown"] == 0) {
-            Q[countdown + "_countdown"] = -1;
-            console.info("Countdown for " + countdown + " reached trigger.");
-            Q[countdown + '_trigger'] = 1;
-        }
-        console.log("Countdown " + countdown + ": " + Q[countdown + "_countdown"] + " ticks remaining.");
     }
 }
 
@@ -221,25 +317,53 @@ if ((!Q.hidden_bng_surge) && (Q.year == 2019)) {
         G.spaSupportInject(Q, 'bng', 'galicia', 5.5, 'up');
     }
 }
-if ((!Q.spa_te_active) && (Q.year == 2018)) {
-    // TBD: More options to trigger this?
-    Q.spa_te_active = true;
-    G.spaSupportInject(Q, 'te', 'rest', 0.22, 'abstain');
-}
-if ((!Q.spa_mes_active) && (Q.year == 2015 && Q.month == 2) ) {
-    // TODO: More ways to trigger this! (maybe trigger in the congreso_tour scene instead?)
-    Q.spa_mes_active = true;
-    if (!Q.iu_in_up) {
-        G.spaSupportInject(Q, 'mes', 'balears', 3.5, 'podemos');
-    } else {
-        G.spaSupportInject(Q, 'mes', 'balears', 3.5, 'up');
-    }
-}
 if ((!Q.podemos_hidden_surge) && (Q.year == 2014 && Q.month == 5)) {
     Q.podemos_hidden_surge = true;
     G.spaSupportInject(Q, 'podemos', 'all', 6.0, 'iu');
     G.spaSupportInject(Q, 'podemos', 'all', 9.0, 'abstain');
     G.spaSupportInject(Q, 'podemos', 'all', 3.0, 'psoe');
+}
+
+// Silent leadership changes
+if (Q.pnv_leader == "Íñigo Urkullu" && Q.year >= 2013) {
+    Q.pnv_leader = "Andoni Ortuzar";
+    Q.pnv_leader_gender = "m";
+}
+if (Q.next_election_time - Q.time > 12 && Q.year > 2016) {
+    Q.ppc_leader = "Xavier García Albiol";
+    Q.ppc_leader_gender = "m";
+}
+if (Q.ehbildu_leader == "Laura Mintegi" && Q.year >= 2015) {
+    Q.ehbildu_leader == "Maddalen Iriarte"
+    Q.ehbildu_leader_gender = "f";
+}
+if (Q.upn_leader == "Yolanda Barcina" && Q.year >= 2015 && Q.month >= 9) {
+    Q.upn_leader = "Javier Esparza";
+    Q.upn_leader_gender = "m";   
+}
+if (Q.bng_leader == "Francisco Jorquera" && Q.year >= 2015) {
+    Q.bng_leader = "Ana Pontón";
+    Q.bng_leader_gender = "f";
+}
+if (Q.ccpnc_leader == "Paulino Rivero" && Q.year >= 2015) {
+    Q.ccpnc_leader = "Fernando Clavijo";
+    Q.ccpnc_leader_gender = "m";
+}
+if (Q.fac_leader == "Paulino Rivero" && Q.year >= 2015) {
+    Q.fac_leader = "Cristina Coto";
+    Q.fac_leader_gender = "f";
+}
+if (Q.ehbildu_leader == "Maddalen Iriarte" && Q.year >= 2016 && Q.month >= 6) {
+    Q.ehbildu_leader = "Arnaldo Otegi";
+    Q.ehbildu_leader_gender = "m";
+}
+if (Q.fac_leader == "Cristina Coto" && Q.year >= 2019) {
+    Q.fac_leader = "Carmen Moriyón";
+    Q.fac_leader_gender = "f";
+}
+if (Q.mes_leader == "Biel Barceló" && Q.year >= 2019) {
+    Q.mes_leader = "Miquel Ensenyat";
+    Q.mes_leader_gender = "m";
 }
 
 Q.has_event = 0;

@@ -3,11 +3,9 @@ new-page: true
 is-card: true
 tags: debug_card
 view-if: debug
-on-arrival: month_actions += 1
 card-image: img/achievements/perrosanxe.png
 go-to: debug_menu
 role: card
-
 
 @debug_menu
 new-page: true
@@ -20,8 +18,12 @@ You should not be seeing this in a normal game. Please report a bug!
 - @inject_party
 - @add_remove_support
 - @set_time
-- @post_event: Pass time
+- @pass_time: Pass time
 - @easy_discard
+
+@pass_time
+on-arrival: month_actions += 1
+go-to: post_event
 
 @inject_party
 title: Inject party situation
@@ -299,10 +301,9 @@ choose-if: 1==0
 @set_time
 title: Set time
 new-page: true
+on-arrival: debug_time_og = time; debug_month_og = month; debug_year_og = year;
 
 = Time setter
-
-Countdowns and timers will be unaffected!!
 
 - @set_month: Set month
 - @set_year: Set year
@@ -325,9 +326,36 @@ Countdowns and timers will be unaffected!!
 - @nov
 - @dec
 
+@timecalc
+title: timecalc
+on-arrival: {!
+    var time_passed = 0;
+    if (Q.year > Q.debug_year_og) {
+        time_passed += 12 * (Q.year - Q.debug_year_og);
+    }
+    if (Q.month > Q.debug_month_og) {
+        time_passed += Q.month - Q.debug_month_og;
+    } else if (Q.month < Q.debug_month_og) {
+        time_passed += 12 - Q.debug_month_og + Q.month;
+        Q.year += 1;
+    }
+    Q.time += time_passed;
+    for (var c of Q.countdowns) {
+        Q[c + "_countdown"] -= time_passed;
+        if (Q[c + "_countdown"] <= 0) {
+            Q[c + "_countdown"] = 0;
+            Q[c + "_trigger"] = true;
+        }
+    }
+    for (var t of Q.timers) {
+        Q[t + "_timer"] -= time_passed;
+    }
+!}
+
 @jan
 title: January
 on-arrival: month=1
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -337,6 +365,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @feb
 title: February
 on-arrival: month=2
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -346,6 +375,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @mar
 title: March
 on-arrival: month=3
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -355,6 +385,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @apr
 title: April
 on-arrival: month=4
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -364,6 +395,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @may
 title: May
 on-arrival: month=5
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -373,6 +405,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @jun
 title: June
 on-arrival: month=6
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -382,6 +415,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @jul
 title: July
 on-arrival: month=7
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -391,6 +425,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @aug
 title: August
 on-arrival: month=8
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -400,6 +435,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @sep
 title: September
 on-arrival: month=9
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -409,6 +445,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @oct
 title: October
 on-arrival: month=10
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -418,6 +455,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @nov
 title: November
 on-arrival: month=11
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -427,6 +465,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @dec
 title: December
 on-arrival: month=12
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -447,6 +486,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @y2013
 title: 2013
 on-arrival: year=2013
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -456,6 +496,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @y2014
 title: 2014
 on-arrival: year=2014
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -465,6 +506,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @y2015
 title: 2015
 on-arrival: year=2015
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -474,6 +516,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @y2016
 title: 2016
 on-arrival: year=2016
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -483,6 +526,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @y2017
 title: 2017
 on-arrival: year=2017
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -492,6 +536,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @y2018
 title: 2018
 on-arrival: year=2018
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 
@@ -501,6 +546,7 @@ time set to [+ month: month +] [+ year +] (week [+ week +])
 @y2019
 title: 2019
 on-arrival: year=2019
+call: debug_card.timecalc
 
 time set to [+ month: month +] [+ year +] (week [+ week +])
 

@@ -5,6 +5,18 @@ tags: event
 new-page: true
 max-visits: 1
 call: newyearcalc
+on-arrival: {!
+    // TODO: make its own event + gate?
+    Q.fnc_formed = true;
+    Q.pxc_dissolved = true;
+    for (var c of Q.parlament_constituencies) {
+        for (var d of Q.parlament_demographics) {
+            Q["fnc_parlament_" + c + "_" + d + "_support"] = 0.9 * Q["pxc_parlament_" + c + "_" + d + "_support"];
+            Q["vox_parlament_" + c + "_" + d + "_support"] = 0.1 * Q["pxc_parlament_" + c + "_" + d + "_support"];
+            Q["pxc_parlament_" + c + "_" + d + "_support"] = 0;
+        }
+    }
+!}
 role: event
 
 = A New Year: 2015

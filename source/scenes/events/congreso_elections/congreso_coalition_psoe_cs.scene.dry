@@ -52,8 +52,8 @@ face-image: img/events/rivera_sanchez.jpg
 on-arrival: {!
     Q.congreso_coalition_psoe_cs_wtf_happened = true;
     
-    Q.next_spanish_election_time = Q.time + 5;
-    Q.next_spanish_election_month = Q.month + 5;
+    Q.next_spanish_election_time = Q.time + 6;
+    Q.next_spanish_election_month = Q.month + 6;
     if (Q.next_spanish_election_month > 12 ) {
         Q.next_spanish_election_year = Q.year + 1;
         Q.next_spanish_election_month = Q.next_spanish_election_month % 12;

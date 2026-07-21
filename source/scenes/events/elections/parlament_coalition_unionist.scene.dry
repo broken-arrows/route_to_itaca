@@ -176,6 +176,10 @@ The unionist parties have agreed to form a [+ cat_coalition_disp +]. The Speaker
 
 @psc_cs
 title: <span style="color: var(--psc); font-style: italic;">PSC</span>-led <span style="color: var(--cs); font-style: italic;">Moderation</span> Government
+view-if: parlament_coalition_psc_cs_mod_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
+choose-if: parlament_coalition_psc_cs_mod_s >= parlament_s_majority
+unavailable-subtitle: PSC and Cs together do not have a combined majority.
+subtitle: [? if player_party == "erc": A "reconciliation" government, helping who? ?][? if player_party == "cup": Moderation-speak for more anti-Catalan politics.?]
 on-arrival: {!
     Q.erc_in_gob = false;
     Q.erc_supporting = false;
@@ -217,7 +221,7 @@ The unionist parties have agreed to form a [+ cat_coalition_disp +]. The Speaker
 
 @cs_psc_ppc
 title: Cs-led Unity Pact (Cs + PSC + PPC)
-view-if: parlament_coalition_cs_psc_ppc_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
+view-if: parlament_coalition_cs_psc_ppc_sup_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
 choose-if: parlament_coalition_cs_psc_ppc_s >= parlament_s_majority
 unavailable-subtitle: Cs, PSC, and PPC together do not have a combined majority.
 subtitle: [? if player_party == "erc": A constitutional bloc against the independence project. ?][? if player_party == "cup": An anti-independence grand coalition.?]
@@ -225,7 +229,7 @@ go-to: cs_ppc
 
 @psc_cs_ppc
 title: PSC-led Unity Pact (PSC + Cs + PPC)
-view-if: parlament_coalition_psc_cs_ppc_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
+view-if: parlament_coalition_psc_cs_ppc_sup_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
 choose-if: parlament_coalition_psc_cs_ppc_s >= parlament_s_majority
 unavailable-subtitle: PSC, Cs, and PPC together do not have a combined majority.
 subtitle: [? if player_party == "erc": A Spanish-nationalist bloc, PSC-led. ?][? if player_party == "cup": The worst kind of social-democrat betrayal.?]
@@ -233,7 +237,7 @@ go-to: ppc_cs
 
 @cs_psc_ppc_vox
 title: <span style="color: var(--cs); font-style: italic;">Right</span>-<span style="color: var(--vox); font-style: italic;">Union</span> Grand Coalition
-view-if: parlament_coalition_cs_psc_ppc_vox_s > 0 and parlament_coalition_cs_ppc_vox_s < parlament_s_majority and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
+view-if: (parlament_coalition_cs_ppc_psc_vox_abst_s > 0 or parlament_coalition_cs_ppc_vox_psc_abst_s > 0 or parlament_coalition_cs_ppc_vox_psc_sup_s > 0) and parlament_coalition_cs_ppc_vox_s < parlament_s_majority and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
 choose-if: parlament_coalition_cs_psc_ppc_vox_s >= parlament_s_majority
 unavailable-subtitle: The constitutionalist and PSC bloc does not have a combined majority.
 subtitle: [? if player_party == "erc": An unprecedented anti-independence bloc. ?][? if player_party == "cup": As bad as it gets.?]
@@ -241,7 +245,7 @@ go-to: cs_ppc_vox
 
 @cs_psc_unio
 title: Cs - PSC - UDC Moderation Pact
-view-if: parlament_coalition_cs_psc_unio_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
+view-if: parlament_coalition_cs_psc_unio_mod_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
 choose-if: parlament_coalition_cs_psc_unio_s >= parlament_s_majority
 unavailable-subtitle: Cs, PSC, and Unió together do not have a combined majority.
 subtitle: [? if player_party == "erc": A centrist bloc without us. ?][? if player_party == "cup": Moderation-speak for blocking independence.?]
@@ -249,7 +253,7 @@ go-to: cs_minority
 
 @psc_cs_unio
 title: PSC-led Moderation Pact (PSC + Cs + Unió)
-view-if: parlament_coalition_psc_cs_unio_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
+view-if: parlament_coalition_psc_cs_unio_mod_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
 choose-if: parlament_coalition_psc_cs_unio_s >= parlament_s_majority
 unavailable-subtitle: PSC, Cs, and Unió together do not have a combined majority.
 subtitle: [? if player_party == "erc": A centrist unionist government. ?][? if player_party == "cup": Another form of blocking independence.?]

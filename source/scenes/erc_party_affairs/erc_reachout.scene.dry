@@ -1,9 +1,9 @@
 title: Reaching Out
 new-page: true
-view-if: erc_reach_out_timer <= 0
+view-if: erc_reachout_timer <= 0
 on-arrival: {! 
     Q.month_actions += 1; 
-    Q.erc_reach_out_timer = 9; 
+    Q.erc_reachout_timer = 9; 
     Q.party_reaching_out_map = 1;
 
     Q.congreso_party_tour_viewed_rest = false;
@@ -13,9 +13,6 @@ on-arrival: {!
     Q.congreso_party_tour_viewed_galicia = true;
     Q.congreso_party_tour_viewed_others = false;
     Q.congreso_party_tour_highlight = ["galicia", "ppcc", "eh", "catalonia"];
-!}
-on-departure: {!
-    Q.party_reaching_out_map = 0;
 !}
 max-visits: 36
 is-card: true
@@ -47,63 +44,391 @@ title: Reach out to the BNG
 subtitle: [-1 resources]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
-on-arrival: {!
+on-arrival: party_resources -= 1
 
+We have collaborated and talked before with the BNG, as we share many points in leftist thinking, independence, and republicanism. What should we focus on this time?
+
+-@campaign_bng
+-@push_bng
+-@pull_bng
+
+@campaign_bng
+title: Campaign together with the BNG
+on-arrival: {!
+    if (Q.podemos_surged) {
+        G.spaSupportInject(Q, "bng", "galicia", "3", "podemos");
+        G.spaSupportInject(Q, "erc", "catalunya", "2", "podemos");
+    } else {
+        G.spaSupportInject(Q, "bng", "galicia", "3", "iu");
+        G.spaSupportInject(Q, "erc", "catalunya", "3", "iu");
+    }
+    G.spaSupportInject(Q, "bng", "galicia", "3", "psoe");
+    G.spaSupportInject(Q, "bng", "galicia", "1", "pp");
+    if (Q.psc_split) {
+        G.spaSupportInject(Q, "erc", "catalunya", "1", "psc");
+    } else {
+        G.spaSupportInject(Q, "erc", "catalunya", "1", "psoe");
+    }  
 !}
 
+Building bridges across state-less nations is always something that draws people into our cause. Let's hope this makes a difference!
+
+- @clean_map
+
+
+@push_bng
+title: Talk the BNG into collaborating with [? if iu_in_up: UP ?][? if not iu_in_up: Podemos ?]
+view-if: podemos_surged
+choose-if: party_reaching_out_bng > -2
+unavailable-subtitle: We've already done everything in our hand to bring them as close as possible.
+on-arrival: {!
+    Q[Q.parlament_current_icv + "_relations"] += 5;
+    Q["cup_relations"] -=3;
+    Q.cat_spa_relations += 1;
+    Q.party_reaching_out_bng -= 1;
+
+    Q.independence_trust -= 3;
+
+    if (Q.spa_cup_active) {
+        G.spaSupportInject(Q, "cup", "calaunya", "1", "erc");
+    } else if (Q.spa_fr_active) {
+        G.spaSupportInject(Q, "fr", "calaunya", "1", "erc");
+    }
+!}
+
+We've tried our best to build bridges and set up talks between them and [? if iu_in_up: UP?][? if not iu_in_up: Podemos?]. We'll have to see if that's enough for them to run together in the next election, though.
+
+- @clean_map
+
+
+@pull_bng
+title: Talk the BNG into running independently from [? if iu_in_up: UP ?][? if not iu_in_up: Podemos ?]
+view-if: podemos_surged 
+choose-if: party_reaching_out_bng < 2
+unavailable-subtitle: We've already done everything in our hand to prop up their independence.
+on-arrival: {!
+    Q[Q.parlament_current_icv + "_relations"] -= 5;
+    Q["cup_relations"] +=3;
+    Q.cat_spa_relations -= 1;
+    Q.party_reaching_out_bng += 1;
+    
+    Q.independence_trust += 1;
+    if (Q.spa_cup_active) {
+        G.spaSupportInject(Q, "erc", "calaunya", "0.5", "cup");
+    } else if (Q.spa_fr_active) {
+        G.spaSupportInject(Q, "erc", "calaunya", "0.5", "fr");
+    }
+!}
+
+We've tried our best to highlight the need to have different political opinions between independence and sovereignty versus [? if iu_in_up: UP's ?][? if not iu_in_up: Podemos' ?] federalism. We'll have to see if that's enough for them to not run together in the next election, though.
+
+- @clean_map
+
+
 @pnv_reach
-title: Reach out to EAJ-PNV
+title: Campaing with EAJ-PNV
 subtitle: [-1 resources]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
-
+    Q.party_resources -= 1
+    if (Q.podemos_surged) {
+        G.spaSupportInject(Q, "pnv", "eusakdi", "2", "podemos");
+        G.spaSupportInject(Q, "podemos", "catalunya", "1", "erc");
+        G.spaSupportInject(Q, "gbai", "navarra", "1", "podemos");
+    } else {
+        G.spaSupportInject(Q, "pnv", "euskadi", "2", "iu");
+        G.spaSupportInject(Q, "iu", "catalunya", "1", "erc");
+        G.spaSupportInject(Q, "gbai", "navarra", "1", "iu");
+    }
+    if (Q.psc_split) {
+        G.spaSupportInject(Q, "erc", "catalunya", "1", "psc");
+    } else {
+        G.spaSupportInject(Q, "erc", "catalunya", "1", "psoe");
+    }
+    G.spaSupportInject(Q, "erc", "catalunya", "1", "ciu");
+    G.spaSupportInject(Q, "pnv", "euskadi", "1", "psoe");
+    G.spaSupportInject(Q, "pnv", "euskadi", "2", "ehbildu");
+    G.spaSupportInject(Q, "gbai", "navarra", "2", "ehbildu");
+    G.spaSupportInject(Q, "gbai", "navarra", "1", "psoe");
 !}
+
+Campaigning with EAJ-PNV is an unusual move from our end. We do not really share that much on the social and economic fronts, but we do both represent aspirations for sovereignty and independence. The message sent is, nonetheless, mixed if not confusing.
+
+- @clean_map
 
 
 @ehbildu_reach
-title: Reach out to ehbildu
+title: Campaign with ehbildu
 subtitle: [-1 resources]
 choose-if: party_resources >= 1
 view-if: spa_ehbildu_active
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
+    // TODO: path for them joining UP? or too implausible?
+    Q.party_resources -= 1;
+    if (Q.podemos_surged) {
+        G.spaSupportInject(Q, "ehbildu", "eusakdi", "3", "podemos");
+        G.spaSupportInject(Q, "erc", "catalunya", "2", "podemos");
+        G.spaSupportInject(Q, "ehbildu", "navarra", "1", "podemos");
 
+    } else {
+        G.spaSupportInject(Q, "ehbildu", "euskadi", "3", "iu");
+        G.spaSupportInject(Q, "ehbildu", "navarra", "1", "iu");
+        G.spaSupportInject(Q, "erc", "catalunya", "3", "iu");
+    }
+    G.spaSupportInject(Q, "ehbildu", "euskadi", "2", "psoe");
+    G.spaSupportInject(Q, "ehbildu", "euskadi", "1", "pnv");
+    G.spaSupportInject(Q, "ehbildu", "navarra", "1", "gbai");
+    G.spaSupportInject(Q, "ehbildu", "navarra", "1", "psoe");
+    if (Q.psc_split) {
+        G.spaSupportInject(Q, "erc", "catalunya", "1", "psc");
+    } else {
+        G.spaSupportInject(Q, "erc", "catalunya", "1", "psoe");
+    }
 !}
 
+Building bridges across state-less nations is always something that draws people into our cause. Let's hope this makes a difference!
+
+- @clean_map
+
+
 @gbai_reach
-title: Reach out to gbai
+title: Campaign with gbai
 subtitle: [-1 resources]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
-
+    // TODO: path for them joining UP? or too implausible?
+    Q.party_resources -= 1
+    if (Q.podemos_surged) {
+        G.spaSupportInject(Q, "pnv", "eusakdi", "1", "podemos");
+        G.spaSupportInject(Q, "gbai", "navarra", "3", "podemos");
+    } else {
+        G.spaSupportInject(Q, "pnv", "euskadi", "1", "iu");
+        G.spaSupportInject(Q, "gbai", "navarra", "4", "iu");
+    }
+    if (Q.psc_split) {
+        G.spaSupportInject(Q, "erc", "catalunya", "1", "psc");
+    } else {
+        G.spaSupportInject(Q, "erc", "catalunya", "1", "psoe");
+    }
+    G.spaSupportInject(Q, "erc", "catalunya", "1", "ciu");
+    G.spaSupportInject(Q, "pnv", "euskadi", "0.5", "psoe");
+    G.spaSupportInject(Q, "pnv", "euskadi", "2", "ehbildu");
+    G.spaSupportInject(Q, "gbai", "navarra", "3", "ehbildu");
+    G.spaSupportInject(Q, "gbai", "navarra", "2", "psoe");
 !}
 
+The gbai coalition is a mix of regionalist and pro-independence parties in Navarre, ranging from centre-left to centre-right, including the Navarrese branch of EAJ-PNV. Campaigning with them is a tad unusual for us, but we do both represent aspirations for sovereignty and independence. 
+
+- @clean_map
+
+
 @amaiur_reach
-title: Reach out to amaiur
+title: Campaign with amaiur
 subtitle: [-1 resources]
 choose-if: party_resources >= 1
 view-if: not spa_ehbildu_active
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
-
+    Q.party_resources -= 1;
+    if (Q.podemos_surged) {
+        G.spaSupportInject(Q, "amaiur", "eusakdi", "4", "podemos");
+        G.spaSupportInject(Q, "erc", "catalunya", "4", "podemos");
+        G.spaSupportInject(Q, "amaiur", "navarra", "3", "podemos");
+    } else {
+        G.spaSupportInject(Q, "amaiur", "euskadi", "5", "iu");
+        G.spaSupportInject(Q, "amaiur", "navarra", "5", "iu");
+        G.spaSupportInject(Q, "erc", "catalunya", "5", "iu");
+    }
+    G.spaSupportInject(Q, "amaiur", "euskadi", "3", "psoe");
+    G.spaSupportInject(Q, "amaiur", "euskadi", "1", "pnv");
+    G.spaSupportInject(Q, "amaiur", "navarra", "1", "gbai");
+    G.spaSupportInject(Q, "amaiur", "navarra", "3", "psoe");
+    if (Q.psc_split) {
+        G.spaSupportInject(Q, "erc", "catalunya", "2", "psc");
+    } else {
+        G.spaSupportInject(Q, "erc", "catalunya", "4", "psoe");
+    }
 !}
+
+Campaiging together against the political repression and persecution of the Spanish state does send a powerful message.
+
+- @clean_map
+
 
 @compromis_reach
 title: Reach out to compromis
 subtitle: [-1 resources]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
-on-arrival: {!
+on-arrival: party_resources -= 1
 
+compromis is a relatively new coalition of broadly regionalist, federalist, republican, social-democratic, left parties in València. While not explicitly pro-independece, the shared language, struggle against Spanish centralization and nationalism, and a long etc does bring us close together. What should we focus on in our reaching out?
+
+-@campaign_compromis
+-@push_compromis
+-@pull_compromis
+
+@campaign_compromis
+title: Campaign together with compromis
+on-arrival: {!
+    if (Q.podemos_surged) {
+        G.spaSupportInject(Q, "compromis", "valencia", "4", "podemos");
+        G.spaSupportInject(Q, "erc", "catalunya", "2", "podemos");
+    } else {
+        G.spaSupportInject(Q, "compromis", "valencia", "3", "iu");
+        G.spaSupportInject(Q, "erc", "catalunya", "3", "iu");
+    }
+    G.spaSupportInject(Q, "compromis", "valencia", "2,5", "psoe");
+    G.spaSupportInject(Q, "compromis", "valencia", "1", "pp");  
+    if (Q.psc_split) {
+        G.spaSupportInject(Q, "erc", "catalunya", "1", "psc");
+    } else {
+        G.spaSupportInject(Q, "erc", "catalunya", "1.5", "psoe");
+    }
 !}
+
+Campaigning in València is never easy, as the right is relentless in calling for a defence against the supposed "pancatalanist" "hypernationalist" threat. Nonethless, the overall feeling is positive. 
+
+- @clean_map
+
+
+@push_compromis
+title: Talk compromis into collaborating with [? if iu_in_up: UP ?][? if not iu_in_up: Podemos ?]
+view-if: podemos_surged
+choose-if: party_reaching_out_compromis > -2
+unavailable-subtitle: We've already done everything in our hand to bring them as close as possible.
+on-arrival: {!
+    Q[Q.parlament_current_icv + "_relations"] += 5;
+    Q["cup_relations"] -= 3;
+    Q.cat_spa_relations += 1;
+    Q.party_reaching_out_compromis -= 1;
+
+    Q.independence_trust -= 3;
+
+    if (Q.spa_cup_active) {
+        G.spaSupportInject(Q, "cup", "calaunya", "1", "erc");
+    } else if (Q.spa_fr_active) {
+        G.spaSupportInject(Q, "fr", "calaunya", "1", "erc");
+    }
+!}
+
+We've tried our best to reinforce the already existing bridges between them and [? if iu_in_up: UP?][? if not iu_in_up: Podemos?]. We'll have to see if that's enough for them to run together in the next election, though.
+
+- @clean_map
+
+
+@pull_compromis
+title: Talk compromis into running independently from [? if iu_in_up: UP ?][? if not iu_in_up: Podemos ?]
+view-if: podemos_surged 
+choose-if: party_reaching_out_compromis < 2
+unavailable-subtitle: We've already done everything in our hand to prop up their independence.
+on-arrival: {!
+    Q[Q.parlament_current_icv + "_relations"] -= 5;
+    Q["cup_relations"] +=3;
+    Q.cat_spa_relations -= 1;
+    Q.party_reaching_out_compromis += 1;
+    
+    Q.independence_trust += 1;
+    if (Q.spa_cup_active) {
+        G.spaSupportInject(Q, "erc", "calaunya", "0.5", "cup");
+    } else if (Q.spa_fr_active) {
+        G.spaSupportInject(Q, "erc", "calaunya", "0.5", "fr");
+    }
+!}
+
+We've tried our best to highlight the need to have different political opinions between actual independent regional representation and sovereignty versus [? if iu_in_up: UP's ?][? if not iu_in_up: Podemos' ?] federalism. We'll have to see if that's enough for them to not run together in the next election, though.
+
+- @clean_map
+
 
 @mes_reach
 title: Reach out to MES
 subtitle: [-1 resources]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
-on-arrival: {!
+on-arrival: party_resources -= 1
 
+MES is a small group, but we do have many shared fights with them, like those on Catalan & Balearic identity, wealth redistribution, and republicanism. What should we focus on this time?
+
+-@campaign_mes
+-@push_mes
+-@pull_mes
+
+@campaign_mes
+title: Campaign together with MES
+on-arrival: {!
+    if (Q.podemos_surged) {
+        G.spaSupportInject(Q, "mes", "balears", "3", "podemos");
+        G.spaSupportInject(Q, "erc", "catalunya", "1", "podemos");
+    } else {
+        G.spaSupportInject(Q, "mes", "balears", "3", "iu");
+        G.spaSupportInject(Q, "erc", "catalunya", "2", "iu");
+    }
+    G.spaSupportInject(Q, "mes", "balears", "2", "psoe");
+    G.spaSupportInject(Q, "mes", "balears", "0.5", "pp");  
+    if (Q.psc_split) {
+        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "psc");
+    } else {
+        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "psoe");
+    }
 !}
+
+While a bit unbalanced as our party size difference is not small, MES can clearly benefit from extra resources and organization for their campaign.
+
+- @clean_map
+
+
+@push_mes
+title: Talk MES into collaborating with [? if iu_in_up: UP ?][? if not iu_in_up: Podemos ?]
+view-if: podemos_surged
+choose-if: party_reaching_out_mes > -2
+unavailable-subtitle: We've already done everything in our hand to bring them as close as possible.
+on-arrival: {!
+    Q[Q.parlament_current_icv + "_relations"] += 5;
+    Q["cup_relations"] -=3;
+    Q.cat_spa_relations += 1;
+    Q.party_reaching_out_mes -= 1;
+
+    Q.independence_trust -= 3;
+
+    if (Q.spa_cup_active) {
+        G.spaSupportInject(Q, "cup", "calaunya", "1", "erc");
+    } else if (Q.spa_fr_active) {
+        G.spaSupportInject(Q, "fr", "calaunya", "1", "erc");
+    }
+!}
+
+We've tried our best to reinforce the already existing bridges between them and [? if iu_in_up: UP?][? if not iu_in_up: Podemos?]. We'll have to see if that's enough for them to run together in the next election, though.
+
+- @clean_map
+
+@pull_mes
+title: Talk MES into running independently from [? if iu_in_up: UP ?][? if not iu_in_up: Podemos ?]
+view-if: podemos_surged 
+choose-if: party_reaching_out_mes < 2
+unavailable-subtitle: We've already done everything in our hand to prop up their independence.
+on-arrival: {!
+    Q[Q.parlament_current_icv + "_relations"] -= 5;
+    Q["cup_relations"] +=3;
+    Q.cat_spa_relations -= 1;
+    Q.party_reaching_out_mes += 1;
+    
+    Q.independence_trust += 1;
+    if (Q.spa_cup_active) {
+        G.spaSupportInject(Q, "erc", "calaunya", "0.5", "cup");
+    } else if (Q.spa_fr_active) {
+        G.spaSupportInject(Q, "erc", "calaunya", "0.5", "fr");
+    }
+!}
+
+We've tried our best to highlight the need to have different political opinions between actual independent regional representation and sovereignty versus [? if iu_in_up: UP's ?][? if not iu_in_up: Podemos' ?] federalism. We'll have to see if that's enough for them to not run together in the next election, though.
+
+- @clean_map
+
+@clean_map
+title: Continue...
+on-arrival: party_reaching_out_map = 0;
+go-to: post_event

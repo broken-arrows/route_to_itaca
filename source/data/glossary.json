@@ -66,12 +66,36 @@
       }
     },
     {
+      "id": "xavier_garcia_albiol",
+      "match": ["Xavier García Albiol", "xavier garcia albiol"],
+      "colour": "ppc",
+      "tooltip": {
+        "title": "Xavier García Albiol",
+        "img": "img/other_leaders/xavier_garcia_albiol.jpg",
+        "q": {
+          "ideology": "Conservatism, Centralism"
+        }
+      }
+    },
+    {
       "id": "albert_rivera",
       "match": ["Albert Rivera", "Albert Rivera Díaz"],
       "colour": "cs",
       "tooltip": {
         "title": "Albert Rivera Díaz",
         "img": "img/other_leaders/albert_rivera.jpg",
+        "q": {
+          "ideology": "Neo-liberalism, Centralism"
+        }
+      }
+    },
+    {
+      "id": "ines_arrimadas",
+      "match": ["Inés Arrimadas", "ines arrimadas"],
+      "colour": "cs",
+      "tooltip": {
+        "title": "Inés Arrimadas García",
+        "img": "img/other_leaders/ines_arrimadas.jpg",
         "q": {
           "ideology": "Neo-liberalism, Centralism"
         }

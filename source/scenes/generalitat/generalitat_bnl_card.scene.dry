@@ -1,6 +1,6 @@
 title: Ministry of Business and Labour
-view-if: bnl_timer <= 0 and (bnl_minister_party == player_party)
-on-arrival: month_actions += 1; bnl_timer += 3;
+view-if: generalitat_bnl_timer <= 0 and (bnl_minister_party == player_party)
+on-arrival: month_actions += 1; generalitat_bnl_timer += 3;
 is-card: true
 card-image: img/labour_icon.svg
 face-image: img/labour_icon.svg

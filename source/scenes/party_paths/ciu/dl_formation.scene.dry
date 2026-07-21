@@ -1,5 +1,5 @@
 title: CDC's identity crisis
-view-if: player_party != "cdc" and pujol_parlament_happened and (dl_formation_trigger)
+view-if: player_party != "cdc" and pujol_parlament_happened and (dl_formation_trigger) and next_election_time - time > 3
 face-image: img/events/dl_formed.jpg
 new-page: true
 max-visits: 1

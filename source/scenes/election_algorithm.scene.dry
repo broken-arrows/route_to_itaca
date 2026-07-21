@@ -424,51 +424,56 @@ for (var constituency of Q.congreso_constituencies) {
     }
 }
 
-// 03b. Map painting — synthetic 'rest' province winners. (Simulated regions are
+// 03b. Map painting — synthetic 'rest' community winners. (Simulated regions are
 // coloured by their popular-vote winner, computed in the main loop above.)
-// 'rest' has no per-province model — synthesise a believable winner per province from
-// the aggregate 'rest' support, modulated by the same urban/rural bias the seat
-// allocator uses, a light historical lean, and regional-minor strongholds. Map flavour
-// only (mirrors the synthetic comarques in @local_elections).
-var REST_PROVINCE_LEAN = {
-    "madrid":             { bias: "urban",   lean: { pp: 1.15, podemos: 1.20, cs: 1.15, vox: 1.10 } },
-    "andalusia":          { bias: "rural",   lean: { psoe: 1.45, podemos: 1.10, vox: 1.05 } },
-    "extremadura":        { bias: "rural",   lean: { psoe: 1.60, pp: 1.05 } },
-    "castile_la_mancha":  { bias: "rural",   lean: { pp: 1.25, psoe: 1.20 } },
-    "castile_and_leon":   { bias: "rural",   lean: { pp: 1.45 } },
-    "murcia":             { bias: "neutral", lean: { pp: 1.40, vox: 1.25 } },
-    "la_rioja":           { bias: "rural",   lean: { pp: 1.40 } },
-    "aragon":             { bias: "rural",   lean: { pp: 1.30, psoe: 1.05 }, minor: "te" },
-    "asturias":           { bias: "neutral", lean: { psoe: 1.35, iu: 1.20 }, minor: "fac" },
-    "cantabria":          { bias: "neutral", lean: { pp: 1.20, psoe: 1.05 }, minor: "prc" },
-    "canary_islands":     { bias: "neutral", lean: { psoe: 1.10, pp: 1.05 }, minor: "cc" },
-    "ceuta":              { bias: "neutral", lean: { pp: 1.50, vox: 1.20 } },
-    "melilla":            { bias: "neutral", lean: { pp: 1.50, psoe: 1.10 } }
+// 'rest' has no per-community model, and the map paints whole autonomous communities,
+// so synthesise a believable winner per community: the live national-'rest' support
+// scaled by a per-community CHARACTER multiplier, argmax = winner. Multiplicative, so a
+// party that is ~0 nationally (VOX pre-2019, Podemos pre-2014) stays ~0 everywhere; the
+// <1.0 down-weights suppress a structurally-weak party (e.g. PSOE in the right enclaves)
+// rather than only ever boosting. Map flavour only — the seat allocation above is the
+// real result and stays untouched.
+// Design: docs/superpowers/specs/2026-07-20-congreso-rest-map-painting-design.md
+var REST_COMMUNITY_CHAR = {
+    madrid:            { char: { pp: 1.15, psoe: 0.85, vox: 1.05, podemos: 1.15, cs: 1.20 } },
+    andalusia:         { char: { pp: 0.90, psoe: 1.35, vox: 1.00, podemos: 1.05, cs: 0.90 } },
+    extremadura:       { char: { pp: 0.95, psoe: 1.55, vox: 0.80, podemos: 0.80, cs: 0.80 } },
+    castile_la_mancha: { char: { pp: 1.20, psoe: 1.20, vox: 0.95, podemos: 0.85, cs: 0.90 } },
+    castile_and_leon:  { char: { pp: 1.40, psoe: 0.95, vox: 1.05, podemos: 0.80, cs: 0.95 } },
+    murcia:            { char: { pp: 1.35, psoe: 0.90, vox: 1.80, podemos: 0.85, cs: 1.05 } },
+    la_rioja:          { char: { pp: 1.35, psoe: 1.00, vox: 1.00, cs: 1.00 } },
+    aragon:            { char: { pp: 1.25, psoe: 1.00, podemos: 0.95 }, minor: { party: "te",  factor: 10 } },
+    asturias:          { char: { pp: 0.95, psoe: 1.30, vox: 0.80, podemos: 1.20, iu: 1.50 }, minor: { party: "fac", factor: 34 } },
+    cantabria:         { char: { pp: 1.20, psoe: 1.00, vox: 0.95 }, minor: { party: "prc", factor: 55 } },
+    canary_islands:    { char: { pp: 1.00, psoe: 1.10, podemos: 1.00, cs: 0.95 }, minor: { party: "cc", factor: 15 } },
+    ceuta:             { char: { pp: 1.50, psoe: 0.72, vox: 2.00, podemos: 0.55, cs: 1.00 } },
+    melilla:           { char: { pp: 1.50, psoe: 0.78, vox: 1.40, podemos: 0.55, cs: 1.00 } }
 };
 var REST_MINOR_PARTIES = { cc: 1, prc: 1, fac: 1, te: 1 };
-// left-bloc carrier aliases share Podemos's bias/lean profile
-function _restBiasKey(party) { return (party === 'up' || party === 'sumar') ? 'podemos' : party; }
+// carrier -> canonical family: left-bloc carriers share the Podemos profile
+function _restFamily(party) { return (party === 'up' || party === 'sumar') ? 'podemos' : party; }
 var _restSupport = {};
 for (var p of Q.congreso_parties_rest) _restSupport[p] = Q[p + '_congreso_rest_support'] || 0;
 
-for (var provId in REST_PROVINCE_LEAN) {
-    var cfg = REST_PROVINCE_LEAN[provId];
-    var biasSet = cfg.bias === 'urban' ? Q.congreso_urban_bias
-                : cfg.bias === 'rural' ? Q.congreso_rural_bias : {};
+for (var cid in REST_COMMUNITY_CHAR) {
+    var cfg = REST_COMMUNITY_CHAR[cid];
     var scores = {};
     for (var p of Q.congreso_parties_rest) {
+        var mult;
         if (REST_MINOR_PARTIES[p]) {
-            // a regional minor only contends in (and dominates) its home province
-            scores[p] = (cfg.minor === p) ? _restSupport[p] * 25 : 0;
-            continue;
+            // regional minor: contends only in its home community, scaled by its
+            // geographic concentration (national-'rest' share is its home vote diluted
+            // across all of the rest), so a genuine surge lets it paint its community
+            mult = (cfg.minor && cfg.minor.party === p) ? cfg.minor.factor : 0;
+        } else {
+            var fam = _restFamily(p);
+            mult = (cfg.char && cfg.char[fam] != null) ? cfg.char[fam] : 1.0;
         }
-        var bk = _restBiasKey(p);
-        var mult = (biasSet[bk] || 1.0) * ((cfg.lean && cfg.lean[bk]) || 1.0);
         scores[p] = _restSupport[p] * mult;
     }
     var winP = null, winBest = 0;
     for (var p in scores) { if (scores[p] > winBest) { winBest = scores[p]; winP = p; } }
-    Q['congreso_prov_' + provId + '_wp'] = winP;
+    Q['congreso_prov_' + cid + '_wp'] = winP;
 }
 
 // 04. Final Global Calculations
