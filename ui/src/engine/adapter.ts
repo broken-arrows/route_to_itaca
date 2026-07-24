@@ -1,5 +1,5 @@
 import { DendryEngine, convertJSONToGame } from 'dendrynexus-ten/lib/engine.js';
-import { convert as paragraphsToHTML } from 'dendrynexus-ten/lib/ui/content/html.js';
+import { convert as paragraphsToHTML, convertLine } from 'dendrynexus-ten/lib/ui/content/html.js';
 import { CaptureUI, normalizeCard } from './capture-ui';
 import { installGameLib } from '../game-bindings';
 import type { Frame, DrawResult, SceneRole, EffectiveRole, GameInfo, AchievementEntry } from './types';
@@ -89,6 +89,63 @@ export class DendryAdapter {
    *  source/lib/brief.js's LABELS tables. */
   translate(s: string): string {
     return this.engine.translate(s);
+  }
+
+  /**
+   * Finds a scene by its `role`. The Brief's hub is located this way and NEVER
+   * by the literal id "status" — a scene id is game content, and `ui/` must not
+   * know any. Same reasoning that killed DeskView's TRAY_KINDS in phase 3a.
+   * Returns the first match in compiled order; null when the game has none.
+   */
+  hubSceneId(role: string): string | null {
+    for (const [id, scene] of Object.entries(this.engine.game.scenes)) {
+      if ((scene as { role?: string }).role === role) return id;
+    }
+    return null;
+  }
+
+  /**
+   * The Brief's tab set: the hub scene's options, filtered by their own
+   * `view-if` against current Q, in declaration order. Title comes from each
+   * target scene's `title:` — translatable for free.
+   *
+   * CORRECTED vs the task brief: `scene.options` compiles to a plain ARRAY
+   * (`[{"id":"@status_new.overview"}, ...]`), not an object with an inner
+   * `.options` — verified against the live `out/game.json`. The brief's
+   * `scene.options?.options` expression is `undefined ?? []` for every real
+   * game, i.e. always zero tabs; this is the same bad pattern flagged in the
+   * task instructions as a known-recurring defect in this plan.
+   */
+  tabScenes(): { id: string; title: string }[] {
+    const hub = this.hubSceneId('status');
+    if (!hub) return [];
+    const scene = this.engine.game.scenes[hub] as {
+      options?: { id: string; viewIf?: unknown }[];
+    };
+    const opts = scene.options ?? [];
+    const out: { id: string; title: string }[] = [];
+    for (const o of opts) {
+      const id = o.id.replace(/^@/, '');
+      const target = this.engine.game.scenes[id] as
+        | { title?: unknown; viewIf?: unknown }
+        | undefined;
+      if (!target) continue;
+      // A sheet hides itself with `view-if` (POLLS in historical mode). The
+      // predicate lives on the TARGET scene, and `_runPredicate` is the
+      // engine's own evaluator — do not reimplement it. Note the leading
+      // underscore: `runPredicate` (no underscore) is only a MODULE-level
+      // export inside dendrynexus-ten/lib/engine.js, not an instance method —
+      // `engine.runPredicate` is `undefined` at runtime (verified). The
+      // actual public-by-convention instance method, matching the same
+      // "private by name, used in production since phase 2.5" pattern as
+      // `_makeDisplayContent`, is `_runPredicate(predicate, defaultValue)`.
+      const viewIf = (target.viewIf ?? o.viewIf) as
+        | ((state: unknown, q: unknown) => boolean)
+        | undefined;
+      if (typeof viewIf === 'function' && !this.engine._runPredicate(viewIf, true)) continue;
+      out.push({ id, title: convertLine(target.title ?? id) });
+    }
+    return out;
   }
 
   /** Classify a raw quality value through one of the game's qdisplays. Row

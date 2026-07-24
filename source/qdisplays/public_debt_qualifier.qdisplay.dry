@@ -1,8 +1,8 @@
 
-(..10) <span style='color: rgb(0, 61, 0);'>excellent</span>
-(10..16) <span style='color: rgb(61, 117, 4);'>good</span>
-(16..23) <span style='color: rgb(114, 110, 6);'>fair</span>
-(23..29) <span style='color: rgb(255, 162, 0);'>mediocre</span>
-(29..34) <span style='color: rgb(178, 0, 0);'>poor</span>
-(34..40) <span style='color: rgb(139, 0, 0);'>very poor</span>
-(40..) <span style='color: rgb(75, 0, 130);'>terrible</span>
+(..10) <span class="q-band" data-scale="public_debt_qualifier" data-band="excellent">excellent</span>
+(10..16) <span class="q-band" data-scale="public_debt_qualifier" data-band="good">good</span>
+(16..23) <span class="q-band" data-scale="public_debt_qualifier" data-band="fair">fair</span>
+(23..29) <span class="q-band" data-scale="public_debt_qualifier" data-band="mediocre">mediocre</span>
+(29..34) <span class="q-band" data-scale="public_debt_qualifier" data-band="poor">poor</span>
+(34..40) <span class="q-band" data-scale="public_debt_qualifier" data-band="very_poor">very poor</span>
+(40..) <span class="q-band" data-scale="public_debt_qualifier" data-band="terrible">terrible</span>

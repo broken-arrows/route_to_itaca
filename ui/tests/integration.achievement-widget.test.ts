@@ -46,16 +46,27 @@ const HAVE_GAME = existsSync(GAME_JSON);
       return wrapper;
     }
 
+    // The invariant is "every registry entry renders a row" — NOT today's count.
+    // This was hardcoded to 13 and broke the moment content gained a 14th
+    // achievement, which is the literal-vs-invariant trap already recorded in
+    // LEARNINGS. Derive it from the same registry the gallery reads, and guard
+    // against a registry that is empty (which would make the assertion vacuous).
+    function expectedRowCount(): number {
+      const registry = JSON.parse(realText).data?.achievements?.achievements ?? [];
+      expect(registry.length).toBeGreaterThan(0);
+      return registry.length;
+    }
+
     it('@achievements (the main gallery, scope=ever)', () => {
       const wrapper = mountSceneProse('game_over.achievements');
       expect(wrapper.find('[data-test="achievement-gallery"]').exists()).toBe(true);
-      expect(wrapper.findAll('[data-test^="achievement-row-"]').length).toBe(13);
+      expect(wrapper.findAll('[data-test^="achievement-row-"]').length).toBe(expectedRowCount());
     });
 
     it('@achievements_this_playthrough (scope=playthrough)', () => {
       const wrapper = mountSceneProse('game_over.achievements_this_playthrough');
       expect(wrapper.find('[data-test="achievement-gallery"]').exists()).toBe(true);
-      expect(wrapper.findAll('[data-test^="achievement-row-"]').length).toBe(13);
+      expect(wrapper.findAll('[data-test^="achievement-row-"]').length).toBe(expectedRowCount());
     });
   },
 );

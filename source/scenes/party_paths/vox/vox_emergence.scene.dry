@@ -1,5 +1,5 @@
 title: A new far right?
-view-if: (year = 2018 and month >= 11) or (year >= 2015 and cat_spa_relations <= 30 and ((rubicon and rubicon_time > 48) or (spanish_pm_party != "pp" and spanish_pm_party != "cs" and next_spanish_election_time - time <= 24)))
+view-if: (year = 2018 and month >= 8) or (year >= 2015 and cat_spa_relations <= 30 and ((rubicon and rubicon_time > 48) or (spanish_pm_party != "pp" and spanish_pm_party != "cs" and next_spanish_election_time - time <= 32)))
 tags: event
 new-page: true
 face-image: img/events/vox_surge.jpg

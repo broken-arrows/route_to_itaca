@@ -299,8 +299,7 @@
   function checkAchievements() {
     var q = window.dendryUI.dendryEngine.state.qualities;
     var reg =
-      ((window.dendryUI.game.data || {}).achievements || {}).achievements ||
-      [];
+      ((window.dendryUI.game.data || {}).achievements || {}).achievements || [];
     reg.forEach(function (a) {
       var key = "achievement_" + a.id;
       if (q[key] && !window._achievementsSeen[key]) {
@@ -322,6 +321,7 @@
     // .superpowers/sdd/p25-task-6-report.md.
     mountWidgets(document, dendryUI.dendryEngine.state.qualities);
     addTooltipEventListeners();
+    window.syncTabLocks();
     // window.justLoaded is true for exactly the FIRST onNewPage of a
     // session (boot's initial goToScene). setState() (Save/Load, quick
     // load, import) re-runs newPage()/displayChoices() through this same
@@ -355,6 +355,16 @@
   };
 
   // tabbed browsing
+  //
+  // This shell renders `source/scenes/status.scene.dry` — its own five-tab
+  // status scene, restored 2026-07-23 when the Brief's sheets moved to
+  // `status_new.scene.dry` for the Desk alone. The `_runActions(scene.onArrival)`
+  // below is load-bearing HERE and only here: this scene's on-arrival computes
+  // `spanish_seal_img` and `unemployment_dataviz`, which its own markup then
+  // substitutes. Rendering-by-mutation is the pattern the Desk migration exists
+  // to kill, and `status_new`'s sheets have no on-arrival at all — but this
+  // shell is frozen and dies at phase 6, so it keeps the mechanism it shipped
+  // with rather than acquiring a divergent one.
   window.updateSidebar = function () {
     $("#qualities").empty();
     var scene = dendryUI.game.scenes[window.statusTab];
@@ -375,29 +385,62 @@
   };
 
   window.changeTab = function (newTab, tabId) {
-    if (
-      tabId == "polls_tab" &&
-      dendryUI.dendryEngine.state.qualities.historical_mode
-    ) {
-      window.alert("Polls are not available in historical mode.");
-      return;
-    }
     var tabButton = document.getElementById(tabId);
+    // NOT the `disabled` attribute: disabled buttons suppress pointer events,
+    // so the CSS `:hover::after` tooltip (game.css) would never fire and the
+    // player would get no explanation at all. A class keeps hover alive.
+    if (tabButton.classList.contains("locked")) return;
     var tabButtons = document.getElementsByClassName("tab_button");
-    for (i = 0; i < tabButtons.length; i++) {
+    for (var i = 0; i < tabButtons.length; i++) {
       tabButtons[i].className = tabButtons[i].className.replace(" active", "");
     }
     tabButton.className += " active";
     window.statusTab = newTab;
     window.updateSidebar();
-    // Widget protocol host (out/html/widgets.js): scans for [data-widget]
-    // and dispatches to the renderers above by name — replaces what used to
-    // be this exact five-call sequence, duplicated across five call sites
-    // (onNewPage / updateSidebar / changeTab / onDisplayContent / onload).
-    // See docs/design/desk_ui_plan.md §6 and
-    // .superpowers/sdd/p25-task-6-report.md.
-    mountWidgets(document, dendryUI.dendryEngine.state.qualities);
-    addTooltipEventListeners();
+  };
+
+  // Unavailable actions explain themselves in place, via the same `.locked`
+  // class + `data-tooltip` pattern, instead of interrupting with window.alert.
+  // Both dims live on something that does NOT own the ::after tooltip (the tab
+  // icon; the link's own colour) — `opacity` on the tooltip's own element makes
+  // the explanation unreadable. See game.css.
+  window.syncTabLocks = function () {
+    var state = dendryUI.dendryEngine.state;
+
+    // Historical mode has no poll data.
+    var polls = document.getElementById("polls_tab");
+    if (polls) {
+      var pollsLocked = !!state.qualities.historical_mode;
+      polls.classList.toggle("locked", pollsLocked);
+      polls.setAttribute(
+        "data-tooltip",
+        pollsLocked
+          ? "Polls are not available in historical mode"
+          : "Opinion Polls",
+      );
+    }
+
+    // Saving/loading. `state.disableSaves` is the engine's own flag (set by
+    // historical mode), and it is what BrowserUserInterface.showSaveSlots
+    // alerts on — read the same source rather than re-deriving the rule here.
+    var save = document.getElementById("save_link");
+    if (save) {
+      var savesLocked = !!state.disableSaves;
+      save.classList.toggle("locked", savesLocked);
+      save.setAttribute(
+        "data-tooltip",
+        savesLocked
+          ? "Saving and loading are disabled in historical mode"
+          : "Save/Load",
+      );
+    }
+  };
+
+  // Intercepts BEFORE dendryUI.showSaveSlots so its window.alert never fires:
+  // the disabled state is already visible on the link itself.
+  window.openSaveSlots = function () {
+    if (dendryUI.dendryEngine.state.disableSaves) return;
+    dendryUI.showSaveSlots();
   };
 
   window.onDisplayContent = function () {
@@ -577,6 +620,7 @@
     // .superpowers/sdd/p25-task-6-report.md.
     mountWidgets(document, dendryUI.dendryEngine.state.qualities);
     addTooltipEventListeners();
+    window.syncTabLocks();
   };
 
   // ---- Tooltips: one shared, viewport-aware floating element ----

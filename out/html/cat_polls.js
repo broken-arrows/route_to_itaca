@@ -832,6 +832,15 @@
     // Inject styles
     injectStyles();
 
+    if (!Q.parlament_demographics || !Q.parties || !Q.parlament_seats) {
+      container.innerHTML = `
+        <div id="map-container">
+          ${getSVGContent()}
+        </div>
+      `;
+      return;
+    }
+
     // Build the HTML structure
     if (wide) {
       container.innerHTML = `

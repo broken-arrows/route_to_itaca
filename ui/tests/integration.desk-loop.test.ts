@@ -27,9 +27,10 @@ import InTray from '../src/components/desk/InTray.vue';
 import type { CardView } from '../src/engine/types';
 import uiEn from '../../source/locales/en/ui.json';
 
-// Every DeskView mount below now also mounts ClipboardFrame, which reads
-// `brief.tab.*` — GAME chrome sourced from source/locales/<loc>/ui.json (see
-// i18n.ts's initGameLocale, and the same fix in desk.components.test.ts).
+// Every DeskView mount below now also mounts Clipboard (phase 3b Task 9;
+// formerly the inert ClipboardFrame), which reads `brief.context.*` — GAME
+// chrome sourced from source/locales/<loc>/ui.json (see i18n.ts's
+// initGameLocale, and the same fix in desk.components.test.ts).
 i18n.global.mergeLocaleMessage('en', uiEn as never);
 
 // The REAL compiled game, not a fixture. It is gitignored build output, so the

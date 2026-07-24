@@ -3,10 +3,10 @@
 // Desk UI Phase 2 plan. Assembles InTray/HandCard/ActionsTray/DeskMonth/
 // OutTray from the game/desk stores, plus FlyingCard (drawing phase only),
 // OpenDossier (dossierOpen/resolving, wrapped in <Transition> for the
-// shrink leave when it unmounts), a desk-dim overlay, and Toast. Renders inside
-// StageScaler's 1512x860 design-space slot as absolutely positioned
-// elements (spec: docs/design/desk_ui_plan.md §3, "Stage scaling").
-import { computed } from 'vue';
+// shrink leave when it unmounts), a desk-dim overlay, and Toast. The outer
+// shell and hand are responsive grids; furniture and overlays are bounded
+// independently while typography stays at its authored size.
+import { computed, ref } from 'vue';
 import { useGameStore } from '../stores/game';
 import { useDeskStore } from '../stores/desk';
 import type { CardView } from '../engine/types';
@@ -17,11 +17,17 @@ import DeskMonth from '../components/desk/DeskMonth.vue';
 import OutTray from '../components/desk/OutTray.vue';
 import FlyingCard from '../components/desk/FlyingCard.vue';
 import OpenDossier from '../components/desk/OpenDossier.vue';
-import ClipboardFrame from '../components/brief/ClipboardFrame.vue';
+import Clipboard from '../components/brief/Clipboard.vue';
 import Prose from '../components/Prose.vue';
 
 const gameStore = useGameStore();
 const deskStore = useDeskStore();
+interface CardScreenOrigin {
+  x: number;
+  y: number;
+}
+const deskRegion = ref<HTMLElement | null>(null);
+const dossierOrigin = ref({ x: 0, y: 0 });
 
 const isIdle = computed(() => deskStore.phase === 'idle');
 
@@ -36,52 +42,41 @@ const deskYear = computed(() => (typeof gameStore.q.year === 'number' ? gameStor
 // live at the desk and a last-known-good snapshot everywhere else; see the
 // comment on it in stores/desk.ts.
 
-// Two rows of three, desk-region-relative (canvas handSix pattern, y ×0.935;
-// see docs/design/reference/desk-frames.md "The hand"). Rotation jitter is
-// part of the design ("loose dossiers"), applied per slot, not per card.
-//
-// Deviation from the brief's literal sample: the brief's handSlotStyle()
-// returns an inline `transform: rotate(...)`, landing on HandCard's root via
-// attrs fallthrough. HandCard's OWN scoped CSS already sets `transform` on
-// that same root (base `rotate(var(--jitter))` + a `:hover` lift/flatten
-// rule) — an inline style attribute always beats a selector-based CSS rule
-// regardless of specificity or pseudo-class, so an inline transform here
-// would silently freeze the base rotation AND permanently kill the hover
-// lift (the `:hover` rule can never win against it). This is exactly the
-// rotation-conflict contingency the brief's Step 5 note calls out. Fix used:
-// pass the slot rotation as a `--slot-rot` custom property instead (custom
-// properties don't collide with HandCard's own `--jitter`/`--card-bg`/
-// `--card-bd` inline vars — Vue merges distinct style keys, it does not let
-// one clobber the other), and HandCard's stylesheet now reads
-// `rotate(var(--slot-rot, var(--jitter)))`, falling back to its own per-card
-// jitter when no slot rotation is supplied (e.g. if it's ever mounted
-// standalone, as the component tests do).
-// x carries the hand AREA's own left origin (240 — desk-frames §3 "Hand
-// area left:240") added to the canvas handSix column pattern: the raw
-// canvas xs (180/392/604) are measured from a different container origin,
-// and used desk-region-relative they park the left column at x180 — on top
-// of the tray column, which ends at x=26+186=212 (confirmed live
-// 2026-07-20: a drawn card covered the Party tray and its DRAW chip).
+// The responsive hand grid supplies the two-row/three-column geometry.
+// Per-slot rotation keeps the "loose dossiers" effect; it is passed as a
+// custom property so HandCard's hover transform remains able to override it.
 const HAND_SLOTS = [
-  { left: 240, top: 131, rot: -1.6 },
-  { left: 452, top: 120, rot: 1.4 },
-  { left: 664, top: 137, rot: -0.8 },
-  { left: 240, top: 415, rot: 1.2 },
-  { left: 452, top: 426, rot: -1.3 },
-  { left: 664, top: 411, rot: 1.8 },
+  { x: -8, y: 12, rot: -1.6 },
+  { x: 6, y: -4, rot: 1.4 },
+  { x: 14, y: 10, rot: -0.8 },
+  { x: 5, y: -2, rot: 1.2 },
+  { x: -10, y: 10, rot: -1.3 },
+  { x: 9, y: -6, rot: 1.8 },
 ];
 function handSlotStyle(index: number): Record<string, string> {
   const slot = HAND_SLOTS[index % HAND_SLOTS.length];
-  return { left: `${slot.left}px`, top: `${slot.top}px`, '--slot-rot': `${slot.rot}deg` };
+  return {
+    '--slot-x': `${slot.x}px`,
+    '--slot-y': `${slot.y}px`,
+    '--slot-rot': `${slot.rot}deg`,
+  };
 }
 
 function onDraw(deckId: string): void {
   deskStore.drawFrom(deckId);
 }
-function onPlayHand(card: CardView): void {
+function onPlayHand(card: CardView, origin: CardScreenOrigin): void {
+  const region = deskRegion.value?.getBoundingClientRect();
+  dossierOrigin.value = region
+    ? {
+        x: origin.x - (region.left + region.width / 2),
+        y: origin.y - (region.top + region.height / 2),
+      }
+    : { x: 0, y: 0 };
   deskStore.playFromHand(card);
 }
 function onPlayPinned(card: CardView): void {
+  dossierOrigin.value = { x: 0, y: 0 };
   deskStore.playPinned(card);
 }
 
@@ -157,8 +152,8 @@ const deskNoteHtml = computed(() => {
 
 <template>
   <div v-if="gameStore.frame" class="desk-view">
-    <ClipboardFrame />
-    <div class="desk-region">
+    <Clipboard />
+    <div ref="deskRegion" class="desk-region">
       <DeskMonth class="pos-month" :month="deskMonth" :year="deskYear" :title-html="deskTitleHtml" />
 
       <!-- The desk scene's own prose, as a typed note (Task 4; spec §5.1 —
@@ -181,16 +176,18 @@ const deskNoteHtml = computed(() => {
         </div>
       </div>
 
-      <HandCard
-        v-for="(card, i) in deskStore.deskView.hand"
-        :key="card.id"
-        class="hand-slot"
-        :style="handSlotStyle(i)"
-        :card="card"
-        :index="i"
-        :dimmed="cardDimmed(card)"
-        @play="onPlayHand"
-      />
+      <div class="hand-area">
+        <HandCard
+          v-for="(card, i) in deskStore.deskView.hand"
+          :key="card.id"
+          class="hand-slot"
+          :style="handSlotStyle(i)"
+          :card="card"
+          :index="i"
+          :dimmed="cardDimmed(card)"
+          @play="onPlayHand"
+        />
+      </div>
 
       <ActionsTray class="pos-actions" :pinned="deskStore.deskView.pinned" :disabled="!isIdle" @play="onPlayPinned" />
 
@@ -213,7 +210,10 @@ const deskNoteHtml = computed(() => {
       <FlyingCard v-if="deskStore.phase === 'drawing' && deskStore.flying" :card="deskStore.flying" />
 
       <Transition name="dossier">
-        <OpenDossier v-if="deskStore.phase === 'dossierOpen' || deskStore.phase === 'resolving'" />
+        <OpenDossier
+          v-if="deskStore.phase === 'dossierOpen' || deskStore.phase === 'resolving'"
+          :origin="dossierOrigin"
+        />
       </Transition>
     </div>
   </div>
@@ -221,23 +221,30 @@ const deskNoteHtml = computed(() => {
 
 <style scoped>
 .desk-view {
-  position: relative;
+  display: grid;
+  grid-template-columns: clamp(var(--brief-min), var(--brief-fluid), var(--brief-max)) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   width: 100%;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
 }
-/* Right two-thirds: x 474 -> 1512. Desk surface texture per desk-frames.md §1. */
+/* The desk consumes the viewport space left by the bounded Brief column. */
 .desk-region {
-  position: absolute;
-  left: 474px;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
   overflow: hidden;
   background:
     repeating-linear-gradient(0deg, rgba(90, 70, 40, 0.028) 0 1px, transparent 1px 6px),
     radial-gradient(120% 110% at 50% 0%, #e2d9c4 0%, #dad0b8 60%, #d2c7ac 100%);
 }
-.pos-month { position: absolute; left: 36px; top: 24px; }
+.pos-month {
+  position: absolute;
+  left: clamp(24px, 2.5vw, 48px);
+  top: clamp(18px, 2.5vh, 30px);
+}
 /* Placement deviation (record for the user's visual pass): the amended plan
    says "near the month", but the month's left strip is occupied by the
    trays column (left:26, top:123, 186 wide, ending ~y763) — bottom-left is
@@ -246,10 +253,10 @@ const deskNoteHtml = computed(() => {
    scatters its typed/hand-written notes into free desk corners. */
 .desk-note {
   position: absolute;
-  left: 26px;
-  bottom: 24px;
-  width: 186px;
-  max-height: 180px;
+  left: clamp(18px, 1.7vw, 32px);
+  bottom: clamp(16px, 2.2vh, 28px);
+  width: clamp(154px, 11.5vw, 210px);
+  max-height: clamp(120px, 20vh, 190px);
   overflow-y: auto;
   /* The canvas's typed notes are scraps of paper — no scrollbar chrome.
      Long prose still scrolls (wheel/keys); the chrome would break the
@@ -271,16 +278,42 @@ const deskNoteHtml = computed(() => {
 }
 .pos-trays {
   position: absolute;
-  left: 26px;
-  top: 123px;
+  left: clamp(24px, 2.5vw, 48px);
+  top: clamp(102px, 14vh, 138px);
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: clamp(12px, 2.2vh, 24px);
 }
 .tray-slot { display: flex; flex-direction: column; gap: 6px; }
-.hand-slot { position: absolute; }
-.pos-actions { position: absolute; top: 43px; right: 16px; }
-.pos-out { position: absolute; bottom: 24px; right: 28px; }
+.hand-area {
+  position: absolute;
+  left: clamp(180px, 18vw, 480px);
+  width: min(760px, calc(100% - clamp(204px, 21vw, 540px)));
+  top: clamp(190px, 25vh, 420px);
+  bottom: clamp(116px, 14vh, 170px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, max-content));
+  grid-template-rows: repeat(2, minmax(0, max-content));
+  justify-content: start;
+  align-content: space-between;
+  gap: clamp(14px, 2vh, 28px) clamp(18px, 1.5vw, 28px);
+  pointer-events: none;
+}
+.hand-slot {
+  position: relative;
+  translate: var(--slot-x, 0) var(--slot-y, 0);
+  pointer-events: auto;
+}
+.pos-actions {
+  position: absolute;
+  top: clamp(28px, 4.5vh, 48px);
+  right: clamp(12px, 1.3vw, 24px);
+}
+.pos-out {
+  position: absolute;
+  bottom: clamp(16px, 2.2vh, 28px);
+  right: clamp(18px, 2vw, 38px);
+}
 .desk-dim {
   position: absolute;
   inset: 0;
@@ -293,5 +326,19 @@ const deskNoteHtml = computed(() => {
 }
 .dim-leave-to {
   opacity: 0;
+}
+
+@media (max-height: 780px) {
+  .hand-area {
+    top: 132px;
+    bottom: 96px;
+  }
+  .pos-trays {
+    top: 104px;
+    gap: 10px;
+  }
+  .desk-note {
+    max-height: 112px;
+  }
 }
 </style>

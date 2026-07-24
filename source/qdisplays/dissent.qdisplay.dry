@@ -1,7 +1,7 @@
 
 # party faction dissent
-(..4.999) <span style='color: #08a708ff;'>very low</span>
-(4.999..14.999) <span style='color: #78ad0cff;'>low</span>
-(14.999..29.999) <span style='color: #a58d04ff;'>medium</span>
-(29.999..49.999) <span style='color: #be7900ff;'>high</span>
-(49.999..) <span style='color: #a30000ff;'>very high</span>
+(..4.999) <span class="q-band" data-scale="dissent" data-band="very_low">very low</span>
+(4.999..14.999) <span class="q-band" data-scale="dissent" data-band="low">low</span>
+(14.999..29.999) <span class="q-band" data-scale="dissent" data-band="medium">medium</span>
+(29.999..49.999) <span class="q-band" data-scale="dissent" data-band="high">high</span>
+(49.999..) <span class="q-band" data-scale="dissent" data-band="very_high">very high</span>

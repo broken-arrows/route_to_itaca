@@ -90,6 +90,38 @@ if (has_time_passed) {
         Q.broken_roadmap = 1;
     }
 
+    if (Q.month == 1 && Q.week == 1) {
+        // It's a new year
+        var party_resources_size = 0;
+        if ((Q.player_party == "erc" && Q.erc_in_jxsi) || (Q.player_party == "cup" && Q.cup_in_jxsi)) {
+            party_resources_size = Math.floor(Q.jxsi_parlament_s / 10);
+        } else if ((Q.player_party == "erc" && Q.erc_in_jxcat) || (Q.player_party == "cup" && Q.cup_in_jxcat)) {
+            party_resources_size = Math.floor(Q.jxcat_parlament_s / 10);
+        } else {
+            party_resources_size = Math.floor(Q[Q.player_party + "_parlament_s"] / 10);
+        }
+        if (party_resources_size < 1) party_resources_size = 1;
+        if (party_resources_size > 3) party_resources_size = 3;
+
+        Q.party_resources += party_resources_size * Q.party_resources_mult + Q.party_income;
+
+        // TODO: more stuff that happens on a new year (govt budget, etc)
+        // TODO: give more/less based on difficulty?
+
+        // PxC sanity check in the rare case that they have seats
+        if (Q.year >= 2015 && (!Q.fnc_formed || !Q.pxc_dissolved)) {
+            Q.fnc_formed = true;
+            Q.pxc_dissolved = true;
+            for (var c of Q.parlament_constituencies) {
+                for (var d of Q.parlament_demographics) {
+                    Q["fnc_parlament_" + c + "_" + d + "_support"] = 0.9 * Q["pxc_parlament_" + c + "_" + d + "_support"];
+                    Q["vox_parlament_" + c + "_" + d + "_support"] = 0.1 * Q["pxc_parlament_" + c + "_" + d + "_support"];
+                    Q["pxc_parlament_" + c + "_" + d + "_support"] = 0;
+            }
+        }
+    }
+    }
+
     if (Q.time + 5 == Q.next_spanish_election_time || Q.time + 12 == Q.next_spanish_election_time) {
         // Resolve parties that actually run
         // It's a double check to allow "last minute" coalitions + allow coalition re-forming on failed elections (e.g 2015-2016 changes)
@@ -298,6 +330,14 @@ if (Q.congreso_coalition_sorpasso && (Q.spanish_pm_party == "podemos" || Q.spani
 }
 
 // 5. Hidden triggers
+if (!Q.hidden_right_consolidation && (Q.year == 2019 && Q.month == 10)) {
+    Q.hidden_right_consolidation = true;
+    // TODO: un-hardcode this? how? via condition of cs giving too much to the pp??
+    G.spaSupportInject(Q, 'vox', 'all', 3.5, 'cs');
+    G.spaSupportInject(Q, 'vox', 'all', 2.0, 'abstain');
+    G.spaSupportInject(Q, 'pp',  'all', 8.0, 'cs');
+    G.spaSupportInject(Q, 'pp',  'all', 3.0, 'abstain');
+}
 if (!Q.hidden_cc_surge && ((Q.year == 2019 && Q.month == 2) || (Q.social_dissent > 90))) {
     // TBD: More/different options to trigger this?
     Q.hidden_cc_surge = true;
@@ -333,6 +373,16 @@ if (Q.amaiur_congreso_s > 0 && Q.spa_ehbildu_active && Q.year == 2015 && Q.month
     Q.ehbildu_congreso_pv = Q.amaiur_congreso_pv;
     Q.amaiur_congreso_s = 0;
     Q.amaiur_congreso_pv = 0;
+}
+if (!Q.hidden_right_shift && Q.art155_ever) {
+    Q.hidden_right_shift = true;
+    var _pp = Q.pp_local_barcelona_support || 0;
+    var _toPsc = Math.min(2.7, _pp);
+    var _toCs = Math.min(0.5, Math.max(0, _pp - _toPsc));
+    Q.pp_local_barcelona_support = _pp - (_toPsc + _toCs);
+    Q.psc_local_barcelona_support = (Q.psc_local_barcelona_support || 0) + _toPsc;
+    Q.cs_local_barcelona_support = (Q.cs_local_barcelona_support || 0) + _toCs;
+    // TODO: parallel parlament / congreso unionist shift? (calibration only models Barcelona city)
 }
 
 // Silent leadership changes

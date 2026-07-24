@@ -1350,3 +1350,152 @@ table {
 
 .star--filled   { color: #dc9600; }
 .star--empty    { color: #2e2e3a; }
+
+/* ---------------------------------------------------------------------------
+ * Qualitative band tokens (phase 3b). The qdisplays used to carry these colours
+ * as inline style= — presentation authored into content, which meant the Desk
+ * could not render the design's stamps and pips without parsing HTML back out.
+ * The colours below are copied VERBATIM from what those qdisplays emitted, so
+ * this shell looks exactly as it did. The Desk maps the same tokens to its own
+ * palette. Do not "tidy" these hexes; they are a parity record.
+ *
+ * NB: only `control` ever had `margin-right: 0.25em` in the original markup
+ * (checked all nine originals) — the brief this block was drafted from had it
+ * on `.q-band` globally, which would add a spacing regression to the other
+ * eight scales (worst in politics_trust, whose trailing preposition sits
+ * right after the span). Scoped to control's own data-scale instead.
+ * ------------------------------------------------------------------------- */
+[data-scale="control"] { margin-right: 0.25em; }
+p.q-band { font-style: italic; margin-bottom: 0em; }
+
+/* control */
+[data-band="none"]      { font-style: italic; }
+[data-band="limited"]   { font-style: italic; color: rgb(152, 97, 3); }
+[data-band="partial"]   { font-style: italic; color: rgb(5, 77, 144); }
+[data-band="complete"]  { font-style: italic; color: rgb(3, 104, 3); }
+[data-band="disputed"]  { font-style: italic; color: rgb(147, 4, 4); }
+
+/* Four qdisplays share the very_low..very_high LADDER but each had its own
+   PALETTE. data-scale keeps them distinct here, so this shell is unchanged;
+   the Desk ignores data-scale and inks one consistent ramp. */
+[data-scale="social_dissent"][data-band="very_low"]    { color: #009f00; }
+[data-scale="social_dissent"][data-band="low"]         { color: #679b00; }
+[data-scale="social_dissent"][data-band="medium_low"]  { color: #a08800; }
+[data-scale="social_dissent"][data-band="medium"]      { color: #9b6200; }
+[data-scale="social_dissent"][data-band="medium_high"] { color: #885f00; }
+[data-scale="social_dissent"][data-band="high"]        { color: #933b00; }
+[data-scale="social_dissent"][data-band="very_high"]   { color: #9b0000; }
+
+[data-scale="cat_spa_relations"][data-band="very_low"]    { color: #009f00; }
+[data-scale="cat_spa_relations"][data-band="low"]         { color: #679b00; }
+[data-scale="cat_spa_relations"][data-band="medium_low"]  { color: #a08800; }
+[data-scale="cat_spa_relations"][data-band="medium"]      { color: #9b6200; }
+[data-scale="cat_spa_relations"][data-band="medium_high"] { color: #885f00; }
+[data-scale="cat_spa_relations"][data-band="high"]        { color: #933b00; }
+[data-scale="cat_spa_relations"][data-band="very_high"]   { color: #9b0000; }
+
+[data-scale="dissent"][data-band="very_low"]  { color: #08a708; }
+[data-scale="dissent"][data-band="low"]       { color: #78ad0c; }
+[data-scale="dissent"][data-band="medium"]    { color: #a58d04; }
+[data-scale="dissent"][data-band="high"]      { color: #be7900; }
+[data-scale="dissent"][data-band="very_high"] { color: #a30000; }
+
+[data-scale="independence_movement"][data-band="very_low"]    { color: #253494; }
+[data-scale="independence_movement"][data-band="low"]         { color: #22628c; }
+[data-scale="independence_movement"][data-band="medium_low"]  { color: #1e8a96; }
+[data-scale="independence_movement"][data-band="medium"]      { color: #14943f; }
+[data-scale="independence_movement"][data-band="medium_high"] { color: #9b9b20; }
+[data-scale="independence_movement"][data-band="high"]        { color: #866a1c; }
+[data-scale="independence_movement"][data-band="very_high"]   { color: #c04f1b; }
+
+/* public_debt_qualifier */
+[data-band="excellent"] { color: rgb(0, 61, 0); }
+[data-band="good"]      { color: rgb(61, 117, 4); }
+[data-band="fair"]      { color: rgb(114, 110, 6); }
+[data-band="mediocre"]  { color: rgb(255, 162, 0); }
+[data-band="poor"]      { color: rgb(178, 0, 0); }
+[data-band="very_poor"] { color: rgb(139, 0, 0); }
+[data-band="terrible"]  { color: rgb(75, 0, 130); }
+
+/* politics_trust */
+[data-band="completely_distrustful"] { color: #8B0000; }
+[data-band="distrustful"]            { color: #B22222; }
+[data-band="skeptical"]              { color: #CD5C5C; }
+[data-band="neutral"]                { color: #DAA520; }
+[data-band="willing"]                { color: #6B8E23; }
+[data-band="trusting"]               { color: #228B22; }
+[data-band="blindly_trusting"]       { color: #006400; }
+
+/* roadmap */
+[data-band="unset"] { font-style: italic; }
+
+/* ---------------------------------------------------------------------------
+ * Institutional seals (phase 3b). The OVERVIEW sheet used to size these crests
+ * with a hand-written flex wrapper (`flex: 0 0 18%` beside the text block) —
+ * layout authored into content, which is what phase 3b removes. The content now
+ * emits a bare <img class="seal">, so the width lives here instead. Same ~18%
+ * of the sheet column as before: this is a parity record, not a redesign.
+ * ------------------------------------------------------------------------- */
+.seal {
+    width: 18%;
+    max-width: 3.5em;
+    vertical-align: middle;
+    margin-right: 0.5em;
+}
+
+/* ---------------------------------------------------------------------------
+ * Phase 3b Task 8: the Polls tab is locked (not disabled — see game.js
+ * window.changeTab) while historical_mode has no poll data to show.
+ *
+ * The dim goes on the ICON, never on the button. `opacity` on the button
+ * establishes a compositing group its ::after tooltip cannot escape, so
+ * `opacity: 0.4` there made the "Polls are not available in historical mode"
+ * text unreadable — the single tooltip in this rail that carries information
+ * was the only one guaranteed to be illegible (user, 2026-07-23).
+ * ------------------------------------------------------------------------- */
+.tab_button.locked { cursor: not-allowed; }
+.tab_button.locked .status-icon { opacity: 0.35; }
+.tab_button.locked:not(.active):hover { background-color: transparent; }
+
+/* Save/Load uses the same pattern in the header (game.js window.openSaveSlots
+   replaces the engine's window.alert in showSaveSlots). A text link dims via
+   `color`, never `opacity` — same compositing reason as above.
+
+   `header` shares `overflow: auto` with #content/footer (game.css:55-63), which
+   exists only to contain the floated #header-links — but it also clips anything
+   painted outside the header box, i.e. a tooltip hanging below it. `flow-root`
+   contains the float without clipping, which is what `overflow` was standing in
+   for before it existed. */
+header {
+  display: flow-root;
+  overflow: visible;
+}
+#header-links a { position: relative; }
+#header-links a.locked {
+  color: var(--unavailable-color);
+  cursor: not-allowed;
+}
+#header-links a.locked:hover { background-color: transparent; }
+#header-links a.locked::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%) translateY(6px);
+  background-color: var(--content-bg-color);
+  color: var(--text-color);
+  padding: 5px 7px;
+  border-radius: 5px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  border: 1px solid #d9d9d9;
+  font-size: 0.9em;
+  z-index: 2;
+}
+#header-links a.locked:hover::after {
+  opacity: 1;
+  visibility: visible;
+}

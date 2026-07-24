@@ -59,6 +59,18 @@ declare module 'dendrynexus-ten/lib/engine.js' {
     // primitive and the old shell has called it in production since phase 2.5
     // (out/html/game.js:361, updateSidebar). Declared so renderView can use it.
     _makeDisplayContent(content: unknown, useParas: boolean): unknown[];
+    // Evaluates a predicate function (a scene/option's compiled `view-if`)
+    // against current state, returning `defaultValue` when the predicate is
+    // undefined or throws. Private by name (DendryEngine.prototype
+    // .`_runPredicate`, engine.js:1114), but — same as `_makeDisplayContent`
+    // above — it is the engine's own evaluator and the only correct way to
+    // read a `view-if`; do not reimplement it. NOTE: the module also exports
+    // a bare `runPredicate` (engine.js:1765), but that is a MODULE-level
+    // function taking `(predicate, default_, context, state)`, not a method
+    // on `DendryEngine` instances — `engine.runPredicate` is `undefined` at
+    // runtime (verified against the compiled engine). Only `_runPredicate`
+    // exists as an instance method.
+    _runPredicate(predicate: unknown, defaultValue: boolean): boolean;
     // Installs the game's own code namespace (source/lib/*), handed to
     // compiled content as a third `G` parameter alongside `state`/`Q` in
     // on-arrival/on-departure/on-display, predicates, and expression inserts.

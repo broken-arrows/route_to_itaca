@@ -75,7 +75,7 @@ function onActivate(): void {
    like skins.ts does; token vars used where an exact token exists. */
 .in-tray {
   position: relative;
-  width: 172px;
+  width: clamp(136px, 10.5vw, 190px);
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -102,7 +102,8 @@ function onActivate(): void {
    inset — the canvas's tray-base recipe, shared with OutTray. */
 .tray-well {
   position: relative;
-  height: 212px;
+  height: auto;
+  aspect-ratio: 43 / 53;
   border: 2px solid #c3b893;
   border-radius: 10px;
   background: rgba(250, 249, 245, 0.4);
@@ -113,8 +114,8 @@ function onActivate(): void {
 }
 .peek {
   position: absolute;
-  width: 132px;
-  height: 164px;
+  width: 77%;
+  height: 77%;
   background: #efe9da;
   border: 1px solid #ddd5c2;
   border-radius: 3px;
@@ -125,8 +126,8 @@ function onActivate(): void {
 }
 .folder {
   position: relative;
-  width: 136px;
-  height: 168px;
+  width: 79%;
+  height: 79%;
   background: var(--tray-bg);
   border: 1px solid var(--tray-bd);
   border-radius: 3px;

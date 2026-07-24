@@ -447,7 +447,9 @@ on-arrival: {!
 
   // International opinions
   Q.international_eu_opinion = 1;
-
+  Q.international_usa_opinion = 0;
+  Q.international_russia_opinion = 0;
+  Q.international_china_opinion = 0;
 
   // Demographics
   Q.parlament_demographics = ["buss", "ind", "middle", "young", "retired", "rural", "unemployed"]
@@ -483,7 +485,25 @@ on-arrival: {!
   // Party support records for graphing
   Q.party_support_records = [];
   Q.party_spa_support_records = [];
-  Q.economic_records = [];
+  // Two pre-run monthly baselines keep the opening Accounts sheet from
+  // starting as three isolated dots. post_event appends the real run from
+  // here onward; these values only establish the incoming trend.
+  Q.economic_records = [
+    {
+      'date': new Date(2012, 5, 1),
+      'gdp_growth': -2.9,
+      'public_debt': 25.4,
+      'unemployment': 22.7,
+      'generalitat_surplus': -2.5,
+    },
+    {
+      'date': new Date(2012, 6, 1),
+      'gdp_growth': -3.0,
+      'public_debt': 25.7,
+      'unemployment': 22.6,
+      'generalitat_surplus': -2.4,
+    },
+  ];
   Q.social_records = [];
 
   // Congreso situation

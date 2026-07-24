@@ -45,7 +45,7 @@
     {
       "id": "psoed",
       "name": "You've been PSOE'd",
-      "description": "Negotiate and make possible a PSOE-led Gobierno, only for the agreements to go unfulfilled.",
+      "description": "Make possible a PSOE-led Gobierno, only for any agreements reached to go unfulfilled.",
       "stars": 2,
       "image": "img/achievements/psoed.jpg"
     },
@@ -69,6 +69,13 @@
       "description": "Have Podemos or Unidas Podemos surpass the PSOE in seats at the Congreso and reach the presidency.",
       "stars": 3,
       "image": "img/achievements/asalto_cielos.avif"
+    },
+    {
+      "id": "josep_maria",
+      "name": "Josep Maria",
+      "description": "Manage to have the Catalan far-right break into the Parlament a decade early.",
+      "stars": 3,
+      "image": "img/achievements/josepmaria.png"
     },
     {
       "id": "barones",

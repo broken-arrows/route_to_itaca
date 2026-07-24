@@ -8,18 +8,14 @@
 // 'boot' shows a loading/error state that reuses DebugPage's own i18n keys
 // (debug.loading/debug.loadError) rather than duplicating that copy.
 //
-// Every routed surface renders INSIDE phase 1's StageScaler (default slot,
-// mounted into its 1512x860 .stage element): DeskView and PaperPage are
-// authored in design-space absolute pixels, so the scaler is what makes
-// them viewport-correct. The boot loading/error state lives inside the
-// stage too — one wrapper for all branches keeps the template flat, and a
-// centered text line scales harmlessly. DebugPage stays UNWRAPPED (a plain
-// document page, as in phase 1).
+// Every routed player surface renders inside one viewport shell. The shell
+// does not scale a design canvas: each surface resolves its own geometry so
+// type and controls remain readable across desktop display sizes.
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGameStore } from '../stores/game';
 import { useDeskStore } from '../stores/desk';
-import StageScaler from '../components/StageScaler.vue';
+import ResponsiveViewport from '../components/ResponsiveViewport.vue';
 import DeskView from './DeskView.vue';
 import PaperPage from '../components/desk/PaperPage.vue';
 import Toast from '../components/desk/Toast.vue';
@@ -49,7 +45,7 @@ const pageVariant = computed<'page' | 'event' | 'ending'>(() => {
 </script>
 
 <template>
-  <StageScaler>
+  <ResponsiveViewport>
     <div v-if="desk.phase === 'boot'" class="boot-state" data-test="boot-state">
       <p v-if="game.loadError">{{ t('debug.loadError') }}</p>
       <p v-else>{{ t('debug.loading') }}</p>
@@ -64,7 +60,7 @@ const pageVariant = computed<'page' | 'event' | 'ending'>(() => {
          nothing) while their own state is null, so this is safe during
          'boot' too. -->
     <Toast v-if="desk.phase !== 'boot'" :text-key="desk.toastKey" :achievement="desk.achievementToast" />
-  </StageScaler>
+  </ResponsiveViewport>
 </template>
 
 <style scoped>

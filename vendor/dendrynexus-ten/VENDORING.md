@@ -131,3 +131,10 @@ whole-file reformat, so this list stays the complete upstream diff.
   `ROLE_TO_MECHANIC` (all derive `isDeck`, mirroring the `card-*` family). Lets a deck
   scene carry its paper skin so no UI needs a deck-id table. Generic vocabulary — no
   game names.
+- **`status` role** (2026-07-22) — `lib/parsers/scene.js` role enum only; no
+  `ROLE_TO_MECHANIC` entry, because like `info-tab` it is presentational and
+  implies no mechanical boolean. Marks the scene whose **options declare a tab
+  set** — the same "the hub scene's options declare what is on the surface"
+  rule `desk` already uses for its trays, so a UI finds the tab list by role
+  instead of hardcoding one. Generic vocabulary: the engine learns that a
+  tabbed info surface can exist, never what this game's tabs are.

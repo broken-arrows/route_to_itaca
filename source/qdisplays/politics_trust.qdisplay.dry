@@ -1,9 +1,9 @@
 
 # How much is the civil population trusting political parties for the independence movement?
-(..15) <span style='color: #8B0000;'>completely distrustful</span> of
-(15..30) <span style='color: #B22222;'>distrustful</span> of
-(30..40) <span style='color: #CD5C5C;'>skeptical</span> of
-(40..60) <span style='color: #DAA520;'>neutral</span> about
-(60..70) <span style='color: #6B8E23;'>willing to bet</span> on
-(70..85) <span style='color: #228B22;'>trusting</span> of
-(85..) <span style='color: #006400;'>blindly trusting</span> of
+(..15) <span class="q-band" data-scale="politics_trust" data-band="completely_distrustful">completely distrustful</span> of
+(15..30) <span class="q-band" data-scale="politics_trust" data-band="distrustful">distrustful</span> of
+(30..40) <span class="q-band" data-scale="politics_trust" data-band="skeptical">skeptical</span> of
+(40..60) <span class="q-band" data-scale="politics_trust" data-band="neutral">neutral</span> about
+(60..70) <span class="q-band" data-scale="politics_trust" data-band="willing">willing to bet</span> on
+(70..85) <span class="q-band" data-scale="politics_trust" data-band="trusting">trusting</span> of
+(85..) <span class="q-band" data-scale="politics_trust" data-band="blindly_trusting">blindly trusting</span> of

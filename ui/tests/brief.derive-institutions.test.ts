@@ -51,9 +51,9 @@ describe('G.brief institution derivations', () => {
   // range, through the real engine — not a second table in this test.
   // NB: qdisplay output is the compiled content HTML (verified by running
   // a.qdisplay(0,'control') directly — it returns
-  // '<span ...><i>None</i></span>', not a bare word), so these assert
-  // `toMatch`/`toContain` against that markup rather than `toBe` a plain
-  // band word.
+  // '<span class="q-band" data-scale="control" data-band="none">None</span>',
+  // not a bare word), so these assert `toMatch`/`toContain` against that
+  // markup rather than `toBe` a plain band word.
   it('the qdisplay named by a control row actually classifies its value', () => {
     const rows = brief().control(Q);
     const banded = a.qdisplay(rows[0].value, rows[0].valueDisplay);

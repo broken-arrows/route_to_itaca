@@ -1,8 +1,8 @@
 // Choreography constants + the sync-when-off timer helper the desk store
-// builds every animated transition on top of. Values are ported verbatim
-// from the approved Draw-to-Dossier prototype (see
-// docs/design/reference/prototype-draw-to-dossier-NOTES.md) — do not
-// retune without re-checking that spec.
+// builds every animated transition on top of. The prototype remains the
+// choreography source; the dossier-open beats were retuned for the responsive
+// desk after browser inspection (2026-07-24), where its edge-on 88° flap was
+// unreadable at large viewports.
 export const DELAYS = {
   draw: 880,
   dossierIn: 40,
@@ -10,9 +10,9 @@ export const DELAYS = {
   // swing, and the swing's start delay. Purely visual — no store timer
   // consumes them; they live here so OpenDossier's CSS durations route
   // through the same animMs() single source as every other desk duration.
-  dossierOpen: 550,
-  coverSwing: 750,
-  coverSwingDelay: 280,
+  dossierOpen: 620,
+  coverSwing: 520,
+  coverSwingDelay: 90,
   resolve: 620,
   cancel: 420,
   toast: 1700,

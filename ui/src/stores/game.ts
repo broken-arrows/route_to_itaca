@@ -159,6 +159,7 @@ export const useGameStore = defineStore('game', () => {
   }
 
   return {
+    adapter,
     ready,
     frame,
     q,

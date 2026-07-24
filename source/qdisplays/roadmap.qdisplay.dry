@@ -1,5 +1,5 @@
 
-(0..0) <span style='font-style: italic'>None</span>
-(1..1) Vote on agreement
-(2..2) Force negotiations
-(3..3) Unilateralism
+(0..0) <span class="q-band" data-scale="roadmap" data-band="unset">None</span>
+(1..1) <span class="q-band" data-scale="roadmap" data-band="vote">Vote on agreement</span>
+(2..2) <span class="q-band" data-scale="roadmap" data-band="negotiate">Force negotiations</span>
+(3..3) <span class="q-band" data-scale="roadmap" data-band="unilateral">Unilateralism</span>

@@ -8,14 +8,15 @@ import GameView from '../src/views/GameView.vue';
 import DebugPage from '../src/views/DebugPage.vue';
 import DeskView from '../src/views/DeskView.vue';
 import PaperPage from '../src/components/desk/PaperPage.vue';
-import StageScaler from '../src/components/StageScaler.vue';
+import ResponsiveViewport from '../src/components/ResponsiveViewport.vue';
 import { useGameStore } from '../src/stores/game';
 import { useDeskStore, setAnimationsForTest } from '../src/stores/desk';
 import uiEn from '../../source/locales/en/ui.json';
 
-// Every DeskView mount below now also mounts ClipboardFrame, which reads
-// `brief.tab.*` — GAME chrome sourced from source/locales/<loc>/ui.json (see
-// i18n.ts's initGameLocale, and the same fix in desk.components.test.ts).
+// Every DeskView mount below now also mounts Clipboard (phase 3b Task 9;
+// formerly the inert ClipboardFrame), which reads `brief.context.*` — GAME
+// chrome sourced from source/locales/<loc>/ui.json (see i18n.ts's
+// initGameLocale, and the same fix in desk.components.test.ts).
 i18n.global.mergeLocaleMessage('en', uiEn as never);
 
 let pinia: ReturnType<typeof createPinia>;
@@ -166,29 +167,23 @@ describe('GameView phase routing', () => {
     errSpy.mockRestore();
   });
 
-  // DeskView/PaperPage are authored in 1512x860 design-space absolute
-  // pixels — they only render correctly inside phase 1's StageScaler
-  // (ui/src/components/StageScaler.vue, default slot inside its .stage
-  // element). `.stage-viewport` is StageScaler's own root class (a
-  // load-bearing style hook, stable), asserted alongside subtree
-  // containment via findComponent chaining.
-  it('renders DeskView inside the StageScaler stage', () => {
+  it('renders DeskView inside the responsive player viewport', () => {
     const { desk, wrapper } = mountAtHub();
     expect(desk.phase).toBe('idle');
-    expect(wrapper.find('.stage-viewport').exists()).toBe(true);
-    const stage = wrapper.findComponent(StageScaler);
-    expect(stage.exists()).toBe(true);
-    expect(stage.findComponent(DeskView).exists()).toBe(true);
+    expect(wrapper.find('.responsive-viewport').exists()).toBe(true);
+    const viewport = wrapper.findComponent(ResponsiveViewport);
+    expect(viewport.exists()).toBe(true);
+    expect(viewport.findComponent(DeskView).exists()).toBe(true);
   });
 
-  it('renders PaperPage inside the StageScaler stage', async () => {
+  it('renders PaperPage inside the responsive player viewport', async () => {
     const { desk, wrapper } = mountAtHub();
     desk.phase = 'eventPage';
     await nextTick();
-    expect(wrapper.find('.stage-viewport').exists()).toBe(true);
-    const stage = wrapper.findComponent(StageScaler);
-    expect(stage.exists()).toBe(true);
-    expect(stage.findComponent(PaperPage).exists()).toBe(true);
+    expect(wrapper.find('.responsive-viewport').exists()).toBe(true);
+    const viewport = wrapper.findComponent(ResponsiveViewport);
+    expect(viewport.exists()).toBe(true);
+    expect(viewport.findComponent(PaperPage).exists()).toBe(true);
   });
 });
 

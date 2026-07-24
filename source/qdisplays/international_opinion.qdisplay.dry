@@ -1,8 +1,8 @@
 
 # how much do countries care
 
-(..-1) <p style="font-style: italic; margin-bottom: 0em;">"Catalonia's independence would set a very dangerous precedent."</p>
-(0..0) <p style="font-style: italic; margin-bottom: 0em;">What is a "Catalonia"?</p>
-(1..1) <p style="font-style: italic; margin-bottom: 0em;">"It's an internal matter."</p>
-(2..2) <p style="font-style: italic; margin-bottom: 0em;">"Catalans have the unalienable right to self-determination."</p>
-(3..) <p style="font-style: italic; margin-bottom: 0em;">"Catalonia would be a most welcome addition to the international community."</p>
+(..-1) <p class="q-band" data-scale="international_opinion" data-band="hostile">"Catalonia's independence would set a very dangerous precedent."</p>
+(0..0) <p class="q-band" data-scale="international_opinion" data-band="unaware">What is a "Catalonia"?</p>
+(1..1) <p class="q-band" data-scale="international_opinion" data-band="watching">"It's an internal matter."</p>
+(2..2) <p class="q-band" data-scale="international_opinion" data-band="sympathetic">"Catalans have the unalienable right to self-determination."</p>
+(3..) <p class="q-band" data-scale="international_opinion" data-band="supportive">"Catalonia would be a most welcome addition to the international community."</p>

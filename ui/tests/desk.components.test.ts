@@ -17,13 +17,13 @@ import { useDeskStore, setAnimationsForTest } from '../src/stores/desk';
 import type { DeckView, CardView } from '../src/engine/types';
 import uiEn from '../../source/locales/en/ui.json';
 
-// Every DeskView mount below now also mounts ClipboardFrame, which reads
-// `brief.tab.*` — GAME chrome sourced from source/locales/<loc>/ui.json, not
-// ui/'s own bundled defaults (see i18n.ts's initGameLocale). Production
-// merges this at boot via a fetch; these tests never mount App.vue's
-// onMounted, so merge the real catalog directly (same source `brief.clipboard
-// .test.ts` uses) rather than let every DeskView mount print
-// `[intlify] Not found 'brief.tab.*'` noise.
+// Every DeskView mount below now also mounts Clipboard (phase 3b Task 9;
+// formerly the inert ClipboardFrame), which reads `brief.context.*` — GAME
+// chrome sourced from source/locales/<loc>/ui.json, not ui/'s own bundled
+// defaults (see i18n.ts's initGameLocale). Production merges this at boot via
+// a fetch; these tests never mount App.vue's onMounted, so merge the real
+// catalog directly (same source `brief.clipboard.test.ts` uses) rather than
+// let every DeskView mount print `[intlify] Not found 'brief.context.*'` noise.
 i18n.global.mergeLocaleMessage('en', uiEn as never);
 
 function withI18n(extra: Record<string, unknown> = {}) {
@@ -127,7 +127,10 @@ describe('HandCard', () => {
     const card = cardWith('card-gov');
     const wrapper = mount(HandCard, withI18n({ props: { card, index: 0 } }));
     await wrapper.trigger('click');
-    expect(wrapper.emitted('play')).toEqual([[card]]);
+    expect(wrapper.emitted('play')?.[0]?.[0]).toEqual(card);
+    expect(wrapper.emitted('play')?.[0]?.[1]).toEqual(
+      expect.objectContaining({ x: expect.any(Number), y: expect.any(Number) }),
+    );
   });
 
   it('renders the card title', () => {

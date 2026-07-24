@@ -9,6 +9,16 @@
       "world": "WORLD",
       "polls": "POLLS",
       "library": "▤ LIBRARY"
-    }
+    },
+    "context": {
+      "overview": "STATE OF PLAY",
+      "party": "THE PARTY · YOURS",
+      "chamber": "THE CHAMBER",
+      "economy": "THE ACCOUNTS",
+      "world": "AS READ FROM BARCELONA",
+      "polls": "IF HELD TODAY",
+      "library": "READING, NOT ACTION"
+    },
+    "pollsUnavailable": "Polls are not available in historical mode."
   }
 }

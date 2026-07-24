@@ -8,7 +8,7 @@
  *
  * - 'hemicycle' / 'achievement-gallery': Task 7/8 give these a Desk component
  *   (registry.ts, below). Not yet referenced by any compiled content.
- * - 'poll-map': declared by `source/scenes/status.scene.dry` (dual-marked
+ * - 'poll-map': declared by `source/scenes/status/status.scene.dry` (dual-marked
  *   alongside its legacy `#cat-polls-widget` id). No Desk component until
  *   phase 3 — WidgetHost renders the placeholder, which is correct.
  * - 'coalitions': declared by `parlament_coalition.scene.dry` and
@@ -16,8 +16,24 @@
  *   `#parlament-coalition-widget` id). No Desk component until phase 4 —
  *   same placeholder story. This is also how `window._cvParlement` dies: the
  *   marker's `data-props` names a Q key (`configFrom`) instead of a global.
+ * - 'tension-rows', 'level-bars', 'seat-bars', 'roster-rows', 'leader-rows',
+ *   'trail': declared by the Brief's six `source/scenes/status/status.scene.dry`
+ *   sheets (phase 3b Task 7), each paired with a `deriveFrom` derivation below.
+ *   No Desk component until phase 3b Part 2 — WidgetHost renders the
+ *   placeholder, same story as 'poll-map' above.
  */
-export const WIDGET_NAMES = ['hemicycle', 'achievement-gallery', 'poll-map', 'coalitions'];
+export const WIDGET_NAMES = [
+  'hemicycle',
+  'achievement-gallery',
+  'poll-map',
+  'coalitions',
+  'tension-rows',
+  'level-bars',
+  'seat-bars',
+  'roster-rows',
+  'leader-rows',
+  'trail',
+];
 
 /**
  * The derivations content may name via `data-props='{"deriveFrom":"…"}'`.
@@ -28,10 +44,14 @@ export const WIDGET_NAMES = ['hemicycle', 'achievement-gallery', 'poll-map', 'co
 export const DERIVE_NAMES = [
   'benches',
   'composition',
+  'standing',
   'cabinet',
   'control',
   'chancelleries',
   'factions',
   'street',
   'trails',
+  'crosstab',
+  'seatProjection',
+  'provinces',
 ];

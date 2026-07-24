@@ -15,11 +15,8 @@
 // unknown until the reveal, not just before it visually.
 //
 // Deliberately no from/to position props (brief's contract: FlyingCard
-// {card: CardView} only) — the NOTES' translate-to-hand-slot geometry is
-// left as a simplification; this plays the flip/scale reveal in a fixed
-// stage-space spot near the hand rather than tracking a specific tray id
-// or landing slot index (avoids coupling this component's props to
-// DeskView's tray/hand layout tables for a purely decorative detail).
+// {card: CardView} only). The reveal is centered in the live desk region,
+// avoiding both design-canvas coordinates and coupling to a landing slot.
 import { computed } from 'vue';
 import type { CardView } from '../../engine/types';
 import { useDeskStore } from '../../stores/desk';
@@ -50,10 +47,12 @@ const drawMs = computed(() => `${desk.animMs('draw')}ms`);
 <style scoped>
 .flying-card {
   position: absolute;
-  left: 426px;
-  top: 290px;
-  width: 186px;
-  height: 264px; /* matches HandCard's 186×264 (desk-frames §3) */
+  left: 50%;
+  top: 50%;
+  width: clamp(150px, 11vw, 210px);
+  height: auto;
+  aspect-ratio: 31 / 44;
+  transform: translate(-50%, -50%);
   perspective: 1200px;
   pointer-events: none;
   z-index: 60;

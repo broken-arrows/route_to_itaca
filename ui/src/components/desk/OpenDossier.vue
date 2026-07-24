@@ -27,6 +27,11 @@ import { skinFor } from './skins';
 import PaperOption from './PaperOption.vue';
 import Prose from '../Prose.vue';
 
+const props = withDefaults(
+  defineProps<{ origin?: { x: number; y: number } }>(),
+  { origin: () => ({ x: 0, y: 0 }) },
+);
+
 const desk = useDeskStore();
 const game = useGameStore();
 
@@ -70,6 +75,8 @@ const styleVars = computed(() => ({
   '--swing-delay': `${desk.animMs('coverSwingDelay')}ms`,
   '--cancel-ms': `${desk.animMs('cancel')}ms`,
   '--resolve-ms': `${desk.animMs('resolve')}ms`,
+  '--origin-x': `${props.origin.x}px`,
+  '--origin-y': `${props.origin.y}px`,
 }));
 
 // PaperOption's `pick` emit only fires for a choosable option; a locked click
@@ -133,17 +140,21 @@ function onPick(i: number): void {
 <style scoped>
 .open-dossier {
   position: absolute;
-  left: 94px;
-  top: 120px;
-  width: 850px;
-  height: 580px;
+  left: 47%;
+  top: 50%;
+  width: clamp(760px, 64vw, 1400px);
+  max-width: calc(100% - clamp(44px, 6vw, 96px));
+  height: min(820px, calc(100% - clamp(56px, 10vh, 120px)));
   display: flex;
   z-index: 50;
   border: 1px solid var(--card-bd);
   border-radius: 5px;
   filter: drop-shadow(0 24px 40px rgba(60, 40, 20, 0.3));
-  transform-origin: 15% 85%;
-  animation: dossier-open var(--scale-ms) cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  transform-origin: center;
+  perspective: 1400px;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  animation: dossier-open var(--scale-ms) cubic-bezier(0.22, 0.72, 0.24, 1) both;
 }
 /* The folder paper — both halves. Lighter than the hand-card manila, to match
    the open-spread reference. */
@@ -153,21 +164,27 @@ function onPick(i: number): void {
 .skin-neutral { background: #f6f4ec; }
 
 @keyframes dossier-open {
-  from { transform: scale(0.22); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform:
+      translate(calc(-50% + var(--origin-x)), calc(-50% + var(--origin-y)))
+      scale(0.22)
+      rotate(-1.5deg);
+    opacity: 0.25;
+  }
+  to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 }
 .open-dossier.resolving {
   animation: dossier-resolve var(--resolve-ms) ease forwards;
 }
 @keyframes dossier-resolve {
-  to { transform: translate(300px, 260px) scale(0.16) rotate(-4deg); opacity: 0; }
+  to { transform: translate(-12%, -8%) scale(0.16) rotate(-4deg); opacity: 0; }
 }
 /* Unmount leave (via <Transition name="dossier"> in DeskView). */
 .dossier-leave-active {
   transition: transform var(--cancel-ms) ease, opacity var(--cancel-ms) ease;
 }
 .dossier-leave-to {
-  transform: scale(0.2) translate(-200px, 200px);
+  transform: translate(-85%, -15%) scale(0.2);
   opacity: 0;
 }
 
@@ -176,12 +193,14 @@ function onPick(i: number): void {
   padding: 26px 26px 22px;
   display: flex;
   flex-direction: column;
-  transform-origin: left center;
-  animation: cover-swing var(--swing-ms) cubic-bezier(0.3, 0.9, 0.35, 1) var(--swing-delay) both;
+  transform-origin: right center;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  animation: cover-swing var(--swing-ms) cubic-bezier(0.22, 0.72, 0.24, 1) var(--swing-delay) both;
 }
 @keyframes cover-swing {
-  from { transform: rotateY(-88deg); }
-  to { transform: rotateY(4deg); }
+  from { transform: rotateY(-28deg); }
+  to { transform: rotateY(0deg); }
 }
 .dossier-header {
   display: flex;

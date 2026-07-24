@@ -43,6 +43,8 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 
 /** The game's art tree. Single source of truth, shared with the old UI. */
 export const GAME_IMG_DIR = path.resolve(here, '..', 'out', 'html', 'img');
+/** New game-owned assets added before the phase-6 bulk art relocation. */
+export const SOURCE_IMG_DIR = path.resolve(here, '..', 'source', 'img');
 
 /**
  * The game's i18n catalogs — `source/locales/<loc>/{ui,content}.json` (§3.4 of
@@ -113,11 +115,21 @@ export function gameAssets(): Plugin {
       server.middlewares.use('/img', (req, res) => {
         // `req.url` is already stripped of the /img mount point.
         const rel = decodeURIComponent((req.url ?? '').split('?')[0]);
-        const file = path.join(GAME_IMG_DIR, rel);
+        const sourceFile = path.join(SOURCE_IMG_DIR, rel);
+        const legacyFile = path.join(GAME_IMG_DIR, rel);
+        const file =
+          sourceFile.startsWith(SOURCE_IMG_DIR + path.sep) &&
+          existsSync(sourceFile) &&
+          statSync(sourceFile).isFile()
+            ? sourceFile
+            : legacyFile;
 
         // Containment check: never serve outside the art tree, whatever the
         // request says (`..%2f` and friends decode to a traversal above).
-        if (!file.startsWith(GAME_IMG_DIR + path.sep)) {
+        if (
+          !sourceFile.startsWith(SOURCE_IMG_DIR + path.sep) ||
+          !legacyFile.startsWith(GAME_IMG_DIR + path.sep)
+        ) {
           res.statusCode = 403;
           return res.end('Forbidden');
         }
@@ -181,6 +193,12 @@ export function gameAssets(): Plugin {
         cpSync(GAME_IMG_DIR, path.join(dist, 'img'), { recursive: true });
       } else {
         this.warn(`game art not found at ${GAME_IMG_DIR} — built app will show placeholders`);
+      }
+      // Overlay the assets already moved into the game-owned tree (currently
+      // the polls map). Existing out/html/img remains the bulk source until
+      // phase 6; this avoids breaking every card image to land one new asset.
+      if (existsSync(SOURCE_IMG_DIR)) {
+        cpSync(SOURCE_IMG_DIR, path.join(dist, 'img'), { recursive: true });
       }
 
       if (existsSync(GAME_LOCALES_DIR)) {

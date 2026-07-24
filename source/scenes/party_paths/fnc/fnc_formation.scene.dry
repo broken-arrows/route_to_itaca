@@ -1,12 +1,9 @@
-title: A New Year
-subtitle: Happy 2015 everyone!
+title: The end of PxC
 view-if: year = 2015 and month = 1
 tags: event
 new-page: true
 max-visits: 1
-call: newyearcalc
 on-arrival: {!
-    // TODO: make its own event + gate?
     Q.fnc_formed = true;
     Q.pxc_dissolved = true;
     for (var c of Q.parlament_constituencies) {
@@ -19,6 +16,6 @@ on-arrival: {!
 !}
 role: event
 
-= A New Year: 2015
+= The end of PxC
 
-- @post_event: TODO
+The far-right, xenophobic party of PxC has officially been dissolved. After time and time again failing to get any meaningful representation, the party direction has merged into VOX, though not all in the party have followed that path. Some have gone their separate way and formed the FNC. Let's hope they stay as irrelevant as they have been so far.

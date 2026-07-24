@@ -23,7 +23,12 @@ const props = defineProps<{
   index: number;
   dimmed?: boolean;
 }>();
-const emit = defineEmits<{ play: [card: CardView] }>();
+interface CardScreenOrigin {
+  x: number;
+  y: number;
+}
+
+const emit = defineEmits<{ play: [card: CardView, origin: CardScreenOrigin] }>();
 
 // Deterministic +/-2deg jitter table (NOT random — keeps renders stable and
 // the component pure/testable). Six entries cover the two-rows-of-three cap.
@@ -37,8 +42,12 @@ const imgSrc = computed(() =>
   props.card.image ? `${import.meta.env.BASE_URL}${props.card.image}` : null,
 );
 
-function onClick(): void {
-  emit('play', props.card);
+function onClick(event: Event): void {
+  const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+  emit('play', props.card, {
+    x: rect.left + rect.width / 2,
+    y: rect.top + rect.height / 2,
+  });
 }
 </script>
 
@@ -104,10 +113,11 @@ function onClick(): void {
 
 <style scoped>
 .hand-card {
-  /* 186×264 dossier — desk-frames.md §3 "The hand". The card is a folder:
-     the .sheet inside is the document. */
-  width: 186px;
-  height: 264px;
+  /* The reference dossier keeps its 31:44 proportion while its physical
+     geometry is independently bounded. The .sheet is the document. */
+  width: clamp(150px, 11vw, 210px);
+  height: auto;
+  aspect-ratio: 31 / 44;
   border-radius: 4px;
   box-shadow: 0 12px 22px rgba(60, 45, 20, 0.28);
   cursor: pointer;

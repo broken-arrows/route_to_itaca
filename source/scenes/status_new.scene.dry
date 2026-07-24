@@ -1,0 +1,146 @@
+title: Status
+role: status
+is-special: true
+
+# The Desk's Brief. Found BY ROLE (adapter.hubSceneId('status')), never by id.
+#
+# The old shell does not read this file at all: it renders `status.scene.dry`,
+# whose five sub-scenes its five hardcoded tab buttons name directly. The two
+# scenes are deliberate duplicates of the same Q data for as long as both UIs
+# ship — the old shell is frozen and dies with phase 6, taking `status.scene.dry`
+# with it. Drift between them is expected and accepted (user, 2026-07-23); the
+# alternative was writing every Brief widget twice.
+
+- @status_new.overview
+- @status_new.party
+- @status_new.chamber
+- @status_new.economy
+- @status_new.world
+- @status_new.polls
+
+
+@overview
+title: Overview
+role: info-tab
+
+# Shapes below (brief-box / brief-ghost / brief-card / brief-row / brief-stamp
+# / brief-note) are the Brief's entry grammar — docs/design/reference/
+# brief-frames.md §1. They are styled in ui/src/components/brief/BriefSheet.vue
+# and nowhere else, which is legitimate: this scene has exactly ONE renderer
+# (the Desk). The old shell renders status.scene.dry instead, and never sees
+# this file. Do NOT re-add <img class="seal">: `.seal` is styled only in
+# out/html/game.css, so on the Desk it rendered at its intrinsic ~800px and
+# destroyed the sheet. The design's institution card carries no seal.
+
+<div class="brief-boxes">
+<div class="brief-box"><strong>✦ [+ party_resources +]</strong><span>Party resources</span></div>
+<div class="brief-box brief-ghost"><strong>✦ —</strong><span>Govern funds<em>when you govern</em></span></div>
+</div>
+
+[? if rubicon: Week [+ week +] ,?][+ month : month +] [+ year +]
+
+[? if player_party != 0 and position_disp != 0: [+ player_party +] [? if player_in_jxsi: (JxSí)?][?if player_in_jxcat: (JxCat)?] position: [+ position_disp +] ?]
+
+<div data-widget="level-bars" data-props='{"deriveFrom":"standing"}'></div>
+
+= The two palaces
+
+<div class="brief-card">
+<div class="brief-card-head"><span>Generalitat de Catalunya</span><span>Pl. Sant Jaume</span></div>
+<div class="brief-row"><span>Govern</span><span>[+ cat_coalition_disp +]</span></div>
+<div class="brief-row"><span>[? if president_gender = "m": President?][? if president_gender = "f": Presidenta?]</span><span>[+ president +] ([+ president_party +])</span></div>
+<div class="brief-row"><span>Next election</span><span>[+ next_election_month : month +] [+ next_election_year +]</span></div>
+</div>
+
+<div class="brief-stamp-line"><span>Madrid ⇄ Barcelona</span><span class="brief-stamp">[+ cat_spa_relations : cat_spa_relations +]</span></div>
+
+<div class="brief-card">
+<div class="brief-card-head"><span>Gobierno de España</span><span>La Moncloa</span></div>
+<div class="brief-row"><span>Gobierno</span><span>[+ spanish_coalition_disp +]</span></div>
+<div class="brief-row"><span>[? if spanish_pm_gender = "m": Presidente?][? if spanish_pm_gender = "f": Presidenta?]</span><span>[+ spanish_pm +] ([? if spanish_pm_party == "cs" : csspa?][? if spanish_pm_party != "cs": [+ spanish_pm_party +]?])</span></div>
+<div class="brief-row"><span>Next election</span><span>[+ next_spanish_election_month : month +] [+ next_spanish_election_year +]</span></div>
+</div>
+
+= The map
+
+[? if not historical_mode: <div id="cat-polls-widget" data-widget="poll-map" data-props='{"variant":"compact"}'></div>?][? if historical_mode: <div id="cat-polls-widget" data-widget="poll-map" data-props='{"variant":"blank"}'></div>?]
+
+
+@party
+title: Party
+role: info-tab
+
+<div class="brief-box brief-ghost"><span class="brief-stamp">[? if player_party = "erc": [+ erc_roadmap : roadmap +]?][? if player_party = "jxsi": [+ jxsi_roadmap : roadmap +]?][? if player_party = "ciu": [+ ciu_roadmap : roadmap +]?][? if player_party = "cup": [+ cup_roadmap : roadmap +]?][? if player_party=None: [+ player_party : roadmap +]?]</span><span>Roadmap[? if roadmap_year: · [+ roadmap_year +]?]</span></div>
+
+[? if player_party == "erc": Internal dissent: [+ erc_dissent : dissent +]?][? if player_party == "cup": Internal dissent: [+ cup_dissent : dissent +]?]
+
+= The factions
+
+<div data-widget="tension-rows" data-props='{"deriveFrom":"factions"}'></div>
+
+= The street
+
+<div data-widget="level-bars" data-props='{"deriveFrom":"street"}'></div>
+
+<div style="font-size:0.85em;"> Currently [+ independence_trust : politics_trust +] the government.</div>
+
+
+@chamber
+title: Chamber
+role: info-tab
+
+<div data-widget="seat-bars" data-props='{"deriveFrom":"composition"}'></div>
+
+Speaker of the House — [+ speaker +] ([+ speaker_party +])
+
+= The benches
+
+<div data-widget="roster-rows" data-props='{"deriveFrom":"benches"}'></div>
+
+= El Govern
+
+<div data-widget="leader-rows" data-props='{"deriveFrom":"cabinet"}'></div>
+
+[? if cat_coalition_dissent != 0 : Coalition dissent: [+ cat_coalition_dissent : dissent +] ?]
+
+
+@economy
+title: Economy
+role: info-tab
+
+<div data-widget="trail" data-props='{"deriveFrom":"trails"}'></div>
+
+<div class="brief-row"><span>Debt status</span><span class="brief-stamp">[+ public_debt : public_debt_qualifier +]</span></div>
+
+
+@world
+title: World
+role: info-tab
+
+= Madrid
+
+Tensions: [+ cat_spa_relations : cat_spa_relations +]
+
+= The chancelleries
+
+<div data-widget="roster-rows" data-props='{"deriveFrom":"chancelleries"}'></div>
+
+= State control
+
+<div data-widget="leader-rows" data-props='{"deriveFrom":"control"}'></div>
+
+
+@polls
+title: Polls
+role: info-tab
+view-if: not historical_mode
+
+<div class="brief-note">Per-province results, if the elections were held today.</div>
+
+<div id="cat-polls-widget" data-widget="poll-map"></div>
+
+= Street sentiment
+
+Social dissent: [+ social_dissent : social_dissent +]
+
+Independence movement momentum: [+ independence_movement : independence_movement +]

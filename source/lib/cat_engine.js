@@ -856,7 +856,10 @@
           "csqp",
           "icv-euia",
           "icv",
-        ].find((p) => (Q[`${p} parlament ${prov} ${demo} support`] || 0) > 0);
+        ].find(
+          (p) =>
+            (Q[p + "_parlament_" + prov + "_" + demo + "_support"] || 0) > 0,
+        );
 
         const partyMultiplier =
           federalLeftChannelMultiplier[activeFederalLeft] ?? 0.0;
@@ -966,6 +969,60 @@
               0.45 * d_cat_spa * Q.psc_recovery_mult;
             delta_vec[FAMILIES.indexOf("fl")] -=
               0.45 * d_cat_spa * Q.psc_recovery_mult;
+          }
+        }
+
+        // ── FNC FEEDING
+        // Aka. post 2015 dissilusionment handling
+        if (Q.fnc_formed === true && Q.pxc_dissolved === true) {
+          const FNC = FAMILIES.indexOf("fnc");
+          const ICR = FAMILIES.indexOf("icr");
+          const PPC = FAMILIES.indexOf("ppc");
+          const VOX = FAMILIES.indexOf("vox");
+          const ABS = FAMILIES.indexOf("abs");
+
+          const momentum = clamp((Q.independence_movement - 45) / 24, 0, 1);
+
+          // Material/political dissatisfaction opens space, but cannot create an FNC surge on its own.
+          const dissentFactor = clamp((Q.social_dissent - 40) / 32, 0, 1);
+
+          // Only matters substantially once FNC begins to inhabit an independence-process political field.
+          const distrustFactor = clamp((40 - Q.independence_trust) / 20, 0, 1);
+
+          // If there is no worsening dissatisfaction this month, do nothing.
+          // This prevents a permanent automatic drift into FNC.
+          const fncPressure = dissentFactor * 0.35 + 0.65 * distrustFactor;
+
+          if (fncPressure > 0) {
+            const rawInflow = 0.018 * fncPressure * nl_d.dissent * nl_p.dissent;
+
+            // Low momentum: Catalanist far-right challenger to PP/Vox.
+            // High momentum: nationalist-process breakaway, above all from ICR
+            // and an abstention pool already produced by process frustration.
+            const ppcShare = 0.62 * (1 - momentum) + 0.1 * momentum;
+            const voxShare = 0.23 * (1 - momentum) + 0.08 * momentum;
+            const icrShare = 0.03 * (1 - momentum) + 0.5 * momentum;
+            const absShare = 1 - ppcShare - voxShare - icrShare;
+
+            // Vox cannot be a donor before it is live in this cell. Its share
+            // returns to PP rather than reducing the total FNC inflow.
+            const voxLive =
+              Q.vox_active === true &&
+              (Q[`voxparlament${prov}${demo}support`] || 0) > 0;
+
+            const effectivePpcShare = ppcShare + (voxLive ? 0 : voxShare);
+            const effectiveVoxShare = voxLive ? voxShare : 0;
+
+            const fromPpc = rawInflow * effectivePpcShare;
+            const fromVox = rawInflow * effectiveVoxShare;
+            const fromIcr = rawInflow * icrShare;
+            const fromAbs = rawInflow * absShare;
+
+            delta_vec[FNC] += rawInflow;
+            delta_vec[PPC] -= fromPpc;
+            delta_vec[VOX] -= fromVox;
+            delta_vec[ICR] -= fromIcr;
+            delta_vec[ABS] -= fromAbs;
           }
         }
 
@@ -1698,7 +1755,12 @@
       console.error(
         "spaSupportInject: delta is not a number (" +
           JSON.stringify(delta) +
-          ") injecting " + family + " from " + from + " in " + c +
+          ") injecting " +
+          family +
+          " from " +
+          from +
+          " in " +
+          c +
           " — call skipped. A decimal COMMA does this.",
       );
       return;
@@ -1707,8 +1769,13 @@
     const known = Q.congreso_constituencies || [];
     if (!everywhere && known.indexOf(c) === -1) {
       console.error(
-        'spaSupportInject: unknown constituency "' + c + '" injecting ' +
-          family + " from " + from + " — nothing injected. Known: " +
+        'spaSupportInject: unknown constituency "' +
+          c +
+          '" injecting ' +
+          family +
+          " from " +
+          from +
+          " — nothing injected. Known: " +
           known.join(", "),
       );
       return;
@@ -1725,7 +1792,9 @@
           console.error(
             "spaSupportInject: " +
               (lineup.includes(toKey) ? fromKey : toKey) +
-              " is not in the " + cc + " lineup — nothing injected.",
+              " is not in the " +
+              cc +
+              " lineup — nothing injected.",
           );
         }
         continue;

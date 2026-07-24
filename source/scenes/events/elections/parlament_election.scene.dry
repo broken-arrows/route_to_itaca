@@ -10,8 +10,8 @@ role: event
 @post_election
 new-page: true
 on-arrival: {!
-    Q.next_election_year += 4;
-    Q.next_election_time += 48;
+    Q.next_election_year = Q.year + 4;
+    Q.next_election_time = Q.time + 48;
     
     // edge case for 2012
     if (Q.player_party == "cup" && Q.cup_parlament_s > 0 && Q.year == 2012) {
@@ -19,6 +19,9 @@ on-arrival: {!
     } 
     if ((Q.player_party == "cup" && Q.cup_parlament_s <= 0) || (Q.player_party == "erc" && Q.erc_parlament_s <= 0)) {
         Q.game_over_trigger = true;
+    }
+    if (Q.fnc_parlament_s > 0) {
+        this.achieve('josep_maria');
     }
 !}
 on-display: {!

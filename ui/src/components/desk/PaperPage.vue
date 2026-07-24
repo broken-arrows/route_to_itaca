@@ -78,8 +78,8 @@ function onPick(i: number, choice: ChoiceView): void {
 }
 .paper-sheet {
   position: relative;
-  width: 900px;
-  max-width: calc(100% - 80px);
+  width: clamp(760px, 62vw, 1100px);
+  max-width: calc(100% - clamp(32px, 5vw, 96px));
   margin-top: 40px;
   background: var(--paper-0);
   border: 1px solid var(--ink-0);

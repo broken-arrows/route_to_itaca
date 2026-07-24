@@ -16,9 +16,10 @@ import { markGlossary, type GlossaryTerm } from '../src/glossary/mark';
 import type { ChoiceView, CardView } from '../src/engine/types';
 import uiEn from '../../source/locales/en/ui.json';
 
-// Every DeskView mount below now also mounts ClipboardFrame, which reads
-// `brief.tab.*` — GAME chrome sourced from source/locales/<loc>/ui.json (see
-// i18n.ts's initGameLocale, and the same fix in desk.components.test.ts).
+// Every DeskView mount below now also mounts Clipboard (phase 3b Task 9;
+// formerly the inert ClipboardFrame), which reads `brief.context.*` — GAME
+// chrome sourced from source/locales/<loc>/ui.json (see i18n.ts's
+// initGameLocale, and the same fix in desk.components.test.ts).
 i18n.global.mergeLocaleMessage('en', uiEn as never);
 
 // Repo convention (per task brief): register BOTH plugins for new test

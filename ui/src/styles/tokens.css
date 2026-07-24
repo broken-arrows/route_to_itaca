@@ -69,9 +69,10 @@
   --font-body: 'Raleway', sans-serif;
   --font-news: Georgia, 'Times New Roman', serif;
   --font-typed: 'Courier New', monospace;
-  /* stage */
-  --stage-w: 1512px;
-  --stage-h: 860px;
+  /* Responsive player sections. These bound geometry, not typography. */
+  --brief-min: 380px;
+  --brief-fluid: 31vw;
+  --brief-max: 600px;
 
   /* Party/person colour tokens — glossary.mark.ts/useGlossary.ts's
      colourValue() maps a glossary/allegiance `colour` TOKEN (e.g. "ciu") to
