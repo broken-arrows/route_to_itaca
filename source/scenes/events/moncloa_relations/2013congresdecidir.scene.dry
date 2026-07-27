@@ -39,14 +39,35 @@ on-arrival: {!
     }    
     Q.congreso_decidir_no = (Q.psoe_congreso_s - psc_congreso) + Q.pp_congreso_s + Q.upyd_congreso_s + Q.fac_congreso_s;
 
-    var congreso_size = 0;
-    for (var constituency of Q.congreso_constituencies) {
-        congreso_size += Q.congreso_seats[constituency];
+    var yes_parties = [{ label: "CiU" }];
+    var abstain_parties = [];
+    if (Q.psc_leader == "Montserrat Tura" || Q.psc_leader == "Àngel Ros") {
+        yes_parties.push({ label: "PSC" });
+    } else {
+        abstain_parties.push({ label: "PSC" });
     }
-
-    Q.congreso_decidir_no_pc = Math.round((Q.congreso_decidir_no / congreso_size) * 100);
-    Q.congreso_decidir_abst_pc = Math.round((Q.congreso_decidir_abst / congreso_size) * 100);
-    Q.congreso_decidir_si_pc = Math.round((Q.congreso_decidir_si / congreso_size) * 100);
+    yes_parties.push(
+        { label: "ERC" },
+        { label: "IU" },
+        { label: "PNV" },
+        { label: "Amaiur" },
+        { label: "compromis" },
+        { label: "BNG" },
+        { label: "GBai" }
+    );
+    abstain_parties.push({ label: "CC-PNC" });
+    Q.congreso_decidir_vote_result = {
+        outcomes: [
+            { kind: "yes", label: "Yes", votes: Q.congreso_decidir_si, parties: yes_parties },
+            { kind: "abstain", label: "Abstention", votes: Q.congreso_decidir_abst, parties: abstain_parties },
+            { kind: "no", label: "No", votes: Q.congreso_decidir_no, parties: [
+                { label: "PP" },
+                { label: "PSOE (excluding PSC)" },
+                { label: "UPyD" },
+                { label: "FAC" }
+            ] }
+        ]
+    };
 
     if (Q.congreso_decidir_no >= Q.congreso_decidir_si) {
         Q.non_binding_consultation_law_countdown = 9;
@@ -56,7 +77,7 @@ on-arrival: {!
     // TODO: What happens if successful constitutional reform
 !}
 
-<table style='border-spacing: 0px; margin-right: 1em; margin-left: 1em; width:95%; table-layout: fixed;'><tr><td style='width: [+ congreso_decidir_si_pc +]%'>Yes</td><td style='text-align: center; width: [+ congreso_decidir_abst_pc +]%'>Abstention</td><td style='text-align: right; width: [+ congreso_decidir_no_pc +]%'>No</td></tr><tr><td style='height: 2em; background-color: #008000; color: white; text-align: center; border-radius: 3px 0 0 3px;'>**[+ congreso_decidir_si +]**</td><td style='background-color: #b1b0aeff; color: black; text-align: center'>**[+ congreso_decidir_abst +]**</td><td style='background-color: #c30000; color: white; text-align: center; border-radius: 0 3px 3px 0;'>**[+ congreso_decidir_no +]**</td></tr><tr style='vertical-align:top'><td> CiU <br/> [? if psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros": PSC <br/> ?] ERC <br/> IU <br/> PNV <br/> Amaiur <br/> compromis <br/> BNG <br/> GBai </td><td> [? if not (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros"): PSC <br/> ?] CC-PNC </td><td style='text-align: right'> PP <br/> PSOE (excluding PSC) <br/> UPyD <br/> FAC </td></tr></table>
+<div data-widget="chamber-vote" data-props='{"configFrom":"congreso_decidir_vote_result"}'></div>
 
 Surprising a total of zero people, the Congreso has rejected the proposal. And, following the innitiative by UPyD, it has actually passed a resolution with the same supports stating that *"under no circumstances can a part of the citizenry vote on territorial organization of the State"* \[...\] *"without including the rest"*. Presidente Mariano Rajoy has also made a statement: *"no referendum and no independence will happen while I am President"*.
 

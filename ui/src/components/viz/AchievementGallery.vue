@@ -47,10 +47,12 @@ interface Row {
 const rows = computed<Row[]>(() => {
   const q = props.q ?? {};
   const prefix = props.scope === 'playthrough' ? 'game_achievement_' : 'achievement_';
-  return game.achievements.map((a) => ({
-    ...a,
-    unlocked: !!q[prefix + a.id],
-  }));
+  return game.achievements
+    .filter((a) => props.scope !== 'playthrough' || !!q[prefix + a.id])
+    .map((a) => ({
+      ...a,
+      unlocked: !!q[prefix + a.id],
+    }));
 });
 
 // Registry image paths are web-root-relative (`img/...`), same as every other

@@ -66,7 +66,9 @@ const HAVE_GAME = existsSync(GAME_JSON);
     it('@achievements_this_playthrough (scope=playthrough)', () => {
       const wrapper = mountSceneProse('game_over.achievements_this_playthrough');
       expect(wrapper.find('[data-test="achievement-gallery"]').exists()).toBe(true);
-      expect(wrapper.findAll('[data-test^="achievement-row-"]').length).toBe(expectedRowCount());
+      // A fresh store has no achievements from this run. This summary renders
+      // completed entries only, rather than the full locked catalogue.
+      expect(wrapper.findAll('[data-test^="achievement-row-"]')).toHaveLength(0);
     });
   },
 );

@@ -66,15 +66,21 @@ describe('AchievementGallery', () => {
     );
   });
 
-  it('reads Q.game_achievement_<id> instead when scope="playthrough"', () => {
+  it('renders only Q.game_achievement_<id> unlocks when scope="playthrough"', () => {
     // achievement_a is set (ever unlocked) but game_achievement_a is not
     // (not unlocked THIS playthrough) — playthrough scope must ignore the
     // ever-unlocked quality entirely.
     const w = mountGallery({ scope: 'playthrough', q: { achievement_a: 1, game_achievement_b: 1 } });
-    expect(w.get('[data-test="achievement-row-a"]').classes()).toContain('achievement-row--locked');
+    expect(w.find('[data-test="achievement-row-a"]').exists()).toBe(false);
     expect(w.get('[data-test="achievement-row-b"]').classes()).toContain(
       'achievement-row--unlocked',
     );
+    expect(w.find('.achievement-row--locked').exists()).toBe(false);
+  });
+
+  it('renders an empty gallery when this playthrough has no achievements', () => {
+    const w = mountGallery({ scope: 'playthrough', q: { achievement_a: 1 } });
+    expect(w.findAll('[data-test^="achievement-row-"]')).toHaveLength(0);
   });
 
   it('renders the correct filled/empty star split', () => {

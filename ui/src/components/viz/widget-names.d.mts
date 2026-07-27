@@ -30,4 +30,6 @@ export declare const WIDGET_NAMES: readonly [
   'roster-rows',
   'leader-rows',
   'trail',
+  'chamber-vote',
+  'law-grid',
 ];

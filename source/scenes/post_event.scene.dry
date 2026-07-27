@@ -70,7 +70,6 @@ if (Q.month >= 13) {
 
 if (has_time_passed) {
     console.info("Time has passed. Current date: ", Q.year, Q.month, Q.week);
-    console.log("Debug DELETE ME TODO: time to next spanish election: ", Q.next_spanish_election_time - Q.time);
     G.engineTick(Q);
     // 2.1. Timers
     for (timer of Q.rubicon_timers) {
@@ -283,12 +282,12 @@ if (has_time_passed) {
         if (Q[countdown + "_countdown"] >= 0) {
             Q[countdown + "_countdown"] -= 1;
             // countdowns at -1 are actually usefull for visualizations
+        } 
+        if (Q[countdown + "_countdown"] == 0) {
+            Q[countdown + "_countdown"] = -1;
+            console.info("Countdown for " + countdown + " reached trigger.");
+            Q[countdown + '_trigger'] = 1;
         } else {
-            if (Q[countdown + "_countdown"] == 0) {
-                Q[countdown + "_countdown"] = -1;
-                console.info("Countdown for " + countdown + " reached trigger.");
-                Q[countdown + '_trigger'] = 1;
-            }
             console.log("Countdown " + countdown + ": " + Q[countdown + "_countdown"] + " ticks remaining.");
         }
     }

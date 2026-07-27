@@ -1,2 +1,126 @@
-title: Parlament Inheritance Tax
+title: Law on Inheritance and Gift Taxes
 new-page: true
+choose-if: party_resources > 0 and not parlament_inheritance_tax_passed
+subtitle: [? if coming_from_parlament: \[-1 resources\]?]
+unavailable-subtitle: [? if parlament_inheritance_tax_passed: Already approved!?][? if not parlament_inheritance_tax_passed and party_resources < 1: Not enough resources.?]
+on-arrival: {! 
+    if (Q.coming_from_parlament) Q.party_resources -= 1; 
+    // TODO: CUP/ERC reaction when part of JxSi // JxCat
+!}
+
+= Law on Inheritance and Gift Taxes
+
+Years of liberal policies on taxation have left close-family inheritances lightly taxed. Being one of the few cases where Catalan Civil law is clearly recognized as fully autonomous, the debate here is on which parties are willing to risk votes over this matter.
+
+- @inheritance_partial: Restore it as a gentle and progressive tax
+- @inheritance_strong: Restore it and steepen the top rates
+
+@inheritance_partial
+subtitle: Most family homes and modest inheritances will remain protected. Larger estates will be making most of the contributions.
+on-arrival: {!
+    Q.parlament_inheritance_tax_variant = "partial_restoration"; 
+!}
+choose-if: player_party != "cup"
+unavailable-subtitle: The party rejects such an unambitious proposal for addressing the housing crisis.
+go-to: inheritance_vote
+
+@inheritance_strong
+subtitle: Large inheritances, gifts and business-asset transfers will face much narrower exemptions and markedly higher effective rates.
+on-arrival: {!
+    Q.parlament_inheritance_tax_variant = "strong_progressive";
+!}
+go-to: inheritance_vote
+
+@inheritance_vote
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.coming_from_parlament = false;
+    var strong = Q.parlament_inheritance_tax_variant == "strong_progressive";
+    var author = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    var leftDonor = Q.parlament_current_icv;
+    var backlash = Q.cs_parlament_s > 0 ? "cs" : "ppc";
+
+    var proposalYoung = strong ? 0.075 : 0.03;
+    var proposalUnemployed = strong ? 0.105 : 0.045;
+    var proposalBussLoss = strong ? 0.09 : 0;
+    var proposalRetiredLoss = strong ? 0.06 : 0.03;
+    var proposalMiddleLoss = strong ? 0.036 : 0;
+    for (const c of Q.parlament_constituencies) {
+        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
+        Q[leftDonor + "_parlament_" + c + "_young_support"] -= proposalYoung;
+        Q[author + "_parlament_" + c + "_unemployed_support"] += proposalUnemployed;
+        Q[leftDonor + "_parlament_" + c + "_unemployed_support"] -= proposalUnemployed;
+        Q[author + "_parlament_" + c + "_buss_support"] -= proposalBussLoss;
+        Q[backlash + "_parlament_" + c + "_buss_support"] += proposalBussLoss;
+        Q[author + "_parlament_" + c + "_retired_support"] -= proposalRetiredLoss;
+        Q[backlash + "_parlament_" + c + "_retired_support"] += proposalRetiredLoss;
+        Q[author + "_parlament_" + c + "_middle_support"] -= proposalMiddleLoss;
+        Q[backlash + "_parlament_" + c + "_middle_support"] += proposalMiddleLoss;
+    }
+
+    var yesNames = strong
+        ? ["jxsi","erc","cup","psc","icv","csqp","cecp","ecp","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","icv","csqp","cecp","ecp","unio","si"];
+    var noNames = strong
+        ? ["ciu","cdc","dl","pdcat","jxcat","junts","unio","ppc","cs","vox","pxc","fnc"]
+        : ["ppc","cs","vox","pxc","fnc"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_inheritance_tax_yes = 0;
+    Q.parlament_inheritance_tax_no = 0;
+    Q.parlament_inheritance_tax_abst = 0;
+    for (const p of all) {
+        var seats = Q[p + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        if (yesNames.includes(p)) {
+            Q.parlament_inheritance_tax_yes += seats;
+            yesParties.push({label:labels[p]});
+        } else if (noNames.includes(p)) {
+            Q.parlament_inheritance_tax_no += seats;
+            noParties.push({label:labels[p]});
+        } else {
+            Q.parlament_inheritance_tax_abst += seats;
+            abstainParties.push({label:labels[p]});
+        }
+    }
+    Q.parlament_inheritance_tax_passed = Q.parlament_inheritance_tax_yes > Q.parlament_inheritance_tax_no;
+    Q.parlament_inheritance_tax_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_inheritance_tax_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_inheritance_tax_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_inheritance_tax_no,parties:noParties}
+    ]};
+
+    if (Q.parlament_inheritance_tax_passed) {
+        var passageYoung = strong ? 0.175 : 0.07;
+        var passageUnemployed = strong ? 0.245 : 0.105;
+        var passageBussLoss = strong ? 0.21 : 0;
+        var passageRetiredLoss = strong ? 0.14 : 0.07;
+        var passageMiddleLoss = strong ? 0.084 : 0;
+        for (const c of Q.parlament_constituencies) {
+            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
+            Q[leftDonor + "_parlament_" + c + "_young_support"] -= passageYoung;
+            Q[author + "_parlament_" + c + "_unemployed_support"] += passageUnemployed;
+            Q[leftDonor + "_parlament_" + c + "_unemployed_support"] -= passageUnemployed;
+            Q[author + "_parlament_" + c + "_buss_support"] -= passageBussLoss;
+            Q[backlash + "_parlament_" + c + "_buss_support"] += passageBussLoss;
+            Q[author + "_parlament_" + c + "_retired_support"] -= passageRetiredLoss;
+            Q[backlash + "_parlament_" + c + "_retired_support"] += passageRetiredLoss;
+            Q[author + "_parlament_" + c + "_middle_support"] -= passageMiddleLoss;
+            Q[backlash + "_parlament_" + c + "_middle_support"] += passageMiddleLoss;
+        }
+        if (strong) {
+            G.registerLaw(Q, {id:"inheritance_tax_strong",title:"Progressive Inheritance Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.075,gdp_growth:-0.035,welfare_index_growth:0.04,social_dissent_eq:-1},ramp_ticks:3});
+        } else {
+            G.registerLaw(Q, {id:"inheritance_tax_partial",title:"Restored Inheritance Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.035,gdp_growth:-0.01},ramp_ticks:2});
+        }
+    }
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_inheritance_tax_vote_result"}'></div>
+
+[? if parlament_inheritance_tax_passed: The Parlament has approved the reform! It will now begin producing fresh revenue for the Generalitat, while it is unlikely to ever hit the courts.?][? if not parlament_inheritance_tax_passed: The Parlament has rejected the reform! We'll have to rethink our supports this legislature if we're to ever attempt such law again. ?][? if parlament_inheritance_tax_passed and parlament_inheritance_tax_variant == "strong_progressive": It is, of course, agitating many retail and business organizations, who are attacking the reform loudly, and may not look kindly on our party.?]
+
+- @post_event: Continue...

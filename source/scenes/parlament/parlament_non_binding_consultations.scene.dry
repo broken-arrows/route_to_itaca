@@ -66,6 +66,8 @@ on-arrival: {!
     Q.parlament_consultations_abst = Q.ecp_parlament_s;
     Q.parlament_consultations_no = Q.ppc_parlament_s + Q.cs_parlament_s + Q.vox_parlament_s;
 
+    Q.parlament_consultations_no_psc = false;
+    Q.parlament_consultations_abst_psc = false;
     switch (Q.psc_leader) {
         default: 
             Q.parlament_consultations_yes += Q.psc_parlament_s;
@@ -80,12 +82,56 @@ on-arrival: {!
             break;
     }
 
-    Q.parlament_consultations_yes_pc = Math.round((Q.parlament_consultations_yes / Q.parlament_size) * 100);
-    Q.parlament_consultations_abst_pc = Math.round((Q.parlament_consultations_abst / Q.parlament_size) * 100);
-    Q.parlament_consultations_no_pc = Math.round((Q.parlament_consultations_no / Q.parlament_size) * 100);
+    var yes_parties = [];
+    var abstain_parties = [];
+    var no_parties = [];
+    function add_if_seated(list, label, seats) {
+        if (seats > 0) {
+            list.push({ label: label });
+        }
+    }
+    add_if_seated(yes_parties, "CiU", Q.ciu_parlament_s);
+    add_if_seated(yes_parties, "CDC", Q.cdc_parlament_s);
+    add_if_seated(yes_parties, "DL", Q.dl_parlament_s);
+    add_if_seated(yes_parties, "JxCat", Q.jxcat_parlament_s);
+    add_if_seated(yes_parties, "JxSí", Q.jxsi_parlament_s);
+    add_if_seated(yes_parties, "Junts", Q.junts_parlament_s);
+    add_if_seated(yes_parties, "PDeCAT", Q.pdcat_parlament_s);
+    add_if_seated(yes_parties, "ERC", Q.erc_parlament_s);
+    if (!Q.parlament_consultations_no_psc && !Q.parlament_consultations_abst_psc) {
+        add_if_seated(yes_parties, "PSC", Q.psc_parlament_s);
+    }
+    add_if_seated(yes_parties, "ICV-EUiA", Q.icv_parlament_s);
+    add_if_seated(yes_parties, "CSQP", Q.csqp_parlament_s);
+    add_if_seated(yes_parties, "CECP", Q.cecp_parlament_s);
+    add_if_seated(yes_parties, "CUP", Q.cup_parlament_s);
+    add_if_seated(yes_parties, "UDC", Q.unio_parlament_s);
+
+    if (Q.parlament_consultations_abst_psc) {
+        add_if_seated(abstain_parties, "PSC", Q.psc_parlament_s);
+    }
+    add_if_seated(abstain_parties, "ECP", Q.ecp_parlament_s);
+
+    if (Q.parlament_consultations_no_psc) {
+        add_if_seated(no_parties, "PSC", Q.psc_parlament_s);
+    }
+    add_if_seated(no_parties, "PPC", Q.ppc_parlament_s);
+    add_if_seated(no_parties, "Cs", Q.cs_parlament_s);
+    add_if_seated(no_parties, "Vox", Q.vox_parlament_s);
+
+    Q.parlament_consultations_vote_result = {
+        outcomes: [
+            { kind: "yes", label: "Yes", votes: Q.parlament_consultations_yes, parties: yes_parties },
+            { kind: "abstain", label: "Abstention", votes: Q.parlament_consultations_abst, parties: abstain_parties },
+            { kind: "no", label: "No", votes: Q.parlament_consultations_no, parties: no_parties }
+        ]
+    };
 
     if (Q.parlament_consultations_yes > Q.parlament_consultations_no) {
         Q.parlament_non_binding_consultations = true;
+
+       G.registerLaw(Q, {id:"consultations",title:"Law on Non-Binding Consultations",icon:"img/government_icon.svg",targets:{independence_trust: 0.5}});
+
         Q.countdowns.push("constitutional_consultations");
         Q.constitutional_consultations_countdown = 2;
 
@@ -104,7 +150,7 @@ on-arrival: {!
     Q.coming_from_parlament = false;
 !}
 
-<table style='border-spacing: 0px; margin-right: 1em; margin-left: 1em; width:95%; table-layout: fixed;'><tr><td style='width: [+ parlament_consultations_yes_pc +]%'>Yes</td><td style='text-align: center; width: [+ parlament_consultations_abst_pc +]%'>[? if parlament_consultations_abst > 0:  Abstention ?]</td><td style='text-align: right; width: [+ parlament_consultations_no_pc +]%'>No</td></tr><tr><td style='height: 2em; background-color: #008000; color: white; text-align: center; border-radius: 3px 0 0 3px;'>**[+ parlament_consultations_yes +]**</td><td style='background-color: #b1b0aeff; color: black; text-align: center'>**[? if parlament_consultations_abst > 0: [+ parlament_consultations_abst +]?]**</td><td style='background-color: #c30000; color: white; text-align: center; border-radius: 0 3px 3px 0;'>**[+ parlament_consultations_no +]**</td></tr><tr style='vertical-align:top'><td>[? if ciu_parlament_s > 0: CiU [? if parlament_consultations_yes_ciu : ([+parlament_consultations_yes_ciu+])?]?][? if cdc_parlament_s > 0: CDC?][? if dl_parlament_s > 0: DL?][? if jxcat_parlament_s > 0: JxCat?][? if jxsi_parlament_s > 0: JxSí ?][? if junts_parlament_s > 0: Junts?][? if pdcat_parlament_s > 0: [? if pdcat_split: <br/> ?] PDcat?][? if erc_parlament_s > 0: <br/> ERC ?][? if not (parlament_consultations_no_psc) and not (parlament_consultations_abst_psc) : <br/> PSC ?] </br> [? if icv_parlament_s > 0: ICV-EUiA ?][? if csqp_parlament_s > 0: CSQP ?][? if cecp_parlament_s > 0: CECP ?][? if cup_parlament_s > 0: <br/> CUP ?][? if unio_parlament_s > 0 : <br/> UDC ?]</td><td>[? if parlament_consultations_abst_psc:  PSC <br/> ?][? if ecp_parlament_s > 0: ECP <br/>?]</td><td style='text-align: right'>[? if parlament_consultations_no_psc: PSC <br/> ?] PPC<br/> Cs <br/> [? if vox_parlament_s > 0: Vox <br/> ?] </td></tr></table>
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_consultations_vote_result"}'></div>
 
 [? if parlament_non_binding_consultations : The Law has been approved! Now everything is in the hands of [? if president_gender = "m": President ?][? if president_gender = "f": Presidenta?] [+ president +] to organize the next steps. We'll have to also follow closely how the Spanish government responds to this... ?]
 [? if not parlament_non_binding_consultations : The Law has been rejected! How is this even possible? The parliamentary arithmetics are messed up this legislature man. ?]

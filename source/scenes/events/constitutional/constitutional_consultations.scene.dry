@@ -7,6 +7,10 @@ max-visits: 1
 on-arrival: {!
     Q.cat_spa_relations -= 5;
     Q.independence_movement += 5;
+
+    G.deactivateLaw(Q, "consultations", "disputed");
+
+     // TODO: Change if constitutional reform happened
 !}
 role: event
 

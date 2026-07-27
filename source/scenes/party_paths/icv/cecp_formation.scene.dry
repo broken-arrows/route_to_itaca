@@ -138,7 +138,7 @@ choose-if: local_barcelona_wp == "bcomu" and podemos_congreso_s < psoe_congreso_
 subtitle: [? if (podemos_congreso_catalunya_support >= 20 or up_congreso_catalunya_support >= 20) and (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25): He'll need a bit of a push to do that, given the momentum Podemos enjoys at the moment. \[-1 resources\] ?]
 unavailable-subtitle: [? if (podemos_congreso_catalunya_support >= 20 or up_congreso_catalunya_support >= 20) and (podemos_congreso_catalunya_support < 25 and up_congreso_catalunya_support < 25): [? if cecp_relations < 55: We don't have good enough relations with CSQP (now CECP). ?][? if party_resources < 1: Not enough resources.?] ?][? if podemos_congreso_catalunya_support >= 25 or up_congreso_catalunya_support >= 25 or local_barcelona_wp != "bcomu" or podemos_congreso_s > psoe_congreso_s or up_congreso_s > psoe_congreso_s: BComu does not have a strong enough position. ?]
 on-arrival: {!
-    Q.cecp_leader = "Joan Coscubiela";
+    Q.cecp_leader = "Jaume Asens";
     Q.cecp_leader_gender = "m";
     Q.cecp_ideology = "Anti-austerity left, Plurinationalism";
 !}

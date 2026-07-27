@@ -36,7 +36,9 @@
       return JSON.parse(raw);
     } catch (err) {
       console.warn(
-        'widget "' + (el.id || el.getAttribute("data-widget")) + '": invalid data-props JSON',
+        'widget "' +
+          (el.id || el.getAttribute("data-widget")) +
+          '": invalid data-props JSON',
         err,
       );
       return {};
@@ -55,8 +57,10 @@
       // function closures); this is the ONLY place left that still calls
       // d3.parliament — that plugin (d3-parliament.js) is unchanged.
       var props = readDataProps(el);
-      var config = typeof props.configFrom === "string" ? Q[props.configFrom] : null;
-      if (!config || !Array.isArray(config.seats) || !config.seats.length) return;
+      var config =
+        typeof props.configFrom === "string" ? Q[props.configFrom] : null;
+      if (!config || !Array.isArray(config.seats) || !config.seats.length)
+        return;
 
       // d3.parliament appends <g>/<circle> children via d3's
       // namespace-INHERITING element creator, which only yields real SVG
@@ -113,6 +117,190 @@
       parliament.highlightedParty(Q.player_party);
       d3.select(svg).datum(data).call(parliament);
     },
+    "chamber-vote": function (el, Q) {
+      var props = resolveProps(el, Q);
+      var outcomes = Array.isArray(props.outcomes) ? props.outcomes : [];
+      outcomes = outcomes.filter(function (outcome) {
+        return outcome && Number(outcome.votes) > 0;
+      });
+
+      el.innerHTML = "";
+      if (!outcomes.length) return;
+
+      var wrap = document.createElement("div");
+      wrap.className = "chamber-vote";
+      var totalVotes = outcomes.reduce(function (total, outcome) {
+        return total + Math.max(0, Number(outcome.votes) || 0);
+      }, 0);
+      var abstainIndex = outcomes.findIndex(function (outcome) {
+        return outcome.kind === "abstain";
+      });
+      if (totalVotes > 0 && abstainIndex >= 0) {
+        var votesBeforeAbstain = outcomes
+          .slice(0, abstainIndex)
+          .reduce(function (total, outcome) {
+            return total + Math.max(0, Number(outcome.votes) || 0);
+          }, 0);
+        var abstainVotes = Math.max(
+          0,
+          Number(outcomes[abstainIndex].votes) || 0,
+        );
+        var abstainCenter =
+          (votesBeforeAbstain + abstainVotes / 2) / totalVotes;
+        var equalColumnCenter = (abstainIndex + 0.5) / outcomes.length;
+        var abstainShift =
+          (abstainCenter - equalColumnCenter) * outcomes.length * 100;
+        wrap.style.setProperty(
+          "--chamber-vote-abstain-shift",
+          String(abstainShift) + "%",
+        );
+      }
+      var labels = document.createElement("div");
+      labels.className = "chamber-vote__labels";
+      var bar = document.createElement("div");
+      bar.className = "chamber-vote__bar";
+      if (totalVotes > 0) {
+        var majorityVotes = Math.floor(totalVotes / 2) + 1;
+        bar.style.setProperty(
+          "--chamber-vote-majority-left",
+          String((majorityVotes / totalVotes) * 100) + "%",
+        );
+        bar.setAttribute("data-majority", String(majorityVotes));
+        bar.title = "Majority: " + majorityVotes + " yes votes";
+      }
+      var breakdowns = document.createElement("div");
+      breakdowns.className = "chamber-vote__breakdowns";
+      var hasBreakdowns = false;
+
+      outcomes.forEach(function (outcome) {
+        var kind =
+          outcome.kind === "yes" ||
+          outcome.kind === "abstain" ||
+          outcome.kind === "no"
+            ? outcome.kind
+            : "abstain";
+        var votes = Math.max(0, Number(outcome.votes) || 0);
+        var label = document.createElement("div");
+        label.className = "chamber-vote__label chamber-vote__label--" + kind;
+        label.textContent = String(outcome.label || "");
+        labels.appendChild(label);
+
+        var segment = document.createElement("div");
+        segment.className =
+          "chamber-vote__outcome chamber-vote__outcome--" + kind;
+        segment.style.flexGrow = String(votes);
+        segment.setAttribute(
+          "aria-label",
+          String(outcome.label || "") + ": " + votes + " votes",
+        );
+        segment.textContent = String(votes);
+        bar.appendChild(segment);
+
+        var breakdown = document.createElement("div");
+        breakdown.className =
+          "chamber-vote__breakdown chamber-vote__breakdown--" + kind;
+        if (Array.isArray(outcome.parties) && outcome.parties.length) {
+          hasBreakdowns = true;
+          var parties = document.createElement("ul");
+          parties.className = "chamber-vote__parties";
+          outcome.parties.forEach(function (party) {
+            if (!party || !party.label) return;
+            var item = document.createElement("li");
+            var partyName = String(party.label);
+            item.innerHTML =
+              typeof window.applyWholesome === "function"
+                ? window.applyWholesome(partyName)
+                : partyName;
+            if (party.count !== undefined && party.count !== null) {
+              item.appendChild(
+                document.createTextNode(" (" + String(party.count) + ")"),
+              );
+            }
+            parties.appendChild(item);
+          });
+          breakdown.appendChild(parties);
+        }
+        breakdowns.appendChild(breakdown);
+      });
+
+      wrap.appendChild(labels);
+      wrap.appendChild(bar);
+      if (hasBreakdowns) wrap.appendChild(breakdowns);
+      el.appendChild(wrap);
+    },
+    "law-grid": function (el, Q) {
+      var gameLib =
+        window.dendryUI &&
+        window.dendryUI.dendryEngine &&
+        window.dendryUI.dendryEngine.gameLib;
+      var buildRows = gameLib && gameLib.getLawsForUI;
+      var laws = typeof buildRows === "function" ? buildRows(Q) : [];
+
+      el.innerHTML = "";
+      var visibleLaws = Array.isArray(laws)
+        ? laws.filter(function (law) {
+            return law && law.status !== "expired" && law.icon;
+          })
+        : [];
+      if (!visibleLaws.length) {
+        var empty = document.createElement("p");
+        empty.className = "law-grid__empty";
+        empty.textContent = "No laws passed yet";
+        el.appendChild(empty);
+        return;
+      }
+
+      var statusLabels = {
+        active: "Active",
+        repealed:
+          "Repealed: this law has been scaled down by the Constitutional Court.",
+        disputed:
+          "Disputed: the Constitutional Court and the Parlament have varying interpretations of this law's status.",
+        struck_down:
+          "Struck down: the Constitutional Court has ruled against the totality of this law.",
+        imposed:
+          "Imposed: this is a top-down law that has not been voted by the Parlament.",
+      };
+      var grid = document.createElement("div");
+      grid.className = "law-grid";
+
+      visibleLaws.forEach(function (law, index) {
+        var status = statusLabels[law.status] ? law.status : "repealed";
+        var label =
+          String(law.title || law.id || "Law") +
+          " — " +
+          (statusLabels[law.status] || String(law.status || "Unknown"));
+        var icon = document.createElement("div");
+        icon.className = "law-grid__law law-grid__law--" + status;
+        icon.setAttribute("role", "img");
+        icon.setAttribute("tabindex", "0");
+        icon.setAttribute("aria-label", label);
+
+        var image = document.createElement("img");
+        image.src = law.icon;
+        image.alt = "";
+        icon.appendChild(image);
+
+        var tooltip = document.createElement("span");
+        tooltip.className = "law-grid__tooltip";
+        tooltip.id = "law-grid-tooltip-" + index;
+        tooltip.setAttribute("role", "tooltip");
+        var tooltipTitle = document.createElement("span");
+        tooltipTitle.className = "law-grid__tooltip-title";
+        tooltipTitle.textContent = String(law.title || law.id || "Law");
+        var tooltipStatus = document.createElement("span");
+        tooltipStatus.className = "law-grid__tooltip-status";
+        tooltipStatus.textContent =
+          statusLabels[law.status] || String(law.status || "Unknown");
+        tooltip.appendChild(tooltipTitle);
+        tooltip.appendChild(tooltipStatus);
+        icon.setAttribute("aria-describedby", tooltip.id);
+        icon.appendChild(tooltip);
+        grid.appendChild(icon);
+      });
+
+      if (grid.childNodes.length) el.appendChild(grid);
+    },
     "poll-map": function (el, Q) {
       initCataloniaPolls(el.id, Q, el.id === "cat-polls-widget-wide");
     },
@@ -129,11 +317,20 @@
       // -body/-description) so the gallery is visually identical to before.
       var props = readDataProps(el);
       var scope = props.scope === "playthrough" ? "playthrough" : "ever";
-      var prefix = scope === "playthrough" ? "game_achievement_" : "achievement_";
+      var prefix =
+        scope === "playthrough" ? "game_achievement_" : "achievement_";
       var reg =
         ((window.dendryUI.game.data || {}).achievements || {}).achievements ||
         [];
-      if (!reg.length) return;
+      if (scope === "playthrough") {
+        reg = reg.filter(function (a) {
+          return !!Q[prefix + a.id];
+        });
+      }
+      if (!reg.length) {
+        el.innerHTML = "";
+        return;
+      }
 
       el.innerHTML = reg
         .map(function (a) {
@@ -184,7 +381,8 @@
       // widget protocol's fix: content writes an ordinary Q object, and the
       // marker names the key via `configFrom` — read it straight off Q.
       var props = readDataProps(el);
-      var config = typeof props.configFrom === "string" ? Q[props.configFrom] : null;
+      var config =
+        typeof props.configFrom === "string" ? Q[props.configFrom] : null;
       initCatCoalitions(el.id, config, Q);
     },
   };

@@ -464,6 +464,12 @@
     });
   }
 
+  function humanizeLawId(id) {
+    return String(id || "")
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (letter) => letter.toUpperCase());
+  }
+
   function deactivateLaw(Q, lawId, reason = "repealed") {
     if (!Q.active_mods || !Q.active_mods[lawId]) return;
     const entry = Q.active_mods[lawId];
@@ -522,21 +528,25 @@
     }
   }
 
-  // UI helper: flat array of currently active laws with their live per-target
-  // contributions, ready to render in a "current policies" panel.
-  function getActiveLawsForUI(Q) {
+  // UI helper: presentation-neutral law rows. Expired laws are historical
+  // bookkeeping and deliberately disappear from the current-government view.
+  // No status exists to also deliberately hide a law from appearing.
+  function getLawsForUI(Q) {
     if (!Q.active_mods) return [];
     return Object.keys(Q.active_mods)
       .map((id) => {
         const entry = Q.active_mods[id];
+        const def = entry.def || {};
         return {
           id,
           status: entry.status,
+          title: def.title || humanizeLawId(id),
+          icon: def.icon,
           ticks_active: entry.ticks_active,
           effects: { ...entry.live_effect },
         };
       })
-      .filter((e) => e.status === "active");
+      .filter((e) => e.status !== "expired");
   }
 
   // --- ENGINE ---
@@ -599,7 +609,7 @@
       (Q.GOB_UNEMP_MOD[gob_key] || 1.0);
     const law_mod_unemp = mod(Q, "unemployment_recovery"); // <-- policy hook
     const u_delta =
-      (gdp_m < 0 ? -gdp_m * 0.3 : -gdp_m * recover) + law_mod_unemp;
+      (gdp_m < 0 ? -gdp_m * 0.3 : -gdp_m * recover) - law_mod_unemp;
     Q.unemployment = clamp(Q.unemployment + u_delta, 10, 36);
     Q.unemployment_change = getArrowBadUp(prev_unemployment, Q.unemployment);
 
@@ -2082,6 +2092,7 @@
     reconcileCongresoLineup: reconcileCongresoLineup,
     registerLaw: registerLaw,
     deactivateLaw: deactivateLaw,
+    getLawsForUI: getLawsForUI,
   };
   if (typeof module !== "undefined" && module.exports) {
     module.exports = api; // Vite / vitest

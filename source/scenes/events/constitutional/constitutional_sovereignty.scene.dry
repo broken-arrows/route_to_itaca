@@ -8,6 +8,8 @@ on-arrival: {!
     Q.cat_spa_relations -= 5;
     Q.independence_movement += 5;
 
+    G.deactivateLaw(Q, "sovereignty_declaration", "disputed");
+    
     // TODO: Change if constitutional reform happened
 !}
 role: event

@@ -200,6 +200,10 @@ Debt status: [+ public_debt : public_debt_qualifier +]
 
 Unemployment: [+ unemployment_dataviz +]% [+ unemployment_change +]
 
+= LAWS & EFFECTS
+
+<div data-widget="law-grid"></div>
+
 @polls
 title: Polls
 on-arrival: {!

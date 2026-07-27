@@ -1,2 +1,112 @@
-title: Parlament Urbanism
+title: Law on Vacant-Homes Uses
 new-page: true
+choose-if: party_resources > 0 and not parlament_urbanism_passed
+subtitle: [? if coming_from_parlament: \[-1 resources\]?]
+unavailable-subtitle: [? if parlament_urbanism_passed: Already approved!?][? if not parlament_urbanism_passed and party_resources < 1: Not enough resources.?]
+on-arrival: {! 
+    if (Q.coming_from_parlament) Q.party_resources -= 1;
+    // TODO: CUP/ERC reaction when part of JxSi // JxCat
+!}
+
+= Law on Vacant-Homes Uses
+
+Many large-scale house holding operators, from large banks to a few particulars, hold thousands of homes across Catalonia that sit empty. Be it for speculation, trading, or other reasons, the fact is that this widespread reality is happening in the midst of a huge housing crisis, and many social pressure groups are asking for new actions that attack this practice. The legal strength of such tax-law, however, is blurry as it is unclear where the exact autonomy limits exist in this matter.
+
+- @urbanism_tax: Tax homes kept empty for more than two years
+- @urbanism_mobilization: Tax prolonged vacancy and compel large holders to offer the homes
+
+@urbanism_tax
+subtitle: A progressive tax on large holders, with exemptions and rebates when homes return to use.
+choose-if: player_party != "cup"
+unavailable-subtitle: The party rejects such an unambitious proposal for addressing the housing crisis.
+on-arrival: parlament_urbanism_variant = "vacancy_tax"
+go-to: urbanism_vote
+
+@urbanism_mobilization
+subtitle: A steeper tax backed by compulsory rental offers and, as a last resort, Generalitat-approved use orders.
+on-arrival: parlament_urbanism_variant = "housing_mobilization"
+go-to: urbanism_vote
+
+@urbanism_vote
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.coming_from_parlament = false;
+
+    var author = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    var donor = Q.parlament_current_icv;
+    var proposalYoung = Q.parlament_urbanism_variant == "vacancy_tax" ? 0.075 : 0.165;
+    var proposalUnemployed = Q.parlament_urbanism_variant == "vacancy_tax" ? 0.105 : 0.225;
+    var proposalMiddle = Q.parlament_urbanism_variant == "vacancy_tax" ? 0.045 : 0.09;
+    for (const c of Q.parlament_constituencies) {
+        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
+        Q[donor + "_parlament_" + c + "_young_support"] -= proposalYoung;
+        Q[author + "_parlament_" + c + "_unemployed_support"] += proposalUnemployed;
+        Q[donor + "_parlament_" + c + "_unemployed_support"] -= proposalUnemployed;
+        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
+        Q[donor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
+    }
+
+    var targeted = Q.parlament_urbanism_variant == "vacancy_tax";
+    var yesNames = targeted
+        ? ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cs","si"]
+        : ["jxsi","erc","cup","psc","icv","csqp","cecp","ecp","si"];
+    var noNames = targeted
+        ? ["psc","ppc","icv","csqp","cecp","ecp","cup","vox","pxc","fnc"]
+        : ["ciu","cdc","dl","pdcat","jxcat","junts","unio","ppc","cs","vox","pxc","fnc"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_urbanism_yes = 0;
+    Q.parlament_urbanism_no = 0;
+    Q.parlament_urbanism_abst = 0;
+    for (const p of all) {
+        var seats = Q[p + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        if (yesNames.includes(p)) {
+            Q.parlament_urbanism_yes += seats;
+            yesParties.push({label: labels[p]});
+        } else if (noNames.includes(p)) {
+            Q.parlament_urbanism_no += seats;
+            noParties.push({label: labels[p]});
+        } else {
+            Q.parlament_urbanism_abst += seats;
+            abstainParties.push({label: labels[p]});
+        }
+    }
+    Q.parlament_urbanism_passed = Q.parlament_urbanism_yes > Q.parlament_urbanism_no;
+    Q.parlament_urbanism_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_urbanism_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_urbanism_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_urbanism_no,parties:noParties}
+    ]};
+
+    if (Q.parlament_urbanism_passed) {
+        var passageYoung = targeted ? 0.175 : 0.385;
+        var passageUnemployed = targeted ? 0.245 : 0.525;
+        var passageMiddle = targeted ? 0.105 : 0.21;
+        for (const c of Q.parlament_constituencies) {
+            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
+            Q[donor + "_parlament_" + c + "_young_support"] -= passageYoung;
+            Q[author + "_parlament_" + c + "_unemployed_support"] += passageUnemployed;
+            Q[donor + "_parlament_" + c + "_unemployed_support"] -= passageUnemployed;
+            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
+            Q[donor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
+        }
+        if (targeted) {
+            G.registerLaw(Q, {id:"vacant_homes_tax",title:"Vacant Homes Tax",icon:"img/people_icon.svg",targets:{generalitat_surplus:0.025,welfare_index_growth:0.05,social_dissent_eq:-1},ramp_ticks:12});
+        } else {
+            G.registerLaw(Q, {id:"vacant_homes_mobilization",title:"Vacant Homes Mobilization",targets:{generalitat_surplus:0.015,welfare_index_growth:0.12,unemployment_recovery:0.02,gdp_growth:-0.04,social_dissent_eq:-2},ramp_ticks:6});
+        }
+        Q.constitutional_vacant_homes_countdown = 30;
+        Q.countdowns.push("constitutional_vacant_homes");
+    }
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_urbanism_vote_result"}'></div>
+
+[? if parlament_urbanism_passed: The Parlament has approved the bill! While social housing pressure groups are[? if parlament_urbanism_variant = "vacancy_tax": cautiously ?] celebrating along with our party's lawmakers, [? if parlament_urbanism_variant = "vacancy_tax": the left of the Parlament is criticizing the law for its lack of ambition and, of course, we also?] the usual PP-filed legal challenge for it is already in motion. We'll have to see how it evolves... ?]
+[? if not parlament_urbanism_passed: The Parlament has rejected the bill, to the dismay of many of our representatives and many in the social housing pressure groups back on the streets. ?]
+
+- @post_event: Continue...

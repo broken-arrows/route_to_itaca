@@ -29,6 +29,14 @@ export interface GameLib {
   /** The Brief's pure row derivations — see source/lib/brief.js. Keys must
    *  match DERIVE_NAMES in ui/src/components/viz/widget-names.mjs. */
   brief: Record<string, (q: Record<string, unknown>) => unknown[]>;
+  getLawsForUI(q: Record<string, unknown>): Array<{
+    id: string;
+    title: string;
+    icon: string;
+    status: 'active' | 'repealed' | 'disputed' | 'imposed' | 'struck_down';
+    ticks_active: number;
+    effects: Record<string, number>;
+  }>;
   // NB: registerLaw / deactivateLaw are exported too but omitted here — content
   // (compiled .dry, not TS-checked) is their only caller, so a precise type
   // buys nothing. The `source/lib/` aggregation/typing shape is deferred to

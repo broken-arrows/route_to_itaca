@@ -21,6 +21,9 @@
  *   sheets (phase 3b Task 7), each paired with a `deriveFrom` derivation below.
  *   No Desk component until phase 3b Part 2 — WidgetHost renders the
  *   placeholder, same story as 'poll-map' above.
+ * - 'law-grid': old-shell-only while the frozen status.scene.dry remains live.
+ *   Its model comes from G.getLawsForUI; the Desk does not render that legacy
+ *   Government sheet.
  */
 export const WIDGET_NAMES = [
   'hemicycle',
@@ -33,6 +36,8 @@ export const WIDGET_NAMES = [
   'roster-rows',
   'leader-rows',
   'trail',
+  'chamber-vote',
+  'law-grid',
 ];
 
 /**

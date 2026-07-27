@@ -1,0 +1,51 @@
+title: Constitutional Court rules on the Catalan Cybersecurity Agency
+face-image: img/events/constitucional.jpg
+new-page: true
+tags: event
+view-if: constitutional_digital_trigger
+max-visits: 1
+role: event
+on-arrival: {!
+    if (Q.parlament_digital_variant == "national_scope") {
+        G.deactivateLaw(Q, "digital_agency_national_scope", "struck_down");
+        Q.cybersecurity_agency_scope = "generalitat";
+    }
+    Q.cat_spa_relations -= 5;
+!}
+
+= Constitutional Court rules on the Catalan Cybersecurity Agency
+
+[? if parlament_digital_variant == "public_services": The Constitutional Court has actually failed in favour of the Catalan Cybersecurity Agency. It has deemed it fails within the Catalan autonomy to protect its public administration, and expects its collaboration with other law enforcement agencies. ?]
+
+[? if parlament_digital_variant == "national_scope": The Constitutional Court has ruled in favour of greatly reducing the agency's powers. While the agency itself survives with a limited role in protecting public services and resources, its authority over the Catalan citizens and companies has been reduced to basically zero.?]
+
+- @digital_ruling_safe: Unexpected, but nice!
+- @digital_ruling_accept: Accept the ruling
+- @digital_ruling_protest: Condemn the ruling!
+
+@digital_ruling_safe
+view-if: parlament_digital_variant == "public_services"
+go-to: post_event
+
+@digital_ruling_accept
+view-if: parlament_digital_variant == "national_scope"
+on-arrival: {! 
+    Q.cat_spa_relations += 2;
+    Q.independence_trust -= 5;
+!}
+
+The Generalit will, for now, comply and concentrate resources on the Generalitat's systems and services. It's not like the agency is completely useless, but it has lost a lot of its role.
+
+- @post_event: Continue...
+
+@digital_ruling_protest
+view-if: parlament_digital_variant == "national_scope"
+choose-if: (player_party == "erc" and (erc_in_gob or erc_supporting)) or (player_party == "cup" and (cup_in_gob or cup_supporting))
+unavailable-subtitle: We don't have the capacity to influence the Generalitat's response to this law
+on-arrival: {!
+    Q.cat_spa_relations -= 2;
+!}
+
+[? if president_gender = "m": President ?][? if president_gender = "f": Presidenta ?][+ president +] has stepped forward to denounce the ruling as an unnecessarily restrictive reading of Catalan self-government. This will hardly change the ruling as the agency's powers are stripped down, but the Generalitat has bowed to push the agency's role to the very maximum.
+
+- @post_event: Continue...

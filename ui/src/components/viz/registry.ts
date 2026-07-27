@@ -9,6 +9,7 @@ import RosterRows from './RosterRows.vue';
 import LeaderRows from './LeaderRows.vue';
 import Trail from './Trail.vue';
 import PollMap from './PollMap.vue';
+import ChamberVote from './ChamberVote.vue';
 
 export type WidgetName = (typeof WIDGET_NAMES)[number];
 
@@ -28,4 +29,5 @@ export const WIDGETS: Partial<Record<WidgetName, Component>> = {
   'leader-rows': LeaderRows,
   trail: Trail,
   'poll-map': PollMap,
+  'chamber-vote': ChamberVote,
 };

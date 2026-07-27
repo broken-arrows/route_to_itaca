@@ -43,6 +43,8 @@ on-arrival: {!
     if (Q.parlament_coalition_concessions_social) {
         G.registerLaw(Q, {
             id: "generalitat_concession_social",
+            title: "Social Policy Concessions",
+            icon: "img/people_icon.svg",
             targets: {
                 welfare_index_growth: 0.1,
                 generalitat_surplus: -0.01

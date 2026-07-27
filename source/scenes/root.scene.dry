@@ -1086,11 +1086,7 @@ on-arrival: {!
   Q.upyd_congreso_galicia_support = 0.44;
   Q.abstain_congreso_galicia_support = 34.69;
 
-  // Rest (virtual-province aggregate) — CC/PRC/TE are protected regional minors.
-  // Abstention across all 7 constituencies is set to real Nov-2011 regional turnout,
-  // census-weighting to the 31.06% national figure recorded above. Abstention has no
-  // level anchor and drifts only ~1pt over a full game, so the starting value IS what
-  // an election sees — this stands in for an election-day mobilisation model.
+  // Rest (virtual-province aggregate) — CC/PRC/TE are protected regional minors
   Q.pp_congreso_rest_support = 37.28;
   Q.psoe_congreso_rest_support = 25.63;
   Q.iu_congreso_rest_support = 5.24;

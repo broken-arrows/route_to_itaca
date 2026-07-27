@@ -100,20 +100,46 @@ on-arrival: {!
     } else {
         Q.parlament2012_abst += Q.psc_parlament_s;
     }
-    Q.parlament2012pc_yes = Math.round(Q.parlament2012_yes / Q.parlament_size * 100);
-    Q.parlament2012pc_no = Math.round(Q.parlament2012_no / Q.parlament_size * 100);
-    Q.parlament2012pc_abst = Math.round(100 - Q.parlament2012pc_yes - Q.parlament2012pc_no);
+
+    var yes_parties = [{ label: "CiU" }, { label: "ERC" }];
+    var abstain_parties = [];
+    var no_parties = [{ label: "PPC" }, { label: "Cs" }];
+    if (Q.parlament2012icv == 1) {
+        yes_parties.push({ label: "ICV-EUiA" });
+    } else {
+        abstain_parties.push({ label: "ICV-EUiA" });
+    }
+    if (Q.parlament2012si == 1) {
+        yes_parties.push({ label: "SI" });
+    } else {
+        abstain_parties.push({ label: "SI" });
+    }
+    if (Q.parlament2012psc == 1) {
+        yes_parties.push({ label: "PSC" });
+    } else {
+        abstain_parties.push({ label: "PSC" });
+    }
+    if (Q.parlament2012si == 0 && Q.parlament2012si_abst == 1) {
+        no_parties.push({ label: "SI" });
+    }
+
+    Q.parlament2012_vote_result = {
+        outcomes: [
+            { kind: "yes", label: "Yes", votes: Q.parlament2012_yes, parties: yes_parties },
+            { kind: "abstain", label: "Abstention", votes: Q.parlament2012_abst, parties: abstain_parties },
+            { kind: "no", label: "No", votes: Q.parlament2012_no, parties: no_parties }
+        ]
+    };
 !}
 
 # Note: despite some code provisions for it, ICV-EUiA will always vote yes
 
-<table style='border-spacing: 0px; margin-right: 1em; margin-left: 1em; width:95%; table-layout: fixed;'><tr><td style='width: [+ parlament2012pc_yes +]%'>Yes</td><td style='text-align: center; width: [+ parlament2012pc_abst +]%'>Abstention</td><td style='text-align: right; width: [+ parlament2012pc_no +]%'>No</td></tr><tr><td style='height: 2em; background-color: #008000; color: white; text-align: center; border-radius: 3px 0 0 3px;'>**[+ parlament2012_yes +]**</td><td style='background-color: #b1b0aeff; color: black; text-align: center'>**[+ parlament2012_abst +]**</td><td style='background-color: #c30000; color: white; text-align: center; border-radius: 0 3px 3px 0;'>**[+ parlament2012_no +]**</td></tr><tr style='vertical-align:top'><td>CiU<br/>ERC[? if parlament2012icv=1:  <br/> ICV-EUiA?][? if parlament2012si=1: <br/> SI?][? if parlament2012psc=1: <br/> PSC?]</td><td>[? if parlament2012psc=0: PSC <br/>?][? if parlament2012icv=0: ICV-EUiA <br/>?][? if parlament2012si=0: SI<br/>?]</td><td>PPC<br/>Cs[? if parlament2012si = 0 and parlament2012si_abst=1: <br/> SI ?]</td></tr></table>
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament2012_vote_result"}'></div>
 
 The vote has confortably passed with [+ parlament2012_yes +] out of the [+ parlament_s_majority +] needed. [? if parlament2012psc = 0 : After hours of debate, the PSC was not convinced to join in. Instead, they voted on their own resolution calling for the vote to explicitly happen within the Constitutional framework and with no set time limits. ?][? if parlament2012si = 0: SI has chosen to abstain as they missed a recognition of Catalan sovereignty without mentions of Spain. ?]
 
 
 - @post_event: Continue...
-
 
 
 

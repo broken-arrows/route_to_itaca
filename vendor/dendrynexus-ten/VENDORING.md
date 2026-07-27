@@ -50,6 +50,11 @@ git subtree split --prefix=vendor/dendrynexus-ten -b dendrynexus-ten-split
 Kept deliberately minimal — touch only the lines that must change, never a
 whole-file reformat, so this list stays the complete upstream diff.
 
+- **`lib/ui/browser.js` + `lib/ui/save-label.js`** (2026-07-26) — the old
+  shell sanitizes the scene-id line when populating save slots: it removes
+  `post_event`, drops nested suffixes after `.`, replaces `_` with spaces, and
+  title-cases the result. Stored timestamps and save blobs stay unchanged, so
+  existing saves improve at display time without a migration.
 - **`lib/engine.js`** (2026-07-20) — two additive changes:
   1. **Loud, findable swallow.** The three scene-code swallow sites
      (`runActions`, `runPredicate`, `runExpression`) still swallow (a broken

@@ -56,9 +56,9 @@ go-to: decisions_erc if coming_from_parlament and player_party == "erc"; decisio
 
 = Parlamentary Declaration of Sovereignty
 
-Since the December 2012 elections, there has been a clear majority in the Parlament who supports the idea of Catalonia as a soverign nation who should have the right to decide on its own future. For the Parlament to legislate in that direction, and for the Generalitat to be able to act upon it, a legal foundation need to be laid down recognizing that sovereignty.
+Since the December 2012 elections, there has been a clear majority in the Parlament who supports the idea of Catalonia as a sovereign nation who should have the right to decide on its own future. For the Parlament to legislate in that direction, and for the Generalitat to be able to act upon it, a legal foundation need to be laid down recognizing that sovereignty.
 
-The *"Principle of Sovereignty"* is the key feature, which is widely agreed upon: *"The people of Catalonia has, for reasons of democratic legitimacy, the nature of a sovereign political and legal entity."*. This deliverately grounds the decisions of the Parlament on the will of the people and, by omission, not necessarily on the Spanish Constitution. [? if coming_from_parlament and player_party == "erc": However, we can also add other features to soften this to make it more paletable to CiU, ICV-EUiA, and who knows, maybe even the PSC. ?][? if not coming_from_parlament : Nonetheless, the main proponents, CiU, have made it more paletable to moderate parties by adding explicit mentions of Legality, Dialogue, and Europeism. ?][? if coming_from_parlament and player_party == "cup": Despite us being the original proponents, ERC and CiU have made many ammendments to the text to make it more paletable to moderate parties by adding explicit mentions of Legality, Dialogue, and Europeism. ?]
+The *"Principle of Sovereignty"* is the key feature, which is widely agreed upon: *"The people of Catalonia has, for reasons of democratic legitimacy, the nature of a sovereign political and legal entity."*. This deliberately grounds the decisions of the Parlament on the will of the people and, by omission, not necessarily on the Spanish Constitution. [? if coming_from_parlament and player_party == "erc": However, we can also add other features to soften this to make it more palatable to CiU, ICV-EUiA, and who knows, maybe even the PSC. ?][? if not coming_from_parlament : Nonetheless, the main proponents, CiU, have made it more palatable to moderate parties by adding explicit mentions of Legality, Dialogue, and Europeism. ?][? if coming_from_parlament and player_party == "cup": Despite us being the original proponents, ERC and CiU have made many amendments to the text to make it more palatable to moderate parties by adding explicit mentions of Legality, Dialogue, and Europeism. ?]
 
 @no_parlament
 
@@ -67,16 +67,16 @@ The *"Principle of Sovereignty"* is the key feature, which is widely agreed upon
 
 @decisions_erc
 
-- @both: Inlcude a mention of strict following of legal frameworks and focus on dialogue and European integration.
+- @both: Include a mention of strict following of legal frameworks and focus on dialogue and European integration.
 - @none: We don't need to mention either.
 
 
 @both
 choose-if: roadmap != 3
-unavailable-subtitle: Our roadmap to independence is about unilateralism, which is explicitly for the breaking with the Spanish leagal frameworks.
+unavailable-subtitle: Our roadmap to independence is about unilateralism, which is explicitly for the breaking with the Spanish legal frameworks.
 on-arrival: parlament_sovereignty_declaration_legality = true
 
-By including mentions of legality and dialogue, we may have made the text more paletable for our moderate allies, but we also risk alienating the CUP and some of our more radical base.
+By including mentions of legality and dialogue, we may have made the text more palatable for our moderate allies, but we also risk alienating the CUP and some of our more radical base.
 
 - @calc_erc: Let's get this done!
 
@@ -99,8 +99,6 @@ on-arrival: {!
             Q.parlament_sovereignty_declaration_yes_cup = 0;
             Q.parlament_sovereignty_declaration_abst_cup = 0;
         }
-
-        console.log(Q.ciu_parlament_s, Q.erc_parlament_s, Q.icv_parlament_s, Q.parlament_sovereignty_declaration_yes_cup, Q.cdc_parlament_s, Q.pdcat_parlament_s, Q.jxsi_parlament_s, Q.jxcat_parlament_s, Q.junts_parlament_s, Q.dl_parlament_s);
     
         Q.parlament_sovereignty_declaration_yes = Q.ciu_parlament_s + Q.erc_parlament_s + Q.icv_parlament_s + Q.parlament_sovereignty_declaration_yes_cup + Q.cdc_parlament_s + Q.pdcat_parlament_s + Q.jxsi_parlament_s + Q.jxcat_parlament_s + Q.junts_parlament_s + Q.dl_parlament_s;
         Q.parlament_sovereignty_declaration_abst_psc = Math.max(Math.round(Q.psc_parlament_s * 0.25), 1);
@@ -124,12 +122,9 @@ on-arrival: {!
         Q.cup_relations += 10;
     }
 
-    Q.parlament_sovereignty_declaration_yes_pc = Math.round((Q.parlament_sovereignty_declaration_yes / Q.parlament_size) * 100);
-    Q.parlament_sovereignty_declaration_abst_pc = Math.round((Q.parlament_sovereignty_declaration_abst / Q.parlament_size) * 100);
-    Q.parlament_sovereignty_declaration_no_pc = Math.round((Q.parlament_sovereignty_declaration_no / Q.parlament_size) * 100);
-
     if (Q.parlament_sovereignty_declaration_yes > Q.parlament_sovereignty_declaration_no) {
         Q.parlament_sovereignty_declaration = true;
+        G.registerLaw(Q, {id:"sovereignty_declaration",title:"Sovereignty Declaration ",icon:"img/government_icon.svg",targets:{independence_trust: 0.1}});
     } else {
         Q.parlament_sovereignty_declaration = false;
     }
@@ -139,7 +134,7 @@ go-to: results
 @decisions_cup
 view-if: player_party == "cup"
 
-With all this, we are left with a [? if roadmap == 3: difficult ?]choice. With the supports it has, the motion is very likely to pass, yet many in the party are critical of the watering down of the text and are demaning a critical positioning to it. Doing so will probably hurt our relations with the parties supporting the motion, but there's a chance it also serves to cement our position a the true pro-independence party unwilling to bow to the Regime of '78.
+With all this, we are left with a [? if roadmap == 3: difficult ?]choice. With the supports it has, the motion is very likely to pass, yet many in the party are critical of the watering down of the text and are demanding a critical positioning to it. Doing so will probably hurt our relations with the parties supporting the motion, but there's a chance it also serves to cement our position a the true pro-independence party unwilling to bow to the Regime of '78.
 
 - @abstain_cup: Abstain from voting
 - @critical_yes_cup: Vote with a "Critical Yes"
@@ -189,12 +184,9 @@ on-arrival: {!
     Q.parlament_sovereignty_declaration_no_psc = Math.min(Math.round(Q.psc_parlament_s * 0.75), Q.psc_parlament_s - 1);
     Q.parlament_sovereignty_declaration_no = Q.ppc_parlament_s + Q.cs_parlament_s + Q.parlament_sovereignty_declaration_no_psc;
 
-    Q.parlament_sovereignty_declaration_yes_pc = Math.round((Q.parlament_sovereignty_declaration_yes / Q.parlament_size) * 100);
-    Q.parlament_sovereignty_declaration_abst_pc = Math.round((Q.parlament_sovereignty_declaration_abst / Q.parlament_size) * 100);
-    Q.parlament_sovereignty_declaration_no_pc = Math.round((Q.parlament_sovereignty_declaration_no / Q.parlament_size) * 100);
-
     if (Q.parlament_sovereignty_declaration_yes > Q.parlament_sovereignty_declaration_no) {
         Q.parlament_sovereignty_declaration = true;
+        G.registerLaw(Q, {id:"sovereignty_declaration",title:"Sovereignty Declaration ",icon:"img/government_icon.svg",targets:{independence_trust: 0.1}});
     } else {
         Q.parlament_sovereignty_declaration = false;
     }
@@ -202,13 +194,112 @@ on-arrival: {!
 go-to: results
 
 @results
-on-arrival: coming_from_parlament = false
+on-arrival: {!
+    Q.coming_from_parlament = false;
 
-<table style='border-spacing: 0px; margin-right: 1em; margin-left: 1em; width:95%; table-layout: fixed;'><tr><td style='width: [+ parlament_sovereignty_declaration_yes_pc +]%'>Yes</td><td style='text-align: center; width: [+ parlament_sovereignty_declaration_abst_pc +]%'>[? if parlament_sovereignty_declaration_abst > 0 : Abstention?]</td><td style='text-align: right; width: [+ parlament_sovereignty_declaration_no_pc +]%'>No</td></tr><tr><td style='height: 2em; background-color: #008000; color: white; text-align: center; border-radius: 3px 0 0 3px;'>**[+ parlament_sovereignty_declaration_yes +]**</td><td style='background-color: #b1b0aeff; color: black; text-align: center'>**[? if parlament_sovereignty_declaration_abst: [+ parlament_sovereignty_declaration_abst +]?]**</td><td style='background-color: #c30000; color: white; text-align: center; border-radius: 0 3px 3px 0;'>**[+ parlament_sovereignty_declaration_no +]**</td></tr><tr style='vertical-align:top'><td>[? if ciu_parlament_s > 0: CiU [? if parlament_sovereignty_declaration_yes_ciu : ([+parlament_sovereignty_declaration_yes_ciu+])?]?][? if cdc_parlament_s > 0: CDC?][? if dl_parlament_s > 0: DL?][? if jxcat_parlament_s > 0: JxCat?][? if junts_parlament_s > 0: Junts?][? if pdcat_parlament_s > 0: [? if pdcat_split: <br/> ?] PDcat?]<br/>ERC [? if parlament_sovereignty_declaration_legality: <br/> ICV-EUiA ?][? if cup_parlament_s > 0: <br/> CUP [? if parlament_sovereignty_declaration_yes_cup: ([+ parlament_sovereignty_declaration_yes_cup +]) ?]?]</td><td>[? if parlament_sovereignty_declaration_abst_ciu and ciu_parlament_s > 0: CiU ([+ parlament_sovereignty_declaration_abst_ciu +]) <br/> ?] PSC ([+ parlament_sovereignty_declaration_abst_psc +]) <br/> [? if not parlament_sovereignty_declaration_legality: ICV-EUiA <br/>?][? if unio_parlament_s > 0 : UDC <br/>?][? if parlament_sovereignty_declaration_abst_cup and cup_parlament_s > 0: CUP [? if  parlament_sovereignty_declaration_abst_cup != cup_parlament_s: ([+ parlament_sovereignty_declaration_abst_cup +])?] ?]</td><td style='text-align: right'>PSC ([+ parlament_sovereignty_declaration_no_psc +]) <br/>PPC<br/>Cs</td></tr></table>
+    var yes_parties = [];
+    var abstain_parties = [];
+    var no_parties = [];
+    function add_party(list, label, seats, count) {
+        if (seats <= 0) {
+            return;
+        }
+        var party = { label: label };
+        if (count !== undefined && count !== null) {
+            party.count = count;
+        }
+        list.push(party);
+    }
+
+    add_party(
+        yes_parties,
+        "CiU",
+        Q.ciu_parlament_s,
+        Q.parlament_sovereignty_declaration_yes_ciu || undefined
+    );
+    add_party(yes_parties, "CDC", Q.cdc_parlament_s);
+    add_party(yes_parties, "DL", Q.dl_parlament_s);
+    add_party(yes_parties, "JxCat", Q.jxcat_parlament_s);
+    add_party(yes_parties, "Junts", Q.junts_parlament_s);
+    add_party(yes_parties, "PDeCAT", Q.pdcat_parlament_s);
+    add_party(yes_parties, "ERC", Q.erc_parlament_s);
+    if (Q.parlament_sovereignty_declaration_legality) {
+        add_party(yes_parties, "ICV-EUiA", Q.icv_parlament_s);
+    }
+    add_party(
+        yes_parties,
+        "CUP",
+        Q.cup_parlament_s,
+        Q.parlament_sovereignty_declaration_yes_cup || undefined
+    );
+
+    if (Q.parlament_sovereignty_declaration_abst_ciu) {
+        add_party(
+            abstain_parties,
+            "CiU",
+            Q.ciu_parlament_s,
+            Q.parlament_sovereignty_declaration_abst_ciu
+        );
+    }
+    add_party(
+        abstain_parties,
+        "PSC",
+        Q.psc_parlament_s,
+        Q.parlament_sovereignty_declaration_abst_psc
+    );
+    if (!Q.parlament_sovereignty_declaration_legality) {
+        add_party(abstain_parties, "ICV-EUiA", Q.icv_parlament_s);
+    }
+    add_party(abstain_parties, "UDC", Q.unio_parlament_s);
+    if (Q.parlament_sovereignty_declaration_abst_cup) {
+        add_party(
+            abstain_parties,
+            "CUP",
+            Q.cup_parlament_s,
+            Q.parlament_sovereignty_declaration_abst_cup != Q.cup_parlament_s
+                ? Q.parlament_sovereignty_declaration_abst_cup
+                : undefined
+        );
+    }
+
+    add_party(
+        no_parties,
+        "PSC",
+        Q.psc_parlament_s,
+        Q.parlament_sovereignty_declaration_no_psc
+    );
+    add_party(no_parties, "PPC", Q.ppc_parlament_s);
+    add_party(no_parties, "Cs", Q.cs_parlament_s);
+
+    Q.parlament_sovereignty_declaration_vote_result = {
+        outcomes: [
+            {
+                kind: "yes",
+                label: "Yes",
+                votes: Q.parlament_sovereignty_declaration_yes,
+                parties: yes_parties
+            },
+            {
+                kind: "abstain",
+                label: "Abstention",
+                votes: Q.parlament_sovereignty_declaration_abst,
+                parties: abstain_parties
+            },
+            {
+                kind: "no",
+                label: "No",
+                votes: Q.parlament_sovereignty_declaration_no,
+                parties: no_parties
+            }
+        ]
+    };
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_sovereignty_declaration_vote_result"}'></div>
 
 [? if parlament_sovereignty_declaration : The Declaration of Sovereignty has been approved! ?][? if not parlament_sovereignty_declaration : The Parlament has rejected the proposed Declaration of Sovereignty. Wonder if we could've convinced anyone else to join in. ?]
 
-This has not been without its share bit of turbulence. [? if parlament_sovereignty_declaration_abst_cup and player_party != "cup": The anti-capitalist, unilateral CUP have supported the declaration with a "Critical Yes" (whatever that means), as they see this as clearly insufficient, and a start of a procés for national liberation full of concessions and compromises. ?][? if not parlament_sovereignty_declaration_legality: Despite initial support, ICV-EUiA has ended up abstainng due to the delcaration eluding any mention of dialogue. [? if ciu_parlament_s > 0: In the case of MPs of the CiU group, some have also abstained. Mostly those coming from the UDC part of the coalition, they see this as a protest against the *"radicalization this represents"*. ?]?][? if player_party != "cup" : This aside, t?][? if player_party == "cup": T?]he true drama has come more from the center of the chamber. The official PSC line has been to vote against this *"breaking with the law"*, yet not all have followed in with the party discipline. Big and small party profiles within the PSC have partook in this internal rebellion, including both old-school catalanist leaders and relatively newer ones critical with Pere Navarro's leadership.
+This has not been without its share bit of turbulence. [? if parlament_sovereignty_declaration_abst_cup and player_party != "cup": The anti-capitalist, unilateral CUP have supported the declaration with a "Critical Yes" (whatever that means), as they see this as clearly insufficient, and a start of a procés for national liberation full of concessions and compromises. ?][? if not parlament_sovereignty_declaration_legality: Despite initial support, ICV-EUiA has ended up abstaining due to the declaration eluding any mention of dialogue. [? if ciu_parlament_s > 0: In the case of MPs of the CiU group, some have also abstained. Mostly those coming from the UDC part of the coalition, they see this as a protest against the *"radicalization this represents"*. ?]?][? if player_party != "cup" : This aside, t?][? if player_party == "cup": T?]he true drama has come more from the center of the chamber. The official PSC line has been to vote against this *"breaking with the law"*, yet not all have followed in with the party discipline. Big and small party profiles within the PSC have partook in this internal rebellion, including both old-school catalanist leaders and relatively newer ones critical with Pere Navarro's leadership.
 
 - @cracks_show: Cracks begin to show...
 

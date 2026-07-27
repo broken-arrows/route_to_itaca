@@ -9,6 +9,7 @@
 
   var contentToHTML = require('./content/html');
   var engine = require('../engine');
+  var saveLabel = require('./save-label');
 
   var BrowserUserInterface = function(game, $content) {
     this.game = game;
@@ -872,7 +873,7 @@
           var delete_button = document.getElementById('delete_button_' + id);
           if (localStorage[that.save_prefix + '_' + id]) {
               var timestamp = localStorage[that.save_prefix+'_timestamp_' + id];
-              save_element.textContent = timestamp;
+              save_element.textContent = saveLabel.formatSaveTimestamp(timestamp);
               save_button.textContent = "Load";
               save_button.onclick = createLoadListener(id);
               delete_button.onclick = createDeleteListener(id);

@@ -1,2 +1,133 @@
-title: Parlament Digital
+title: Law on Digital Public Services and Cybersecurity
 new-page: true
+choose-if: party_resources > 0 and not parlament_digital_passed
+subtitle: [? if coming_from_parlament: \[-1 resources\]?]
+unavailable-subtitle: [? if parlament_digital_passed: Already approved!?][? if not parlament_digital_passed and party_resources < 1: Not enough resources.?]
+on-arrival: {!
+    if (Q.coming_from_parlament) Q.party_resources -= 1;
+!}
+
+= Law on Digital Public Services and Cybersecurity
+
+In the digital age, is not a suprise that Catalonia's public administration already depends on digital identification, electronic records, shared databases, etc. Yet, the responsibility for protecting those systems remains fragmented, and transparency and data protection could be better to say the least.
+
+The Parlament has a chance now to centralize those responsibilities in a public Cybersecurity Agency and recognize digital rights in dealings with Catalan institutions. The difficult boundary is whether the new body should protect the Generalitat's own systems or, more broadly, claim responsibility for cybersecurity throughout Catalonia.
+
+- @digital_public_services: Focus on protecting Catalan Public services and their users
+- @digital_national_scope: Establish a National Cybersecurity and digital-rights framework
+
+@digital_public_services
+subtitle: A public-law agency will protect Generalitat's systems and guarantee citizen data integrity.
+on-arrival: parlament_digital_variant = "public_services"
+go-to: digital_vote
+
+@digital_national_scope
+subtitle: The agency will do the above, while also coordinate incidents throughout Catalonia with law enforcement, and assist citizens and companies directly.
+on-arrival: parlament_digital_variant = "national_scope"
+go-to: digital_vote
+
+@digital_vote
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.coming_from_parlament = false;
+
+    var nationalScope = Q.parlament_digital_variant == "national_scope";
+    var author = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    var leftDonor = Q.parlament_current_icv;
+    var modernisationDonor = Q.parlament_current_ciu;
+    var proposalYoung = nationalScope ? 0.06 : 0.03;
+    var proposalMiddle = nationalScope ? 0.045 : 0.03;
+    var proposalBusiness = nationalScope ? 0.03 : 0.02;
+    for (const c of Q.parlament_constituencies) {
+        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
+        Q[leftDonor + "_parlament_" + c + "_young_support"] -= proposalYoung;
+        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
+        Q[modernisationDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
+        Q[author + "_parlament_" + c + "_buss_support"] += proposalBusiness;
+        Q[modernisationDonor + "_parlament_" + c + "_buss_support"] -= proposalBusiness;
+    }
+
+    // TODO: Revisit the CUP's votes once CUP leadership dynamics are modelled.
+    var yesNames = nationalScope
+        ? ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","icv","csqp","cecp","ecp","unio","si"];
+    var noNames = nationalScope
+        ? ["ppc","cs","vox","pxc","fnc"]
+        : ["cs","vox","pxc","fnc"];
+
+    if (nationalScope) {
+        if (Q.psc_leader == "Montserrat Tura") {
+            yesNames.push("psc");
+        } else if (Q.psc_leader != "Àngel Ros" && Q.psc_leader != "Núria Parlon") {
+            noNames.push("psc");
+        }
+
+        if (Q.csqp_leader == "Arcadi Oliveres") yesNames.push("csqp");
+
+        if (Q.cecp_leader == "Arcadi Oliveres" || Q.cecp_leader == "Jaume Asens") {
+            yesNames.push("cecp");
+        } else if (Q.cecp_leader == "Joan Coscubiela") {
+            noNames.push("cecp");
+        }
+    }
+
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_digital_yes = 0;
+    Q.parlament_digital_no = 0;
+    Q.parlament_digital_abst = 0;
+    for (const p of all) {
+        var seats = Q[p + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        if (yesNames.includes(p)) {
+            Q.parlament_digital_yes += seats;
+            yesParties.push({label:labels[p]});
+        } else if (noNames.includes(p)) {
+            Q.parlament_digital_no += seats;
+            noParties.push({label:labels[p]});
+        } else {
+            Q.parlament_digital_abst += seats;
+            abstainParties.push({label:labels[p]});
+        }
+    }
+    Q.parlament_digital_passed = Q.parlament_digital_yes > Q.parlament_digital_no;
+    Q.parlament_digital_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_digital_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_digital_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_digital_no,parties:noParties}
+    ]};
+
+    if (Q.parlament_digital_passed) {
+        var passageYoung = nationalScope ? 0.14 : 0.07;
+        var passageMiddle = nationalScope ? 0.105 : 0.07;
+        var passageBusiness = nationalScope ? 0.07 : 0.046;
+        for (const c of Q.parlament_constituencies) {
+            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
+            Q[leftDonor + "_parlament_" + c + "_young_support"] -= passageYoung;
+            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
+            Q[modernisationDonor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
+            Q[author + "_parlament_" + c + "_buss_support"] += passageBusiness;
+            Q[modernisationDonor + "_parlament_" + c + "_buss_support"] -= passageBusiness;
+        }
+
+        Q.cybersecurity_agency_scope = nationalScope ? "catalonia" : "generalitat";
+        G.registerLaw(Q, {id:"digital_agency_core",title:"Catalan Cybersecurity Agency",icon:"img/comms_icon.svg",targets:{gdp_growth:0.015,generalitat_surplus:-0.010},ramp_ticks:12});
+        if (nationalScope) {
+            G.registerLaw(Q, {id:"digital_agency_national_scope",title:"National Cybersecurity Framework",icon:"img/interior_icon.svg",targets:{gdp_growth:0.020,generalitat_surplus:-0.015},ramp_ticks:8});
+            Q.independence_trust += 1;
+        }
+        Q.constitutional_digital_countdown = 24;
+        Q.countdowns.push("constitutional_digital");
+    }
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_digital_vote_result"}'></div>
+
+[? if parlament_digital_passed and parlament_digital_variant == "public_services": The Parlament has approved the law! Even if the agency focuses only on the public side of the digital infrastructure, the classical PP-Cs coalition has nevertheless and as usual asked the Constitutional Court to strike it down.?]
+[? if parlament_digital_passed and parlament_digital_variant == "national_scope": The Parlament has approved the law! Supporters are presenting it as both a civil-rights guarantee and as an essential sovereign infrastructure. We can bet that its territorial reach has will be triggering a challenge in the courts.?]
+[? if not parlament_digital_passed: The Parlament has rejected the bill. The need for safer digital services has not disappeared, but this draft has failed to assemble a majority.?]
+
+- @post_event: Continue...
