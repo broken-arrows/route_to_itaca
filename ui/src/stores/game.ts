@@ -1,44 +1,27 @@
 import { computed, markRaw, ref, shallowRef } from 'vue';
 import { defineStore } from 'pinia';
+import { createSaveStore, type SaveStore } from 'dendrynexus-ten/lib/persistence.js';
 import { DendryAdapter } from '../engine/adapter';
-import type { AchievementEntry, DrawResult, EffectiveRole, Frame, GameInfo, SaveMeta } from '../engine/types';
+import type {
+  AchievementEntry,
+  DrawResult,
+  EffectiveRole,
+  Frame,
+  GameInfo,
+  SaveMeta,
+  SaveSlotEntry,
+} from '../engine/types';
 import type { GlossaryTerm } from '../glossary/mark';
+import { useSettingsStore } from './settings';
 
-// `dnt:` prefix (the library, not the game) — see i18n.ts's STORAGE_KEY
-// comment for the naming rule and the phase-5 per-game discriminator plan.
-const SAVE_PREFIX = 'dnt:save:';
-// Pre-rename prefix (phases 1–2.5 shipped with the game-named `rti:`).
-const LEGACY_SAVE_PREFIX = 'rti:desk:save:';
-
-interface StoredSave {
-  meta: SaveMeta;
-  state: unknown;
-}
-
-// One-time, idempotent: copy any pre-rename save slots to the new prefix so
-// existing beta players keep them. Copy (not move) and never overwrite — if
-// both exist the new key already won, and leaving the old blob behind is
-// harmless (nothing writes it again; delete-legacy can ride along when phase 5
-// reworks the shelf anyway).
-function migrateLegacySaves(): void {
-  if (typeof localStorage === 'undefined') return;
-  const legacyKeys: string[] = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key?.startsWith(LEGACY_SAVE_PREFIX)) legacyKeys.push(key);
-  }
-  for (const key of legacyKeys) {
-    const target = SAVE_PREFIX + key.slice(LEGACY_SAVE_PREFIX.length);
-    if (localStorage.getItem(target) === null) {
-      localStorage.setItem(target, localStorage.getItem(key)!);
-    }
-  }
-}
+export type LoadSlotResult =
+  | { status: 'loaded' }
+  | { status: 'missing' | 'corrupt' | 'unreadable' | 'unsupported'; error?: { code: string } }
+  | { status: 'confirmation-required'; compatibility: 'incompatible' | 'unknown' };
 
 export const useGameStore = defineStore('game', () => {
-  migrateLegacySaves();
-
   const adapter = shallowRef<DendryAdapter | null>(null);
+  let saves: SaveStore | null = null;
   const frame = ref<Frame | null>(null);
   const version = ref(0);
   const loadError = ref(false);
@@ -79,6 +62,20 @@ export const useGameStore = defineStore('game', () => {
 
   function initFromText(text: string): void {
     adapter.value = markRaw(DendryAdapter.fromJSONText(text));
+    const manifest = adapter.value.info;
+    if (manifest.storageId) {
+      saves = createSaveStore({
+        storage: localStorage,
+        storageId: manifest.storageId,
+        gameVersion: manifest.version,
+      });
+      useSettingsStore().configure(manifest.storageId);
+    } else {
+      // Backward-compatible engine games can still run, but durable browser
+      // state is deliberately unavailable until they declare a namespace.
+      saves = null;
+      console.warn('game manifest has no storage-id; saves and settings are disabled');
+    }
     loadError.value = false;
   }
 
@@ -123,39 +120,84 @@ export const useGameStore = defineStore('game', () => {
   function playPinned(cardId: string): void {
     apply(adapter.value!.playPinnedCard(cardId));
   }
-  function saveSlot(slot: string): void {
+  function saveSlot(slot: string) {
     const a = adapter.value!;
     const qs = a.qualities;
     const meta: SaveMeta = {
-      slot,
-      savedAt: new Date().toISOString(),
+      savedAt: '', // the persistence clock overwrites this atomically
       year: typeof qs.year === 'number' ? qs.year : null,
       month: typeof qs.month === 'number' ? qs.month : null,
       playerParty: typeof qs.player_party === 'string' ? qs.player_party : null,
       sceneId: frame.value?.sceneId ?? '',
       resources: typeof qs.party_resources === 'number' ? qs.party_resources : null,
     };
-    const stored: StoredSave = { meta, state: JSON.parse(a.exportStateJSON()) };
-    localStorage.setItem(SAVE_PREFIX + slot, JSON.stringify(stored));
+    if (!saves) return { ok: false, error: { code: 'persistence-unconfigured' } };
+    return saves.write(slot, JSON.parse(a.exportStateJSON()), meta as unknown as Record<string, unknown>);
   }
 
-  function loadSlot(slot: string): boolean {
-    const raw = localStorage.getItem(SAVE_PREFIX + slot);
-    if (!raw || !adapter.value) return false;
-    const stored = JSON.parse(raw) as StoredSave;
-    apply(adapter.value.importStateJSON(JSON.stringify(stored.state)));
-    return true;
-  }
-
-  function listSlots(): SaveMeta[] {
-    const out: SaveMeta[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key?.startsWith(SAVE_PREFIX)) {
-        out.push((JSON.parse(localStorage.getItem(key)!) as StoredSave).meta);
+  // Canonical autosave ordering is positional, not a flip-flop: auto-1 is
+  // always newest and auto-2 is always the previous auto-1. Reuse the store's
+  // export/import validation instead of reaching around its interface into
+  // localStorage. If an existing auto-1 is corrupt, abort rather than destroy
+  // the only recoverable raw copy.
+  function saveAutosave() {
+    if (!saves) return { ok: false, error: { code: 'persistence-unconfigured' } };
+    const current = saves.read('auto-1');
+    if (current.status !== 'missing') {
+      const exported = saves.export('auto-1');
+      if (!exported.ok) return exported;
+      const shifted = saves.import('auto-2', exported.data);
+      if (!shifted.ok || shifted.status !== 'ready') {
+        return shifted.ok
+          ? { ok: false, error: { code: 'autosave-source-not-loadable' } }
+          : shifted;
       }
     }
-    return out.sort((a, b) => a.slot.localeCompare(b.slot));
+    return saveSlot('auto-1');
+  }
+
+  function loadSlot(slot: string, allowRisk = false): LoadSlotResult {
+    if (!saves || !adapter.value) return { status: 'missing' };
+    const stored = saves.read(slot);
+    if (stored.status !== 'ready') {
+      return { status: stored.status, error: 'error' in stored ? stored.error : undefined };
+    }
+    if (stored.compatibility !== 'compatible' && !allowRisk) {
+      return { status: 'confirmation-required', compatibility: stored.compatibility };
+    }
+    apply(adapter.value.importStateJSON(JSON.stringify(stored.record.state)));
+    return { status: 'loaded' };
+  }
+
+  function listSlots(): SaveSlotEntry[] {
+    if (!saves) return [];
+    return saves.list().map((entry) => {
+      if (entry.status === 'ready') {
+        return {
+          slot: entry.slot,
+          status: entry.status,
+          compatibility: entry.compatibility,
+          meta: entry.record.meta as unknown as SaveMeta,
+          ...(entry.record.meta as unknown as SaveMeta),
+        };
+      }
+      return { slot: entry.slot, status: entry.status, error: entry.error };
+    });
+  }
+
+  function removeSlot(slot: string) {
+    return saves?.remove(slot) ?? { ok: false, error: { code: 'persistence-unconfigured' } };
+  }
+
+  function exportSlot(slot: string) {
+    return saves?.export(slot) ?? { ok: false, error: { code: 'persistence-unconfigured' } };
+  }
+
+  function importSlot(slot: string, serialized: string) {
+    return saves?.import(slot, serialized) ?? {
+      ok: false,
+      error: { code: 'persistence-unconfigured' },
+    };
   }
 
   return {
@@ -176,7 +218,11 @@ export const useGameStore = defineStore('game', () => {
     play,
     playPinned,
     saveSlot,
+    saveAutosave,
     loadSlot,
     listSlots,
+    removeSlot,
+    exportSlot,
+    importSlot,
   };
 });

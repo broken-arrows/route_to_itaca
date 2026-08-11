@@ -9,7 +9,14 @@
 
   var contentToHTML = require('./content/html');
   var engine = require('../engine');
+  var persistence = require('../persistence');
   var saveLabel = require('./save-label');
+
+  var canonicalSlot = function(slot) {
+    if (slot === 'a0') { return 'auto-1'; }
+    if (slot === 'a1') { return 'auto-2'; }
+    return 'manual-' + (Number(slot) + 1);
+  };
 
   var BrowserUserInterface = function(game, $content) {
     this.game = game;
@@ -46,7 +53,7 @@
     this.onNewPage = false;
 
     // for saving
-    this.save_prefix = game.title + '_' + game.author + '_save';
+    this._configurePersistence();
     this.max_slots = 8; // max save slots
     this.DateOptions = {hour: 'numeric',
                  minute: 'numeric',
@@ -56,6 +63,18 @@
                  day: 'numeric' };
   };
   engine.UserInterface.makeParentOf(BrowserUserInterface);
+
+  BrowserUserInterface.prototype._configurePersistence = function() {
+    var info = this.game.info || this.game;
+    this.storage_id = info.storageId || this.game.storageId;
+    this.game_version = info.version || this.game.version;
+    this.settings_key = this.storage_id + ':settings-old';
+    this.saveStore = persistence.createSaveStore({
+      storage: localStorage,
+      storageId: this.storage_id,
+      gameVersion: this.game_version,
+    });
+  };
 
   // ------------------------------------------------------------------------
   // Main API
@@ -81,6 +100,7 @@
           });
           that.game = game;
           that.dendryEngine = new engine.DendryEngine(that, game);
+          that._configurePersistence();
           that.dendryEngine.beginGame();
       })
       .catch(err => console.log(err));
@@ -703,13 +723,14 @@
 
   BrowserUserInterface.prototype.saveSettings = function() {
     if (typeof localStorage !== 'undefined') {
-        localStorage[this.game.title + '_animate'] = this.animate;
-        localStorage[this.game.title + '_disable_bg'] = this.disable_bg;
-        localStorage[this.game.title + '_animate_bg'] = this.animate_bg;
-        localStorage[this.game.title + '_show_portraits'] = this.show_portraits;
-        localStorage[this.game.title + '_disable_audio'] = this.disable_audio;
-        localStorage[this.game.title + '_dark_mode'] = this.dark_mode;
-        //localStorage[this.game.title + '_settings'] = JSON.stringify(this.current_settings);
+        localStorage.setItem(this.settings_key, JSON.stringify({
+          animate: this.animate,
+          disableBg: this.disable_bg,
+          animateBg: this.animate_bg,
+          showPortraits: this.show_portraits,
+          disableAudio: this.disable_audio,
+          darkMode: this.dark_mode,
+        }));
     }
   };
 
@@ -717,12 +738,21 @@
   BrowserUserInterface.prototype.loadSettings = function(defaultSettings) {
     var defaults = {animate: false, disable_bg: false, animate_bg: true, 
                     show_portraits: true, disable_audio: false, dark_mode: false};
+    var storedNames = {animate: 'animate', disable_bg: 'disableBg',
+                       animate_bg: 'animateBg', show_portraits: 'showPortraits',
+                       disable_audio: 'disableAudio', dark_mode: 'darkMode'};
+    var stored = null;
     if (typeof localStorage !== 'undefined') {
+        try {
+          stored = JSON.parse(localStorage.getItem(this.settings_key));
+        } catch (error) {
+          stored = null;
+        }
         for (var prop in defaults) {
             if (defaults.hasOwnProperty(prop)) {
-                var lsKey = this.game.title + '_' + prop;
-                if (lsKey in localStorage) {
-                    this[prop] = localStorage[lsKey] != 'false';
+                var storedName = storedNames[prop];
+                if (stored && stored.hasOwnProperty(storedName)) {
+                    this[prop] = stored[storedName];
                 } else {
                     if (defaultSettings && defaultSettings.hasOwnProperty(prop)) {
                         this[prop] = defaultSettings[prop];
@@ -752,79 +782,98 @@
 
 
   // save functions
-  BrowserUserInterface.prototype.autosave = function() {
-      var oldData = localStorage[this.save_prefix+'_a0'];
-      if (oldData) {
-          localStorage[this.save_prefix+'_a1'] = oldData;
-          localStorage[this.save_prefix+'_timestamp_a1'] = localStorage[this.save_prefix+'_timestamp_a0'];
-      }
-      var slot = 'a0';
-      var saveString = JSON.stringify(this.dendryEngine.getExportableState());
-      localStorage[this.save_prefix + '_' + slot] = saveString;
-      var scene = this.dendryEngine.state.sceneId;
-      var date = new Date(Date.now());
-      date = scene + '\n(' + date.toLocaleString(undefined, this.DateOptions) + ')';
-      localStorage[this.save_prefix +'_timestamp_' + slot] = date;
-      this.populateSaveSlots(slot + 1, 2);
+  BrowserUserInterface.prototype._saveMetadata = function() {
+    return {sceneId: this.dendryEngine.state.sceneId};
   };
 
-  BrowserUserInterface.prototype.quickSave = function() {
-    var saveString = JSON.stringify(this.dendryEngine.getExportableState());
-    localStorage[this.save_prefix + '_q'] = saveString;
-    window.alert('Saved.');
+  BrowserUserInterface.prototype._displaySaveError = function(action, result) {
+    var detail = result && result.error && result.error.message;
+    window.alert(action + ' failed.' + (detail ? '\n' + detail : ''));
+  };
+
+  BrowserUserInterface.prototype._loadSaveResult = function(result) {
+    if (result.status === 'missing') {
+      window.alert('No save available.');
+      return false;
+    }
+    if (result.status === 'unsupported') {
+      window.alert('This save uses an unsupported save format and cannot be loaded.');
+      return false;
+    }
+    if (result.status === 'corrupt' || result.status === 'unreadable') {
+      window.alert('This save is corrupt or unreadable and cannot be loaded.');
+      return false;
+    }
+    if (result.compatibility !== 'compatible' &&
+        !window.confirm('This save was created with a different or unknown game version. Load it anyway?')) {
+      return false;
+    }
+    this.dendryEngine.setState(result.record.state);
+    this.hideSaveSlots();
+    window.alert('Loaded.');
+    return true;
+  };
+
+  BrowserUserInterface.prototype.autosave = function() {
+      var previous = this.saveStore.export('auto-1');
+      if (previous.ok) {
+          // Import preserves the complete previous envelope, including savedAt.
+          var rotated = this.saveStore.import('auto-2', previous.data);
+          if (!rotated.ok) {
+            this._displaySaveError('Autosave rotation', rotated);
+            return;
+          }
+      } else if (previous.error.code !== 'missing-save') {
+          this._displaySaveError('Autosave rotation', previous);
+          return;
+      }
+      var result = this.saveStore.write(
+        'auto-1',
+        this.dendryEngine.getExportableState(),
+        this._saveMetadata()
+      );
+      if (!result.ok) {
+        this._displaySaveError('Autosave', result);
+      }
+      this.populateSaveSlots(this.max_slots, 2);
   };
 
   BrowserUserInterface.prototype.saveSlot = function(slot) {
-    var saveString = JSON.stringify(this.dendryEngine.getExportableState());
-    localStorage[this.save_prefix + '_' + slot] = saveString;
-    var scene = this.dendryEngine.state.sceneId;
-    var date = new Date(Date.now());
-    date = scene + '\n(' + date.toLocaleString(undefined, this.DateOptions) + ')';
-    localStorage[this.save_prefix + '_timestamp_' + slot] = date;
-    this.populateSaveSlots(slot + 1, 2);
-  };
-
-  BrowserUserInterface.prototype.quickLoad = function() {
-    if (localStorage[this.save_prefix + '_q']) {
-      var saveString = localStorage[this.save_prefix + '_q'];
-      this.dendryEngine.setState(JSON.parse(saveString));
-      window.alert('Loaded.');
-    } else {
-      window.alert('No save available.');
+    var result = this.saveStore.write(
+      canonicalSlot(slot),
+      this.dendryEngine.getExportableState(),
+      this._saveMetadata()
+    );
+    if (!result.ok) {
+      this._displaySaveError('Save', result);
     }
+    this.populateSaveSlots(this.max_slots, 2);
   };
 
   BrowserUserInterface.prototype.loadSlot = function(slot) {
-    if (localStorage[this.save_prefix + '_' + slot]) {
-      var saveString = localStorage[this.save_prefix + '_' + slot];
-      this.dendryEngine.setState(JSON.parse(saveString));
-      this.hideSaveSlots();
-      window.alert('Loaded.');
-    } else {
-      window.alert('No save available.');
-    }
+    this._loadSaveResult(this.saveStore.read(canonicalSlot(slot)));
   };
 
   BrowserUserInterface.prototype.deleteSlot = function(slot) {
-    if (localStorage[this.save_prefix + '_' + slot]) {
-      localStorage[this.save_prefix + '_' + slot] = '';
-      localStorage[this.save_prefix + '_timestamp_' + slot] = '';
-      this.populateSaveSlots(slot + 1, 2);
-    } else {
+    var result = this.saveStore.remove(canonicalSlot(slot));
+    if (!result.ok) {
+      this._displaySaveError('Delete', result);
+    } else if (!result.existed) {
       window.alert('No save available.');
     }
+    this.populateSaveSlots(this.max_slots, 2);
   };
 
   BrowserUserInterface.prototype.exportSlot = function(slot) {
-    if (localStorage[this.save_prefix + '_' + slot]) {
-      var data = localStorage[this.save_prefix + '_' + slot];
+    var result = this.saveStore.export(canonicalSlot(slot));
+    if (result.ok) {
       var a = document.createElement("a");
-      var file = new Blob([data], {type: 'text/plain'});
+      var file = new Blob([result.data], {type: 'application/json'});
       a.href = URL.createObjectURL(file);
       a.download = 'save.txt';
       a.click();
     } else {
-      window.alert('No save available.');
+      this._displaySaveError('Export', result);
     }
   };
 
@@ -832,14 +881,32 @@
       var that = this;
       function onFileLoad(e) {
           var data = e.target.result;
-          that.dendryEngine.setState(JSON.parse(data));
-          that.hideSaveSlots();
-          window.alert('Loaded.');
+          var slot = null;
+          for (var i = 1; i <= that.max_slots; i++) {
+            if (that.saveStore.read('manual-' + i).status === 'missing') {
+              slot = 'manual-' + i;
+              break;
+            }
+          }
+          if (!slot) {
+            window.alert('All save slots are occupied. Delete a save before importing.');
+            return;
+          }
+          var imported = that.saveStore.import(slot, data);
+          if (!imported.ok) {
+            that._displaySaveError('Import', imported);
+            return;
+          }
+          that.populateSaveSlots(that.max_slots, 2);
+          that._loadSaveResult(that.saveStore.read(slot));
       }
       var uploader = document.getElementById(doc_id);
       var reader = new FileReader();
       var file = uploader.files[0];
-      console.log(uploader.files);
+      if (!file) {
+        window.alert('Choose a save file to import.');
+        return;
+      }
       reader.onload = onFileLoad;
       reader.readAsText(file);
   };
@@ -868,28 +935,52 @@
       };
     }
       function populateSlot(id) {
+          var entry = that.saveStore.read(canonicalSlot(id));
           var save_element = document.getElementById('save_info_' + id);
           var save_button = document.getElementById('save_button_' + id);
           var delete_button = document.getElementById('delete_button_' + id);
-          if (localStorage[that.save_prefix + '_' + id]) {
-              var timestamp = localStorage[that.save_prefix+'_timestamp_' + id];
-              save_element.textContent = saveLabel.formatSaveTimestamp(timestamp);
+          var export_button = document.getElementById('export_button_' + id);
+          save_button.onclick = null;
+          delete_button.onclick = null;
+          export_button.onclick = null;
+          save_button.disabled = false;
+          delete_button.disabled = false;
+          export_button.disabled = false;
+          if (entry.status === 'ready') {
+              var meta = entry.record.meta || {};
+              var savedAt = new Date(meta.savedAt);
+              var timestamp = isNaN(savedAt.getTime()) ? String(meta.savedAt || '') :
+                savedAt.toLocaleString(undefined, that.DateOptions);
+              var state = entry.record.state;
+              var label = String(meta.sceneId || (state && state.sceneId) || 'Unknown scene') +
+                '\n(' + timestamp + ')';
+              save_element.textContent = saveLabel.formatSaveTimestamp(label);
+              if (entry.compatibility !== 'compatible') {
+                save_element.textContent += '\n(Game version warning)';
+              }
               save_button.textContent = "Load";
               save_button.onclick = createLoadListener(id);
               delete_button.onclick = createDeleteListener(id);
-          } else {
+              export_button.onclick = createExportListener(id);
+          } else if (entry.status === 'missing') {
               save_button.textContent = "Save";
               save_element.textContent = "Empty";
               save_button.onclick = createSaveListener(id);
-          }
-          try {
-              var export_button = document.getElementById('export_button_' + id);
-              if (localStorage[that.save_prefix + '_' + id]) {
-                  export_button.onclick = createExportListener(id);
+              delete_button.disabled = true;
+              export_button.disabled = true;
+          } else {
+              save_button.textContent = "Load";
+              save_button.disabled = true;
+              save_element.textContent = entry.status === 'unsupported' ?
+                'Unsupported save format' :
+                (entry.status === 'corrupt' ? 'Corrupt save' : 'Unreadable save');
+              delete_button.onclick = createDeleteListener(id);
+              if (entry.status === 'unreadable') {
+                export_button.disabled = true;
+              } else {
+                export_button.onclick = createExportListener(id);
               }
-          } catch(error) {
           }
-
       }
       for (var i = 0; i < max_slots; i++) {
           populateSlot(i);
@@ -1036,6 +1127,12 @@
       ui.dendryEngine.beginGame();
     });
   };
-  $(main);
+
+  BrowserUserInterface.canonicalSlot = canonicalSlot;
+  module.exports = BrowserUserInterface;
+
+  if (typeof window !== 'undefined' && window.game) {
+    $(main);
+  }
 
 }(jQuery));

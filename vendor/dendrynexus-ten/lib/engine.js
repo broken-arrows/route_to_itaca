@@ -823,15 +823,25 @@
 
   DendryEngine.prototype._loadAchievements = function() {
     if (typeof localStorage !== 'undefined') {
-        if (localStorage[this.game.title + '_achievements']) {
+        var key = this._achievementStorageKey();
+        if (localStorage[key]) {
             this.state.achievements = JSON.parse(
-                localStorage[this.game.title + '_achievements']);
+                localStorage[key]);
             // add a special quality named 'achievement_'
             for (var achievement in this.state.achievements) {
                 this.state.qualities['achievement_' + achievement] = 1;
             }
         }
     }
+  };
+
+  DendryEngine.prototype._achievementStorageKey = function() {
+    var storageId = this.game.info && this.game.info.storageId;
+    // `storageId` also remains at the compiled game's top level for legacy
+    // engine consumers because Game merges info.dry there. Prefer the nested
+    // manifest, but tolerate compiled games produced during that transition.
+    storageId = storageId || this.game.storageId;
+    return storageId ? storageId + ':achievements' : this.game.title + '_achievements';
   };
 
   DendryEngine.prototype.gameOver = function() {
@@ -1371,7 +1381,7 @@
     this.state.qualities['game_achievement_' + achievementName] = 1;
     // set localStorage for achievement
     if (typeof localStorage !== 'undefined') {
-      localStorage[this.game.title + '_achievements'] = JSON.stringify(this.state.achievements);
+      localStorage[this._achievementStorageKey()] = JSON.stringify(this.state.achievements);
     }
   };
 

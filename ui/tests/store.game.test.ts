@@ -38,7 +38,7 @@ describe('game store', () => {
     const store = bootedStore();
     store.choose(0);
     store.draw('gov_deck');
-    store.saveSlot('test');
+    expect(store.saveSlot('test')).toMatchObject({ ok: true });
 
     const slots = store.listSlots();
     expect(slots).toHaveLength(1);
@@ -53,31 +53,47 @@ describe('game store', () => {
     // mutate, then restore
     store.draw('gov_deck');
     expect(store.frame?.hand).toHaveLength(2);
-    expect(store.loadSlot('test')).toBe(true);
+    expect(store.loadSlot('test')).toEqual({ status: 'loaded' });
     expect(store.frame?.hand).toHaveLength(1);
   });
 
-  it('loadSlot returns false for missing slot', () => {
+  it('loadSlot reports a missing slot', () => {
     const store = bootedStore();
-    expect(store.loadSlot('nope')).toBe(false);
+    expect(store.loadSlot('nope')).toMatchObject({ status: 'missing' });
   });
 
-  it('migrates pre-rename rti:desk:save:* slots to dnt:save:* at store creation', () => {
-    localStorage.clear();
-    // A save written by a phases-1–2.5 build, under the old game-named prefix.
-    const legacyBlob = JSON.stringify({ meta: { slot: 'old' }, state: {} });
-    localStorage.setItem('rti:desk:save:old', legacyBlob);
-    // A slot that exists under BOTH prefixes: the new one must never be
-    // overwritten by the migration.
-    localStorage.setItem('rti:desk:save:both', JSON.stringify({ meta: { slot: 'stale' }, state: {} }));
-    const freshBlob = JSON.stringify({ meta: { slot: 'both' }, state: {} });
-    localStorage.setItem('dnt:save:both', freshBlob);
+  it('hard-cuts provisional save shelves without migrating or deleting them', () => {
+    localStorage.setItem('rti:desk:save:old', JSON.stringify({ meta: {}, state: {} }));
+    localStorage.setItem('dnt:save:old', JSON.stringify({ meta: {}, state: {} }));
+    const store = bootedStore();
 
-    useGameStore();
+    expect(store.listSlots()).toEqual([]);
+    expect(localStorage.getItem('rti:desk:save:old')).not.toBeNull();
+    expect(localStorage.getItem('dnt:save:old')).not.toBeNull();
+  });
 
-    expect(localStorage.getItem('dnt:save:old')).toBe(legacyBlob);
-    expect(localStorage.getItem('dnt:save:both')).toBe(freshBlob);
-    localStorage.clear();
+  it('retains corrupt saves in the list and refuses to load them', () => {
+    const store = bootedStore();
+    localStorage.setItem('test-game:save:manual-1', '{');
+    expect(store.listSlots()).toMatchObject([
+      { slot: 'manual-1', status: 'corrupt', error: { code: 'invalid-json' } },
+    ]);
+    expect(store.loadSlot('manual-1')).toMatchObject({ status: 'corrupt' });
+  });
+
+  it('requires explicit confirmation before a game-version-incompatible load', () => {
+    const store = bootedStore();
+    store.choose(0);
+    store.saveSlot('manual-1');
+    const saved = JSON.parse(localStorage.getItem('test-game:save:manual-1')!);
+    saved.gameVersion = '0.2.0';
+    localStorage.setItem('test-game:save:manual-1', JSON.stringify(saved));
+
+    expect(store.loadSlot('manual-1')).toEqual({
+      status: 'confirmation-required',
+      compatibility: 'incompatible',
+    });
+    expect(store.loadSlot('manual-1', true)).toEqual({ status: 'loaded' });
   });
 
   it('glossary is empty before boot and empty with no data.glossary registry', () => {

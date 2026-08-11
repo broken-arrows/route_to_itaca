@@ -1,11 +1,10 @@
 /**
  * Achievement unlock DETECTION. There is no ledger here on purpose.
  *
- * The ENGINE already owns achievements (engine.js:1133 `achieve`, :588
- * `_loadAchievements`): `achieve(x)` sets Q.achievement_x AND
- * Q.game_achievement_x and persists the set to
- * localStorage[game.title + '_achievements']; boot restores Q.achievement_*
- * from it. So:
+ * The ENGINE already owns achievements: `achieve(x)` sets Q.achievement_x AND
+ * Q.game_achievement_x and persists the cross-playthrough set to the manifest-
+ * scoped `<storageId>:achievements` key (`rti:achievements` for this game).
+ * Boot and save load restore Q.achievement_* from it. So:
  *
  *   Q.achievement_x       = ever unlocked, ACROSS SAVES (pre-seeded at boot)
  *   Q.game_achievement_x  = unlocked in THIS playthrough

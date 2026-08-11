@@ -35,6 +35,14 @@
       required: false,
       validate: null
     },
+    storageId: {
+      required: false,
+      validate: validators.validateStorageId
+    },
+    version: {
+      required: false,
+      validate: validators.validateGameVersion
+    },
 
     // Locales this game ships/declares. Parsed as a tag-style list:
     // `languages: en ca` -> ['en', 'ca']. Drives the language picker and

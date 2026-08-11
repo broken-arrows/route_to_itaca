@@ -50,6 +50,23 @@ git subtree split --prefix=vendor/dendrynexus-ten -b dendrynexus-ten-split
 Kept deliberately minimal — touch only the lines that must change, never a
 whole-file reformat, so this list stays the complete upstream diff.
 
+- **`lib/parsers/info.js`, `lib/parsers/validators.js`,
+  `lib/parsers/compiler.js`, and `lib/engine.js`** (2026-08-11) — game
+  manifests may declare a validated, lowercase `storage-id` and a two- or
+  three-component `version` with an optional hyphenated tag. The nested
+  runtime `game.info` manifest now carries those fields plus `ifid`.
+  Achievement persistence uses `<storageId>:achievements` when the field is
+  present, with a title-based fallback only for third-party games that omit
+  it. There is deliberately no read fallback or migration from the old title
+  key when a storage id exists.
+
+- **`lib/persistence.js`, `lib/ui/browser.js`, and stock HTML templates**
+  (2026-08-11) — both shells share manifest-scoped, versioned save envelopes,
+  positional two-save autos, and one-based manual slot names. The old shell
+  exposes manual 1…8, has no quicksave, and stores its settings separately at
+  `<storageId>:settings-old`. Canonical-envelope imports only; corrupt and
+  unsupported records remain manageable without being loadable.
+
 - **`lib/ui/browser.js` + `lib/ui/save-label.js`** (2026-07-26) — the old
   shell sanitizes the scene-id line when populating save slots: it removes
   `post_event`, drops nested suffixes after `.`, replaces `_` with spaces, and

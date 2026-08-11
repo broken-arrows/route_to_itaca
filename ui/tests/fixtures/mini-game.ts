@@ -1,4 +1,5 @@
 export const miniGame = {
+  info: { storageId: 'test-game', version: '0.1.0', languages: ['en'] },
   scenes: {
     root: {
       id: 'root',

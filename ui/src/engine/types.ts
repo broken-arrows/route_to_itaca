@@ -4,7 +4,14 @@ export type SceneRole =
   | 'pinned-action' | 'newspaper' | 'event'
   | 'status' | 'info-tab' | 'pause-item' | 'main-menu-item' | 'library-item' | 'ending';
 export type EffectiveRole = SceneRole | 'page';
-export interface GameInfo { title?: string; author?: string; languages: string[] }
+export interface GameInfo {
+  title?: string;
+  author?: string;
+  ifid?: string;
+  storageId?: string;
+  version?: string;
+  languages: string[];
+}
 
 export interface ChoiceView {
   id: string;
@@ -50,13 +57,23 @@ export interface Frame {
 }
 
 export interface SaveMeta {
-  slot: string;
   savedAt: string; // ISO
   year: number | null;
   month: number | null;
   playerParty: string | null;
   sceneId: string;
   resources: number | null;
+}
+
+export type SaveCompatibility = 'compatible' | 'incompatible' | 'unknown';
+export type SaveEntryStatus = 'ready' | 'corrupt' | 'unreadable' | 'unsupported';
+
+export interface SaveSlotEntry extends Partial<SaveMeta> {
+  slot: string;
+  status: SaveEntryStatus;
+  compatibility?: SaveCompatibility;
+  meta?: SaveMeta;
+  error?: { code: string; message?: string };
 }
 
 // game.json.data.achievements = { achievements: AchievementEntry[] } —

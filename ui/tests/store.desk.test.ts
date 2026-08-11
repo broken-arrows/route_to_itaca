@@ -19,7 +19,10 @@ async function jsonFor(files: { name: string; contents: string }[]): Promise<str
 // implementers may read tasks independently, so this file carries its own
 // copy rather than importing across test files.
 const FILES = [
-  { name: 'info.dry', contents: 'title: T\nauthor: A\nlanguages: en ca\n' },
+  {
+    name: 'info.dry',
+    contents: 'title: T\nauthor: A\nstorage-id: test-game\nversion: 0.1.0\nlanguages: en ca\n',
+  },
   { name: 'root.scene.dry', contents: 'title: Root\n\nIntro.\n\n- @hub\n' },
   {
     name: 'hub.scene.dry',
@@ -472,8 +475,8 @@ describe('desk store', () => {
     expect(slots.map((s) => s.slot)).toEqual(['auto-1']);
     expect(slots[0].savedAt).toBe(auto1SavedAt);
 
-    // A second month-crossing resolution flips the rotation to 'auto-2' and
-    // leaves 'auto-1' untouched.
+    // A second month-crossing shifts the previous auto-1 to auto-2, then
+    // writes the newest state to auto-1.
     card = game.frame!.hand[0];
     desk.playFromHand(card);
     desk.pickPaper(0); // -> c1_next: month 2 -> 3
@@ -481,16 +484,15 @@ describe('desk store', () => {
 
     slots = game.listSlots();
     expect(slots.map((s) => s.slot).sort()).toEqual(['auto-1', 'auto-2']);
-    expect(slots.find((s) => s.slot === 'auto-2')!.month).toBe(3);
-    expect(slots.find((s) => s.slot === 'auto-1')!.savedAt).toBe(auto1SavedAt);
+    expect(slots.find((s) => s.slot === 'auto-1')!.month).toBe(3);
+    expect(slots.find((s) => s.slot === 'auto-2')!.month).toBe(2);
+    expect(slots.find((s) => s.slot === 'auto-2')!.savedAt).toBe(auto1SavedAt);
   });
 
-  // REGRESSION (I3): the rotation slot used to be a CLOSURE variable
-  // (`lastAutoSlot`), reset to null on every page load — so the first
-  // month-crossing of every new session always wrote 'auto-1' and destroyed
-  // the newest autosave, while 'auto-2' sat empty. The target slot must be
-  // derived from what is actually STORED.
-  it('the rotation survives a reload: a new session writes the free slot, not the newest one', async () => {
+  // REGRESSION (I3): the rotation must survive a page reload. Positional
+  // semantics make that deterministic: previous auto-1 is copied to auto-2
+  // before the new auto-1 is written, with no closure toggle to reset.
+  it('the positional rotation survives a reload and preserves the previous auto-1', async () => {
     // --- session A: one month-crossing -> auto-1.
     const { game, desk } = await boot(FILES_AUTOSAVE);
     game.choose(0);
@@ -513,10 +515,9 @@ describe('desk store', () => {
     desk2.pickPaper(0); // -> hub: stamp moved -> autosave
 
     const slots = game2.listSlots();
-    // Pre-fix this was ['auto-1'] — session B overwrote the only autosave.
     expect(slots.map((s) => s.slot).sort()).toEqual(['auto-1', 'auto-2']);
-    expect(slots.find((s) => s.slot === 'auto-1')!.savedAt).toBe(auto1SavedAt); // untouched
-    expect(slots.find((s) => s.slot === 'auto-2')!.month).toBe(2);
+    expect(slots.find((s) => s.slot === 'auto-2')!.savedAt).toBe(auto1SavedAt);
+    expect(slots.find((s) => s.slot === 'auto-1')!.month).toBe(2);
   });
 
   // REGRESSION (C3): the engine only fills displayHand/displayDecks/

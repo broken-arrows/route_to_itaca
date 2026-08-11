@@ -15,6 +15,9 @@ AGENTS.md
 .superpowers/*
 .playwright-mcp/*
 /docs/*
+/.scratch/
+/CONTEXT.md
+/CONTEXT-MAP.md
 Overview.pdf
 /ui/node_modules
 /ui/dist

@@ -132,6 +132,9 @@
     if (infoDry) {
       if (infoDry.title !== undefined) { this.info.title = infoDry.title; }
       if (infoDry.author !== undefined) { this.info.author = infoDry.author; }
+      if (infoDry.ifid !== undefined) { this.info.ifid = infoDry.ifid; }
+      if (infoDry.storageId !== undefined) { this.info.storageId = infoDry.storageId; }
+      if (infoDry.version !== undefined) { this.info.version = infoDry.version; }
       if (infoDry.languages !== undefined) { this.info.languages = infoDry.languages; }
     }
   };

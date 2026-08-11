@@ -3,32 +3,18 @@ import en from './locales/en.json';
 import ca from './locales/ca.json';
 
 export type AppLocale = 'en' | 'ca';
-// `dnt:` = dendrynexus-ten, the library this shell belongs to — NOT the game:
-// a game-agnostic UI must not bake game naming (`rti:`) into its storage keys.
-// The per-game discriminator (derived from the manifest's game.title, so two
-// games on one origin don't collide) is phase-5 work — see desk_ui_plan.md
-// §11.5(b).
-const STORAGE_KEY = 'dnt:locale';
-// Pre-rename key (phases 1–2.5 shipped with the game-named prefix). Read-only
-// fallback so existing beta players keep their choice; never written again.
-const LEGACY_STORAGE_KEY = 'rti:desk:locale';
-
-function initialLocale(): AppLocale {
-  if (typeof localStorage === 'undefined') return 'en';
-  const stored = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY);
-  return stored === 'ca' ? 'ca' : 'en';
-}
-
 export const i18n = createI18n({
   legacy: false,
-  locale: initialLocale(),
+  // Persistence belongs to the settings store's manifest-scoped blob. i18n
+  // starts from the language-independent default, then settings.configure()
+  // applies the saved locale once game.info.storageId is available.
+  locale: 'en',
   fallbackLocale: 'en',
   messages: { en, ca },
 });
 
 export function setLocale(locale: AppLocale): void {
   i18n.global.locale.value = locale;
-  if (typeof localStorage !== 'undefined') localStorage.setItem(STORAGE_KEY, locale);
   syncDocument();
 }
 

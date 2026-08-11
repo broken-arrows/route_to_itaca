@@ -193,21 +193,6 @@ export const useDeskStore = defineStore('desk', () => {
     }
   }
 
-  // Which of the two rotation slots to overwrite next. Derived from what is
-  // actually STORED, never from an in-memory toggle: a closure variable is
-  // reset to null on every page load, so it always picked 'auto-1' first in a
-  // new session and destroyed the newest autosave while 'auto-2' sat empty —
-  // defeating the rotation's entire purpose (always keep the previous turn as
-  // a fallback). Free slot first, then the OLDER of the two.
-  function nextAutoSlot(): 'auto-1' | 'auto-2' {
-    const slots = game.listSlots();
-    const a1 = slots.find((s) => s.slot === 'auto-1');
-    const a2 = slots.find((s) => s.slot === 'auto-2');
-    if (!a1) return 'auto-1';
-    if (!a2) return 'auto-2';
-    return Date.parse(a1.savedAt) <= Date.parse(a2.savedAt) ? 'auto-1' : 'auto-2';
-  }
-
   function maybeAutosave(): void {
     const year = game.q.year;
     const month = game.q.month;
@@ -218,7 +203,7 @@ export const useDeskStore = defineStore('desk', () => {
     }
     if (stamp === autosaveStamp) return;
     autosaveStamp = stamp;
-    game.saveSlot(nextAutoSlot());
+    game.saveAutosave();
   }
 
   // --- Engine error handling (spec §9, docs/design/desk_ui_plan.md:329-332).

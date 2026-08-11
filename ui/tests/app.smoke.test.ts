@@ -70,6 +70,7 @@ describe('app shell', () => {
     await flushPromises();
     setActivePinia(pinia);
     const settings = useSettingsStore();
+    settings.configure('rti');
     expect(settings.language).toBe('en');
 
     const ca = wrapper.findAll('button').find((b) => b.text() === 'CA');
@@ -79,7 +80,7 @@ describe('app shell', () => {
     expect(settings.language).toBe('ca'); // the store is the source of truth
     expect(i18n.global.locale.value).toBe('ca'); // ...and it drove i18n
     // ...and it persisted as the settings BLOB, not just the loose key.
-    expect(JSON.parse(localStorage.getItem('dnt:settings')!).language).toBe('ca');
+    expect(JSON.parse(localStorage.getItem('rti:settings')!).language).toBe('ca');
 
     errSpy.mockRestore();
     vi.unstubAllGlobals();

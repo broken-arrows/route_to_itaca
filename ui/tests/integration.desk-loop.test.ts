@@ -48,7 +48,7 @@ const MAX_PRE_DESK_STEPS = 30;
 const MAX_PAPERS = 10;
 const MAX_TURNS = 20;
 
-const AUTO_SAVE_RE = /^dnt:save:auto-/;
+const AUTO_SAVE_RE = /^rti:save:auto-/;
 
 function firstChoosable(choices: { canChoose: boolean }[]): number {
   return choices.findIndex((c) => c.canChoose);
@@ -258,7 +258,7 @@ describe('integration: the real game through the desk loop', () => {
     }
 
     const autoKeys = Object.keys(localStorage).filter((k) => AUTO_SAVE_RE.test(k));
-    expect(autoKeys.length, 'no dnt:save:auto-* key after a month advance').toBeGreaterThanOrEqual(1);
+    expect(autoKeys.length, 'no rti:save:auto-* key after a month advance').toBeGreaterThanOrEqual(1);
     const autoMeta = game.listSlots().filter((s) => s.slot.startsWith('auto-'));
     expect(autoMeta[0].playerParty).toBe('erc'); // the pre-desk walk picks ERC
     expect(autoMeta[0].month).toBe(game.q.month);
