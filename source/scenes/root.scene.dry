@@ -1386,11 +1386,11 @@ on-arrival: {!
   Q.position_disp = "<span style='font-style: italic;'>Opposition</span>"; 
 
   Q.ciu_relations = 55;
-  Q.cup_relations = 70;
+  Q.cup_relations = 65;
   Q.cs_relations = 3;
-  Q.psc_relations = 25;
+  Q.psc_relations = 30;
   Q.ppc_relations = 2;
-  Q.si_relations = 68;
+  Q.si_relations = 65;
   Q.icv_relations = 60;
   Q.vox_relations = 0;
   Q.pxc_relations = 1;
@@ -1479,12 +1479,12 @@ on-arrival: {!
   Q.cup_roadmap = 3;
 
   Q.ciu_relations = 15;
-  Q.erc_relations = 65;
+  Q.erc_relations = 60;
   Q.cs_relations = 0;
-  Q.psc_relations = 10;
+  Q.psc_relations = 15;
   Q.ppc_relations = 0;
   Q.si_relations = 45;
-  Q.icv_relations = 30;
+  Q.icv_relations = 35;
   Q.vox_relations = 0;
   Q.pxc_relations = 0;
 

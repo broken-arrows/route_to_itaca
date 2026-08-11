@@ -9,20 +9,130 @@ on-arrival: {!
 
 = Public Order Reform
 
-After a woman lost her eye in an anti-austerity protest due to police-shot rubber bullets, a broader crisis related to public-police trust has emerged. With Catalonia having its own police force in the form of the Mossos d'Esquadra, it is clear that the Generalitat and the Parlament have a responsibility to fulfill here. Official recommendations call for a ban on rubber bullets all together and reforming crowd-control protocols to "better balance the right to protest with public order and safety". However, social movements are demanding more in-depth police reforms. These talk about police democratization, independent watchdogs, and structural reforms to the chains of command to root-out impunity.
+After a woman lost her eye in an anti-austerity protest due to police-shot rubber bullets, a broader crisis related to public-police trust has emerged. With Catalonia having its own police force in the form of the Mossos d'Esquadra, it is clear that the Generalitat and the Parlament have a responsibility to fulfill here.
+
+Official recommendations call for a ban on rubber bullets all together and reforming crowd-control protocols to "better balance the right to protest with public order and safety". However, social movements are demanding more in-depth police reforms. These talk about police democratization, independent watchdogs, and structural reforms to the chains of command to root-out impunity.
 
 - @police_focused
 - @police_democratic
 
 @police_focused
 title: Focus on surgical reforms and banning rubber bullets
-on-arrival: parlament_police_variant = "focused_reform"
-go-to: police_vote
+choose-if: player_party != "cup"
+unavailable-subtitle: Such a soft reform has too many opponents within the party.
+on-arrival: {!
+    Q.parlament_police_variant = "focused_reform";
+!}
+go-to: police_prepare_vote
+
+Such a surgical change to policing, without any in-depth addressing of the root causes of police violence, hardly convinces those to the left of the political spectrum. We may want to approach them if we want to secure an ample majority for this vote.
 
 @police_democratic
 title: Push for the democratization of policing
-on-arrival: parlament_police_variant = "democratic_policing"
-go-to: police_vote
+on-arrival: {!
+    Q.parlament_police_variant = "democratic_policing";
+!}
+go-to: police_prepare_vote
+
+While it is unsurprising that right-wing parties oppose such a reform to policing, more traditional parties towards the centre of the political spectrum also think of it as a bit of a radical approach. We may want to approach them if we want to secure an ample majority for this vote.
+
+@police_prepare_vote
+on-arrival: {!
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    var democratic = Q.parlament_police_variant == "democratic_policing";
+    Q.parlament_police_yes_names = democratic
+        ? ["erc","cup","icv","csqp","cecp","ecp","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cs","si"];
+    Q.parlament_police_no_names = democratic
+        ? ["ciu","cdc","dl","pdcat","junts","ppc","cs","unio","vox","pxc","fnc"]
+        : ["ppc","icv","csqp","cecp","ecp","vox","pxc","fnc"];
+    if (Q.coming_from_parlament && !Q.parlament_police_yes_names.includes(proposingParty)) {
+        Q.parlament_police_yes_names.push(proposingParty);
+    }
+    Q.parlament_police_deals = [];
+!}
+go-to: police_negotiation
+
+@police_negotiation
+on-arrival: {!
+    function canApproach(party, eligible) {
+        if (!eligible || !party) return false;
+        if ((Q[party + "_parlament_s"] || 0) <= 0) return false;
+        if ((Q[party + "_relations"] || 0) < 55) return false;
+        if (Q.parlament_police_yes_names.includes(party)) return false;
+        return !Q.parlament_police_deals.some(function (deal) { return deal.party == party; });
+    }
+
+    var ercPlayer = Q.player_party == "erc";
+    var cupPlayer = Q.player_party == "cup";
+    Q.parlament_police_can_approach_cup = canApproach("cup", ercPlayer);
+    Q.parlament_police_can_approach_psc = canApproach("psc", ercPlayer);
+    Q.parlament_police_can_approach_erc = canApproach("erc", cupPlayer);
+    Q.parlament_police_can_approach_convergence = canApproach(Q.parlament_current_ciu, ercPlayer || cupPlayer);
+    Q.parlament_police_can_approach_icv = canApproach(Q.parlament_current_icv, ercPlayer || cupPlayer);
+!}
+
+
+- @police_approach_cup
+- @police_approach_psc
+- @police_approach_erc
+- @police_approach_convergence
+- @police_approach_icv
+- @police_vote: Proceed with the vote anyway
+
+@police_approach_cup
+title: Approach the CUP before the vote
+view-if: parlament_police_can_approach_cup
+on-arrival: parlament_police_deal_party = "cup"
+go-to: police_make_deal
+
+· The CUP will not oppose our proposal.
+
+@police_approach_psc
+title: Approach the PSC before the vote
+view-if: parlament_police_can_approach_psc
+on-arrival: parlament_police_deal_party = "psc"
+go-to: police_make_deal
+
+· The PSC will not oppose our proposal.
+
+@police_approach_erc
+title: Approach ERC before the vote
+view-if: parlament_police_can_approach_erc
+on-arrival: parlament_police_deal_party = "erc"
+go-to: police_make_deal
+
+· ERC will not oppose our proposal.
+
+@police_approach_convergence
+title: Approach [+ parlament_current_ciu +] before the vote
+view-if: parlament_police_can_approach_convergence
+on-arrival: {!
+    Q.parlament_police_deal_party = Q.parlament_current_ciu;
+!}
+go-to: police_make_deal
+
+· [+ parlament_current_ciu +] will not oppose our proposal.
+
+@police_approach_icv
+title: Approach [+ parlament_current_icv +] before the vote
+view-if: parlament_police_can_approach_icv
+on-arrival: {!
+    Q.parlament_police_deal_party = Q.parlament_current_icv;
+!}
+go-to: police_make_deal
+
+· [+ parlament_current_icv +] will not oppose our proposal.
+
+@police_make_deal
+on-arrival: {!
+    var party = Q.parlament_police_deal_party;
+    var baselineNo = Q.parlament_police_no_names.includes(party);
+    var newPosition = baselineNo && Q[party + "_relations"] <= 65 ? "abstain" : "yes";
+    Q.parlament_police_deals.push({party: party, position: newPosition});
+    Q[party + "_relations"] -= 5;
+!}
+go-to: police_negotiation
 
 @police_vote
 on-arrival: {!
@@ -59,13 +169,24 @@ on-arrival: {!
     }
 
     // TODO: Refine ERC, PSC and JxSi/JxCat positions by leadership after playtesting.
-    var yesNames = democratic
-        ? ["erc","cup","icv","csqp","cecp","ecp","si"]
-        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cs","si"];
-    var noNames = democratic
-        ? ["ciu","cdc","dl","pdcat","junts","ppc","cs","unio","vox","pxc","fnc"]
-        : ["ppc","icv","csqp","cecp","ecp","vox","pxc","fnc"];
-    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    var yesNames = (Q.parlament_police_yes_names || []).slice();
+    var noNames = (Q.parlament_police_no_names || []).slice();
+    // Old saves or direct scene jumps may not have passed through the
+    // negotiation setup, so retain the authored vote map as a fallback.
+    if (yesNames.length == 0 && noNames.length == 0) {
+        yesNames = democratic
+            ? ["erc","cup","icv","csqp","cecp","ecp","si"]
+            : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cs","si"];
+        noNames = democratic
+            ? ["ciu","cdc","dl","pdcat","junts","ppc","cs","unio","vox","pxc","fnc"]
+            : ["ppc","icv","csqp","cecp","ecp","vox","pxc","fnc"];
+        if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    }
+    for (const deal of (Q.parlament_police_deals || [])) {
+        yesNames = yesNames.filter(function (party) { return party != deal.party; });
+        noNames = noNames.filter(function (party) { return party != deal.party; });
+        if (deal.position == "yes") yesNames.push(deal.party);
+    }
     var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
     var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSÃ­",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
     var yesParties = [], noParties = [], abstainParties = [];

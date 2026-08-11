@@ -45,8 +45,9 @@ on-arrival: {!
     Q.psc_leader = "Àngel Ros";
     Q.psc_ideology = "Centrist Social Democracy, Plurinationalism";
     Q.psc_recovery_mult = 1.5;
-
-    // TODO: force PSC split in the Congreso
+    
+    Q.psc_breakup_countdown = 6;
+    Q.countdowns.push("psc_breakup");
 !}
 
 # TODO: Actual text
@@ -61,7 +62,8 @@ on-arrival: {!
     Q.psc_ideology = "Social Democracy, Plurinationalism";
     Q.psc_recovery_mult = 1.75;
 
-    // TODO: force PSC split in the Congreso
+    Q.psc_breakup_countdown = 6;
+    Q.countdowns.push("psc_breakup");
 !}
 
 # TODO: Actual text
