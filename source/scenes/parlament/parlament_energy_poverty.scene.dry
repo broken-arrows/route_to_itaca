@@ -217,10 +217,10 @@ on-arrival: {!
             Q[backlash + "_parlament_" + c + "_middle_support"] += passageMiddleLoss;
         }
         if (ambitious) {
-            G.registerLaw(Q, {id:"energy_poverty_protection_core",title:"Energy-Poverty Protection",icon:"img/people_icon.svg",targets:{welfare_index_growth:0.08,generalitat_surplus:-0.005,social_dissent_eq:-1},ramp_ticks:2});
-            G.registerLaw(Q, {id:"energy_poverty_disconnection_ban",title:"Utility Disconnection Ban",icon:"img/people_icon.svg",targets:{welfare_index_growth:0.10,gdp_growth:-0.01,social_dissent_eq:-1.5},ramp_ticks:2});
+            G.registerLaw(Q, {id:"energy_poverty_protection_core",title:"Energy-Poverty Protection",icon:"img/home_icon.svg",targets:{welfare_index_growth:0.08,generalitat_surplus:-0.005,social_dissent_eq:-1},ramp_ticks:2});
+            G.registerLaw(Q, {id:"energy_poverty_disconnection_ban",title:"Utility Disconnection Ban",icon:"img/home_icon.svg",targets:{welfare_index_growth:0.10,gdp_growth:-0.01,social_dissent_eq:-1.5},ramp_ticks:2});
         } else {
-            G.registerLaw(Q, {id:"energy_poverty_public_guarantee",title:"Essential-Supply Guarantee",icon:"img/people_icon.svg",targets:{welfare_index_growth:0.10,generalitat_surplus:-0.025,social_dissent_eq:-1.5},ramp_ticks:4});
+            G.registerLaw(Q, {id:"energy_poverty_public_guarantee",title:"Essential-Supply Guarantee",icon:"img/home_icon.svg",targets:{welfare_index_growth:0.10,generalitat_surplus:-0.025,social_dissent_eq:-1.5},ramp_ticks:4});
         }
         Q.constitutional_energy_poverty_countdown = 24;
         Q.countdowns.push("constitutional_energy_poverty");

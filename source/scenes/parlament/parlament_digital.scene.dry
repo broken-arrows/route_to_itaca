@@ -247,7 +247,7 @@ on-arrival: {!
         Q.cybersecurity_agency_scope = nationalScope ? "catalonia" : "generalitat";
         G.registerLaw(Q, {id:"digital_agency_core",title:"Catalan Cybersecurity Agency",icon:"img/comms_icon.svg",targets:{gdp_growth:0.015,generalitat_surplus:-0.010},ramp_ticks:12});
         if (nationalScope) {
-            G.registerLaw(Q, {id:"digital_agency_national_scope",title:"National Cybersecurity Framework",icon:"img/interior_icon.svg",targets:{gdp_growth:0.020,generalitat_surplus:-0.015},ramp_ticks:8});
+            G.registerLaw(Q, {id:"digital_agency_national_scope",title:"National Cybersecurity Framework",icon:"img/comms_icon.svg",targets:{gdp_growth:0.020,generalitat_surplus:-0.015},ramp_ticks:8});
             Q.independence_trust += 1;
         }
         Q.constitutional_digital_countdown = 24;

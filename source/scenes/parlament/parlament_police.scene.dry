@@ -243,9 +243,9 @@ on-arrival: {!
             Q[orderParty + "_parlament_" + c + "_rural_support"] += passageRuralLoss;
         }
         if (democratic) {
-            G.registerLaw(Q, {id:"democratic_policing",title:"Law on Democratic Policing",group:"rights",icon:"img/fist_icon.png",targets:{generalitat_surplus:-0.012,social_dissent_eq:-2.5},ramp_ticks:8});
+            G.registerLaw(Q, {id:"democratic_policing",title:"Law on Democratic Policing",group:"rights",icon:"img/interior_icon.svg",targets:{generalitat_surplus:-0.012,social_dissent_eq:-2.5},ramp_ticks:8});
         } else {
-            G.registerLaw(Q, {id:"public_order_focused_reform",title:"Public Order Reform",group:"rights",icon:"img/fist_icon.png",targets:{social_dissent_eq:-1},ramp_ticks:3});
+            G.registerLaw(Q, {id:"public_order_focused_reform",title:"Public Order Reform",group:"rights",icon:"img/interior_icon.svg",targets:{social_dissent_eq:-1},ramp_ticks:3});
         }
     }
 !}

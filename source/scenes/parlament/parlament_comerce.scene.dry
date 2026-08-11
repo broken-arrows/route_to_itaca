@@ -208,9 +208,9 @@ on-arrival: {!
             Q[workerDonor + "_parlament_" + c + "_ind_support"] -= passageWorkers;
         }
 
-        G.registerLaw(Q, {id:"commerce_internal_framework",title:"Internal Commerce Framework",icon:"img/economy_icon.svg",targets:{gdp_growth:0.03,unemployment_recovery:0.01,generalitat_surplus:0.005},ramp_ticks:protective ? 5 : 8});
+        G.registerLaw(Q, {id:"commerce_internal_framework",title:"Internal Commerce Framework",icon:"img/store_icon.svg",targets:{gdp_growth:0.03,unemployment_recovery:0.01,generalitat_surplus:0.005},ramp_ticks:protective ? 5 : 8});
         if (protective) {
-            G.registerLaw(Q, {id:"commerce_protective_controls",title:"Protective Commerce Controls",icon:"img/economy_icon.svg",targets:{gdp_growth:0.02,unemployment_recovery:0.005,welfare_index_growth:0.04},ramp_ticks:5});
+            G.registerLaw(Q, {id:"commerce_protective_controls",title:"Protective Commerce Controls",icon:"img/store_icon.svg",targets:{gdp_growth:0.02,unemployment_recovery:0.005,welfare_index_growth:0.04},ramp_ticks:5});
             Q.constitutional_commerce_countdown = 24;
             Q.countdowns.push("constitutional_commerce");
         }

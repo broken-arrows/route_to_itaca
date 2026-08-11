@@ -97,12 +97,12 @@ on-arrival: {!
             Q[competenceDonor + "_parlament_" + c + "_buss_support"] -= passageBusiness;
         }
         if (complete) {
-            G.registerLaw(Q, {id:"civil_code_book_six_core",title:"Civil Code: Book Six",group:"government",icon:"img/government_icon.svg",targets:{gdp_growth:0.03,generalitat_surplus:-0.001},ramp_ticks:9});
-            G.registerLaw(Q, {id:"civil_code_book_six_contested_rule",title:"Book Six Contested Provision",targets:{gdp_growth:0.01},ramp_ticks:9}); // TODO: Check that this is hidden
+            G.registerLaw(Q, {id:"civil_code_book_six_core",title:"Civil Code: Book Six",group:"government",icon:"img/scales_icon.svg",targets:{gdp_growth:0.03,generalitat_surplus:-0.001},ramp_ticks:9});
+            G.registerLaw(Q, {id:"civil_code_book_six_contested_rule",title:"Book Six Contested Provision",icon:"img/scales_icon.svg",targets:{gdp_growth:0.01},ramp_ticks:9}); // TODO: Check that this is hidden
             Q.constitutional_civil_law_countdown = 24;
             Q.countdowns.push("constitutional_civil_law");
         } else {
-            G.registerLaw(Q, {id:"civil_code_consolidation",title:"Civil Code: Traditional Book Six",group:"government",icon:"img/government_icon.svg",targets:{gdp_growth:0.02},ramp_ticks:6});
+            G.registerLaw(Q, {id:"civil_code_consolidation",title:"Civil Code: Traditional Book Six",group:"government",icon:"img/scales_icon.svg",targets:{gdp_growth:0.02},ramp_ticks:6});
         }
     }
 !}

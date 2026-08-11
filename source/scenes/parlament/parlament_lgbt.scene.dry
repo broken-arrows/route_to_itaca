@@ -120,10 +120,10 @@ on-arrival: {!
         }
         if (enforcement) {
             Q.welfare_index += 0.7;
-            G.registerLaw(Q, {id:"lgbt_enforcement",title:"LGBTI Right Enforcement",group:"rights",icon:"img/fist_icon.png",targets:{generalitat_surplus:-0.005,social_dissent_eq:-0.8},ramp_ticks:8});
+            G.registerLaw(Q, {id:"lgbt_enforcement",title:"LGBTI Right Enforcement",group:"rights",icon:"img/rainbow_icon.svg",targets:{generalitat_surplus:-0.005,social_dissent_eq:-0.8},ramp_ticks:8});
         } else {
             Q.welfare_index += 0.4;
-            G.registerLaw(Q, {id:"lgbt_rights_services",title:"LGBTI Rights and Services",group:"rights",icon:"img/fist_icon.png",targets:{generalitat_surplus:-0.0025},ramp_ticks:4});
+            G.registerLaw(Q, {id:"lgbt_rights_services",title:"LGBTI Rights and Services",group:"rights",icon:"img/rainbow_icon.svg",targets:{generalitat_surplus:-0.0025},ramp_ticks:4});
         }
     }
 !}

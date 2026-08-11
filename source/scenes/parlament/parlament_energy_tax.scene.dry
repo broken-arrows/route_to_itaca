@@ -214,9 +214,9 @@ on-arrival: {!
             Q[backlash + "_parlament_" + c + "_retired_support"] += passageRetiredLoss;
         }
 
-        G.registerLaw(Q, {id:"environmental_emissions_levies",title:"Emissions Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.025,gdp_growth:-0.02,welfare_index_growth:0.02},ramp_ticks:6});
+        G.registerLaw(Q, {id:"environmental_emissions_levies",title:"Emissions Tax",icon:"img/leaf_icon.svg",targets:{generalitat_surplus:0.025,gdp_growth:-0.02,welfare_index_growth:0.02},ramp_ticks:6});
         if (nuclear) {
-            G.registerLaw(Q, {id:"nuclear_production_tax",title:"Nuclear Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.04,gdp_growth:-0.04,welfare_index_growth:0.02},ramp_ticks:4});
+            G.registerLaw(Q, {id:"nuclear_production_tax",title:"Nuclear Tax",icon:"img/leaf_icon.svg",targets:{generalitat_surplus:0.04,gdp_growth:-0.04,welfare_index_growth:0.02},ramp_ticks:4});
             Q.constitutional_environmental_tax_countdown = 24;
             Q.countdowns.push("constitutional_environmental_tax");
         }

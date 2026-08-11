@@ -130,7 +130,7 @@ on-arrival: {!
     if (Q.parlament_consultations_yes > Q.parlament_consultations_no) {
         Q.parlament_non_binding_consultations = true;
 
-       G.registerLaw(Q, {id:"consultations",title:"Law on Non-Binding Consultations",icon:"img/government_icon.svg",targets:{independence_trust: 0.5}});
+       G.registerLaw(Q, {id:"consultations",title:"Law on Non-Binding Consultations",icon:"img/politics_icon.svg",targets:{independence_trust: 0.5}});
 
         Q.countdowns.push("constitutional_consultations");
         Q.constitutional_consultations_countdown = 2;
