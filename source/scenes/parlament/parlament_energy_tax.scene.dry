@@ -5,6 +5,7 @@ subtitle: [? if coming_from_parlament: \[-1 resources\]?]
 unavailable-subtitle: [? if parlament_energy_tax_passed: Already approved!?][? if not parlament_energy_tax_passed and party_resources < 1: Not enough resources.?]
 on-arrival: {!
     if (Q.coming_from_parlament) Q.party_resources -= 1;
+    Q.parlament_energy_tax_deals = [];
 !}
 
 = Law on Environmental Taxation
@@ -20,9 +21,114 @@ go-to: environmental_tax_vote
 
 @environmental_nuclear
 on-arrival: parlament_energy_tax_variant = "nuclear_package"
-go-to: environmental_tax_vote
+go-to: environmental_tax_negotiation if player_party != "cup"; environmental_tax_vote if player_party = "cup"
+
+Taxing nuclear energy production has some parties to our right doubting about the proposal. We may want to approach them if we want to secure an ample majority for this vote.
+
+@environmental_tax_negotiation
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    var nuclear = Q.parlament_energy_tax_variant == "nuclear_package";
+    var yesNames = nuclear
+        ? ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","icv","csqp","cecp","ecp","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","icv","csqp","cecp","ecp","si"];
+    var noNames = nuclear
+        ? ["ppc","cs","vox","pxc","fnc"]
+        : ["ppc","vox","pxc"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    Q.parlament_energy_tax_yes_names = yesNames;
+    Q.parlament_energy_tax_no_names = noNames;
+
+    function canApproach(party, eligible) {
+        if (!eligible || !party) return false;
+        if ((Q[party + "_parlament_s"] || 0) <= 0) return false;
+        if (Q.parlament_energy_tax_yes_names.includes(party)) return false;
+        return !Q.parlament_energy_tax_deals.some(function (deal) { return deal.party == party; });
+    }
+
+    var ercPlayer = Q.player_party == "erc";
+    var cupPlayer = Q.player_party == "cup";
+    Q.parlament_energy_tax_can_approach_cup = canApproach("cup", ercPlayer);
+    Q.parlament_energy_tax_can_approach_psc = canApproach("psc", ercPlayer);
+    Q.parlament_energy_tax_can_approach_erc = canApproach("erc", cupPlayer);
+    Q.parlament_energy_tax_can_approach_convergence = canApproach(Q.parlament_current_ciu, ercPlayer || cupPlayer);
+    Q.parlament_energy_tax_can_approach_icv = canApproach(Q.parlament_current_icv, ercPlayer || cupPlayer);
+!}
+
+- @environmental_tax_approach_cup
+- @environmental_tax_approach_psc
+- @environmental_tax_approach_erc
+- @environmental_tax_approach_convergence
+- @environmental_tax_approach_icv
+- @environmental_tax_vote: Proceed with the vote
+
+@environmental_tax_approach_cup
+title: Approach the CUP before the vote
+view-if: parlament_energy_tax_can_approach_cup
+choose-if: cup_relations > 55
+unavailable-subtitle: We don't have good enough relations with the CUP
+on-arrival: parlament_energy_tax_deal_party = "cup"
+go-to: environmental_tax_make_deal
+
+· The CUP will not oppose our proposal.
+
+@environmental_tax_approach_psc
+title: Approach the PSC before the vote
+view-if: parlament_energy_tax_can_approach_psc
+choose-if: psc_relations > 55
+unavailable-subtitle: We don't have good enough relations with the PSC
+on-arrival: parlament_energy_tax_deal_party = "psc"
+go-to: environmental_tax_make_deal
+
+· The PSC will not oppose our proposal.
+
+@environmental_tax_approach_erc
+title: Approach ERC before the vote
+view-if: parlament_energy_tax_can_approach_erc
+choose-if: erc_relations > 55
+unavailable-subtitle: We don't have good enough relations with ERC
+on-arrival: parlament_energy_tax_deal_party = "erc"
+go-to: environmental_tax_make_deal
+
+· ERC will not oppose our proposal.
+
+@environmental_tax_approach_convergence
+title: Approach [+ parlament_current_ciu +] before the vote
+choose-if: (ciu_parlament_s > 0 and ciu_relations > 55) or (cdc_parlament_s > 0 and cdc_relations > 55) or (dl_parlament_s > 0 and dl_relations > 55) or (pdcat_parlament_s > 0 and pdcat_relations > 55) or (jxcat_parlament_s > 0 and jxcat_relations > 55 and not player_in_jxcat) or (junts_parlament_s > 0 and junts_relations > 55)
+view-if: parlament_energy_tax_can_approach_convergence
+unavailable-subtitle: We don't have good enough relations with [+ parlament_current_ciu +]
+on-arrival: {!
+    Q.parlament_energy_tax_deal_party = Q.parlament_current_ciu;
+!}
+go-to: environmental_tax_make_deal
+
+· [+ parlament_current_ciu +] will not oppose our proposal.
+
+@environmental_tax_approach_icv
+title: Approach [+ parlament_current_icv +] before the vote
+view-if: parlament_energy_tax_can_approach_icv
+choose-if: (icv_parlament_s > 0 and icv_relations > 55) or (csqp_parlament_s > 0 and csqp_relations > 55) or (cecp_parlament_s > 0 and cecp_relations > 55) or (ecp_parlament_s > 0 and ecp_relations > 55)
+unavailable-subtitle: We don't have good enough relations with [+ parlament_current_icv +]
+on-arrival: {!
+    Q.parlament_energy_tax_deal_party = Q.parlament_current_icv;
+!}
+go-to: environmental_tax_make_deal
+
+· [+ parlament_current_icv +] will not oppose our proposal.
+
+@environmental_tax_make_deal
+on-arrival: {!
+    var party = Q.parlament_energy_tax_deal_party;
+    var baselineNo = Q.parlament_energy_tax_no_names.includes(party);
+    var newPosition = baselineNo && Q[party + "_relations"] <= 65 ? "abstain" : "yes";
+    Q.parlament_energy_tax_deals.push({party: party, position: newPosition});
+    Q[party + "_relations"] -= 5;
+!}
+go-to: environmental_tax_negotiation
 
 @environmental_tax_vote
+subtitle: [? if not parlament_energy_tax_deal_party: Who needs their support anyway? ?]
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
@@ -55,8 +161,13 @@ on-arrival: {!
         : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","icv","csqp","cecp","ecp","si"];
     var noNames = nuclear
         ? ["ppc","cs","vox","pxc","fnc"]
-        : ["ppc","vox","pxc","fnc"];
+        : ["ppc","vox","pxc"];
     if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    for (const deal of (Q.parlament_energy_tax_deals || [])) {
+        yesNames = yesNames.filter(function (party) { return party != deal.party; });
+        noNames = noNames.filter(function (party) { return party != deal.party; });
+        if (deal.position == "yes") yesNames.push(deal.party);
+    }
     var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
     var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
     var yesParties = [], noParties = [], abstainParties = [];

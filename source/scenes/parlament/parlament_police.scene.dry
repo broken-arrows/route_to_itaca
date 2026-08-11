@@ -22,30 +22,9 @@ choose-if: player_party != "cup"
 unavailable-subtitle: Such a soft reform has too many opponents within the party.
 on-arrival: {!
     Q.parlament_police_variant = "focused_reform";
-!}
-go-to: police_prepare_vote
-
-Such a surgical change to policing, without any in-depth addressing of the root causes of police violence, hardly convinces those to the left of the political spectrum. We may want to approach them if we want to secure an ample majority for this vote.
-
-@police_democratic
-title: Push for the democratization of policing
-on-arrival: {!
-    Q.parlament_police_variant = "democratic_policing";
-!}
-go-to: police_prepare_vote
-
-While it is unsurprising that right-wing parties oppose such a reform to policing, more traditional parties towards the centre of the political spectrum also think of it as a bit of a radical approach. We may want to approach them if we want to secure an ample majority for this vote.
-
-@police_prepare_vote
-on-arrival: {!
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
-    var democratic = Q.parlament_police_variant == "democratic_policing";
-    Q.parlament_police_yes_names = democratic
-        ? ["erc","cup","icv","csqp","cecp","ecp","si"]
-        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cs","si"];
-    Q.parlament_police_no_names = democratic
-        ? ["ciu","cdc","dl","pdcat","junts","ppc","cs","unio","vox","pxc","fnc"]
-        : ["ppc","icv","csqp","cecp","ecp","vox","pxc","fnc"];
+    Q.parlament_police_yes_names = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cs","si"];
+    Q.parlament_police_no_names = ["ppc","icv","csqp","cecp","ecp","vox","pxc","fnc"];
     if (Q.coming_from_parlament && !Q.parlament_police_yes_names.includes(proposingParty)) {
         Q.parlament_police_yes_names.push(proposingParty);
     }
@@ -53,12 +32,29 @@ on-arrival: {!
 !}
 go-to: police_negotiation
 
+Such a surgical change to policing, without any in-depth addressing of the root causes of police violence, hardly convinces those to the left of the political spectrum. We may want to approach them if we want to secure an ample majority for this vote.
+
+@police_democratic
+title: Push for the democratization of policing
+on-arrival: {!
+    Q.parlament_police_variant = "democratic_policing";
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.parlament_police_yes_names = ["erc","cup","icv","csqp","cecp","ecp","si"];
+    Q.parlament_police_no_names = ["ciu","cdc","dl","pdcat","junts","ppc","cs","unio","vox","pxc","fnc"];
+    if (Q.coming_from_parlament && !Q.parlament_police_yes_names.includes(proposingParty)) {
+        Q.parlament_police_yes_names.push(proposingParty);
+    }
+    Q.parlament_police_deals = [];
+!}
+go-to: police_negotiation
+
+While it is unsurprising that right-wing parties oppose such a reform to policing, more traditional parties towards the centre of the political spectrum also think of it as a bit of a radical approach. We may want to approach them if we want to secure an ample majority for this vote.
+
 @police_negotiation
 on-arrival: {!
     function canApproach(party, eligible) {
         if (!eligible || !party) return false;
         if ((Q[party + "_parlament_s"] || 0) <= 0) return false;
-        if ((Q[party + "_relations"] || 0) < 55) return false;
         if (Q.parlament_police_yes_names.includes(party)) return false;
         return !Q.parlament_police_deals.some(function (deal) { return deal.party == party; });
     }
@@ -78,11 +74,13 @@ on-arrival: {!
 - @police_approach_erc
 - @police_approach_convergence
 - @police_approach_icv
-- @police_vote: Proceed with the vote anyway
+- @police_vote: Proceed with the vote
 
 @police_approach_cup
 title: Approach the CUP before the vote
 view-if: parlament_police_can_approach_cup
+choose-if: cup_relations > 55
+unavailable-subtitle: We don't have good enough relations with the CUP
 on-arrival: parlament_police_deal_party = "cup"
 go-to: police_make_deal
 
@@ -91,6 +89,8 @@ go-to: police_make_deal
 @police_approach_psc
 title: Approach the PSC before the vote
 view-if: parlament_police_can_approach_psc
+choose-if: psc_relations > 55
+unavailable-subtitle: We don't have good enough relations with the PSC
 on-arrival: parlament_police_deal_party = "psc"
 go-to: police_make_deal
 
@@ -99,6 +99,8 @@ go-to: police_make_deal
 @police_approach_erc
 title: Approach ERC before the vote
 view-if: parlament_police_can_approach_erc
+choose-if: psc_relations > 55
+unavailable-subtitle: We don't have good enough relations with ERC
 on-arrival: parlament_police_deal_party = "erc"
 go-to: police_make_deal
 
@@ -106,7 +108,9 @@ go-to: police_make_deal
 
 @police_approach_convergence
 title: Approach [+ parlament_current_ciu +] before the vote
+choose-if: (ciu_parlament_s > 0 and ciu_relations > 55) or (cdc_parlament_s > 0 and cdc_relations > 55) or (dl_parlament_s > 0 and dl_relations > 0) or (pdcat_parlament_s > 0 and ciu_relations > 55 and not pdcat_split) or (jxcat_parlament_s > 0 and jxcat_relations > 55 and not player_in_jxcat) or (junts_parlament_s > 0 and junts_relations > 55)
 view-if: parlament_police_can_approach_convergence
+unavailable-subtitle: We don't have good enough relations with [+ parlament_current_ciu +]
 on-arrival: {!
     Q.parlament_police_deal_party = Q.parlament_current_ciu;
 !}
@@ -117,6 +121,8 @@ go-to: police_make_deal
 @police_approach_icv
 title: Approach [+ parlament_current_icv +] before the vote
 view-if: parlament_police_can_approach_icv
+choose-if: (icv_parlament_s > 0 and icv_relations > 55) or (csq_parlament_s > 0 and csqp_relations > 55) or (cecp_parlament_s > 0 and cecp_relations > 55) or (ecp_parlament_s > 0 and ecp_relations > 55)
+unavailable-subtitle: We don't have good enough relations with [+ parlament_current_icv +]
 on-arrival: {!
     Q.parlament_police_deal_party = Q.parlament_current_icv;
 !}
@@ -135,6 +141,7 @@ on-arrival: {!
 go-to: police_negotiation
 
 @police_vote
+subtitle: [? if not parlament_police_deal_party: Who needs their support anyway? ?]
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;

@@ -5,6 +5,7 @@ subtitle: [? if coming_from_parlament: \[-1 resources\]?]
 unavailable-subtitle: [? if parlament_housing_passed: Already approved!?][? if not parlament_housing_passed and party_resources < 1: Not enough resources.?]
 on-arrival: {!
     if (Q.coming_from_parlament) Q.party_resources -= 1;
+    Q.parlament_housing_deals = [];
 !}
 
 = Housing Emergency Law
@@ -16,13 +17,120 @@ Since the burst of the housing bubble, Catalonia has faced a housing emergency. 
 
 @housing_public_stock
 on-arrival: parlament_housing_variant = "acquisition_rehabilitation"
-go-to: housing_vote
+go-to: housing_negotiation
+
+Such expansion of the public rent offering will take a toll on the Generalitat's finances, which makes some on the right a bit uneasy. We may want to approach them if we want to secure an ample majority for this vote.
 
 @housing_compulsory_relief
 on-arrival: parlament_housing_variant = "compulsory_rent_debt_relief"
-go-to: housing_vote
+go-to: housing_negotiation
+
+Such a radical intervention on the private housing market is a bit of a tough pill to swallow for some on the centre and on the right. We may want to approach them if we want to secure an ample majority for this vote.
+
+@housing_negotiation
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    var ambitious = Q.parlament_housing_variant == "compulsory_rent_debt_relief";
+    var yesNames = ambitious
+        ? ["jxsi","jxcat","erc","cup","icv","csqp","cecp","ecp","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","psc","cs","icv","csqp","cecp","ecp","si"];
+    var noNames = ambitious
+        ? ["ppc","cs","vox","pxc","fnc"]
+        : ["ppc","vox","pxc","fnc"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    Q.parlament_housing_yes_names = yesNames;
+    Q.parlament_housing_no_names = noNames;
+
+    function canApproach(party, eligible) {
+        if (!eligible || !party) return false;
+        if ((Q[party + "_parlament_s"] || 0) <= 0) return false;
+        if (Q.parlament_housing_yes_names.includes(party)) return false;
+        return !Q.parlament_housing_deals.some(function (deal) { return deal.party == party; });
+    }
+
+    var ercPlayer = Q.player_party == "erc";
+    var cupPlayer = Q.player_party == "cup";
+    Q.parlament_housing_can_approach_cup = canApproach("cup", ercPlayer);
+    Q.parlament_housing_can_approach_psc = canApproach("psc", ercPlayer);
+    Q.parlament_housing_can_approach_erc = canApproach("erc", cupPlayer);
+    Q.parlament_housing_can_approach_convergence = canApproach(Q.parlament_current_ciu, ercPlayer || cupPlayer);
+    Q.parlament_housing_can_approach_icv = canApproach(Q.parlament_current_icv, ercPlayer || cupPlayer);
+!}
+
+- @housing_approach_cup
+- @housing_approach_psc
+- @housing_approach_erc
+- @housing_approach_convergence
+- @housing_approach_icv
+- @housing_vote: Proceed with the vote
+
+@housing_approach_cup
+title: Approach the CUP before the vote
+view-if: parlament_housing_can_approach_cup
+choose-if: cup_relations > 55
+unavailable-subtitle: We don't have good enough relations with the CUP
+on-arrival: parlament_housing_deal_party = "cup"
+go-to: housing_make_deal
+
+· The CUP will not oppose our proposal.
+
+@housing_approach_psc
+title: Approach the PSC before the vote
+view-if: parlament_housing_can_approach_psc
+choose-if: psc_relations > 55
+unavailable-subtitle: We don't have good enough relations with the PSC
+on-arrival: parlament_housing_deal_party = "psc"
+go-to: housing_make_deal
+
+· The PSC will not oppose our proposal.
+
+@housing_approach_erc
+title: Approach ERC before the vote
+view-if: parlament_housing_can_approach_erc
+choose-if: erc_relations > 55
+unavailable-subtitle: We don't have good enough relations with ERC
+on-arrival: parlament_housing_deal_party = "erc"
+go-to: housing_make_deal
+
+· ERC will not oppose our proposal.
+
+@housing_approach_convergence
+title: Approach [+ parlament_current_ciu +] before the vote
+choose-if: (ciu_parlament_s > 0 and ciu_relations > 55) or (cdc_parlament_s > 0 and cdc_relations > 55) or (dl_parlament_s > 0 and dl_relations > 55) or (pdcat_parlament_s > 0 and pdcat_relations > 55) or (jxcat_parlament_s > 0 and jxcat_relations > 55 and not player_in_jxcat) or (junts_parlament_s > 0 and junts_relations > 55)
+view-if: parlament_housing_can_approach_convergence
+unavailable-subtitle: We don't have good enough relations with [+ parlament_current_ciu +]
+on-arrival: {!
+    Q.parlament_housing_deal_party = Q.parlament_current_ciu;
+!}
+go-to: housing_make_deal
+
+· [+ parlament_current_ciu +] will not oppose our proposal.
+
+@housing_approach_icv
+title: Approach [+ parlament_current_icv +] before the vote
+view-if: parlament_housing_can_approach_icv
+choose-if: (icv_parlament_s > 0 and icv_relations > 55) or (csqp_parlament_s > 0 and csqp_relations > 55) or (cecp_parlament_s > 0 and cecp_relations > 55) or (ecp_parlament_s > 0 and ecp_relations > 55)
+unavailable-subtitle: We don't have good enough relations with [+ parlament_current_icv +]
+on-arrival: {!
+    Q.parlament_housing_deal_party = Q.parlament_current_icv;
+!}
+go-to: housing_make_deal
+
+· [+ parlament_current_icv +] will not oppose our proposal.
+
+@housing_make_deal
+on-arrival: {!
+    var party = Q.parlament_housing_deal_party;
+    var baselineNo = Q.parlament_housing_no_names.includes(party);
+    var newPosition = baselineNo && Q[party + "_relations"] <= 65 ? "abstain" : "yes";
+    Q.parlament_housing_deals.push({party: party, position: newPosition});
+    Q[party + "_relations"] -= 5;
+!}
+go-to: housing_negotiation
 
 @housing_vote
+subtitle: [? if not parlament_housing_deal_party: Who needs their support anyway? ?]
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
@@ -54,12 +162,17 @@ on-arrival: {!
     }
 
     var yesNames = ambitious
-        ? ["jxsi","jxcat","erc","cup","psc","icv","csqp","cecp","ecp","si"]
+        ? ["jxsi","jxcat","erc","cup","icv","csqp","cecp","ecp","si"]
         : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","psc","cs","icv","csqp","cecp","ecp","si"];
     var noNames = ambitious
         ? ["ppc","cs","vox","pxc","fnc"]
         : ["ppc","vox","pxc","fnc"];
     if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    for (const deal of (Q.parlament_housing_deals || [])) {
+        yesNames = yesNames.filter(function (party) { return party != deal.party; });
+        noNames = noNames.filter(function (party) { return party != deal.party; });
+        if (deal.position == "yes") yesNames.push(deal.party);
+    }
     var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
     var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
     var yesParties = [], noParties = [], abstainParties = [];

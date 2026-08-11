@@ -5,11 +5,12 @@ subtitle: [? if coming_from_parlament: \[-1 resources\]?]
 unavailable-subtitle: [? if parlament_climate_change_passed: Already approved!?][? if not parlament_climate_change_passed and party_resources < 1: Not enough resources.?]
 on-arrival: {!
     if (Q.coming_from_parlament) Q.party_resources -= 1;
+    Q.parlament_climate_change_deals = [];
 !}
 
 = Climate Change Law
 
-Catalonia already feels a warming climate through drought, fire risk and increased coastal erosion. While unprecedented in Europe, it is within the powers of the Parlament to bind the executive and companies and individuals operating in Catalonia to, for instance, measured carbon budgets. Alternatively, it could also bet on a faster economy-wide transition, even if that may step into the blury lines of autonomy powers in sectors like energy and transport planning.
+Catalonia already feels a warming climate through drought, fire risk and increased coastal erosion. While unprecedented in Europe, it is within the powers of the Parlament to bind the executive and companies and individuals operating in Catalonia to, for instance, measured carbon budgets. Alternatively, it could also bet on a faster economy-wide transition, even if that may step into the blurry lines of autonomy powers in sectors like energy and transport planning.
 
 - @climate_carbon_budgets: Set carbon budgets for Catalan institutions and industry
 - @climate_economy_transition: Bind the whole economy to a rapid green transition
@@ -21,9 +22,114 @@ go-to: climate_change_vote
 @climate_economy_transition
 subtitle: An unprecedented effort with economy-wide targets, fossil-fuel restrictions and transport and energy mandates. One may even call it a green version of the "New Deal"?
 on-arrival: parlament_climate_change_variant = "economy_transition"
-go-to: climate_change_vote
+go-to: climate_change_negotiation
+
+Many on the right of the political spectrum are fundamentally opposed to this level of regulation of the private sector. We may want to approach them if we want to secure an ample majority for this vote.
+
+@climate_change_negotiation
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    var ambitious = Q.parlament_climate_change_variant == "economy_transition";
+    var yesNames = ambitious
+        ? ["jxsi","jxcat","erc","cup","psc","icv","csqp","cecp","ecp","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","cs","icv","csqp","cecp","ecp","unio","si"];
+    var noNames = ambitious
+        ? ["ppc","vox","pxc","fnc"]
+        : ["vox","pxc","fnc"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    Q.parlament_climate_change_yes_names = yesNames;
+    Q.parlament_climate_change_no_names = noNames;
+
+    function canApproach(party, eligible) {
+        if (!eligible || !party) return false;
+        if ((Q[party + "_parlament_s"] || 0) <= 0) return false;
+        if (Q.parlament_climate_change_yes_names.includes(party)) return false;
+        return !Q.parlament_climate_change_deals.some(function (deal) { return deal.party == party; });
+    }
+
+    var ercPlayer = Q.player_party == "erc";
+    var cupPlayer = Q.player_party == "cup";
+    Q.parlament_climate_change_can_approach_cup = canApproach("cup", ercPlayer);
+    Q.parlament_climate_change_can_approach_psc = canApproach("psc", ercPlayer);
+    Q.parlament_climate_change_can_approach_erc = canApproach("erc", cupPlayer);
+    Q.parlament_climate_change_can_approach_convergence = canApproach(Q.parlament_current_ciu, ercPlayer || cupPlayer);
+    Q.parlament_climate_change_can_approach_icv = canApproach(Q.parlament_current_icv, ercPlayer || cupPlayer);
+!}
+
+- @climate_change_approach_cup
+- @climate_change_approach_psc
+- @climate_change_approach_erc
+- @climate_change_approach_convergence
+- @climate_change_approach_icv
+- @climate_change_vote: Proceed with the vote
+
+@climate_change_approach_cup
+title: Approach the CUP before the vote
+view-if: parlament_climate_change_can_approach_cup
+choose-if: cup_relations > 55
+unavailable-subtitle: We don't have good enough relations with the CUP
+on-arrival: parlament_climate_change_deal_party = "cup"
+go-to: climate_change_make_deal
+
+· The CUP will not oppose our proposal.
+
+@climate_change_approach_psc
+title: Approach the PSC before the vote
+view-if: parlament_climate_change_can_approach_psc
+choose-if: psc_relations > 55
+unavailable-subtitle: We don't have good enough relations with the PSC
+on-arrival: parlament_climate_change_deal_party = "psc"
+go-to: climate_change_make_deal
+
+· The PSC will not oppose our proposal.
+
+@climate_change_approach_erc
+title: Approach ERC before the vote
+view-if: parlament_climate_change_can_approach_erc
+choose-if: erc_relations > 55
+unavailable-subtitle: We don't have good enough relations with ERC
+on-arrival: parlament_climate_change_deal_party = "erc"
+go-to: climate_change_make_deal
+
+· ERC will not oppose our proposal.
+
+@climate_change_approach_convergence
+title: Approach [+ parlament_current_ciu +] before the vote
+choose-if: (ciu_parlament_s > 0 and ciu_relations > 55) or (cdc_parlament_s > 0 and cdc_relations > 55) or (dl_parlament_s > 0 and dl_relations > 55) or (pdcat_parlament_s > 0 and pdcat_relations > 55) or (jxcat_parlament_s > 0 and jxcat_relations > 55 and not player_in_jxcat) or (junts_parlament_s > 0 and junts_relations > 55)
+view-if: parlament_climate_change_can_approach_convergence
+unavailable-subtitle: We don't have good enough relations with [+ parlament_current_ciu +]
+on-arrival: {!
+    Q.parlament_climate_change_deal_party = Q.parlament_current_ciu;
+!}
+go-to: climate_change_make_deal
+
+· [+ parlament_current_ciu +] will not oppose our proposal.
+
+@climate_change_approach_icv
+title: Approach [+ parlament_current_icv +] before the vote
+view-if: parlament_climate_change_can_approach_icv
+choose-if: (icv_parlament_s > 0 and icv_relations > 55) or (csqp_parlament_s > 0 and csqp_relations > 55) or (cecp_parlament_s > 0 and cecp_relations > 55) or (ecp_parlament_s > 0 and ecp_relations > 55)
+unavailable-subtitle: We don't have good enough relations with [+ parlament_current_icv +]
+on-arrival: {!
+    Q.parlament_climate_change_deal_party = Q.parlament_current_icv;
+!}
+go-to: climate_change_make_deal
+
+· [+ parlament_current_icv +] will not oppose our proposal.
+
+@climate_change_make_deal
+on-arrival: {!
+    var party = Q.parlament_climate_change_deal_party;
+    var baselineNo = Q.parlament_climate_change_no_names.includes(party);
+    var newPosition = baselineNo && Q[party + "_relations"] <= 65 ? "abstain" : "yes";
+    Q.parlament_climate_change_deals.push({party: party, position: newPosition});
+    Q[party + "_relations"] -= 5;
+!}
+go-to: climate_change_negotiation
 
 @climate_change_vote
+subtitle: [? if not parlament_climate_change_deal_party: Who needs their support anyway? ?]
 on-arrival: {!
     // TODO: Even more radical version for CUP?
     var playerProposal = Q.coming_from_parlament;
@@ -53,12 +159,17 @@ on-arrival: {!
     }
 
     var yesNames = ambitious
-        ? ["jxsi","jxcat","erc","cup","psc","icv","csqp","cecp","ecp","cs","si"]
+        ? ["jxsi","jxcat","erc","cup","psc","icv","csqp","cecp","ecp","si"]
         : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","cs","icv","csqp","cecp","ecp","unio","si"];
     var noNames = ambitious
         ? ["ppc","vox","pxc","fnc"]
         : ["vox","pxc","fnc"];
     if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    for (const deal of (Q.parlament_climate_change_deals || [])) {
+        yesNames = yesNames.filter(function (party) { return party != deal.party; });
+        noNames = noNames.filter(function (party) { return party != deal.party; });
+        if (deal.position == "yes") yesNames.push(deal.party);
+    }
     var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
     var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
     var yesParties = [], noParties = [], abstainParties = [];
