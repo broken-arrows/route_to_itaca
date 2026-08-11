@@ -9,7 +9,7 @@ on-arrival: {!
 
 = Law on Digital Public Services and Cybersecurity
 
-In the digital age, is not a suprise that Catalonia's public administration already depends on digital identification, electronic records, shared databases, etc. Yet, the responsibility for protecting those systems remains fragmented, and transparency and data protection could be better to say the least.
+In the digital age, it is no surprise that Catalonia's public administration already depends on digital identification, electronic records and shared databases. Yet responsibility for protecting those systems remains fragmented, and transparency and data protection could be much better.
 
 The Parlament has a chance now to centralize those responsibilities in a public Cybersecurity Agency and recognize digital rights in dealings with Catalan institutions. The difficult boundary is whether the new body should protect the Generalitat's own systems or, more broadly, claim responsibility for cybersecurity throughout Catalonia.
 
@@ -127,7 +127,7 @@ on-arrival: {!
 <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_digital_vote_result"}'></div>
 
 [? if parlament_digital_passed and parlament_digital_variant == "public_services": The Parlament has approved the law! Even if the agency focuses only on the public side of the digital infrastructure, the classical PP-Cs coalition has nevertheless and as usual asked the Constitutional Court to strike it down.?]
-[? if parlament_digital_passed and parlament_digital_variant == "national_scope": The Parlament has approved the law! Supporters are presenting it as both a civil-rights guarantee and as an essential sovereign infrastructure. We can bet that its territorial reach has will be triggering a challenge in the courts.?]
+[? if parlament_digital_passed and parlament_digital_variant == "national_scope": The Parlament has approved the law! Supporters are presenting it as both a civil-rights guarantee and essential sovereign infrastructure. Its territorial reach will almost certainly trigger a challenge in the courts.?]
 [? if not parlament_digital_passed: The Parlament has rejected the bill. The need for safer digital services has not disappeared, but this draft has failed to assemble a majority.?]
 
 - @post_event: Continue...

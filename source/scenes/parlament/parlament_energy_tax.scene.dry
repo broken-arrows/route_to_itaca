@@ -1,2 +1,121 @@
-title: Parlament Energy Tax
+title: Law on Environmental Taxation
 new-page: true
+choose-if: party_resources > 0 and not parlament_energy_tax_passed
+subtitle: [? if coming_from_parlament: \[-1 resources\]?]
+unavailable-subtitle: [? if parlament_energy_tax_passed: Already approved!?][? if not parlament_energy_tax_passed and party_resources < 1: Not enough resources.?]
+on-arrival: {!
+    if (Q.coming_from_parlament) Q.party_resources -= 1;
+!}
+
+= Law on Environmental Taxation
+
+Commercial aviation and heavy industry are the biggest contributors to Catalonia's carbon footprint. Yet the environmental and social costs this has are hardly reflected in their accounts. The Generalitat has (or is supposed to have) powers to levy nitrogen-oxide and industrial-emissions taxes. This could even be expanded to tax as well nuclear-electrical production and satisfy an important percentage of the Catalan population who is deeply anti-nuclear.
+
+- @environmental_levies: Tax aviation and heavy-industry atmospheric emissions
+- @environmental_nuclear: On top of that, tax nuclear electricity production as well
+
+@environmental_levies
+on-arrival: parlament_energy_tax_variant = "environmental_levies"
+go-to: environmental_tax_vote
+
+@environmental_nuclear
+on-arrival: parlament_energy_tax_variant = "nuclear_package"
+go-to: environmental_tax_vote
+
+@environmental_tax_vote
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.coming_from_parlament = false;
+
+    var nuclear = Q.parlament_energy_tax_variant == "nuclear_package";
+    var author = proposingParty;
+    var greenDonor = author == Q.parlament_current_icv ? "psc" : Q.parlament_current_icv;
+    var backlash = Q.cs_parlament_s > 0 ? "cs" : "ppc";
+    var proposalYoung = nuclear ? 0.12 : 0.06;
+    var proposalMiddleGain = nuclear ? 0.06 : 0.03;
+    var proposalBusinessLoss = nuclear ? 0.12 : 0.045;
+    var proposalMiddleLoss = nuclear ? 0.054 : 0.024;
+    var proposalRetiredLoss = nuclear ? 0.03 : 0;
+    for (const c of Q.parlament_constituencies) {
+        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
+        Q[greenDonor + "_parlament_" + c + "_young_support"] -= proposalYoung;
+        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddleGain;
+        Q[greenDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddleGain;
+        Q[author + "_parlament_" + c + "_buss_support"] -= proposalBusinessLoss;
+        Q[backlash + "_parlament_" + c + "_buss_support"] += proposalBusinessLoss;
+        Q[author + "_parlament_" + c + "_middle_support"] -= proposalMiddleLoss;
+        Q[backlash + "_parlament_" + c + "_middle_support"] += proposalMiddleLoss;
+        Q[author + "_parlament_" + c + "_retired_support"] -= proposalRetiredLoss;
+        Q[backlash + "_parlament_" + c + "_retired_support"] += proposalRetiredLoss;
+    }
+
+    var yesNames = nuclear
+        ? ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","icv","csqp","cecp","ecp","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","icv","csqp","cecp","ecp","si"];
+    var noNames = nuclear
+        ? ["ppc","cs","vox","pxc","fnc"]
+        : ["ppc","vox","pxc","fnc"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_energy_tax_yes = 0;
+    Q.parlament_energy_tax_no = 0;
+    Q.parlament_energy_tax_abst = 0;
+    for (const p of all) {
+        var seats = Q[p + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        if (yesNames.includes(p)) {
+            Q.parlament_energy_tax_yes += seats;
+            yesParties.push({label:labels[p]});
+        } else if (noNames.includes(p)) {
+            Q.parlament_energy_tax_no += seats;
+            noParties.push({label:labels[p]});
+        } else {
+            Q.parlament_energy_tax_abst += seats;
+            abstainParties.push({label:labels[p]});
+        }
+    }
+    Q.parlament_energy_tax_passed = Q.parlament_energy_tax_yes > Q.parlament_energy_tax_no;
+    Q.parlament_energy_tax_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_energy_tax_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_energy_tax_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_energy_tax_no,parties:noParties}
+    ]};
+
+    if (Q.parlament_energy_tax_passed) {
+        var passageYoung = nuclear ? 0.28 : 0.14;
+        var passageMiddleGain = nuclear ? 0.14 : 0.07;
+        var passageBusinessLoss = nuclear ? 0.28 : 0.105;
+        var passageMiddleLoss = nuclear ? 0.126 : 0.056;
+        var passageRetiredLoss = nuclear ? 0.07 : 0;
+        for (const c of Q.parlament_constituencies) {
+            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
+            Q[greenDonor + "_parlament_" + c + "_young_support"] -= passageYoung;
+            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddleGain;
+            Q[greenDonor + "_parlament_" + c + "_middle_support"] -= passageMiddleGain;
+            Q[author + "_parlament_" + c + "_buss_support"] -= passageBusinessLoss;
+            Q[backlash + "_parlament_" + c + "_buss_support"] += passageBusinessLoss;
+            Q[author + "_parlament_" + c + "_middle_support"] -= passageMiddleLoss;
+            Q[backlash + "_parlament_" + c + "_middle_support"] += passageMiddleLoss;
+            Q[author + "_parlament_" + c + "_retired_support"] -= passageRetiredLoss;
+            Q[backlash + "_parlament_" + c + "_retired_support"] += passageRetiredLoss;
+        }
+
+        G.registerLaw(Q, {id:"environmental_emissions_levies",title:"Emissions Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.025,gdp_growth:-0.02,welfare_index_growth:0.02},ramp_ticks:6});
+        if (nuclear) {
+            G.registerLaw(Q, {id:"nuclear_production_tax",title:"Nuclear Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.04,gdp_growth:-0.04,welfare_index_growth:0.02},ramp_ticks:4});
+            Q.constitutional_environmental_tax_countdown = 24;
+            Q.countdowns.push("constitutional_environmental_tax");
+        }
+    }
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_energy_tax_vote_result"}'></div>
+
+[? if parlament_energy_tax_passed and parlament_energy_tax_variant == "environmental_levies": The Parlament has approved the aviation and industrial-emissions levies. Not only this may satisfy the most environmentally-conscious bit of the electorate, but also provide a new critical revenue source for the Generalitat. ?]
+[? if parlament_energy_tax_passed and parlament_energy_tax_variant == "nuclear_package": The Parlament has approved the complete environmental taxation packages. Not only this may satisfy the most environmentally-conscious bit of the electorate, but also provide a new critical revenue source for the Generalitat. ?]
+[? if not parlament_energy_tax_passed: The Parlament has rejected the our proposed tax package. We'll have to find a more favourable political arithmetic and try again at a later time.?]
+
+- @post_event: Continue...

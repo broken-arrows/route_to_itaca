@@ -1,0 +1,17 @@
+title: Constitutional Court limits the Law on Commerce
+face-image: img/events/constitucional.jpg
+new-page: true
+tags: event
+view-if: constitutional_commerce_trigger
+max-visits: 1
+role: event
+on-arrival: {!
+    G.deactivateLaw(Q, "commerce_protective_controls", "struck_down");
+    Q.cat_spa_relations -= 2;
+!}
+
+= Constitutional Court limits the Law on Commerce
+
+The now two-year old Law on Local Commerce approved by the Parlament has just received a strong setback in the hands of the ever-looming Constitutional Court. While the consolidation and simplification of rules will be able to stay mostly in place, the strict worker hour protections rules and the increased sanctions will not. Small business will probably be the most affected by this, as they will once again have extra trouble competing with large retail chains.
+
+- @post_event: Continue...

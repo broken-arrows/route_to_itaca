@@ -1,2 +1,130 @@
-title: Parlament Climate Change
+title: Climate Change Law
 new-page: true
+choose-if: party_resources > 0 and not parlament_climate_change_passed
+subtitle: [? if coming_from_parlament: \[-1 resources\]?]
+unavailable-subtitle: [? if parlament_climate_change_passed: Already approved!?][? if not parlament_climate_change_passed and party_resources < 1: Not enough resources.?]
+on-arrival: {!
+    if (Q.coming_from_parlament) Q.party_resources -= 1;
+!}
+
+= Climate Change Law
+
+Catalonia already feels a warming climate through drought, fire risk and increased coastal erosion. While unprecedented in Europe, it is within the powers of the Parlament to bind the executive and companies and individuals operating in Catalonia to, for instance, measured carbon budgets. Alternatively, it could also bet on a faster economy-wide transition, even if that may step into the blury lines of autonomy powers in sectors like energy and transport planning.
+
+- @climate_carbon_budgets: Set carbon budgets for Catalan institutions and industry
+- @climate_economy_transition: Bind the whole economy to a rapid green transition
+
+@climate_carbon_budgets
+on-arrival: parlament_climate_change_variant = "carbon_budgets"
+go-to: climate_change_vote
+
+@climate_economy_transition
+subtitle: An unprecedented effort with economy-wide targets, fossil-fuel restrictions and transport and energy mandates. One may even call it a green version of the "New Deal"?
+on-arrival: parlament_climate_change_variant = "economy_transition"
+go-to: climate_change_vote
+
+@climate_change_vote
+on-arrival: {!
+    // TODO: Even more radical version for CUP?
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.coming_from_parlament = false;
+    var ambitious = Q.parlament_climate_change_variant == "economy_transition";
+    var author = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    var greenDonor = Q.parlament_current_icv;
+    var backlash = Q.cs_parlament_s > 0 ? "cs" : "ppc";
+
+    var proposalYoung = ambitious ? 0.12 : 0.06;
+    var proposalMiddle = ambitious ? 0.06 : 0.03;
+    var proposalBussLoss = ambitious ? 0.12 : 0;
+    var proposalMiddleLoss = ambitious ? 0.054 : 0;
+    var proposalRetiredLoss = ambitious ? 0.03 : 0;
+    for (const c of Q.parlament_constituencies) {
+        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
+        Q[greenDonor + "_parlament_" + c + "_young_support"] -= proposalYoung;
+        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
+        Q[greenDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
+        Q[author + "_parlament_" + c + "_buss_support"] -= proposalBussLoss;
+        Q[backlash + "_parlament_" + c + "_buss_support"] += proposalBussLoss;
+        Q[author + "_parlament_" + c + "_middle_support"] -= proposalMiddleLoss;
+        Q[backlash + "_parlament_" + c + "_middle_support"] += proposalMiddleLoss;
+        Q[author + "_parlament_" + c + "_retired_support"] -= proposalRetiredLoss;
+        Q[backlash + "_parlament_" + c + "_retired_support"] += proposalRetiredLoss;
+    }
+
+    var yesNames = ambitious
+        ? ["jxsi","jxcat","erc","cup","psc","icv","csqp","cecp","ecp","cs","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","cs","icv","csqp","cecp","ecp","unio","si"];
+    var noNames = ambitious
+        ? ["ppc","vox","pxc","fnc"]
+        : ["vox","pxc","fnc"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_climate_change_yes = 0;
+    Q.parlament_climate_change_no = 0;
+    Q.parlament_climate_change_abst = 0;
+    for (const p of all) {
+        var seats = Q[p + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        if (yesNames.includes(p)) {
+            Q.parlament_climate_change_yes += seats;
+            yesParties.push({label:labels[p]});
+        } else if (noNames.includes(p)) {
+            Q.parlament_climate_change_no += seats;
+            noParties.push({label:labels[p]});
+        } else {
+            Q.parlament_climate_change_abst += seats;
+            abstainParties.push({label:labels[p]});
+        }
+    }
+    Q.parlament_climate_change_passed = Q.parlament_climate_change_yes > Q.parlament_climate_change_no;
+    Q.parlament_climate_change_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_climate_change_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_climate_change_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_climate_change_no,parties:noParties}
+    ]};
+
+    if (Q.parlament_climate_change_passed) {
+        var passageYoung = ambitious ? 0.28 : 0.14;
+        var passageMiddle = ambitious ? 0.14 : 0.07;
+        var passageBussLoss = ambitious ? 0.28 : 0;
+        var passageMiddleLoss = ambitious ? 0.126 : 0;
+        var passageRetiredLoss = ambitious ? 0.07 : 0;
+        for (const c of Q.parlament_constituencies) {
+            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
+            Q[greenDonor + "_parlament_" + c + "_young_support"] -= passageYoung;
+            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
+            Q[greenDonor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
+            Q[author + "_parlament_" + c + "_buss_support"] -= passageBussLoss;
+            Q[backlash + "_parlament_" + c + "_buss_support"] += passageBussLoss;
+            Q[author + "_parlament_" + c + "_middle_support"] -= passageMiddleLoss;
+            Q[backlash + "_parlament_" + c + "_middle_support"] += passageMiddleLoss;
+            Q[author + "_parlament_" + c + "_retired_support"] -= passageRetiredLoss;
+            Q[backlash + "_parlament_" + c + "_retired_support"] += passageRetiredLoss;
+        }
+        if (ambitious) {
+            Q.climate_capacity = (Q.climate_capacity || 0) + 18;
+            Q.climate_transition_mature = false;
+            Q.climate_transition_contested_struck = false;
+            G.registerLaw(Q, {id:"climate_transition_core_initial",title:"Climate Transition Program",icon:"img/economy_icon.svg",targets:{gdp_growth:-0.04,generalitat_surplus:-0.02,unemployment_recovery:0.015}});
+            G.registerLaw(Q, {id:"climate_binding_targets_initial",title:"Binding Economy-Wide Climate Targets",icon:"img/economy_icon.svg",targets:{gdp_growth:-0.06,generalitat_surplus:-0.01,unemployment_recovery:0.005}});
+            Q.climate_transition_matures_countdown = 12;
+            Q.countdowns.push("climate_transition_matures");
+        } else {
+            Q.climate_capacity = (Q.climate_capacity || 0) + 8;
+            G.registerLaw(Q, {id:"climate_carbon_budgets",title:"Catalan Carbon Budgets",icon:"img/economy_icon.svg",targets:{gdp_growth:-0.02,generalitat_surplus:-0.015,welfare_index_growth:0.03},ramp_ticks:12});
+        }
+        Q.constitutional_climate_change_countdown = 24;
+        Q.countdowns.push("constitutional_climate_change");
+    }
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_climate_change_vote_result"}'></div>
+
+[? if parlament_climate_change_passed and parlament_climate_change_variant == "carbon_budgets": In a first for the European continent, the Parlament has approved binding Carbon budgets for the Catalan institutions and industry. The program, while a first-of-a-kind, it's still quite forgiving and relies on slowly building capacity slowly, so even right-wing parties that historically accepted climate legislation have little to oppose.?]
+[? if parlament_climate_change_passed and parlament_climate_change_variant == "economy_transition": In a true first in the European continent, the Parlament has approved a binding economy-wide climate transition. There's little doubt in that the first years will be costly, but we should hope and expect a more resilient and sustainable economy in the long run.?]
+[? if not parlament_climate_change_passed: The Parlament has rejected the first-of-its-kind Climate law. The draft can return, but climate change will hardly wait for a more convenient majority.?]
+
+- @post_event: Continue...

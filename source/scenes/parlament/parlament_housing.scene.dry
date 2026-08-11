@@ -1,2 +1,129 @@
-title: Parlament Housing
+title: Housing Emergency Law
 new-page: true
+choose-if: party_resources > 0 and not parlament_housing_passed
+subtitle: [? if coming_from_parlament: \[-1 resources\]?]
+unavailable-subtitle: [? if parlament_housing_passed: Already approved!?][? if not parlament_housing_passed and party_resources < 1: Not enough resources.?]
+on-arrival: {!
+    if (Q.coming_from_parlament) Q.party_resources -= 1;
+!}
+
+= Housing Emergency Law
+
+Since the burst of the housing bubble, Catalonia has faced a housing emergency. With a very small public housing numbers, families face dramatic evictions, uncapped rent increases, and unsustainable debt. A citizen initiative has finally reached the halls of the Parlament, but it is now up to the parties to decide how to respond to that. Housing policy requires a direction: the administration's efforts can either be put on expanding public stock, or on creating and enforcing compulsory rent caps, debt relief, and other protections for tenants, as the citizen initiative proposes.
+
+- @housing_public_stock: Expand public housing stock.
+- @housing_compulsory_relief: Develop a framework for rent caps and more tenant-protective legislation.
+
+@housing_public_stock
+on-arrival: parlament_housing_variant = "acquisition_rehabilitation"
+go-to: housing_vote
+
+@housing_compulsory_relief
+on-arrival: parlament_housing_variant = "compulsory_rent_debt_relief"
+go-to: housing_vote
+
+@housing_vote
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.coming_from_parlament = false;
+    var ambitious = Q.parlament_housing_variant == "compulsory_rent_debt_relief";
+    var author = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    var socialDonor = Q.parlament_current_icv;
+    var backlash = Q.cs_parlament_s > 0 ? "cs" : "ppc";
+
+    var proposalYoung = ambitious ? 0.0825 : 0.075;
+    var proposalUnemployed = ambitious ? 0.1125 : 0.105;
+    var proposalMiddle = ambitious ? 0.045 : 0.045;
+    var proposalBussLoss = ambitious ? 0.06 : 0;
+    var proposalMiddleLoss = ambitious ? 0.027 : 0;
+    var proposalRetiredLoss = ambitious ? 0.015 : 0;
+    for (const c of Q.parlament_constituencies) {
+        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
+        Q[socialDonor + "_parlament_" + c + "_young_support"] -= proposalYoung;
+        Q[author + "_parlament_" + c + "_unemployed_support"] += proposalUnemployed;
+        Q[socialDonor + "_parlament_" + c + "_unemployed_support"] -= proposalUnemployed;
+        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
+        Q[socialDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
+        Q[author + "_parlament_" + c + "_buss_support"] -= proposalBussLoss;
+        Q[backlash + "_parlament_" + c + "_buss_support"] += proposalBussLoss;
+        Q[author + "_parlament_" + c + "_middle_support"] -= proposalMiddleLoss;
+        Q[backlash + "_parlament_" + c + "_middle_support"] += proposalMiddleLoss;
+        Q[author + "_parlament_" + c + "_retired_support"] -= proposalRetiredLoss;
+        Q[backlash + "_parlament_" + c + "_retired_support"] += proposalRetiredLoss;
+    }
+
+    var yesNames = ambitious
+        ? ["jxsi","jxcat","erc","cup","psc","icv","csqp","cecp","ecp","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","psc","cs","icv","csqp","cecp","ecp","si"];
+    var noNames = ambitious
+        ? ["ppc","cs","vox","pxc","fnc"]
+        : ["ppc","vox","pxc","fnc"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_housing_yes = 0;
+    Q.parlament_housing_no = 0;
+    Q.parlament_housing_abst = 0;
+    for (const p of all) {
+        var seats = Q[p + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        if (yesNames.includes(p)) {
+            Q.parlament_housing_yes += seats;
+            yesParties.push({label:labels[p]});
+        } else if (noNames.includes(p)) {
+            Q.parlament_housing_no += seats;
+            noParties.push({label:labels[p]});
+        } else {
+            Q.parlament_housing_abst += seats;
+            abstainParties.push({label:labels[p]});
+        }
+    }
+    Q.parlament_housing_passed = Q.parlament_housing_yes > Q.parlament_housing_no;
+    Q.parlament_housing_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_housing_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_housing_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_housing_no,parties:noParties}
+    ]};
+
+    if (Q.parlament_housing_passed) {
+        var passageYoung = ambitious ? 0.1925 : 0.175;
+        var passageUnemployed = ambitious ? 0.2625 : 0.245;
+        var passageMiddle = ambitious ? 0.105 : 0.105;
+        var passageBussLoss = ambitious ? 0.14 : 0;
+        var passageMiddleLoss = ambitious ? 0.063 : 0;
+        var passageRetiredLoss = ambitious ? 0.035 : 0;
+        for (const c of Q.parlament_constituencies) {
+            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
+            Q[socialDonor + "_parlament_" + c + "_young_support"] -= passageYoung;
+            Q[author + "_parlament_" + c + "_unemployed_support"] += passageUnemployed;
+            Q[socialDonor + "_parlament_" + c + "_unemployed_support"] -= passageUnemployed;
+            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
+            Q[socialDonor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
+            Q[author + "_parlament_" + c + "_buss_support"] -= passageBussLoss;
+            Q[backlash + "_parlament_" + c + "_buss_support"] += passageBussLoss;
+            Q[author + "_parlament_" + c + "_middle_support"] -= passageMiddleLoss;
+            Q[backlash + "_parlament_" + c + "_middle_support"] += passageMiddleLoss;
+            Q[author + "_parlament_" + c + "_retired_support"] -= passageRetiredLoss;
+            Q[backlash + "_parlament_" + c + "_retired_support"] += passageRetiredLoss;
+        }
+        if (ambitious) {
+            Q.welfare_index += 0.8;
+            G.registerLaw(Q, {id:"housing_compulsory_social_rent",title:"Compulsory Social Rent",icon:"img/people_icon.svg",targets:{welfare_index_growth:0.14,generalitat_surplus:-0.015,gdp_growth:-0.02,social_dissent_eq:-2.5},ramp_ticks:4});
+            G.registerLaw(Q, {id:"housing_debt_relief_procedure",title:"Mortgage Debt Relief",icon:"img/people_icon.svg",targets:{welfare_index_growth:0.08,gdp_growth:-0.03,social_dissent_eq:-1},ramp_ticks:4});
+        } else {
+            G.registerLaw(Q, {id:"housing_public_stock",title:"Public Housing Expansion",icon:"img/people_icon.svg",targets:{unemployment_recovery:0.04,welfare_index_growth:0.14,generalitat_surplus:-0.05,social_dissent_eq:-2},ramp_ticks:9});
+        }
+        Q.constitutional_housing_countdown = 20;
+        Q.countdowns.push("constitutional_housing");
+    }
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_housing_vote_result"}'></div>
+
+[? if parlament_housing_passed and parlament_housing_variant == "acquisition_rehabilitation": The Parlament has approved the public-housing programme. Its results will take time and money. Let's hope for it to be a worthwhile long-term investment. ?]
+[? if parlament_housing_passed and parlament_housing_variant == "compulsory_rent_debt_relief": The original intent of the citizen initiative has become law. Banks and large landlords must now offer social rent, and a new framework for rent caps is being implemented.?]
+[? if not parlament_housing_passed: The Parlament has rejected the bill. No one is particularly happy about this, as doing nothing is for sure guaranteed to not help in addressing the housing crisis. Social organization will keep pressing, and the proposal may be introduced again in a hopefully more favourable moment.?]
+
+- @post_event: Continue...

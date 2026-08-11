@@ -15,13 +15,13 @@ on-arrival: {!
 
 = Constitutional Court rules on the Catalan Cybersecurity Agency
 
-[? if parlament_digital_variant == "public_services": The Constitutional Court has actually failed in favour of the Catalan Cybersecurity Agency. It has deemed it fails within the Catalan autonomy to protect its public administration, and expects its collaboration with other law enforcement agencies. ?]
+[? if parlament_digital_variant == "public_services": The Constitutional Court has ruled in favour of the Catalan Cybersecurity Agency. It has deemed the protection of Catalonia's public administration to fall within the Generalitat's powers, while expecting the agency to cooperate with other law-enforcement bodies. ?]
 
 [? if parlament_digital_variant == "national_scope": The Constitutional Court has ruled in favour of greatly reducing the agency's powers. While the agency itself survives with a limited role in protecting public services and resources, its authority over the Catalan citizens and companies has been reduced to basically zero.?]
 
 - @digital_ruling_safe: Unexpected, but nice!
-- @digital_ruling_accept: Accept the ruling
-- @digital_ruling_protest: Condemn the ruling!
+- @digital_ruling_accept: The Generalitat accepts the ruling
+- @digital_ruling_protest: The Generalitat condemns the ruling!
 
 @digital_ruling_safe
 view-if: parlament_digital_variant == "public_services"
@@ -34,7 +34,7 @@ on-arrival: {!
     Q.independence_trust -= 5;
 !}
 
-The Generalit will, for now, comply and concentrate resources on the Generalitat's systems and services. It's not like the agency is completely useless, but it has lost a lot of its role.
+The Generalitat will, for now, comply and concentrate resources on its own systems and services. The agency remains useful, but it has lost much of its intended role.
 
 - @post_event: Continue...
 

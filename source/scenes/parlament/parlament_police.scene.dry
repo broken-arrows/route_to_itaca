@@ -1,2 +1,131 @@
-title: Parlament police
+title: Public Order Reform
 new-page: true
+choose-if: party_resources > 0 and not parlament_police_passed
+subtitle: [? if coming_from_parlament: \[-1 resources\]?]
+unavailable-subtitle: [? if parlament_police_passed: Already approved!?][? if not parlament_police_passed and party_resources < 1: Not enough resources.?]
+on-arrival: {!
+    if (Q.coming_from_parlament) Q.party_resources -= 1;
+!}
+
+= Public Order Reform
+
+After a woman lost her eye in an anti-austerity protest due to police-shot rubber bullets, a broader crisis related to public-police trust has emerged. With Catalonia having its own police force in the form of the Mossos d'Esquadra, it is clear that the Generalitat and the Parlament have a responsibility to fulfill here. Official recommendations call for a ban on rubber bullets all together and reforming crowd-control protocols to "better balance the right to protest with public order and safety". However, social movements are demanding more in-depth police reforms. These talk about police democratization, independent watchdogs, and structural reforms to the chains of command to root-out impunity.
+
+- @police_focused
+- @police_democratic
+
+@police_focused
+title: Focus on surgical reforms and banning rubber bullets
+on-arrival: parlament_police_variant = "focused_reform"
+go-to: police_vote
+
+@police_democratic
+title: Push for the democratization of policing
+on-arrival: parlament_police_variant = "democratic_policing"
+go-to: police_vote
+
+@police_vote
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.coming_from_parlament = false;
+
+    var democratic = Q.parlament_police_variant == "democratic_policing";
+    var author = proposingParty;
+    var reformDonor = Q.parlament_current_icv;
+    if (reformDonor == author || (Q[reformDonor + "_parlament_s"] || 0) <= 0) reformDonor = "psc";
+    if (reformDonor == author || (Q[reformDonor + "_parlament_s"] || 0) <= 0) reformDonor = Q.parlament_current_ciu;
+    var orderParty = (Q.cs_parlament_s || 0) > 0 && author != "cs" ? "cs" : "ppc";
+
+    var proposalYoung = democratic ? 0.105 : 0.036;
+    var proposalMiddle = democratic ? 0 : 0.024;
+    var proposalWorker = democratic ? 0.075 : 0;
+    var proposalRetiredLoss = democratic ? 0.036 : 0;
+    var proposalBusinessLoss = democratic ? 0.03 : 0;
+    var proposalRuralLoss = democratic ? 0.024 : 0;
+    for (const c of Q.parlament_constituencies) {
+        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
+        Q[reformDonor + "_parlament_" + c + "_young_support"] -= proposalYoung;
+        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
+        Q[reformDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
+        Q[author + "_parlament_" + c + "_ind_support"] += proposalWorker;
+        Q[reformDonor + "_parlament_" + c + "_ind_support"] -= proposalWorker;
+        Q[author + "_parlament_" + c + "_retired_support"] -= proposalRetiredLoss;
+        Q[orderParty + "_parlament_" + c + "_retired_support"] += proposalRetiredLoss;
+        Q[author + "_parlament_" + c + "_buss_support"] -= proposalBusinessLoss;
+        Q[orderParty + "_parlament_" + c + "_buss_support"] += proposalBusinessLoss;
+        Q[author + "_parlament_" + c + "_rural_support"] -= proposalRuralLoss;
+        Q[orderParty + "_parlament_" + c + "_rural_support"] += proposalRuralLoss;
+    }
+
+    // TODO: Refine ERC, PSC and JxSi/JxCat positions by leadership after playtesting.
+    var yesNames = democratic
+        ? ["erc","cup","icv","csqp","cecp","ecp","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cs","si"];
+    var noNames = democratic
+        ? ["ciu","cdc","dl","pdcat","junts","ppc","cs","unio","vox","pxc","fnc"]
+        : ["ppc","icv","csqp","cecp","ecp","vox","pxc","fnc"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSÃ­",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_police_yes = 0;
+    Q.parlament_police_no = 0;
+    Q.parlament_police_abst = 0;
+    for (const p of all) {
+        var seats = Q[p + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        if (yesNames.includes(p)) {
+            Q.parlament_police_yes += seats;
+            yesParties.push({label:labels[p]});
+        } else if (noNames.includes(p)) {
+            Q.parlament_police_no += seats;
+            noParties.push({label:labels[p]});
+        } else {
+            Q.parlament_police_abst += seats;
+            abstainParties.push({label:labels[p]});
+        }
+    }
+    Q.parlament_police_passed = Q.parlament_police_yes > Q.parlament_police_no;
+    Q.parlament_police_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_police_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_police_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_police_no,parties:noParties}
+    ]};
+
+    if (Q.parlament_police_passed) {
+        var passageYoung = democratic ? 0.245 : 0.084;
+        var passageMiddle = democratic ? 0 : 0.056;
+        var passageWorker = democratic ? 0.175 : 0;
+        var passageRetiredLoss = democratic ? 0.084 : 0;
+        var passageBusinessLoss = democratic ? 0.07 : 0;
+        var passageRuralLoss = democratic ? 0.056 : 0;
+        for (const c of Q.parlament_constituencies) {
+            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
+            Q[reformDonor + "_parlament_" + c + "_young_support"] -= passageYoung;
+            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
+            Q[reformDonor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
+            Q[author + "_parlament_" + c + "_ind_support"] += passageWorker;
+            Q[reformDonor + "_parlament_" + c + "_ind_support"] -= passageWorker;
+            Q[author + "_parlament_" + c + "_retired_support"] -= passageRetiredLoss;
+            Q[orderParty + "_parlament_" + c + "_retired_support"] += passageRetiredLoss;
+            Q[author + "_parlament_" + c + "_buss_support"] -= passageBusinessLoss;
+            Q[orderParty + "_parlament_" + c + "_buss_support"] += passageBusinessLoss;
+            Q[author + "_parlament_" + c + "_rural_support"] -= passageRuralLoss;
+            Q[orderParty + "_parlament_" + c + "_rural_support"] += passageRuralLoss;
+        }
+        if (democratic) {
+            G.registerLaw(Q, {id:"democratic_policing",title:"Law on Democratic Policing",group:"rights",icon:"img/fist_icon.png",targets:{generalitat_surplus:-0.012,social_dissent_eq:-2.5},ramp_ticks:8});
+        } else {
+            G.registerLaw(Q, {id:"public_order_focused_reform",title:"Public Order Reform",group:"rights",icon:"img/fist_icon.png",targets:{social_dissent_eq:-1},ramp_ticks:3});
+        }
+    }
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_police_vote_result"}'></div>
+
+[? if parlament_police_passed and parlament_police_variant == "focused_reform": The Parlament has approved the reform. Rubber bullets are now banned, and crowd-control protocols are to be rewritten around mediation and de-escalation.?]
+[? if parlament_police_passed and parlament_police_variant == "democratic_policing": The Parlament has approved the Law on Democratic Policing. An independent investigation body will now have to be built in the face of resistance from police unions and parts of the Interior hierarchy.?]
+[? if not parlament_police_passed: The Parlament has rejected the reform. Public concern over policing will not change without any further actions, so we may want to re-introduce this proposal at a later date.?]
+
+- @post_event: Continue...

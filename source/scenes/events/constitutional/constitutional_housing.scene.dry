@@ -1,0 +1,18 @@
+title: Constitutional Court rules on the Housing Emergency Law
+face-image: img/events/constitucional.jpg
+new-page: true
+tags: event
+view-if: constitutional_housing_trigger and parlament_housing_variant = "compulsory_rent_debt_relief"
+max-visits: 1
+role: event
+on-arrival: {!
+    G.deactivateLaw(Q, "housing_debt_relief_procedure", "struck_down");
+    Q.cat_spa_relations -= 5;
+    Q.social_dissent += 3;
+!}
+
+= Constitutional Court rules on the Housing Emergency Law
+
+Hearing the Cs-PP petition to strike down the Parlament-approved Housing Emergency Law, the Constitutional Court has, a bit unsurprisingly, ruled against it. Some of the provisions for compulsory social rent percentages in new and rehabilitated buildings will remain along the programmes for debt relief, but the rent caps and heavy regulation of the market has, for all intents and purposes, been struck down. The Court has been clear that these powers are clearly in the hands of the central government, much to the dismay of the Parlament's majority and the social organizations that have been pushing for this for years.
+
+- @post_event: Continue...

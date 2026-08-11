@@ -252,7 +252,7 @@ subtitle: We have long championed the need for more social policies
 
 **Política Social**
 
-[Text]
+In times of economic struggle, the Catalan social safety net is under pressure. As long-time supporters of a strong welfare state, we can use many legislative levers to expand it and cover the most pressing issues: from unaffordable energy and housing to climate change.
 
 - @parlament_energy_poverty
 - @parlament_housing
@@ -266,7 +266,7 @@ subtitle: As a left party, pushing for further freedoms is something that has al
 
 **Rights and Liberties**
 
-[Text]
+In our push for further democratization and expansion of individual and collective rights, there's still plenty to be done. 
 
 - @parlament_civil_law
 - @parlament_police
@@ -280,7 +280,7 @@ subtitle: Nothing is free, and in finances lay many levers for a more just socie
 
 **Finances and Economy**
 
-[Text]
+It's no secret that the Generalitat's financial situation is not the best. 
 
 - @parlament_comerce
 - @parlament_inheritance_tax
@@ -306,10 +306,12 @@ Despite the Parlament being legally limited in its powers, it is still symbolica
 
 @budget
 title: Pass the Generalitat's budget
+choose-if: 1==0
+unavailable-subtitle: WIP!
 subtitle: Ensuring government stability may be more important at this moment
 
 **Generalitat's Budget**
 
-[Text]
+[Text - TODO]
 
 - @parlament_options: Let us consider other options

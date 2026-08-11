@@ -1,13 +1,150 @@
-title: Parlament Bank Taxes
+title: Law on Bank Taxation
 new-page: true
+choose-if: party_resources > 0 and not parlament_bank_taxes_passed
+subtitle: [? if coming_from_parlament: \[-1 resources\]?]
+unavailable-subtitle: [? if parlament_bank_taxes_passed: Already approved!?][? if not parlament_bank_taxes_passed and party_resources < 1: Not enough resources.?]
 on-arrival: {!
-
+    if (Q.coming_from_parlament) Q.party_resources -= 1;
+    var livePlayer = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.parlament_bank_player_in_government = Q.cat_coalition.includes(Q.player_party) || Q.cat_coalition.includes(livePlayer);
 !}
-go-to: pre2014options if year <= 2014; post2014options if year > 2014
+go-to: bank_preemption_options if year <= 2014; bank_post_preemption_options if year > 2014
 
-= Bank Taxation Law
+= Law on Bank Taxation
 
-@pre2014options
+During the latest financial crisis, people have felt left out, while banks have received huge sums in bailouts and guarantees. This opens a political opportunity: raising taxes on bank operations can generate some sorely-needed revenue for the Generalitat, while also sending the message that it is new revenue that, for once, does not come from burdening workers any further. 
 
-@post2014options
+@bank_preemption_options
 
+The autonomy limits on the space this new tax would occupy are not entirely clear, and we can expect some legal challenges, but may be worth a try nonetheless. 
+
+- @bank_deposit_act: Let's get this done!
+
+@bank_deposit_act
+on-arrival: parlament_bank_taxes_variant = "deposit_act"
+go-to: bank_vote
+
+
+@bank_post_preemption_options
+
+The autonomy limits on the space this new tax would occupy are a bit difficult, since the Gobierno has recently approved some similar taxes. Besides hoping for the State to share some of its revenue, the only real solution is to create a genuinely different tax, and work it through the Parlament and the courts.
+
+- @bank_nonproductive_assets: Make a tax variation targeting non-productive assets
+- @back_to_parlament: Let's rethink this and pass a different law instead.
+
+@back_to_parlament
+on-arrival: {!
+    Q.party_resources += 1;
+    Q.month_actions -= 1;
+!}
+go-to: parlament_card
+
+@bank_nonproductive_assets
+subtitle: Tax high-value non-productive assets sheltered in companies, a different taxable event from both bank deposits and vacant homes.
+on-arrival: parlament_bank_taxes_variant = "nonproductive_assets"
+go-to: bank_vote
+
+@bank_vote
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.coming_from_parlament = false;
+
+    var assets = Q.parlament_bank_taxes_variant == "nonproductive_assets";
+    var author = proposingParty;
+    var socialDonor = author == Q.parlament_current_icv ? "psc" : Q.parlament_current_icv;
+    var backlash = Q.cs_parlament_s > 0 ? "cs" : "ppc";
+    var proposalUnemployed = demand ? 0.045 : 0.135;
+    var proposalYoung = demand ? 0.03 : 0.09;
+    var proposalMiddleGain = demand ? 0.015 : 0.045;
+    var proposalBusinessLoss = demand ? 0 : 0.12;
+    var proposalMiddleLoss = demand ? 0 : 0.054;
+    var proposalRetiredLoss = demand ? 0 : 0.03;
+    for (const c of Q.parlament_constituencies) {
+        Q[author + "_parlament_" + c + "_unemployed_support"] += proposalUnemployed;
+        Q[socialDonor + "_parlament_" + c + "_unemployed_support"] -= proposalUnemployed;
+        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
+        Q[socialDonor + "_parlament_" + c + "_young_support"] -= proposalYoung;
+        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddleGain;
+        Q[socialDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddleGain;
+        Q[author + "_parlament_" + c + "_buss_support"] -= proposalBusinessLoss;
+        Q[backlash + "_parlament_" + c + "_buss_support"] += proposalBusinessLoss;
+        Q[author + "_parlament_" + c + "_middle_support"] -= proposalMiddleLoss;
+        Q[backlash + "_parlament_" + c + "_middle_support"] += proposalMiddleLoss;
+        Q[author + "_parlament_" + c + "_retired_support"] -= proposalRetiredLoss;
+        Q[backlash + "_parlament_" + c + "_retired_support"] += proposalRetiredLoss;
+    }
+
+    var yesNames = assets
+        ? ["jxsi","jxcat","erc","cup","icv","csqp","cecp","ecp","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","icv","csqp","cecp","ecp","unio","si"];
+    var noNames = demand
+        ? ["ppc","vox","pxc","fnc"]
+        : ["ppc","cs","vox","pxc","fnc"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_bank_taxes_yes = 0;
+    Q.parlament_bank_taxes_no = 0;
+    Q.parlament_bank_taxes_abst = 0;
+    for (const p of all) {
+        var seats = Q[p + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        if (yesNames.includes(p)) {
+            Q.parlament_bank_taxes_yes += seats;
+            yesParties.push({label:labels[p]});
+        } else if (noNames.includes(p)) {
+            Q.parlament_bank_taxes_no += seats;
+            noParties.push({label:labels[p]});
+        } else {
+            Q.parlament_bank_taxes_abst += seats;
+            abstainParties.push({label:labels[p]});
+        }
+    }
+    Q.parlament_bank_taxes_passed = Q.parlament_bank_taxes_yes > Q.parlament_bank_taxes_no;
+    Q.parlament_bank_taxes_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_bank_taxes_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_bank_taxes_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_bank_taxes_no,parties:noParties}
+    ]};
+
+    if (Q.parlament_bank_taxes_passed) {
+        var passageUnemployed = 0.315;
+        var passageYoung = 0.21;
+        var passageMiddleGain = 0.105;
+        var passageBusinessLoss = 0.28;
+        var passageMiddleLoss = 0.126;
+        var passageRetiredLoss = 0.07;
+        for (const c of Q.parlament_constituencies) {
+            Q[author + "_parlament_" + c + "_unemployed_support"] += passageUnemployed;
+            Q[socialDonor + "_parlament_" + c + "_unemployed_support"] -= passageUnemployed;
+            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
+            Q[socialDonor + "_parlament_" + c + "_young_support"] -= passageYoung;
+            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddleGain;
+            Q[socialDonor + "_parlament_" + c + "_middle_support"] -= passageMiddleGain;
+            Q[author + "_parlament_" + c + "_buss_support"] -= passageBusinessLoss;
+            Q[backlash + "_parlament_" + c + "_buss_support"] += passageBusinessLoss;
+            Q[author + "_parlament_" + c + "_middle_support"] -= passageMiddleLoss;
+            Q[backlash + "_parlament_" + c + "_middle_support"] += passageMiddleLoss;
+            Q[author + "_parlament_" + c + "_retired_support"] -= passageRetiredLoss;
+            Q[backlash + "_parlament_" + c + "_retired_support"] += passageRetiredLoss;
+        }
+
+        if (assets) {
+            G.registerLaw(Q, {id:"nonproductive_corporate_assets_tax",title:"Non-Productive Assets Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.04,gdp_growth:-0.02,welfare_index_growth:0.02,social_dissent_eq:-0.5},ramp_ticks:6});
+        } else {
+            G.registerLaw(Q, {id:"bank_deposit_tax", title: "Bank Deposits Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.08,gdp_growth:-0.04},ramp_ticks: 2});
+            Q.constitutional_bank_taxes_countdown = 24;
+            Q.countdowns.push("constitutional_bank_taxes");
+        }
+    }
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_bank_taxes_vote_result"}'></div>
+
+[? if parlament_bank_taxes_passed and parlament_bank_taxes_variant == "deposit_act": The Parlament has approved a novel form of Bank Taxes. We can hope for some extra revenue to gradually start flowing in soon, while we can also expect some opinions by the courts at some point.?]
+[? if parlament_bank_taxes_passed and parlament_bank_taxes_variant == "nonproductive_assets": The Parlament has approved a tax on non-productive assets held through companies. While a bit twisted in its definition, it is a different approach to taxing than the one implemented by the central government, so we may hope for it to stand the test of the courts.?]
+[? if not parlament_bank_taxes_passed: The Bank Taxes proposal has failed to command a majority. The party may return to the issue in a later parliamentary session.?]
+
+- @post_event: Continue...

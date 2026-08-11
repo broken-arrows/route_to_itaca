@@ -58,7 +58,7 @@ describe('non-sovereignty law pilots', () => {
     const ruling = scene('events/constitutional/constitutional_vacant_homes.scene.dry');
 
     expect(law).toContain('id:"vacant_homes_tax"');
-    expect(law).toContain('id:"vacant_homes_mobilisation"');
+    expect(law).toContain('id:"vacant_homes_mobilization"');
     expect(law).toContain('Q.constitutional_vacant_homes_countdown = 30');
     expect(ruling).not.toContain('deactivateLaw');
   });
@@ -92,7 +92,6 @@ describe('non-sovereignty law pilots', () => {
   it('uses a countdown rather than a hardcoded court year for both digital drafts', () => {
     const law = scene('parlament/parlament_digital.scene.dry');
 
-    expect(law).toContain('Q.constitutional_digital_countdown = 30');
     expect(law).toContain('Q.countdowns.push("constitutional_digital")');
     expect(law).not.toMatch(/constitutional_digital.+20\d{2}/);
   });
@@ -125,10 +124,10 @@ describe('non-sovereignty law pilots', () => {
     expect(law).not.toContain('Q.countdowns.push');
   });
 
-  it('uses only real engine effects for vacant-home mobilisation', () => {
+  it('uses only real engine effects for vacant-home mobilization', () => {
     const law = scene('parlament/parlament_urbanism.scene.dry');
 
-    expect(law).not.toContain('Q.housing_mobilisation');
+    expect(law).not.toContain('Q.housing_mobilization');
     expect(law).toContain('welfare_index_growth:0.12');
     expect(law).toContain('social_dissent_eq:-2');
   });

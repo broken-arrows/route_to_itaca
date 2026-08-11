@@ -1,2 +1,111 @@
-title: Parlament Comerce
+title: Law on Local Commerce
 new-page: true
+choose-if: party_resources > 0 and not parlament_comerce_passed
+subtitle: [? if coming_from_parlament: \[-1 resources\]?]
+unavailable-subtitle: [? if parlament_comerce_passed: Already approved!?][? if not parlament_comerce_passed and party_resources < 1: Not enough resources.?]
+on-arrival: {!
+    if (Q.coming_from_parlament) Q.party_resources -= 1;
+!}
+
+= Law on Local Commerce
+
+Catalonia's economy is built on a backbone of small and medium sized business, and big corporations are rare outside international presence. On the local commerce space, however, this dense network of small shops is struggling. Competing with large, either Spanish-wide or trans-national retail groups and online sellers, and the economic crisis may bring them to the breaking point. There's a legislative chance to bring rules for these business to a place that helps them and the workers working in them. These can also be expanded and go the extra mail to pushing for stricter opening hours, more controls and stronger linguistic and sanctioning duties.
+
+- @commerce_internal: Consolidate and simplify internal-commerce and small-retail rules
+- @commerce_protective: Protect small retailers with stronger hour, labour, and language rules
+
+@commerce_internal
+subtitle: A Catalonia-level framework meant to ease paperwork and protect, to an extent, small and medium business.
+on-arrival: parlament_comerce_variant = "internal_framework"
+go-to: commerce_vote
+
+@commerce_protective
+subtitle: We can go the extra mile and also tighten opening hours, add closer control of tourist exemptions and stronger duties and sanctions.
+on-arrival: parlament_comerce_variant = "protective_framework"
+go-to: commerce_vote
+
+@commerce_vote
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.coming_from_parlament = false;
+
+    var protective = Q.parlament_comerce_variant == "protective_framework";
+    var author = proposingParty;
+    var marketDonor = author == Q.parlament_current_ciu ? (Q.cs_parlament_s > 0 ? "cs" : "ppc") : Q.parlament_current_ciu;
+    var workerDonor = author == Q.parlament_current_icv ? "psc" : Q.parlament_current_icv;
+    var proposalBusiness = protective ? 0.054 : 0.045;
+    var proposalMiddle = protective ? 0 : 0.03;
+    var proposalWorkers = protective ? 0.045 : 0;
+    for (const c of Q.parlament_constituencies) {
+        Q[author + "_parlament_" + c + "_buss_support"] += proposalBusiness;
+        Q[marketDonor + "_parlament_" + c + "_buss_support"] -= proposalBusiness;
+        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
+        Q[marketDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
+        Q[author + "_parlament_" + c + "_ind_support"] += proposalWorkers;
+        Q[workerDonor + "_parlament_" + c + "_ind_support"] -= proposalWorkers;
+    }
+
+    var yesNames = protective
+        ? ["jxsi","jxcat","erc","cup","icv","csqp","cecp","ecp","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","psc","icv","csqp","cecp","ecp","cs","ppc","unio","si"];
+    var noNames = protective
+        ? ["cs","ppc","vox","pxc","fnc"]
+        : ["vox","pxc","fnc"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_comerce_yes = 0;
+    Q.parlament_comerce_no = 0;
+    Q.parlament_comerce_abst = 0;
+    for (const p of all) {
+        var seats = Q[p + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        if (yesNames.includes(p)) {
+            Q.parlament_comerce_yes += seats;
+            yesParties.push({label:labels[p]});
+        } else if (noNames.includes(p)) {
+            Q.parlament_comerce_no += seats;
+            noParties.push({label:labels[p]});
+        } else {
+            Q.parlament_comerce_abst += seats;
+            abstainParties.push({label:labels[p]});
+        }
+    }
+    Q.parlament_comerce_passed = Q.parlament_comerce_yes > Q.parlament_comerce_no;
+    Q.parlament_comerce_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_comerce_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_comerce_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_comerce_no,parties:noParties}
+    ]};
+
+    if (Q.parlament_comerce_passed) {
+        var passageBusiness = protective ? 0.126 : 0.105;
+        var passageMiddle = protective ? 0 : 0.07;
+        var passageWorkers = protective ? 0.105 : 0;
+        for (const c of Q.parlament_constituencies) {
+            Q[author + "_parlament_" + c + "_buss_support"] += passageBusiness;
+            Q[marketDonor + "_parlament_" + c + "_buss_support"] -= passageBusiness;
+            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
+            Q[marketDonor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
+            Q[author + "_parlament_" + c + "_ind_support"] += passageWorkers;
+            Q[workerDonor + "_parlament_" + c + "_ind_support"] -= passageWorkers;
+        }
+
+        G.registerLaw(Q, {id:"commerce_internal_framework",title:"Internal Commerce Framework",icon:"img/economy_icon.svg",targets:{gdp_growth:0.03,unemployment_recovery:0.01,generalitat_surplus:0.005},ramp_ticks:protective ? 5 : 8});
+        if (protective) {
+            G.registerLaw(Q, {id:"commerce_protective_controls",title:"Protective Commerce Controls",icon:"img/economy_icon.svg",targets:{gdp_growth:0.02,unemployment_recovery:0.005,welfare_index_growth:0.04},ramp_ticks:5});
+            Q.constitutional_commerce_countdown = 24;
+            Q.countdowns.push("constitutional_commerce");
+        }
+    }
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_comerce_vote_result"}'></div>
+
+[? if parlament_comerce_passed and parlament_comerce_variant == "internal_framework": The Parlament has approved the framework. Small retailers gain a clearer set of consolidated rules, which overall is unlikely to trigger any court reaction. We can never know for sure though...?]
+[? if parlament_comerce_passed and parlament_comerce_variant == "protective_framework": The Parlament has approved a relatively ambitious protective framework. Retail associations are celebrating, while large chains and the State government are preparing a serious court challenge.?]
+[? if not parlament_comerce_passed: The Parlament has rejected our proposed law rewriting. We'll have to wait for a re-trying with a more favourable legislature.?]
+
+- @post_event: Continue...

@@ -1,2 +1,137 @@
-title: Parlament LGBT
+title: Law on LGBTI Rights
 new-page: true
+choose-if: party_resources > 0 and not parlament_lgbt_passed
+subtitle: [? if coming_from_parlament: \[-1 resources\]?]
+unavailable-subtitle: [? if parlament_lgbt_passed: Already approved!?][? if not parlament_lgbt_passed and party_resources < 1: Not enough resources.?]
+on-arrival: {!
+    if (Q.coming_from_parlament) Q.party_resources -= 1;
+!}
+
+= Law on LGBTI Rights
+
+While same-sex unions are recognized in Catalonia since 1998 and, following the 2007 Spanish reform of the civil registry, trans people can change their legal name and gender, fact is that there's still much left to be done in terms of queer rights. LGBTI discrimination remains common in employment, education, health care and public services. Victim support is lacking, and law enforcement has poor procedures to address these issues. Not to mention the still missing administrative routes for trans people to be recognized without surgery, or the lack of recognition of non-binary identities. 
+
+While the autonomy limits somewhat what can be done from the Parlament alone, there's still much that can be attempted and done, and a broad parliamentary majority accepts that formal equality is not enough. This unique opportunity can be taken to push not only for better recognition and expansion of social services, but to also enforce those rights with dedicated sanctioning procedures.
+
+- @lgbt_services: Expand recognition, LGBTI services and training protocols
+- @lgbt_enforcement: Do the above, and develop a dedicated enforcement and sanctioning framework
+
+@lgbt_services
+subtitle: Public services will support victims and train public employees.
+on-arrival: parlament_lgbt_variant = "rights_services"
+go-to: lgbt_vote
+
+@lgbt_enforcement
+subtitle: The Generalitat will develop powers to sanction LGBTI-rights violations and enforce protections and obligations.
+on-arrival: parlament_lgbt_variant = "enforcement"
+go-to: lgbt_vote
+
+@lgbt_vote
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.coming_from_parlament = false;
+
+    var enforcement = Q.parlament_lgbt_variant == "enforcement";
+    var author = proposingParty;
+    var rightsDonor = Q.parlament_current_icv;
+    if (rightsDonor == author || (Q[rightsDonor + "_parlament_s"] || 0) <= 0) rightsDonor = "psc";
+    if (rightsDonor == author || (Q[rightsDonor + "_parlament_s"] || 0) <= 0) rightsDonor = Q.parlament_current_ciu;
+    var orderParty = (Q.cs_parlament_s || 0) > 0 && author != "cs" ? "cs" : "ppc";
+
+    var proposalYoung = enforcement ? 0.105 : 0.054;
+    var proposalMiddle = enforcement ? 0.045 : 0.024;
+    var proposalRetiredLoss = enforcement ? 0.036 : 0;
+    var proposalBusinessLoss = enforcement ? 0.03 : 0;
+    var proposalRuralLoss = enforcement ? 0.024 : 0;
+    for (const c of Q.parlament_constituencies) {
+        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
+        Q[rightsDonor + "_parlament_" + c + "_young_support"] -= proposalYoung;
+        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
+        Q[rightsDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
+        Q[author + "_parlament_" + c + "_retired_support"] -= proposalRetiredLoss;
+        Q[orderParty + "_parlament_" + c + "_retired_support"] += proposalRetiredLoss;
+        Q[author + "_parlament_" + c + "_buss_support"] -= proposalBusinessLoss;
+        Q[orderParty + "_parlament_" + c + "_buss_support"] += proposalBusinessLoss;
+        Q[author + "_parlament_" + c + "_rural_support"] -= proposalRuralLoss;
+        Q[orderParty + "_parlament_" + c + "_rural_support"] += proposalRuralLoss;
+    }
+
+    var yesNames = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","cs","icv","csqp","cecp","ecp","si"];
+    var noNames = enforcement
+        ? ["ppc","vox","pxc","fnc", "unio"]
+        : ["vox","pxc","fnc", "unio"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSÃ­",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_lgbt_yes = 0;
+    Q.parlament_lgbt_no = 0;
+    Q.parlament_lgbt_abst = 0;
+    for (const p of all) {
+        var seats = Q[p + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        if (yesNames.includes(p)) {
+            if (p == "ciu") {
+                Q.parlament_lgbt_yes += Math.min(Math.round(Q.ciu_parlament_s * 0.67), Q.ciu_parlament_s - 1);
+                yesParties.push({
+                    label: "CiU (CDC)"
+                });
+                Q.parlament_lgbt_no += Math.max(Math.round(Q.ciu_parlament_s * 0.33), 1);
+                noParties.push({
+                    label: "CiU (UDC)"
+                });
+            } else {
+                Q.parlament_lgbt_yes += seats;
+                yesParties.push({label:labels[p]});
+            }
+        } else if (noNames.includes(p)) {
+            Q.parlament_lgbt_no += seats;
+            noParties.push({label:labels[p]});
+        } else {
+            Q.parlament_lgbt_abst += seats;
+            abstainParties.push({label:labels[p]});
+        }
+    }
+    Q.parlament_lgbt_passed = Q.parlament_lgbt_yes > Q.parlament_lgbt_no;
+    Q.parlament_lgbt_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_lgbt_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_lgbt_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_lgbt_no,parties:noParties}
+    ]};
+
+    if (Q.parlament_lgbt_passed) {
+        var passageYoung = enforcement ? 0.245 : 0.126;
+        var passageMiddle = enforcement ? 0.105 : 0.056;
+        var passageRetiredLoss = enforcement ? 0.084 : 0;
+        var passageBusinessLoss = enforcement ? 0.07 : 0;
+        var passageRuralLoss = enforcement ? 0.056 : 0;
+        for (const c of Q.parlament_constituencies) {
+            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
+            Q[rightsDonor + "_parlament_" + c + "_young_support"] -= passageYoung;
+            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
+            Q[rightsDonor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
+            Q[author + "_parlament_" + c + "_retired_support"] -= passageRetiredLoss;
+            Q[orderParty + "_parlament_" + c + "_retired_support"] += passageRetiredLoss;
+            Q[author + "_parlament_" + c + "_buss_support"] -= passageBusinessLoss;
+            Q[orderParty + "_parlament_" + c + "_buss_support"] += passageBusinessLoss;
+            Q[author + "_parlament_" + c + "_rural_support"] -= passageRuralLoss;
+            Q[orderParty + "_parlament_" + c + "_rural_support"] += passageRuralLoss;
+        }
+        if (enforcement) {
+            Q.welfare_index += 0.7;
+            G.registerLaw(Q, {id:"lgbt_enforcement",title:"LGBTI Right Enforcement",group:"rights",icon:"img/fist_icon.png",targets:{generalitat_surplus:-0.005,social_dissent_eq:-0.8},ramp_ticks:8});
+        } else {
+            Q.welfare_index += 0.4;
+            G.registerLaw(Q, {id:"lgbt_rights_services",title:"LGBTI Rights and Services",group:"rights",icon:"img/fist_icon.png",targets:{generalitat_surplus:-0.0025},ramp_ticks:4});
+        }
+    }
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_lgbt_vote_result"}'></div>
+
+[? if parlament_lgbt_passed and parlament_lgbt_variant == "rights_services": The Parlament has approved the law with broad support. Public services must now put its anti-discrimination guarantees, staff training and victim-support routes into practice.?]
+[? if parlament_lgbt_passed and parlament_lgbt_variant == "enforcement": The Parlament has approved an unprecedented protection and enforcement framework for LGBTI people. Building that capacity will take time and money, and the fight for further rights is not over, but we can congratulate ourselves with this achievement, at least for now..?]
+[? if not parlament_lgbt_passed: Somehow, the Parlament has rejected the law. The proposal can return, but its guarantees will remain only promises until a majority votes for them.?]
+
+- @post_event: Continue...

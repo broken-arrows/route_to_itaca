@@ -1,0 +1,22 @@
+title: Constitutional Court rules on the Climate Change Law
+face-image: img/events/constitucional.jpg
+new-page: true
+tags: event
+view-if: constitutional_climate_change_trigger and parlament_climate_change_variant = "economy_transition"
+max-visits: 1
+role: event
+on-arrival: {!
+    if (Q.climate_transition_mature) {
+        G.deactivateLaw(Q, "climate_binding_targets_mature", "struck_down");
+    } else {
+        G.deactivateLaw(Q, "climate_binding_targets_initial", "struck_down");
+    }
+    Q.climate_transition_contested_struck = true;
+    Q.cat_spa_relations -= 4;
+!}
+
+= Constitutional Court rules on the Climate Change Law
+
+Even with the Constitutional Court preserving the very broad framework of the Climate Change Law, including adaptation and Catalan transition measures, it has nontheless annulled many of the stated targets and obligations. We can assume some of the goals of maturing into a green economy will surive and still have a purpose, but without many of the compulsory economy-wide provisions we're yet to see how effective it will be. 
+
+- @post_event: Continue...

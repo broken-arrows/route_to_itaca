@@ -1,2 +1,116 @@
-title: Parlament Civil Law Scene
+title: Book Six of the Catalan Civil Code
 new-page: true
+choose-if: party_resources > 0 and not parlament_civil_law_passed
+subtitle: [? if coming_from_parlament: \[-1 resources\]?]
+unavailable-subtitle: [? if parlament_civil_law_passed: Already approved!?][? if not parlament_civil_law_passed and party_resources < 1: Not enough resources.?]
+on-arrival: {!
+    if (Q.coming_from_parlament) Q.party_resources -= 1;
+!}
+
+= Book Six of the Catalan Civil Code
+
+Catalonia's Civil Code remains incomplete. Historically distinct to the Spanish "common" code and with Catalan autonomy allowing for its development, there next step in walking towards its completion is the Sixth Book, regarding contractual obligations. It is also a chance for the Parlament to bring Civil Law up to speed and have one of the most advanced codes in the world, as many are demanding, even if it does break with some of its historical roots.
+
+- @civil_law_consolidation: Consolidate established Catalan contracts and obligations
+- @civil_law_complete: Complete Book Six as a modern and systematic code
+
+@civil_law_consolidation
+subtitle: Follow the clearest historical connection to Catalan civil law.
+on-arrival: parlament_civil_law_variant = "consolidation"
+go-to: civil_law_vote
+
+@civil_law_complete
+subtitle: Fast-forward civil law to the most up-to-date practices.
+on-arrival: parlament_civil_law_variant = "complete_book_six"
+go-to: civil_law_vote
+
+@civil_law_vote
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.coming_from_parlament = false;
+
+    var complete = Q.parlament_civil_law_variant == "complete_book_six";
+    var author = proposingParty;
+    var competenceDonor = Q.parlament_current_ciu;
+    if (competenceDonor == author || (Q[competenceDonor + "_parlament_s"] || 0) <= 0) competenceDonor = Q.parlament_current_icv;
+    if (competenceDonor == author || (Q[competenceDonor + "_parlament_s"] || 0) <= 0) competenceDonor = "psc";
+    if (competenceDonor == author || (Q[competenceDonor + "_parlament_s"] || 0) <= 0) competenceDonor = "cs";
+
+    var proposalMiddle = complete ? 0.075 : 0.036;
+    var proposalRural = complete ? 0.06 : 0.03;
+    var proposalBusiness = complete ? 0.036 : 0;
+    for (const c of Q.parlament_constituencies) {
+        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
+        Q[competenceDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
+        Q[author + "_parlament_" + c + "_rural_support"] += proposalRural;
+        Q[competenceDonor + "_parlament_" + c + "_rural_support"] -= proposalRural;
+        Q[author + "_parlament_" + c + "_buss_support"] += proposalBusiness;
+        Q[competenceDonor + "_parlament_" + c + "_buss_support"] -= proposalBusiness;
+    }
+
+    // TODO: Refine the PSC's complete-Book-Six vote by leadership after playtesting.
+    var yesNames = complete
+        ? ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","icv","csqp","cecp","ecp","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","cs","icv","csqp","cecp","ecp","unio","si"];
+    var noNames = complete
+        ? ["ppc","cs","vox","pxc","fnc"]
+        : ["vox","pxc","fnc"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSÃ­",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_civil_law_yes = 0;
+    Q.parlament_civil_law_no = 0;
+    Q.parlament_civil_law_abst = 0;
+    for (const p of all) {
+        var seats = Q[p + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        if (yesNames.includes(p)) {
+            Q.parlament_civil_law_yes += seats;
+            yesParties.push({label:labels[p]});
+        } else if (noNames.includes(p)) {
+            Q.parlament_civil_law_no += seats;
+            noParties.push({label:labels[p]});
+        } else {
+            Q.parlament_civil_law_abst += seats;
+            abstainParties.push({label:labels[p]});
+        }
+    }
+    Q.parlament_civil_law_passed = Q.parlament_civil_law_yes > Q.parlament_civil_law_no;
+    Q.parlament_civil_law_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_civil_law_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_civil_law_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_civil_law_no,parties:noParties}
+    ]};
+
+    if (Q.parlament_civil_law_passed) {
+        var passageMiddle = complete ? 0.175 : 0.084;
+        var passageRural = complete ? 0.14 : 0.07;
+        var passageBusiness = complete ? 0.084 : 0;
+        for (const c of Q.parlament_constituencies) {
+            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
+            Q[competenceDonor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
+            Q[author + "_parlament_" + c + "_rural_support"] += passageRural;
+            Q[competenceDonor + "_parlament_" + c + "_rural_support"] -= passageRural;
+            Q[author + "_parlament_" + c + "_buss_support"] += passageBusiness;
+            Q[competenceDonor + "_parlament_" + c + "_buss_support"] -= passageBusiness;
+        }
+        if (complete) {
+            G.registerLaw(Q, {id:"civil_code_book_six_core",title:"Civil Code: Book Six",group:"government",icon:"img/government_icon.svg",targets:{gdp_growth:0.03,generalitat_surplus:-0.001},ramp_ticks:9});
+            G.registerLaw(Q, {id:"civil_code_book_six_contested_rule",title:"Book Six Contested Provision",targets:{gdp_growth:0.01},ramp_ticks:9}); // TODO: Check that this is hidden
+            Q.constitutional_civil_law_countdown = 24;
+            Q.countdowns.push("constitutional_civil_law");
+        } else {
+            G.registerLaw(Q, {id:"civil_code_consolidation",title:"Civil Code: Traditional Book Six",group:"government",icon:"img/government_icon.svg",targets:{gdp_growth:0.02},ramp_ticks:6});
+        }
+    }
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_civil_law_vote_result"}'></div>
+
+[? if parlament_civil_law_passed and parlament_civil_law_variant == "consolidation": The Parlament has approved the consolidation of Catalonia's established law of contracts. With its more traditional roots, there's hope that at least any constitutional challenges to it fall on their own, but we'll have to wait and see.?]
+[? if parlament_civil_law_passed and parlament_civil_law_variant == "complete_book_six": The Parlament has completed Book Six of the Civil Code. Most of the new framework rests firmly on Catalonia's civil-law powers, though the usual suspects have already filed challenges against many of its newly developed contractual rules.?]
+[? if not parlament_civil_law_passed: The Parlament has rejected Book Six. Catalan contract law remains incomplete, though we may want to introduce the proposal again at a more favourable time.?]
+
+- @post_event: Continue...

@@ -11,6 +11,6 @@ role: event
 
 = Constitutional Court upholds the Law on Vacant-Homes Uses
 
-[? if parlament_urbanism_variant="hosing_mobilisation": A bit unexpectedly given the Law's ambition, the Constitutional Court has nonetheless ruled in its favour. ?]The challenge has failed in full. The Court accepts that the levy is a genuine Catalan tax and that its housing-policy purpose does not, by itself, invade the state's powers. 
+[? if parlament_urbanism_variant = "housing_mobilization": A bit unexpectedly given the Law's ambition, the Constitutional Court has nonetheless ruled in its favour. ?]The challenge has failed in full. The Court accepts that the levy is a genuine Catalan tax and that its housing-policy purpose does not, by itself, invade the state's powers.
 
 - @post_event: Continue...

@@ -1,0 +1,16 @@
+title: Constitutional Court rules on the Catalan Bank Taxation
+face-image: img/events/constitucional.jpg
+new-page: true
+tags: event
+view-if: constitutional_bank_taxes_trigger
+max-visits: 1
+role: event
+on-arrival: {!
+    G.deactivateLaw(Q, "bank_deposit_tax", "repealed");
+!}
+
+= Constitutional Court rules on the Catalan Bank Taxation
+
+With the central government having recently passed very similar taxation updates to the ones already in place by the Generalitat, the challenge to the Catalan bank taxes has gained a lot of weight. What was expected to be a longer legal battle over autonomy powers now has been speed up and resolved swiftly, as double taxation is never allowed. With that, the Constitutional Court has repealed the Catalan version of the law, leaving only the Gobierno's, and thus cutting off any direct revenue from it for the Catalan government.
+
+- @post_event: Damn it!

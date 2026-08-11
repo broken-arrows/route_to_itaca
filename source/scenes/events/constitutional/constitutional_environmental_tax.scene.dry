@@ -1,0 +1,17 @@
+title: Constitutional Court rules on the Nuclear Tax
+face-image: img/events/constitucional.jpg
+new-page: true
+tags: event
+view-if: constitutional_environmental_tax_trigger
+max-visits: 1
+role: event
+on-arrival: {!
+    G.deactivateLaw(Q, "nuclear_production_tax", "struck_down");
+    Q.cat_spa_relations -= 3;
+!}
+
+= Constitutional Court rules on the Nuclear Tax
+
+In yet another ruling against Catalan laws, the Constitutional Court has struck down the recently implemented taxes on Nuclear electricity. The ruling is based on it being considered a duplication of an existing State-wide levy on radioactive waste, yet the most critical will see yet another denial on Catalonia having any say in its energy sector. 
+
+- @post_event: Continue...

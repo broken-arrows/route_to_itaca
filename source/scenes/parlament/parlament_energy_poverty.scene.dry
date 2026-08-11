@@ -1,2 +1,123 @@
-title: Parlament Energy Poverty
+title: Law on Energy Poverty
 new-page: true
+choose-if: party_resources > 0 and not parlament_energy_poverty_passed
+subtitle: [? if coming_from_parlament: \[-1 resources\]?]
+unavailable-subtitle: [? if parlament_energy_poverty_passed: Already approved!?][? if not parlament_energy_poverty_passed and party_resources < 1: Not enough resources.?]
+on-arrival: {!
+    if (Q.coming_from_parlament) Q.party_resources -= 1;
+!}
+
+= Law on Energy Poverty
+
+After the big setbacks of the 2008 Financial Crisis and the 2011 Debt Crisis, the number of people struggling to pay the most basic bills like electricity, gas, or water, have climbed to the thousands. Social pressure groups and many in the left are calling for a Generalitat-led guarantee of these basic needs in times of economic struggle. Eradicating Energy Poverty, nonetheless, can take different directions. Catalan public social services could, for instance, aid in funding these bills. Alternatively, the law could forbid supplying companies from cutting certified vulnerable households from their services, absorbing themselves the cost.
+
+- @energy_public_guarantee: Fund a public guarantee of essential supply
+- @energy_disconnection_ban: Prohibit disconnections for vulnerable households
+
+@energy_public_guarantee
+on-arrival: parlament_energy_poverty_variant = "public_guarantee"
+go-to: energy_poverty_vote
+
+@energy_disconnection_ban
+on-arrival: parlament_energy_poverty_variant = "disconnection_ban"
+go-to: energy_poverty_vote
+
+@energy_poverty_vote
+on-arrival: {!
+    var playerProposal = Q.coming_from_parlament;
+    var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.coming_from_parlament = false;
+    var ambitious = Q.parlament_energy_poverty_variant == "disconnection_ban";
+    var author = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    var socialDonor = Q.parlament_current_icv;
+    var backlash = Q.cs_parlament_s > 0 ? "cs" : "ppc";
+
+    var proposalYoung = ambitious ? 0.165 : 0.075;
+    var proposalUnemployed = ambitious ? 0.225 : 0.105;
+    var proposalMiddle = ambitious ? 0.09 : 0.045;
+    var proposalBussLoss = ambitious ? 0.045 : 0;
+    var proposalMiddleLoss = ambitious ? 0.024 : 0;
+    for (const c of Q.parlament_constituencies) {
+        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
+        Q[socialDonor + "_parlament_" + c + "_young_support"] -= proposalYoung;
+        Q[author + "_parlament_" + c + "_unemployed_support"] += proposalUnemployed;
+        Q[socialDonor + "_parlament_" + c + "_unemployed_support"] -= proposalUnemployed;
+        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
+        Q[socialDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
+        Q[author + "_parlament_" + c + "_buss_support"] -= proposalBussLoss;
+        Q[backlash + "_parlament_" + c + "_buss_support"] += proposalBussLoss;
+        Q[author + "_parlament_" + c + "_middle_support"] -= proposalMiddleLoss;
+        Q[backlash + "_parlament_" + c + "_middle_support"] += proposalMiddleLoss;
+    }
+
+    // TODO: Refine PSC and Convergence-family positions by leadership after playtesting.
+    var yesNames = ambitious
+        ? ["jxsi","jxcat","erc","cup","psc","icv","csqp","cecp","ecp","si"]
+        : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","cs","icv","csqp","cecp","ecp","unio","si"];
+    var noNames = ambitious
+        ? ["ppc","cs","vox","pxc","fnc"]
+        : ["vox","pxc","fnc"];
+    if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
+    var all = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_energy_poverty_yes = 0;
+    Q.parlament_energy_poverty_no = 0;
+    Q.parlament_energy_poverty_abst = 0;
+    for (const p of all) {
+        var seats = Q[p + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        if (yesNames.includes(p)) {
+            Q.parlament_energy_poverty_yes += seats;
+            yesParties.push({label:labels[p]});
+        } else if (noNames.includes(p)) {
+            Q.parlament_energy_poverty_no += seats;
+            noParties.push({label:labels[p]});
+        } else {
+            Q.parlament_energy_poverty_abst += seats;
+            abstainParties.push({label:labels[p]});
+        }
+    }
+    Q.parlament_energy_poverty_passed = Q.parlament_energy_poverty_yes > Q.parlament_energy_poverty_no;
+    Q.parlament_energy_poverty_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_energy_poverty_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_energy_poverty_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_energy_poverty_no,parties:noParties}
+    ]};
+
+    if (Q.parlament_energy_poverty_passed) {
+        var passageYoung = ambitious ? 0.385 : 0.175;
+        var passageUnemployed = ambitious ? 0.525 : 0.245;
+        var passageMiddle = ambitious ? 0.21 : 0.105;
+        var passageBussLoss = ambitious ? 0.105 : 0;
+        var passageMiddleLoss = ambitious ? 0.056 : 0;
+        for (const c of Q.parlament_constituencies) {
+            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
+            Q[socialDonor + "_parlament_" + c + "_young_support"] -= passageYoung;
+            Q[author + "_parlament_" + c + "_unemployed_support"] += passageUnemployed;
+            Q[socialDonor + "_parlament_" + c + "_unemployed_support"] -= passageUnemployed;
+            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
+            Q[socialDonor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
+            Q[author + "_parlament_" + c + "_buss_support"] -= passageBussLoss;
+            Q[backlash + "_parlament_" + c + "_buss_support"] += passageBussLoss;
+            Q[author + "_parlament_" + c + "_middle_support"] -= passageMiddleLoss;
+            Q[backlash + "_parlament_" + c + "_middle_support"] += passageMiddleLoss;
+        }
+        if (ambitious) {
+            G.registerLaw(Q, {id:"energy_poverty_protection_core",title:"Energy-Poverty Protection",icon:"img/people_icon.svg",targets:{welfare_index_growth:0.08,generalitat_surplus:-0.005,social_dissent_eq:-1},ramp_ticks:2});
+            G.registerLaw(Q, {id:"energy_poverty_disconnection_ban",title:"Utility Disconnection Ban",icon:"img/people_icon.svg",targets:{welfare_index_growth:0.10,gdp_growth:-0.01,social_dissent_eq:-1.5},ramp_ticks:2});
+        } else {
+            G.registerLaw(Q, {id:"energy_poverty_public_guarantee",title:"Essential-Supply Guarantee",icon:"img/people_icon.svg",targets:{welfare_index_growth:0.10,generalitat_surplus:-0.025,social_dissent_eq:-1.5},ramp_ticks:4});
+        }
+        Q.constitutional_energy_poverty_countdown = 24;
+        Q.countdowns.push("constitutional_energy_poverty");
+    }
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_energy_poverty_vote_result"}'></div>
+
+[? if parlament_energy_poverty_passed and parlament_energy_poverty_variant == "public_guarantee": The Parlament has approved a public essential-supply guarantee. Vulnerable households will receive direct protection, although the Generalitat must carry its cost. We can, as usual, expect a Constitutional challenge, but it is hard for lawmakers to say where the court's will will fall.?]
+[? if parlament_energy_poverty_passed and parlament_energy_poverty_variant == "disconnection_ban": The Parlament has approved a quite ambitious disconnection ban. As expected, social organizations are celebrating while utility companies protest. We can, as usual, expect a Constitutional challenge, but it is hard for lawmakers to say where the court's will will fall.?]
+[? if not parlament_energy_poverty_passed: The Parlament has rejected our proposed law. Energy poverty remains unaddressed, and we'll have to find our footing to try to pass it again at a more favourable time. ?]
+
+- @post_event: Continue...
