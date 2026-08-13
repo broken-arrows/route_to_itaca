@@ -40,6 +40,7 @@ export type DrawResult =
 
 export interface Frame {
   sceneId: string;
+  title: string;
   sceneTags: string[];
   role?: SceneRole;
   effectiveRole: EffectiveRole;
@@ -53,6 +54,7 @@ export interface Frame {
   pinned: CardView[];
   gameOver: boolean;
   bg: string | null;
+  faceImage: string | null;
   signals: unknown[];
 }
 

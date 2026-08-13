@@ -8,6 +8,8 @@ import GameView from '../src/views/GameView.vue';
 import DebugPage from '../src/views/DebugPage.vue';
 import DeskView from '../src/views/DeskView.vue';
 import PaperPage from '../src/components/desk/PaperPage.vue';
+import Newspaper from '../src/components/desk/Newspaper.vue';
+import FrontPage from '../src/components/desk/FrontPage.vue';
 import ResponsiveViewport from '../src/components/ResponsiveViewport.vue';
 import { useGameStore } from '../src/stores/game';
 import { useDeskStore, setAnimationsForTest } from '../src/stores/desk';
@@ -87,14 +89,22 @@ describe('GameView phase routing', () => {
     }
   });
 
-  it("routes 'eventPage' to PaperPage variant=event", async () => {
+  it("routes 'newspaper' to Newspaper", async () => {
+    const { desk, wrapper } = mountAtHub();
+    desk.phase = 'newspaper';
+    await nextTick();
+    expect(wrapper.findComponent(DeskView).exists()).toBe(false);
+    expect(wrapper.findComponent(Newspaper).exists()).toBe(true);
+    expect(wrapper.findComponent(PaperPage).exists()).toBe(false);
+  });
+
+  it("routes 'eventPage' to FrontPage", async () => {
     const { desk, wrapper } = mountAtHub();
     desk.phase = 'eventPage';
     await nextTick();
     expect(wrapper.findComponent(DeskView).exists()).toBe(false);
-    const page = wrapper.findComponent(PaperPage);
-    expect(page.exists()).toBe(true);
-    expect(page.props('variant')).toBe('event');
+    expect(wrapper.findComponent(FrontPage).exists()).toBe(true);
+    expect(wrapper.findComponent(PaperPage).exists()).toBe(false);
   });
 
   it("routes 'page' with a non-ending scene to PaperPage variant=page", async () => {
@@ -176,14 +186,14 @@ describe('GameView phase routing', () => {
     expect(viewport.findComponent(DeskView).exists()).toBe(true);
   });
 
-  it('renders PaperPage inside the responsive player viewport', async () => {
+  it('renders FrontPage inside the responsive player viewport', async () => {
     const { desk, wrapper } = mountAtHub();
     desk.phase = 'eventPage';
     await nextTick();
     expect(wrapper.find('.responsive-viewport').exists()).toBe(true);
     const viewport = wrapper.findComponent(ResponsiveViewport);
     expect(viewport.exists()).toBe(true);
-    expect(viewport.findComponent(PaperPage).exists()).toBe(true);
+    expect(viewport.findComponent(FrontPage).exists()).toBe(true);
   });
 });
 

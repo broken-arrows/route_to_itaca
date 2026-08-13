@@ -3,8 +3,8 @@
 // .superpowers/sdd/p2-task-8-brief.md). Boots the game the same way
 // DebugPage does (see DebugPage.vue onMounted, via game.initFromUrl), then
 // routes purely on the desk store's phase: the four "at the desk" phases
-// render DeskView (Task 6/7's work, untouched here); 'eventPage' and 'page'
-// render PaperPage, the neutral full-page paper surface (this task);
+// render DeskView; newspaper/eventPage render their Phase-4A paper surfaces;
+// other non-desk phases render PaperPage;
 // 'boot' shows a loading/error state that reuses DebugPage's own i18n keys
 // (debug.loading/debug.loadError) rather than duplicating that copy.
 //
@@ -18,6 +18,8 @@ import { useDeskStore } from '../stores/desk';
 import ResponsiveViewport from '../components/ResponsiveViewport.vue';
 import DeskView from './DeskView.vue';
 import PaperPage from '../components/desk/PaperPage.vue';
+import Newspaper from '../components/desk/Newspaper.vue';
+import FrontPage from '../components/desk/FrontPage.vue';
 import Toast from '../components/desk/Toast.vue';
 
 const { t } = useI18n();
@@ -51,6 +53,8 @@ const pageVariant = computed<'page' | 'event' | 'ending'>(() => {
       <p v-else>{{ t('debug.loading') }}</p>
     </div>
     <DeskView v-else-if="showDesk" />
+    <Newspaper v-else-if="desk.phase === 'newspaper'" />
+    <FrontPage v-else-if="desk.phase === 'eventPage'" />
     <PaperPage v-else :variant="pageVariant" />
     <!-- Mounted at the phase-router level, not inside DeskView: an
          achievement unlock (or an engine-error nudge) must stay visible

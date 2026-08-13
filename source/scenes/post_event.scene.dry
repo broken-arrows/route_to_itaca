@@ -454,11 +454,13 @@ go-to: events_choice if has_event = 1; elections_choice if has_election = 1; mai
 = [+ month : month +] [+ year +][? if rubicon:, Week [+ week +]?]
 
 @events_choice
+title: El Matí
 role: newspaper
 
 - #event
 
 @elections_choice
+title: El Matí
 role: newspaper
 
 - #election
@@ -466,4 +468,3 @@ role: newspaper
 # go-to: main
 
 # This scene is solely for updating numbers after events, and routing to special events.
-

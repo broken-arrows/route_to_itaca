@@ -46,15 +46,23 @@ export class CaptureUI {
   maxCards = 0;
   pinned: RawChoice[] = [];
   bg: string | null = null;
+  faceImage: string | null = null;
   signals: unknown[] = [];
 
   // -- content --
   beginGame(): void {}
-  displayContent(paragraphs: unknown[], _faceImage?: unknown): void {
+  displayContent(paragraphs: unknown[], faceImage?: unknown): void {
     this.paragraphs.push(...paragraphs);
+    // A face image belongs to the current page, not to one individual scene
+    // transition. Dendry continuations commonly append prose without repeating
+    // `face-image`; the old browser UI leaves the existing figure in place.
+    // Only replace it when new media is explicitly supplied. `newPage()` is
+    // the boundary that clears it.
+    if (typeof faceImage === 'string') this.faceImage = faceImage;
   }
   newPage(): void {
     this.paragraphs = [];
+    this.faceImage = null;
   }
   // -- choices & cards --
   displayChoices(choices: RawChoice[]): void {

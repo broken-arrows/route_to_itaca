@@ -37,6 +37,7 @@ export type DeskPhase =
   | 'drawing'
   | 'dossierOpen'
   | 'resolving'
+  | 'newspaper'
   | 'eventPage';
 
 // Animations toggle now lives in the settings store; this wrapper keeps the
@@ -48,6 +49,7 @@ export function setAnimationsForTest(on: boolean): void {
 
 function routePhase(role: EffectiveRole): DeskPhase {
   if (role === 'desk') return 'idle';
+  if (role === 'newspaper') return 'newspaper';
   if (role === 'event') return 'eventPage';
   if (role === 'pinned-action' || role.startsWith('card')) return 'dossierOpen';
   return 'page';
@@ -129,8 +131,11 @@ export const useDeskStore = defineStore('desk', () => {
   // arrival of a session only initializes the stamp — it must NOT save,
   // otherwise loading a save (which immediately routes to idle) would
   // clobber the auto-1/auto-2 rotation before the player has done anything
-  // new. Every later idle-entry whose stamp differs from the last-seen one
-  // rotates the slot.
+  // new. Every later desk OR newspaper-listing entry whose stamp differs
+  // from the last-seen one rotates the slot. The newspaper entry matters:
+  // it is the normal first stable frame after a month action, and auto-1 must
+  // capture that listing rather than wait until the complete news sequence
+  // has returned to the desk.
   let autosaveStamp: string | null = null;
 
   // Achievement-unlock detection: a frame-to-frame diff of Q.achievement_*
@@ -258,7 +263,7 @@ export const useDeskStore = defineStore('desk', () => {
       deskSnapshot.value = { hand: f.hand, decks: f.decks, pinned: f.pinned, maxCards: f.maxCards, html: f.html };
     }
     phase.value = next;
-    if (next === 'idle') maybeAutosave();
+    if (next === 'idle' || next === 'newspaper') maybeAutosave();
   }
 
   watch(() => game.frame, syncFromFrame, { immediate: true, flush: 'sync' });
@@ -352,6 +357,49 @@ export const useDeskStore = defineStore('desk', () => {
     });
   }
 
+  // Newspaper stories and front-page answers are ordinary engine choices.
+  // These thin, phase-guarded entry points keep the presentation from
+  // acquiring any event-specific navigation or eligibility rules.
+  function chooseNewspaperStory(i: number): void {
+    if (phase.value !== 'newspaper') return;
+    const choice = game.frame?.choices[i];
+    if (!choice?.canChoose) return;
+    if (!runNewsEngine(() => game.choose(i))) return;
+
+    // Most listing choices open an event page and are not a completed story.
+    // A choice whose authored go-to resolves immediately is still valid; in
+    // that case checkpoint the resulting listing/desk just like a front-page
+    // resolution.
+    if (routePhase(game.effectiveRole) !== 'eventPage') game.checkpointAutosave();
+  }
+
+  function chooseEventChoice(i: number): void {
+    if (phase.value !== 'eventPage') return;
+    const choice = game.frame?.choices[i];
+    if (!choice?.canChoose) return;
+    if (!runNewsEngine(() => game.choose(i))) return;
+
+    // Role inheritance keeps multi-stage event continuations on eventPage.
+    // Only leaving that effective role means the story resolved. The engine
+    // itself decides whether the destination is the refreshed event paper,
+    // the successive election paper, the desk, or an ending.
+    if (routePhase(game.effectiveRole) !== 'eventPage') game.checkpointAutosave();
+  }
+
+  function runNewsEngine(fn: () => void): boolean {
+    try {
+      fn();
+      return true;
+    } catch (err) {
+      console.error('[desk] engine action failed:', err);
+      // News errors must not use recoverToIdle(): doing so would visually
+      // unlock the desk while the engine remains on a newspaper/event frame.
+      phase.value = game.frame ? routePhase(game.effectiveRole) : 'boot';
+      nudge('desk.toast.engineError');
+      return false;
+    }
+  }
+
   // Toast auto-dismiss deliberately does NOT scale with the animations
   // toggle: a toast is information delivery, not motion — with animations
   // off an animMs-scaled delay would set + clear it synchronously, making
@@ -385,6 +433,8 @@ export const useDeskStore = defineStore('desk', () => {
     playFromHand,
     playPinned,
     pickPaper,
+    chooseNewspaperStory,
+    chooseEventChoice,
     nudge,
   };
 });

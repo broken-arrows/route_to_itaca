@@ -221,10 +221,8 @@ export class DendryAdapter {
   importStateJSON(json: string): Frame {
     this.ui.resetTransient();
     this.engine.setState(JSON.parse(json));
-    // Recompute from the loaded scene alone; dossier context (an inherited
-    // effective role from a role-less scene's ancestor) is intentionally NOT
-    // restored across load.
-    this.effective = this.roleFor(this.engine.state.sceneId) ?? 'page';
+    const sceneId = this.engine.state.sceneId;
+    this.effective = this.roleFor(sceneId) ?? this.restoredEventRole(sceneId) ?? 'page';
     return this.buildFrame();
   }
 
@@ -238,6 +236,81 @@ export class DendryAdapter {
     return r && r !== 'default' ? (r as SceneRole) : undefined;
   }
 
+  /**
+   * Restore the presentation context that normal navigation would have
+   * inherited when a save lands on a role-less event continuation.
+   *
+   * Dendry saves the current scene, not the path used to reach it. Most
+   * continuations retain their authored parent in the compiled id
+   * (`event.branch`), which is the strongest signal. Some election flows hand
+   * off to a scene in another file, so for those we conservatively walk the
+   * reverse authored scene graph until reaching explicit roles. We restore
+   * `event` only when every boundary is an event; shared helpers reachable
+   * from a card/page keep the normal `page` fallback.
+   *
+   * This deliberately does not reconstruct card dossier roles. Their runtime
+   * inheritance remains unchanged, while persistence restoration is limited
+   * to the event/front-page correctness contract.
+   */
+  private restoredEventRole(sceneId: string): EffectiveRole | undefined {
+    const scenes = this.engine.game.scenes as Record<string, Record<string, unknown>>;
+
+    // A local @child compiles as parent.child, so walk all authored parents.
+    let parent = sceneId;
+    while (parent.includes('.')) {
+      parent = parent.slice(0, parent.lastIndexOf('.'));
+      const parentRole = this.roleFor(parent);
+      if (parentRole) return parentRole === 'event' ? 'event' : undefined;
+    }
+
+    const predecessors = new Map<string, string[]>();
+    const addEdge = (from: string, rawTarget: unknown) => {
+      if (typeof rawTarget !== 'string' || rawTarget.startsWith('#')) return;
+      const target = rawTarget.replace(/^@/, '');
+      if (!Object.prototype.hasOwnProperty.call(scenes, target)) return;
+      const incoming = predecessors.get(target) ?? [];
+      incoming.push(from);
+      predecessors.set(target, incoming);
+    };
+
+    for (const [id, scene] of Object.entries(scenes)) {
+      for (const option of (scene.options as { id?: unknown }[] | undefined) ?? []) {
+        addEdge(id, option.id);
+      }
+      for (const destination of (scene.goTo as { id?: unknown }[] | undefined) ?? []) {
+        addEdge(id, destination.id);
+      }
+    }
+
+    const pending = [sceneId];
+    const visited = new Set<string>([sceneId]);
+    let foundEventBoundary = false;
+    let ambiguous = false;
+
+    while (pending.length > 0) {
+      const current = pending.pop()!;
+      const incoming = predecessors.get(current) ?? [];
+      if (incoming.length === 0) {
+        ambiguous = true;
+        continue;
+      }
+      for (const predecessor of incoming) {
+        const role = this.roleFor(predecessor);
+        if (role) {
+          if (role === 'event') foundEventBoundary = true;
+          else ambiguous = true;
+          continue;
+        }
+        if (!visited.has(predecessor)) {
+          visited.add(predecessor);
+          pending.push(predecessor);
+        }
+      }
+    }
+
+    return foundEventBoundary && !ambiguous ? 'event' : undefined;
+  }
+
   protected buildFrame(): Frame {
     const sceneId = this.engine.state.sceneId;
     const scene = (this.engine.game.scenes[sceneId] ?? {}) as Record<string, unknown>;
@@ -245,6 +318,7 @@ export class DendryAdapter {
     if (ownRole) this.effective = ownRole; // 'desk' reset is just this assignment
     return {
       sceneId,
+      title: convertLine(scene.title ?? sceneId),
       sceneTags: (scene.tags as string[] | undefined) ?? [],
       role: ownRole,
       effectiveRole: this.effective,
@@ -285,6 +359,12 @@ export class DendryAdapter {
       })),
       gameOver: this.engine.isGameOver(),
       bg: this.ui.bg,
+      // setState's restore branch replays stored prose without forwarding the
+      // scene face-image to the UI. The image is authored static scene data,
+      // so read it here as the load-safe source of truth; CaptureUI remains a
+      // fallback for engines that supply a dynamic display image.
+      faceImage:
+        typeof scene.faceImage === 'string' ? scene.faceImage : this.ui.faceImage,
       signals: [...this.ui.signals],
     };
   }

@@ -149,6 +149,52 @@ const FILES_EVENT = [
   },
 ];
 
+// Phase 4A lifecycle: the pinned turn action advances the month into an
+// events newspaper. Its story has a role-less continuation (which must remain
+// an event page through effective-role inheritance), then flows directly into
+// a separate elections newspaper, and the election returns to the desk.
+const FILES_NEWSPAPER = [
+  FILES[0],
+  {
+    name: 'root.scene.dry',
+    contents: 'title: Root\non-arrival: year = 2012; month = 1; party_resources = 3;\n\n- @hub\n',
+  },
+  {
+    name: 'hub.scene.dry',
+    contents:
+      'title: Hub\nrole: desk\nis-hand: true\nmax-cards: 3\n\nDesk.\n\n- @turn_action\n',
+  },
+  {
+    name: 'turn_action.scene.dry',
+    contents: 'title: Advance\nrole: pinned-action\n\n- @events\n',
+  },
+  {
+    name: 'events.scene.dry',
+    contents:
+      'title: Events\nrole: newspaper\non-arrival: month += 1;\n\nCurrent events.\n\n- @event_one\n- @locked_story\n',
+  },
+  {
+    name: 'locked_story.scene.dry',
+    contents: 'title: Locked\nrole: event\nchoose-if: false\n\nUnavailable.\n\n- @elections\n',
+  },
+  {
+    name: 'event_one.scene.dry',
+    contents: 'title: Event One\nrole: event\n\nStory.\n\n- @event_continuation\n',
+  },
+  {
+    name: 'event_continuation.scene.dry',
+    contents: 'title: Event Continued\n\nMore story.\n\n- @elections\n',
+  },
+  {
+    name: 'elections.scene.dry',
+    contents: 'title: Elections\nrole: newspaper\n\nElection results.\n\n- @election_one\n',
+  },
+  {
+    name: 'election_one.scene.dry',
+    contents: 'title: Election One\nrole: event\n\nResult.\n\n- @hub\n',
+  },
+];
+
 // Raw-JSON fixture: it deliberately contains a dangling reference (`ghost`
 // is not a scene), which the .dry compiler would reject at BUILD time —
 // which is exactly why engine throws are a RUNTIME concern (a renamed
@@ -236,6 +282,35 @@ function bootBroken() {
   game.initFromText(JSON.stringify(brokenGame));
   game.newGame();
   game.choose(0); // -> hub, idle
+  return { game, desk };
+}
+
+function bootBrokenNews(role: 'newspaper' | 'event') {
+  const game = useGameStore();
+  const desk = useDeskStore();
+  game.initFromText(JSON.stringify({
+    scenes: {
+      root: {
+        id: 'root',
+        type: 'scene',
+        title: 'Broken news',
+        role,
+        content: [],
+        options: [{ id: '@into_the_void' }],
+      },
+      into_the_void: {
+        id: 'into_the_void',
+        type: 'scene',
+        title: 'Into the void',
+        content: [],
+        goTo: [{ id: 'ghost' }],
+      },
+    },
+    qualities: {},
+    qdisplays: {},
+    tagLookup: {},
+  }));
+  game.newGame();
   return { game, desk };
 }
 
@@ -520,6 +595,69 @@ describe('desk store', () => {
     expect(slots.find((s) => s.slot === 'auto-1')!.month).toBe(2);
   });
 
+  it('routes newspapers separately and preserves seamless events to elections flow', async () => {
+    const { game, desk } = await boot(FILES_NEWSPAPER);
+    game.choose(0); // desk, seeds month 1
+    expect(desk.phase).toBe('idle');
+
+    desk.playPinned(game.frame!.pinned[0]);
+    desk.pickPaper(0); // month 2 events listing
+    expect(desk.phase).toBe('newspaper');
+    expect(game.frame?.sceneId).toBe('events');
+
+    // Presentation does not bypass ordinary choice eligibility.
+    desk.chooseNewspaperStory(1);
+    expect(game.frame?.sceneId).toBe('events');
+
+    desk.chooseNewspaperStory(0);
+    expect(desk.phase).toBe('eventPage');
+    expect(game.frame?.sceneId).toBe('event_one');
+
+    desk.chooseEventChoice(0);
+    expect(desk.phase).toBe('eventPage');
+    expect(game.frame?.sceneId).toBe('event_continuation');
+
+    desk.chooseEventChoice(0);
+    expect(desk.phase).toBe('newspaper');
+    expect(game.frame?.sceneId).toBe('elections');
+
+    desk.chooseNewspaperStory(0);
+    expect(desk.phase).toBe('eventPage');
+    desk.chooseEventChoice(0);
+    expect(desk.phase).toBe('idle');
+    expect(game.frame?.sceneId).toBe('hub');
+  });
+
+  it('rotates once at the news boundary, then checkpoints resolved stories in place', async () => {
+    const { game, desk } = await boot(FILES_NEWSPAPER);
+    game.choose(0); // desk, seeds month 1
+    expect(game.saveSlot('auto-1')).toMatchObject({ ok: true });
+    const priorSavedAt = game.listSlots()[0].savedAt;
+
+    desk.playPinned(game.frame!.pinned[0]);
+    desk.pickPaper(0); // events listing at month 2: one turn-boundary rotation
+
+    let slots = game.listSlots();
+    expect(slots.find((s) => s.slot === 'auto-1')).toMatchObject({ sceneId: 'events', month: 2 });
+    expect(slots.find((s) => s.slot === 'auto-2')?.savedAt).toBe(priorSavedAt);
+    const rollbackSavedAt = slots.find((s) => s.slot === 'auto-2')!.savedAt;
+
+    desk.chooseNewspaperStory(0); // opening is not a resolved-story checkpoint
+    desk.chooseEventChoice(0); // role-less continuation is not one either
+    expect(game.listSlots().find((s) => s.slot === 'auto-1')?.sceneId).toBe('events');
+
+    desk.chooseEventChoice(0); // resolves event -> elections listing
+    slots = game.listSlots();
+    expect(slots.find((s) => s.slot === 'auto-1')?.sceneId).toBe('elections');
+    expect(slots.find((s) => s.slot === 'auto-2')?.savedAt).toBe(rollbackSavedAt);
+
+    desk.chooseNewspaperStory(0);
+    desk.chooseEventChoice(0); // resolves election -> desk
+    slots = game.listSlots();
+    expect(slots.find((s) => s.slot === 'auto-1')?.sceneId).toBe('hub');
+    expect(slots.find((s) => s.slot === 'auto-2')?.savedAt).toBe(rollbackSavedAt);
+  });
+
   // REGRESSION (C3): the engine only fills displayHand/displayDecks/
   // displayPinnedCards on `is-hand` scenes (engine.js:334), and
   // CaptureUI.resetTransient() clears those buffers at the start of every
@@ -712,5 +850,21 @@ describe('desk store — engine errors never leave the machine stuck (spec §9)'
     expect(game.frame!.isHand).toBe(false);
     expect(desk.deskView.hand.map((c) => c.id)).toEqual(['c1']);
     expect(desk.deskView.decks.map((d) => d.id)).toEqual(['gov_deck']);
+  });
+
+  it.each([
+    ['newspaper', 'chooseNewspaperStory'],
+    ['event', 'chooseEventChoice'],
+  ] as const)('a throwing %s choice keeps the in-world actions locked', (role, action) => {
+    const { desk } = bootBrokenNews(role);
+    const expectedPhase = role === 'newspaper' ? 'newspaper' : 'eventPage';
+    expect(desk.phase).toBe(expectedPhase);
+
+    withSilencedError((errSpy) => {
+      desk[action](0);
+      expect(desk.phase).toBe(expectedPhase);
+      expect(desk.toastKey).toBe('desk.toast.engineError');
+      expect(errSpy).toHaveBeenCalled();
+    });
   });
 });

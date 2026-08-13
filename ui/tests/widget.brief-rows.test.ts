@@ -101,7 +101,7 @@ describe('Brief row widgets', () => {
     expect(benches.find('.roster-stamp').text()).toBe('you');
     expect(benches.find('.roster-stamp').attributes('data-band')).toBe('you');
     expect(benches.findAll('.roster-logo')[0].attributes('src')).toBe(
-      'http://localhost:3000/img/parties/logo_erc.svg',
+      'http://localhost:3000/img/parties/logo_erc.png',
     );
     expect(benches.findAll('.roster-logo')[1].attributes('src')).toBe(
       'http://localhost:3000/img/parties/logo_si.jpg',

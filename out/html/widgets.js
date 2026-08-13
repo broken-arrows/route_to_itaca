@@ -403,9 +403,10 @@
     },
   ];
 
-  // A widget the shell has no bespoke handler for still gets its data resolved
-  // here; Part 2 of phase 3b adds the generic fallback RENDERER that consumes
-  // it. Until then an unhandled marker stays an empty div, exactly as before.
+  // Shared explicit handlers resolve their data here. Desk-only Brief widgets
+  // live in status_new.scene.dry, which this frozen shell never renders, so an
+  // unknown marker deliberately remains untouched rather than growing a
+  // generic fallback solely for a UI that is scheduled for retirement.
   function resolveProps(el, Q) {
     var props = readDataProps(el);
     if (typeof props.configFrom === "string") {

@@ -53,6 +53,7 @@ export default defineConfig({
     include: [
       'dendrynexus-ten/lib/engine.js',
       'dendrynexus-ten/lib/ui/content/html.js',
+      'dendrynexus-ten/lib/persistence.js',
     ],
   },
   build: {

@@ -156,6 +156,14 @@ export const useGameStore = defineStore('game', () => {
     return saveSlot('auto-1');
   }
 
+  // A news sequence can span several player decisions after the turn-boundary
+  // rotation. Keep auto-2 as the genuine previous-turn rollback while making
+  // the current sequence resumable: checkpoints replace auto-1 directly and
+  // deliberately do not pass through saveAutosave()'s rotation.
+  function checkpointAutosave() {
+    return saveSlot('auto-1');
+  }
+
   function loadSlot(slot: string, allowRisk = false): LoadSlotResult {
     if (!saves || !adapter.value) return { status: 'missing' };
     const stored = saves.read(slot);
@@ -219,6 +227,7 @@ export const useGameStore = defineStore('game', () => {
     playPinned,
     saveSlot,
     saveAutosave,
+    checkpointAutosave,
     loadSlot,
     listSlots,
     removeSlot,

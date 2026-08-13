@@ -554,7 +554,7 @@
       "tooltip": {
         "title": "Republican Left of Catalonia",
         "subtitle": "Esquerra Republicana de Catalunya",
-        "img": "img/parties/logo_erc.svg",
+        "img": "img/parties/logo_erc.png",
         "q": {
           "ledBy": "erc_leader",
           "ideology": "erc_ideology"
@@ -570,7 +570,7 @@
       "tooltip": {
         "title": "Republican Left of Catalonia (Barcelona)",
         "subtitle": "Esquerra Republicana de Catalunya",
-        "img": "img/parties/logo_erc.svg",
+        "img": "img/parties/logo_erc.png",
         "q": {
           "ledBy": "ercbcn_leader",
           "ideology": "erc_ideology"

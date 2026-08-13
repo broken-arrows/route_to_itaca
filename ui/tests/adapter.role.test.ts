@@ -39,6 +39,41 @@ const FILES = [
   },
 ];
 
+const EVENT_FILES = [
+  { name: 'info.dry', contents: 'title: T\nauthor: A\nlanguages: en\n' },
+  {
+    name: 'root.scene.dry',
+    contents: 'title: Root\n\nIntro.\n\n- @event\n- @ordinary\n- @paper\n',
+  },
+  {
+    name: 'event.scene.dry',
+    contents:
+      'title: Event\nrole: event\n\nEvent.\n\n- @child\n\n@child\ntitle: Child\n\nChild.\n\n- @cross_file\n',
+  },
+  {
+    name: 'cross_file.scene.dry',
+    contents: 'title: Cross-file continuation\n\nCross-file result.\n\n- @done\n',
+  },
+  {
+    name: 'ordinary.scene.dry',
+    contents: 'title: Ordinary\nrole: card-party\n\nCard.\n\n- @shared\n',
+  },
+  {
+    name: 'shared.scene.dry',
+    contents: 'title: Shared\n\nShared helper.\n\n- @done\n',
+  },
+  {
+    name: 'paper.scene.dry',
+    contents: 'title: El Matí\nrole: newspaper\n\nEdition.\n\n- @done\n',
+  },
+  { name: 'done.scene.dry', contents: 'title: Done\n\nDone.\n' },
+];
+
+function stateAt(a: DendryAdapter, sceneId: string): string {
+  a.goToScene(sceneId);
+  return a.exportStateJSON();
+}
+
 describe('effective role tracking', () => {
   it('boot base-case is page; explicit roles override; role-less inherits', async () => {
     const a = await adapterFor(FILES);
@@ -59,7 +94,7 @@ describe('effective role tracking', () => {
     expect(f.effectiveRole).toBe('desk');
   });
 
-  it('load recomputes effective role from the loaded scene alone', async () => {
+  it('load uses explicit scene roles and keeps the page fallback for unrelated role-less scenes', async () => {
     const a = await adapterFor(FILES);
     a.beginGame();
     a.choose(0); // hub
@@ -77,6 +112,77 @@ describe('effective role tracking', () => {
     const c = await adapterFor(FILES);
     const rootState = c.beginGame() && c.exportStateJSON();
     expect(b.importStateJSON(rootState).effectiveRole).toBe('page');
+  });
+
+  it('restores event presentation for namespaced and cross-file continuations', async () => {
+    const source = await adapterFor(EVENT_FILES);
+    source.beginGame();
+    source.choose(0); // event
+    expect(source.choose(0).effectiveRole).toBe('event'); // namespaced child
+    const child = source.exportStateJSON();
+    expect(source.choose(0).effectiveRole).toBe('event'); // cross-file continuation
+    const crossFile = source.exportStateJSON();
+
+    const loaded = await adapterFor(EVENT_FILES);
+    loaded.beginGame();
+    expect(loaded.importStateJSON(child)).toMatchObject({
+      sceneId: 'event.child',
+      role: undefined,
+      effectiveRole: 'event',
+    });
+    expect(loaded.importStateJSON(crossFile)).toMatchObject({
+      sceneId: 'cross_file',
+      role: undefined,
+      effectiveRole: 'event',
+    });
+  });
+
+  it('restores newspaper scenes directly but does not guess for shared continuations', async () => {
+    const source = await adapterFor(EVENT_FILES);
+    source.beginGame();
+    const paper = stateAt(source, 'paper');
+
+    // Make the otherwise cross-file event continuation shared with a non-event
+    // role. Static provenance is then ambiguous and must keep the page fallback.
+    const sharedSource = await adapterFor(
+      EVENT_FILES.map((file) =>
+        file.name === 'ordinary.scene.dry'
+          ? { ...file, contents: file.contents.replace('@shared', '@cross_file') }
+          : file,
+      ),
+    );
+    sharedSource.beginGame();
+    const shared = stateAt(sharedSource, 'cross_file');
+
+    const loaded = await adapterFor(EVENT_FILES);
+    loaded.beginGame();
+    expect(loaded.importStateJSON(paper).effectiveRole).toBe('newspaper');
+
+    const ambiguous = await adapterFor(
+      EVENT_FILES.map((file) =>
+        file.name === 'ordinary.scene.dry'
+          ? { ...file, contents: file.contents.replace('@shared', '@cross_file') }
+          : file,
+      ),
+    );
+    ambiguous.beginGame();
+    expect(ambiguous.importStateJSON(shared).effectiveRole).toBe('page');
+  });
+
+  it('restores an authored event face image even though engine setState does not replay it', async () => {
+    const withImage = EVENT_FILES.map((file) =>
+      file.name === 'event.scene.dry'
+        ? { ...file, contents: file.contents.replace('role: event', 'role: event\nface-image: img/event.jpg') }
+        : file,
+    );
+    const source = await adapterFor(withImage);
+    source.beginGame();
+    source.choose(0);
+    const state = source.exportStateJSON();
+
+    const loaded = await adapterFor(withImage);
+    loaded.beginGame();
+    expect(loaded.importStateJSON(state).faceImage).toBe('img/event.jpg');
   });
 
   it('exposes game info with languages', async () => {

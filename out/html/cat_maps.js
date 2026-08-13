@@ -1382,7 +1382,7 @@
     nsuma: "img/parties/logo_nsuma.png",
     upyd: "img/parties/logo_upyd.svg",
 
-    erc: "img/parties/logo_erc.svg",
+    erc: "img/parties/logo_erc.png",
     ciu: "img/parties/logo_ciu.png",
     cdc: "img/parties/logo_cdc_png",
     dl: "img/parties/logo_dl.png",
