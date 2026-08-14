@@ -104,7 +104,7 @@
       }
       var parliament = d3.parliament();
       parliament.width(width).height(height).innerRadiusCoef(0.4);
-      parliament.enter.fromCenter(true).smallToBig(false);
+      parliament.enter.fromCenter(Boolean(props.animate)).smallToBig(Boolean(props.animate));
       parliament.exit.toCenter(false).bigToSmall(false);
       parliament.highlightedParty(Q.player_party);
       d3.select(svg).datum(data).call(parliament);

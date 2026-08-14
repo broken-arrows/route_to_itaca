@@ -1,9 +1,10 @@
 <script setup lang="ts">
 
-import { computed } from 'vue';
-import { arc as d3Arc, line as d3Line } from 'd3-shape';
+import { computed, ref } from 'vue';
+import { arc as d3Arc } from 'd3-shape';
 import { scaleLinear } from 'd3-scale';
 import { range as d3Range, sum as d3Sum } from 'd3-array';
+import { useGameStore } from '../../stores/game';
 
 defineOptions({ name: 'Hemicycle' });
 
@@ -14,15 +15,25 @@ interface HemicycleSeat {
 }
 
 const props = withDefaults(
-  defineProps<{ seats?: HemicycleSeat[]; majority?: number; q?: Record<string, unknown> }>(),
+  defineProps<{
+    seats?: HemicycleSeat[];
+    majority?: number;
+    animate?: boolean;
+    q?: Record<string, unknown>;
+  }>(),
   {
     seats: () => [],
     majority: 0,
+    animate: false,
     // Declared (like AchievementGallery) so WidgetHost's `:q` is consumed as a
     // prop, not leaked onto the root <svg> as a q="[object Object]" attribute.
     q: undefined,
   },
 );
+
+const game = useGameStore();
+const activeParty = ref<string | null>(null);
+const tooltipPosition = ref({ left: '0px', top: '0px' });
 
 // Fixed canvas — same base dimensions as the old shell's own
 // `<svg id="parlament" style="width: 500px; height: 250px;">`, and the same
@@ -137,72 +148,194 @@ function colourVar(token: string): string {
   return token.startsWith('#') ? token : `var(--${token})`;
 }
 
-// The angle marking "one more seat than `majority - 1`" — the boundary
-// between the seat that completes a majority and the seat before it. Not
-// present in the old shell's chart at all (d3-parliament.js has no majority
-// concept; the old page prints "Majority: N" as plain text beside the SVG)
-// — a genuine Desk-only addition, not a parity port.
-const majorityTheta = computed<number | null>(() => {
-  const points = seatPoints.value;
-  if (points.length === 0) return null;
-  if (points.length === 1) return points[0].theta;
-  const idx = Math.min(Math.max(Math.round(props.majority), 1), points.length - 1);
-  return (points[idx - 1].theta + points[idx].theta) / 2;
-});
-
-const majorityLinePath = computed<string | null>(() => {
-  const theta = majorityTheta.value;
-  if (theta === null) return null;
-  const lineGen = d3Line<[number, number]>();
-  return lineGen([
-    [INNER_RADIUS * Math.cos(theta), INNER_RADIUS * Math.sin(theta)],
-    [OUTER_RADIUS * Math.cos(theta), OUTER_RADIUS * Math.sin(theta)],
-  ]);
-});
-
 const totalSeats = computed(() => seatPoints.value.length);
+
+const activeSeatGroup = computed(() =>
+  props.seats.find((party) => party.party === activeParty.value),
+);
+
+const activeTerm = computed(() => {
+  const token = activeParty.value?.toLowerCase();
+  if (!token) return undefined;
+  return game.glossary.find((term) =>
+    term.match.some((match) => match.toLowerCase() === token),
+  ) ?? game.glossary.find((term) => term.bold && term.colour === token);
+});
+
+const tooltipName = computed(() =>
+  activeTerm.value?.display ?? activeTerm.value?.tooltip?.title ?? activeParty.value ?? '',
+);
+
+const tooltipLogo = computed(() => {
+  const path = activeTerm.value?.tooltip?.img;
+  return path ? new URL(path, document.baseURI).href : null;
+});
+
+function seatStyle(seat: SeatPoint, index: number): Record<string, string> | undefined {
+  if (!props.animate) return undefined;
+  return {
+    '--seat-x': `${seat.x}px`,
+    '--seat-y': `${seat.y}px`,
+    // The old D3 renderer launches every seat together, with an independent
+    // 1–1.8s duration. A deterministic spread retains that lively, irregular
+    // arrival without making screenshots and tests random.
+    '--seat-duration': `${1000 + ((index * 137) % 800)}ms`,
+  };
+}
+
+function positionTooltip(event: MouseEvent | FocusEvent): void {
+  if (event instanceof MouseEvent) {
+    tooltipPosition.value = { left: `${event.clientX + 10}px`, top: `${event.clientY - 50}px` };
+    return;
+  }
+  const rect = (event.currentTarget as SVGCircleElement).getBoundingClientRect();
+  tooltipPosition.value = { left: `${rect.right + 10}px`, top: `${rect.top - 20}px` };
+}
+
+function showParty(party: string, event: MouseEvent | FocusEvent): void {
+  activeParty.value = party;
+  positionTooltip(event);
+}
+
+function hideParty(): void {
+  activeParty.value = null;
+}
+
+function isFirstPartySeat(index: number): boolean {
+  return index === 0 || seatPoints.value[index - 1]?.party.party !== seatPoints.value[index]?.party.party;
+}
 </script>
 
 <template>
-  <svg
-    class="hemicycle"
-    viewBox="0 0 500 250"
-    role="img"
-    :aria-label="`Hemicycle: ${totalSeats} seats, majority ${majority}`"
-  >
-    <g :transform="`translate(${WIDTH / 2}, ${OUTER_RADIUS})`">
-      <path
-        v-for="(seat, i) in seatPoints"
-        :key="i"
-        class="seat"
-        :class="seat.party.party"
-        :transform="`translate(${seat.x}, ${seat.y})`"
-        :d="seatPath(seat.seatRadius)"
-        :fill="colourVar(seat.party.colour)"
+  <div class="hemicycle-wrap">
+    <svg
+      class="hemicycle"
+      :class="{ 'is-animated': animate }"
+      viewBox="0 0 500 250"
+      role="img"
+      :aria-label="`Hemicycle: ${totalSeats} seats, majority ${majority}`"
+    >
+      <g :transform="`translate(${WIDTH / 2}, ${OUTER_RADIUS})`">
+        <g
+          v-for="(seat, i) in seatPoints"
+          :key="i"
+          class="seat-position"
+          :transform="`translate(${seat.x}, ${seat.y})`"
+          :style="seatStyle(seat, i)"
+        >
+          <path
+            class="seat"
+            :class="[
+              seat.party.party,
+              {
+                'party-hovered': activeParty === seat.party.party,
+                'party-nothovered': activeParty && activeParty !== seat.party.party,
+              },
+            ]"
+            :d="seatPath(seat.seatRadius)"
+            :fill="colourVar(seat.party.colour)"
+          />
+          <circle
+            class="seat-hit"
+            :class="seat.party.party"
+            cx="0"
+            cy="0"
+            :r="seat.seatRadius * 2"
+            :tabindex="isFirstPartySeat(i) ? 0 : -1"
+            :aria-label="`${seat.party.party}: ${seat.party.seats} seats`"
+            @mouseenter="showParty(seat.party.party, $event)"
+            @mousemove="positionTooltip"
+            @mouseleave="hideParty"
+            @focus="showParty(seat.party.party, $event)"
+            @blur="hideParty"
+          />
+        </g>
+      </g>
+    </svg>
+    <Teleport to="body">
+      <div
+        v-if="activeSeatGroup"
+        class="hemicycle-tooltip"
+        data-test="hemicycle-tooltip"
+        role="tooltip"
+        :style="{ ...tooltipPosition, borderColor: colourVar(activeSeatGroup.colour) }"
       >
-        <title>{{ seat.party.party }}</title>
-      </path>
-      <path
-        v-if="majorityLinePath"
-        class="majority-line"
-        :data-majority="majority"
-        :d="majorityLinePath"
-      />
-    </g>
-  </svg>
+        <img v-if="tooltipLogo" :src="tooltipLogo" :alt="tooltipName" />
+        <div>
+          <strong :style="{ color: colourVar(activeSeatGroup.colour) }">{{ tooltipName }}</strong>
+          <span>{{ activeSeatGroup.seats }} seat{{ activeSeatGroup.seats === 1 ? '' : 's' }}</span>
+        </div>
+      </div>
+    </Teleport>
+  </div>
 </template>
 
 <style scoped>
+.hemicycle-wrap {
+  width: 100%;
+}
 .hemicycle {
   display: block;
   width: 100%;
   height: auto;
 }
-.majority-line {
-  fill: none;
-  stroke: var(--accent-red);
+.is-animated .seat-position {
+  animation: seat-enter var(--seat-duration) cubic-bezier(.4, 0, .2, 1) both;
+}
+@keyframes seat-enter {
+  from { transform: translate(0, 0) scale(0); }
+  to { transform: translate(var(--seat-x), var(--seat-y)) scale(1); }
+}
+.seat {
+  transition: opacity 140ms ease, filter 140ms ease;
+}
+.seat.party-hovered {
+  filter: saturate(1.2) brightness(1.05);
+}
+.seat.party-nothovered {
+  opacity: .2;
+}
+.seat-hit {
+  fill: transparent;
+  pointer-events: all;
+  cursor: help;
+  outline: none;
+}
+.seat-hit:focus-visible {
+  stroke: var(--ink-0);
   stroke-width: 1.5;
-  stroke-dasharray: 3 2;
-  opacity: 0.75;
+}
+.hemicycle-tooltip {
+  position: fixed;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 150px;
+  padding: 9px 11px;
+  color: var(--ink-0);
+  background: var(--paper-0);
+  border: 2px solid var(--ink-0);
+  border-radius: 3px;
+  box-shadow: 0 8px 20px rgba(46, 42, 34, .28);
+  font-family: var(--font-body);
+  pointer-events: none;
+}
+.hemicycle-tooltip img {
+  width: auto;
+  max-width: 120px;
+  height: 42px;
+  object-fit: contain;
+}
+.hemicycle-tooltip strong,
+.hemicycle-tooltip span {
+  display: block;
+}
+.hemicycle-tooltip strong {
+  font-family: var(--font-news);
+  font-size: 14px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-animated .seat-position { animation: none; }
 }
 </style>

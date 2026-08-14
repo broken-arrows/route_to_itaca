@@ -312,21 +312,18 @@ on-display: {!
         });
     }
 
-
-    if (window && d3) {
+    Q.congreso_election_hemicycle = {
+        seats: data.map(function (p) {
+            return { party: p.id, seats: p.seats, colour: p.id };
+        }),
+        majority: Q.congreso_s_majority,
+    };
+    if (typeof window !== "undefined" && typeof d3 !== "undefined") {
         var width = 500;
-        var height = 500;
         var screenWidth =  document.getElementById('content').offsetWidth;
         if (screenWidth < width - 50) {
             width = screenWidth - 50;
-            height = width;
-            document.getElementById("congreso").style.height = screenWidth/2 + "px";
         }
-        var parliament = d3.parliament();
-        parliament.width(width).height(height).innerRadiusCoef(0.4);
-        parliament.enter.fromCenter(true).smallToBig(true);
-        parliament.exit.toCenter(false).bigToSmall(true);
-        d3.select("#congreso").datum(data).call(parliament);
 
         console.log(Q.congreso_parties);
         var lines_spa = d3.linegraph(true, true,
@@ -341,7 +338,7 @@ on-display: {!
 
 = Election Results
 
-{!<svg id="congreso" style="width: 500px; height: 250px;"> </svg>!}
+{!<div id="congreso" data-widget="hemicycle" data-props='{"configFrom":"congreso_election_hemicycle","animate":true}'></div>!}
 {!<div style='margin-top: -2em; width: 100%; font-style: italic; text-align: center'>!} Majority: [+ congreso_s_majority +]{!</div>!}
 
 {!<table style='margin-left: 0.5em; display:table; width: 95%;'>!}

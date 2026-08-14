@@ -1,7 +1,6 @@
 title: Widening the Base
 new-page: true
-view-if: 1 == 0
-# view-if: not rubicon or erc_base_timer <= 0
+view-if: not rubicon or erc_base_timer <= 0
 on-arrival: month_actions += 1; erc_base_timer = 2 if rubicon
 max-visits: 36
 is-card: true

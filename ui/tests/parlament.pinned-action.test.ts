@@ -33,7 +33,7 @@ describe('Parliament pinned-action migration', () => {
     expect(parliament).not.toContain('[+ parlament_timer +] weeks');
     expect(parliament).toContain('The Parlament is currently dissolved.');
     expect(parliament).toContain('Q.parlament_action_open = Q.parlament_timer <= 0');
-    expect(parliament.match(/choose-if: parlament_action_open/g)).toHaveLength(4);
+    expect(parliament.match(/choose-if: parlament_action_open/g)).toHaveLength(5);
     expect(parliament).not.toContain('tags: erc_party cup_party parlament_card');
     expect(parliament).not.toContain('is-card: true');
     expect(parliament).not.toContain('@easy_discard');

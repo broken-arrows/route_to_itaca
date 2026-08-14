@@ -31,10 +31,8 @@ function widgetNamesInContent(): string[] {
 }
 
 describe('widget registry', () => {
-  // NOT "every WIDGET_NAME has a component" — poll-map/coalitions are
-  // declared in content (so the future audit-globals guard must accept
-  // them) but have no Desk component until phase 3/4; WidgetHost renders
-  // the placeholder for those by design. Instead: the registry must never
+  // NOT "every WIDGET_NAME has a component" — law-grid remains intentionally
+  // old-shell-only. Instead: the registry must never
   // register a name the guard wouldn't recognise.
   it('registers a component only for known names (WIDGETS keys ⊆ WIDGET_NAMES)', () => {
     for (const key of Object.keys(WIDGETS)) {

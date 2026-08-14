@@ -422,8 +422,14 @@
     // be this exact five-call sequence, duplicated across five call sites
     // (onNewPage / updateSidebar / changeTab / onDisplayContent / onload).
 
-    mountWidgets(document, dendryUI.dendryEngine.state.qualities);
     addTooltipEventListeners();
+    // BrowserUI calls this hook while the engine is still inside
+    // displaySceneContent(), immediately BEFORE scene.onDisplay runs. Defer
+    // content widgets one task so JSON-safe presentation models can be
+    // reconstructed by on-display on both normal entry and save restoration.
+    setTimeout(function () {
+      mountWidgets(document, dendryUI.dendryEngine.state.qualities);
+    }, 0);
   };
 
   window._achievementStack = [];

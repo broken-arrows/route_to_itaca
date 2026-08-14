@@ -2694,27 +2694,17 @@ if (Q.vox_parlament_s) {
     });
 }
 
-if (window && d3) {
-    var width = 500;
-    var height = 500;
-    var screenWidth =  document.getElementById('content').offsetWidth;
-    if (screenWidth < width - 50) {
-        width = screenWidth - 50;
-        height = width;
-        document.getElementById("parlament").style.height = screenWidth/2 + "px";
-    }
-    var parliament = d3.parliament();
-    parliament.width(width).height(height).innerRadiusCoef(0.4);
-    parliament.enter.fromCenter(true).smallToBig(true);
-    parliament.exit.toCenter(false).bigToSmall(true);
-    // parliament.highlightedParty("jxsi"); // for testing
-    d3.select("#parlament").datum(data).call(parliament);
-}
+Q.election_simulation_parlament_hemicycle = {
+    seats: data.map(function (party) {
+        return { party: party.id, seats: party.seats, colour: party.id };
+    }),
+    majority: Q.parlament_s_majority,
+};
 !}
 
 = Election Results
 
-{!<svg id="parlament" style="width: 500px; height: 250px;"> </svg>!}
+{!<div id="parlament" data-widget="hemicycle" data-props='{"configFrom":"election_simulation_parlament_hemicycle","animate":true}'></div>!}
 {!<div style='margin-top: -2em; width: 100%; font-style: italic; text-align: center'>!} Majority: [+ parlament_s_majority +]{!</div>!}
 
 {!<table style='margin-left: 0.5em; display:table; width: 95%;'>!}
@@ -3067,27 +3057,18 @@ if (Q.vox_congreso_s) {
 }
 
 
-if (window && d3) {
-    var width = 500;
-    var height = 500;
-    var screenWidth =  document.getElementById('content').offsetWidth;
-    if (screenWidth < width - 50) {
-        width = screenWidth - 50;
-        height = width;
-        document.getElementById("congreso").style.height = screenWidth/2 + "px";
-    }
-    var parliament = d3.parliament();
-    parliament.width(width).height(height).innerRadiusCoef(0.4);
-    parliament.enter.fromCenter(true).smallToBig(true);
-    parliament.exit.toCenter(false).bigToSmall(true);
-    d3.select("#congreso").datum(data).call(parliament);
-}
+Q.election_simulation_congreso_hemicycle = {
+    seats: data.map(function (party) {
+        return { party: party.id, seats: party.seats, colour: party.id };
+    }),
+    majority: Q.congreso_s_majority,
+};
 
 !}
 
 = Election results
 
-{!<svg id="congreso" style="width: 500px; height: 250px;"> </svg>!}
+{!<div id="congreso" data-widget="hemicycle" data-props='{"configFrom":"election_simulation_congreso_hemicycle","animate":true}'></div>!}
 {!<div style='margin-top: -2em; width: 100%; font-style: italic; text-align: center'>!} Majority: [+ congreso_s_majority +]{!</div>!}
 
 {!<table style='margin-left: 0.5em; display:table; width: 95%;'>!}
@@ -3309,28 +3290,17 @@ on-display: {!
         });
     }
 
-    console.log(data);
-
-    if (window && d3) {
-        var width = 500;
-        var height = 500;
-        var screenWidth =  document.getElementById('content').offsetWidth;
-        if (screenWidth < width - 50) {
-            width = screenWidth - 50;
-            height = width;
-            document.getElementById("barcelonalocal").style.height = screenWidth/2 + "px";
-        }
-        var parliament = d3.parliament();
-        parliament.width(width).height(height).innerRadiusCoef(0.4);
-        parliament.enter.fromCenter(true).smallToBig(true);
-        parliament.exit.toCenter(false).bigToSmall(true);
-        d3.select("#barcelonalocal").datum(data).call(parliament);
-    }
+    Q.election_simulation_local_hemicycle = {
+        seats: data.map(function (party) {
+            return { party: party.id, seats: party.seats, colour: party.id };
+        }),
+        majority: Q.barcelona_s_majority,
+    };
 !}
 
 = Barcelona Local Election Results
 
-{!<svg id="barcelonalocal" style="width: 500px; height: 250px;"> </svg>!}
+{!<div id="barcelonalocal" data-widget="hemicycle" data-props='{"configFrom":"election_simulation_local_hemicycle","animate":true}'></div>!}
 {!<div style='margin-top: -2em; width: 100%; font-style: italic; text-align: center'>!} Majority: [+ barcelona_s_majority +]{!</div>!}
 
 

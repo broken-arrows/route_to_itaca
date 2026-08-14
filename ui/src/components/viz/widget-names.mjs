@@ -12,8 +12,8 @@
  *   explicit legacy handler.
  * - 'coalitions': declared by `parlament_coalition.scene.dry` and
  *   `congreso_coalition.scene.dry` (dual-marked alongside their legacy
- *   `#parlament-coalition-widget` id). No Desk component until phase 4 —
- *   same placeholder story. This is also how `window._cvParlement` dies: the
+ *   `#parlament-coalition-widget` id), rendered by Coalitions.vue.
+ *   This is also how `window._cvParlement` dies: the
  *   marker's `data-props` names a Q key (`configFrom`) instead of a global.
  * - 'tension-rows', 'level-bars', 'seat-bars', 'roster-rows', 'leader-rows',
  *   'trail': declared by the Brief's six `source/scenes/status/status.scene.dry`
@@ -24,18 +24,18 @@
  *   Government sheet.
  */
 export const WIDGET_NAMES = [
-  'hemicycle',
-  'achievement-gallery',
-  'poll-map',
-  'coalitions',
-  'tension-rows',
-  'level-bars',
-  'seat-bars',
-  'roster-rows',
-  'leader-rows',
-  'trail',
-  'chamber-vote',
-  'law-grid',
+  "hemicycle",
+  "achievement-gallery",
+  "poll-map",
+  "coalitions",
+  "tension-rows",
+  "level-bars",
+  "seat-bars",
+  "roster-rows",
+  "leader-rows",
+  "trail",
+  "chamber-vote",
+  "law-grid",
 ];
 
 /**
@@ -45,16 +45,16 @@ export const WIDGET_NAMES = [
  * empty widget forever — same contract as WIDGET_NAMES above.
  */
 export const DERIVE_NAMES = [
-  'benches',
-  'composition',
-  'standing',
-  'cabinet',
-  'control',
-  'chancelleries',
-  'factions',
-  'street',
-  'trails',
-  'crosstab',
-  'seatProjection',
-  'provinces',
+  "benches",
+  "composition",
+  "standing",
+  "cabinet",
+  "control",
+  "chancelleries",
+  "factions",
+  "street",
+  "trails",
+  "crosstab",
+  "seatProjection",
+  "provinces",
 ];

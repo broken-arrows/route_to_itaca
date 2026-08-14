@@ -24,3 +24,4 @@ Overview.pdf
 /ui/public/game.*.json
 /out/html/desk/
 /out/html/lib/
+*.log
