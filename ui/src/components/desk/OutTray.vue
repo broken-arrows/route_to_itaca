@@ -1,10 +1,4 @@
 <script setup lang="ts">
-// OUT tray: bottom-right, 210×104 tray base + resolved slip. Geometry/
-// colours: docs/design/reference/desk-frames.md §3 "Out tray" (same
-// tray-base recipe as the in-trays: 2px #c3b893, radius 10, inset shadow).
-// Unlike InTray (reused for 3 different kinds), this component is always
-// the same single tray, so it self-labels with the fixed desk.tray.out
-// chrome key.
 import { useI18n } from 'vue-i18n';
 import Prose from '../Prose.vue';
 

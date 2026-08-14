@@ -1,23 +1,5 @@
 <script setup lang="ts">
-// Real seat-arc hemicycle — the Desk's Vue-rendered replacement for the old
-// shell's out/html/d3-parliament.js (phase 2.5 Task 7, the one live
-// d3-in-content regression the Desk could already reach). Vue owns every
-// <path>; d3-shape/d3-scale/d3-array supply pure MATH (arc/line geometry,
-// linear row-radius interpolation, seat-count sums) — no chart library, no
-// DOM manipulation. The row/seat placement algorithm below is a faithful
-// port of d3-parliament.js's own layout math (same row-growth formula, same
-// row-width/seat-radius arithmetic, same left-to-right angle sort + in-order
-// party assignment), so the Desk's dome has the same shape as the old
-// shell's — see docs/design/desk_ui_plan.md §6.
-//
-// Content hands this component a DATA-ONLY view-model
-// (source/scenes/parlament/parlament_card.scene.dry's on-arrival writes
-// Q.parlament_hemicycle = {seats, majority} — no function closures, per
-// docs/design/LEARNINGS.md 2026-07-17's Task-6 lesson). Colour is a bare CSS
-// custom-property token (e.g. "ciu"), resolved here as `var(--${colour})` —
-// the same palette source (ui/src/styles/tokens.css) the rest of the Desk
-// already draws party colours from, so identity never drifts between prose
-// and chart.
+
 import { computed } from 'vue';
 import { arc as d3Arc, line as d3Line } from 'd3-shape';
 import { scaleLinear } from 'd3-scale';

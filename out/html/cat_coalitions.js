@@ -5,8 +5,7 @@
  * ── Usage ────────────────────────────────────────────────────────────────────
  *
  *   The config is a Q object, not a browser global — content computes it,
- *   the widget protocol's marker names the Q key, out/html/widgets.js reads
- *   it (see docs/design/desk_ui_plan.md §6 "the widget protocol").
+ *   the widget protocol's marker names the Q key, out/html/widgets.js reads it.
  *
  *   on-arrival:
  *   {!

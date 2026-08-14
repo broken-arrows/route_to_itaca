@@ -1,39 +1,3 @@
-/* =============================================================================
- * vite-plugin-game-assets — serve the GAME's static art to the Vue app.
- * =============================================================================
- *
- * THE PROBLEM
- * Compiled content references art by a path that is relative to the rendering
- * UI's web root: `card-image: img/erc/araerc.jpg` (198 files, ~101 MB). The OLD
- * UI's web root IS `out/html/`, so `img/...` just resolves. The Vue app's root
- * is `ui/` in dev and `/desk/` in prod, where no `img/` exists — so every image
- * 404s and `HandCard`'s `@error` handler falls back to the striped placeholder.
- * The placeholder was working perfectly, on assets nobody had wired up.
- *
- * THE FIX (deliberately the MINIMAL one — see WHY below)
- * Point the Vue app at the art where it already lives. One copy of every file,
- * no duplication, no drift:
- *   - dev:   a middleware serves /img/* straight off `out/html/img`
- *   - build: the tree is copied into `dist/img`, so a built app is standalone
- *            (`npm run build && npm run preview` renders real art, and CI's
- *            `out/html/desk/` assembly picks it up with no extra step).
- * The relative paths inside `game.json` never change — each UI simply serves an
- * `img/` at its own root. They were always UI-agnostic.
- *
- * WHY NOT MOVE THE FILES TO `source/img/` NOW (asked + decided 2026-07-13)
- * That IS the correct end state — and it is viable: the compiler's walk is
- * `pattern = pattern || /\.dry$/` (`lib/cli/utils.js:59`), so it ignores
- * non-.dry files and art can live beside the scenes that reference it. But
- * doing it now means changing the FROZEN old-UI build path (out/html/img would
- * become build output) and moving 193 tracked files / 101 MB mid-phase, for
- * zero functional gain over this. And it is the SAME relocation problem as
- * `src/game-bindings.ts`'s `cat_engine.js`.
- *
- * >>> PHASE 6 (the swap) MUST relocate BOTH, together, in one tested change:
- * >>> the macro simulation AND this art tree move to a neutral home, with the
- * >>> old UI's build and this plugin both repointed. `out/html/` dies there.
- * >>> Recorded in `docs/design/desk_ui_plan.md`, phase 6.
- * ============================================================================= */
 import { createReadStream, existsSync, statSync, cpSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -46,42 +10,10 @@ export const GAME_IMG_DIR = path.resolve(here, '..', 'out', 'html', 'img');
 /** New game-owned assets added before the phase-6 bulk art relocation. */
 export const SOURCE_IMG_DIR = path.resolve(here, '..', 'source', 'img');
 
-/**
- * The game's i18n catalogs — `source/locales/<loc>/{ui,content}.json` (§3.4 of
- * `docs/superpowers/specs/2026-07-13-content-ui-decoupling-and-the-brief-design.md`).
- *
- * Deliberate deviation from the engine plan: the compiler does NOT copy these
- * next to `game.json`. The Desk is the ONLY consumer (the old shell is
- * English-only and never reads a catalog), and this plugin already owns
- * exactly this job for `game.json`/`img/` — serving `source/locales/**`
- * straight off disk is the same mechanism, one fewer engine change, and it
- * moves cleanly when the old shell dies at phase 6.
- *
- * `ui/src/i18n.ts` fetches `/locales/<loc>/ui.json` at boot and deep-merges it
- * OVER the bundled `ui/src/locales/<loc>.json` defaults (the game wins on any
- * key collision) — `ui/src/locales` is a fallback layer, not a fence. A
- * missing catalog is NOT an error: i18n.ts treats a 404 as "no override
- * shipped" and the UI's defaults simply stand.
- */
 export const GAME_LOCALES_DIR = path.resolve(here, '..', 'source', 'locales');
 
-/**
- * The compiled game, straight from the compiler's output.
- *
- * This used to be a HAND-COPIED `ui/public/game.en.json` (gitignored), which
- * meant the dev server silently served a STALE game: edit a `.dry`, run
- * `dendrynexus-ten compile`, reload — and see the old content, because nobody
- * re-ran the copy. It cost a real debugging session (a `role:` added to
- * `post_event.events_choice` "did not work"; in fact the browser never saw it —
- * the served artifact had 159 roled scenes, the fresh compile 161).
- *
- * Serving `out/game.json` directly makes a stale artifact structurally
- * impossible: `compile` IS the deploy. `ui/public/game.en.json` must NOT exist —
- * Vite's publicDir would shadow this middleware and the footgun would be back.
- */
 export const GAME_JSON = path.resolve(here, '..', 'out', 'game.json');
 
-/** The URL the app fetches (`GameView`/`DebugPage`: `${BASE_URL}game.en.json`). */
 const GAME_JSON_URL = '/game.en.json';
 
 const MIME: Record<string, string> = {

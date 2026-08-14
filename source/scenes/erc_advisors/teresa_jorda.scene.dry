@@ -5,7 +5,7 @@ card-image: img/erc/jorda.jpg
 face-image: img/erc/jorda.jpg
 view-if: teresa_jorda_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Teresa Jordà i Roura
 

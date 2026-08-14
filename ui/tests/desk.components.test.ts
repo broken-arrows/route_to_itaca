@@ -205,6 +205,20 @@ describe('ActionsTray', () => {
     setActivePinia(pinia);
   });
 
+  function setAdvisorTimer(timer: number): void {
+    const game = useGameStore();
+    game.initFromText(JSON.stringify({
+      scenes: {
+        root: {
+          id: 'root', type: 'scene', title: 'Root', role: 'desk', isHand: true,
+          onArrival: [{ $code: `Q.advisor_action_timer = ${timer};` }], content: [], options: [],
+        },
+      },
+      qualities: {}, qdisplays: {}, tagLookup: {},
+    }));
+    game.newGame();
+  }
+
   it('renders one entry per pinned card', () => {
     const wrapper = mount(ActionsTray, { global: { plugins: [pinia, i18n] }, props: { pinned } });
     expect(wrapper.findAll('[data-test="pinned-card"]')).toHaveLength(3);
@@ -223,6 +237,53 @@ describe('ActionsTray', () => {
     });
     await wrapper.findAll('[data-test="pinned-card"]')[0].trigger('click');
     expect(wrapper.emitted('play')).toBeUndefined();
+  });
+
+  it('shows one shared red readiness mark on the advisor group when the shared timer is ready', () => {
+    setAdvisorTimer(0);
+    const advisors: CardView[] = [
+      { id: 'a1', title: 'Advisor One', tags: [], role: 'pinned-advisor', canChoose: true },
+      { id: 'a2', title: 'Advisor Two', tags: [], role: 'pinned-advisor', canChoose: true },
+    ];
+    const wrapper = mount(ActionsTray, { global: { plugins: [pinia, i18n] }, props: { pinned: advisors } });
+    expect(wrapper.findAll('[data-test="advisor-ready"]')).toHaveLength(1);
+    expect(wrapper.findAll('.advisor .ready-badge')).toHaveLength(0);
+  });
+
+  it('hides advisor readiness while the shared timer is positive without disabling portraits', async () => {
+    setAdvisorTimer(4);
+    const advisor: CardView = {
+      id: 'a1', title: 'Advisor One', tags: [], role: 'pinned-advisor', canChoose: true,
+    };
+    const wrapper = mount(ActionsTray, { global: { plugins: [pinia, i18n] }, props: { pinned: [advisor] } });
+    expect(wrapper.find('[data-test="advisor-ready"]').exists()).toBe(false);
+    await wrapper.find('[data-test="pinned-card"]').trigger('click');
+    expect(wrapper.emitted('play')).toEqual([[advisor]]);
+  });
+
+  it('keeps blocked Parliament visible with its authored reason and does not activate it', async () => {
+    const parliament: CardView = {
+      id: 'parlament', title: 'Parlament', tags: [], role: 'pinned-parliament',
+      canChoose: false, subtitle: 'Next parliamentary action available in 4 weeks.',
+    };
+    const wrapper = mount(ActionsTray, { global: { plugins: [pinia, i18n] }, props: { pinned: [parliament] } });
+    const action = wrapper.find('[data-test="parliament-action"]');
+    expect(action.exists()).toBe(true);
+    expect(action.attributes('aria-disabled')).toBe('true');
+    expect(wrapper.text()).toContain(parliament.subtitle);
+    expect(wrapper.find('[data-test="parliament-ready"]').exists()).toBe(false);
+    await action.trigger('click');
+    expect(wrapper.emitted('play')).toBeUndefined();
+  });
+
+  it('shows Parliament readiness independently and activates the ordinary pinned action', async () => {
+    const parliament: CardView = {
+      id: 'parlament', title: 'Parlament', tags: [], role: 'pinned-parliament', canChoose: true,
+    };
+    const wrapper = mount(ActionsTray, { global: { plugins: [pinia, i18n] }, props: { pinned: [parliament] } });
+    expect(wrapper.find('[data-test="parliament-ready"]').text()).toBe('!');
+    await wrapper.find('[data-test="parliament-action"]').trigger('click');
+    expect(wrapper.emitted('play')).toEqual([[parliament]]);
   });
 });
 

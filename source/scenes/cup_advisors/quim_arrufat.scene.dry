@@ -5,10 +5,10 @@ card-image: img/cup/quimarrufat.jpg
 face-image: img/cup/quimarrufat.jpg
 view-if: quim_arrufat_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Quim Arrufat i Ibáñez
 
 Quim Arrufat is a political scientist with long experience in internatonalism, human and housing rights.
 
-- @root: Return to main 
+- @root: Return to main

@@ -15,9 +15,6 @@
     ui = dendryUI;
     game = ui.game;
 
-    // The game's own code (source/lib/), reached by content as `G`. Without this,
-    // every G.* call throws into runActions' swallow and the macro simulation
-    // silently never runs — see docs/design/LEARNINGS.md, 2026-07-13.
     dendryUI.dendryEngine.setGameLib(window.RTI_GAME_LIB);
 
     // I want these settings on by default, but the engine does not have a way to set them and I don't fancy touching that sht.
@@ -284,16 +281,6 @@
 
   // This function allows you to do something in response to signals.
   window.handleSignal = function (signal, event, scene_id) {};
-
-  // Achievements are now PULLED, not pushed (phase 2.5 Task 8 — see
-  // docs/design/LEARNINGS.md 2026-07-13 §7-8). Content only ever calls
-  // this.achieve('x'), an engine API that sets BOTH Q.achievement_x (ever
-  // unlocked, cross-save — the engine pre-seeds it at boot from
-  // localStorage) and Q.game_achievement_x (this playthrough). A
-  // falsy->truthy transition on Q.achievement_x WITHIN a session means
-  // FIRST TIME EVER, which reproduces the old hand-written
-  // `if (!Q.achievement_x) { notif(...) }` guards exactly — see
-  // window._achievementsSeen below, which IS that guard, centralised.
   window._achievementsSeen = {};
 
   function checkAchievements() {
@@ -317,25 +304,11 @@
     // and dispatches to the renderers above by name — replaces what used to
     // be this exact five-call sequence, duplicated across five call sites
     // (onNewPage / updateSidebar / changeTab / onDisplayContent / onload).
-    // See docs/design/desk_ui_plan.md §6 and
-    // .superpowers/sdd/p25-task-6-report.md.
+
     mountWidgets(document, dendryUI.dendryEngine.state.qualities);
     addTooltipEventListeners();
     window.syncTabLocks();
-    // window.justLoaded is true for exactly the FIRST onNewPage of a
-    // session (boot's initial goToScene). setState() (Save/Load, quick
-    // load, import) re-runs newPage()/displayChoices() through this same
-    // window.onNewPage hook (vendor/dendrynexus-ten/lib/engine.js:682's
-    // setState calls this.ui.newPage()), but _loadAchievements() always
-    // re-seeds Q.achievement_* from the SAME single localStorage key
-    // (game.title + '_achievements') regardless of which save is loaded —
-    // so the achievement set never differs between "boot" and "any later
-    // load" unless a genuine new this.achieve() ran in between. Seeding
-    // once here, before the first real check, is therefore sufficient: it
-    // is what stops every achievement ever unlocked from bursting as
-    // notifications on the very first page (the bug the Desk's now-deleted
-    // rti:desk:achievements ledger had), and no later load can reintroduce
-    // that burst because the set it re-seeds is provably unchanged.
+
     if (window.justLoaded) {
       var q0 = window.dendryUI.dendryEngine.state.qualities;
       for (var key in q0) {
@@ -378,8 +351,7 @@
     // and dispatches to the renderers above by name — replaces what used to
     // be this exact five-call sequence, duplicated across five call sites
     // (onNewPage / updateSidebar / changeTab / onDisplayContent / onload).
-    // See docs/design/desk_ui_plan.md §6 and
-    // .superpowers/sdd/p25-task-6-report.md.
+
     mountWidgets(document, dendryUI.dendryEngine.state.qualities);
     addTooltipEventListeners();
   };
@@ -449,8 +421,7 @@
     // and dispatches to the renderers above by name — replaces what used to
     // be this exact five-call sequence, duplicated across five call sites
     // (onNewPage / updateSidebar / changeTab / onDisplayContent / onload).
-    // See docs/design/desk_ui_plan.md §6 and
-    // .superpowers/sdd/p25-task-6-report.md.
+
     mountWidgets(document, dendryUI.dendryEngine.state.qualities);
     addTooltipEventListeners();
   };
@@ -616,8 +587,6 @@
     // and dispatches to the renderers above by name — replaces what used to
     // be this exact five-call sequence, duplicated across five call sites
     // (onNewPage / updateSidebar / changeTab / onDisplayContent / onload).
-    // See docs/design/desk_ui_plan.md §6 and
-    // .superpowers/sdd/p25-task-6-report.md.
     mountWidgets(document, dendryUI.dendryEngine.state.qualities);
     addTooltipEventListeners();
     window.syncTabLocks();

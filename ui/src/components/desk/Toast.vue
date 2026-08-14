@@ -1,23 +1,5 @@
 <script setup lang="ts">
-// Toast — spec: prototype-draw-to-dossier-NOTES.md "Motion sequences" #5
-// (slide-up fade .18s). Auto-dismiss + single-slot/latest-wins timing is
-// the STORE's job (desk.nudge() already owns the ~1700ms auto-clear); this
-// component only owns the fade-in/out VISUAL, gated by settings.animations
-// so "animations off" collapses it to instant, same reduced-motion
-// contract as the rest of the desk components (there's no DELAYS.toast*
-// fade entry to route through animMs() — DELAYS.toast is the dismiss
-// delay, a different constant — so this reads settings directly).
-// No handwritten/cursive treatment (locked decision, desk_ui_plan.md §8):
-// plain typed-ink styling.
-//
-// Two channels (phase 2.5 Task 8), NOT one: `textKey` is the ORIGINAL i18n-
-// key nudge (engineError/handFull/deckEmpty — a fixed string the catalogs
-// already hold). `achievement` is a SEPARATE, dynamic payload — a game
-// content name/image/stars that no i18n key could hold — for the unlock
-// toast (docs/design/LEARNINGS.md 2026-07-13 §7-8; ambiguity resolution 1
-// in the task-8 brief). Achievement takes priority when both happen to be
-// set (the rarer, dynamic content wins over a generic nudge); each is
-// otherwise independent, own timer lives on the desk store.
+
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useSettingsStore } from '../../stores/settings';

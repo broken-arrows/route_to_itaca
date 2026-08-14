@@ -1,14 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-// THE regression this whole task fixes: vendor/dendrynexus-ten/lib/ui/content/
-// html.js:14 calls window.displayText(text) on every rendered text run, if it
-// exists. The old shell has always defined it; the Vue app never had — which
-// silently stripped every dossier of party colours and the entire glossary
-// since phase 2 (see docs/design/LEARNINGS.md 2026-07-13, finding #1). Every
-// other test in this task exercises markGlossary/the store/the components in
-// isolation; per LEARNINGS's own "browser-only bugs" lesson (2026-07-13), NONE
-// of that proves the real entrypoint actually wires them together. This test
-// imports the real ui/src/main.ts and checks window.displayText for real.
 describe('main.ts wiring: window.displayText', () => {
   beforeEach(() => {
     vi.resetModules();

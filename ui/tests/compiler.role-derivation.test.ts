@@ -45,10 +45,24 @@ describe('role -> mechanical boolean derivation', () => {
     expect(game.scenes.t.isHand).toBe(true);
   });
 
-  it('role: pinned-action derives isPinnedCard: true when is-pinned-card is absent', async () => {
-    const game = await compile([scene('title: T\nrole: pinned-action\n\nBody.\n')]);
-    expect(game.scenes.t.isPinnedCard).toBe(true);
-  });
+  it.each(['pinned-action', 'pinned-advisor', 'pinned-parliament'])(
+    'role: %s derives isPinnedCard: true when is-pinned-card is absent',
+    async (role) => {
+      const game = await compile([scene(`title: T\nrole: ${role}\n\nBody.\n`)]);
+      expect(game.scenes.t.isPinnedCard).toBe(true);
+      expect(game.scenes.t.role).toBe(role);
+    },
+  );
+
+  it.each(['pinned-advisor', 'pinned-parliament'])(
+    'explicit is-pinned-card wins over role: %s, even when false',
+    async (role) => {
+      const game = await compile([
+        scene(`title: T\nrole: ${role}\nis-pinned-card: false\n\nBody.\n`),
+      ]);
+      expect(game.scenes.t.isPinnedCard).toBe(false);
+    },
+  );
 
   it('non-mechanical role (event) leaves all mechanical booleans undefined', async () => {
     const game = await compile([scene('title: T\nrole: event\n\nBody.\n')]);
@@ -103,5 +117,29 @@ describe('role -> mechanical boolean derivation', () => {
     a.choose(0); // -> hub
     const draw = a.drawCard('pool_deck');
     expect(draw.result.id).toBe('c1');
+  });
+
+  it('behavioral: the engine lists both presentation variants as ordinary pinned cards', async () => {
+    const files = [
+      { name: 'info.dry', contents: 'title: T\nauthor: A\n' },
+      {
+        name: 'root.scene.dry',
+        contents: 'title: Root\nrole: desk\nis-hand: true\n\nDesk.\n\n- @advisor\n- @parliament\n',
+      },
+      {
+        name: 'advisor.scene.dry',
+        contents: 'title: Advisor\nrole: pinned-advisor\n\nBiography and actions.\n',
+      },
+      {
+        name: 'parliament.scene.dry',
+        contents: 'title: Parliament\nrole: pinned-parliament\n\nInstitutional actions.\n',
+      },
+    ];
+    const a = await adapterFor(files);
+    const frame = a.beginGame();
+    expect(frame.pinned).toEqual([
+      expect.objectContaining({ id: 'advisor', role: 'pinned-advisor' }),
+      expect.objectContaining({ id: 'parliament', role: 'pinned-parliament' }),
+    ]);
   });
 });

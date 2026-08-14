@@ -5,10 +5,10 @@ card-image: img/cup/carlesriera.jpg
 face-image: img/cup/carlesriera.jpg
 view-if: carles_riera_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Carles Riera i Albert
 
 Carles Riera is a sociologist and long-time activist with strong points on geopolitics, civil disobedience, and open confrontation with the state.
 
-- @root: Return to main 
+- @root: Return to main

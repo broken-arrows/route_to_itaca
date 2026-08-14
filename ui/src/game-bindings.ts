@@ -16,9 +16,7 @@
  * `out/html/cat_engine.js`, reached by content as `window.engineTick`. The Vue
  * app has no script tags, so it was `undefined` — and dendry's `runActions`
  * SWALLOWS the resulting TypeError. The whole monthly simulation silently never
- * ran for an entire phase while the calendar kept advancing. See
- * `docs/design/LEARNINGS.md`, 2026-07-13.
- *
+ * ran for an entire phase while the calendar kept advancing. 
  * The guard that keeps it dead: `ui/tests/integration.desk-loop.test.ts` asserts
  * an engine-EXCLUSIVE Q value actually moves (`gdp_growth` / `unemployment` /
  * `welfare_index` — the three nothing else in `source/` writes). Do not weaken

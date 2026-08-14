@@ -2,8 +2,7 @@
  * widgets.js — the OLD (jQuery) shell's widget host.
  *
  * Content declares `<div id="LEGACY_ID" data-widget="NAME" data-props='JSON'>`
- * (the widget protocol — docs/design/desk_ui_plan.md §6 / the widget-protocol
- * spec). `mountWidgets(root, Q)` scans `root` for `[data-widget]` and
+ * `mountWidgets(root, Q)` scans `root` for `[data-widget]` and
  * dispatches to this shell's EXISTING d3 renderers by name — the renderers
  * themselves (cat_polls.js, cat_coalitions.js, cat_maps.js) are UNCHANGED.
  *
@@ -17,8 +16,7 @@
  * of the shape is preserved here, just centralised.
  *
  * A few widget divs predate the protocol and are not yet dual-marked with
- * `data-widget` (out of Task 6's scope — see
- * .superpowers/sdd/p25-task-6-report.md): the wide poll map
+ * `data-widget`: the wide poll map
  * (#cat-polls-widget-wide), the local results map (#catalonia-local-map),
  * the Congreso map (#congreso-map-widget) and the Congreso party tour
  * (#congreso-party-tour-widget). They are still mounted here, by their
@@ -50,12 +48,6 @@
   // are called exactly as they always were (by id + Q [+ config]).
   var HANDLERS = {
     hemicycle: function (el, Q) {
-      // Phase 2.5 Task 7: the seat-arc rendering call itself — the second
-      // half of what used to be parlament_card.scene.dry's on-display block
-      // (docs/design/LEARNINGS.md, 2026-07-17). Content now only computes
-      // the view-model (Q[configFrom] = {seats, majority}, data-only, no
-      // function closures); this is the ONLY place left that still calls
-      // d3.parliament — that plugin (d3-parliament.js) is unchanged.
       var props = readDataProps(el);
       var config =
         typeof props.configFrom === "string" ? Q[props.configFrom] : null;
@@ -376,10 +368,6 @@
         .join("");
     },
     coalitions: function (el, Q) {
-      // The old channel was a browser global content pushed the coalition
-      // view-model through (docs/design/LEARNINGS.md, 2026-07-13). The
-      // widget protocol's fix: content writes an ordinary Q object, and the
-      // marker names the key via `configFrom` — read it straight off Q.
       var props = readDataProps(el);
       var config =
         typeof props.configFrom === "string" ? Q[props.configFrom] : null;

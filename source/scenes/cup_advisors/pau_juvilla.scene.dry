@@ -5,7 +5,7 @@ card-image: img/cup/pau_juvilla.jpg
 face-image: img/cup/pau_juvilla.jpg
 view-if: pau_juvilla_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Pau Juvillà i Ballester
 

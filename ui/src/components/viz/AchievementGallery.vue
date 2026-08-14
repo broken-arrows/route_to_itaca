@@ -1,28 +1,4 @@
 <script setup lang="ts">
-// The real achievement gallery (phase 2.5 Task 8, replacing the Task-6
-// stub). Content marks `<div data-widget="achievement-gallery"
-// data-props='{"scope":"ever"|"playthrough"}'></div>` in
-// game_over.scene.dry (both the main gallery and the
-// "this playthrough" summary) — WidgetHost resolves that into this
-// component's plain top-level props + `:q="q"` (docs/design/desk_ui_plan.md
-// §2.5's invariant: a widget never knows where its props came from).
-//
-// Unlike Hemicycle (a pure view-model-in, no store), this widget needs the
-// REGISTRY (name/description/stars/image per id) — that is static game
-// data, not something content computes per-frame into Q, so it is read off
-// the game store's `achievements` computed (game.json.data.achievements —
-// see stores/game.ts, mirroring `glossary`), exactly per the task brief's
-// ambiguity resolution 2. `q` still carries the per-id UNLOCKED bit:
-// `scope: "ever"` reads Q.achievement_<id> (cross-save, pre-seeded at
-// engine boot); `scope: "playthrough"` reads Q.game_achievement_<id>
-// (reset every new game) — the same two qualities `this.achieve(id)`
-// already writes (engine.js:1133), never a third parallel source of truth.
-//
-// This is the Desk's own "paper grammar" rendering of the SAME data the old
-// shell's out/html/widgets.js achievement-gallery handler turns into
-// `.achievement--unlocked`/`--locked` markup — a different view, the same
-// model, per docs/design/LEARNINGS.md 2026-07-13's "renderers should NOT be
-// shared between the two UIs" ruling.
 import { computed, reactive } from 'vue';
 import { useGameStore } from '../../stores/game';
 

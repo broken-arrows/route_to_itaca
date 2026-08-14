@@ -5,7 +5,7 @@ card-image: img/erc/sergisabria.jpg
 face-image: img/erc/sergisabria.jpg
 view-if: sergi_sabria_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Sergi Sabrià i Benito
 

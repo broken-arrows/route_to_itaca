@@ -5,9 +5,16 @@ on-arrival: {!
 if (Q.advisor_action_timer <= 0) {
     Q.pinnedCardsDescription = 'Advisors - an action is available.';
 } else if (Q.advisor_action_timer == 1) {
-    Q.pinnedCardsDescription = 'Advisors - next action available in 1 week.';
+    Q.pinnedCardsDescription = 'Advisors - next action available in 1 ' + Q.rubicon ? 'week.' : 'month.';
 } else {
-    Q.pinnedCardsDescription = 'Advisors - next action available in ' + Q.advisor_action_timer + ' weeks.';
+    Q.pinnedCardsDescription = 'Advisors - next action available in ' + Q.advisor_action_timer + Q.rubicon ? 'weeks.' : 'months.';
+}
+if (Q.parlament_timer <= 0) {
+    Q.pinnedParlamentDescription= 'Parlament - an action is available.';
+} else if (Q.parlament_timer == 1) {
+    Q.pinnedParlamentDescription = 'Parlament - next action available in 1 ' + Q.rubicon ? 'week.' : 'month.';
+} else {
+    Q.pinnedParlamentDescription = 'Parlament - next action available in ' + Q.parlament_timer + Q.rubicon ? 'weeks.' : 'months.';
 }
 !}
 max-cards: 5
@@ -31,11 +38,11 @@ role: desk
 - @party_erc
 - @party_cup
 - @cat_gov
-- @parlament_deck
 - @debug_deck
 - #advisor
 - @erc_shuffle_leadership_pinned
 - @cup_shuffle_leadership_pinned
+- @parlament_card
 
 @main_easy
 is-hand: true
@@ -44,9 +51,16 @@ on-arrival: {!
 if (Q.advisor_action_timer <= 0) {
     Q.pinnedCardsDescription = 'Advisors - an action is available.';
 } else if (Q.advisor_action_timer == 1) {
-    Q.pinnedCardsDescription = 'Advisors - next action available in 1 week.';
+    Q.pinnedCardsDescription = 'Advisors - next action available in 1 ' + Q.rubicon ? 'week.' : 'month.';
 } else {
-    Q.pinnedCardsDescription = 'Advisors - next action available in ' + Q.advisor_action_timer + ' weeks.';
+    Q.pinnedCardsDescription = 'Advisors - next action available in ' + Q.advisor_action_timer + Q.rubicon ? 'weeks.' : 'months.';
+}
+if (Q.parlament_timer <= 0) {
+    Q.pinnedParlamentDescription= 'Parlament - an action is available.';
+} else if (Q.parlament_timer == 1) {
+    Q.pinnedParlamentDescription = 'Parlament - next action available in 1 ' + Q.rubicon ? 'week.' : 'month.';
+} else {
+    Q.pinnedParlamentDescription = 'Parlament - next action available in ' + Q.parlament_timer + Q.rubicon ? 'weeks.' : 'months.';
 }
 !}
 max-cards: 6
@@ -69,11 +83,11 @@ role: desk
 - @party_erc
 - @party_cup
 - @cat_gov
-- @parlament_deck
 - @debug_deck
 - #advisor
 - @erc_shuffle_leadership_pinned
 - @cup_shuffle_leadership_pinned
+- @parlament_card
 
 
 @main_hard
@@ -83,9 +97,16 @@ on-arrival: {!
 if (Q.advisor_action_timer <= 0) {
     Q.pinnedCardsDescription = 'Advisors - an action is available.';
 } else if (Q.advisor_action_timer == 1) {
-    Q.pinnedCardsDescription = 'Advisors - next action available in 1 week.';
+    Q.pinnedCardsDescription = 'Advisors - next action available in 1 ' + Q.rubicon ? 'week.' : 'month.';
 } else {
-    Q.pinnedCardsDescription = 'Advisors - next action available in ' + Q.advisor_action_timer + ' weeks.';
+    Q.pinnedCardsDescription = 'Advisors - next action available in ' + Q.advisor_action_timer + Q.rubicon ? 'weeks.' : 'months.';
+}
+if (Q.parlament_timer <= 0) {
+    Q.pinnedParlamentDescription= 'Parlament - an action is available.';
+} else if (Q.parlament_timer == 1) {
+    Q.pinnedParlamentDescription = 'Parlament - next action available in 1 ' + Q.rubicon ? 'week.' : 'month.';
+} else {
+    Q.pinnedParlamentDescription = 'Parlament - next action available in ' + Q.parlament_timer + Q.rubicon ? 'weeks.' : 'months.';
 }
 !}
 max-cards: 3
@@ -108,9 +129,9 @@ role: desk
 - @party_erc
 - @party_cup
 - @cat_gov
-- @parlament_deck
 - @debug_deck
 - #advisor
+- @parlament_card
 
 
 @party_erc
@@ -139,15 +160,6 @@ is-deck: true
 role: deck-gov
 
 - #generalitat
-
-@parlament_deck
-title: Parlament
-view-if: year > 2012
-card-image: img/parlament_card.jpg
-is-deck: true
-role: deck-parliament
-
-- #parlament_card
 
 @debug_deck
 title: DEBUG!

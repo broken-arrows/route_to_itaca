@@ -5,7 +5,7 @@ card-image: img/cup/vidalaragones.png
 face-image: img/cup/vidalaragones.png
 view-if: vidal_aragones_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Vidal Aragonés i Chicharro
 

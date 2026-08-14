@@ -2,21 +2,6 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { setActivePinia, createPinia } from 'pinia';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-// The game's own code (source/lib/), reached by compiled scene code as
-// `G.engineTick` / `G.spaSupportInject`. `DendryAdapter`'s constructor installs
-// it on every engine via `installGameLib` (game-bindings.ts), before
-// `beginGame` runs — so constructing the adapter (which `game.initFromText`
-// below does) wires it; nothing here touches `window` any more.
-//
-// HISTORY (phase-2.5 Task 3 changed this): this used to be
-// `window.engineTick`/`window.spaSupportInject`, reachable only because
-// `game-bindings.ts` side-effect-imported `out/html/cat_engine.js` onto
-// `window`. The Vue app has no script tags, so without that import
-// `window.engineTick` was `undefined` — and dendry's `runActions` SWALLOWS the
-// resulting TypeError, so the loop kept working and the calendar kept moving
-// while nothing simulated. That is precisely the bug this file guards against;
-// only the MECHANISM changed (`window.*` -> `G.*` via `engine.setGameLib`), not
-// the property being asserted. See `docs/design/LEARNINGS.md`, 2026-07-13.
 import { gameLib } from '../src/game-bindings';
 import { mount } from '@vue/test-utils';
 import { useGameStore } from '../src/stores/game';
@@ -27,23 +12,11 @@ import InTray from '../src/components/desk/InTray.vue';
 import type { CardView } from '../src/engine/types';
 import uiEn from '../../source/locales/en/ui.json';
 
-// Every DeskView mount below now also mounts Clipboard (phase 3b Task 9;
-// formerly the inert ClipboardFrame), which reads `brief.context.*` — GAME
-// chrome sourced from source/locales/<loc>/ui.json (see i18n.ts's
-// initGameLocale, and the same fix in desk.components.test.ts).
 i18n.global.mergeLocaleMessage('en', uiEn as never);
 
-// The REAL compiled game, not a fixture. It is gitignored build output, so the
-// test skips when it is absent (fresh clone, no compile yet) rather than
-// failing. Regenerate from the repo root with `npm run dendrynexus-ten compile`.
 const GAME_JSON = path.join(__dirname, '..', '..', 'out', 'game.json');
 const HAVE_GAME = existsSync(GAME_JSON);
 
-// Caps, per the phase-2 acceptance brief. They are deliberately generous: the
-// observed real flow needs 8 pre-desk steps and 2 papers, and the first card
-// already crosses a month boundary. A cap being HIT is a genuine content
-// regression (the desk became unreachable / a card no longer resolves), not a
-// number to raise.
 const MAX_PRE_DESK_STEPS = 30;
 const MAX_PAPERS = 10;
 const MAX_TURNS = 20;
@@ -54,30 +27,6 @@ function firstChoosable(choices: { canChoose: boolean }[]): number {
   return choices.findIndex((c) => c.canChoose);
 }
 
-// Macro-simulation outputs that ONLY `monthPasses` (`out/html/cat_engine.js:137`
-// — the function behind `window.engineTick`) can move on the desk→next-month
-// path. Verified by grepping every write in `source/`:
-//
-//   gdp_growth      root.scene.dry:93 (boot init) + election_simulation.scene.dry
-//   welfare_index   root.scene.dry:91 (boot init) + election_simulation.scene.dry
-//   unemployment    root.scene.dry:98 (boot init) + election_simulation.scene.dry
-//                   + post_event.scene.dry:10-11, which are RANGE CLAMPS
-//                   (`if (Q.unemployment < 0) …`) and run BEFORE the engineTick
-//                   call on line 73 — no-ops for an in-range value.
-//
-// `root` runs once at boot (long before the snapshot below) and
-// `election_simulation` is a standalone sandbox scene that the desk loop never
-// enters. So no card, no event and no outcome scene writes any of these: if
-// they are unchanged after the calendar has moved, the simulation did not run.
-//
-// Deliberately EXCLUDED, despite `monthPasses` writing them every tick:
-// social_dissent (25 content writes), cat_spa_relations (21) and
-// independence_movement (34) are routinely set by ordinary cards and events —
-// asserting on them would let a card's own effect mask a dead engine.
-//
-// Each of the three is a continuous float updated with a gaussian term, and
-// none starts near its clamp (see the printed values), so a spurious "unchanged"
-// cannot happen by chance. Do not weaken this.
 const SIM_OUTPUTS = ['gdp_growth', 'unemployment', 'welfare_index'] as const;
 
 function simState(q: Record<string, unknown>): Record<string, number> {
@@ -279,7 +228,7 @@ describe('integration: the real game through the desk loop', () => {
     // `main.debug_deck`) instead of the uniform `deck` every deck used to
     // carry — assert the family, not the old single literal.
     for (const deck of final.decks) expect(deck.role!.startsWith('deck')).toBe(true);
-    for (const pin of final.pinned) expect(pin.role).toBe('pinned-action');
+    for (const pin of final.pinned) expect(pin.role!.startsWith('pinned-')).toBe(true);
     for (const card of final.hand) expect(card.role!.startsWith('card')).toBe(true);
   });
 

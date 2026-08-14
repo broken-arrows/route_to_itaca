@@ -27,7 +27,8 @@
       "empty": "Nothing to draw."
     },
     "actions": {
-      "title": "ACTIONS"
+      "title": "ACTIONS",
+      "advisors": "ASSESSORS"
     },
     "out": {
       "empty": "Nothing resolved yet.",

@@ -5,7 +5,7 @@ card-image: img/cup/benetsalellas.jpg
 face-image: img/cup/benetsalellas.jpg
 view-if: benet_salellas_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Benet Salellas i Vilar
 

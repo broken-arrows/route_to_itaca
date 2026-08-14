@@ -56,13 +56,6 @@ const pageVariant = computed<'page' | 'event' | 'ending'>(() => {
     <Newspaper v-else-if="desk.phase === 'newspaper'" />
     <FrontPage v-else-if="desk.phase === 'eventPage'" />
     <PaperPage v-else :variant="pageVariant" />
-    <!-- Mounted at the phase-router level, not inside DeskView: an
-         achievement unlock (or an engine-error nudge) must stay visible
-         regardless of which surface is currently showing — including the
-         ending/page surfaces PaperPage renders (phase 2.5 Task 8; see
-         docs/design/LEARNINGS.md). Both channels are no-ops (render
-         nothing) while their own state is null, so this is safe during
-         'boot' too. -->
     <Toast v-if="desk.phase !== 'boot'" :text-key="desk.toastKey" :achievement="desk.achievementToast" />
   </ResponsiveViewport>
 </template>

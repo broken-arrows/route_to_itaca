@@ -5,7 +5,7 @@ card-image: img/cup/dolorssabater.jpg
 face-image: img/cup/dolorssabater.jpg
 view-if: dolors_sabater_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Dolors Sabater i Puig
 

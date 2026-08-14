@@ -37,7 +37,7 @@ on-arrival: {!
     Q.party_resources += 1;
     Q.month_actions -= 1;
 !}
-go-to: parlament_card
+go-to: parlament_card.parlament_options
 
 @bank_nonproductive_assets
 subtitle: Tax high-value non-productive assets sheltered in companies, a different taxable event from both bank deposits and vacant homes.

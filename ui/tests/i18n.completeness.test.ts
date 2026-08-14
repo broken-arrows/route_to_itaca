@@ -6,14 +6,6 @@ import en from '../src/locales/en.json';
 import ca from '../src/locales/ca.json';
 
 // -----------------------------------------------------------------------
-// i18n completeness — extended for the MERGED set (Task 9, §3.4 of
-// docs/superpowers/specs/2026-07-13-content-ui-decoupling-and-the-brief-design.md):
-// source/locales/<loc>/ui.json is a real second layer now, not a
-// hypothetical. A key drift or an empty value THERE is exactly as broken as
-// one in ui/'s own bundled catalog — the player sees the same blank/missing
-// string either way — so this test validates the MERGED result (ui/
-// defaults + source/ overrides), not just the two bundled files.
-//
 // The source catalogs are read via fs, not a static import: they live
 // outside ui/'s tsconfig `include` (ui/tsconfig.json only names
 // src/**/*.ts and tests/**/*.ts), and — critically — a MISSING file is a

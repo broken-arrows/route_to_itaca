@@ -693,11 +693,6 @@ describe('desk store', () => {
     expect(desk.deskView.maxCards).toBe(3);
   });
 
-  // Task 4 (typed note): the desk scene's own prose (frame.html — dropped on
-  // the floor since phase 2, see docs/design/desk_ui_plan.md §5.1) must be
-  // snapshotted like the rest of the furniture, and must keep showing the
-  // DESK's prose (not the open card's) for the whole dossierOpen window —
-  // same continuity duty deskSnapshot already owns for hand/decks/pinned.
   it('deskView.html carries the desk scene prose and survives the dossier window', async () => {
     const { game, desk } = await boot(FILES_NOTE);
     game.choose(0); // -> hub, role: desk, is-hand
@@ -710,10 +705,6 @@ describe('desk store', () => {
     expect(desk.deskView.html).toBe('<p>November brief.</p>'); // snapshot, not the card's
   });
 
-  // REGRESSION (I1): pickPaper only had two branches — "lands on role: desk"
-  // (resolve) and "still a dossier" (continuation). A pick that routes off
-  // the desk entirely fell through BOTH: openCard leaked and the OUT tray
-  // was never stamped. That is the standard monthly path in the real game.
   it('a pick that routes off the desk still lands the card in the OUT tray', async () => {
     const { game, desk } = await boot(FILES_EVENT);
     game.choose(0); // -> hub, idle
@@ -765,12 +756,7 @@ describe('desk store', () => {
   });
 });
 
-// C2 / spec §9 (docs/design/desk_ui_plan.md:329-332): "wrap adapter actions
-// in try/catch; surface a visible toast + console detail. Never leave the
-// choreography state machine stuck — on error, return to `idle` with the
-// desk unlocked." Every fault below is a REAL throw out of the REAL engine
-// (see brokenGame), driven through the real store.
-describe('desk store — engine errors never leave the machine stuck (spec §9)', () => {
+describe('Engine Error', () => {
   beforeEach(() => {
     localStorage.clear();
     setActivePinia(createPinia());

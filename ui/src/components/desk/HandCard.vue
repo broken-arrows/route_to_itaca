@@ -1,19 +1,4 @@
 <script setup lang="ts">
-// A drawn, face-up hand card — full stationery anatomy per
-// docs/design/reference/desk_ui.png (the two cards "Pressure the Cabinet" /
-// "Inter-Party Outreach") and desk-frames.md §3 "Card anatomy":
-//   gov  = WHITE ministry letterhead: Generalitat crest + department line +
-//          red double rule, subject box "ASSUMPTE:", registre footer.
-//   party= manila dossier: typed header row, framed poster art, subject box,
-//          footer.
-// Both carry a typed file-ref TAB overhanging the top and a peek sheet behind
-// (the "there is a folder here" tell). The file-ref / letterhead / registre
-// strings are DIEGETIC document furniture that is CONSTANT per skin (a
-// Generalitat card is always the Generalitat; a pre-printed form code, like
-// CONFIDENCIAL/ASSUMPTE already are) — not per-card data, so no numbering
-// scheme is invented and the filler rule (plan §2) holds. Positioning (the
-// two-rows-of-three grid) is DeskView's job; this component owns its own
-// jitter rotation and the hover lift.
 import { computed, ref } from 'vue';
 import type { CardView } from '../../engine/types';
 import { skinFor } from './skins';

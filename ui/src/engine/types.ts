@@ -1,7 +1,7 @@
 export type SceneRole =
   | 'desk' | 'deck' | 'deck-gov' | 'deck-party' | 'deck-parliament'
   | 'card' | 'card-gov' | 'card-party' | 'card-parliament'
-  | 'pinned-action' | 'newspaper' | 'event'
+  | 'pinned-action' | 'pinned-advisor' | 'pinned-parliament' | 'newspaper' | 'event'
   | 'status' | 'info-tab' | 'pause-item' | 'main-menu-item' | 'library-item' | 'ending';
 export type EffectiveRole = SceneRole | 'page';
 export interface GameInfo {
@@ -29,6 +29,8 @@ export interface DeckView extends ChoiceView {
 export interface CardView {
   id: string;
   title: string;
+  subtitle?: string;
+  canChoose?: boolean;
   image?: string;
   tags: string[];
   role?: SceneRole;

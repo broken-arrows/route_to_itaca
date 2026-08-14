@@ -23,15 +23,6 @@ is-special: true
 title: Overview
 role: info-tab
 
-# Shapes below (brief-box / brief-ghost / brief-card / brief-row / brief-stamp
-# / brief-note) are the Brief's entry grammar — docs/design/reference/
-# brief-frames.md §1. They are styled in ui/src/components/brief/BriefSheet.vue
-# and nowhere else, which is legitimate: this scene has exactly ONE renderer
-# (the Desk). The old shell renders status.scene.dry instead, and never sees
-# this file. Do NOT re-add <img class="seal">: `.seal` is styled only in
-# out/html/game.css, so on the Desk it rendered at its intrinsic ~800px and
-# destroyed the sheet. The design's institution card carries no seal.
-
 <div class="brief-boxes">
 <div class="brief-box"><strong>✦ [+ party_resources +]</strong><span>Party resources</span></div>
 <div class="brief-box brief-ghost"><strong>✦ —</strong><span>Govern funds<em>when you govern</em></span></div>

@@ -5,7 +5,7 @@ card-image: img/erc/alfredbosch.jpg
 face-image: img/erc/alfredbosch.jpg
 view-if: alfred_bosch_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Alfred Bosch i García
 

@@ -26,7 +26,6 @@ defineProps<{ title: string; context: string; html: string }>();
 </template>
 
 <style scoped>
-/* Geometry from docs/design/reference/desk-frames.md §2 and brief-frames.md §2. */
 .sheet {
   position: relative;
   z-index: 2;
@@ -89,9 +88,6 @@ defineProps<{ title: string; context: string; html: string }>();
 }
 
 /* ===========================================================================
- * THE ENTRY GRAMMAR — docs/design/reference/brief-frames.md §1 (the eight
- * shapes) and §2 (the seven sheets). Phase 3b Part 2, Task A2.
- *
  * Everything below reaches ENGINE-AUTHORED HTML: the sheet's markup comes from
  * `source/scenes/status_new.scene.dry` through `renderView` -> Prose's
  * `v-html`, and (from Task B) from widget SFCs mounted inside it. Scoped CSS

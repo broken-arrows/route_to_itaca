@@ -1,19 +1,7 @@
-// The glossary LOOK, shared by Prose.vue and GlossaryTerm.vue. mark.ts (the
-// DATA/marker) never touches colour or presentation on purpose — this is
-// where a token ("ciu") or a raw hex ("#555555", for parties the old
-// palette never had a var for) becomes an actual CSS colour, exactly the
-// convention `out/html/game.js`'s cssColour() used. `allegiancesFor` is the
-// other half of a person tooltip's body (§4 of this task's brief): the
-// game's own Q-branching logic (source/lib/allegiances.js), reached through
-// gameLib exactly as the old shell reaches it (window.RTI_GAME_LIB.allegiances).
 import { computed } from 'vue';
 import { useGameStore } from '../stores/game';
 import { gameLib } from '../game-bindings';
 import type { GlossaryTerm } from './mark';
-// Relative import, not a bare specifier — TypeScript's resolver picks up the
-// co-located source/lib/index.d.ts sibling automatically for any importer
-// (see docs/design/LEARNINGS.md 2026-07-14 #1; game-bindings.ts's GameLib
-// import is the other example of this same pattern, one directory shallower).
 import type { AllegianceEntry } from '../../../source/lib/index.js';
 
 export function useGlossary() {

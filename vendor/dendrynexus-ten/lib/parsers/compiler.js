@@ -154,7 +154,9 @@
     'deck-party': 'isDeck',
     'deck-parliament': 'isDeck',
     'desk': 'isHand',
-    'pinned-action': 'isPinnedCard'
+    'pinned-action': 'isPinnedCard',
+    'pinned-advisor': 'isPinnedCard',
+    'pinned-parliament': 'isPinnedCard'
   };
 
   var deriveMechanicsFromRole = function(scene) {

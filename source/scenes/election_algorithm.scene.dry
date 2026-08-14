@@ -433,7 +433,7 @@ for (var constituency of Q.congreso_constituencies) {
 // <1.0 down-weights suppress a structurally-weak party (e.g. PSOE in the right enclaves)
 // rather than only ever boosting. Map flavour only — the seat allocation above is the
 // real result and stays untouched.
-// Design: docs/superpowers/specs/2026-07-20-congreso-rest-map-painting-design.md
+
 var REST_COMMUNITY_CHAR = {
     madrid:            { char: { pp: 1.15, psoe: 0.85, vox: 1.05, podemos: 1.15, cs: 1.20 } },
     andalusia:         { char: { pp: 0.90, psoe: 1.30, vox: 1.00, podemos: 1.05, cs: 0.90 } },

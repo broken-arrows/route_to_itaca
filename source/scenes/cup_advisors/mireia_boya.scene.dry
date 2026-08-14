@@ -5,7 +5,7 @@ card-image: img/cup/mireiaboya.jpg
 face-image: img/cup/mireiaboya.jpg 
 view-if: mireia_boya_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Mireia Boya e Busquet
 

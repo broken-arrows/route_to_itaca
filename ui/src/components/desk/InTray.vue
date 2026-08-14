@@ -1,13 +1,4 @@
 <script setup lang="ts">
-// In-tray: a face-down draw folder. Geometry/colours: docs/design/reference/
-// desk-frames.md §3 "In-trays" (172×212 well, 2px #c3b893 border, blind —
-// no counts, top dossier with a peek sheet behind, DRAW chip overhanging
-// bottom-right). The FIXED chrome caption ("GOVERNMENT"/"PARTY"/"PARLAMENT")
-// is NOT rendered here: this component is reused for all three tray kinds.
-// The deck scene's `role` (deck-gov, deck-party, or deck-parliament; plain
-// 'deck' = neutral fallback) flows from the adapter; skinFor maps it to the
-// paper skin. What IS rendered here is `deck.title` — the deck's own
-// (game-content) name.
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { DeckView } from '../../engine/types';

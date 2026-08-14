@@ -204,12 +204,19 @@ export class DendryAdapter {
 
   playCard(cardId: string): Frame {
     this.ui.resetTransient();
+    // Playing a card establishes its presentation context even when its root
+    // immediately redirects to a role-less child. The engine completes that
+    // redirect before the adapter can observe an intermediate frame.
+    const cardRole = this.roleFor(cardId);
+    if (cardRole) this.effective = cardRole;
     this.engine.playCard(cardId);
     return this.buildFrame();
   }
 
   playPinnedCard(cardId: string): Frame {
     this.ui.resetTransient();
+    const cardRole = this.roleFor(cardId);
+    if (cardRole) this.effective = cardRole;
     this.engine.playPinnedCard(cardId);
     return this.buildFrame();
   }
@@ -353,6 +360,8 @@ export class DendryAdapter {
       pinned: this.ui.pinned.map((c) => ({
         id: c.id,
         title: c.title,
+        subtitle: c.subtitle ?? c.unavailableSubtitle,
+        canChoose: !!c.canChoose,
         image: c.image,
         tags: this.tagsFor(c.id),
         role: this.roleFor(c.id),

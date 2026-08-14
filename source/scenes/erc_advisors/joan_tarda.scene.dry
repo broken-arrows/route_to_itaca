@@ -5,7 +5,7 @@ card-image: img/erc/joantarda.jpg
 face-image: img/erc/joantarda.jpg
 view-if: joan_tarda_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Joan Tardà i Comas
 

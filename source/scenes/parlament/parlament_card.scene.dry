@@ -1,27 +1,20 @@
 title: Parlament
 new-page: true
-view-if: parlament_timer <= 0 and year > 2012 and not cat_caretaker_gov
-on-arrival: parlament_timer += 6; month_actions += 1; coming_from_parlament = true;
-is-card: true
+view-if: year > 2012
+choose-if: parlament_timer <= 0 and not cat_caretaker_gov
+unavailable-subtitle: [? if cat_caretaker_gov : The Parlament is currently dissolved.?]
+on-arrival: {!
+    Q.parlament_action_open = Q.parlament_timer <= 0 && !Q.cat_caretaker_gov;
+    Q.coming_from_parlament = Q.parlament_action_open;
+    if (Q.parlament_action_open) {
+        Q.parlament_timer += 6;
+        Q.month_actions += 1;
+    }
+!}
 card-image: img/parlament_card.jpg
-tags: erc_party cup_party parlament_card
-go-to: parlament_options if not cat_caretaker_gov; parlament_dissolved if cat_caretaker_gov
-role: card-parliament
+go-to: parlament_options
+role: pinned-parliament
 # TODO: What happens on art. 155
-
-@parlament_dissolved
-title: Parlament
-new-page: true
-
-= Parlament de Catalunya
-
-The Parlament is currently dissolved, so no parliamentary actions are possible at this point.
-
-- @go_back: Return card to hnd
-
-@go_back
-call: easy_discard
-go-to: root
 
 @parlament_options
 title: Parlament
@@ -209,17 +202,6 @@ on-arrival: {!
         });
     }
 
-    // Store the view-model for the widget protocol (data-widget="hemicycle"
-    // marker below points at this key via configFrom) — a plain, JSON-safe Q
-    // object the UI reads, not a value pushed through a browser global/d3
-    // call (docs/design/LEARNINGS.md, 2026-07-17: no function closures in Q).
-    // `legend`/`name` are dropped: out/html/d3-parliament.js's own renderer
-    // only ever reads `.id`/`.seats` off each party, so `party`/`colour`
-    // both reuse `id` (the same token the old shell's `.seat.<id>` CSS
-    // classes already key their fill colour on) and legend/name carry no
-    // rendering weight. See docs/design/desk_ui_plan.md §6 and
-    // out/html/widgets.js (old shell) / Hemicycle.vue (Desk), both of which
-    // resolve configFrom against Q.
     Q.parlament_hemicycle = {
         seats: data.map(function (p) {
             return { party: p.id, seats: p.seats, colour: p.id };
@@ -233,9 +215,9 @@ on-arrival: {!
 
 {!<div id="parlament" data-widget="hemicycle" data-props='{"configFrom":"parlament_hemicycle"}'></div>!}
 {!<div style='margin-top: -2em; width: 100%; font-style: italic; text-align: center'>!} Majority: [+ parlament_s_majority +]{!</div>!}
-{!<div style='margin-top: -1em; width: 100%; text-align: center'>!} Speaker of the House:<br/>[+ speaker +] ([+ speaker_party +]){!</div>!}
+[? if not cat_caretaker_gov: {!<div style='margin-top: -1em; width: 100%; text-align: center'>!} Speaker of the House:<br/>[+ speaker +] ([+ speaker_party +]){!</div>!} ?]
 
-As a party with representation in the Parlament, we have the opportunity to use our seats to make our voice heard and push for new initiatives and legislation.
+[? if cat_caretaker_gov : The Parlament is currently dissolved, so no parliamentary actions are possible at this point. ?][? if not cat_caretaker_gov: As a party with representation in the Parlament, we have the opportunity to use our seats to make our voice heard and push for new initiatives and legislation. ?]
 
 - @politica_social
 - @rights
@@ -243,12 +225,13 @@ As a party with representation in the Parlament, we have the opportunity to use 
 - @sovereignty
 - @budget
 - @root: We don't need to do anything in the Parlament right now
-- @easy_discard
 
 
 @politica_social
 title: Política social
 subtitle: We have long championed the need for more social policies
+unavailable-subtitle: Our lawmakers are still unready. Next action possible in [+ parlament_timer +] [? if parlament_timer > 1:  months.?][? if parlament_timer = 1: month.?]
+choose-if: parlament_action_open
 
 **Política Social**
 
@@ -263,6 +246,8 @@ In times of economic struggle, the Catalan social safety net is under pressure. 
 @rights
 title: Rights and Liberties
 subtitle: As a left party, pushing for further freedoms is something that has always been on the agenda
+choose-if: parlament_action_open
+unavailable-subtitle: Our lawmakers are still unready. Next action possible in [+ parlament_timer +] [? if parlament_timer > 1:  months.?][? if parlament_timer = 1: month.?]
 
 **Rights and Liberties**
 
@@ -277,6 +262,8 @@ In our push for further democratization and expansion of individual and collecti
 @finances
 title: Finances and Economy
 subtitle: Nothing is free, and in finances lay many levers for a more just society
+choose-if: parlament_action_open
+unavailable-subtitle: Our lawmakers are still unready. Next action possible in [+ parlament_timer +] [? if parlament_timer > 1:  months.?][? if parlament_timer = 1: month.?]
 
 **Finances and Economy**
 
@@ -291,6 +278,8 @@ It's no secret that the Generalitat's financial situation is not the best.
 @sovereignty
 title: Catalan Sovereignty
 subtitle: No other institutional lever is as symbolic and powerful as pushing for further sovereignty than the Parlament
+choose-if: parlament_action_open
+unavailable-subtitle: Our lawmakers are still unready. Next action possible in [+ parlament_timer +] [? if parlament_timer > 1:  months.?][? if parlament_timer = 1: month.?]
 
 **On Catalan Sovereignty**
 
@@ -306,8 +295,8 @@ Despite the Parlament being legally limited in its powers, it is still symbolica
 
 @budget
 title: Pass the Generalitat's budget
-choose-if: 1==0
-unavailable-subtitle: WIP!
+choose-if: parlament_action_open
+unavailable-subtitle: Our lawmakers are still unready. Next action possible in [+ parlament_timer +] [? if parlament_timer > 1:  months.?][? if parlament_timer = 1: month.?]
 subtitle: Ensuring government stability may be more important at this moment
 
 **Generalitat's Budget**

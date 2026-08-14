@@ -44,10 +44,6 @@ const tooltip = computed(() => term.value?.tooltip);
 
 const imgBroken = ref(false);
 watch(() => props.termId, () => { imgBroken.value = false; });
-// Art paths in compiled content are relative to the RENDERING UI's web root
-// (see docs/design/LEARNINGS.md 2026-07-13 "no art rendered" finding) — same
-// convention HandCard.vue's imgSrc uses. Computed here, not inline in the
-// template: `import.meta` cannot appear inside a compiled template expression.
 const imgSrc = computed(() =>
   tooltip.value?.img ? `${import.meta.env.BASE_URL}${tooltip.value.img}` : null,
 );

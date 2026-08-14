@@ -1,23 +1,5 @@
 <script setup lang="ts">
-// The ECONOMY sheet's three full-run trails — brief-frames.md §1 shape 1
-// ("A NUMBER THAT MOVES") and §2 frame 14. Content marks
-// `<div data-widget="trail" data-props='{"deriveFrom":"trails"}'></div>`;
-// WidgetHost resolves the `trails` derivation (source/lib/brief.js) into this
-// component's `rows` prop — the widget never learns where they came from
-// (docs/design/desk_ui_plan.md §2.5's invariant).
-//
-// Vue owns every <svg>/<path>/<circle>; d3 supplies pure MATH only — scaleLinear
-// for the axes, d3-shape's line() for the path `d` string, d3-array min/max for
-// the y-domain. NO chart library, NO d3-select, no DOM manipulation, the same
-// contract Hemicycle.vue follows — so the widget stays trivially testable in
-// jsdom (a fixed viewBox scaled by CSS, no ResizeObserver).
-//
-// Shape 1 per row: a header line (key · dotted leader · value + direction arrow)
-// over a full-run trail against a dashed zero ground line. The value+arrow and
-// the inked current-month dot are GREEN when the move is good for THIS metric,
-// RED when bad — `good` decides the colour, never `dir` (unemployment falling is
-// good). Negatives read BELOW the line, so the y-domain is
-// [min(0,…series), max(0,…series)]; the current month is the last reading.
+
 import { computed } from 'vue';
 import { scaleLinear } from 'd3-scale';
 import { line as d3Line } from 'd3-shape';

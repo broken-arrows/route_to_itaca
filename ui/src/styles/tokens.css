@@ -1,20 +1,4 @@
-/* Design tokens — spec: docs/design/desk_ui_plan.md §8.
-   Newsreader (--font-news) and Courier Prime (--font-typed) font FILES are
-   added in phase 2 with the newspaper surfaces; until then those tokens
-   resolve to system fallbacks. Font faces are deliberately swappable —
-   the HK Grotesk single-weight vs Hanken Grotesk variable decision is
-   deferred (spec §12.3). */
 
-/* Global box-sizing reset (phase 3a Wave 2, Task 6). The Claude Design
-   canvas every desk/brief geometry value was measured from carries its own
-   `*{box-sizing:border-box}` reset (docs/design/reference/desk-frames.md
-   intro) — the app never matched it, so every width+padding pair rendered
-   LARGER than the canvas value under the browser default (content-box).
-   Measured live: .clipboard-frame (width:474px + padding:18px 28px 18px 18px
-   + 1px border) rendered 521px wide instead of 474, pushing the tab rail and
-   the whole Brief column ~47px into the desk region/trays. Matching the
-   canvas's own reset is the one-line fix; see the phase-3a Wave-2 task-6
-   report for the full width+padding rule audit this reset changes. */
 *, *::before, *::after {
   box-sizing: border-box;
 }

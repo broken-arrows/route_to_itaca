@@ -5,7 +5,7 @@ card-image: img/erc/ernestmaragall.jpg
 face-image: img/erc/ernestmaragall.jpg
 view-if: ernest_maragall_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Ernest Maragall i Mira
 

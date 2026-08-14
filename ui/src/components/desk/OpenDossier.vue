@@ -1,25 +1,4 @@
 <script setup lang="ts">
-// The open dossier overlay — a single open FOLDER spread, per
-// docs/design/reference/desk_ui_dossier_open.png: both halves are the same
-// folder paper (manila for a party card, cream for gov), the left half is the
-// cover (typed header row, big serif title, prompt prose, framed poster art),
-// the right half holds the option papers as WHITE slips floating on the
-// folder. No white "papers panel" with an ink border, no ✕, no instructional
-// footer text (user rulings 2026-07-13 / 2026-07-20; the "THE PAPERS INSIDE —
-// CHOOSE ONE TO ACT" line and "Banked capital…/Choosing a paper is the turn…"
-// captions in the design are filler slots, skipped per plan §2).
-//
-// There is NO close/✕ affordance (user decision overriding phase-2 spec §6):
-// an open dossier is a committed engine action; the only way back to the hand
-// is the game's own `easy_discard` paper. See the header in stores/desk.ts.
-//
-// Every CSS duration routes through desk.animMs() (motion.ts DELAYS:
-// dossierOpen/coverSwing/coverSwingDelay/cancel/resolve), so "animations off"
-// = 0ms everywhere with ONE timing source.
-//
-// During 'resolving' the prose/papers render from resolveView (the pick's
-// engine call already advanced the frame), not the live frame — rendering
-// live would blank the dossier mid-animation.
 import { computed, ref } from 'vue';
 import { useDeskStore } from '../../stores/desk';
 import { useGameStore } from '../../stores/game';

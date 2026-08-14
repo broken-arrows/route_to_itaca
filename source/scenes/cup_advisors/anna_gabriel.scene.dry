@@ -5,7 +5,7 @@ card-image: img/cup/annagabriel.jpg
 face-image: img/cup/annagabriel.jpg
 view-if: anna_gabriel_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Anna Gabriel i Sabaté
 

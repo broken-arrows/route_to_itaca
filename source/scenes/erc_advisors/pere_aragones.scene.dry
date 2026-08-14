@@ -5,7 +5,7 @@ card-image: img/erc/aragones.jpg
 face-image: img/erc/aragones.jpg
 view-if: pere_aragones_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Pere Aragonès i Garcia
 

@@ -51,7 +51,7 @@ function routePhase(role: EffectiveRole): DeskPhase {
   if (role === 'desk') return 'idle';
   if (role === 'newspaper') return 'newspaper';
   if (role === 'event') return 'eventPage';
-  if (role === 'pinned-action' || role.startsWith('card')) return 'dossierOpen';
+  if (role.startsWith('pinned-') || role.startsWith('card')) return 'dossierOpen';
   return 'page';
 }
 
@@ -138,24 +138,6 @@ export const useDeskStore = defineStore('desk', () => {
   // has returned to the desk.
   let autosaveStamp: string | null = null;
 
-  // Achievement-unlock detection: a frame-to-frame diff of Q.achievement_*
-  // (see stores/achievements.ts's newlyUnlocked). Deliberately NOT hung off
-  // maybeAutosave() — an unlock that happens between two turn boundaries
-  // (mid-dossier, mid-event) would otherwise toast late, or not at all if the
-  // player never crosses another month.
-  //
-  // `seeded` gates the FIRST call where a real frame exists (not the
-  // pre-boot call, where game.frame/game.q are still empty — there is
-  // nothing to seed from yet). The engine pre-seeds Q.achievement_* from
-  // localStorage at beginGame() time, so that first real frame's Q already
-  // carries every achievement ever unlocked, in any previous save, in
-  // either UI. Diffing it against an empty prevQ would read every one of
-  // those as "just unlocked" and burst them all as toasts — exactly the
-  // bug this store's OWN prior `rti:desk:achievements` ledger had (see
-  // docs/design/LEARNINGS.md 2026-07-13 §8, finding 3) and exactly what the
-  // old shell's `window.justLoaded` gate (out/html/game.js) exists to
-  // avoid. Seed-without-diffing on that first real frame; diff normally
-  // from the second real frame onward.
   let prevQ: Record<string, unknown> = {};
   let seeded = false;
   let achievementQueue: AchievementToastPayload[] = [];
@@ -211,15 +193,6 @@ export const useDeskStore = defineStore('desk', () => {
     game.saveAutosave();
   }
 
-  // --- Engine error handling (spec §9, docs/design/desk_ui_plan.md:329-332).
-  // Every engine call the desk makes goes through runEngine(). On a throw we
-  // log the detail, raise the ordinary nudge toast, and force the machine back
-  // to a clean, UNLOCKED idle — the choreography must never be left stuck.
-  //
-  // The engine itself is left wherever it was: the game store only publishes a
-  // new frame AFTER the adapter call returns, so on a throw `game.frame` is
-  // still the pre-action frame, and the desk renders from `deskView`'s
-  // snapshot rather than that (possibly furniture-less) frame.
   function recoverToIdle(): void {
     flying.value = null;
     flyingFrom.value = null;
@@ -296,7 +269,7 @@ export const useDeskStore = defineStore('desk', () => {
   }
 
   function playPinned(card: CardView): void {
-    if (phase.value !== 'idle') return;
+    if (phase.value !== 'idle' || card.canChoose === false) return;
     if (!runEngine(() => game.playPinned(card.id)).ok) return;
     openCard.value = card;
     // Belt-and-suspenders: the flush:'sync' frame watch already applied this

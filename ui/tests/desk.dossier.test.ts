@@ -375,7 +375,7 @@ describe('OpenDossier', () => {
 // the Desk through CaptureUI.normalizeCard's convertLine, exactly like the
 // prose — can arrive already wrapped in a glossary `<span data-term=...>`.
 // 4 of the 6 real pinned advisor cards (source/scenes) have no
-// zero-width-space escape on their own name (see docs/design/LEARNINGS.md),
+// zero-width-space escape on their own name,
 // so opening one used to show the literal `<span class="term"...>` text in
 // the dossier's cover title (plain `{{ }}` interpolation). Fixed by routing
 // it through <Prose tag="span"> like the prose already does. This test

@@ -5,7 +5,7 @@ card-image: img/erc/paluzie.jpg
 face-image: img/erc/paluzie.jpg
 view-if: elisenda_paluzie_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Elisenda Paluzie i Hernández
 

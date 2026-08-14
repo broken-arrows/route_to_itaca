@@ -5,7 +5,7 @@ card-image: img/cup/eulaliareguant.png
 face-image: img/cup/eulaliareguant.png
 view-if: eulalia_reguant_advisor = 1
 new-page: true
-role: pinned-action
+role: pinned-advisor
 
 = Eulàlia Reguant i Cura
 

@@ -4,33 +4,33 @@
  * MIT License
  */
 /*jshint indent:2 */
-(function() {
-  'use strict';
+(function () {
+  "use strict";
 
   // To avoid the need to include any utility libraries when this is
   // used in a browser, define some helper functions we'd normally
   // rely on libraries for.
 
-  var assert = function(mustBeTrue) {
+  var assert = function (mustBeTrue) {
     /* istanbul ignore if */
     if (!mustBeTrue) {
-      throw new Error('Assertion failed.');
+      throw new Error("Assertion failed.");
     }
   };
 
-  var each = function(array, fn) {
+  var each = function (array, fn) {
     for (var i = 0; i < array.length; ++i) {
       fn(array[i]);
     }
   };
 
-  var objEach = function(obj, fn) {
+  var objEach = function (obj, fn) {
     for (var key in obj) {
       fn(key, obj[key]);
     }
   };
 
-  var merge = function() {
+  var merge = function () {
     var result = {};
     for (var i = 0; i < arguments.length; ++i) {
       var obj = arguments[i];
@@ -42,19 +42,19 @@
   };
 
   // Credit: Taken from Lodash (MIT License). See CREDITS.
-  var isObject = function(value) {
+  var isObject = function (value) {
     var type = typeof value;
-    return type === 'function' || (value && type === 'object') || false;
+    return type === "function" || (value && type === "object") || false;
   };
 
-  var makeFunctionFromSource = function(source) {
+  var makeFunctionFromSource = function (source) {
     source = source.trim();
     /*jshint -W054 */
     // 'G' is the GAME LIB (see DendryEngine.setGameLib): the game's own code,
     // handed to the engine by whichever UI is running it. Content calls
     // `G.engineTick(Q)` instead of `window.engineTick(Q)` — so a scene never
     // depends on a browser global, and therefore never depends on a UI.
-    var fn = new Function('state', 'Q', 'G', source);
+    var fn = new Function("state", "Q", "G", source);
     /*jshint +W054 */
     fn.source = source;
     return fn;
@@ -87,11 +87,11 @@
   // Lines of a stack that look like frames. V8 puts "Error: message" on line
   // 0 and SpiderMonkey doesn't; rather than sniff for it, we rebuild the
   // header ourselves and keep only frame-shaped lines.
-  var stackFrames = function(stack) {
-    var lines = String(stack || '').split('\n');
+  var stackFrames = function (stack) {
+    var lines = String(stack || "").split("\n");
     var frames = [];
     for (var i = 0; i < lines.length; ++i) {
-      if (/^\s*at\s/.test(lines[i]) || lines[i].indexOf('@') >= 0) {
+      if (/^\s*at\s/.test(lines[i]) || lines[i].indexOf("@") >= 0) {
         frames.push(lines[i].trim());
       }
     }
@@ -102,10 +102,11 @@
   // innermost-first in both V8 and SpiderMonkey, so that is the first match;
   // within a frame we take the LAST match, guarding the embedded-location
   // shape above from the other direction.
-  var findCodeFrame = function(stack) {
+  var findCodeFrame = function (stack) {
     var frames = stackFrames(stack);
     for (var i = 0; i < frames.length; ++i) {
-      var match, last = null;
+      var match,
+        last = null;
       GENERATED_FRAME_RE.lastIndex = 0;
       while ((match = GENERATED_FRAME_RE.exec(frames[i])) !== null) {
         last = match;
@@ -115,7 +116,7 @@
           frames: frames,
           frameIndex: i,
           line: parseInt(last[1], 10),
-          column: parseInt(last[2], 10)
+          column: parseInt(last[2], 10),
         };
       }
     }
@@ -128,7 +129,7 @@
   // not a spec guarantee. The probe is built through makeFunctionFromSource
   // itself, so it is constructed exactly like every real block. V8 and
   // SpiderMonkey both report line 3 for a throw on source line 1 ⇒ offset 2.
-  var BODY_LINE_OFFSET = (function() {
+  var BODY_LINE_OFFSET = (function () {
     try {
       makeFunctionFromSource('throw new Error("dendry-probe");')();
     } catch (err) {
@@ -138,27 +139,27 @@
       }
     }
     return 2;
-  }());
+  })();
 
-  var repeat = function(str, n) {
-    var out = '';
+  var repeat = function (str, n) {
+    var out = "";
     for (var i = 0; i < n; ++i) {
       out += str;
     }
     return out;
   };
 
-  var padStart = function(value, width) {
+  var padStart = function (value, width) {
     var str = String(value);
-    return (str.length >= width) ? str : repeat(' ', width - str.length) + str;
+    return str.length >= width ? str : repeat(" ", width - str.length) + str;
   };
 
   // The failing line with ±1 line of context and a caret under the column.
   // Returns null when the line is out of range, which routes logCodeError to
   // its fallback rather than printing a confidently wrong excerpt.
   var MAX_EXCERPT_LINE = 200;
-  var excerpt = function(source, line, column) {
-    var lines = String(source).split('\n');
+  var excerpt = function (source, line, column) {
+    var lines = String(source).split("\n");
     if (!(line >= 1 && line <= lines.length)) {
       return null;
     }
@@ -167,124 +168,144 @@
     var width = String(last).length;
     var out = [];
     for (var n = first; n <= last; ++n) {
-      var failing = (n === line);
+      var failing = n === line;
       var text = lines[n - 1];
       var col = column;
       if (text.length > MAX_EXCERPT_LINE) {
         // Window around the column on the failing line, from the left
         // elsewhere: a logic property compiles to one long generated line.
         var start = failing ? Math.max(0, col - (MAX_EXCERPT_LINE >> 1)) : 0;
-        var tail = (text.length > start + MAX_EXCERPT_LINE) ? '…' : '';
-        text = (start > 0 ? '…' : '') +
-          text.substr(start, MAX_EXCERPT_LINE) + tail;
+        var tail = text.length > start + MAX_EXCERPT_LINE ? "…" : "";
+        text =
+          (start > 0 ? "…" : "") + text.substr(start, MAX_EXCERPT_LINE) + tail;
         col = col - start + (start > 0 ? 1 : 0);
       }
       // The caret indent is derived from the gutter STRING, not a duplicated
       // width constant, so the two cannot drift apart.
-      var gutter = (failing ? '  > ' : '    ') + padStart(n, width) + ' | ';
+      var gutter = (failing ? "  > " : "    ") + padStart(n, width) + " | ";
       out.push(gutter + text);
       if (failing && col >= 1) {
-        out.push(repeat(' ', gutter.length + col - 1) + '^');
+        out.push(repeat(" ", gutter.length + col - 1) + "^");
       }
     }
-    return out.join('\n');
+    return out.join("\n");
   };
 
-  var describeError = function(err) {
+  var describeError = function (err) {
     if (err && err.name && err.message) {
-      return err.name + ': ' + err.message;
+      return err.name + ": " + err.message;
     }
     return String((err && err.message) || err);
   };
 
   var MAX_FRAMES_ABOVE = 8;
 
-  var logCodeError = function(label, phase, state, fn, err) {
-    var scene = (state && state.sceneId) ? state.sceneId : '(unknown scene)';
-    var heading = phase ?
-      label + ' — ' + phase + ' of "' + scene + '"' :
-      label + ' — "' + scene + '"';
+  var logCodeError = function (label, phase, state, fn, err) {
+    var scene = state && state.sceneId ? state.sceneId : "(unknown scene)";
+    var heading = phase
+      ? label + " — " + phase + ' of "' + scene + '"'
+      : label + ' — "' + scene + '"';
     try {
-      var frame = (fn && fn.source) ? findCodeFrame(err && err.stack) : null;
+      var frame = fn && fn.source ? findCodeFrame(err && err.stack) : null;
       var sourceLine = frame ? frame.line - BODY_LINE_OFFSET : 0;
       var body = frame ? excerpt(fn.source, sourceLine, frame.column) : null;
       if (body) {
-        var parts = [heading, '  ' + describeError(err)];
+        var parts = [heading, "  " + describeError(err)];
         // Frames ABOVE the block are where it actually broke (typically inside
         // the game lib, reached via G.*). Frames BELOW are always runActions →
         // _runActions → __changeScene → goToScene → choose → jQuery dispatch:
         // fixed, known, and the bulk of what made the old message unreadable.
         var above = frame.frames.slice(0, frame.frameIndex);
         for (var i = 0; i < above.length && i < MAX_FRAMES_ABOVE; ++i) {
-          parts.push('    ' + above[i]);
+          parts.push("    " + above[i]);
         }
         // "block source line" names the coordinate system rather than implying
         // a .dry file line — and stays honest for a logic property, whose
         // $code is compiler-GENERATED source, not what the author typed.
-        parts.push((above.length ? '  reached from block' : '  block') +
-          ' source line ' + sourceLine + ', col ' + frame.column + ':');
-        parts.push('');
+        parts.push(
+          (above.length ? "  reached from block" : "  block") +
+            " source line " +
+            sourceLine +
+            ", col " +
+            frame.column +
+            ":",
+        );
+        parts.push("");
         parts.push(body);
-        console.error(parts.join('\n'));
+        console.error(parts.join("\n"));
         return;
       }
     } catch (ignored) {
       // Fall through to the flat message. This helper runs inside a catch
       // handler; it must never itself be the thing that throws.
     }
-    var src = (fn && fn.source) ?
-      String(fn.source).replace(/\s+/g, ' ').trim().slice(0, 200) : '';
+    var src =
+      fn && fn.source
+        ? String(fn.source).replace(/\s+/g, " ").trim().slice(0, 200)
+        : "";
     console.error(
-      heading + ': ' + ((err && err.stack) || err) +
-      (src ? '\n    source: ' + src : '')
+      heading +
+        ": " +
+        ((err && err.stack) || err) +
+        (src ? "\n    source: " + src : ""),
     );
   };
 
-  var runActions = function(actions, context, state, phase) {
+  var runActions = function (actions, context, state, phase) {
     if (actions === undefined) {
       return;
     }
-    each(actions, function(fn) {
+    each(actions, function (fn) {
       try {
         fn.call(context, state, state.qualities, context.gameLib);
       } catch (err) {
-        logCodeError('Scene action error', phase, state, fn, err);
+        logCodeError("Scene action error", phase, state, fn, err);
       }
     });
   };
 
-  var runPredicate = function(predicate, default_, context, state) {
+  var runPredicate = function (predicate, default_, context, state) {
     var result = default_;
     if (predicate === undefined) {
       return result;
     }
     try {
-      result = !!predicate.call(context, state, state.qualities, context.gameLib);
+      result = !!predicate.call(
+        context,
+        state,
+        state.qualities,
+        context.gameLib,
+      );
     } catch (err) {
       // Swallowed (a bad predicate falls back to `default_`) but named — see
       // logCodeError. Predicates run often; a genuinely broken one repeats,
       // which is the point: it should be seen, not hidden.
-      logCodeError('Scene predicate error', undefined, state, predicate, err);
+      logCodeError("Scene predicate error", undefined, state, predicate, err);
     }
     return result;
   };
 
-  var runExpression = function(expression, default_, context, state) {
+  var runExpression = function (expression, default_, context, state) {
     var result = default_;
     if (expression === undefined) {
       return result;
     }
     try {
-      result = expression.call(context, state, state.qualities, context.gameLib);
+      result = expression.call(
+        context,
+        state,
+        state.qualities,
+        context.gameLib,
+      );
     } catch (err) {
       // Swallowed (falls back to `default_`) but named — see logCodeError.
-      logCodeError('Scene expression error', undefined, state, expression, err);
+      logCodeError("Scene expression error", undefined, state, expression, err);
     }
     return result;
   };
 
-  var convertJSONToGame = function(json, callback) {
-    var reviver = function(key, value) {
+  var convertJSONToGame = function (json, callback) {
+    var reviver = function (key, value) {
       if (isObject(value) && value.$code !== undefined) {
         return makeFunctionFromSource(value.$code);
       } else {
@@ -300,37 +321,66 @@
     }
   };
 
-  var simpleContent = function(text) {
-    return [{type:'paragraph', content:text}];
+  var simpleContent = function (text) {
+    return [{ type: "paragraph", content: text }];
   };
 
-  var getCardinalNumber = function(value) {
+  var getCardinalNumber = function (value) {
     if (Math.floor(value) === value && value >= 0 && value <= 12) {
       // Integer, so use word.
-      return ['zero', 'one', 'two', 'three', 'four', 'five', 'six',
-              'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'][value];
+      return [
+        "zero",
+        "one",
+        "two",
+        "three",
+        "four",
+        "five",
+        "six",
+        "seven",
+        "eight",
+        "nine",
+        "ten",
+        "eleven",
+        "twelve",
+      ][value];
     } else {
       return value.toString();
     }
   };
 
-  var getOrdinalNumber = function(value) {
+  var getOrdinalNumber = function (value) {
     if (Math.floor(value) === value && value >= 0) {
       if (value <= 12) {
-        return ['zeroth', 'first', 'second', 'third', 'fourth', 'fifth',
-                'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh',
-                'twelfth'][value];
+        return [
+          "zeroth",
+          "first",
+          "second",
+          "third",
+          "fourth",
+          "fifth",
+          "sixth",
+          "seventh",
+          "eighth",
+          "ninth",
+          "tenth",
+          "eleventh",
+          "twelfth",
+        ][value];
       } else {
         value = value.toString();
         if (/1[0-9]$/.test(value)) {
-          return value + 'th';
+          return value + "th";
         } else {
           var last = value.substr(value.length - 1, 1);
           switch (last) {
-            case '1': return value + 'st';
-            case '2': return value + 'nd';
-            case '3': return value + 'rd';
-            default: return value + 'th';
+            case "1":
+              return value + "st";
+            case "2":
+              return value + "nd";
+            case "3":
+              return value + "rd";
+            default:
+              return value + "th";
           }
         }
       }
@@ -339,21 +389,28 @@
     }
   };
 
-  var getFudgeDisplay = function(value) {
+  var getFudgeDisplay = function (value) {
     if (Math.floor(value) === value) {
       if (value > 3) {
-        return 'superb+' + (value - 3);
+        return "superb+" + (value - 3);
       } else if (value < -3) {
-        return 'terrible' + (value + 3);
+        return "terrible" + (value + 3);
       } else {
         switch (value) {
-          case  3: return 'superb';
-          case  2: return 'great';
-          case  1: return 'good';
-          case  0: return 'fair';
-          case -1: return 'mediocre';
-          case -2: return 'poor';
-          case -3: return 'terrible';
+          case 3:
+            return "superb";
+          case 2:
+            return "great";
+          case 1:
+            return "good";
+          case 0:
+            return "fair";
+          case -1:
+            return "mediocre";
+          case -2:
+            return "poor";
+          case -3:
+            return "terrible";
         }
       }
     } else {
@@ -361,13 +418,15 @@
     }
   };
 
-  var getUserQDisplay = function(value, qdisplay) {
+  var getUserQDisplay = function (value, qdisplay) {
     for (var i = 0; i < qdisplay.content.length; ++i) {
       var case_ = qdisplay.content[i];
       var min = case_.min;
       var max = case_.max;
-      if ((min === undefined || min <= value) &&
-          (max === undefined || max >= value)) {
+      if (
+        (min === undefined || min <= value) &&
+        (max === undefined || max >= value)
+      ) {
         if (case_.output !== undefined) {
           return case_.output;
         } else {
@@ -379,30 +438,35 @@
   };
 
   // broad difficulty from https://fallenlondon.wiki/wiki/Broad_difficulty
-  
-  var calculateBroadDifficulty = function(quality, difficulty, scaler, random) {
+
+  var calculateBroadDifficulty = function (
+    quality,
+    difficulty,
+    scaler,
+    random,
+  ) {
     if (!scaler) {
       scaler = 0.6;
     }
     if (scaler > 1) {
-      scaler = scaler/100;
+      scaler = scaler / 100;
     }
-    var success_prob = scaler*(quality/difficulty);
+    var success_prob = scaler * (quality / difficulty);
     if (success_prob > 1) {
       success_prob = 1;
     }
     return success_prob;
- };
+  };
 
   // narrow difficulty from https://fallenlondon.wiki/wiki/Narrow_difficulty
-  var calculateNarrowDifficulty = function(quality, difficulty, increment) {
+  var calculateNarrowDifficulty = function (quality, difficulty, increment) {
     if (!increment) {
       increment = 0.1;
     }
     if (increment > 1) {
-      increment = increment/100;
+      increment = increment / 100;
     }
-    var success_prob = (quality - difficulty)*increment + 0.5;
+    var success_prob = (quality - difficulty) * increment + 0.5;
     if (success_prob > 1) {
       success_prob = 1;
     } else if (success_prob < increment) {
@@ -412,23 +476,21 @@
   };
 
   // this function actually does the roll for success.
-  var rollDifficulty = function(success_prob, random) {
+  var rollDifficulty = function (success_prob, random) {
     var rn;
     if (random) {
       rn = random.random();
-
     } else {
       rn = Math.random();
     }
     if (rn < success_prob) {
       return true;
     }
-    return false;   
+    return false;
   };
 
-
   // use the storynexus adjectives
-  var displayDifficulty = function(success_prob) {
+  var displayDifficulty = function (success_prob) {
     if (success_prob <= 0.1) {
       return "almost impossible";
     } else if (success_prob <= 0.3) {
@@ -450,41 +512,40 @@
     }
   };
 
-
   // ------------------------------------------------------------------------
 
   // Objects with this interface are passed to a game state to have it
   // display content.
-  var UserInterface = function() {};
-  UserInterface.prototype.beginGame = function() {};
-  UserInterface.prototype.displayContent = function(paragraphs, faceImage) {};
+  var UserInterface = function () {};
+  UserInterface.prototype.beginGame = function () {};
+  UserInterface.prototype.displayContent = function (paragraphs, faceImage) {};
   // these are the dendrynexus display functions
   // displays the decks
-  UserInterface.prototype.displayDecks = function(decks) {};
+  UserInterface.prototype.displayDecks = function (decks) {};
   // displays cards in hand
-  UserInterface.prototype.displayHand = function(hand) {};
+  UserInterface.prototype.displayHand = function (hand) {};
   // displays pinned cards (these are basically an alternate way of displaying choices)
-  UserInterface.prototype.displayPinnedCards = function(cards) {};
+  UserInterface.prototype.displayPinnedCards = function (cards) {};
 
-  UserInterface.prototype.displayChoices = function(choices) {};
-  UserInterface.prototype.displayGameOver = function() {
-    this.displayContent(simpleContent('Game Over'));
+  UserInterface.prototype.displayChoices = function (choices) {};
+  UserInterface.prototype.displayGameOver = function () {
+    this.displayContent(simpleContent("Game Over"));
   };
-  UserInterface.prototype.removeChoices = function() {};
+  UserInterface.prototype.removeChoices = function () {};
   // Called when the player makes a choice and new content is about to be
   // added (i.e. isn't called between output when the next scene is arrived
   // at via go-to).
-  UserInterface.prototype.beginOutput = function() {};
-  UserInterface.prototype.endOutput = function() {};
-  UserInterface.prototype.newPage = function() {};
-  UserInterface.prototype.setStyle = function(style) {};
-  UserInterface.prototype.signal = function(data) {};
-  UserInterface.prototype.setBg = function(img) {};
-  UserInterface.prototype.setSprites = function(data) {};
-  UserInterface.prototype.setSpriteStyle = function(loc, style) {};
-  UserInterface.prototype.audio = function(audio) {};
+  UserInterface.prototype.beginOutput = function () {};
+  UserInterface.prototype.endOutput = function () {};
+  UserInterface.prototype.newPage = function () {};
+  UserInterface.prototype.setStyle = function (style) {};
+  UserInterface.prototype.signal = function (data) {};
+  UserInterface.prototype.setBg = function (img) {};
+  UserInterface.prototype.setSprites = function (data) {};
+  UserInterface.prototype.setSpriteStyle = function (loc, style) {};
+  UserInterface.prototype.audio = function (audio) {};
   // Not part of the UI, but allows us to simply subclass.
-  UserInterface.makeParentOf = function(OtherConstructor) {
+  UserInterface.makeParentOf = function (OtherConstructor) {
     OtherConstructor.prototype = new UserInterface();
     OtherConstructor.constructor = OtherConstructor;
   };
@@ -494,7 +555,7 @@
   // An engine is given a user interface, the game and the current
   // game state (can be omitted). It is responsible for the logic of
   // the game.
-  var DendryEngine = function(ui, game) {
+  var DendryEngine = function (ui, game) {
     this.ui = ui;
     this.game = game;
     // The game's own code namespace, exposed to compiled content as `G`.
@@ -511,14 +572,14 @@
   // Installs the game's own code (the sim, derivations — whatever `source/lib/`
   // exports). Same shape as setLocale: each UI hands the engine the game's
   // stuff, and NEITHER UI knows what is in it.
-  DendryEngine.prototype.setGameLib = function(lib) {
+  DendryEngine.prototype.setGameLib = function (lib) {
     this.gameLib = lib || {};
     return this;
   };
 
   // Installs a runtime translation overlay. `catalog` maps an English
   // source string (the key) to its translation. Passing null clears it.
-  DendryEngine.prototype.setLocale = function(locale, catalog) {
+  DendryEngine.prototype.setLocale = function (locale, catalog) {
     this.locale = locale || null;
     this.catalog = catalog || null;
     return this;
@@ -529,8 +590,10 @@
   // through _localizePlain because they were never in a content tree. Same
   // English-as-key contract as the content catalog. Identity when no catalog is
   // installed, which is what keeps the old shell (locale === null) English.
-  DendryEngine.prototype.translate = function(s) {
-    if (!this.catalog || typeof s !== 'string') { return s; }
+  DendryEngine.prototype.translate = function (s) {
+    if (!this.catalog || typeof s !== "string") {
+      return s;
+    }
     return this._localizeString(s);
   };
 
@@ -541,16 +604,16 @@
   // so it cannot read source/qdisplays/*.dry directly — but it can name one.
   // That keeps every threshold written in exactly one place (the qdisplay
   // file) instead of being duplicated into JS wherever a row needs a band.
-  DendryEngine.prototype.qdisplay = function(value, qDisplayId) {
+  DendryEngine.prototype.qdisplay = function (value, qDisplayId) {
     return this._getQDisplay(value, qDisplayId);
   };
 
-  DendryEngine.prototype.displayGameOver = function() {
+  DendryEngine.prototype.displayGameOver = function () {
     this.ui.displayGameOver();
     return this;
   };
 
-  DendryEngine.prototype.displayChoices = function() {
+  DendryEngine.prototype.displayChoices = function () {
     // TODO: dendrynexus - if the current scene is a hand, display the decks, hand, and pinned cards.
     var choices = this.getCurrentChoices();
     assert(choices);
@@ -565,7 +628,8 @@
           // if the deck has
           if (!this._drawFromDeck(c.id)) {
             c.canChoose = false;
-            c.subtitle = c.unavailableSubtitle || "No cards available from deck.";
+            c.subtitle =
+              c.unavailableSubtitle || "No cards available from deck.";
           } else {
             c.canChoose = true;
           }
@@ -605,7 +669,7 @@
     return this;
   };
 
-  DendryEngine.prototype.displaySceneContent = function(restorePage) {
+  DendryEngine.prototype.displaySceneContent = function (restorePage) {
     var scene = this.getCurrentScene();
     assert(scene);
     // TODO: displaying images
@@ -615,9 +679,11 @@
     }
     var sceneSignal = scene.signal || this.game.sceneSignal;
     if (sceneSignal !== undefined) {
-      this.ui.signal({signal:sceneSignal,
-                      event:'scene-display',
-                      id:this.state.sceneId});
+      this.ui.signal({
+        signal: sceneSignal,
+        event: "scene-display",
+        id: this.state.sceneId,
+      });
     }
     if (restorePage) {
       this.ui.newPage();
@@ -635,34 +701,44 @@
       if (this.state.enableTranscript) {
         this.transcript = this.transcript.concat(displayContent);
       }
-      this.state.currentContent = this.state.currentContent.concat(displayContent);
+      this.state.currentContent =
+        this.state.currentContent.concat(displayContent);
       this.ui.displayContent(displayContent, faceImage);
     }
-    this._runActions(scene.onDisplay, 'on-display');
+    this._runActions(scene.onDisplay, "on-display");
 
     return this;
   };
 
-  DendryEngine.prototype.choose = function(choiceIndex) {
+  DendryEngine.prototype.choose = function (choiceIndex) {
     var choices = this.choiceCache;
 
     // Check for valid choice.
     assert(choices);
     if (choices.length <= choiceIndex) {
-      throw new Error('No choice at index ' + choiceIndex + ', only ' +
-                      choices.length + ' choices are available.');
+      throw new Error(
+        "No choice at index " +
+          choiceIndex +
+          ", only " +
+          choices.length +
+          " choices are available.",
+      );
     }
 
     // Commit the choice.
     var choice = choices[choiceIndex];
     if (!choice.canChoose) {
-      throw new Error('Attempted to choose index ' + choiceIndex + ', but ' +
-                      'that choice is unavailable.');
+      throw new Error(
+        "Attempted to choose index " +
+          choiceIndex +
+          ", but " +
+          "that choice is unavailable.",
+      );
     }
 
     var id = choice.id;
     if (this.state.enableTranscript) {
-      this.transcript.push('> ' + choice.title);
+      this.transcript.push("> " + choice.title);
     }
 
     delete this.choiceCache;
@@ -671,7 +747,7 @@
     return this;
   };
 
-  DendryEngine.prototype.chooseSceneId = function(sceneId) {
+  DendryEngine.prototype.chooseSceneId = function (sceneId) {
     delete this.choiceCache;
     this.goToScene(id);
 
@@ -679,22 +755,22 @@
   };
 
   // TODO: dendrynexus - draw card
-  DendryEngine.prototype.drawCard = function(deckId) {
+  DendryEngine.prototype.drawCard = function (deckId) {
     var currentSceneId = this.state.sceneId;
     var scene = this.getCurrentScene();
     assert(scene);
-    
+
     var currentHand = this.state.currentHands[currentSceneId];
     // return a message saying that there are too many cards
     if (scene.maxCards <= currentHand.length) {
-      return {id: null, title: 'no_space_in_hand'};
+      return { id: null, title: "no_space_in_hand" };
     }
     // get an available card from deckId
     // card is {id: id, title: title}
     var card = this._drawFromDeck(deckId);
     // distinguish between the "no space left in hand" and "no card in deck" situations?
     if (!card) {
-      return {id: null, title: 'no_card_in_deck'};
+      return { id: null, title: "no_card_in_deck" };
     }
     this.state.lastDrawnCard = card;
     var image = this.game.scenes[card.id].cardImage;
@@ -702,14 +778,16 @@
     this.state.currentHands[currentSceneId].push(card);
 
     // display the hand
-    this.ui.displayHand(this.state.currentHands[currentSceneId], scene.maxCards);
+    this.ui.displayHand(
+      this.state.currentHands[currentSceneId],
+      scene.maxCards,
+    );
     return card;
   };
 
-
   // dendrynexus - play a card (remove it from the current hand)
   // should this be the code for pinned cards as well?
-  DendryEngine.prototype.playCard = function(cardId) {
+  DendryEngine.prototype.playCard = function (cardId) {
     var currentSceneId = this.state.sceneId;
     var currentHand = this.state.currentHands[currentSceneId];
     // remove card from hand
@@ -724,25 +802,25 @@
     // later "return card to hand" (content: easy_discard) can revert whatever
     // cooldown timer the card set — by *_timer key, independent of how the
     // card names it. Generic mechanism, like lastPlayedCard itself; the engine
-    // attaches no meaning to it. (See docs/design/LEARNINGS.md 2026-07-20.)
+    // attaches no meaning to it.
     this.state.lastPlayedCardQ = Object.assign({}, this.state.qualities);
     delete this.choiceCache;
     this.goToScene(cardId);
   };
 
-  DendryEngine.prototype.playPinnedCard = function(cardId) {
+  DendryEngine.prototype.playPinnedCard = function (cardId) {
     delete this.choiceCache;
     this.goToScene(cardId);
   };
 
-  DendryEngine.prototype.goToScene = function(id) {
+  DendryEngine.prototype.goToScene = function (id) {
     this.state.sceneIdsSinceGoTo = [];
     this.ui.beginOutput();
     this.__changeScene(id);
     this.ui.endOutput();
   };
 
-  DendryEngine.prototype.beginGame = function(rndSeeds) {
+  DendryEngine.prototype.beginGame = function (rndSeeds) {
     // A UI that forgets setGameLib reproduces the exact bug this API exists to
     // kill: content's calls into the game lib throw, runActions SWALLOWS the
     // throw, and the game plays on over a dead simulation. The audit guard
@@ -751,15 +829,16 @@
     if (!this._warnedNoGameLib && Object.keys(this.gameLib).length === 0) {
       this._warnedNoGameLib = true;
       console.warn(
-        'dendrynexus: no game lib installed (engine.setGameLib was never called). ' +
-        'Any content calling G.* will throw into a swallowed catch and the ' +
-        'game will look fine while nothing runs.');
+        "dendrynexus: no game lib installed (engine.setGameLib was never called). " +
+          "Any content calling G.* will throw into a swallowed catch and the " +
+          "game will look fine while nothing runs.",
+      );
     }
     this.random = rndSeeds ? Random.fromSeeds(rndSeeds) : Random.fromUnique();
     this.state = {
       sceneId: null,
       sceneIdsSinceGoTo: [],
-      rootSceneId: this.game.rootScene || this.game.firstScene || 'root',
+      rootSceneId: this.game.rootScene || this.game.firstScene || "root",
       gameOver: false,
       visits: {},
       qualities: {},
@@ -821,40 +900,41 @@
     return this;
   };
 
-  DendryEngine.prototype._loadAchievements = function() {
-    if (typeof localStorage !== 'undefined') {
-        var key = this._achievementStorageKey();
-        if (localStorage[key]) {
-            this.state.achievements = JSON.parse(
-                localStorage[key]);
-            // add a special quality named 'achievement_'
-            for (var achievement in this.state.achievements) {
-                this.state.qualities['achievement_' + achievement] = 1;
-            }
+  DendryEngine.prototype._loadAchievements = function () {
+    if (typeof localStorage !== "undefined") {
+      var key = this._achievementStorageKey();
+      if (localStorage[key]) {
+        this.state.achievements = JSON.parse(localStorage[key]);
+        // add a special quality named 'achievement_'
+        for (var achievement in this.state.achievements) {
+          this.state.qualities["achievement_" + achievement] = 1;
         }
+      }
     }
   };
 
-  DendryEngine.prototype._achievementStorageKey = function() {
+  DendryEngine.prototype._achievementStorageKey = function () {
     var storageId = this.game.info && this.game.info.storageId;
     // `storageId` also remains at the compiled game's top level for legacy
     // engine consumers because Game merges info.dry there. Prefer the nested
     // manifest, but tolerate compiled games produced during that transition.
     storageId = storageId || this.game.storageId;
-    return storageId ? storageId + ':achievements' : this.game.title + '_achievements';
+    return storageId
+      ? storageId + ":achievements"
+      : this.game.title + "_achievements";
   };
 
-  DendryEngine.prototype.gameOver = function() {
+  DendryEngine.prototype.gameOver = function () {
     this.state.gameOver = true;
     this.displayGameOver();
     return this;
   };
 
-  DendryEngine.prototype.isGameOver = function() {
+  DendryEngine.prototype.isGameOver = function () {
     return this.state.gameOver;
   };
 
-  DendryEngine.prototype.getCurrentScene = function() {
+  DendryEngine.prototype.getCurrentScene = function () {
     var scene = this.game.scenes[this.state.sceneId];
     assert(scene !== undefined);
     return scene;
@@ -865,12 +945,12 @@
   // option objects in a scene (though options are used to generate
   // choices). Choices are compiled from the options belonging to the
   // current scene.
-  DendryEngine.prototype.getCurrentChoices = function() {
+  DendryEngine.prototype.getCurrentChoices = function () {
     return this.choiceCache;
   };
 
   // Sets the current state of the engine from an exportable state.
-  DendryEngine.prototype.setState = function(state) {
+  DendryEngine.prototype.setState = function (state) {
     // Set the state.
     this.state = state;
     this._setUpQualities();
@@ -896,7 +976,7 @@
       this.ui.newPage();
       this.ui.removeChoices();
       this.ui.displayContent(this.state.currentContent);
-      this._runActions(scene.onDisplay, 'on-display');
+      this._runActions(scene.onDisplay, "on-display");
       this.choiceCache = this._compileChoices(scene);
       this.displayChoices();
       this.ui.setSprites(this.state.sprites);
@@ -907,7 +987,7 @@
 
   // Returns a data structure for exporting without any accessors or
   // complex classes.
-  DendryEngine.prototype.getExportableState = function() {
+  DendryEngine.prototype.getExportableState = function () {
     // Because we only have complex state in the qualities (they have
     // accessors), and because we save with JSON (which calls
     // accessors correctly), we don't have to worry about giving the
@@ -919,22 +999,23 @@
 
   // ------------------------------------------------------------------------
 
-  DendryEngine.prototype._getQDisplay = function(value, qDisplayId) {
+  DendryEngine.prototype._getQDisplay = function (value, qDisplayId) {
     switch (qDisplayId) {
-    case 'cardinal': case 'number':
-      return getCardinalNumber(value);
-    case 'ordinal':
-      return getOrdinalNumber(value);
-    case 'fudge':
-      return getFudgeDisplay(value);
-    default:
-      var qdisplay = this.game.qdisplays[qDisplayId];
-      assert(qdisplay !== undefined);
-      return getUserQDisplay(value, qdisplay);
+      case "cardinal":
+      case "number":
+        return getCardinalNumber(value);
+      case "ordinal":
+        return getOrdinalNumber(value);
+      case "fudge":
+        return getFudgeDisplay(value);
+      default:
+        var qdisplay = this.game.qdisplays[qDisplayId];
+        assert(qdisplay !== undefined);
+        return getUserQDisplay(value, qdisplay);
     }
   };
 
-  DendryEngine.prototype._evaluateStateDependencies = function(defs) {
+  DendryEngine.prototype._evaluateStateDependencies = function (defs) {
     var result = [];
 
     for (var i = 0; i < defs.length; ++i) {
@@ -942,19 +1023,19 @@
       var def = defs[i];
       var fn = def.fn;
       switch (def.type) {
-      case 'insert':
-        value = this._runExpression(fn);
-        if (def.qdisplay) {
-          value = this._getQDisplay(value, def.qdisplay);
-        } else {
-          value = value.toString();
-        }
-        break;
+        case "insert":
+          value = this._runExpression(fn);
+          if (def.qdisplay) {
+            value = this._getQDisplay(value, def.qdisplay);
+          } else {
+            value = value.toString();
+          }
+          break;
 
-      default:
-        assert(def.type === 'predicate');
-        value = this._runPredicate(fn);
-        break;
+        default:
+          assert(def.type === "predicate");
+          value = this._runPredicate(fn);
+          break;
       }
 
       // Recurse the resolution into the resulting value, if needed.
@@ -967,7 +1048,7 @@
     return result;
   };
 
-  DendryEngine.prototype._mergeStateEvalsInArray = function(array, evals) {
+  DendryEngine.prototype._mergeStateEvalsInArray = function (array, evals) {
     if (!Array.isArray(array)) {
       array = [array];
     }
@@ -978,37 +1059,37 @@
     return result;
   };
 
-  DendryEngine.prototype._mergeStateEvals = function(content, evals) {
+  DendryEngine.prototype._mergeStateEvals = function (content, evals) {
     if (content.type === undefined) {
       return [content];
     }
 
     var result;
     switch (content.type) {
-    case 'conditional':
-      if (evals[content.predicate]) {
-        result = this._mergeStateEvalsInArray(content.content, evals);
-      } else {
-        result = [];
-      }
-      break;
-    case 'insert':
-      result = evals[content.insert];
-      break;
-    default:
-      var newE = {type:content.type};
-      newE.content = this._mergeStateEvalsInArray(content.content, evals);
-      result = [newE];
-      break;
+      case "conditional":
+        if (evals[content.predicate]) {
+          result = this._mergeStateEvalsInArray(content.content, evals);
+        } else {
+          result = [];
+        }
+        break;
+      case "insert":
+        result = evals[content.insert];
+        break;
+      default:
+        var newE = { type: content.type };
+        newE.content = this._mergeStateEvalsInArray(content.content, evals);
+        result = [newE];
+        break;
     }
     return result;
   };
 
   // Look up a single source string in the active catalog. Identity if the
   // key is absent or no catalog is active.
-  DendryEngine.prototype._localizeString = function(s) {
+  DendryEngine.prototype._localizeString = function (s) {
     var t = this.catalog[s];
-    return (typeof t === 'string') ? t : s;
+    return typeof t === "string" ? t : s;
   };
 
   // Localize ONLY a whole single-plain-string content value (a bare string,
@@ -1019,27 +1100,33 @@
   // overhead and zero copying when no catalog is active. Placed here, BEFORE
   // _mergeStateEvals flattens inserts/conditionals, so the deferred transform
   // slots in without relocating this seam.
-  DendryEngine.prototype._localizePlain = function(v) {
-    if (!this.catalog) { return v; }
-    if (typeof v === 'string') { return this._localizeString(v); }
-    if (Array.isArray(v) && v.length === 1 && typeof v[0] === 'string') {
+  DendryEngine.prototype._localizePlain = function (v) {
+    if (!this.catalog) {
+      return v;
+    }
+    if (typeof v === "string") {
+      return this._localizeString(v);
+    }
+    if (Array.isArray(v) && v.length === 1 && typeof v[0] === "string") {
       return [this._localizeString(v[0])];
     }
     return v;
   };
 
-  DendryEngine.prototype._makeDisplayContent = function(content, useParas) {
+  DendryEngine.prototype._makeDisplayContent = function (content, useParas) {
     // Raw content can just be returned.
     if (content.content === undefined) {
       if (Array.isArray(content)) {
         return this._localizePlain(content);
       } else if (useParas) {
-        return [{type:'paragraph', content:this._localizePlain(content)}];
+        return [{ type: "paragraph", content: this._localizePlain(content) }];
       } else {
         return [this._localizePlain(content)];
       }
-    } else if (content.stateDependencies === undefined &&
-               content.type !== undefined) {
+    } else if (
+      content.stateDependencies === undefined &&
+      content.type !== undefined
+    ) {
       return [content];
     }
 
@@ -1051,36 +1138,33 @@
       if (!Array.isArray(displayContent)) {
         displayContent = [displayContent];
       }
-      displayContent = this._mergeStateEvalsInArray(
-        displayContent, evals
-      );
+      displayContent = this._mergeStateEvalsInArray(displayContent, evals);
     }
     return displayContent;
   };
 
-  DendryEngine.prototype._setUpQualities = function() {
-    var _Q = this._qualitiesAccessorsPrivate = {};
+  DendryEngine.prototype._setUpQualities = function () {
+    var _Q = (this._qualitiesAccessorsPrivate = {});
     var Q = this.state.qualities;
     var that = this;
-    objEach(this.game.qualities, function(id, quality) {
+    objEach(this.game.qualities, function (id, quality) {
       var min = quality.min;
       var max = quality.max;
       var signal = quality.signal || that.game.qualitySignal;
       var predicate = quality.isValid;
-      var needsAccessors = (
+      var needsAccessors =
         min !== undefined ||
         max !== undefined ||
         signal !== undefined ||
-        predicate !== undefined
-      );
+        predicate !== undefined;
       if (needsAccessors) {
         if (Q[id] !== undefined) {
           _Q[id] = Q[id];
         }
-        Q.__defineGetter__(id, function() {
+        Q.__defineGetter__(id, function () {
           return _Q[id];
         });
-        Q.__defineSetter__(id, function(value) {
+        Q.__defineSetter__(id, function (value) {
           if (min !== undefined && value < min) {
             value = min;
           }
@@ -1100,9 +1184,9 @@
           if (signal !== undefined && value !== was) {
             var signalObj = {
               signal: signal,
-              event: 'quality-change',
+              event: "quality-change",
               id: id,
-              now: value
+              now: value,
             };
             if (was !== undefined) {
               signalObj.was = was;
@@ -1117,41 +1201,41 @@
     });
   };
 
-  DendryEngine.prototype._runActions = function(actions, phase) {
+  DendryEngine.prototype._runActions = function (actions, phase) {
     runActions(actions, this, this.state, phase);
   };
 
-  DendryEngine.prototype._runPredicate = function(predicate, default_) {
+  DendryEngine.prototype._runPredicate = function (predicate, default_) {
     return runPredicate(predicate, default_, this, this.state);
   };
 
-  DendryEngine.prototype._runExpression = function(expression, default_) {
+  DendryEngine.prototype._runExpression = function (expression, default_) {
     return runExpression(expression, default_, this, this.state);
   };
 
-  DendryEngine.prototype.__changeScene = function(id) {
+  DendryEngine.prototype.__changeScene = function (id) {
     if (this.state.justReturned) {
-        this.state.justReturned = false;
+      this.state.justReturned = false;
     }
     var scene = null;
     var restorePage = false;
     // if id is 'prevScene', go to the previous scene.
-    if (id == 'prevScene') {
+    if (id == "prevScene") {
       if (this.prevSceneId === null) {
         // this really only comes up on the very first scene of the game.
       }
       scene = this.game.scenes[this.state.prevSceneId];
       id = this.state.prevSceneId;
       assert(scene);
-    } else if (id == 'prevTopScene') {
+    } else if (id == "prevTopScene") {
       scene = this.game.scenes[this.state.prevTopSceneId];
       id = this.state.prevTopSceneId;
       assert(scene);
-    } else if (id == 'jumpScene') {
+    } else if (id == "jumpScene") {
       scene = this.game.scenes[this.state.jumpSceneId];
       id = this.state.jumpSceneId;
       assert(scene);
-    } else if (id === 'backSpecialScene') {
+    } else if (id === "backSpecialScene") {
       scene = this.game.scenes[this.state.prevSpecialSceneId];
       id = this.state.prevSpecialSceneId;
       restorePage = true;
@@ -1163,7 +1247,6 @@
       scene = this.game.scenes[id];
       assert(scene);
     }
-
 
     // Leave previous scene.
     var fromId = this.state.sceneId;
@@ -1178,13 +1261,15 @@
         this.state.prevSpecialSceneId = fromId;
       }
       var from = this.getCurrentScene();
-      this._runActions(from.onDeparture, 'on-departure');
+      this._runActions(from.onDeparture, "on-departure");
       var fromSignal = from.signal || this.game.sceneSignal;
       if (fromSignal !== undefined) {
-        this.ui.signal({signal:fromSignal,
-                        event:'scene-departure',
-                        id:this.state.sceneId,
-                        'to':id});
+        this.ui.signal({
+          signal: fromSignal,
+          event: "scene-departure",
+          id: this.state.sceneId,
+          to: id,
+        });
       }
     }
 
@@ -1208,21 +1293,21 @@
     }
 
     if (!restorePage && !this.state.justReturned) {
-        // If we go back from a special scene (e.g. the stats page),
-        // we probably don't want to run the scene actions again.
-        this._runActions(scene.onArrival, 'on-arrival');
-        // TODO: After running onArrival, we should run call if call has
-        if (scene.call) {
-          var callScene = this.game.scenes[scene.call];
-          this._runActions(callScene.onArrival, 'on-arrival (call)');
-        }
+      // If we go back from a special scene (e.g. the stats page),
+      // we probably don't want to run the scene actions again.
+      this._runActions(scene.onArrival, "on-arrival");
+      // TODO: After running onArrival, we should run call if call has
+      if (scene.call) {
+        var callScene = this.game.scenes[scene.call];
+        this._runActions(callScene.onArrival, "on-arrival (call)");
+      }
     }
     var sceneSignal = scene.signal || this.game.sceneSignal;
     if (sceneSignal !== undefined) {
       var signal = {
         signal: sceneSignal,
-        event: 'scene-arrival',
-        id: id
+        event: "scene-arrival",
+        id: id,
       };
       if (!!fromId) {
         signal.from = fromId;
@@ -1236,41 +1321,40 @@
     // from here.
     this.state.currentRandomState = this.random.getState();
     //if (!this.state.justReturned) {
-        // if the state has just returned from a goSub, we don't display
-        // the content?
-        // TODO: i'm not sure what the best logic for this is...
-        // Maybe the text pre-gosub should be displayed only after the goSub?
+    // if the state has just returned from a goSub, we don't display
+    // the content?
+    // TODO: i'm not sure what the best logic for this is...
+    // Maybe the text pre-gosub should be displayed only after the goSub?
     this.displaySceneContent(restorePage);
     //}
     // display background
     if (scene.setBg) {
-        this.state.bg = scene.setBg;
-        this.ui.setBg(scene.setBg);
+      this.state.bg = scene.setBg;
+      this.ui.setBg(scene.setBg);
     }
     if (scene.setSprites) {
-        this.state.sprites = scene.setSprites;
-        this.ui.setSprites(scene.setSprites);
+      this.state.sprites = scene.setSprites;
+      this.ui.setSprites(scene.setSprites);
     }
     if (scene.audio) {
-        this.ui.audio(scene.audio);
+      this.ui.audio(scene.audio);
     }
     // TODO: there has got to be a better way of doing this.
     if (scene.setTopLeftStyle) {
-        this.ui.setSpriteStyle('topLeft', scene.setTopLeftStyle);
+      this.ui.setSpriteStyle("topLeft", scene.setTopLeftStyle);
     }
     if (scene.setTopRightStyle) {
-        this.ui.setSpriteStyle('topRight', scene.setTopRightStyle);
+      this.ui.setSpriteStyle("topRight", scene.setTopRightStyle);
     }
     if (scene.setBottomLeftStyle) {
-        this.ui.setSpriteStyle('bottomLeft', scene.setBottomLeftStyle);
+      this.ui.setSpriteStyle("bottomLeft", scene.setBottomLeftStyle);
     }
     if (scene.setBottomRightStyle) {
-        this.ui.setSpriteStyle('bottomRight', scene.setBottomRightStyle);
+      this.ui.setSpriteStyle("bottomRight", scene.setBottomRightStyle);
     }
     // update achievement
     if (scene.achievement) {
-        this.achieve(scene.achievement);
-
+      this.achieve(scene.achievement);
     }
 
     // Check if we have any reason to leave the scene, or end the game.
@@ -1283,8 +1367,7 @@
       var validSubs = [];
       for (var s1 = 0; s1 < scene.goSub.length; ++s1) {
         var sub = scene.goSub[s1];
-        if (sub.predicate === undefined ||
-            this._runPredicate(sub.predicate)) {
+        if (sub.predicate === undefined || this._runPredicate(sub.predicate)) {
           validSubs.push(sub.id);
         }
       }
@@ -1293,8 +1376,10 @@
       var validGoToIds = [];
       for (var i = 0; i < scene.goTo.length; ++i) {
         var goTo = scene.goTo[i];
-        if (goTo.predicate === undefined ||
-            this._runPredicate(goTo.predicate)) {
+        if (
+          goTo.predicate === undefined ||
+          this._runPredicate(goTo.predicate)
+        ) {
           validGoToIds.push(goTo.id);
         }
       }
@@ -1313,8 +1398,7 @@
       var validRefs = [];
       for (var s = 0; s < scene.goToRef.length; ++s) {
         var ref = scene.goToRef[s];
-        if (ref.predicate === undefined ||
-            this._runPredicate(ref.predicate)) {
+        if (ref.predicate === undefined || this._runPredicate(ref.predicate)) {
           validRefs.push(ref.id);
         }
       }
@@ -1333,23 +1417,41 @@
     // WHAT IF scenes have gotos and checks. huh. don't do that. Let's just say that is undefined behavior.
     var hasCheck = false;
     var successProb, isSuccess;
-    if (scene.checkQuality && scene.broadDifficulty && scene.checkSuccessGoTo && scene.checkFailureGoTo) {
+    if (
+      scene.checkQuality &&
+      scene.broadDifficulty &&
+      scene.checkSuccessGoTo &&
+      scene.checkFailureGoTo
+    ) {
       var scaler = 0.6;
       if (scene.difficultyScaler) {
         scaler = scene.difficultyScaler;
       }
-      successProb = calculateBroadDifficulty(this.state.qualities[scene.checkQuality] || 0, scene.broadDifficulty, scaler);
+      successProb = calculateBroadDifficulty(
+        this.state.qualities[scene.checkQuality] || 0,
+        scene.broadDifficulty,
+        scaler,
+      );
       hasCheck = true;
-    } else if (scene.checkQuality && scene.narrowDifficulty && scene.checkSuccessGoTo && scene.checkFailureGoTo) {
+    } else if (
+      scene.checkQuality &&
+      scene.narrowDifficulty &&
+      scene.checkSuccessGoTo &&
+      scene.checkFailureGoTo
+    ) {
       var increment = 0.1;
       if (scene.difficultyIncrement) {
         increment = scene.difficultyIncrement;
       }
-      successProb = calculateNarrowDifficulty(this.state.qualities[scene.checkQuality] || 0, scene.narrowDifficulty, increment);
+      successProb = calculateNarrowDifficulty(
+        this.state.qualities[scene.checkQuality] || 0,
+        scene.narrowDifficulty,
+        increment,
+      );
       hasCheck = true;
     }
     if (hasCheck) {
-      isSuccess = rollDifficulty(successProb, this.random); 
+      isSuccess = rollDifficulty(successProb, this.random);
       // logic for changing the scene on success/failure of the check
       done = true;
       if (isSuccess) {
@@ -1373,19 +1475,21 @@
     }
   };
 
-  DendryEngine.prototype.achieve = function(achievementName) {
+  DendryEngine.prototype.achieve = function (achievementName) {
     this.state.achievements[achievementName] = 1;
     // add a special quality named 'achievement_'
-    this.state.qualities['achievement_' + achievementName] = 1;
+    this.state.qualities["achievement_" + achievementName] = 1;
     // add a new quality indicating that the achievement has been done for the current game
-    this.state.qualities['game_achievement_' + achievementName] = 1;
+    this.state.qualities["game_achievement_" + achievementName] = 1;
     // set localStorage for achievement
-    if (typeof localStorage !== 'undefined') {
-      localStorage[this._achievementStorageKey()] = JSON.stringify(this.state.achievements);
+    if (typeof localStorage !== "undefined") {
+      localStorage[this._achievementStorageKey()] = JSON.stringify(
+        this.state.achievements,
+      );
     }
   };
 
-  DendryEngine.prototype.__getChoiceSelectionData = function(idToInfoMap) {
+  DendryEngine.prototype.__getChoiceSelectionData = function (idToInfoMap) {
     var result = [];
     for (var id in idToInfoMap) {
       var optionScene = this.game.scenes[id];
@@ -1411,7 +1515,7 @@
     return result;
   };
 
-  DendryEngine.prototype.__filterViewable = function(idToInfoMap) {
+  DendryEngine.prototype.__filterViewable = function (idToInfoMap) {
     var result = {};
     for (var id in idToInfoMap) {
       var thisScene = this.game.scenes[id];
@@ -1444,28 +1548,28 @@
     return result;
   };
 
-  DendryEngine.prototype.__getChoiceIdsFromOptions = function(options) {
+  DendryEngine.prototype.__getChoiceIdsFromOptions = function (options) {
     var that = this;
 
     var choices = {};
-    each(options, function(option) {
+    each(options, function (option) {
       // Filter out options that can't be viewed.
       if (!that._runPredicate(option.viewIf, true)) {
         return;
       }
 
-      if (option.id.substr(0, 1) === '@') {
+      if (option.id.substr(0, 1) === "@") {
         // This is an id, use it.
         var trimmedId = option.id.substring(1);
-        var choice = merge(option, {id:trimmedId});
+        var choice = merge(option, { id: trimmedId });
         choices[trimmedId] = choice;
       } else {
-        assert(option.id.substr(0, 1) === '#');
+        assert(option.id.substr(0, 1) === "#");
         // This is a tag, add all matching ids.
         var ids = that.game.tagLookup[option.id.substring(1)];
-        objEach(ids, function(id) {
+        objEach(ids, function (id) {
           if (choices[id] === undefined) {
-            choices[id] = merge(option, {id:id});
+            choices[id] = merge(option, { id: id });
           }
         });
       }
@@ -1474,12 +1578,14 @@
   };
 
   // Code based on Undum (MIT License). See CREDITS.
-  DendryEngine.prototype.__filterByPriority = function(choices,
-                                                       minChoices,
-                                                       maxChoices) {
-    assert(minChoices === null ||
-           maxChoices === null ||
-           maxChoices >= minChoices);
+  DendryEngine.prototype.__filterByPriority = function (
+    choices,
+    minChoices,
+    maxChoices,
+  ) {
+    assert(
+      minChoices === null || maxChoices === null || maxChoices >= minChoices,
+    );
     var that = this;
 
     var committed = [];
@@ -1487,7 +1593,7 @@
     var choice;
 
     // Work in descending priority order.
-    choices.sort(function(a, b) {
+    choices.sort(function (a, b) {
       return b.priority - a.priority;
     });
 
@@ -1523,14 +1629,14 @@
       committed.push.apply(committed, candidates);
     } else {
       // Take a subset of the candidates, using their relative frequency.
-      each(candidates, function(choice) {
+      each(candidates, function (choice) {
         if (choice.frequency === null) {
           choice.selectionPriority = 0; // Always choose.
         } else {
           choice.selectionPriority = that.random.random() / choice.frequency;
         }
       });
-      candidates.sort(function(a, b) {
+      candidates.sort(function (a, b) {
         return a.selectionPriority - b.selectionPriority;
       });
       var extraChoices = maxChoices - committedChoices;
@@ -1541,7 +1647,7 @@
     return committed;
   };
 
-  DendryEngine.prototype.__getChoiceDisplayData = function(choicesSelected) {
+  DendryEngine.prototype.__getChoiceDisplayData = function (choicesSelected) {
     var choiceOutput = [];
     var numChoosable = 0;
 
@@ -1563,39 +1669,56 @@
 
       var subtitle = null;
       if (!canChoose) {
-        subtitle = choice.unavailableSubtitle ||
-                   choiceScene.unavailableSubtitle;
+        subtitle =
+          choice.unavailableSubtitle || choiceScene.unavailableSubtitle;
       }
       if (!subtitle) {
         subtitle = choice.subtitle || choiceScene.subtitle;
       }
 
-
       var finalChoice = {
-        id:choice.id,
-        canChoose:canChoose,
-        title:this._makeDisplayContent(title, false)
+        id: choice.id,
+        canChoose: canChoose,
+        title: this._makeDisplayContent(title, false),
       };
       if (subtitle) {
         finalChoice.subtitle = this._makeDisplayContent(subtitle, false);
       }
       // dendrynexus - add success/failure probabilities, and challenges.
       var successProb;
-      if (choiceScene.checkQuality && choiceScene.broadDifficulty && choiceScene.checkSuccessGoTo && choiceScene.checkFailureGoTo) {
+      if (
+        choiceScene.checkQuality &&
+        choiceScene.broadDifficulty &&
+        choiceScene.checkSuccessGoTo &&
+        choiceScene.checkFailureGoTo
+      ) {
         var scaler = 0.6;
         if (choiceScene.difficultyScaler) {
           scaler = choiceScene.difficultyScaler;
         }
-        successProb = calculateBroadDifficulty(this.state.qualities[choiceScene.checkQuality] || 0, choiceScene.broadDifficulty, scaler);
+        successProb = calculateBroadDifficulty(
+          this.state.qualities[choiceScene.checkQuality] || 0,
+          choiceScene.broadDifficulty,
+          scaler,
+        );
         finalChoice.checkQuality = choiceScene.checkQuality;
         finalChoice.successProb = successProb;
         finalChoice.difficulty = displayDifficulty(successProb);
-      } else if (choiceScene.checkQuality && choiceScene.narrowDifficulty && choiceScene.checkSuccessGoTo && choiceScene.checkFailureGoTo) {
+      } else if (
+        choiceScene.checkQuality &&
+        choiceScene.narrowDifficulty &&
+        choiceScene.checkSuccessGoTo &&
+        choiceScene.checkFailureGoTo
+      ) {
         var increment = 0.1;
         if (choiceScene.difficultyIncrement) {
           increment = choiceScene.difficultyIncrement;
         }
-        successProb = calculateNarrowDifficulty(this.state.qualities[choiceScene.checkQuality] || 0, choiceScene.narrowDifficulty, increment);
+        successProb = calculateNarrowDifficulty(
+          this.state.qualities[choiceScene.checkQuality] || 0,
+          choiceScene.narrowDifficulty,
+          increment,
+        );
         finalChoice.checkQuality = choiceScene.checkQuality;
         finalChoice.successProb = successProb;
         finalChoice.difficulty = displayDifficulty(successProb);
@@ -1607,28 +1730,30 @@
       }
     }
 
-    return {choices:choiceOutput, numChoosable:numChoosable};
+    return { choices: choiceOutput, numChoosable: numChoosable };
   };
 
-  DendryEngine.prototype._compileChoices = function(scene) {
+  DendryEngine.prototype._compileChoices = function (scene) {
     assert(scene);
 
     var options = scene.options;
     var choiceOutput = [];
     var numChoosable = 0;
     if (options !== undefined) {
-
       var choiceIds = this.__getChoiceIdsFromOptions(options);
       choiceIds = this.__filterViewable(choiceIds);
 
       var validChoiceData = this.__getChoiceSelectionData(choiceIds);
       var minChoices = scene.minChoices || null;
       var maxChoices = scene.maxChoices || null;
-      validChoiceData = this.__filterByPriority(validChoiceData,
-                                                minChoices, maxChoices);
+      validChoiceData = this.__filterByPriority(
+        validChoiceData,
+        minChoices,
+        maxChoices,
+      );
 
       // Sort the result into display order.
-      validChoiceData.sort(function(a, b) {
+      validChoiceData.sort(function (a, b) {
         return a.order - b.order;
       });
 
@@ -1645,7 +1770,11 @@
       if (root !== this.state.sceneId) {
         var rootSceneChoose = this.game.scenes[root].chooseIf;
         if (!rootSceneChoose || this._runPredicate(rootSceneChoose, true)) {
-          choiceOutput.push({id:root, title:'Continue...', canChoose:true});
+          choiceOutput.push({
+            id: root,
+            title: "Continue...",
+            canChoose: true,
+          });
           ++numChoosable;
         }
       }
@@ -1657,9 +1786,8 @@
     }
   };
 
-
   // dendrynexus - this returns a single available card from the given deck, formatted as an object of the type {id: id, title: title}
-  DendryEngine.prototype._drawFromDeck = function(deckId) {
+  DendryEngine.prototype._drawFromDeck = function (deckId) {
     var scene = this.game.scenes[deckId];
     var viewableScenes = this._compileChoices(scene);
     if (!viewableScenes) {
@@ -1668,13 +1796,13 @@
     var choosableScenes = [];
     var currentHand = this.state.currentHands[this.state.sceneId];
     if (!currentHand) {
-        currentHand = [];
+      currentHand = [];
     }
-    currentHand = currentHand.map((x)=>x.id);
+    currentHand = currentHand.map((x) => x.id);
     for (var x of viewableScenes) {
       var choiceScene = this.game.scenes[x.id];
       // filter for whether the card is in the hand
-      if (x.canChoose && choiceScene.isCard &&  currentHand.indexOf(x.id) < 0) {
+      if (x.canChoose && choiceScene.isCard && currentHand.indexOf(x.id) < 0) {
         choosableScenes.push(x);
       }
     }
@@ -1691,43 +1819,43 @@
 
   // Marsaglia, George (July 2003). 'Xorshift RNGs'.
   // Journal of Statistical Software 8 (14).
-  var Random = function(v, w, x, y, z) {
-    this.getState = function() {
+  var Random = function (v, w, x, y, z) {
+    this.getState = function () {
       return [v, w, x, y, z];
     };
-    var uint32Multiply = function(a, b) {
+    var uint32Multiply = function (a, b) {
       var aHigh = (a >> 16) & 0xffff;
       var aLow = a & 0xffff;
       var bHigh = (b >> 16) & 0xffff;
       var bLow = b & 0xffff;
-      var prodHigh = ((aHigh * bLow) + (aLow * bHigh)) & 0xffff;
-      return ((prodHigh << 16) >>> 0) + (aLow * bLow);
+      var prodHigh = (aHigh * bLow + aLow * bHigh) & 0xffff;
+      return ((prodHigh << 16) >>> 0) + aLow * bLow;
     };
-    this.uint32 = function() {
+    this.uint32 = function () {
       var t = (x ^ (x >>> 7)) >>> 0;
       x = y;
       y = z;
       z = w;
       w = v;
-      v = (v ^ (v << 6)) ^ (t ^ (t << 13)) >>> 0;
-      return uint32Multiply((y + y + 1), v) >>> 0;
+      v = v ^ (v << 6) ^ ((t ^ (t << 13)) >>> 0);
+      return uint32Multiply(y + y + 1, v) >>> 0;
     };
-    this.random = function() {
+    this.random = function () {
       return this.uint32() * 2.3283064365386963e-10;
     };
   };
 
   var __next = 1;
-  Random.fromUnique = function() {
+  Random.fromUnique = function () {
     var seed = new Date().getTime();
     return Random.fromSeeds([seed, __next++]);
   };
 
-  Random.fromTime = function() {
+  Random.fromTime = function () {
     return Random.fromSeeds([new Date().getTime()]);
   };
 
-  Random.fromSeeds = function(seeds) {
+  Random.fromSeeds = function (seeds) {
     var v = 886756453;
     var w = 88675123;
     var x = 123456789;
@@ -1736,7 +1864,7 @@
 
     // The seed hashing function is based on Mash 0.9 (MIT License).
     // See CREDITS.
-    var hashSeed = function(data) {
+    var hashSeed = function (data) {
       data = data.toString();
       var n = 0xefc8249d;
       for (var i = 0; i < data.length; i++) {
@@ -1763,7 +1891,7 @@
     return new Random(v, w, x, y, z);
   };
 
-  Random.fromState = function(state) {
+  Random.fromState = function (state) {
     return new Random(state[0], state[1], state[2], state[3], state[4]);
   };
 
@@ -1786,6 +1914,6 @@
     UserInterface: UserInterface,
     NullUserInterface: UserInterface,
 
-    Random: Random
+    Random: Random,
   };
-}());
+})();

@@ -15,10 +15,13 @@ describe('role scene attribute', () => {
     expect(game.scenes.t.role).toBe('card');
   });
 
-  it('accepts pinned-action (hyphenated value)', async () => {
-    const game = await compile([scene('title: T\nrole: pinned-action\n\nBody.\n')]);
-    expect(game.scenes.t.role).toBe('pinned-action');
-  });
+  it.each(['pinned-action', 'pinned-advisor', 'pinned-parliament'])(
+    'accepts pinned presentation role %s and preserves it',
+    async (role) => {
+      const game = await compile([scene(`title: T\nrole: ${role}\n\nBody.\n`)]);
+      expect(game.scenes.t.role).toBe(role);
+    },
+  );
 
   it('allows a scene with no role (undefined)', async () => {
     const game = await compile([scene('title: T\n\nBody.\n')]);
@@ -39,5 +42,11 @@ describe('role scene attribute', () => {
 
   it('still rejects unknown skin-like values', async () => {
     await expect(compile([scene('title: T\nrole: card-ministry\n\nBody.\n')])).rejects.toThrow(/role/i);
+  });
+
+  it('still rejects unknown pinned presentation variants', async () => {
+    await expect(compile([scene('title: T\nrole: pinned-ministry\n\nBody.\n')])).rejects.toThrow(
+      /role/i,
+    );
   });
 });

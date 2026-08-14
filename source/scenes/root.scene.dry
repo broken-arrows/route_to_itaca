@@ -1191,6 +1191,8 @@ on-arrival: {!
     'erc_reachout'
   ];
   Q.rubicon_timers = [
+    "advisor_action",
+    'parlament',
     //erc_party
     'erc_campaigning',
     'erc_base',
