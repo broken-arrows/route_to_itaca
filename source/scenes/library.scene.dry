@@ -1,9 +1,11 @@
 title: library
+role: library-item
 new-page: true
 is-special: true
 go-to: menu
 
 @menu
+title: Library
 new-page: true
 
 = Library
@@ -18,6 +20,7 @@ Herein you may find all varieties of information pertaining to Catalonia.
 # - @spanish_parties_lib: Spanish Political Parties
 
 @catalan_system_lib
+new-page: true
 
 = Catalan Political System
 
@@ -36,6 +39,7 @@ With this budget, the Generalitat does have to manage its many areas it does con
 - @menu: Back
 
 @timeline_lib
+new-page: true
 
 = Timeline of recent Catalan history
 
@@ -74,6 +78,7 @@ The anti-austerity movements that expanded through Europe in the 2010's reach th
 - @menu: Back
 
 @catalan_parties_lib
+new-page: true
 
 = Political Parties
 
@@ -114,9 +119,8 @@ The pro-independence transversal coalition sought sovereignty with progressive p
 - @menu: Back
 
 @spanish_parties_lib
+new-page: true
 
 = Spanish Political Parties
 
 - @menu: Back
-
-

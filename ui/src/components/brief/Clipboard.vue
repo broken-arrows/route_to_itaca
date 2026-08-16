@@ -13,13 +13,18 @@ import { useI18n } from 'vue-i18n';
 import { useBriefStore } from '../../stores/brief';
 import { briefTabs } from './tabs';
 import BriefSheet from './BriefSheet.vue';
+import Prose from '../Prose.vue';
+import { splitAuthoredPane } from '../menu/authoredPane';
 
 const { t } = useI18n();
 const brief = useBriefStore();
 
-const tabs = computed(() => briefTabs(brief.tabs));
+const tabs = computed(() => briefTabs(brief.tabs, brief.libraryId));
+const libraryPane = computed(() => splitAuthoredPane(brief.libraryIndexHtml));
 const activeTitle = computed(
-  () => brief.tabs.find((s) => s.id === brief.activeTab)?.title ?? '',
+  () => brief.libraryOpen
+    ? brief.libraryIndexTitle
+    : brief.tabs.find((s) => s.id === brief.activeTab)?.title ?? '',
 );
 // Context labels are this game's chrome, keyed by the sheet's short name.
 const contextKey = computed(() => (brief.activeTab ?? '').split('.').pop() ?? '');
@@ -28,20 +33,35 @@ const context = computed(() => t(`brief.context.${contextKey.value}`, ''));
 
 <template>
   <div class="clipboard-frame">
-    <BriefSheet :title="activeTitle" :context="context" :html="brief.activeHtml" />
+    <BriefSheet
+      :title="activeTitle"
+      :context="brief.libraryOpen ? '' : context"
+      :html="brief.libraryOpen ? libraryPane.bodyHtml : brief.activeHtml"
+    >
+      <div v-if="brief.libraryOpen" class="library-index-options" data-test="library-index">
+        <button
+          v-for="(choice, index) in brief.libraryIndexChoices"
+          :key="choice.id"
+          type="button"
+          :disabled="!choice.canChoose"
+          :data-test="choice.id === 'backSpecialScene' ? 'library-close' : 'library-index-choice'"
+          @click="brief.chooseLibraryIndex(index)"
+        >
+          <Prose tag="span" :html="choice.title" />
+        </button>
+      </div>
+    </BriefSheet>
     <div class="tab-rail">
       <button
         v-for="tab in tabs"
-        :key="tab.id || 'library'"
+        :key="tab.id"
         class="tab"
         :class="{
           'tab-gold': tab.gold,
           'tab-active': tab.id === brief.activeTab,
-          'tab-inert': tab.inert,
         }"
         data-test="brief-tab"
-        :disabled="tab.inert"
-        @click="tab.inert ? null : brief.select(tab.id)"
+        @click="brief.select(tab.id)"
       >{{ tab.label }}</button>
     </div>
   </div>
@@ -107,6 +127,10 @@ const context = computed(() => t(`brief.context.${contextKey.value}`, ''));
 }
 .tab { cursor: pointer; }
 .tab-inert { cursor: default; }
+.library-index-options { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
+.library-index-options button { border: 0; border-bottom: 1px solid #c6bda8; background: transparent; padding: 9px 3px; color: var(--ink-0); font: 600 12px/1.35 var(--font-title); text-align: left; cursor: pointer; }
+.library-index-options button:last-child { margin-top: 8px; color: #7c6120; }
+.library-index-options button:focus-visible { outline: 3px solid var(--accent-red); outline-offset: 2px; }
 /* The paper is the top layer: tab roots tuck underneath its right edge.
    Clipboard itself remains outside the dossier dim, so lowering the rail
    inside this local stacking context does not dim the Brief. */

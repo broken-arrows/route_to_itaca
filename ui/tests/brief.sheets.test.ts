@@ -33,13 +33,16 @@ describe('Brief sheet scenes', () => {
     expect(a.engine.game.scenes['status_new'].onArrival).toBeUndefined();
   });
 
-  it('the hub declares the six sheets as options, in tab order', () => {
+  it('the hub declares the six sheets followed by the authored Library entry', () => {
     // Measured against the real compiled artifact: scene.options is a plain
     // ARRAY of {id} objects (e.g. main.main_easy's options), not an object
     // with its own .options property — the brief's own test dereferenced
     // this wrongly (`(scene.options as any).options`).
     const opts = a.engine.game.scenes['status_new'].options as { id: string }[];
-    expect(opts.map((o) => o.id)).toEqual(SHEETS.map((s) => `@${HUB}.${s}`));
+    expect(opts.map((o) => o.id)).toEqual([
+      ...SHEETS.map((s) => `@${HUB}.${s}`),
+      '@library',
+    ]);
   });
 
   it('every sheet renders to non-empty HTML with no inline flex styling left', () => {

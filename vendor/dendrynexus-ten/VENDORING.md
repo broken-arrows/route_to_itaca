@@ -57,8 +57,11 @@ whole-file reformat, so this list stays the complete upstream diff.
   runtime `game.info` manifest now carries those fields plus `ifid`.
   Achievement persistence uses `<storageId>:achievements` when the field is
   present, with a title-based fallback only for third-party games that omit
-  it. There is deliberately no read fallback or migration from the old title
-  key when a storage id exists.
+  it. New unlocks store their real-world first-unlock time as an ISO
+  `{unlockedAt}` record; repeated unlocks preserve that time, while legacy
+  numeric entries remain unlocked with an unknown date. There is deliberately
+  no read fallback or migration from the old title key when a storage id
+  exists.
 
 - **`lib/persistence.js`, `lib/ui/browser.js`, and stock HTML templates**
   (2026-08-11) — both shells share manifest-scoped, versioned save envelopes,

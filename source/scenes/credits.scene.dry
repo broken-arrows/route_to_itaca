@@ -4,6 +4,8 @@ go-to: force_new_page_credits
 @force_new_page_credits
 new-page: true
 
+= Credits
+
 This game was developed by <a class="link" href="https://www.reddit.com/user/_BrokenArrows/">u/_BrokenArrows</a>. It is a fork from the Autumn Chen's <a class="link" href="https://red-autumn.itch.io/petrograd-1917">Petrograd 1917</a>, the prequel to the amazing original, <a class="link" href="https://red-autumn.itch.io/social-democracy">Social Democracy, an Alternate History</a>.  If you have not tried them out you should! Immediately!
 
 Added to that, the acclaimed mod to that game by originn0, <a class="link" href="https://originn0.github.io/dynamic_social_democracy/">Dynamic Social Democracy</a>, was invaluable in making this game and all the coding tricks that it uses.
@@ -15,7 +17,7 @@ Peak, fork, and play around with the code from <a class="link" href="https://git
 - @assets: Assets
 - @on_ai: On the use of AI
 # - @music: Music
-- @root: Back
+- @about: Back
 
 
 @on_ai

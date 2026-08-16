@@ -1,8 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import AchievementGallery from '../src/components/viz/AchievementGallery.vue';
 import { useGameStore } from '../src/stores/game';
+import { i18n, setLocale } from '../src/i18n';
 
 // Real Pinia + a hand-authored "compiled game" object (same pattern
 // glossary.prose.test.ts uses for game.data.glossary — convertJSONToGame is
@@ -12,6 +13,7 @@ import { useGameStore } from '../src/stores/game';
 // `q`, passed as a prop by WidgetHost) — see the component's own header
 // comment for why those are two different sources.
 const GAME = {
+  info: { title: 'Test', storageId: 'test-game', languages: ['en', 'ca'] },
   scenes: {
     root: {
       id: 'root',
@@ -39,10 +41,17 @@ function mountGallery(props: { scope?: 'ever' | 'playthrough'; q?: Record<string
   const game = useGameStore();
   game.initFromText(JSON.stringify(GAME));
   game.newGame();
-  return mount(AchievementGallery, { props, global: { plugins: [pinia] } });
+  return mount(AchievementGallery, { props, global: { plugins: [pinia, i18n] } });
 }
 
 describe('AchievementGallery', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    setLocale('en');
+  });
+
+  afterEach(() => vi.useRealTimers());
+
   it('renders one row per registry entry, in registry order', () => {
     const w = mountGallery({ q: {} });
     const rows = w.findAll('[data-test^="achievement-row-"]');
@@ -93,6 +102,47 @@ describe('AchievementGallery', () => {
     expect(rowB.findAll('.star--empty')).toHaveLength(0);
   });
 
+  it('shows the real unlocked and registry totals', () => {
+    const w = mountGallery({ q: { achievement_a: 1 } });
+    expect(w.get('[data-test="achievement-count"]').text()).toBe('1 / 2 unlocked');
+  });
+
+  it('renders relative labels below 24 hours from the engine-owned ledger', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-15T12:00:00.000Z'));
+    localStorage.setItem('test-game:achievements', JSON.stringify({
+      a: { unlockedAt: '2026-08-15T11:58:00.000Z' },
+      b: { unlockedAt: '2026-08-15T04:00:00.000Z' },
+    }));
+    const w = mountGallery({ q: { achievement_a: 1, achievement_b: 1 } });
+    expect(w.get('[data-test="achievement-date-a"]').text()).toBe('2 min. ago');
+    expect(w.get('[data-test="achievement-date-b"]').text()).toBe('8 h. ago');
+    expect(w.get('[data-test="achievement-date-a"]').element.parentElement?.classList)
+      .toContain('achievement-row-meta');
+    expect(w.find('[data-test="achievement-row-a"] .achievement-row-meta .achievement-row-stars').exists())
+      .toBe(true);
+  });
+
+  it('renders locale-formatted absolute dates after 24 hours', () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-15T12:00:00.000Z'));
+    localStorage.setItem('test-game:achievements', JSON.stringify({
+      a: { unlockedAt: '2025-10-15T12:00:00.000Z' },
+    }));
+    const w = mountGallery({ q: { achievement_a: 1 } });
+    expect(w.get('[data-test="achievement-date-a"]').text()).toBe(
+      new Intl.DateTimeFormat('en', { day: 'numeric', month: 'short', year: 'numeric' })
+        .format(new Date('2025-10-15T12:00:00.000Z')),
+    );
+  });
+
+  it('labels legacy numeric and malformed records with an unknown date', () => {
+    localStorage.setItem('test-game:achievements', JSON.stringify({ a: 1, b: { unlockedAt: 'nope' } }));
+    const w = mountGallery({ q: { achievement_a: 1, achievement_b: 1 } });
+    expect(w.get('[data-test="achievement-date-a"]').text()).toBe('Unlock date unknown');
+    expect(w.get('[data-test="achievement-date-b"]').text()).toBe('Unlock date unknown');
+  });
+
   it('renders name, description and image', () => {
     const w = mountGallery({ q: {} });
     const rowA = w.get('[data-test="achievement-row-a"]');
@@ -115,7 +165,7 @@ describe('AchievementGallery', () => {
       }),
     );
     game.newGame();
-    const w = mount(AchievementGallery, { props: { q: {} }, global: { plugins: [pinia] } });
+    const w = mount(AchievementGallery, { props: { q: {} }, global: { plugins: [pinia, i18n] } });
     expect(w.find('[data-test="achievement-gallery"]').exists()).toBe(true);
     expect(w.findAll('[data-test^="achievement-row-"]')).toHaveLength(0);
   });

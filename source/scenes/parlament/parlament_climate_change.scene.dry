@@ -220,7 +220,7 @@ on-arrival: {!
             Q.climate_transition_mature = false;
             Q.climate_transition_contested_struck = false;
             G.registerLaw(Q, {id:"climate_transition_core_initial",title:"Climate Transition Program",icon:"img/leaf_icon.svg",targets:{gdp_growth:-0.04,generalitat_surplus:-0.02,unemployment_recovery:0.015}});
-            G.registerLaw(Q, {id:"climate_binding_targets_initial",title:"Binding Economy-Wide Climate Targets",icon:"img/leaf_icon.svg",targets:{gdp_growth:-0.06,generalitat_surplus:-0.01,unemployment_recovery:0.005}});
+            G.registerLaw(Q, {id:"climate_binding_targets_initial",title:"Binding Climate Targets",icon:"img/leaf_icon.svg",targets:{gdp_growth:-0.06,generalitat_surplus:-0.01,unemployment_recovery:0.005}});
             Q.climate_transition_matures_countdown = 12;
             Q.countdowns.push("climate_transition_matures");
         } else {

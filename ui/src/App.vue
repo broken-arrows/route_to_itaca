@@ -33,7 +33,7 @@ const isDebug = new URLSearchParams(window.location.search).has('debug');
 </script>
 
 <template>
-  <header class="app-header">
+  <header v-show="isDebug" class="app-header" :aria-hidden="!isDebug">
     <h1>{{ t('app.title') }}</h1>
     <nav>
       <button

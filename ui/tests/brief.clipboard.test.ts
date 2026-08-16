@@ -26,7 +26,7 @@ describe('Clipboard (live, phase 3b)', () => {
     g.newGame();
   });
 
-  it('renders the six live tabs plus the gold inert LIBRARY tab, in order', () => {
+  it('renders the authored Library entry as the gold seventh tab', () => {
     const tabs = mountClipboard().findAll('[data-test="brief-tab"]');
     expect(tabs).toHaveLength(7);
     expect(tabs.map((t) => t.text())).toEqual([
@@ -59,17 +59,16 @@ describe('Clipboard (live, phase 3b)', () => {
     expect(w.text()).toMatch(/Speaker of the House/);
   });
 
-  it('the LIBRARY tab is gold and inert: clicking it changes nothing', async () => {
+  it('the Library tab enters the live special scene and renders its authored index', async () => {
     const w = mountClipboard();
     const tabs = w.findAll('[data-test="brief-tab"]');
     const library = tabs[6];
-    expect(library.attributes('disabled')).toBeDefined();
-
     await library.trigger('click');
 
-    expect(tabs[0].classes()).toContain('tab-active'); // still Overview
-    expect(library.classes()).not.toContain('tab-active');
-    expect(w.find('h2').text()).toBe('Overview');
+    expect(useGameStore().effectiveRole).toBe('library-item');
+    expect(library.classes()).toContain('tab-active');
+    expect(w.find('[data-test="library-index"]').exists()).toBe(true);
+    expect(w.text()).toMatch(/Catalan Political System/);
   });
 
   it('multi-root safety: asserts on its own root node, not wrapper.element', () => {

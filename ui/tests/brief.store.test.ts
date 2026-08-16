@@ -17,14 +17,14 @@ describe('brief store', () => {
 
   it('finds the hub by ROLE, not by a hardcoded scene id', () => {
     const b = useBriefStore();
-    expect(b.tabs.length).toBe(6);
+    expect(b.tabs.length).toBe(7);
     expect(b.tabs[0].id).toBe('status_new.overview');
   });
 
   it('tab labels come from each sheet scene title', () => {
     const b = useBriefStore();
     expect(b.tabs.map((t) => t.title)).toEqual([
-      'Overview', 'Party', 'Chamber', 'Economy', 'World', 'Polls',
+      'Overview', 'Party', 'Chamber', 'Economy', 'World', 'Polls', 'library',
     ]);
   });
 
@@ -70,15 +70,15 @@ describe('brief store', () => {
     const g = useGameStore();
     const scenes = () => g.adapter!.tabScenes();
 
-    expect(scenes().length).toBe(6);
+    expect(scenes().length).toBe(7);
     expect(scenes().some((t) => t.id === 'status_new.polls')).toBe(true);
 
     (g.adapter!.qualities as Record<string, unknown>).historical_mode = 1;
-    expect(scenes().length).toBe(5);
+    expect(scenes().length).toBe(6);
     expect(scenes().some((t) => t.id === 'status_new.polls')).toBe(false);
 
     (g.adapter!.qualities as Record<string, unknown>).historical_mode = 0;
-    expect(scenes().length).toBe(6);
+    expect(scenes().length).toBe(7);
     expect(scenes().some((t) => t.id === 'status_new.polls')).toBe(true);
   });
 
@@ -86,7 +86,7 @@ describe('brief store', () => {
     const g = useGameStore();
     const b = useBriefStore();
 
-    expect(b.tabs.length).toBe(6);
+    expect(b.tabs.length).toBe(7);
     expect(b.tabs.some((t) => t.id === 'status_new.polls')).toBe(true);
 
     // root.start_menu_2 -> "Start game" -> root.start's difficulty choice,
@@ -98,7 +98,7 @@ describe('brief store', () => {
     expect(historicalIdx).toBeGreaterThanOrEqual(0);
     g.choose(historicalIdx);
 
-    expect(b.tabs.length).toBe(5);
+    expect(b.tabs.length).toBe(6);
     expect(b.tabs.some((t) => t.id === 'status_new.polls')).toBe(false);
   });
 

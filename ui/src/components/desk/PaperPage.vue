@@ -20,17 +20,22 @@
 // PaperPage has no dossier/shake choreography (that lives on the desk
 // store, scoped to 'dossierOpen'), so there is nothing to animate or
 // report — just call game.choose(i) directly for a choosable option.
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGameStore } from '../../stores/game';
 import type { ChoiceView } from '../../engine/types';
 import PaperOption from './PaperOption.vue';
 import Prose from '../Prose.vue';
+import { useSettingsStore } from '../../stores/settings';
 
 const props = defineProps<{ variant: 'page' | 'event' | 'ending' }>();
 
 const { t } = useI18n();
 const game = useGameStore();
+const settings = useSettingsStore();
+const imageBroken = ref(false);
+const assetBase = import.meta.env.BASE_URL;
+watch(() => game.frame?.sceneId, () => { imageBroken.value = false; });
 
 const choices = computed<ChoiceView[]>(() => game.frame?.choices ?? []);
 
@@ -47,6 +52,14 @@ function onPick(i: number, choice: ChoiceView): void {
       <span v-if="props.variant === 'ending'" class="ended-stamp" data-test="ended-stamp">
         {{ t('desk.page.ended') }}
       </span>
+      <img
+        v-if="props.variant === 'event' && settings.eventImages && game.frame?.faceImage && !imageBroken"
+        class="event-image"
+        :src="`${assetBase}${game.frame.faceImage}`"
+        alt=""
+        data-test="event-face-image"
+        @error="imageBroken = true"
+      />
       <!-- Engine-authored prose; trusted content from our own game.json
            (same trust boundary as DebugPage/OpenDossier's Prose). -->
       <Prose class="prose" :html="game.frame?.html ?? ''" />
@@ -107,6 +120,7 @@ function onPick(i: number, choice: ChoiceView): void {
   color: var(--ink-0);
   clear: both;
 }
+.event-image { float: right; width: min(36%, 340px); max-height: 250px; margin: 0 0 20px 28px; object-fit: contain; }
 .options {
   display: flex;
   flex-direction: column;

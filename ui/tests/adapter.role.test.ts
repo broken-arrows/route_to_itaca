@@ -69,12 +69,77 @@ const EVENT_FILES = [
   { name: 'done.scene.dry', contents: 'title: Done\n\nDone.\n' },
 ];
 
+const TITLE_FILES = [
+  { name: 'info.dry', contents: 'title: T\nauthor: A\nlanguages: en\n' },
+  {
+    name: 'root.scene.dry',
+    contents:
+      'title: Root\ngo-to: menu\n\n@menu\ntitle: Menu\nrole: title-hub\n\n' +
+      '- @new\n- @achievements\n- @about\n',
+  },
+  {
+    name: 'new.scene.dry',
+    contents: 'title: New Game\nsubtitle: Begin setup\ntags: starts-game\nrole: main-menu-item\n\nSetup.\n',
+  },
+  {
+    name: 'achievements.scene.dry',
+    contents:
+      'title: Achievements\ntags: shell-achievements\nrole: main-menu-item\n\nLedger.\n\n- @prevScene: Back\n',
+  },
+  {
+    name: 'about.scene.dry',
+    contents:
+      'title: About\nrole: main-menu-item\ngo-to: page\n\n@page\ntitle: About Route\n\nAbout.\n',
+  },
+];
+
 function stateAt(a: DendryAdapter, sceneId: string): string {
   a.goToScene(sceneId);
   return a.exportStateJSON();
 }
 
 describe('effective role tracking', () => {
+  it('discovers a title hub and reads its authored choices without navigation', async () => {
+    const a = await adapterFor(TITLE_FILES);
+    expect(a.beginGame()).toMatchObject({ sceneId: 'root.menu', effectiveRole: 'title-hub' });
+
+    const before = a.exportStateJSON();
+    expect(a.roleHub('title-hub')).toEqual({
+      id: 'root.menu',
+      choices: [
+        expect.objectContaining({
+          id: 'new',
+          title: 'New Game',
+          subtitle: 'Begin setup',
+          tags: ['starts-game'],
+          role: 'main-menu-item',
+        }),
+        expect.objectContaining({
+          id: 'achievements',
+          title: 'Achievements',
+          tags: ['shell-achievements'],
+          role: 'main-menu-item',
+        }),
+        expect.objectContaining({ id: 'about', title: 'About', role: 'main-menu-item' }),
+      ],
+    });
+    expect(a.exportStateJSON()).toBe(before);
+  });
+
+  it('seeds direct navigation roles across immediate redirects and tags previous-scene returns', async () => {
+    const a = await adapterFor(TITLE_FILES);
+    a.beginGame();
+    expect(a.goToScene('about')).toMatchObject({
+      sceneId: 'about.page',
+      role: undefined,
+      effectiveRole: 'main-menu-item',
+    });
+    expect(a.goToScene('achievements')).toMatchObject({
+      effectiveRole: 'main-menu-item',
+      choices: [expect.objectContaining({ id: 'prevScene', tags: ['shell-return'] })],
+    });
+  });
+
   it('boot base-case is page; explicit roles override; role-less inherits', async () => {
     const a = await adapterFor(FILES);
     let f = a.beginGame();

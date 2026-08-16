@@ -17,6 +17,7 @@ is-special: true
 - @status_new.economy
 - @status_new.world
 - @status_new.polls
+- @library
 
 
 @overview

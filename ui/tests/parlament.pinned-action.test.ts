@@ -24,14 +24,18 @@ describe('Parliament pinned-action migration', () => {
     }
   });
 
-  it('keeps Party Affairs pools free of Parliament without exposing its timer', () => {
+  it('keeps Party Affairs pools free of Parliament and preserves its intended player messaging', () => {
     const parliament = scene('parlament/parlament_card.scene.dry');
     expect(parliament).toContain('role: pinned-parliament');
     expect(parliament).toContain('view-if: year > 2012');
     expect(parliament).toContain('choose-if: parlament_timer <= 0 and not cat_caretaker_gov');
-    expect(parliament).not.toContain('parlament_timer = 1');
-    expect(parliament).not.toContain('[+ parlament_timer +] weeks');
+    expect(parliament).toContain('unavailable-subtitle: [? if cat_caretaker_gov : The Parlament is currently dissolved.?]');
     expect(parliament).toContain('The Parlament is currently dissolved.');
+    expect(
+      parliament.match(
+        /Our lawmakers are still unready\. Next action possible in \[\+ parlament_timer \+\].*?months\..*?parlament_timer = 1: month\./g,
+      ),
+    ).toHaveLength(5);
     expect(parliament).toContain('Q.parlament_action_open = Q.parlament_timer <= 0');
     expect(parliament.match(/choose-if: parlament_action_open/g)).toHaveLength(5);
     expect(parliament).not.toContain('tags: erc_party cup_party parlament_card');

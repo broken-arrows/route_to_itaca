@@ -5,16 +5,16 @@ on-arrival: {!
 if (Q.advisor_action_timer <= 0) {
     Q.pinnedCardsDescription = 'Advisors - an action is available.';
 } else if (Q.advisor_action_timer == 1) {
-    Q.pinnedCardsDescription = 'Advisors - next action available in 1 ' + Q.rubicon ? 'week.' : 'month.';
+    Q.pinnedCardsDescription = 'Advisors - next action available in 1 ' + (Q.rubicon ? ' week.' : ' month.');
 } else {
-    Q.pinnedCardsDescription = 'Advisors - next action available in ' + Q.advisor_action_timer + Q.rubicon ? 'weeks.' : 'months.';
+    Q.pinnedCardsDescription = 'Advisors - next action available in ' + Q.advisor_action_timer + (Q.rubicon ? ' weeks.' : ' months.');
 }
-if (Q.parlament_timer <= 0) {
+if (Q.parlament_timer <= 0 && Q.year > 2012) {
     Q.pinnedParlamentDescription= 'Parlament - an action is available.';
-} else if (Q.parlament_timer == 1) {
-    Q.pinnedParlamentDescription = 'Parlament - next action available in 1 ' + Q.rubicon ? 'week.' : 'month.';
-} else {
-    Q.pinnedParlamentDescription = 'Parlament - next action available in ' + Q.parlament_timer + Q.rubicon ? 'weeks.' : 'months.';
+} else if (Q.parlament_timer == 1 && Q.year > 2012) {
+    Q.pinnedParlamentDescription = 'Parlament - next action available in 1 ' + (Q.rubicon ? ' week.' : ' month.');
+} else if (Q.year > 2012) {
+    Q.pinnedParlamentDescription = 'Parlament - next action available in ' + Q.parlament_timer + (Q.rubicon ? ' weeks.' : ' months.');
 }
 !}
 max-cards: 5
@@ -51,16 +51,16 @@ on-arrival: {!
 if (Q.advisor_action_timer <= 0) {
     Q.pinnedCardsDescription = 'Advisors - an action is available.';
 } else if (Q.advisor_action_timer == 1) {
-    Q.pinnedCardsDescription = 'Advisors - next action available in 1 ' + Q.rubicon ? 'week.' : 'month.';
+    Q.pinnedCardsDescription = 'Advisors - next action available in 1 ' + (Q.rubicon ? ' week.' : ' month.');
 } else {
-    Q.pinnedCardsDescription = 'Advisors - next action available in ' + Q.advisor_action_timer + Q.rubicon ? 'weeks.' : 'months.';
+    Q.pinnedCardsDescription = 'Advisors - next action available in ' + Q.advisor_action_timer + (Q.rubicon ? ' weeks.' : ' months.');
 }
-if (Q.parlament_timer <= 0) {
+if (Q.parlament_timer <= 0 && Q.year > 2012) {
     Q.pinnedParlamentDescription= 'Parlament - an action is available.';
-} else if (Q.parlament_timer == 1) {
-    Q.pinnedParlamentDescription = 'Parlament - next action available in 1 ' + Q.rubicon ? 'week.' : 'month.';
-} else {
-    Q.pinnedParlamentDescription = 'Parlament - next action available in ' + Q.parlament_timer + Q.rubicon ? 'weeks.' : 'months.';
+} else if (Q.parlament_timer == 1 && Q.year > 2012) {
+    Q.pinnedParlamentDescription = 'Parlament - next action available in 1 ' + (Q.rubicon ? ' week.' : ' month.');
+} else if (Q.year > 2012) {
+    Q.pinnedParlamentDescription = 'Parlament - next action available in ' + Q.parlament_timer + (Q.rubicon ? ' weeks.' : ' months.');
 }
 !}
 max-cards: 6
@@ -97,16 +97,16 @@ on-arrival: {!
 if (Q.advisor_action_timer <= 0) {
     Q.pinnedCardsDescription = 'Advisors - an action is available.';
 } else if (Q.advisor_action_timer == 1) {
-    Q.pinnedCardsDescription = 'Advisors - next action available in 1 ' + Q.rubicon ? 'week.' : 'month.';
+    Q.pinnedCardsDescription = 'Advisors - next action available in 1 ' + (Q.rubicon ? ' week.' : ' month.');
 } else {
-    Q.pinnedCardsDescription = 'Advisors - next action available in ' + Q.advisor_action_timer + Q.rubicon ? 'weeks.' : 'months.';
+    Q.pinnedCardsDescription = 'Advisors - next action available in ' + Q.advisor_action_timer + (Q.rubicon ? ' weeks.' : ' months.');
 }
-if (Q.parlament_timer <= 0) {
+if (Q.parlament_timer <= 0 && Q.year > 2012) {
     Q.pinnedParlamentDescription= 'Parlament - an action is available.';
-} else if (Q.parlament_timer == 1) {
-    Q.pinnedParlamentDescription = 'Parlament - next action available in 1 ' + Q.rubicon ? 'week.' : 'month.';
-} else {
-    Q.pinnedParlamentDescription = 'Parlament - next action available in ' + Q.parlament_timer + Q.rubicon ? 'weeks.' : 'months.';
+} else if (Q.parlament_timer == 1 && Q.year > 2012) {
+    Q.pinnedParlamentDescription = 'Parlament - next action available in 1 ' + (Q.rubicon ? ' week.' : ' month.');
+} else if (Q.year > 2012) {
+    Q.pinnedParlamentDescription = 'Parlament - next action available in ' + Q.parlament_timer + (Q.rubicon ? ' weeks.' : ' months.');
 }
 !}
 max-cards: 3

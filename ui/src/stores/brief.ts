@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
 import { useGameStore } from './game';
+import type { ChoiceView } from '../engine/types';
 
 /**
  * The Brief's tab state. The tab LIST is game content (the hub scene's
@@ -13,6 +14,16 @@ import { useGameStore } from './game';
 export const useBriefStore = defineStore('brief', () => {
   const game = useGameStore();
   const selected = ref<string | null>(null);
+  const libraryIndexScene = ref<string | null>(null);
+  const libraryIndexHtml = ref('');
+  const libraryIndexTitle = ref('');
+  const libraryIndexChoices = ref<ChoiceView[]>([]);
+
+  const libraryId = computed(() => game.adapter?.hubSceneId('library-item') ?? null);
+  const libraryOpen = computed(() => game.effectiveRole === 'library-item');
+  const libraryAtIndex = computed(() =>
+    libraryOpen.value && game.frame?.sceneId === libraryIndexScene.value,
+  );
 
   // DEVIATION from the task brief (see task report): `tabScenes()` filters by
   // `view-if` against LIVE, non-reactive Q (a plain object Vue cannot track).
@@ -29,7 +40,8 @@ export const useBriefStore = defineStore('brief', () => {
   });
 
   const activeTab = computed<string | null>(() => {
-    const list = tabs.value;
+    if (libraryOpen.value) return libraryId.value;
+    const list = tabs.value.filter((tab) => tab.id !== libraryId.value);
     if (!list.length) return null;
     // A selected tab that has since hidden itself (POLLS on entering historical
     // mode) falls back to the first, rather than rendering nothing.
@@ -44,8 +56,48 @@ export const useBriefStore = defineStore('brief', () => {
   });
 
   function select(id: string): void {
+    if (id === libraryId.value) {
+      openLibrary();
+      return;
+    }
+    if (libraryOpen.value) closeLibrary();
     selected.value = id;
   }
 
-  return { tabs, activeTab, activeHtml, select };
+  function openLibrary(): void {
+    if (!libraryId.value || libraryOpen.value) return;
+    game.goToScene(libraryId.value);
+    libraryIndexScene.value = game.frame?.sceneId ?? null;
+    libraryIndexHtml.value = game.frame?.html ?? '';
+    libraryIndexTitle.value = game.frame?.title ?? '';
+    libraryIndexChoices.value = [...(game.frame?.choices ?? [])];
+  }
+
+  function closeLibrary(): void {
+    if (!libraryOpen.value) return;
+    game.goToScene('backSpecialScene');
+    libraryIndexScene.value = null;
+    libraryIndexHtml.value = '';
+    libraryIndexTitle.value = '';
+    libraryIndexChoices.value = [];
+  }
+
+  function chooseLibraryIndex(index: number): void {
+    const choice = libraryIndexChoices.value[index];
+    if (!choice?.canChoose) return;
+    if (choice.id === 'backSpecialScene') closeLibrary();
+    else game.goToScene(choice.id);
+  }
+
+  function chooseLibraryArticle(index: number): void {
+    const choice = game.frame?.choices[index];
+    if (choice?.canChoose) game.choose(index);
+  }
+
+  return {
+    tabs, activeTab, activeHtml, select,
+    libraryId, libraryOpen, libraryAtIndex,
+    libraryIndexHtml, libraryIndexTitle, libraryIndexChoices,
+    openLibrary, closeLibrary, chooseLibraryIndex, chooseLibraryArticle,
+  };
 });

@@ -11,6 +11,7 @@ import Toast from '../src/components/desk/Toast.vue';
 import DeskView from '../src/views/DeskView.vue';
 import { useGameStore } from '../src/stores/game';
 import { useDeskStore, setAnimationsForTest } from '../src/stores/desk';
+import { useSettingsStore } from '../src/stores/settings';
 import { DELAYS } from '../src/components/desk/motion';
 import { markGlossary, type GlossaryTerm } from '../src/glossary/mark';
 import type { ChoiceView, CardView } from '../src/engine/types';
@@ -275,6 +276,35 @@ describe('OpenDossier', () => {
   it('renders the cover prose via v-html of frame.html', () => {
     const { wrapper } = mountDossierScene();
     expect(wrapper.html()).toContain('Decide wisely.');
+  });
+
+  it('hides face-image when Event Images is off but retains card-image cover artwork', async () => {
+    const gameJson = {
+      ...dossierGame,
+      scenes: {
+        ...dossierGame.scenes,
+        card_a: {
+          ...dossierGame.scenes.card_a,
+          faceImage: 'img/events/inside.jpg',
+          cardImage: 'img/cards/cover.jpg',
+        },
+      },
+    };
+    const game = useGameStore();
+    const desk = useDeskStore();
+    game.initFromText(JSON.stringify(gameJson));
+    game.newGame();
+    game.choose(0);
+    desk.playPinned(game.frame!.pinned[0]);
+    const settings = useSettingsStore();
+    const wrapper = mount(OpenDossier, withPlugins());
+    expect(wrapper.find('[data-test="dossier-face-image"]').exists()).toBe(true);
+    expect(wrapper.find('.cover-art img').attributes('src')).toContain('img/cards/cover.jpg');
+
+    settings.setEventImages(false);
+    await nextTick();
+    expect(wrapper.find('[data-test="dossier-face-image"]').exists()).toBe(false);
+    expect(wrapper.find('.cover-art img').attributes('src')).toContain('img/cards/cover.jpg');
   });
 
   // Task 7 (Wave 2): 110 scene files lead their content with a `=` heading

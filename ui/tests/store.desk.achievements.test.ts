@@ -102,6 +102,81 @@ describe('desk store — achievement unlock toast (phase 2.5 Task 8)', () => {
     expect(JSON.parse(localStorage.getItem('T_achievements')!)).toEqual({ old: 1 });
   });
 
+  it('persists a real-world ISO timestamp for a new unlock and keeps both Q qualities unchanged', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-14T18:42:00.000Z'));
+    try {
+      const { game } = await boot(FILES);
+      game.choose(0);
+      game.draw('gov_deck');
+      game.play(game.frame!.hand[0].id);
+
+      expect(JSON.parse(localStorage.getItem('test-game:achievements')!)).toEqual({
+        foo: { unlockedAt: '2026-08-14T18:42:00.000Z' },
+      });
+      expect(game.q.achievement_foo).toBe(1);
+      expect(game.q.game_achievement_foo).toBe(1);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('preserves the first unlock timestamp when achieve() is called again', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-14T18:42:00.000Z'));
+    try {
+      const { game } = await boot(FILES);
+      game.choose(0);
+      game.draw('gov_deck');
+      game.play(game.frame!.hand[0].id);
+
+      vi.setSystemTime(new Date('2026-08-15T09:00:00.000Z'));
+      game.choose(0);
+      game.draw('gov_deck');
+      game.play(game.frame!.hand[0].id);
+
+      expect(JSON.parse(localStorage.getItem('test-game:achievements')!)).toEqual({
+        foo: { unlockedAt: '2026-08-14T18:42:00.000Z' },
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('keeps a legacy numeric unlock date unknown when the achievement is earned again', async () => {
+    localStorage.setItem('test-game:achievements', JSON.stringify({ foo: 1 }));
+    const { game } = await boot(FILES);
+    game.choose(0);
+    game.draw('gov_deck');
+    game.play(game.frame!.hand[0].id);
+
+    expect(JSON.parse(localStorage.getItem('test-game:achievements')!)).toEqual({ foo: 1 });
+    expect(game.q.achievement_foo).toBe(1);
+    expect(game.q.game_achievement_foo).toBe(1);
+  });
+
+  it('keeps the engine ledger authoritative across save-state restoration', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-08-14T18:42:00.000Z'));
+    try {
+      const { game } = await boot(FILES);
+      game.choose(0);
+      const beforeUnlock = game.captureState();
+      game.draw('gov_deck');
+      game.play(game.frame!.hand[0].id);
+
+      game.restoreState(beforeUnlock);
+
+      expect(JSON.parse(localStorage.getItem('test-game:achievements')!)).toEqual({
+        foo: { unlockedAt: '2026-08-14T18:42:00.000Z' },
+      });
+      expect(game.q.achievement_foo).toBe(1);
+      expect(game.q.game_achievement_foo).toBeUndefined();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('retains the title-based achievement key for games without a storage id', async () => {
     localStorage.setItem('T_achievements', JSON.stringify({ foo: 1 }));
     const files = [

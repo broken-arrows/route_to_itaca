@@ -20,6 +20,106 @@
     "deckEmpty": "No cards available in this deck"
   },
   "lang": { "en": "EN", "ca": "CA" },
+  "shell": {
+    "close": "Close",
+    "back": "Back",
+    "cancel": "Cancel",
+    "title": {
+      "menuLabel": "Main menu",
+      "continue": "Continue",
+      "load": "Load Game",
+      "options": "Options",
+      "saveCount": "{count} usable saves"
+    },
+    "pause": {
+      "menuLabel": "Pause menu",
+      "open": "Pause game",
+      "paused": "Paused",
+      "escResumes": "Esc resumes",
+      "resume": "Resume",
+      "saveLoad": "Save & Load",
+      "settings": "Settings",
+      "achievements": "Achievements",
+      "exit": "Exit to Main Menu"
+    },
+    "achievements": {
+      "count": "{unlocked} / {total} unlocked",
+      "minutesAgo": "{count} min. ago",
+      "hoursAgo": "{count} h. ago",
+      "unknownDate": "Unlock date unknown"
+    },
+    "load": {
+      "title": "Load Game",
+      "pauseTitle": "Save & Load"
+    },
+    "saveManager": {
+      "listLabel": "Saved games",
+      "autoLatest": "Latest autosave",
+      "autoPrevious": "Previous autosave",
+      "manual": "Manual save {number}",
+      "unknownDate": "Date unavailable",
+      "gameDate": "Year {year}, month {month}",
+      "resources": "{count} resources",
+      "empty": "No saved games yet. You can still import one.",
+      "actions": {
+        "load": "Load",
+        "export": "Export",
+        "delete": "Delete",
+        "import": "Import",
+        "new": "New Save",
+        "overwrite": "Overwrite"
+      },
+      "status": {
+        "ready": "Ready",
+        "corrupt": "Corrupt",
+        "unreadable": "Unreadable",
+        "unsupported": "Unsupported"
+      },
+      "compatibility": {
+        "incompatible": "Version warning",
+        "unknown": "Unknown version"
+      },
+      "reasons": {
+        "select": "Select a save first.",
+        "ironmanRun": "This run permits only its latest recovery autosave.",
+        "ironmanLoad": "Loading another record is disabled during this run.",
+        "ironmanSave": "Manual saving is disabled during this run.",
+        "notLoadable": "This record cannot be loaded, but it can still be exported or deleted.",
+        "notExportable": "The browser could not read this record.",
+        "autoProtected": "Autosaves cannot be deleted here.",
+        "manualOnly": "Only manual saves can be overwritten."
+      },
+      "confirm": {
+        "overwriteTitle": "Overwrite this save?",
+        "overwriteBody": "The selected manual save will be replaced by the current game state.",
+        "loadTitle": "Load this save?",
+        "loadBody": "This save was created by a different or unknown game version.",
+        "loadAnyway": "Load Anyway"
+      },
+      "error": "The operation failed ({code})."
+    },
+    "options": {
+      "title": "Options",
+      "pauseTitle": "Settings",
+      "language": "Language",
+      "animations": "Animations",
+      "animationsDescription": "Animate cards, ribbons, and panes.",
+      "eventImages": "Event Images",
+      "eventImagesDescription": "Show illustrations inside events and opened dossiers.",
+      "music": "Music",
+      "wip": "Work in progress"
+    },
+    "continueWarning": {
+      "title": "Continue this save?",
+      "body": "This save was created by a different or unknown game version.",
+      "confirm": "Continue Anyway"
+    },
+    "exit": {
+      "title": "Exit to Main Menu?",
+      "body": "Unsaved progress since the latest autosave will be lost.",
+      "confirm": "Exit to Main Menu"
+    }
+  },
   "desk": {
     "tray": {
       "out": "OUT",

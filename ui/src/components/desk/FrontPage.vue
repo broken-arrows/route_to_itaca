@@ -5,12 +5,14 @@
 import { computed, ref, watch } from 'vue';
 import { useGameStore } from '../../stores/game';
 import { useDeskStore } from '../../stores/desk';
+import { useSettingsStore } from '../../stores/settings';
 import type { ChoiceView } from '../../engine/types';
 import Clipboard from '../brief/Clipboard.vue';
 import Prose from '../Prose.vue';
 
 const game = useGameStore();
 const desk = useDeskStore();
+const settings = useSettingsStore();
 const choices = computed<ChoiceView[]>(() => game.frame?.choices ?? []);
 const assetBase = import.meta.env.BASE_URL;
 const imageBroken = ref(false);
@@ -33,7 +35,7 @@ function choose(index: number, choice: ChoiceView): void {
           <span class="red-rule" aria-hidden="true"></span>
         </header>
         <img
-          v-if="game.frame?.faceImage && !imageBroken"
+          v-if="settings.eventImages && game.frame?.faceImage && !imageBroken"
           class="event-image"
           :src="`${assetBase}${game.frame.faceImage}`"
           alt=""

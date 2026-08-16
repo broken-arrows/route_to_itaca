@@ -23,6 +23,14 @@ describe('role scene attribute', () => {
     },
   );
 
+  it.each(['title-hub', 'main-menu-item'])(
+    'accepts shell presentation role %s and preserves it',
+    async (role) => {
+      const game = await compile([scene(`title: T\nrole: ${role}\n\nBody.\n`)]);
+      expect(game.scenes.t.role).toBe(role);
+    },
+  );
+
   it('allows a scene with no role (undefined)', async () => {
     const game = await compile([scene('title: T\n\nBody.\n')]);
     expect(game.scenes.t.role).toBeUndefined();

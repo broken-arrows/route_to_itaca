@@ -6,6 +6,7 @@ import Newspaper from '../src/components/desk/Newspaper.vue';
 import FrontPage from '../src/components/desk/FrontPage.vue';
 import { useGameStore } from '../src/stores/game';
 import { useDeskStore, setAnimationsForTest } from '../src/stores/desk';
+import { useSettingsStore } from '../src/stores/settings';
 import uiEn from '../../source/locales/en/ui.json';
 
 i18n.global.mergeLocaleMessage('en', uiEn as never);
@@ -109,6 +110,13 @@ describe('FrontPage', () => {
     start('event');
     const wrapper = mount(FrontPage, plugins());
     expect(wrapper.find('.event-image').attributes('src')).toContain('img/events/authored.jpg');
+  });
+
+  it('suppresses face-image presentation when Event Images is off', () => {
+    start('event');
+    useSettingsStore().setEventImages(false);
+    const wrapper = mount(FrontPage, plugins());
+    expect(wrapper.find('.event-image').exists()).toBe(false);
   });
 
   it('renders only the current authored prose and ordinary choices', () => {

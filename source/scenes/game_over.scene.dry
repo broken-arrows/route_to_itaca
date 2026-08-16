@@ -192,6 +192,8 @@ game-over: true
 @achievements
 title: Achievements
 new-page: true
+tags: shell-achievements
+role: main-menu-item
 
 = Achievements
 
@@ -199,7 +201,4 @@ Note that your achievement progress is stored in your browser. Switching browser
 
 <div data-widget="achievement-gallery" data-props='{"scope":"ever"}'></div>
 
-
-- @root: Back
-
-
+- @prevScene: Back

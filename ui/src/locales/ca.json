@@ -20,28 +20,128 @@
     "deckEmpty": "No cards available in this deck"
   },
   "lang": { "en": "EN", "ca": "CA" },
+  "shell": {
+    "close": "Tanca",
+    "back": "Enrere",
+    "cancel": "Cancel·la",
+    "title": {
+      "menuLabel": "Menú principal",
+      "continue": "Continua",
+      "load": "Carrega",
+      "options": "Opcions",
+      "saveCount": "{count} partides disponibles"
+    },
+    "pause": {
+      "menuLabel": "Menú",
+      "open": "Menú",
+      "paused": "En pausa",
+      "escResumes": "Premeu Esc per continuar",
+      "resume": "Continua",
+      "saveLoad": "Desa i carrega",
+      "settings": "Configuració",
+      "achievements": "Assoliments",
+      "exit": "Menú principal"
+    },
+    "achievements": {
+      "count": "{unlocked} / {total} desbloquejats",
+      "minutesAgo": "fa {count} min.",
+      "hoursAgo": "fa {count} h.",
+      "unknownDate": "Data de desbloqueig desconeguda"
+    },
+    "load": {
+      "title": "Carrega",
+      "pauseTitle": "Desa i carrega"
+    },
+    "saveManager": {
+      "listLabel": "Partides desades",
+      "autoLatest": "Darrer desament automàtic",
+      "autoPrevious": "Desament automàtic anterior",
+      "manual": "Desament manual {number}",
+      "unknownDate": "Data no disponible",
+      "gameDate": "Any {year}, mes {month}",
+      "resources": "{count} recursos",
+      "empty": "Encara no hi ha cap partida desada. En podeu importar una.",
+      "actions": {
+        "load": "Carrega",
+        "export": "Exporta",
+        "delete": "Suprimeix",
+        "import": "Importa",
+        "new": "Desa de nou",
+        "overwrite": "Sobreescriu"
+      },
+      "status": {
+        "ready": "Disponible",
+        "corrupt": "Corromput",
+        "unreadable": "Il·legible",
+        "unsupported": "No compatible"
+      },
+      "compatibility": {
+        "incompatible": "Avís de versió",
+        "unknown": "Versió desconeguda"
+      },
+      "reasons": {
+        "select": "Seleccioneu primer una partida.",
+        "ironmanRun": "Aquesta partida només permet el darrer desament automàtic de recuperació.",
+        "ironmanLoad": "No es pot carregar cap altre registre durant aquesta partida.",
+        "ironmanSave": "No es poden fer desaments manuals durant aquesta partida.",
+        "notLoadable": "Aquest registre no es pot carregar, però encara es pot exportar o suprimir.",
+        "notExportable": "El navegador no ha pogut llegir aquest registre.",
+        "autoProtected": "Els desaments automàtics no es poden suprimir aquí.",
+        "manualOnly": "Només es poden sobreescriure els desaments manuals."
+      },
+      "confirm": {
+        "overwriteTitle": "Voleu sobreescriure aquest desament?",
+        "overwriteBody": "El desament manual seleccionat se substituirà per l'estat actual de la partida.",
+        "loadTitle": "Voleu carregar aquesta partida?",
+        "loadBody": "Aquesta partida es va crear amb una versió del joc diferent o desconeguda.",
+        "loadAnyway": "Carrega-la igualment"
+      },
+      "error": "L'operació ha fallat ({code})."
+    },
+    "options": {
+      "title": "Opcions",
+      "pauseTitle": "Configuració",
+      "language": "Llengua",
+      "animations": "Animacions",
+      "animationsDescription": "Anima les cartes, les cintes i els panells.",
+      "eventImages": "Imatges dels esdeveniments",
+      "eventImagesDescription": "Mostra les il·lustracions als esdeveniments i als dossiers oberts.",
+      "music": "Música",
+      "wip": "En desenvolupament"
+    },
+    "continueWarning": {
+      "title": "Voleu continuar aquesta partida?",
+      "body": "Aquesta partida es va crear amb una versió del joc diferent o desconeguda.",
+      "confirm": "Continua de totes maneres"
+    },
+    "exit": {
+      "title": "Voleu sortir al menú principal?",
+      "body": "Es perdrà el progrés posterior al darrer desament automàtic.",
+      "confirm": "Surt al menú principal"
+    }
+  },
   "desk": {
     "tray": {
-      "out": "OUT",
-      "draw": "DRAW",
-      "empty": "Nothing to draw."
+      "out": "FET",
+      "draw": "ROBAR",
+      "empty": "No hi ha cap carta a robar."
     },
     "actions": {
-      "title": "ACTIONS",
+      "title": "ACCIONS",
       "advisors": "ASSESSORS"
     },
     "out": {
-      "empty": "Nothing resolved yet.",
-      "resolved": "RESOLVED"
+      "empty": "No s'ha resolt res (encara!).",
+      "resolved": "RESOLT"
     },
     "toast": {
-      "handFull": "Hand is full — play a dossier first",
-      "deckEmpty": "No cards available in this deck",
-      "engineError": "Something went wrong — that action was cancelled",
-      "achievementUnlocked": "Achievement Unlocked"
+      "handFull": "La mà està plena, juga un dossier.",
+      "deckEmpty": "No hi ha cap carta en aquesta baralla.",
+      "engineError": "Alguna cosa ha anat malament... S'ha cancel·lat l'acció.",
+      "achievementUnlocked": "Assoliment desbloquejat!"
     },
     "dossier": {
-      "locked": "Locked"
+      "locked": "Bloquejat"
     },
     "glossary": {
       "leader": "Líder:",
@@ -49,21 +149,21 @@
       "allegiances": "Afiliacions:"
     },
     "page": {
-      "ended": "ENDED"
+      "ended": "Finalitzat"
     },
     "month": {
-      "1": "January",
-      "2": "February",
-      "3": "March",
-      "4": "April",
-      "5": "May",
-      "6": "June",
-      "7": "July",
-      "8": "August",
-      "9": "September",
-      "10": "October",
-      "11": "November",
-      "12": "December"
+      "1": "Gener",
+      "2": "Febrer",
+      "3": "Març",
+      "4": "Abril",
+      "5": "Maig",
+      "6": "Juny",
+      "7": "Juliol",
+      "8": "Augost",
+      "9": "Setembre",
+      "10": "Octubre",
+      "11": "Novembre",
+      "12": "Decembre"
     }
   }
 }

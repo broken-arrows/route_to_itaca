@@ -1,8 +1,10 @@
 title: Root Scene
 new-page: true
+tags: shell-return
 go-to: post_event if started = 1; start_menu if started = 0
 
 @start_menu
+role: title-hub
 new-page: true
 set-bg: img/3rd_October_2017.jpg
 on-arrival: {!
@@ -20,6 +22,8 @@ on-arrival: {!
   }
 
   Q.url_valid = local_file || valid_url;
+
+  Q.debug = local_file; // Playing the game locally means debug becomes available. Change?
 
   // setup
   Q.year = 2012;
@@ -617,30 +621,23 @@ on-arrival: {!
     Q[p + "_local_barcelona_support"] = 0.0;
   }
 !}
-go-to: start_menu_2
-
 
 = Route to Ítaca - An Alternate History
 
-@start_menu_2
-
 [? if not url_valid: **If you are playing this mod via the Mod Loader in base game, you may be using a broken build. For the intended experience, please <a class="link" href="https://broken-arrows.github.io/route_to_itaca/" style="text-de">play using this link</a>.** ?]
 
-- @start: <span style="font-size: 1.1em;">Start game</span>
-- @game_over.achievements: <span style="font-size: 1.1em;">Achievements</span>
-- @election_simulation: <span style="font-size: 1.1em;">Election simulation</span>
-- @language: <span style="font-size: 1.1em;">Language</span>
-- @about: <span style="font-size: 1.1em;">About</span> <span style="margin-left: 0.5em; font-style: italic; color: gray;">v0.1.0 (07.2026)</span>
-- @credits: <span style="font-size: 1.1em;">Credits</span>
-
+- @start: New Game
+- @game_over.achievements: Achievements
+- @election_simulation: Election Simulation
+- @about: About
 
 @start
+tags: starts-game
+role: main-menu-item
 choose-if: url_valid
 unavailable-subtitle: Route to Ítaca is currently in its early development stages. Check back soon(-ish) for the full experience!
 # unavailable-subtitle: Game loaded from an unrecognized origin, are you sure you're in the right place? TODO: put this as the right unavailable subtitle!
 on-arrival: {!
-  Q.debug = true; // FIXME - TODO: remove!
-
   // Achievement variables
   Q.psoe_sanchez_president_ever = false;
 

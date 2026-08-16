@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue';
 import { useGameStore } from '../../stores/game';
+import { i18n } from '../../i18n';
 
 defineOptions({ name: 'AchievementGallery' });
 
@@ -10,6 +11,35 @@ const props = withDefaults(
 );
 
 const game = useGameStore();
+const locale = computed(() => i18n.global.locale.value);
+const t = i18n.global.t;
+
+// Snapshot the engine-owned ledger when the authored gallery mounts. Title and
+// pause navigation remount it on each opening, refreshing relative labels
+// without a permanent clock or a Vue-owned persistence domain.
+const openedAt = Date.now();
+const ledger = { ...game.achievementLedger };
+
+function unlockedLabel(id: string): string {
+  const value = ledger[id];
+  if (!value || typeof value !== 'object') return t('shell.achievements.unknownDate');
+  const raw = value.unlockedAt;
+  if (typeof raw !== 'string') return t('shell.achievements.unknownDate');
+  const timestamp = Date.parse(raw);
+  if (!Number.isFinite(timestamp)) return t('shell.achievements.unknownDate');
+
+  const elapsed = Math.max(0, openedAt - timestamp);
+  if (elapsed < 24 * 60 * 60 * 1000) {
+    const minutes = Math.floor(elapsed / (60 * 1000));
+    if (minutes < 60) return t('shell.achievements.minutesAgo', { count: minutes });
+    return t('shell.achievements.hoursAgo', { count: Math.floor(minutes / 60) });
+  }
+  return new Intl.DateTimeFormat(locale.value, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(timestamp);
+}
 
 interface Row {
   id: string;
@@ -18,6 +48,7 @@ interface Row {
   stars: number;
   image: string;
   unlocked: boolean;
+  unlockedLabel?: string;
 }
 
 const rows = computed<Row[]>(() => {
@@ -28,8 +59,14 @@ const rows = computed<Row[]>(() => {
     .map((a) => ({
       ...a,
       unlocked: !!q[prefix + a.id],
+      unlockedLabel: q[prefix + a.id] ? unlockedLabel(a.id) : undefined,
     }));
 });
+
+const unlockedCount = computed(() => rows.value.filter((row) => row.unlocked).length);
+const totalCount = computed(() =>
+  props.scope === 'playthrough' ? game.achievements.length : rows.value.length,
+);
 
 // Registry image paths are web-root-relative (`img/...`), same as every other
 // art path in compiled content — resolve against BASE_URL and fall back to the
@@ -43,6 +80,9 @@ function imgSrc(row: Row): string | null {
 
 <template>
   <div class="achievement-gallery" data-test="achievement-gallery">
+    <div class="achievement-gallery-count" data-test="achievement-count">
+      {{ t('shell.achievements.count', { unlocked: unlockedCount, total: totalCount }) }}
+    </div>
     <div
       v-for="row in rows"
       :key="row.id"
@@ -61,12 +101,21 @@ function imgSrc(row: Row): string | null {
       </div>
       <div class="achievement-row-body">
         <div class="achievement-row-name">{{ row.name }}</div>
+        <div class="achievement-row-description">{{ row.description }}</div>
+      </div>
+      <div class="achievement-row-meta">
         <div class="achievement-row-stars" :aria-label="`${row.stars}/5`">
           <span v-for="i in 5" :key="i" :class="i <= row.stars ? 'star--filled' : 'star--empty'"
             >★</span
           >
         </div>
-        <div class="achievement-row-description">{{ row.description }}</div>
+        <div
+          v-if="row.unlockedLabel"
+          class="achievement-row-date"
+          :data-test="`achievement-date-${row.id}`"
+        >
+          {{ row.unlockedLabel }}
+        </div>
       </div>
     </div>
   </div>
@@ -77,6 +126,12 @@ function imgSrc(row: Row): string | null {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+.achievement-gallery-count {
+  align-self: flex-end;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--ink-1, var(--ink-0));
 }
 .achievement-row {
   display: flex;
@@ -128,7 +183,7 @@ function imgSrc(row: Row): string | null {
   color: var(--ink-0);
 }
 .achievement-row-stars {
-  margin: 2px 0 4px;
+  white-space: nowrap;
 }
 .achievement-row-stars .star--filled {
   color: var(--accent-gold);
@@ -137,9 +192,42 @@ function imgSrc(row: Row): string | null {
   color: var(--paper-3);
 }
 .achievement-row-description {
+  margin-top: 4px;
   font-family: var(--font-body);
   font-size: 12px;
   color: var(--ink-0);
   opacity: 0.85;
+}
+.achievement-row-meta {
+  flex: 0 0 112px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  text-align: right;
+}
+.achievement-row-date {
+  margin-top: 5px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-style: italic;
+  color: var(--ink-1, var(--ink-0));
+}
+
+@media (max-width: 560px) {
+  .achievement-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .achievement-row-body {
+    flex-basis: calc(100% - 86px);
+  }
+  .achievement-row-meta {
+    flex-basis: 100%;
+    align-items: flex-start;
+    padding-left: 86px;
+    text-align: left;
+  }
 }
 </style>

@@ -1,4 +1,5 @@
 title: Election Simulation
+role: main-menu-item
 set-bg: img/parlament_de_catalunya.jpg
 new-page: true
 on-arrival: {!

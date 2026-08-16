@@ -5,6 +5,7 @@ import { useGameStore } from '../../stores/game';
 import { skinFor } from './skins';
 import PaperOption from './PaperOption.vue';
 import Prose from '../Prose.vue';
+import { useSettingsStore } from '../../stores/settings';
 
 const props = withDefaults(
   defineProps<{ origin?: { x: number; y: number } }>(),
@@ -13,6 +14,8 @@ const props = withDefaults(
 
 const desk = useDeskStore();
 const game = useGameStore();
+const settings = useSettingsStore();
+const assetBase = import.meta.env.BASE_URL;
 
 const skin = computed(() => skinFor(desk.openCard?.role));
 const resolving = computed(() => desk.phase === 'resolving');
@@ -32,6 +35,7 @@ const coverArt = computed(() => {
   return img ? `${import.meta.env.BASE_URL}${img}` : null;
 });
 const artBroken = ref(false);
+const faceArtBroken = ref(false);
 
 // Diegetic header labels — constant per skin (document furniture, not i18n).
 const header = computed(() => {
@@ -94,6 +98,14 @@ function onPick(i: number): void {
            its root (LEARNINGS 2026-07-20). -->
       <div class="cover-prose">
         <Prose :html="proseHtml" />
+      </div>
+
+      <div
+        v-if="settings.eventImages && game.frame?.faceImage && !faceArtBroken"
+        class="dossier-face-art"
+        data-test="dossier-face-image"
+      >
+        <img :src="`${assetBase}${game.frame.faceImage}`" alt="" @error="faceArtBroken = true" />
       </div>
 
       <div v-if="coverArt && !artBroken" class="cover-art">
@@ -247,6 +259,8 @@ function onPick(i: number): void {
   max-height: 200px;
   object-fit: cover;
 }
+.dossier-face-art { margin-top: 14px; max-width: 90%; }
+.dossier-face-art img { display: block; width: 100%; height: auto; max-height: 200px; object-fit: contain; }
 
 .papers {
   flex: 1;

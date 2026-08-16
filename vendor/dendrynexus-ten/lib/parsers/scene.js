@@ -102,7 +102,7 @@
         'desk', 'deck', 'deck-gov', 'deck-party', 'deck-parliament',
         'card', 'card-gov', 'card-party', 'card-parliament',
         'pinned-action', 'pinned-advisor', 'pinned-parliament', 'newspaper', 'event',
-        'status', 'info-tab', 'pause-item', 'main-menu-item', 'library-item',
+        'status', 'info-tab', 'pause-item', 'title-hub', 'main-menu-item', 'library-item',
         'ending', 'default'
       ])
     },

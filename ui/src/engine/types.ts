@@ -2,7 +2,7 @@ export type SceneRole =
   | 'desk' | 'deck' | 'deck-gov' | 'deck-party' | 'deck-parliament'
   | 'card' | 'card-gov' | 'card-party' | 'card-parliament'
   | 'pinned-action' | 'pinned-advisor' | 'pinned-parliament' | 'newspaper' | 'event'
-  | 'status' | 'info-tab' | 'pause-item' | 'main-menu-item' | 'library-item' | 'ending';
+  | 'status' | 'info-tab' | 'pause-item' | 'title-hub' | 'main-menu-item' | 'library-item' | 'ending';
 export type EffectiveRole = SceneRole | 'page';
 export interface GameInfo {
   title?: string;
@@ -20,6 +20,11 @@ export interface ChoiceView {
   canChoose: boolean;
   tags: string[];
   role?: SceneRole;
+}
+
+export interface RoleHubView {
+  id: string;
+  choices: ChoiceView[];
 }
 
 export interface DeckView extends ChoiceView {
@@ -91,3 +96,6 @@ export interface AchievementEntry {
   stars: number;
   image: string;
 }
+
+export type AchievementLedgerValue = number | { unlockedAt?: string };
+export type AchievementLedger = Record<string, AchievementLedgerValue>;

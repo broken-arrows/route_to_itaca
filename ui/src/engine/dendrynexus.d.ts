@@ -23,6 +23,7 @@ declare module 'dendrynexus-ten/lib/engine.js' {
       bg: string | null;
       [key: string]: unknown;
     };
+    choiceCache: RawChoice[];
     game: {
       scenes: Record<string, Record<string, unknown>>;
       info?: {
@@ -38,6 +39,7 @@ declare module 'dendrynexus-ten/lib/engine.js' {
     beginGame(rndSeeds?: number[]): void;
     choose(choiceIndex: number): void;
     displayChoices(): void;
+    _compileChoices(scene: unknown): RawChoice[];
     drawCard(deckId: string): RawCard | { id: null; title: string };
     playCard(cardId: string): void;
     playPinnedCard(cardId: string): void;

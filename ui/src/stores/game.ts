@@ -4,6 +4,7 @@ import { createSaveStore, type SaveStore } from 'dendrynexus-ten/lib/persistence
 import { DendryAdapter } from '../engine/adapter';
 import type {
   AchievementEntry,
+  AchievementLedger,
   DrawResult,
   EffectiveRole,
   Frame,
@@ -13,11 +14,29 @@ import type {
 } from '../engine/types';
 import type { GlossaryTerm } from '../glossary/mark';
 import { useSettingsStore } from './settings';
+import { useShellStore } from './shell';
+import { loadContentCatalog } from '../locales/content';
+import type { AppLocale } from '../i18n';
 
 export type LoadSlotResult =
   | { status: 'loaded' }
+  | { status: 'blocked'; error: { code: 'saves-disabled' } }
   | { status: 'missing' | 'corrupt' | 'unreadable' | 'unsupported'; error?: { code: string } }
   | { status: 'confirmation-required'; compatibility: 'incompatible' | 'unknown' };
+
+export type ManualSlotOperationResult =
+  | { ok: true; slot: string; status?: 'ready' | 'unsupported' }
+  | { ok: false; error: { code: string; message?: string } };
+
+export type OverwriteManualSlotResult =
+  | ManualSlotOperationResult
+  | { ok: false; status: 'confirmation-required'; slot: string };
+
+const MANUAL_SLOT = /^manual-([1-9]\d*)$/;
+
+function disabledResult() {
+  return { ok: false as const, error: { code: 'saves-disabled' as const } };
+}
 
 export const useGameStore = defineStore('game', () => {
   const adapter = shallowRef<DendryAdapter | null>(null);
@@ -41,6 +60,14 @@ export const useGameStore = defineStore('game', () => {
   // pre-boot/on load-error" contract as glossary above. Consumed by the
   // desk store (toast metadata) and AchievementGallery.vue.
   const achievements = computed<AchievementEntry[]>(() => adapter.value?.achievements ?? []);
+  const achievementLedger = computed<AchievementLedger>(() => {
+    void version.value;
+    return adapter.value?.achievementLedger ?? {};
+  });
+  const savesDisabled = computed(() => {
+    void version.value;
+    return adapter.value?.savesDisabled ?? false;
+  });
 
   function apply(f: Frame): void {
     // Order matters: version ticks BEFORE the frame is published, so the
@@ -84,10 +111,18 @@ export const useGameStore = defineStore('game', () => {
       const res = await fetch(url);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       initFromText(await res.text());
+      await setContentLanguage(useSettingsStore().language);
     } catch (err) {
       console.error('game data load failed:', err);
       loadError.value = true;
     }
+  }
+
+  async function setContentLanguage(language: AppLocale): Promise<void> {
+    if (!adapter.value) return;
+    const catalog = await loadContentCatalog(language);
+    const refreshed = adapter.value.refreshLocale(language, catalog);
+    if (refreshed) apply(refreshed);
   }
 
   // Spec §9: the engine can throw on boot (beginGame -> goToScene(root) asserts
@@ -107,20 +142,40 @@ export const useGameStore = defineStore('game', () => {
     }
   }
   function choose(i: number): void {
+    if (useShellStore().blocksEngineChoices) return;
     apply(adapter.value!.choose(i));
   }
+  function chooseFromShell(i: number): void {
+    apply(adapter.value!.choose(i));
+  }
+  function goToScene(id: string): void {
+    apply(adapter.value!.goToScene(id));
+  }
+  function roleHub(role: 'title-hub') {
+    return adapter.value?.roleHub(role) ?? null;
+  }
+  function captureState(): string {
+    return adapter.value!.exportStateJSON();
+  }
+  function restoreState(serialized: string): void {
+    apply(adapter.value!.importStateJSON(serialized));
+  }
   function draw(deckId: string): DrawResult {
+    if (useShellStore().blocksEngineChoices) return { id: null, title: 'no_card_in_deck' };
     const { result, frame: f } = adapter.value!.drawCard(deckId);
     apply(f);
     return result;
   }
   function play(cardId: string): void {
+    if (useShellStore().blocksEngineChoices) return;
     apply(adapter.value!.playCard(cardId));
   }
   function playPinned(cardId: string): void {
+    if (useShellStore().blocksEngineChoices) return;
     apply(adapter.value!.playPinnedCard(cardId));
   }
   function saveSlot(slot: string) {
+    if (savesDisabled.value && slot !== 'auto-1') return disabledResult();
     const a = adapter.value!;
     const qs = a.qualities;
     const meta: SaveMeta = {
@@ -142,6 +197,12 @@ export const useGameStore = defineStore('game', () => {
   // the only recoverable raw copy.
   function saveAutosave() {
     if (!saves) return { ok: false, error: { code: 'persistence-unconfigured' } };
+    if (savesDisabled.value) {
+      const written = saveSlot('auto-1');
+      if (!written.ok) return written;
+      const removed = saves.remove('auto-2');
+      return removed.ok ? written : removed;
+    }
     const current = saves.read('auto-1');
     if (current.status !== 'missing') {
       const exported = saves.export('auto-1');
@@ -161,11 +222,18 @@ export const useGameStore = defineStore('game', () => {
   // the current sequence resumable: checkpoints replace auto-1 directly and
   // deliberately do not pass through saveAutosave()'s rotation.
   function checkpointAutosave() {
-    return saveSlot('auto-1');
+    if (!savesDisabled.value) return saveSlot('auto-1');
+    const written = saveSlot('auto-1');
+    if (!written.ok || !saves) return written;
+    const removed = saves.remove('auto-2');
+    return removed.ok ? written : removed;
   }
 
   function loadSlot(slot: string, allowRisk = false): LoadSlotResult {
     if (!saves || !adapter.value) return { status: 'missing' };
+    if (savesDisabled.value && slot !== 'auto-1') {
+      return { status: 'blocked', error: { code: 'saves-disabled' } };
+    }
     const stored = saves.read(slot);
     if (stored.status !== 'ready') {
       return { status: stored.status, error: 'error' in stored ? stored.error : undefined };
@@ -179,7 +247,7 @@ export const useGameStore = defineStore('game', () => {
 
   function listSlots(): SaveSlotEntry[] {
     if (!saves) return [];
-    return saves.list().map((entry) => {
+    const entries: SaveSlotEntry[] = saves.list().map((entry) => {
       if (entry.status === 'ready') {
         return {
           slot: entry.slot,
@@ -191,6 +259,58 @@ export const useGameStore = defineStore('game', () => {
       }
       return { slot: entry.slot, status: entry.status, error: entry.error };
     });
+    return entries.sort((left, right) => {
+      const autoRank = (slot: string) => slot === 'auto-1' ? 0 : slot === 'auto-2' ? 1 : 2;
+      const rankDifference = autoRank(left.slot) - autoRank(right.slot);
+      if (rankDifference !== 0) return rankDifference;
+
+      const leftManual = MANUAL_SLOT.exec(left.slot);
+      const rightManual = MANUAL_SLOT.exec(right.slot);
+      if (leftManual && rightManual) {
+        const timestamp = (entry: SaveSlotEntry) => {
+          const parsed = entry.savedAt ? Date.parse(entry.savedAt) : Number.NaN;
+          return Number.isFinite(parsed) ? parsed : Number.NEGATIVE_INFINITY;
+        };
+        const leftTime = timestamp(left);
+        const rightTime = timestamp(right);
+        if (leftTime !== rightTime) return rightTime - leftTime;
+        return Number(leftManual[1]) - Number(rightManual[1]);
+      }
+      if (leftManual) return -1;
+      if (rightManual) return 1;
+      return left.slot.localeCompare(right.slot);
+    });
+  }
+
+  function nextManualSlot(): string {
+    const occupied = new Set(saves?.list().map(({ slot }) => slot) ?? []);
+    let number = 1;
+    while (occupied.has(`manual-${number}`)) number++;
+    return `manual-${number}`;
+  }
+
+  function createManualSave(): ManualSlotOperationResult {
+    if (savesDisabled.value) return disabledResult();
+    const slot = nextManualSlot();
+    const result = saveSlot(slot);
+    return result.ok
+      ? { ok: true, slot }
+      : { ok: false, error: result.error };
+  }
+
+  function overwriteManualSave(slot: string, confirmed = false): OverwriteManualSlotResult {
+    if (savesDisabled.value) return disabledResult();
+    if (!MANUAL_SLOT.test(slot)) {
+      return { ok: false as const, error: { code: 'invalid-manual-slot' as const } };
+    }
+    if (!saves) return { ok: false as const, error: { code: 'persistence-unconfigured' as const } };
+    if (saves.read(slot).status !== 'missing' && !confirmed) {
+      return { ok: false, status: 'confirmation-required', slot };
+    }
+    const result = saveSlot(slot);
+    return result.ok
+      ? { ok: true, slot }
+      : { ok: false, error: result.error };
   }
 
   function removeSlot(slot: string) {
@@ -202,10 +322,21 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function importSlot(slot: string, serialized: string) {
+    if (savesDisabled.value) return disabledResult();
     return saves?.import(slot, serialized) ?? {
       ok: false,
       error: { code: 'persistence-unconfigured' },
     };
+  }
+
+
+  function importManualSave(serialized: string): ManualSlotOperationResult {
+    if (savesDisabled.value) return disabledResult();
+    const slot = nextManualSlot();
+    const result = importSlot(slot, serialized);
+    return result.ok
+      ? { ok: true, status: result.status, slot }
+      : { ok: false, error: result.error };
   }
 
   return {
@@ -217,15 +348,25 @@ export const useGameStore = defineStore('game', () => {
     effectiveRole,
     glossary,
     achievements,
+    achievementLedger,
+    savesDisabled,
     loadError,
     initFromText,
     initFromUrl,
+    setContentLanguage,
     newGame,
     choose,
+    chooseFromShell,
+    goToScene,
+    roleHub,
+    captureState,
+    restoreState,
     draw,
     play,
     playPinned,
     saveSlot,
+    createManualSave,
+    overwriteManualSave,
     saveAutosave,
     checkpointAutosave,
     loadSlot,
@@ -233,5 +374,6 @@ export const useGameStore = defineStore('game', () => {
     removeSlot,
     exportSlot,
     importSlot,
+    importManualSave,
   };
 });

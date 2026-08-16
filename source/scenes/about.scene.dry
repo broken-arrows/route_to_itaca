@@ -1,5 +1,6 @@
 title: About
 go-to: force_new_page_about
+role: main-menu-item
 
 @force_new_page_about
 new-page: true
@@ -81,6 +82,8 @@ No playable game has been released yet!
 
 **v0.2.0** - *pre-release beta* - TBD
 
+· Local Elections
+
 · October 2017 events, aka. "Rubicon".
 
 · Playable CUP.
@@ -99,6 +102,8 @@ No playable game has been released yet!
 
 ** Beyond v1.0.0 and ideas**
 
+· Deterministic mode!
+
 · Start dates!
 
 · Playable CiU / CDC / DL / PDeCAT / Junts.
@@ -116,4 +121,3 @@ No playable game has been released yet!
 · Even more achievements
 
 - @force_new_page_about: Back
-

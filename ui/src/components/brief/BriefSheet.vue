@@ -21,6 +21,7 @@ defineProps<{ title: string; context: string; html: string }>();
     </header>
     <div class="sheet-body">
       <Prose :html="html" />
+      <slot />
     </div>
   </div>
 </template>

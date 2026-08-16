@@ -2,12 +2,41 @@ import { DendryEngine, convertJSONToGame } from 'dendrynexus-ten/lib/engine.js';
 import { convert as paragraphsToHTML, convertLine } from 'dendrynexus-ten/lib/ui/content/html.js';
 import { CaptureUI, normalizeCard } from './capture-ui';
 import { installGameLib } from '../game-bindings';
-import type { Frame, DrawResult, SceneRole, EffectiveRole, GameInfo, AchievementEntry } from './types';
+import type {
+  Frame,
+  DrawResult,
+  SceneRole,
+  EffectiveRole,
+  GameInfo,
+  AchievementEntry,
+  AchievementLedger,
+  RoleHubView,
+} from './types';
 import type { GlossaryTerm } from '../glossary/mark';
+
+function localizeStaticContent(value: unknown, catalog: Record<string, string>): unknown {
+  if (!value || typeof value !== 'object') return value;
+  if (Array.isArray(value)) return value.map((entry) => localizeStaticContent(entry, catalog));
+
+  const node = value as Record<string, unknown>;
+  if (node.stateDependencies !== undefined || node.content === undefined) return value;
+  const content = node.content;
+  let localized = content;
+  if (typeof content === 'string') localized = catalog[content] ?? content;
+  else if (Array.isArray(content) && content.length === 1 && typeof content[0] === 'string') {
+    localized = [catalog[content[0]] ?? content[0]];
+  } else if (Array.isArray(content)) {
+    localized = content.map((entry) =>
+      typeof entry === 'object' ? localizeStaticContent(entry, catalog) : entry,
+    );
+  }
+  return localized === content ? value : { ...node, content: localized };
+}
 
 export class DendryAdapter {
   readonly engine: DendryEngine;
   private ui: CaptureUI;
+  private contentCatalog: Record<string, string> = {};
   // Runtime "effective role" tracker: a scene's own non-`default` role becomes
   // the new effective role; role-less (or `default`) scenes inherit the current
   // one. The `desk` reset is just this same assignment — no special case.
@@ -33,7 +62,11 @@ export class DendryAdapter {
   }
 
   get qualities(): Record<string, unknown> {
-    return this.engine.state.qualities;
+    return this.engine.state?.qualities ?? {};
+  }
+
+  get savesDisabled(): boolean {
+    return this.engine.state?.disableSaves === true;
   }
 
   get info(): GameInfo {
@@ -60,8 +93,37 @@ export class DendryAdapter {
     return a?.achievements ?? [];
   }
 
+  /** The engine-owned cross-playthrough ledger. Components may read this
+   * projection, but all mutation and persistence stays in DendryEngine. */
+  get achievementLedger(): AchievementLedger {
+    return (this.engine.state?.achievements ?? {}) as AchievementLedger;
+  }
+
   setLocale(locale: string | null, catalog: Record<string, string> | null): void {
+    this.contentCatalog = catalog ?? {};
     this.engine.setLocale(locale, catalog);
+  }
+
+  /** Install a content catalog and rebuild the visible frame in place.
+   * This deliberately bypasses goToScene: locale changes are presentation,
+   * so neither on-arrival nor on-display actions may replay. */
+  refreshLocale(locale: string, catalog: Record<string, string>): Frame | null {
+    this.contentCatalog = catalog;
+    this.engine.setLocale(locale, catalog);
+    if (!this.engine.state?.sceneId) return null;
+
+    const faceImage = this.ui.faceImage;
+    const currentContent = this.engine.state.currentContent ?? [];
+    this.ui.resetTransient();
+    this.ui.newPage();
+    const scene = this.engine.getCurrentScene();
+    this.ui.displayContent(
+      Array.isArray(currentContent) ? currentContent : [],
+      faceImage ?? scene.faceImage,
+    );
+    this.engine.choiceCache = this.engine._compileChoices(scene);
+    this.engine.displayChoices();
+    return this.buildFrame();
   }
 
   setGameLib(lib: object): void {
@@ -82,7 +144,8 @@ export class DendryAdapter {
       if (!scene) console.warn(`renderView: no scene "${sceneId}"`);
       return '';
     }
-    return paragraphsToHTML(this.engine._makeDisplayContent(scene.content, true));
+    const content = this.engine._makeDisplayContent(scene.content, true);
+    return paragraphsToHTML(localizeStaticContent(content, this.contentCatalog) as unknown[]);
   }
 
   /** Catalog lookup for strings built outside the content tree — see
@@ -102,6 +165,40 @@ export class DendryAdapter {
       if ((scene as { role?: string }).role === role) return id;
     }
     return null;
+  }
+
+  /**
+   * Read an authored hub's live choices without navigating to it. Shells use
+   * this for persistent indexes such as the title ribbons: navigating back to
+   * the root menu would replay authored arrival actions and can reset Q.
+   * Choice compilation remains engine-owned, so view/choose predicates,
+   * subtitles, localization, and authored order match ordinary navigation.
+   */
+  roleHub(role: SceneRole): RoleHubView | null {
+    const id = this.hubSceneId(role);
+    if (!id) return null;
+    const scene = this.engine.game.scenes[id];
+    const choices = (
+      this.engine as unknown as {
+        _compileChoices(scene: unknown): Array<{
+          id: string;
+          title: unknown;
+          subtitle?: unknown;
+          canChoose: boolean;
+        }> | null;
+      }
+    )._compileChoices(scene) ?? [];
+    return {
+      id,
+      choices: choices.map((choice) => ({
+        id: choice.id,
+        title: convertLine(choice.title),
+        subtitle: choice.subtitle === undefined ? undefined : convertLine(choice.subtitle),
+        canChoose: !!choice.canChoose,
+        tags: this.tagsFor(choice.id),
+        role: this.roleFor(choice.id),
+      })),
+    };
   }
 
   /**
@@ -174,7 +271,22 @@ export class DendryAdapter {
 
   goToScene(id: string): Frame {
     this.ui.resetTransient();
+    // A destination can redirect before an intermediate frame is built. Seed
+    // its explicit role first so a role-less redirect child inherits it.
+    const destinationRole = this.roleFor(id);
+    if (destinationRole) this.effective = destinationRole;
     this.engine.goToScene(id);
+    // A special-scene return is an engine-level destination rather than a
+    // compiled scene, so it has no role to seed above. Reclassify the restored
+    // origin explicitly; otherwise a role-less generic page inherits the
+    // special scene's presentation and remains trapped in that surface.
+    if (id === 'backSpecialScene') {
+      const restoredId = this.engine.state.sceneId;
+      this.effective = this.roleFor(restoredId)
+        ?? this.restoredSpecialOriginRole(restoredId)
+        ?? this.restoredEventRole(restoredId)
+        ?? 'page';
+    }
     return this.buildFrame();
   }
 
@@ -229,13 +341,23 @@ export class DendryAdapter {
     this.ui.resetTransient();
     this.engine.setState(JSON.parse(json));
     const sceneId = this.engine.state.sceneId;
-    this.effective = this.roleFor(sceneId) ?? this.restoredEventRole(sceneId) ?? 'page';
+    this.effective = this.roleFor(sceneId)
+      ?? this.restoredLibraryRole(sceneId)
+      ?? this.restoredEventRole(sceneId)
+      ?? 'page';
     return this.buildFrame();
   }
 
   private tagsFor(id: string): string[] {
     const s = this.engine.game.scenes[id] as { tags?: string[] } | undefined;
     return s?.tags ?? [];
+  }
+
+  private choiceTagsFor(id: string): string[] {
+    // `prevScene` is an authored engine destination rather than a scene, so
+    // it cannot carry scene tags of its own. Surface its built-in return
+    // semantics just like the authored root scene's `shell-return` tag.
+    return id === 'prevScene' ? ['shell-return'] : this.tagsFor(id);
   }
 
   private roleFor(id: string): SceneRole | undefined {
@@ -318,6 +440,34 @@ export class DendryAdapter {
     return foundEventBoundary && !ambiguous ? 'event' : undefined;
   }
 
+  /** Library articles inherit their root's presentation during ordinary live
+   * navigation. A serialized state keeps the compiled child id but not that
+   * runtime inheritance, so recover this one special-scene contract by walking
+   * authored parents. Do not generalize this to dossiers: their load behavior
+   * is intentionally separate from live card inheritance. */
+  private restoredLibraryRole(sceneId: string): EffectiveRole | undefined {
+    let parent = sceneId;
+    while (parent.includes('.')) {
+      parent = parent.slice(0, parent.lastIndexOf('.'));
+      if (this.roleFor(parent) === 'library-item') return 'library-item';
+    }
+    return undefined;
+  }
+
+  /** `backSpecialScene` restores the exact authored child that opened the
+   * special scene. That child may inherit its presentation from a card root;
+   * recover the parent role for this live return only. Ordinary save imports
+   * deliberately keep their narrower dossier behavior. */
+  private restoredSpecialOriginRole(sceneId: string): EffectiveRole | undefined {
+    let parent = sceneId;
+    while (parent.includes('.')) {
+      parent = parent.slice(0, parent.lastIndexOf('.'));
+      const role = this.roleFor(parent);
+      if (role) return role;
+    }
+    return undefined;
+  }
+
   protected buildFrame(): Frame {
     const sceneId = this.engine.state.sceneId;
     const scene = (this.engine.game.scenes[sceneId] ?? {}) as Record<string, unknown>;
@@ -330,13 +480,15 @@ export class DendryAdapter {
       role: ownRole,
       effectiveRole: this.effective,
       info: this.info,
-      html: paragraphsToHTML(this.ui.paragraphs),
+      html: paragraphsToHTML(
+        localizeStaticContent(this.ui.paragraphs, this.contentCatalog) as unknown[],
+      ),
       choices: this.ui.choices.map((c) => ({
         id: c.id,
         title: c.title,
         subtitle: c.subtitle ?? c.unavailableSubtitle,
         canChoose: !!c.canChoose,
-        tags: this.tagsFor(c.id),
+        tags: this.choiceTagsFor(c.id),
         role: this.roleFor(c.id),
       })),
       isHand: !!scene.isHand,

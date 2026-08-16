@@ -1476,7 +1476,15 @@
   };
 
   DendryEngine.prototype.achieve = function (achievementName) {
-    this.state.achievements[achievementName] = 1;
+    // The persisted ledger records the real-world time of the first unlock.
+    // Preserve any existing entry verbatim: in addition to keeping the first
+    // timestamp stable, this leaves legacy numeric records unlocked with an
+    // intentionally unknown date rather than silently backfilling them.
+    if (!Object.prototype.hasOwnProperty.call(this.state.achievements, achievementName)) {
+      this.state.achievements[achievementName] = {
+        unlockedAt: new Date().toISOString(),
+      };
+    }
     // add a special quality named 'achievement_'
     this.state.qualities["achievement_" + achievementName] = 1;
     // add a new quality indicating that the achievement has been done for the current game

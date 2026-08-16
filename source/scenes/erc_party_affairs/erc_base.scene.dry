@@ -1,6 +1,6 @@
 title: Widening the Base
 new-page: true
-view-if: not rubicon or erc_base_timer <= 0
+view-if: not rubicon and erc_base_timer <= 0 and erc_parlament_s >= 20
 on-arrival: month_actions += 1; erc_base_timer = 2 if rubicon
 max-visits: 36
 is-card: true
@@ -12,4 +12,4 @@ role: card-party
 
 = Widening the Base
 
-TODO!
+The party is growing at a rate hard to imagine a few years ago. From a relatively minor, deeply pro-independence option, ERC is now becoming 

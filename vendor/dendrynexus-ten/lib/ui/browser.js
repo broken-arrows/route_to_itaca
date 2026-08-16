@@ -425,6 +425,7 @@
       return null;
     }
     var pinnedCardsDescription = "Pinned cards - click a card to play.";
+    var pinnedParlamentDescription = "";
     if (window.pinnedCardsDescription) {
       pinnedCardsDescription = window.pinnedCardsDescription;
     }
@@ -432,19 +433,19 @@
       pinnedCardsDescription =
         this.dendryEngine.state.qualities.pinnedCardsDescription;
     }
-    if (this.dendryEngine.state.qualities.pinnedParlamentDescription) {
-      pinnedParlamentDescription =
-        this.dendryEngine.state.qualities.pinnedParlamentDescription;
-    }
     this.$content.append($("<hr>"));
     this.$content.append(
       $("<p>").addClass("pinned-text-description").text(pinnedCardsDescription),
     );
-    this.$content.append(
-      $("<p>")
-        .addClass("pinned-text-description")
-        .text(pinnedParlamentDescription),
-    );
+    if (this.dendryEngine.state.qualities.pinnedParlamentDescription) {
+      pinnedParlamentDescription =
+        this.dendryEngine.state.qualities.pinnedParlamentDescription;
+      this.$content.append(
+        $("<p>")
+          .addClass("pinned-text-description")
+          .text(pinnedParlamentDescription),
+      );
+    }
     var $cardsEl = $("<ul>").addClass("pinned-cards");
     for (var card of cards) {
       var $cardEl = $("<li>").addClass("pinned-card");
