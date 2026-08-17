@@ -4,8 +4,7 @@ set-bg: img/3rd_October_2017.jpg
 go-to: eg_menu
 on-arrival: {!
     // Achievements. Notification is now PULLED by each UI from a
-    // Q.achievement_* frame-to-frame diff (phase 2.5 Task 8) — this.achieve()
-    // is the sole declaration; nothing here pushes a notification anymore.
+    // Q.achievement_* frame-to-frame diff + this.achieve() is the sole declaration; nothing here pushes a notification anymore.
     this.achieve('game_completed');
 
     if (Q.psoe_barons_revolted && !Q.psoe_sanchez_president_ever) {

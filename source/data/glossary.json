@@ -442,12 +442,176 @@
       }
     },
     {
+      "id": "endavant",
+      "match": ["Endavant"],
+      "display": "Endavant",
+      "colour": "#c50000",
+      "bold": true,
+      "tooltip": {
+        "title": "Forward - Socialist Organization of National Liberation",
+        "subtitle": "Endavant - Organització Socialista d'Alliberament Nacional",
+        "img": "img/parties/logo_endavant.png",
+        "infoDesc": "Political Organization",
+        "q": {
+          "ideology": "Marxism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "poble_lliure",
+      "match": ["Poble Lliure"],
+      "display": "Poble Lliure",
+      "colour": "#c11d4e",
+      "bold": true,
+      "tooltip": {
+        "title": "Free People",
+        "subtitle": "Poble Lliure",
+        "img": "img/parties/logo_poblelliure.png",
+        "infoDesc": "Political Organization",
+        "q": {
+          "ideology": "Socialism, Unilateralism"
+        }
+      }
+    },
+    {
       "id": "david_fern_ndez",
-      "match": ["David Fernàndez", "David Fernàndez i Ramos"],
+      "match": ["David Fernàndez i Ramos", "David Fernàndez"],
       "colour": "#b8a12b",
       "tooltip": {
         "title": "David Fernàndez i Ramos",
         "img": "img/cup/davidfernandez.jpg",
+        "q": {
+          "ideology": "Anti-capitalism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "benet_salellas",
+      "match": ["Benet Salellas i Vilar", "Benet Salellas"],
+      "colour": "#b8a12b",
+      "tooltip": {
+        "title": "Benet Salellas i Vilar",
+        "img": "img/cup/benetsalellas.jpg",
+        "q": {
+          "ideology": "Anti-capitalism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "dolors_sabater",
+      "match": ["Dolors Sabater i Puig", "Dolors Sabater"],
+      "colour": "#b8a12b",
+      "tooltip": {
+        "title": "Dolors Sabater i Puig",
+        "img": "img/cup/dolorssabater.jpg",
+        "q": {
+          "ideology": "Anti-capitalism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "gabriela_serra",
+      "match": ["Gabriela Serra i Frediani", "Gabriela Serra"],
+      "colour": "#b8a12b",
+      "tooltip": {
+        "title": "Gabriela Serra i Frediani",
+        "img": "img/cup/gabrielaserra.jpg",
+        "q": {
+          "ideology": "Anti-capitalism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "carles_riera",
+      "match": ["Carles Riera i Albert", "Carles Riera"],
+      "colour": "#b8a12b",
+      "tooltip": {
+        "title": "Carles Riera i Albert",
+        "img": "img/cup/carlesriera.jpg",
+        "q": {
+          "ideology": "Anti-capitalism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "mireia_vehi",
+      "match": ["Mireia Vehí i Cantenys", "Mireia Vehí"],
+      "colour": "#b8a12b",
+      "tooltip": {
+        "title": "Mireia Vehí i Cantenys",
+        "img": "img/cup/mireiavehi.jpg",
+        "q": {
+          "ideology": "Anti-capitalism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "vial_aragones",
+      "match": ["Vidal Aragonés i Chicharro", "Vidal Aragonés"],
+      "colour": "#b8a12b",
+      "tooltip": {
+        "title": "Vidal Aragonés i Chicharro",
+        "img": "img/cup/vidalaragones.png",
+        "q": {
+          "ideology": "Anti-capitalism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "eulalia_reguant",
+      "match": ["Eulàlia Reguant i Cura", "Eulàlia Reguant"],
+      "colour": "#b8a12b",
+      "tooltip": {
+        "title": "Eulàlia Reguant i Cura",
+        "img": "img/cup/eulaliareguant.png",
+        "q": {
+          "ideology": "Anti-capitalism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "anna_gabriel",
+      "match": ["Anna Gabriel i Sabaté", "Anna Gabriel"],
+      "colour": "#b8a12b",
+      "tooltip": {
+        "title": "Anna Gabriel i Sabaté",
+        "img": "img/cup/annagabriel.jpg",
+        "q": {
+          "ideology": "Anti-capitalism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "antonio_banos",
+      "match": ["Antonio Baños i Boncompain", "Antonio Baños"],
+      "colour": "#b8a12b",
+      "tooltip": {
+        "title": "Antonio Baños i Boncompain",
+        "img": "img/cup/antoniobanos.jpg",
+        "q": {
+          "ideology": "Anti-capitalism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "albert_botran",
+      "match": ["Albert Botran i Pahissa", "Albert Botran"],
+      "colour": "#b8a12b",
+      "tooltip": {
+        "title": "Albert Botran i Pahissa",
+        "img": "img/cup/albertbotran.png",
+        "q": {
+          "ideology": "Anti-capitalism, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "mireia_boya",
+      "match": ["Mireia Boya e Busquet", "Mireia Boya"],
+      "colour": "#b8a12b",
+      "tooltip": {
+        "title": "Mireia Boya e Busquet",
+        "img": "img/cup/mireiaboya.jpg",
         "q": {
           "ideology": "Anti-capitalism, Unilateralism"
         }

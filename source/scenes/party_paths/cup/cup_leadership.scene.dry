@@ -1,0 +1,193 @@
+title: CUP's National Assembly chooses new leadership
+face-image: img/cup/congres.jpg
+view-if: year > 2012 and cup_leadership_timer = 0 and player_party != "cup"
+tags: event
+new-page: true
+on-arrival: {!
+    Q.cup_leadership_timer = 10;
+
+    Q.cup_poble_lliure_points = 0;
+    Q.cup_endavant_points = 0;
+    switch (Q[Q.parlament_current_ciu + "_roadmap"]) {
+        default:
+            Q.cup_poble_lliure_points += 2;
+            break;
+        case 1:
+            Q.cup_poble_lliure_points += 1;
+            break;
+        case 2:
+            Q.cup_endavant_points += 1;
+            break;
+        case 3:
+            Q.cup_endavant_points += 2;
+            break;
+    }
+    if (Q.cup_in_jxsi || Q.cup_in_jxcat) {
+        Q.cup_poble_lliure_points += 3;
+    } else {
+        Q.cup_endavant_points += 1;
+    }
+    if (Q.jxsi_leader == "Artur Mas" || Q.jxcat_leader == "Artur Mas" || Q[Q.parlament_current_ciu + "_leader"] == "Artur Mas") {
+        Q.cup_endavant_points += 1;
+    } else {
+        Q.cup_poble_lliure_points += 1;
+    }
+    switch (Q.erc_roadmap) {
+        default:
+            Q.cup_poble_lliure_points += 2;
+            break;
+        case 1:
+            Q.cup_poble_lliure_points += 1;
+            break;
+        case 2:
+            Q.cup_endavant_points += 1;
+            break;
+        case 3:
+            Q.cup_endavant_points += 2;
+            break;
+    }
+    if (Q.independence_trust > 60) {
+        Q.cup_poble_lliure_points += Math.floor(Q.independence_trust / 10) - 4;
+    } else {
+        Q.cup_endavant_points += 10 - Math.ceil(Q.independence_trust / 10);
+    }
+    Q.cup_third_sector_points = Math.abs(Q.cup_endavant_points - Q.cup_poble_lliure_points);
+
+    console.log("CUP Faction points: Third Sector:", Q.cup_third_sector_points, " - Endavant:", Q.cup_endavant_points, " - Poble Lliure:", Q.cup_poble_lliure_points);
+!}
+
+= ​CUP's National Assembly chooses new leadership
+
+The anti-capitalist party is now going through the ordinary processes to renew its leadership and visible faces. Following its strict term limits, these roles need renewal each election cycle, and with Catalan elections just around the corner, party representatives from all over are convening in its National Assembly. 
+
+While names may change around, the general currents within the party keep falling along the usual lines. While Endavant and Poble Lliure will keep arguing endlessly about the fight beyond the institutions or within them, respectively, the rest of the associative network that makes up the party may end up proposing a figurehead that's less divisive. 
+
+- @third_sector
+- @endavant
+- @poble_lliure
+
+@third_sector
+title: A Third Sector, consensus-figure candidate
+subtitle: The default, party-unity choice. [? if cup_third_sector_points = 2: \[-1 resources\]?]
+choose-if: cup_third_sector_points < 2 or (cup_third_sector_points = 2 and party_resources >= 1 and cup_relations >= 55)
+unavailable-subtitle: [? if cup_third_sector_points > 2: Other party factions are too strong at the moment. ?][? if cup_relations < 55: We don't have good enough relations with the CUP. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: {!
+    if (Q.cup_third_sector_points == 2) {
+        Q.party_resources -= 1;
+    }
+    Q.cup_faction = "Third Sector";
+    var new_candidate = Q.cup_leader;
+    var new_candidate_gender = Q.cup_leader_gender;
+    var rnd = 0;
+    while (new_candidate == Q.cup_leader || new_candidate_gender == Q.cup_leader_gender) {
+        rnd = Math.floor(Math.random() * 4);
+        switch (rnd) {
+            default:
+                new_candidate = "David Fernández";
+                new_candidate_gender = "m";
+                break;
+            case 0:
+                new_candidate = "Benet Salellas";
+                new_candidate_gender = "m";
+                break;
+            case 1:
+                new_candidate = "Dolors Sabater";
+                new_candidate_gender = "f";
+                break;
+            case 2:
+                new_candidate = "Gabriela Serra";
+                new_candidate_gender = "f";
+                break;
+        }
+    }
+    Q.cup_leader = new_candidate;
+    Q.cup_leader_gender = new_candidate_gender;
+!}
+
+[+ cup_leader +] will be CUP's number 1 a the coming election. While the exact leadership does not mean a lot for the far-left party, and other prominent positions will be filled with names from the other factions and groups, having the Third Sector at the forefront means a bet on party unity. 
+
+- @post_event: We'll see how [? if cup_leader_gender = "m": he?][? if cup_leader_gender = "f": she?] fares...
+
+@endavant
+title: An Endavant leadership
+subtitle: The CUP's focus will be on the streets, with institutional presence being secondary. [? if cup_endavant_points = cup_poble_lliure_points: \[-1 resources\]?]
+choose-if: cup_endavant_points > cup_poble_lliure_points or (cup_endavant_points = cup_poble_lliure_points and party_resources >= 1 and cup_relations >= 55)
+unavailable-subtitle: [? if cup_endavant_points < cup_poble_lliure_points: Endavant is not strong enough at the moment. ?][? if cup_relations < 55: We don't have good enough relations with the CUP. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: {!
+    if (Q.cup_poble_lliure_points == Q.cup_endavant_points) {
+        Q.party_resources -= 1;
+    }
+    Q.cup_faction = "Endavant";
+    var new_candidate = Q.cup_leader;
+    var new_candidate_gender = Q.cup_leader_gender;
+    var rnd = 0;
+    while (new_candidate == Q.cup_leader || new_candidate_gender == Q.cup_leader_gender) {
+        rnd = Math.floor(Math.random() * 5);
+        switch (rnd) {
+            default:
+                new_candidate = "Carles Riera";
+                new_candidate_gender = "m";
+                break;
+            case 0:
+                new_candidate = "Mireia Vehí";
+                new_candidate_gender = "f";
+                break;
+            case 1:
+                new_candidate = "Vidal Aragonès";
+                new_candidate_gender = "m";
+                break;
+            case 2:
+                new_candidate = "Eulàlia Reguant";
+                new_candidate_gender = "f";
+                break;
+            case 3:
+                new_candidate = "Anna Gabriel";
+                new_candidate_gender = "f";
+                break;
+        }
+    }
+    Q.cup_leader = new_candidate;
+    Q.cup_leader_gender = new_candidate_gender;
+!}
+
+[+ cup_leader +] will be CUP's number 1 a the coming election. While the exact leadership does not mean a lot for the far-left party, and other prominent positions will be filled with names from the other factions and groups, this does give a big platform to Endavant. Analysts expect the CUP to take a more critical approach to institutional power, and be a lot more cautious when dealing with traditional parties.
+
+- @post_event: We'll see how [? if cup_leader_gender = "m": he?][? if cup_leader_gender = "f": she?] fares...
+
+@poble_lliure
+title: A Poble Lliure leadership
+subtitle: The CUP will focus on bringing the street's force to the halls of institutional power. [? if cup_endavant_points = cup_poble_lliure_points: \[-1 resources\]?]
+choose-if: cup_endavant_points < cup_poble_lliure_points or (cup_endavant_points = cup_poble_lliure_points and party_resources >= 1 and cup_relations >= 55)
+unavailable-subtitle: [? if cup_endavant_points < cup_poble_lliure_points: Poble Lliure is not strong enough at the moment. ?][? if cup_relations < 55: We don't have good enough relations with the CUP. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: {!
+    if (Q.cup_poble_lliure_points == Q.cup_endavant_points) {
+        Q.party_resources -= 1;
+    }
+    Q.cup_faction = "Poble Lliure";
+    var new_candidate = Q.cup_leader;
+    var new_candidate_gender = Q.cup_leader_gender;
+    var rnd = 0;
+    while (new_candidate == Q.cup_leader || new_candidate_gender == Q.cup_leader_gender) {
+        rnd = Math.floor(Math.random() * 3);
+        switch (rnd) {
+            default:
+                new_candidate = "Antonio Baños";
+                new_candidate_gender = "m";
+                break;
+            case 0:
+                new_candidate = "Albert Botrán";
+                new_candidate_gender = "m";
+                break;
+            case 1:
+                new_candidate = "Mireia Boya";
+                new_candidate_gender = "f";
+                break;
+        }
+    }
+    Q.cup_leader = new_candidate;
+    Q.cup_leader_gender = new_candidate_gender;
+!}
+
+[+ cup_leader +] will be CUP's number 1 a the coming election. While the exact leadership does not mean a lot for the far-left party, and other prominent positions will be filled with names from the other factions and groups, this does give a big platform to Poble Lliure. Analysts expect the CUP to be, while critical, somewhat more willing to build bridges with more traditional parties.
+
+- @post_event: We'll see how [? if cup_leader_gender = "m": he?][? if cup_leader_gender = "f": she?] fares...

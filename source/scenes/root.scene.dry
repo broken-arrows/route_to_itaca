@@ -201,6 +201,7 @@ on-arrival: {!
   Q.cup_ideology = "Anticapitalism, Unilateralism";
   Q.cup_leader = "David Fernàndez";
   Q.cup_leader_gender = "m";
+  Q.cup_faction = "Third Sector";
 
   Q.cs_leader = "Albert Rivera";
   Q.cs_ideology = "Neo-liberalism, Centralism";
@@ -1167,6 +1168,7 @@ on-arrival: {!
     "congreso_party_tour",
     "advisor_action",
     "parlament",
+    "cup_leadership",
     //generalitat (each card's timer = <card_id minus _card>_timer)
     "generalitat_bnl",
     "generalitat_economy",
@@ -1185,7 +1187,8 @@ on-arrival: {!
     'erc_disunity',
     'erc_rally',
     'erc_enemies',
-    'erc_reachout'
+    'erc_reachout',
+    'erc_base'
   ];
   Q.rubicon_timers = [
     "advisor_action",

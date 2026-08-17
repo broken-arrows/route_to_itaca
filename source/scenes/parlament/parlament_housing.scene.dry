@@ -223,10 +223,10 @@ on-arrival: {!
         }
         if (ambitious) {
             Q.welfare_index += 0.8;
-            G.registerLaw(Q, {id:"housing_compulsory_social_rent",title:"Compulsory Social Rent",icon:"img/home_icon.svg",targets:{welfare_index_growth:0.14,generalitat_surplus:-0.015,gdp_growth:-0.02,social_dissent_eq:-2.5},ramp_ticks:4});
-            G.registerLaw(Q, {id:"housing_debt_relief_procedure",title:"Mortgage Debt Relief",icon:"img/home_icon.svg",targets:{welfare_index_growth:0.08,gdp_growth:-0.03,social_dissent_eq:-1},ramp_ticks:4});
+            G.registerLaw(Q, {id:"housing_compulsory_social_rent",title:"Compulsory Social Rent",icon:"img/community_icon.svg",targets:{welfare_index_growth:0.14,generalitat_surplus:-0.015,gdp_growth:-0.02,social_dissent_eq:-2.5},ramp_ticks:4});
+            G.registerLaw(Q, {id:"housing_debt_relief_procedure",title:"Mortgage Debt Relief",icon:"img/community_icon.svg",targets:{welfare_index_growth:0.08,gdp_growth:-0.03,social_dissent_eq:-1},ramp_ticks:4});
         } else {
-            G.registerLaw(Q, {id:"housing_public_stock",title:"Public Housing Expansion",icon:"img/home_icon.svg",targets:{unemployment_recovery:0.04,welfare_index_growth:0.14,generalitat_surplus:-0.05,social_dissent_eq:-2},ramp_ticks:9});
+            G.registerLaw(Q, {id:"housing_public_stock",title:"Public Housing Expansion",icon:"img/community_icon.svg",targets:{unemployment_recovery:0.04,welfare_index_growth:0.14,generalitat_surplus:-0.05,social_dissent_eq:-2},ramp_ticks:9});
         }
         Q.constitutional_housing_countdown = 20;
         Q.countdowns.push("constitutional_housing");

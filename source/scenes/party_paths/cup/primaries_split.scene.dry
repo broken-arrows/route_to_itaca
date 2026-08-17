@@ -1,12 +1,9 @@
-title: Primàries splits the radical-left Barcelona vote
-view-if: year = 2019 and month = 4 and 1==0
+title: Primàries to run in local elections!"
+view-if: year = 2019 and month = 3 and independence_trust < 80 and not rubicon and 1==0
 tags: event
 new-page: true
 max-visits: 1
 on-arrival: {!
-    // The Primàries per la República candidacy crystallises in Barcelona for 2019,
-    // peeling radical-left voters off the CUP. Both end up below the 5% threshold.
-    // cal: local_calibrator m=81 (CUP -> primaries, Barcelona city)
     var _t = Math.min(4.0, Q.cup_local_barcelona_support || 0);
     Q.cup_local_barcelona_support = (Q.cup_local_barcelona_support || 0) - _t;
     Q.primaries_local_barcelona_support = (Q.primaries_local_barcelona_support || 0) + _t;
@@ -14,5 +11,7 @@ on-arrival: {!
     // TODO: set primaries leadership if not done, make this dynamic ?? + are we even doing this?
 !}
 role: event
+
+TODO: Text
 
 - @post_event: TODO

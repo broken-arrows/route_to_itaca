@@ -210,9 +210,9 @@ on-arrival: {!
             Q[donor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
         }
         if (targeted) {
-            G.registerLaw(Q, {id:"vacant_homes_tax",title:"Vacant Homes Tax",icon:"img/home_icon.svg",targets:{generalitat_surplus:0.025,welfare_index_growth:0.05,social_dissent_eq:-1},ramp_ticks:12});
+            G.registerLaw(Q, {id:"vacant_homes_tax",title:"Vacant Homes Tax",icon:"img/community_icon.svg",targets:{generalitat_surplus:0.025,welfare_index_growth:0.05,social_dissent_eq:-1},ramp_ticks:12});
         } else {
-            G.registerLaw(Q, {id:"vacant_homes_mobilization",title:"Vacant Homes Mobilization",icon:"img/home_icon.svg",targets:{generalitat_surplus:0.015,welfare_index_growth:0.12,unemployment_recovery:0.02,gdp_growth:-0.04,social_dissent_eq:-2},ramp_ticks:6});
+            G.registerLaw(Q, {id:"vacant_homes_mobilization",title:"Vacant Homes Mobilization",icon:"img/community_icon.svg",targets:{generalitat_surplus:0.015,welfare_index_growth:0.12,unemployment_recovery:0.02,gdp_growth:-0.04,social_dissent_eq:-2},ramp_ticks:6});
         }
         Q.constitutional_vacant_homes_countdown = 30;
         Q.countdowns.push("constitutional_vacant_homes");

@@ -1,12 +1,10 @@
 title: A new pro-independence force in the Congreso?
-view-if: next_spanish_election_time - time <= 4 and cecp_leader != "Arcadi Oliveres" and cecp_leader != "Jaume Asens" and cecp_formed and not spa_cup_active and erc_roadmap < 3
+view-if: next_spanish_election_time - time <= 4 and cecp_leader != "Arcadi Oliveres" and cecp_formed and not spa_cup_active and erc_roadmap < 3 and not spa_cup_active and cup_parlament_s > 3
 face-image: img/events/fr_formation.jpg
 tags: event
 new-page: true
 max-visits: 1
 on-arrival: {!
-    // TODO: Check if the triggers are really enough for this to even make sense, maybe remove Jaume Asens gate??
-    // TODO: remove/activate dynamically after this!
     Q.fr_formed = true;
     Q.spa_fr_active = true;
     G.spaSupportInject(Q, 'fr', 'catalunya', 1.0, 'ciu');

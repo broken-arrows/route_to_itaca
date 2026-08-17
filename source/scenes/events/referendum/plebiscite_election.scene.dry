@@ -26,6 +26,7 @@ on-arrival: {!
     Q.cat_coalition_disp_old = Q.cat_coalition_disp;
     Q.cat_coalition_disp = Q.president_party + "<span style=\"font-style:italic;\"> caretaker gov.</span>";1
     Q.cat_caretaker_gov = true;
+    Q.cup_leadership_timer = 1;
 
     if (Q[Q.player_party + "_in_gob"] && !(Q.president_party == Q.player_party)) {
         Q.position_disp = "<span style='font-style: italic'>Government Support</span>";

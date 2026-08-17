@@ -238,10 +238,9 @@ The jxsi coalition has been formed! It now counts with ample support from civil 
 @jxsi_cup_in
 title: Push the CUP to join in!
 subtitle: Despite some heavy criticisms of the role of [? if cdc_in_jxsi > 0: CDC?][? if dl_in_jxsi > 0: DL?][? if pdcat_in_jxsi > 0: the PDeCAT?] within jxsi, it seems like they can be convinced after all with a bit of a push. \[-1 resources\]
-choose-if: cup_relations >= 65 and jxsi_formation_num == 50 and party_resouces >= 1
-unavailable-subtitle: [? if cup_relations >= 65: We don't have good enough relations with the CUP. ?][? if jxsi_formation_num != 40: There's no way they can accept a [? if cdc_in_jxsi > 0: CDC?][? if dl_in_jxsi > 0: DL?][? if pdcat_in_jxsi > 0: PDeCAT?] leadership. ?][? if party_resources < 1: Not enough resources.?]
+choose-if: cup_relations >= 65 and jxsi_formation_num == 50 and party_resouces >= 1 and cup_faction != "Endavant"
+unavailable-subtitle: [? if cup_faction = "Endavant" && jxsi_formation == 50: With Endavant currently being the leading faction within the CUP, there's no way they will accept joining into jxsi. ?][? if cup_relations >= 65: We don't have good enough relations with the CUP. ?][? if jxsi_formation_num != 40: There's no way they can accept a [? if cdc_in_jxsi > 0: CDC?][? if dl_in_jxsi > 0: DL?][? if pdcat_in_jxsi > 0: PDeCAT?] leadership. ?][? if party_resources < 1: Not enough resources.?]
 on-arrival: {!
-    // TODO: make a poble lliure leadership also a requisite?
     const _activeComuns = Q.icv_parlament_s > 0 ? "icv" : Q.csqp_parlament_s > 0 ? "csqp" : Q.cecp_parlament_s > 0 ? "cecp" : "ecp";
     Q.jxsi_parlament_s += Q.cup_parlament_s;
     Q.cup_parlament_s = 0;
@@ -263,7 +262,7 @@ on-arrival: {!
 title: The CUP stays out of the coalition
 subtitle: [? if jxsi_formation_num != 50: Something about betraying the original idea of a civic list and instead doing yet another party-centric coalition ?]
 
-Seems like National unity will have to do without the CUP for now. Even without them, this is a huge step forward for the upcoming elections! The vote of our lives!
+Seems like National Unity will have to do without the CUP for now. Even without them, this is a huge step forward for the upcoming elections! The vote of our lives!
 
 -@post_event: Let's hope we don't need them down the line though...
 
