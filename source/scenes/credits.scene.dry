@@ -6,11 +6,11 @@ new-page: true
 
 = Credits
 
-This game was developed by <a class="link" href="https://www.reddit.com/user/_BrokenArrows/">u/_BrokenArrows</a>. It is a fork from the Autumn Chen's <a class="link" href="https://red-autumn.itch.io/petrograd-1917">Petrograd 1917</a>, the prequel to the amazing original, <a class="link" href="https://red-autumn.itch.io/social-democracy">Social Democracy, an Alternate History</a>.  If you have not tried them out you should! Immediately!
+This game was developed by <a target="_blank" class="link" href="https://www.reddit.com/user/_BrokenArrows/">u/_BrokenArrows</a>. It is a fork from the Autumn Chen's <a target="_blank" class="link" href="https://red-autumn.itch.io/petrograd-1917">Petrograd 1917</a>, the prequel to the amazing original, <a target="_blank" class="link" href="https://red-autumn.itch.io/social-democracy">Social Democracy, an Alternate History</a>.  If you have not tried them out you should! Immediately!
 
-Added to that, the acclaimed mod to that game by originn0, <a class="link" href="https://originn0.github.io/dynamic_social_democracy/">Dynamic Social Democracy</a>, was invaluable in making this game and all the coding tricks that it uses.
+Added to that, the acclaimed mod to that game by originn0, <a target="_blank" class="link" href="https://originn0.github.io/dynamic_social_democracy/">Dynamic Social Democracy</a>, was invaluable in making this game and all the coding tricks that it uses.
 
-Peak, fork, and play around with the code from <a class="link" href="https://github.com/broken-arrows/route_to_itaca">GitHub</a>. Just as in the originals, many works were referenced in the making of this game.
+Peak, fork, and play around with the code from <a target="_blank" class="link" href="https://github.com/broken-arrows/route_to_itaca">GitHub</a>. Just as in the originals, many works were referenced in the making of this game.
 
 - @articles: Articles
 - @images: Images
@@ -48,23 +48,23 @@ Applying to all of the above:
 
 · Text, Image, Video, or Music generation.
 
-The author's stance on the use of AI tools is strictly against AI-generated "Art", including images, videos, text, music, videogames, and other creative works that may apply. Nonetheless, LLM tools can and do provide valuable assistance as specific tools for concrete tasks, and can undoubtedly help by speeding-up of many aspects of the development workflow. Its usage as a tool must be as responsible as it is transparent. If you feel like the usages described herein attempt against your intellectual property rights, contact me via <a class="link" href="https://www.reddit.com/user/_BrokenArrows/">Reddit DM</a>.
+The author's stance on the use of AI tools is strictly against AI-generated "Art", including images, videos, text, music, videogames, and other creative works that may apply. Nonetheless, LLM tools can and do provide valuable assistance as specific tools for concrete tasks, and can undoubtedly help by speeding-up of many aspects of the development workflow. Its usage as a tool must be as responsible as it is transparent. If you feel like the usages described herein attempt against your intellectual property rights, contact me via <a target="_blank" class="link" href="https://www.reddit.com/user/_BrokenArrows/">Reddit DM</a>.
 
 - @credits: Back
 
 @articles
 
-Vought, M. (2025). "Nationalism and Ethnic Mobilization: Towards an Integrated Perspective". Cambridge University Press. Available from doi: <a class="link" href="https://doi.org/10.1017/nps.2024.98">doi.org/10.1017/nps.2024.98</a>
+Vought, M. (2025). "Nationalism and Ethnic Mobilization: Towards an Integrated Perspective". Cambridge University Press. Available from doi: <a target="_blank" class="link" href="https://doi.org/10.1017/nps.2024.98">doi.org/10.1017/nps.2024.98</a>
 
-Simón, P. (2020). The Multiple Spanish Elections of April and May 2019: The Impact of Territorial and Left-right Polarisation. South European Society and Politics. Available from doi: <a class="link" href="https://doi.org/10.1080/13608746.2020.1756612">doi.org/10.1080/13608746.2020.1756612</a>
+Simón, P. (2020). The Multiple Spanish Elections of April and May 2019: The Impact of Territorial and Left-right Polarisation. South European Society and Politics. Available from doi: <a target="_blank" class="link" href="https://doi.org/10.1080/13608746.2020.1756612">doi.org/10.1080/13608746.2020.1756612</a>
 
-Serra, M. (2024). The ​ERC: from a single-issue to a mainstream party? Cogent Social Sciences, 10(1). Available from doi: <a class="link" href="https://doi.org/10.1080/23311886.2024.2306699">doi.org/10.1080/23311886.2024.2306699</a>
+Serra, M. (2024). The ​ERC: from a single-issue to a mainstream party? Cogent Social Sciences, 10(1). Available from doi: <a target="_blank" class="link" href="https://doi.org/10.1080/23311886.2024.2306699">doi.org/10.1080/23311886.2024.2306699</a>
 
-Centre d'Estudis d'Opinió (CEO) - Generalitat de Catalunya. Available from: <a class="link" href="https://ceo.gencat.cat/ca/barometre/">ceo.gencat.cat/ca/barometre/</a>
+Centre d'Estudis d'Opinió (CEO) - Generalitat de Catalunya. Available from: <a target="_blank" class="link" href="https://ceo.gencat.cat/ca/barometre/">ceo.gencat.cat/ca/barometre/</a>
 
-Institut d'Estadística de Catalunya (IDESCAT) - Generalitat de Catalunya. Available from: <a class="link" href="https://www.idescat.cat/tema/xifpo">www.idescat.cat/tema/xifpo</a>
+Institut d'Estadística de Catalunya (IDESCAT) - Generalitat de Catalunya. Available from: <a target="_blank" class="link" href="https://www.idescat.cat/tema/xifpo">www.idescat.cat/tema/xifpo</a>
 
-Govern de la Generalitat de Catalunya - Departament d'Economia i Hisenda. "The Catalan fiscal deficit with the State is already close to 22.000 million €". Available from: <a class="link" href="https://govern.cat/govern/docs/2025/03/28/13/00/7109ae10-1583-41ab-944d-5a6180f33288.pdf">govern.cat/govern/docs/2025/03/28/13/00/7109ae10-1583-41ab-944d-5a6180f33288.pdfindicadors_economics/</a>
+Govern de la Generalitat de Catalunya - Departament d'Economia i Hisenda. "The Catalan fiscal deficit with the State is already close to 22.000 million €". Available from: <a target="_blank" class="link" href="https://govern.cat/govern/docs/2025/03/28/13/00/7109ae10-1583-41ab-944d-5a6180f33288.pdf">govern.cat/govern/docs/2025/03/28/13/00/7109ae10-1583-41ab-944d-5a6180f33288.pdfindicadors_economics/</a>
 
 - @credits: Back
 
@@ -76,281 +76,283 @@ Note: when choosing images, priority has always been given to those taken during
 
 **​ERC**
 
-​erc/alfredbosch.jpg: By Press Cambrabcn, CC BY-SA 2.0 <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=40346066">commons.wikimedia.org/w/index.php?curid=40346066</a> (2015)
+​erc/alfredbosch.jpg: By Press Cambrabcn, CC BY-SA 2.0 <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=40346066">commons.wikimedia.org/w/index.php?curid=40346066</a> (2015)
 
-​erc/aragones.jpg: By Generalitat de Catalunya, Attribution <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=69692455">commons.wikimedia.org/w/index.php?curid=69692455</a> (2018)
+​erc/aragones.jpg: By Generalitat de Catalunya, Attribution <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=69692455">commons.wikimedia.org/w/index.php?curid=69692455</a> (2018)
 
-​erc/bassa.jpg: By Generalitat de Catalunya, Attribution <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=141197676">commons.wikimedia.org/w/index.php?curid=141197676</a> (2016)
+​erc/bassa.jpg: By Generalitat de Catalunya, Attribution <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=141197676">commons.wikimedia.org/w/index.php?curid=141197676</a> (2016)
 
-​erc/carlesmundo.jpg: By Generalitat de Catalunya, Attribution <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=65083150">commons.wikimedia.org/w/index.php?curid=65083150</a> (2017)
+​erc/carlesmundo.jpg: By Generalitat de Catalunya, Attribution <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=65083150">commons.wikimedia.org/w/index.php?curid=65083150</a> (2017)
 
-​erc/elisendaalamany.jpg: By Districte Sant Martí, CC BY 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=81386721">commons.wikimedia.org/w/index.php?curid=81386721</a> (2019)
+​erc/elisendaalamany.jpg: By Districte Sant Martí, CC BY 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=81386721">commons.wikimedia.org/w/index.php?curid=81386721</a> (2019)
 
-​erc/ernestmaragall.jpg: By Generalitat de Catalunya, Attribution <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=69692442">commons.wikimedia.org/w/index.php?curid=69692442</a> (2018)
+​erc/ernestmaragall.jpg: By Generalitat de Catalunya, Attribution <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=69692442">commons.wikimedia.org/w/index.php?curid=69692442</a> (2018)
 
-​erc/forcadell.jpg: By User:Judesba, cropped and improved by Ezarate - File:Via Catalana Barcelona Plaça Catalunya 62.jpg by Judesba, CC BY-SA 3.0 <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=32047792">https://commons.wikimedia.org/w/index.php?curid=32047792</a> (2013)
+​erc/forcadell.jpg: By User:Judesba, cropped and improved by Ezarate - File:Via Catalana Barcelona Plaça Catalunya 62.jpg by Judesba, CC BY-SA 3.0 <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=32047792">https://commons.wikimedia.org/w/index.php?curid=32047792</a> (2013)
 
-​erc/joanjosepnuet.jpg: By Òmnium Cultural via flickr, CC BY-SA 2.0 <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=76781741">commons.wikimedia.org/w/index.php?curid=76781741</a> (2019)
+​erc/joanjosepnuet.jpg: By Òmnium Cultural via flickr, CC BY-SA 2.0 <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=76781741">commons.wikimedia.org/w/index.php?curid=76781741</a> (2019)
 
-​erc/joantarda.jpg: By Marta Jara (eldiario.es ), CC BY-SA 3.0 es <a class="link" href="http://www.eldiario.es/politica/ERC-Rajoy-Negociacion-actuaremos-consecuencia_0_696081302.html">eldiario.es/politica/​ERC-​Rajoy-Negociacion-actuaremos-consecuencia_0_696081302.html</a> (2017)
+​erc/joantarda.jpg: By Marta Jara (eldiario.es ), CC BY-SA 3.0 es <a target="_blank" class="link" href="http://www.eldiario.es/politica/ERC-Rajoy-Negociacion-actuaremos-consecuencia_0_696081302.html">eldiario.es/politica/​ERC-​Rajoy-Negociacion-actuaremos-consecuencia_0_696081302.html</a> (2017)
 
-​erc/jorda.jpg: By Esquerra Republicana de Catalunya, author unknown <a class="link" href="https://locals.esquerra.cat/fedgirona/article/jorda-erc-quant-al-desdoblament-de-la-n-ii-en-aquests-moments-no-son-admissibles-ni-els-re">locals.esquerra.cat/fedgirona/article/jorda-​erc-quant-al-desdoblament-de-la-n-ii-en-aquests-moments-no-son-admissibles-ni-els-re/</a> (2012)
+​erc/jorda.jpg: By Esquerra Republicana de Catalunya, author unknown <a target="_blank" class="link" href="https://locals.esquerra.cat/fedgirona/article/jorda-erc-quant-al-desdoblament-de-la-n-ii-en-aquests-moments-no-son-admissibles-ni-els-re">locals.esquerra.cat/fedgirona/article/jorda-​erc-quant-al-desdoblament-de-la-n-ii-en-aquests-moments-no-son-admissibles-ni-els-re/</a> (2012)
 
-​erc/junqueras.jpg: By Generalitat de Catalunya, Attribution <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=55876947">commons.wikimedia.org/w/index.php?curid=55876947</a> (2016)
+​erc/junqueras.jpg: By Generalitat de Catalunya, Attribution <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=55876947">commons.wikimedia.org/w/index.php?curid=55876947</a> (2016)
 
-​erc/laporta.jpg: By Mutari - Own work, CC BY-SA 4.0 <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=6154783">commons.wikimedia.org/w/index.php?curid=6154783</a> (2008)
+​erc/laporta.jpg: By Mutari - Own work, CC BY-SA 4.0 <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=6154783">commons.wikimedia.org/w/index.php?curid=6154783</a> (2008)
 
-​erc/martarovira.jpg: By Raulpresseguer - Own work, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=63944311">commons.wikimedia.org/w/index.php?curid=63944311</a> (2017)
+​erc/martarovira.jpg: By Raulpresseguer - Own work, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=63944311">commons.wikimedia.org/w/index.php?curid=63944311</a> (2017)
 
-​erc/paluzie.jpg: By Òmnium Cultural via flickr, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=76781760">commons.wikimedia.org/w/index.php?curid=76781760</a> (2019)
+​erc/paluzie.jpg: By Òmnium Cultural via flickr, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=76781760">commons.wikimedia.org/w/index.php?curid=76781760</a> (2019)
 
-​erc/romeva.jpg: By Generalitat de Catalunya, Attribution, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=63909605">commons.wikimedia.org/w/index.php?curid=63909605</a> (2017)
+​erc/romeva.jpg: By Generalitat de Catalunya, Attribution, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=63909605">commons.wikimedia.org/w/index.php?curid=63909605</a> (2017)
 
-​erc/rogertorrent.jpg: By Òmnium Cultural, CC BY-SA 2.0 <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=70435737">commons.wikimedia.org/w/index.php?curid=70435737</a> (2018)
+​erc/rogertorrent.jpg: By Òmnium Cultural, CC BY-SA 2.0 <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=70435737">commons.wikimedia.org/w/index.php?curid=70435737</a> (2018)
 
-​erc/rufian.png: By eldiario.es / Alejandro Navarro, CC BY-SA 4.0 <a class="link" href="https://www.eldiario.es/politica/Gabriel-Rufian_0_941406274.html">eldiario.es/politica/Gabriel-Rufian_0_941406274.html</a> (2019)
+​erc/rufian.png: By eldiario.es / Alejandro Navarro, CC BY-SA 4.0 <a target="_blank" class="link" href="https://www.eldiario.es/politica/Gabriel-Rufian_0_941406274.html">eldiario.es/politica/Gabriel-Rufian_0_941406274.html</a> (2019)
 
-​erc/sergisabria.jpg: By Ajuntament de Palafrugell, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=41849353">commons.wikimedia.org/w/index.php?curid=41849353</a> (2015)
+​erc/sergisabria.jpg: By Ajuntament de Palafrugell, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=41849353">commons.wikimedia.org/w/index.php?curid=41849353</a> (2015)
 
-​erc/lluiscompanys.jpg: By Unknown author - Narodowe Archiwum Cyfrowe (Sygnatura: 1-E-6412) (Polish National Digital Archive), Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=151332982">commons.wikimedia.org/w/index.php?curid=151332982</a> (1933)
+​erc/lluiscompanys.jpg: By Unknown author - Narodowe Archiwum Cyfrowe (Sygnatura: 1-E-6412) (Polish National Digital Archive), Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=151332982">commons.wikimedia.org/w/index.php?curid=151332982</a> (1933)
 
 **​CIU - ​PDCAT - ​JUNTS**
 
-​ciu/arturmas.jpg: By Generalitat de Catalunya, Attribution, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=46343133">commons.wikimedia.org/w/index.php?curid=46343133</a> (2011)
+​ciu/arturmas.jpg: By Generalitat de Catalunya, Attribution, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=46343133">commons.wikimedia.org/w/index.php?curid=46343133</a> (2011)
 
-​ciu/carlespuigdemont.jpg: By Generalitat de Catalunya, Attribution, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=54984488">commons.wikimedia.org/w/index.php?curid=54984488</a> (2016)
+​ciu/carlespuigdemont.jpg: By Generalitat de Catalunya, Attribution, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=54984488">commons.wikimedia.org/w/index.php?curid=54984488</a> (2016)
 
-​ciu/jordipujol.jpg: By Convergència Democràtica de Catalunya - Conferència ​Jordi Pujol, CC BY 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=40764299">commons.wikimedia.org/w/index.php?curid=40764299</a> (2011)
+​ciu/jordipujol.jpg: By Convergència Democràtica de Catalunya - Conferència ​Jordi Pujol, CC BY 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=40764299">commons.wikimedia.org/w/index.php?curid=40764299</a> (2011)
 
-​ciu/jaduranilleida.jpg: By Junta de Andalucía, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=45150197">commons.wikimedia.org/w/index.php?curid=45150197</a> (2015)
+​ciu/jaduranilleida.jpg: By Junta de Andalucía, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=45150197">commons.wikimedia.org/w/index.php?curid=45150197</a> (2015)
 
 **​CUP**
 
-​cup/albertbotran.png: By El Camp Difusió, CC BY 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=134920824">commons.wikimedia.org/w/index.php?curid=134920824</a> (2018)
+​cup/albertbotran.png: By El Camp Difusió, CC BY 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=134920824">commons.wikimedia.org/w/index.php?curid=134920824</a> (2018)
 
-​cup/annagabriel.jpg: By Generalitat de Catalunya, Attribution, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=64011810">commons.wikimedia.org/w/index.php?curid=64011810</a> (2016)
+​cup/annagabriel.jpg: By Generalitat de Catalunya, Attribution, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=64011810">commons.wikimedia.org/w/index.php?curid=64011810</a> (2016)
 
-​cup/antoniobanos.jpg: By Candidatura d'Unitat Popular, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=41936565">commons.wikimedia.org/w/index.php?curid=41936565</a> (2015)
+​cup/antoniobanos.jpg: By Candidatura d'Unitat Popular, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=41936565">commons.wikimedia.org/w/index.php?curid=41936565</a> (2015)
 
-​cup/benetsalellas.jpg: By Òmnium Cultural, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=81672025">commons.wikimedia.org/w/index.php?curid=81672025</a> (2019)
+​cup/benetsalellas.jpg: By Òmnium Cultural, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=81672025">commons.wikimedia.org/w/index.php?curid=81672025</a> (2019)
 
-​cup/carlesriea.jpg: By Volo Lliure - YouTube - Carles Riera, CC BY 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=64052993">commons.wikimedia.org/w/index.php?curid=64052993</a> (2017)
+​cup/carlesriea.jpg: By Volo Lliure - YouTube - Carles Riera, CC BY 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=64052993">commons.wikimedia.org/w/index.php?curid=64052993</a> (2017)
 
-​cup/davidfernandez.jpg: By 15Mbcn (youtube), CC BY 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=39650093">commons.wikimedia.org/w/index.php?curid=39650093</a> (2012)
+​cup/davidfernandez.jpg: By 15Mbcn (youtube), CC BY 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=39650093">commons.wikimedia.org/w/index.php?curid=39650093</a> (2012)
 
-​cup/dolorssabater.jpg: By Guanyem Badalona (youtube), CC BY 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=43497597">commons.wikimedia.org/w/index.php?curid=43497597</a> (2015)
+​cup/dolorssabater.jpg: By Guanyem Badalona (youtube), CC BY 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=43497597">commons.wikimedia.org/w/index.php?curid=43497597</a> (2015)
 
-​cup/eulaliareguant.png: By Jordi Borràs Abelló, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=99368281">commons.wikimedia.org/w/index.php?curid=99368281</a> (2021)
+​cup/eulaliareguant.png: By Jordi Borràs Abelló, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=99368281">commons.wikimedia.org/w/index.php?curid=99368281</a> (2021)
 
-​cup/gabrielaserra.jpg: By Òmnium Cultural, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=75333900">commons.wikimedia.org/w/index.php?curid=75333900</a> (2018)
+​cup/gabrielaserra.jpg: By Òmnium Cultural, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=75333900">commons.wikimedia.org/w/index.php?curid=75333900</a> (2018)
 
-​cup/mireiaboya.jpg: By Arnaucc - Own work, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=46632741">commons.wikimedia.org/w/index.php?curid=46632741</a> (2015)
+​cup/mireiaboya.jpg: By Arnaucc - Own work, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=46632741">commons.wikimedia.org/w/index.php?curid=46632741</a> (2015)
 
-​cup/mireiavehi.jpg: By Cuarto Poder - Interview with Mireia Vehí, CC BY 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=85700112">commons.wikimedia.org/w/index.php?curid=85700112</a> (2019)
+​cup/mireiavehi.jpg: By Cuarto Poder - Interview with Mireia Vehí, CC BY 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=85700112">commons.wikimedia.org/w/index.php?curid=85700112</a> (2019)
 
-​cup/paujuvilla.jpg: By Candidatura d'Unitat Popular, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=99772544">commons.wikimedia.org/w/index.php?curid=99772544</a> (2021)
+​cup/paujuvilla.jpg: By Candidatura d'Unitat Popular, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=99772544">commons.wikimedia.org/w/index.php?curid=99772544</a> (2021)
 
-​cup/quimarrufat.jpg: By Enric Català - eldiario.es, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=73801324">commons.wikimedia.org/w/index.php?curid=73801324</a> (2015)
+​cup/quimarrufat.jpg: By Enric Català - eldiario.es, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=73801324">commons.wikimedia.org/w/index.php?curid=73801324</a> (2015)
 
-​cup/vidalaragones.jpg: By Candidatura d'Unitat Popular, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=65039021">commons.wikimedia.org/w/index.php?curid=65039021</a> (2017)
+​cup/vidalaragones.jpg: By Candidatura d'Unitat Popular, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=65039021">commons.wikimedia.org/w/index.php?curid=65039021</a> (2017)
 
 **Others**
 
-other_leaders/ada_colau.jpg: By Ricardo Patiño, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=40062444">commons.wikimedia.org/w/index.php?curid=40062444</a> (2013)
+other_leaders/ada_colau.jpg: By Ricardo Patiño, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=40062444">commons.wikimedia.org/w/index.php?curid=40062444</a> (2013)
 
-other_leaders/albano_dantefachin.jpg: By IcariaEditorial (youtube) - El placer de pasar a la acción - Alberto San Juan y Cafèambllet - Icaria Editorial - A dos voces (at 2min 49s), CC BY 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=40932397">commons.wikimedia.org/w/index.php?curid=40932397</a> (2014)
+other_leaders/albano_dantefachin.jpg: By IcariaEditorial (youtube) - El placer de pasar a la acción - Alberto San Juan y Cafèambllet - Icaria Editorial - A dos voces (at 2min 49s), CC BY 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=40932397">commons.wikimedia.org/w/index.php?curid=40932397</a> (2014)
 
-other_leaders/albert_rivera.jpg: By Generalitat de Catalunya, CC BY 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=52835380">commons.wikimedia.org/w/index.php?curid=52835380</a> (2016)
+other_leaders/albert_rivera.jpg: By Generalitat de Catalunya, CC BY 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=52835380">commons.wikimedia.org/w/index.php?curid=52835380</a> (2016)
 
-other_leaders/alfons_lopeztena.jpg: By Josep, CC BY 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=38698342">commons.wikimedia.org/w/index.php?curid=38698342</a> (2009)
+other_leaders/alfons_lopeztena.jpg: By Josep, CC BY 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=38698342">commons.wikimedia.org/w/index.php?curid=38698342</a> (2009)
 
-other_leaders/alicia_sanchezcamacho.jpg: By ​PP Madrid, CC BY 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=28306706">commons.wikimedia.org/w/index.php?curid=28306706</a> (2012)
+other_leaders/alicia_sanchezcamacho.jpg: By ​PP Madrid, CC BY 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=28306706">commons.wikimedia.org/w/index.php?curid=28306706</a> (2012)
 
-other_leaders/angel_ros.jpg: By Cambra de Comerç de Barcelona, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=37680333">commons.wikimedia.org/w/index.php?curid=37680333</a> (2011)
+other_leaders/angel_ros.jpg: By Cambra de Comerç de Barcelona, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=37680333">commons.wikimedia.org/w/index.php?curid=37680333</a> (2011)
 
-other_leaders/arcadi_oliveres.jpg: By GuillemMedina, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=60358268">commons.wikimedia.org/w/index.php?curid=60358268</a> (2006)
+other_leaders/arcadi_oliveres.jpg: By GuillemMedina, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=60358268">commons.wikimedia.org/w/index.php?curid=60358268</a> (2006)
 
-other_leaders/fgonzalez.jpg: By Junta Informa, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=35244618">commons.wikimedia.org/w/index.php?curid=35244618</a> (2014)
+other_leaders/fgonzalez.jpg: By Junta Informa, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=35244618">commons.wikimedia.org/w/index.php?curid=35244618</a> (2014)
 
-other_leaders/​franco.jpg: By Unknown Author - Biblioteca Virtual de Defensa: Retrato del Gral. ​Francisco Franco Bahamonde (MUE-120973), CC0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=70812173">commons.wikimedia.org/w/index.php?curid=70812173</a> (2025)
+other_leaders/​franco.jpg: By Unknown Author - Biblioteca Virtual de Defensa: Retrato del Gral. ​Francisco Franco Bahamonde (MUE-120973), CC0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=70812173">commons.wikimedia.org/w/index.php?curid=70812173</a> (2025)
 
-other_leaders/ines_arrimadas.jpg: By Universidad Pablo de Olavide from Sevilla, España, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=88068297">commons.wikimedia.org/w/index.php?curid=88068297</a> (2017)
+other_leaders/ines_arrimadas.jpg: By Universidad Pablo de Olavide from Sevilla, España, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=88068297">commons.wikimedia.org/w/index.php?curid=88068297</a> (2017)
 
-other_leaders/jaume_asens.jpg: By Barcelona En Comú - Guanyem Barcelona, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=41859915">commons.wikimedia.org/w/index.php?curid=41859915</a> (2015)
+other_leaders/jaume_asens.jpg: By Barcelona En Comú - Guanyem Barcelona, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=41859915">commons.wikimedia.org/w/index.php?curid=41859915</a> (2015)
 
-other_leaders/joan_herrera.jpg: By Press Cambrabcn, Derivative work: Ecemaml, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=24004163">commons.wikimedia.org/w/index.php?curid=24004163</a> (2010)
+other_leaders/joan_herrera.jpg: By Press Cambrabcn, Derivative work: Ecemaml, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=24004163">commons.wikimedia.org/w/index.php?curid=24004163</a> (2010)
 
-other_leaders/joan_coscubiela.jpg: By Izquierda Unida, derivative work: Ecemaml, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=23832498">commons.wikimedia.org/w/index.php?curid=23832498</a> (2012)
+other_leaders/joan_coscubiela.jpg: By Izquierda Unida, derivative work: Ecemaml, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=23832498">commons.wikimedia.org/w/index.php?curid=23832498</a> (2012)
 
-other_leaders/lluis_rabell.jpg: By Catalunya Sí Que Es Pot, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=55386348">commons.wikimedia.org/w/index.php?curid=55386348</a> (2015)
+other_leaders/lluis_rabell.jpg: By Catalunya Sí Que Es Pot, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=55386348">commons.wikimedia.org/w/index.php?curid=55386348</a> (2015)
 
-other_leaders/madina.jpg: By ​psoe extremadura, CC BY 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=24541884">commons.wikimedia.org/w/index.php?curid=24541884</a> (2012)
+other_leaders/madina.jpg: By ​psoe extremadura, CC BY 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=24541884">commons.wikimedia.org/w/index.php?curid=24541884</a> (2012)
 
-other_leaders/miquel_iceta.jpg: By Xavier Puig i Sedano (eldiario.es ), CC BY-SA 3.0 es, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=63671213">commons.wikimedia.org/w/index.php?curid=63671213</a> (2015)
+other_leaders/miquel_iceta.jpg: By Xavier Puig i Sedano (eldiario.es ), CC BY-SA 3.0 es, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=63671213">commons.wikimedia.org/w/index.php?curid=63671213</a> (2015)
 
-other_leaders/montserrat_tura.jpg: By Davidparm Own work, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=94967422">commons.wikimedia.org/w/index.php?curid=94967422</a> (2019)
+other_leaders/montserrat_tura.jpg: By Davidparm Own work, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=94967422">commons.wikimedia.org/w/index.php?curid=94967422</a> (2019)
 
-other_leaders/nuria_parlon.jpg: By Núria Parlon Gil, CC BY 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=66944494">commons.wikimedia.org/w/index.php?curid=66944494</a> (2016)
+other_leaders/nuria_parlon.jpg: By Núria Parlon Gil, CC BY 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=66944494">commons.wikimedia.org/w/index.php?curid=66944494</a> (2016)
 
-other_leaders/pablo_iglesias.jpg: By Ahora Madrid, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=40586763">commons.wikimedia.org/w/index.php?curid=40586763</a> (2015)
+other_leaders/pablo_iglesias.jpg: By Ahora Madrid, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=40586763">commons.wikimedia.org/w/index.php?curid=40586763</a> (2015)
 
-other_leaders/pasqual_maragall.jpg: By Generalitat de Catalunya, Attribution, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=42759840">commons.wikimedia.org/w/index.php?curid=42759840</a> (2015)
+other_leaders/pasqual_maragall.jpg: By Generalitat de Catalunya, Attribution, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=42759840">commons.wikimedia.org/w/index.php?curid=42759840</a> (2015)
 
-other_leaders/pedro_sanchez.jpg: By ​psoe extremadura - P1580018, CC BY 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=36060442">commons.wikimedia.org/w/index.php?curid=36060442</a> (2014)
+other_leaders/pedro_sanchez.jpg: By ​psoe extremadura - P1580018, CC BY 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=36060442">commons.wikimedia.org/w/index.php?curid=36060442</a> (2014)
 
-other_leaders/pere_navarro.jpg: By Press Cambrabcn, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=21667070">commons.wikimedia.org/w/index.php?curid=21667070</a> (2012)
+other_leaders/pere_navarro.jpg: By Press Cambrabcn, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=21667070">commons.wikimedia.org/w/index.php?curid=21667070</a> (2012)
 
-other_leaders/​rajoy.jpg: By Ministry of the Presidency. Government of Spain, Attribution, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=69781542">commons.wikimedia.org/w/index.php?curid=69781542</a> (2018)
+other_leaders/​rajoy.jpg: By Ministry of the Presidency. Government of Spain, Attribution, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=69781542">commons.wikimedia.org/w/index.php?curid=69781542</a> (2018)
 
-other_leaders/​rubalcaba.jpg: By Irekia, uploaded by Rastrojo, CC BY 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=16841118">commons.wikimedia.org/w/index.php?curid=16841118</a> (2010)
+other_leaders/​rubalcaba.jpg: By Irekia, uploaded by Rastrojo, CC BY 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=16841118">commons.wikimedia.org/w/index.php?curid=16841118</a> (2010)
 
-other_leaders/soraya.jpg: By ​PP Comunidad de Madrid - AACU8277, CC BY 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=107609170">commons.wikimedia.org/w/index.php?curid=107609170</a> (2018)
+other_leaders/soraya.jpg: By ​PP Comunidad de Madrid - AACU8277, CC BY 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=107609170">commons.wikimedia.org/w/index.php?curid=107609170</a> (2018)
 
-other_leaders/susanadiaz.jpg: By Junta de Andalucía, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=75928747">commons.wikimedia.org/w/index.php?curid=75928747</a> (2018)
+other_leaders/susanadiaz.jpg: By Junta de Andalucía, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=75928747">commons.wikimedia.org/w/index.php?curid=75928747</a> (2018)
 
-other_leaders/xavier_domenech.jpg: By En Comú Podem, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=45372119">commons.wikimedia.org/w/index.php?curid=45372119</a> (2015)
+other_leaders/xavier_domenech.jpg: By En Comú Podem, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=45372119">commons.wikimedia.org/w/index.php?curid=45372119</a> (2015)
 
-other_leaders/xavier_garcia_albiol.jpg: By Cristina Cifuentes - Comité Ejecutivo Nacional, CC BY 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=64194246">commons.wikimedia.org/w/index.php?curid=64194246</a> (2017)
+other_leaders/xavier_garcia_albiol.jpg: By Cristina Cifuentes - Comité Ejecutivo Nacional, CC BY 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=64194246">commons.wikimedia.org/w/index.php?curid=64194246</a> (2017)
 
 = Artwork, Newspapers, and Posters
 
-achievements/2020.jpg: By David Revoy - Happy New Year 2020!, CC BY 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=85582181">commons.wikimedia.org/w/index.php?curid=85582181</a> (2020)
+achievements/2020.jpg: By David Revoy - Happy New Year 2020!, CC BY 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=85582181">commons.wikimedia.org/w/index.php?curid=85582181</a> (2020)
 
-achievements/asalto_cielos.avif: By Toni Albir (EFE), via El País, used under Fair Use, <a class="link" href="https://elpais.com/ideas/2024-01-14/una-decada-de-podemos-del-asalto-a-los-cielos-a-la-supervivencia.html">elpais.com/ideas/2024-01-14/una-decada-de-podemos-del-asalto-a-los-cielos-a-la-supervivencia.html</a> (2015)
+achievements/asalto_cielos.avif: By Toni Albir (EFE), via El País, used under Fair Use, <a target="_blank" class="link" href="https://elpais.com/ideas/2024-01-14/una-decada-de-podemos-del-asalto-a-los-cielos-a-la-supervivencia.html">elpais.com/ideas/2024-01-14/una-decada-de-podemos-del-asalto-a-los-cielos-a-la-supervivencia.html</a> (2015)
 
-achievements/josepmaria.png: By @DancsCatalans, via X (Twitter), used under Fair Use, <a class="link" href="https://x.com/DancsCatalans/status/1952742288142020893/photo/1">x.com/DancsCatalans/status/1952742288142020893/photo/1</a> (2025)
+achievements/josepmaria.png: By @DancsCatalans, via X (Twitter), used under Fair Use, <a target="_blank" class="link" href="https://x.com/DancsCatalans/status/1952742288142020893/photo/1">x.com/DancsCatalans/status/1952742288142020893/photo/1</a> (2025)
 
-achievements/​jxsi_dedebo.jpg: By Jordi Pinyol (?), Unknown license, used under Fair Use, <a class="link" href="https://dimoniet1960.blogspot.com/">dimoniet1960.blogspot.com/</a> (2015)
+achievements/​jxsi_dedebo.jpg: By Jordi Pinyol (?), Unknown license, used under Fair Use, <a target="_blank" class="link" href="https://dimoniet1960.blogspot.com/">dimoniet1960.blogspot.com/</a> (2015)
 
-achievements/majoria_silenciosa.jpg: By ​Ciutadans, Unknown license, used under Fair Use, <a class="link" href="https://www.ciudadanos-cs.org/imagen-del-partido">ciudadanos-cs.org/imagen-del-partido</a> (unknown, circa 2015)
+achievements/majoria_silenciosa.jpg: By ​Ciutadans, Unknown license, used under Fair Use, <a target="_blank" class="link" href="https://www.ciudadanos-cs.org/imagen-del-partido">ciudadanos-cs.org/imagen-del-partido</a> (unknown, circa 2015)
 
-achievements/psoed.jpg: Unknown Author, from <a class="link" href="https://www.twitter.com">X/Twitter</a> (unknown, circa 2022).
+achievements/psoed.jpg: Unknown Author, from <a target="_blank" class="link" href="https://www.twitter.com">X/Twitter</a> (unknown, circa 2022).
 
-​cup/cartellcup2012.jpg: By ​CUP via El Blog Insostenible, Public Domain, <a class="link" href="https://www.miguelgarciavega.com/25n-catalunya-carteles-electorales/">miguelgarciavega.com/25n-catalunya-carteles-electorales/</a> (2012)
+​cup/cartellcup2012.jpg: By ​CUP via El Blog Insostenible, Public Domain, <a target="_blank" class="link" href="https://www.miguelgarciavega.com/25n-catalunya-carteles-electorales/">miguelgarciavega.com/25n-catalunya-carteles-electorales/</a> (2012)
 
-​cup/escombremlos.jpg: By ​CUP via El Periódico, Public Domain, <a class="link" href="https://www.elperiodico.cat/ca/politica/20170810/inspiracion-leninista-cartell-campanya-independencia-cup-6217946">elperiodico.cat/ca/politica/20170810/inspiracion-leninista-cartell-campanya-independencia-​cup-6217946</a> (2017)
+​cup/escombremlos.jpg: By ​CUP via El Periódico, Public Domain, <a target="_blank" class="link" href="https://www.elperiodico.cat/ca/politica/20170810/inspiracion-leninista-cartell-campanya-independencia-cup-6217946">elperiodico.cat/ca/politica/20170810/inspiracion-leninista-cartell-campanya-independencia-​cup-6217946</a> (2017)
 
-​erc/ampliarbase.jpg: By ​ERC, from Universitat Autònoma de Barcelona. Biblioteca de Comunicació i Hemeroteca General, CC, <a class="link" href="https://ddd.uab.cat/record/21601">ddd.uab.cat/record/21601</a>  (2019)
+​erc/araerc.jpg: By ​ERC, from Universitat Autònoma de Barcelona. Biblioteca de Comunicació i Hemeroteca General. CEDOC. Used under Fair Use, <a target="_blank" class="link" href="https://ddd.uab.cat/record/105399">ddd.uab.cat/record/105399</a> (2011)
 
-​erc/araerc.jpg: By ​ERC, from Universitat Autònoma de Barcelona. Biblioteca de Comunicació i Hemeroteca General. CEDOC. Used under Fair Use, <a class="link" href="https://ddd.uab.cat/record/105399">ddd.uab.cat/record/105399</a> (2011)
+erc/ararepubliques.jpg: By Zucre, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=94696624">commons.wikimedia.org/w/index.php?curid=94696624</a> (2019)
 
-erc/ararepubliques.jpg: By Zucre, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=94696624">commons.wikimedia.org/w/index.php?curid=94696624</a> (2019)
+​erc/campaign.jpeg: By ​ERC via Twitter (recovered from El Nacional), Public Domain, <a target="_blank" class="link" href="https://www.elnacional.cat/ca/politica/erc-campanya-referendum_159546_102.html">elnacional.cat/ca/politica/erc-campanya-referendum_159546_102.html</a> (2017)
 
-​erc/campaign.jpeg: By ​ERC via Twitter (recovered from El Nacional), Public Domain, <a class="link" href="https://www.elnacional.cat/ca/politica/erc-campanya-referendum_159546_102.html">elnacional.cat/ca/politica/erc-campanya-referendum_159546_102.html</a> (2017)
+​erc/disunity.jpeg: By ​ERC via Twitter, Public Domain, <a target="_blank" class="link" href="https://x.com/Esquerra_ERC/status/1191806533165862913/photo/1">x.com/Esquerra_ERC/status/1191806533165862913/photo/1</a> (2019)
 
-​erc/disunity.jpeg: By ​ERC via Twitter, Public Domain, <a class="link" href="https://x.com/Esquerra_ERC/status/1191806533165862913/photo/1">x.com/Esquerra_ERC/status/1191806533165862913/photo/1</a> (2019)
+​erc/international.jpg: By ​JERC, from Universitat Autònoma de Barcelona. Biblioteca de Comunicació i Hemeroteca General. CEDOC. Used under Fair Use, <a target="_blank" class="link" href="https://ddd.uab.cat/record/50258?ln=en">ddd.uab.cat/record/50258?ln=en</a> (2004)
 
-​erc/international.jpg: By ​JERC, from Universitat Autònoma de Barcelona. Biblioteca de Comunicació i Hemeroteca General. CEDOC. Used under Fair Use, <a class="link" href="https://ddd.uab.cat/record/50258?ln=en">ddd.uab.cat/record/50258?ln=en</a> (2004)
+​erc/media.jpg: By ​ERC, from Universitat Autònoma de Barcelona. Biblioteca de Comunicació i Hemeroteca General. CEDOC. Used under Fair Use, <a target="_blank" class="link" href="https://ddd.uab.cat/record/105401">ddd.uab.cat/record/105401</a> (2011)
 
-​erc/media.jpg: By ​ERC, from Universitat Autònoma de Barcelona. Biblioteca de Comunicació i Hemeroteca General. CEDOC. Used under Fair Use, <a class="link" href="https://ddd.uab.cat/record/105401">ddd.uab.cat/record/105401</a> (2011)
+​erc/nomesfaltestu.jpg: By ​JERC, from Universitat Autònoma de Barcelona. Biblioteca de Comunicació i Hemeroteca General. CEDOC. Used under Fair Use, <a target="_blank" class="link" href="https://ddd.uab.cat/record/166306">ddd.uab.cat/record/166306</a> (2016)
 
-​erc/nomesfaltestu.jpg: By ​JERC, from Universitat Autònoma de Barcelona. Biblioteca de Comunicació i Hemeroteca General. CEDOC. Used under Fair Use, <a class="link" href="https://ddd.uab.cat/record/166306">ddd.uab.cat/record/166306</a> (2016)
+​erc/noupais.jpg: By ​ERC, from Universitat Autònoma de Barcelona. Biblioteca de Comunicació i Hemeroteca General. CEDOC. Used under CC, <a target="_blank" class="link" href="https://ddd.uab.cat/record/104871">ddd.uab.cat/record/104871</a> (2010)
 
-​erc/noupais.jpg: By ​ERC, from Universitat Autònoma de Barcelona. Biblioteca de Comunicació i Hemeroteca General. CEDOC. Used under CC, <a class="link" href="https://ddd.uab.cat/record/104871">ddd.uab.cat/record/104871</a> (2010)
+​erc/rally.png: By ​ERC, from Universitat Autònoma de Barcelona. Biblioteca de Comunicació i Hemeroteca General. CEDOC. Used under CC, <a target="_blank" class="link" href="https://ddd.uab.cat/record/188181">ddd.uab.cat/record/188181</a> (2017)
 
-​erc/rally.png: By ​ERC, from Universitat Autònoma de Barcelona. Biblioteca de Comunicació i Hemeroteca General. CEDOC. Used under CC, <a class="link" href="https://ddd.uab.cat/record/188181">ddd.uab.cat/record/188181</a> (2017)
+​erc/relleu.jpg: By ​JERC, from Facebook, Public Domain, <a target="_blank" class="link" href="https://www.facebook.com/photo/?fbid=1038912596605407&set=pb.100066389023657.-2207520000">facebook.com/photo/?fbid=1038912596605407&set=pb.100066389023657.-2207520000</a> (2021)
 
-​erc/relleu.jpg: By ​JERC, from Facebook, Public Domain, <a class="link" href="https://www.facebook.com/photo/?fbid=1038912596605407&set=pb.100066389023657.-2207520000">facebook.com/photo/?fbid=1038912596605407&set=pb.100066389023657.-2207520000</a> (2021)
-
-parties/frontpopular.jpg: By Bas i Blasi, Martí, Sindicat de Dibuixants Professionals (recovered from Memòria Digital de Catalunya, Universitat de Barcelona), used under Fair Use, <a class="link" href="https://mdc.csuc.cat/digital/collection/pavellorepu/id/1228/">mdc.csuc.cat/digital/collection/pavellorepu/id/1228/</a> (2007)
+parties/frontpopular.jpg: By Bas i Blasi, Martí, Sindicat de Dibuixants Professionals (recovered from Memòria Digital de Catalunya, Universitat de Barcelona), used under Fair Use, <a target="_blank" class="link" href="https://mdc.csuc.cat/digital/collection/pavellorepu/id/1228/">mdc.csuc.cat/digital/collection/pavellorepu/id/1228/</a> (2007)
 
 = Photographs
 
-3rd_October_2017.jpg: By Clàudia Abancó, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=63148434">commons.wikimedia.org/w/index.php?curid=63148434</a> (3 October 2017)
+3rd_October_2017.jpg: By Clàudia Abancó, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=63148434">commons.wikimedia.org/w/index.php?curid=63148434</a> (3 October 2017)
 
-achievements/barones.webp: By EFE, via El Español, used under Fair Use, <a class="link" href="https://www.elespanol.com/espana/politica/20230105/barones-psoe-plantan-sanchez-ultimo-puesta-elecciones/731177216_0.html">elespanol.com/espana/politica/20230105/barones-psoe-plantan-sanchez-ultimo-puesta-elecciones/731177216_0.html</a> (2023)
+achievements/barones.webp: By EFE, via El Español, used under Fair Use, <a target="_blank" class="link" href="https://www.elespanol.com/espana/politica/20230105/barones-psoe-plantan-sanchez-ultimo-puesta-elecciones/731177216_0.html">elespanol.com/espana/politica/20230105/barones-psoe-plantan-sanchez-ultimo-puesta-elecciones/731177216_0.html</a> (2023)
 
-achievements/calcotada.jpg: By Gerhidt - Own work, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=35706812">commons.wikimedia.org/w/index.php?curid=35706812</a> (2014)
+achievements/calcotada.jpg: By Gerhidt - Own work, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=35706812">commons.wikimedia.org/w/index.php?curid=35706812</a> (2014)
 
-achievements/mas_o_marc.webp: From "Polònia", by CCMA, via Empordà, used under Fair Use, <a class="link" href="https://www.emporda.info/oci/tv/2015/12/02/o-marc-polonia-50996504.html">emporda.info/oci/tv/2015/12/02/o-marc-polonia-50996504.html</a> (2015)
+achievements/mas_o_marc.webp: From "Polònia", by CCMA, via Empordà, used under Fair Use, <a target="_blank" class="link" href="https://www.emporda.info/oci/tv/2015/12/02/o-marc-polonia-50996504.html">emporda.info/oci/tv/2015/12/02/o-marc-polonia-50996504.html</a> (2015)
 
-achievements/paperera_de_la_historia.png: From CG via Crónica Global, used under Fair use, <a class="link" href="https://cronicaglobal.elespanol.com/politica/20170325/artur-mas-solidaridad-europa-momento-crucial-historia/203479655_0.html">cronicaglobal.elespanol.com/politica/20170325/artur-mas-solidaridad-europa-momento-crucial-historia/203479655_0.html</a> (2017)
+achievements/paperera_de_la_historia.png: From CG via Crónica Global, used under Fair use, <a target="_blank" class="link" href="https://cronicaglobal.elespanol.com/politica/20170325/artur-mas-solidaridad-europa-momento-crucial-historia/203479655_0.html">cronicaglobal.elespanol.com/politica/20170325/artur-mas-solidaridad-europa-momento-crucial-historia/203479655_0.html</a> (2017)
 
-achievements/perrosanxe.png: From KnowYourMeme, unknown license, <a class="link" href="https://knowyourmeme.com/photos/2702822-perro-sanxe">knowyourmeme.com/photos/2702822-perro-sanxe</a> (2024)
+achievements/perrosanxe.png: From KnowYourMeme, unknown license, <a target="_blank" class="link" href="https://knowyourmeme.com/photos/2702822-perro-sanxe">knowyourmeme.com/photos/2702822-perro-sanxe</a> (2024)
 
-congreso.jpg: By cesar.ruiz, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=52736666">commons.wikimedia.org/w/index.php?curid=52736666</a> (5 April 2011)
+congreso.jpg: By cesar.ruiz, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=52736666">commons.wikimedia.org/w/index.php?curid=52736666</a> (5 April 2011)
 
-parlament_card.jpg: By Xavier Vázquez - Own work, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=1697916">commons.wikimedia.org/w/index.php?curid=1697916</a> (2007)
+parlament_card.jpg: By Xavier Vázquez - Own work, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=1697916">commons.wikimedia.org/w/index.php?curid=1697916</a> (2007)
 
-parlament_de_catalunya.jpg: By Iván Melenchón Serrano, CC0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=64723561">commons.wikimedia.org/w/index.php?curid=64723561</a> (7 December 2017)
+parlament_de_catalunya.jpg: By Iván Melenchón Serrano, CC0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=64723561">commons.wikimedia.org/w/index.php?curid=64723561</a> (7 December 2017)
 
-​cup/congres.jpg: By ​CUP - cup.cat, author unknown via Enciclopèdia.cat <a class="link" href="https://www.enciclopedia.cat/gran-enciclopedia-catalana/candidatura-dunitat-popular">enciclopedia.cat/gran-enciclopedia-catalana/candidatura-dunitat-popular</a> (2011)
+​cup/congres.jpg: By ​CUP - cup.cat, author unknown via Enciclopèdia.cat <a target="_blank" class="link" href="https://www.enciclopedia.cat/gran-enciclopedia-catalana/candidatura-dunitat-popular">enciclopedia.cat/gran-enciclopedia-catalana/candidatura-dunitat-popular</a> (2011)
 
-​cup/seunacional.jpg: By Kippelboy - Own work, CC0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=68239064">commons.wikimedia.org/w/index.php?curid=68239064</a> (2018)
+​cup/seunacional.jpg: By Kippelboy - Own work, CC0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=68239064">commons.wikimedia.org/w/index.php?curid=68239064</a> (2018)
 
-diada/2010.jpg: By ca:User:amadalvarez - Own work, with the support of Blanca i Rosa, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=10900222">commons.wikimedia.org/w/index.php?curid=10900222</a> (2010)
+diada/2010.jpg: By ca:User:amadalvarez - Own work, with the support of Blanca i Rosa, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=10900222">commons.wikimedia.org/w/index.php?curid=10900222</a> (2010)
 
-diada/2012.jpg: By Josep Renalias - Lohen11 - Own work, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=21285591">commons.wikimedia.org/w/index.php?curid=21285591</a> (2012)
+diada/2012.jpg: By Josep Renalias - Lohen11 - Own work, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=21285591">commons.wikimedia.org/w/index.php?curid=21285591</a> (2012)
 
-​erc/congres.png: By VilaWeb, author unknown <a class="link" href="https://www.vilaweb.cat/noticies/ara-la-republica-catalana-la-direccio-derc-acorda-amb-els-critics-de-canviar-el-nom-de-la-ponencia/">vilaweb.cat/noticies/ara-la-republica-catalana-la-direccio-derc-acorda-amb-els-critics-de-canviar-el-nom-de-la-ponencia//</a> (2018)
+​erc/congres.png: By VilaWeb, author unknown <a target="_blank" class="link" href="https://www.vilaweb.cat/noticies/ara-la-republica-catalana-la-direccio-derc-acorda-amb-els-critics-de-canviar-el-nom-de-la-ponencia/">vilaweb.cat/noticies/ara-la-republica-catalana-la-direccio-derc-acorda-amb-els-critics-de-canviar-el-nom-de-la-ponencia//</a> (2018)
 
-​erc/executiva.jpg: By Esquerra Republicana de Catalunya and VilaWeb, author unknown <a class="link" href="https://www.vilaweb.cat/noticies/page/4817/">vilaweb.cat/noticies/page/4817/</a> (2015)
+​erc/executiva.jpg: By Esquerra Republicana de Catalunya and VilaWeb, author unknown <a target="_blank" class="link" href="https://www.vilaweb.cat/noticies/page/4817/">vilaweb.cat/noticies/page/4817/</a> (2015)
 
-events/2012nofiscalagreement.webp: By EFE, via Diari Ara, used under Fair Use, <a class="link" href="https://www.ara.cat/politica/pacte-fiscal-mas-rajoy_1_2416743.html">ara.cat/politica/pacte-fiscal-mas-rajoy_1_2416743.html</a> (2012)
+events/2012nofiscalagreement.webp: By EFE, via Diari Ara, used under Fair Use, <a target="_blank" class="link" href="https://www.ara.cat/politica/pacte-fiscal-mas-rajoy_1_2416743.html">ara.cat/politica/pacte-fiscal-mas-rajoy_1_2416743.html</a> (2012)
 
-events/9n.jpg: By Kippelboy - own work, CC BY 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=36688801">commons.wikimedia.org/w/index.php?curid=36688801</a> (2014)
+events/9n.jpg: By Kippelboy - own work, CC BY 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=36688801">commons.wikimedia.org/w/index.php?curid=36688801</a> (2014)
 
-events/barones_revolt.jpg: By EFE via El Independiente, used under Fair Use, <a class="link" href="https://www.elindependiente.com/politica/2017/05/23/felipe-gonzalez-estoy-minoria-apoyar-la-mayoria/">elindependiente.com/politica/2017/05/23/felipe-gonzalez-estoy-minoria-apoyar-la-mayoria/</a (2017)
+events/barones_revolt.jpg: By EFE via El Independiente, used under Fair Use, <a target="_blank" class="link" href="https://www.elindependiente.com/politica/2017/05/23/felipe-gonzalez-estoy-minoria-apoyar-la-mayoria/">elindependiente.com/politica/2017/05/23/felipe-gonzalez-estoy-minoria-apoyar-la-mayoria/</a (2017)
 
-events/bye_rubalcaba.jpg: By AP, via El Mundo, used under Fair Use, <a class="link" href= "https://www.elmundo.es/espana/2014/05/26/53832a0b268e3e1f488b4571.html">elmundo.es/espana/2014/05/26/53832a0b268e3e1f488b4571.html</a> (2014)
+events/bye_rubalcaba.jpg: By AP, via El Mundo, used under Fair Use, <a target="_blank" class="link" href= "https://www.elmundo.es/espana/2014/05/26/53832a0b268e3e1f488b4571.html">elmundo.es/espana/2014/05/26/53832a0b268e3e1f488b4571.html</a> (2014)
 
-events/​cecp_formation.png: By EuropaPress, used under Fair Use, <a class="link" href="https://www.europapress.es/catalunya/noticia-catcomu-escoge-sabado-asamblea-lista-electoral-capitaneada-domenech-20171111040115.html">europapress.es/catalunya/noticia-catcomu-escoge-sabado-asamblea-lista-electoral-capitaneada-domenech-20171111040115.html</a> (2017)
+events/​cecp_formation.png: By EuropaPress, used under Fair Use, <a target="_blank" class="link" href="https://www.europapress.es/catalunya/noticia-catcomu-escoge-sabado-asamblea-lista-electoral-capitaneada-domenech-20171111040115.html">europapress.es/catalunya/noticia-catcomu-escoge-sabado-asamblea-lista-electoral-capitaneada-domenech-20171111040115.html</a> (2017)
 
-events/congreso_decidir.webp: By Europa Press, via ElDiario.es, used under Fair Use, <a class="link" href="https://www.eldiario.es/catalunya/decidir-separar-psoe-psc-congres_1_5194459.html">eldiario.es/catalunya/decidir-separar-psoe-psc-congres_1_5194459.html</a> (2013)
+events/congreso_decidir.webp: By Europa Press, via ElDiario.es, used under Fair Use, <a target="_blank" class="link" href="https://www.eldiario.es/catalunya/decidir-separar-psoe-psc-congres_1_5194459.html">eldiario.es/catalunya/decidir-separar-psoe-psc-congres_1_5194459.html</a> (2013)
 
-events/constitucional.jpg: By Zarateman, own work, CC0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=48874219">commons.wikimedia.org/w/index.php?curid=48874219</a> (2016)
+events/constitucional.jpg: By Zarateman, own work, CC0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=48874219">commons.wikimedia.org/w/index.php?curid=48874219</a> (2016)
 
-events/consultation_question.jpg: By Convergència Democràtica de Catalunya, CC BY 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=36131696">commons.wikimedia.org/w/index.php?curid=36131696</a> (2014)
+events/consultation_question.jpg: By Convergència Democràtica de Catalunya, CC BY 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=36131696">commons.wikimedia.org/w/index.php?curid=36131696</a> (2014)
 
-events/​csqp_formation.jpg: By Barcelona En Comú, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=41062475">commons.wikimedia.org/w/index.php?curid=41062475</a> (2015)
+events/​csqp_formation.jpg: By Barcelona En Comú, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=41062475">commons.wikimedia.org/w/index.php?curid=41062475</a> (2015)
 
-events/​cup_congreso.webp: By CUP Nacional, via 20 Minutos, used under Fair Use, <a class="link" href="https://www.20minutos.es/noticia/4045194/0/reguant-cup-critica-que-la-unidad-no-se-hace-con-electoralismo-cuando-conviene/">20minutos.es/noticia/4045194/0/reguant-cup-critica-que-la-unidad-no-se-hace-con-electoralismo-cuando-conviene/</a> (2019)
+events/​cup_congreso.webp: By CUP Nacional, via 20 Minutos, used under Fair Use, <a target="_blank" class="link" href="https://www.20minutos.es/noticia/4045194/0/reguant-cup-critica-que-la-unidad-no-se-hace-con-electoralismo-cuando-conviene/">20minutos.es/noticia/4045194/0/reguant-cup-critica-que-la-unidad-no-se-hace-con-electoralismo-cuando-conviene/</a> (2019)
 
-events/​dl_formed.jpg: By Alberto Estévez, via El Mundo, used under Fair Use, <a class="link" href="https://www.elmundo.es/album/espana/2015/12/20/567700d9268e3ef8678b45ca_38.html">elmundo.es/album/espana/2015/12/20/567700d9268e3ef8678b45ca_38.html</a> (2015)
+events/​dl_formed.jpg: By Alberto Estévez, via El Mundo, used under Fair Use, <a target="_blank" class="link" href="https://www.elmundo.es/album/espana/2015/12/20/567700d9268e3ef8678b45ca_38.html">elmundo.es/album/espana/2015/12/20/567700d9268e3ef8678b45ca_38.html</a> (2015)
 
-events/​ecp_formation.jpg: By En Comu Podem - El Cambi Real És Possible!, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=45786405">commons.wikimedia.org/w/index.php?curid=45786405</a> (2015)
+events/​ecp_formation.jpg: By En Comu Podem - El Cambi Real És Possible!, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=45786405">commons.wikimedia.org/w/index.php?curid=45786405</a> (2015)
 
-events/​fr_formation.jpg: By ​Òmnium Cultural, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=78397192">commons.wikimedia.org/w/index.php?curid=78397192</a> (2019)
+events/​fnc_formation.jpg: Unknown author, via El Món, used under Fair Use, <a target="_blank" class="link" href="https://elmon.cat/politica/jaume-nolla-el-front-es-antifeixista-i-independentista-pero-no-som-desquerres-207391/">elmon.cat/politica/jaume-nolla-el-front-es-antifeixista-i-independentista-pero-no-som-desquerres-207391/</a> (2021)
 
-events/full_de_ruta_​anc.jpg: By Assemblea.cat, via ​ANC Sant Joan Despí, used under Fair Use, <a class="link" href="https://santjoandespiperlaindependencia.blogspot.com/2015/06/tenim-un-full-de-ruta-clar-inclusiu-i.html">santjoandespiperlaindependencia.blogspot.com/2015/06/tenim-un-full-de-ruta-clar-inclusiu-i.html</a> (2015)
+events/​fr_formation.jpg: By ​Òmnium Cultural, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=78397192">commons.wikimedia.org/w/index.php?curid=78397192</a> (2019)
 
-events/​junts_formed.jpg: By DrGiRu, own work, CC0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=148429693">commons.wikimedia.org/w/index.php?curid=148429693</a> (2024)
+events/full_de_ruta_​anc.jpg: By Assemblea.cat, via ​ANC Sant Joan Despí, used under Fair Use, <a target="_blank" class="link" href="https://santjoandespiperlaindependencia.blogspot.com/2015/06/tenim-un-full-de-ruta-clar-inclusiu-i.html">santjoandespiperlaindependencia.blogspot.com/2015/06/tenim-un-full-de-ruta-clar-inclusiu-i.html</a> (2015)
 
-events/​jxsi_formation.jpg : By Amadalvarez, own work, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=42742419">commons.wikimedia.org/w/index.php?curid=42742419</a> (2015)
+events/​junts_formed.jpg: By DrGiRu, own work, CC0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=148429693">commons.wikimedia.org/w/index.php?curid=148429693</a> (2024)
 
-events/​jxsi_junqueras.jpg: By DaniCo46, own work, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=41738349">commons.wikimedia.org/w/index.php?curid=41738349</a> (2015)
+events/​jxsi_formation.jpg : By Amadalvarez, own work, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=42742419">commons.wikimedia.org/w/index.php?curid=42742419</a> (2015)
 
-events/​jxsi_mas.jpg: By DaniCo46, own work, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=41738351">commons.wikimedia.org/w/index.php?curid=41738351</a> (2015)
+events/​jxsi_junqueras.jpg: By DaniCo46, own work, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=41738349">commons.wikimedia.org/w/index.php?curid=41738349</a> (2015)
 
-events/​pdcat_founding.jpg: By ​Convergència Democràtica de Catalunya, Congrés fundacional, CC BY 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=50117445">commons.wikimedia.org/w/index.php?curid=50117445</a> (2016)
+events/​jxsi_mas.jpg: By DaniCo46, own work, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=41738351">commons.wikimedia.org/w/index.php?curid=41738351</a> (2015)
 
-events/primarypsoe.jpg: Unknown, via Libertad Digital, used under Fair Use, <a class="link" href="https://www.libertaddigital.com/espana/politica/2017-05-21/primarias-del-psoe.html">libertaddigital.com/espana/politica/2017-05-21/primarias-del-psoe.html</a> (2017)
+events/​pdcat_founding.jpg: By ​Convergència Democràtica de Catalunya, Congrés fundacional, CC BY 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=50117445">commons.wikimedia.org/w/index.php?curid=50117445</a> (2016)
 
-events/​podemos_formation.jpg: By Asqueladd, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=32978568">commons.wikimedia.org/w/index.php?curid=32978568</a> (2014)
+events/primarypsoe.jpg: Unknown, via Libertad Digital, used under Fair Use, <a target="_blank" class="link" href="https://www.libertaddigital.com/espana/politica/2017-05-21/primarias-del-psoe.html">libertaddigital.com/espana/politica/2017-05-21/primarias-del-psoe.html</a> (2017)
 
-events/​pujol_parlament.jpg: Unknown, via El País, used under Fair Use, <a class="link" href="https://elpais.com/cat/2015/01/23/catalunya/1422028730_932115.html">elpais.com/cat/2015/01/23/catalunya/1422028730_932115.html</a> (2014)
+events/​podemos_formation.jpg: By Asqueladd, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=32978568">commons.wikimedia.org/w/index.php?curid=32978568</a> (2014)
 
-events/​psc_divorce.jpg: Unknown, via El Mundo, used under Fair Use, <a class="link" href="https://www.elmundo.es/elmundo/tags/da/psc.html">elmundo.es/elmundo/tags/da/psc.html</a> (circa 2014)
+events/​pujol_parlament.jpg: Unknown, via El País, used under Fair Use, <a target="_blank" class="link" href="https://elpais.com/cat/2015/01/23/catalunya/1422028730_932115.html">elpais.com/cat/2015/01/23/catalunya/1422028730_932115.html</a> (2014)
 
-events/​psc_implosion.jpg: Author unknown, from "ristorondinaire", used under its CC label, <a class="link" href="https://ristorondinaire.blogspot.com/2012/12/">ristorondinaire.blogspot.com/2012/12/</a> (2012)
+events/​psc_divorce.jpg: Unknown, via El Mundo, used under Fair Use, <a target="_blank" class="link" href="https://www.elmundo.es/elmundo/tags/da/psc.html">elmundo.es/elmundo/tags/da/psc.html</a> (circa 2014)
 
-events/​psc2016.jpg: By Julià N., ACN, used under Fair Use, <a class="link" href="https://cadenaser.com/programa/2016/10/13/hoy_por_hoy/1476334175_038864.html">cadenaser.com/programa/2016/10/13/hoy_por_hoy/1476334175_038864.html</a> (2016)
+events/​psc_implosion.jpg: Author unknown, from "ristorondinaire", used under its CC label, <a target="_blank" class="link" href="https://ristorondinaire.blogspot.com/2012/12/">ristorondinaire.blogspot.com/2012/12/</a> (2012)
 
-events/rivera_sanchez.jpg: By EFE, via OkDiario, used under Fair Use, <a class="link" href="https://okdiario.com/espana/sanchez-pacto-ciudadanos-investidura-fallida-2016-maternidad-gestacion-subrogada-10680009">okdiario.com/espana/sanchez-pacto-ciudadanos-investidura-fallida-2016-maternidad-gestacion-subrogada-10680009</a> (206)
+events/​psc2016.jpg: By Julià N., ACN, used under Fair Use, <a target="_blank" class="link" href="https://cadenaser.com/programa/2016/10/13/hoy_por_hoy/1476334175_038864.html">cadenaser.com/programa/2016/10/13/hoy_por_hoy/1476334175_038864.html</a> (2016)
 
-events/snapelection.jpg: By Generalitat de Catalunya, Attribution, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=42130527">commons.wikimedia.org/w/index.php?curid=42130527</a> (2012)
+events/rivera_sanchez.jpg: By EFE, via OkDiario, used under Fair Use, <a target="_blank" class="link" href="https://okdiario.com/espana/sanchez-pacto-ciudadanos-investidura-fallida-2016-maternidad-gestacion-subrogada-10680009">okdiario.com/espana/sanchez-pacto-ciudadanos-investidura-fallida-2016-maternidad-gestacion-subrogada-10680009</a> (206)
 
-events/unio_breakup.jpg: By ACN, via VilaWeb, used under Fair Use, <a class="link" href="https://www.vilaweb.cat/noticia/4235685/20150312/diputats-dudc-madrid-acusen-cdc-buscar-separacio-irreversible.html">vilaweb.cat/noticia/4235685/20150312/diputats-dudc-madrid-acusen-cdc-buscar-separacio-irreversible.html</a> (2015)
+events/snapelection.jpg: By Generalitat de Catalunya, Attribution, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=42130527">commons.wikimedia.org/w/index.php?curid=42130527</a> (2012)
 
-events/​vox_surge.jpg: By Contando Estrelas from Vigo, España / Spain, CC BY-SA 2.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=73683342">commons.wikimedia.org/w/index.php?curid=73683342</a> (2018)
+events/unio_breakup.jpg: By ACN, via VilaWeb, used under Fair Use, <a target="_blank" class="link" href="https://www.vilaweb.cat/noticia/4235685/20150312/diputats-dudc-madrid-acusen-cdc-buscar-separacio-irreversible.html">vilaweb.cat/noticia/4235685/20150312/diputats-dudc-madrid-acusen-cdc-buscar-separacio-irreversible.html</a> (2015)
 
-generalitat.jpg: By Enfo, Own work, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=28123735">commons.wikimedia.org/w/index.php?curid=28123735</a> (2012)
+events/​vox_surge.jpg: By Contando Estrelas from Vigo, España / Spain, CC BY-SA 2.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=73683342">commons.wikimedia.org/w/index.php?curid=73683342</a> (2018)
 
-generalitat_interior.jpg: By Generalitat de Catalunya, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=14982670">commons.wikimedia.org/w/index.php?curid=14982670</a> (2011)
+events/yay.webp and events/nay.webp: By Ivan Alvarado - Reuters, via Buzzfeed, used under Fair Use, <a target="_blank" class="link" href="https://www.buzzfeed.com/sandracresposanchez/la-foto-de-esta-mujer-en-la-concentracion-de-barcelona-es">buzzfeed.com/sandracresposanchez/la-foto-de-esta-mujer-en-la-concentracion-de-barcelona-es</a> (2017)
 
-salodaurat.jpg: By Enfo - Own work, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=28357479">commons.wikimedia.org/w/index.php?curid=28357479</a> (2013)
+generalitat.jpg: By Enfo, Own work, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=28123735">commons.wikimedia.org/w/index.php?curid=28123735</a> (2012)
 
-salo_de_cent.jpg: By Oscar Valencoso - Own work, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=13274104">commons.wikimedia.org/w/index.php?curid=13274104</a> (2011)
+generalitat_interior.jpg: By Generalitat de Catalunya, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=14982670">commons.wikimedia.org/w/index.php?curid=14982670</a> (2011)
+
+salodaurat.jpg: By Enfo - Own work, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=28357479">commons.wikimedia.org/w/index.php?curid=28357479</a> (2013)
+
+salo_de_cent.jpg: By Oscar Valencoso - Own work, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=13274104">commons.wikimedia.org/w/index.php?curid=13274104</a> (2011)
 
 
 - @credits: Back
@@ -359,158 +361,158 @@ salo_de_cent.jpg: By Oscar Valencoso - Own work, CC BY-SA 3.0, <a class="link" h
 
 = Assets
 
-Arrow Up, Down, and Steady icons from Dynamic Social Democracy by originn0, MIT License <a class="link" href="https://github.com/originn0/dynamic_social_democracy">github.com/originn0/dynamic_social_democracy</a> (2025)
+Arrow Up, Down, and Steady icons from Dynamic Social Democracy by originn0, MIT License <a target="_blank" class="link" href="https://github.com/originn0/dynamic_social_democracy">github.com/originn0/dynamic_social_democracy</a> (2025)
 
-Icons (everything ended with _icon.svg) from RemixIcon, by Remix Design, under Apache License <a class="link" href="https://remixicon.com/">remixicon.com</a> (2025)
+Icons (everything ended with _icon.svg) from RemixIcon, by Remix Design, under Apache License <a target="_blank" class="link" href="https://remixicon.com/">remixicon.com</a> (2025)
 
-Map of Catalonia (embedded into poll view and election results view) by Geocat - Own work, modified, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=18297093">commons.wikimedia.org/w/index.php?curid=18297093</a> (2012)
+Map of Catalonia (embedded into poll view and election results view) by Geocat - Own work, modified, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=18297093">commons.wikimedia.org/w/index.php?curid=18297093</a> (2012)
 
-Map of Spain (embedded into election results view) by Alberto el93 - Own work, modified, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=80972721">commons.wikimedia.org/w/index.php?curid=80972721</a> (2019)
+Map of Spain (embedded into election results view) by Alberto el93 - Own work, modified, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=80972721">commons.wikimedia.org/w/index.php?curid=80972721</a> (2019)
 
 
 **Party** (and organization) **Logos**
 
-Logo of amaiur (logo_amaiur.svg) - By ​Amaiur (vectoriced by User:Miguillen), CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=17645914">commons.wikimedia.org/w/index.php?curid=17645914</a> (2011)
+Logo of amaiur (logo_amaiur.svg) - By ​Amaiur (vectoriced by User:Miguillen), CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=17645914">commons.wikimedia.org/w/index.php?curid=17645914</a> (2011)
 
-Logo of the ANC (anc.webp) - Original design by assemblea.cat, vector created by Offnfopt, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=63236627">commons.wikimedia.org/w/index.php?curid=63236627</a> (2017)
+Logo of the ANC (anc.webp) - Original design by assemblea.cat, vector created by Offnfopt, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=63236627">commons.wikimedia.org/w/index.php?curid=63236627</a> (2017)
 
-Logo of BNG (logo_bng.svg) - By Bloque Nacionalista Galego, Public Domain, <a class="link" href ="https://commons.wikimedia.org/w/index.php?curid=64186667">commons.wikimedia.org/w/index.php?curid=64186667</a> (2018)
+Logo of BNG (logo_bng.svg) - By Bloque Nacionalista Galego, Public Domain, <a target="_blank" class="link" href ="https://commons.wikimedia.org/w/index.php?curid=64186667">commons.wikimedia.org/w/index.php?curid=64186667</a> (2018)
 
-Logo of bcomu (logo_bcomu.png) - By Barcelona en Comú, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=92590219">commons.wikimedia.org/w/index.php?curid=92590219</a> (2020)
+Logo of bcomu (logo_bcomu.png) - By Barcelona en Comú, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=92590219">commons.wikimedia.org/w/index.php?curid=92590219</a> (2020)
 
-Logo of CC-PNC (logo_ccpnc.svg) - By Coalición Canaria, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=64187005">commons.wikimedia.org/w/index.php?curid=64187005</a> (2018)
+Logo of CC-PNC (logo_ccpnc.svg) - By Coalición Canaria, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=64187005">commons.wikimedia.org/w/index.php?curid=64187005</a> (2018)
 
-Logo of CDA-PNA (logo_cda.svg) - By Convergéncia Aranesa, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=113058827">commons.wikimedia.org/w/index.php?curid=113058827</a> (2020)
+Logo of CDA-PNA (logo_cda.svg) - By Convergéncia Aranesa, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=113058827">commons.wikimedia.org/w/index.php?curid=113058827</a> (2020)
 
 Logo of cdc (logo_cdc.png) - By 
-​CDC, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=41794132">commons.wikimedia.org/w/index.php?curid=41794132</a> (2015)
+​CDC, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=41794132">commons.wikimedia.org/w/index.php?curid=41794132</a> (2015)
 
-Logo of CiU (logo_ciu.png) - By Coentor, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=38856327">commons.wikimedia.org/w/index.php?curid=38856327</a> (2015)
+Logo of CiU (logo_ciu.png) - By Coentor, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=38856327">commons.wikimedia.org/w/index.php?curid=38856327</a> (2015)
 
-Logo of CECP (logo_cecp.png) - By Catalunya en Comú Podem, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=71121874">commons.wikimedia.org/w/index.php?curid=71121874</a> (2017)
+Logo of CECP (logo_cecp.png) - By Catalunya en Comú Podem, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=71121874">commons.wikimedia.org/w/index.php?curid=71121874</a> (2017)
 
 Logo of Cs (logo_cs.svg) - Trademarked by 
-​Ciutadans. This file, by Jotaele91, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=22874825">commons.wikimedia.org/w/index.php?curid=22874825</a> (2012)
+​Ciutadans. This file, by Jotaele91, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=22874825">commons.wikimedia.org/w/index.php?curid=22874825</a> (2012)
 
-Logo of CSQP (logo_csqp.png) - By Catalunya sí que es pot, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=50076056">commons.wikimedia.org/w/index.php?curid=50076056</a> (2016)
+Logo of CSQP (logo_csqp.png) - By Catalunya sí que es pot, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=50076056">commons.wikimedia.org/w/index.php?curid=50076056</a> (2016)
 
-Logo of Compromís (logo_compromis.svg) - By Francesc Llorens i Barreira, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=52730167">commons.wikimedia.org/w/index.php?curid=52730167</a> (2016)
+Logo of Compromís (logo_compromis.svg) - By Francesc Llorens i Barreira, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=52730167">commons.wikimedia.org/w/index.php?curid=52730167</a> (2016)
 
 Logo of cup (logo_cup.svg) - By 
-​CUP, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=45405430">commons.wikimedia.org/w/index.php?curid=45405430</a> (2018)
+​CUP, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=45405430">commons.wikimedia.org/w/index.php?curid=45405430</a> (2018)
 
-Logo of DL (logo_dl.png) - By Democràcia i Llibertat, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=45093513">commons.wikimedia.org/w/index.php?curid=45093513</a> (2015)
+Logo of DL (logo_dl.png) - By Democràcia i Llibertat, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=45093513">commons.wikimedia.org/w/index.php?curid=45093513</a> (2015)
 
-Logo of EAJ-PNV (logo_pnv.svg) - By Euzko Alderdi Jeltzalea - Partido Nacionalista Vasco, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=175369635">commons.wikimedia.org/w/index.php?curid=175369635</a> (2023)
+Logo of EAJ-PNV (logo_pnv.svg) - By Euzko Alderdi Jeltzalea - Partido Nacionalista Vasco, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=175369635">commons.wikimedia.org/w/index.php?curid=175369635</a> (2023)
 
-Logo of ECP (logo_ecp.svg) - By En Comú Podem, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=99312283">commons.wikimedia.org/w/index.php?curid=99312283</a> (2021)
+Logo of ECP (logo_ecp.svg) - By En Comú Podem, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=99312283">commons.wikimedia.org/w/index.php?curid=99312283</a> (2021)
 
-Logo of ERC (logo_erc.png) - By Esquerra Republicana de Catalunya, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=64384172blic">commons.wikimedia.org/w/index.php?curid=64384172blic</a> (2017)
+Logo of ERC (logo_erc.png) - By Esquerra Republicana de Catalunya, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=64384172blic">commons.wikimedia.org/w/index.php?curid=64384172blic</a> (2017)
 
-Logo of ehbildu (logo_ehbildu.png) - By Euskal Herria Bildu, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=70224891">commons.wikimedia.org/w/index.php?curid=70224891</a> (2018)
+Logo of ehbildu (logo_ehbildu.png) - By Euskal Herria Bildu, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=70224891">commons.wikimedia.org/w/index.php?curid=70224891</a> (2018)
 
-Logo of Endavant (logo_endavant.png) - By Lluís RD, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=113443627">commons.wikimedia.org/w/index.php?curid=113443627</a> (2010)
+Logo of Endavant (logo_endavant.png) - By Lluís RD, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=113443627">commons.wikimedia.org/w/index.php?curid=113443627</a> (2010)
 
-Logo of FAC (logo_fac.svg) - By Phalbertt - Own work, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=85700105">commons.wikimedia.org/w/index.php?curid=85700105</a> (2020)
+Logo of FAC (logo_fac.svg) - By Phalbertt - Own work, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=85700105">commons.wikimedia.org/w/index.php?curid=85700105</a> (2020)
 
-Logo of FNC (logo_fnc.png) - By Front Nacional de Catalunya - Facebook, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=80302306">commons.wikimedia.org/w/index.php?curid=80302306</a> (2013)
+Logo of FNC (logo_fnc.png) - By Front Nacional de Catalunya - Facebook, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=80302306">commons.wikimedia.org/w/index.php?curid=80302306</a> (2013)
 
-Logo of FR (logo_fr.svg) - By Front Republicà, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=77879522">commons.wikimedia.org/w/index.php?curid=77879522</a> (2019)
+Logo of FR (logo_fr.svg) - By Front Republicà, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=77879522">commons.wikimedia.org/w/index.php?curid=77879522</a> (2019)
 
-Logo of GBai (logo_gbai.svg) - By KwwpCalm - Own work, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=85738899">commons.wikimedia.org/w/index.php?curid=85738899</a> (2020)
+Logo of GBai (logo_gbai.svg) - By KwwpCalm - Own work, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=85738899">commons.wikimedia.org/w/index.php?curid=85738899</a> (2020)
 
-Logo of ICV-EUiA (logo_icv.svg) - By Iniciativa per Catalunya VerdsEsquerra Unida i Alternativa, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=64414126">commons.wikimedia.org/w/index.php?curid=64414126</a> (2017)
+Logo of ICV-EUiA (logo_icv.svg) - By Iniciativa per Catalunya VerdsEsquerra Unida i Alternativa, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=64414126">commons.wikimedia.org/w/index.php?curid=64414126</a> (2017)
 
-Logo of IU (logo_iu.svg) - By Izquierda Unida-Unidad Popular, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=47265960">commons.wikimedia.org/w/index.php?curid=47265960</a> (2025)
+Logo of IU (logo_iu.svg) - By Izquierda Unida-Unidad Popular, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=47265960">commons.wikimedia.org/w/index.php?curid=47265960</a> (2025)
 
 Logo of JxCat (logo_jxcat.svg) - By 
-​Junts per Catalunya, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=64425442">commons.wikimedia.org/w/index.php?curid=64425442</a> (2017)
+​Junts per Catalunya, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=64425442">commons.wikimedia.org/w/index.php?curid=64425442</a> (2017)
 
 Logo of jxsi (logo_jxsi.png) - By 
-​Junts pel Sí, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=42249493">commons.wikimedia.org/w/index.php?curid=42249493</a> (2015)
+​Junts pel Sí, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=42249493">commons.wikimedia.org/w/index.php?curid=42249493</a> (2015)
 
 Logo of junts (logo_junts.svg) - By 
-​Junts per Catalunya, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=94770505">commons.wikimedia.org/w/index.php?curid=94770505</a> (2020)
+​Junts per Catalunya, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=94770505">commons.wikimedia.org/w/index.php?curid=94770505</a> (2020)
 
 Logo of Más País (logo_mpais.svg) - By 
-​Más País, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=82542542">commons.wikimedia.org/w/index.php?curid=82542542</a> (2019)
+​Más País, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=82542542">commons.wikimedia.org/w/index.php?curid=82542542</a> (2019)
 
-Logo of MES (logo_mes.png) - By Acharlesr, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=40454943">commons.wikimedia.org/w/index.php?curid=40454943</a> (2015)
+Logo of MES (logo_mes.png) - By Acharlesr, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=40454943">commons.wikimedia.org/w/index.php?curid=40454943</a> (2015)
 
-Logo of the Mossos d'Esquadra (mossos_desquadra.webp) - By Generalitat de Catalunya, Public Domain <a class="link" href="http://identitatcorporativa.gencat.cat/">identitatcorporativa.gencat.cat</a> (date unknown)
+Logo of the Mossos d'Esquadra (mossos_desquadra.webp) - By Generalitat de Catalunya, Public Domain <a target="_blank" class="link" href="http://identitatcorporativa.gencat.cat/">identitatcorporativa.gencat.cat</a> (date unknown)
 
-Logo of nsuma (logo_nsuma.png) - By Navarra Suma, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=79779808">commons.wikimedia.org/w/index.php?curid=79779808</a> (2019)
+Logo of nsuma (logo_nsuma.png) - By Navarra Suma, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=79779808">commons.wikimedia.org/w/index.php?curid=79779808</a> (2019)
 
-Logo of Omnium Cultural (logo_omnium.png) - By Vermell12, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=23203056">commons.wikimedia.org/w/index.php?curid=23203056</a> (2012)
+Logo of Omnium Cultural (logo_omnium.png) - By Vermell12, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=23203056">commons.wikimedia.org/w/index.php?curid=23203056</a> (2012)
 
-Logo of PDeCAT (logo_pdecat.svg) - By Carlitoscarlos, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=54213737">commons.wikimedia.org/w/index.php?curid=54213737</a> (2016)
+Logo of PDeCAT (logo_pdecat.svg) - By Carlitoscarlos, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=54213737">commons.wikimedia.org/w/index.php?curid=54213737</a> (2016)
 
-Logo of Poble Lliure (logo_poblelliure.png) - By poblelliure.cat, used under Fair Use, <a class="link" href="https://en.wikipedia.org/w/index.php?curid=48524925">en.wikipedia.org/w/index.php?curid=48524925</a> (2024)
+Logo of Poble Lliure (logo_poblelliure.png) - By poblelliure.cat, used under Fair Use, <a target="_blank" class="link" href="https://en.wikipedia.org/w/index.php?curid=48524925">en.wikipedia.org/w/index.php?curid=48524925</a> (2024)
 
-Logo of PP (logo_pp.png) - By Partido Popular, Public Domain <a class="link" href="https://logos-world.net/partido-popular-logo/">logos-world.net/partido-popular-logo/</a> (2019)
+Logo of PP (logo_pp.png) - By Partido Popular, Public Domain <a target="_blank" class="link" href="https://logos-world.net/partido-popular-logo/">logos-world.net/partido-popular-logo/</a> (2019)
 
-Logo of PRC (logo_prc.png) - By Yeswecarm - Own work, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=104928700">commons.wikimedia.org/w/index.php?curid=104928700</a> (2021)
+Logo of PRC (logo_prc.png) - By Yeswecarm - Own work, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=104928700">commons.wikimedia.org/w/index.php?curid=104928700</a> (2021)
 
-Logo of primariesbcn (logo_primaries.svg) - By Primàries Catalunya, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=92506359">commons.wikimedia.org/w/index.php?curid=92506359</a> (2020)
+Logo of primariesbcn (logo_primaries.svg) - By Primàries Catalunya, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=92506359">commons.wikimedia.org/w/index.php?curid=92506359</a> (2020)
 
-Logo of PSC (logo_psc.svg) - By Fer1997, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=77829407">commons.wikimedia.org/w/index.php?curid=77829407</a> (2020)
+Logo of PSC (logo_psc.svg) - By Fer1997, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=77829407">commons.wikimedia.org/w/index.php?curid=77829407</a> (2020)
 
 Logo of psoe (logo_psoe.png) - By 
-​PSOE, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=85523477">commons.wikimedia.org/w/index.php?curid=85523477</a> (2020)
+​PSOE, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=85523477">commons.wikimedia.org/w/index.php?curid=85523477</a> (2020)
 
-Logo of Podemos (logo_podemos.svg) - By Ignis Fatuus - Image extracted from archive, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=45769504">commons.wikimedia.org/w/index.php?curid=45769504</a> (2015)
+Logo of Podemos (logo_podemos.svg) - By Ignis Fatuus - Image extracted from archive, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=45769504">commons.wikimedia.org/w/index.php?curid=45769504</a> (2015)
 
-Logo of PxC (logo_pxc.gif) - By PxCatalunya, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=17317770">commons.wikimedia.org/w/index.php?curid=17317770</a> (2011)
+Logo of PxC (logo_pxc.gif) - By PxCatalunya, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=17317770">commons.wikimedia.org/w/index.php?curid=17317770</a> (2011)
 
-Logo of SI (logo_si.jpg) - By Spuig, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=98527076">commons.wikimedia.org/w/index.php?curid=98527076</a> (2021)
+Logo of SI (logo_si.jpg) - By Spuig, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=98527076">commons.wikimedia.org/w/index.php?curid=98527076</a> (2021)
 
-Logo of texiste (logo_te.jpg) - By Teruel Existe, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=85456817">commons.wikimedia.org/w/index.php?curid=85456817</a> (2019)
+Logo of texiste (logo_te.jpg) - By Teruel Existe, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=85456817">commons.wikimedia.org/w/index.php?curid=85456817</a> (2019)
 
-Logo of txt (logo_txt.png) - By Tot per Terrassa - Ballart x Terrassa, CC BY-SA 4.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=132097566">commons.wikimedia.org/w/index.php?curid=132097566</a> (2020)
+Logo of txt (logo_txt.png) - By Tot per Terrassa - Ballart x Terrassa, CC BY-SA 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=132097566">commons.wikimedia.org/w/index.php?curid=132097566</a> (2020)
 
-Logo of UA (logo_ua.svg) - By Unitat d'Aran, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=113058828">commons.wikimedia.org/w/index.php?curid=113058828</a> (2021)
+Logo of UA (logo_ua.svg) - By Unitat d'Aran, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=113058828">commons.wikimedia.org/w/index.php?curid=113058828</a> (2021)
 
-Logo of UDC (logo_unio.png) - By Unió Democràtica de Catalunya, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=41755171">commons.wikimedia.org/w/index.php?curid=41755171</a> (2016)
+Logo of UDC (logo_unio.png) - By Unió Democràtica de Catalunya, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=41755171">commons.wikimedia.org/w/index.php?curid=41755171</a> (2016)
 
 Logo of UP (logo_up.svg) - By Unidas 
-​Podemos (Podemos-​IU-Equo), Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=78486203">commons.wikimedia.org/w/index.php?curid=78486203</a> (2019)
+​Podemos (Podemos-​IU-Equo), Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=78486203">commons.wikimedia.org/w/index.php?curid=78486203</a> (2019)
 
-Logo of UPN (logo_upn.svg) - By Miguillen - Own work, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=15885635">commons.wikimedia.org/w/index.php?curid=15885635</a> (2011)
+Logo of UPN (logo_upn.svg) - By Miguillen - Own work, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=15885635">commons.wikimedia.org/w/index.php?curid=15885635</a> (2011)
 
-Logo of UPyD (logo_upyd.svg) - By Unión, Progreso y Democracia, Public Domain, <a class="link" href"https://commons.wikimedia.org/w/index.php?curid=41516627">commons.wikimedia.org/w/index.php?curid=41516627</a> (2015)
+Logo of UPyD (logo_upyd.svg) - By Unión, Progreso y Democracia, Public Domain, <a target="_blank" class="link" href"https://commons.wikimedia.org/w/index.php?curid=41516627">commons.wikimedia.org/w/index.php?curid=41516627</a> (2015)
 
 Logo of vox (logo_vox.svg) - By 
-​VOX, Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=30795789">commons.wikimedia.org/w/index.php?curid=30795789</a> (2014)
+​VOX, Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=30795789">commons.wikimedia.org/w/index.php?curid=30795789</a> (2014)
 
 = Flags and Seals
 
-Estelada (estelada.png) - By Huhsunqu, CC BY-SA 2.5, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=739696">commons.wikimedia.org/w/index.php?curid=739696</a> (2006)
+Estelada (estelada.png) - By Huhsunqu, CC BY-SA 2.5, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=739696">commons.wikimedia.org/w/index.php?curid=739696</a> (2006)
 
-Flag of the European Union (eu.svg) - By User:Verdy p, User:-xfi-, User:Paddu, User:Nightstallion, User:Funakoshi, User:Jeltz, User:Dbenbenn, User:Zscout370. File based on the specification given at [1]., Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=2615952">commons.wikimedia.org/w/index.php?curid=2615952</a> (2008)
+Flag of the European Union (eu.svg) - By User:Verdy p, User:-xfi-, User:Paddu, User:Nightstallion, User:Funakoshi, User:Jeltz, User:Dbenbenn, User:Zscout370. File based on the specification given at [1]., Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=2615952">commons.wikimedia.org/w/index.php?curid=2615952</a> (2008)
 
-Flag of the People's Republic of China (​prc.svg) - By Zeng Liansong. National Flag Image for Online Usage, National People's Congress of ​PRC, per Article 9 of the National Flag Law of ​PRC., Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=436175">commons.wikimedia.org/w/index.php?curid=436175</a> (2025)
+Flag of the People's Republic of China (​prc.svg) - By Zeng Liansong. National Flag Image for Online Usage, National People's Congress of ​PRC, per Article 9 of the National Flag Law of ​PRC., Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=436175">commons.wikimedia.org/w/index.php?curid=436175</a> (2025)
 
-Flag of Québec (achievements/quebec.svg) - By Krun (original) - Government of Quebec(Vector graphics image by Krun), Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=424220">commons.wikimedia.org/w/index.php?curid=424220</a> (2005)
+Flag of Québec (achievements/quebec.svg) - By Krun (original) - Government of Quebec(Vector graphics image by Krun), Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=424220">commons.wikimedia.org/w/index.php?curid=424220</a> (2005)
 
-Flag of the Russian Federation (russia.svg) - By Peter the Great. Государственный флаг Российской Федерации. Цвета флага: (Blue - Pantone 286 C, Red - Pantone 485 C) взяты из [1][2][3][4], Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=9450374">commons.wikimedia.org/w/index.php?curid=9450374</a> (2025)
+Flag of the Russian Federation (russia.svg) - By Peter the Great. Государственный флаг Российской Федерации. Цвета флага: (Blue - Pantone 286 C, Red - Pantone 485 C) взяты из [1][2][3][4], Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=9450374">commons.wikimedia.org/w/index.php?curid=9450374</a> (2025)
 
-Flag of the United States of America (usa.svg) - By by Dbenbenn, Zscout370, Jacobolus, Indolences, and Technion. SVG implementation of U. S. Code: Title 4, Chapter 1, Section 1, Public Domain <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=167150371">commons.wikimedia.org/w/index.php?curid=167150371</a> ()
+Flag of the United States of America (usa.svg) - By by Dbenbenn, Zscout370, Jacobolus, Indolences, and Technion. SVG implementation of U. S. Code: Title 4, Chapter 1, Section 1, Public Domain <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=167150371">commons.wikimedia.org/w/index.php?curid=167150371</a> ()
 
-Seal of ETA (eta.webp) - By Tpwissaa (derived), Public Domain, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=90726645">commons.wikimedia.org/w/index.php?curid=90726645</a> (2020)
+Seal of ETA (eta.webp) - By Tpwissaa (derived), Public Domain, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=90726645">commons.wikimedia.org/w/index.php?curid=90726645</a> (2020)
 
-Seal of the Generalitat de Catalunya (cat_seal.svg) - By Joan M. Borràs (ebrenc), CC BY-SA 2.5, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=11618229">commons.wikimedia.org/w/index.php?curid=11618229</a> (2010)
+Seal of the Generalitat de Catalunya (cat_seal.svg) - By Joan M. Borràs (ebrenc), CC BY-SA 2.5, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=11618229">commons.wikimedia.org/w/index.php?curid=11618229</a> (2010)
 
-Seal of Spain (esp_seal.svg) - SVG adaptation from the PNG file following the codes as specified in the Royal Decree 2267/1982 and specifications of the relevant manuals. Public Domain from <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=151575838">commons.wikimedia.org/w/index.php?curid=151575838</a>
+Seal of Spain (esp_seal.svg) - SVG adaptation from the PNG file following the codes as specified in the Royal Decree 2267/1982 and specifications of the relevant manuals. Public Domain from <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=151575838">commons.wikimedia.org/w/index.php?curid=151575838</a>
 
-Seal of Spain 1931-1939 (esp_seal_republic.svg) - By Heralder, CC BY-SA 3.0, <a class="link" href="https://commons.wikimedia.org/w/index.php?curid=15286550">commons.wikimedia.org/w/index.php?curid=15286550</a> (2011)
+Seal of Spain 1931-1939 (esp_seal_republic.svg) - By Heralder, CC BY-SA 3.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=15286550">commons.wikimedia.org/w/index.php?curid=15286550</a> (2011)
 
 = Fonts
 
-HK Grotesk - by Hanken Design Co. used under SIL Open Font License (OFL) <a class="link" href="https://hanken.co/products/hk-grotesk?variant=14506990633023">hanken.co/products/hk-grotesk</a> (2021)
+HK Grotesk - by Hanken Design Co. used under SIL Open Font License (OFL) <a target="_blank" class="link" href="https://hanken.co/products/hk-grotesk?variant=14506990633023">hanken.co/products/hk-grotesk</a> (2021)
 
-Raleway - by the Matt McInerney, Pablo Impallari, Rodrigo Fuenzalida, used under SIL Open Font License (OFL) <a class="link" href="">https://www.theleagueofmoveabletype.com/raleway</a> (2013)
+Raleway - by the Matt McInerney, Pablo Impallari, Rodrigo Fuenzalida, used under SIL Open Font License (OFL) <a target="_blank" class="link" href="">https://www.theleagueofmoveabletype.com/raleway</a> (2013)
 
-Ubuntu Regular - by Canonical Ltd. used under Ubuntu Font License <a class="link" href="https://design.ubuntu.com/font/">design.ubuntu.com/font/</a> (2010)
+Ubuntu Regular - by Canonical Ltd. used under Ubuntu Font License <a target="_blank" class="link" href="https://design.ubuntu.com/font/">design.ubuntu.com/font/</a> (2010)
 
 
 - @credits: Back

@@ -31,7 +31,11 @@ on-arrival: {!
   Q.week = 1;
   Q.rubicon = 0;
   Q.rubicon_time = 0;
-  Q.countdowns = [];
+  Q.countdowns = [
+    "player_roadmap_change"
+  ];
+
+  Q.player_roadmap_change_countdown = 6;
 
   // start situation
   Q.president = "Artur Mas";
@@ -85,7 +89,7 @@ on-arrival: {!
   Q.next_spanish_election_week = 3;
   Q.next_spanish_election_month = 12;
   Q.next_spanish_election_year = 2015;
-  Q.next_spanish_election_time = 36;
+  Q.next_spanish_election_time = 40;
   Q.next_local_election_week = 4;
   Q.next_local_election_month = 5;
   Q.next_local_election_year = 2015;
@@ -196,12 +200,14 @@ on-arrival: {!
   Q.erc_ideology = "Social Democracy, Independence";
   Q.erc_leader = "Oriol Junqueras";
   Q.erc_leader_gender = "m";
+  Q.erc_roadmap = 1;
 
-  // TODO: Handle leadership changes (both for player-cup and non-player-cup)
+  // TODO: Handle leadership changes (for player-cup)
   Q.cup_ideology = "Anticapitalism, Unilateralism";
   Q.cup_leader = "David Fernàndez";
   Q.cup_leader_gender = "m";
   Q.cup_faction = "Third Sector";
+  Q.cup_roadmap = 3
 
   Q.cs_leader = "Albert Rivera";
   Q.cs_ideology = "Neo-liberalism, Centralism";
@@ -1116,8 +1122,8 @@ on-arrival: {!
   Q.spa_foro_active = false;         // if true, FAC will run separate from the PP
   Q.spa_compromis_active = false;    // if false, will go with either UP or Podemos, whatver is running
   Q.spa_mes_active = false;          // if false, will go with either UP or Podemos, whatver is running
-  Q.spa_fr_active = false;           // TODO: Pending trigger!
-  Q.spa_cup_active = false;          // TODO: Pending trigger!
+  Q.spa_fr_active = false;
+  Q.spa_cup_active = false;
   Q.spa_mpais_active = false;        // if true, más país will run separate from Podemos and UP - TODO: Pending trigger!
   Q.upn_in_pp = true;                // if false, UPN will go separate from PP
   Q.iu_in_up = false;                // equivalent to "UP active" flag - TODO: Pending trigger!
@@ -1169,7 +1175,8 @@ on-arrival: {!
     "advisor_action",
     "parlament",
     "cup_leadership",
-    //generalitat (each card's timer = <card_id minus _card>_timer)
+    "roadmap_card",
+    //generalitat
     "generalitat_bnl",
     "generalitat_economy",
     "generalitat_education",
@@ -1188,14 +1195,14 @@ on-arrival: {!
     'erc_rally',
     'erc_enemies',
     'erc_reachout',
-    'erc_base'
+    'erc_base',
+    'erc_ideology'
   ];
   Q.rubicon_timers = [
     "advisor_action",
     'parlament',
     //erc_party
     'erc_campaigning',
-    'erc_base',
   ];
   Q.advisor_action_timer = 0;
 
@@ -1478,7 +1485,6 @@ unavailable-subtitle: Too much in WIP for now!
 on-arrival: {!
   Q.player_party = "cup";
   Q.position_disp = "Non-existence";
-  Q.cup_roadmap = 3;
 
   Q.ciu_relations = 15;
   Q.erc_relations = 60;

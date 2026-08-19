@@ -1,0 +1,50 @@
+title: Unfulfilled Roadmap to Independence!
+new-page: true
+tags: event
+view-if: broken_roadmap_trigger
+face-image: img/events/nay.webp
+go-to: erc_broken if player_party = "erc"; cup_broken if player_party = "cup"
+on-arrival: {!
+    if (Q.player_in_jxsi || Q.player_in_jxcat) {
+        this.achieve("junts_pel_bluf");
+    }
+    Q.broken_roadmap_trigger = false;
+    Q.broken_roadmap_expires_countdown = 12;
+    Q.countdowns.push("broken_roadmap_expires");
+
+!}
+role: event
+
+= Unfulfilled Roadmap to Independence
+
+Our promise to follow a [+ player_roadmap : roadmap +] roadmap to Independence, and fulfil it by [+ roadmap_year +] can now only be considered broken. Needless to say, this is highly disappointing for many in our party, but specially for the voters that have trusted us this far. 
+
+@erc_broken
+on-arrival: {!
+    Q.roadmap_year = 0;
+    Q.erc_civic_dissent += 15;
+    Q.erc_core_dissent += 3;
+
+    for (var c of Q.parlament_constituencies) {
+        for (var d of Q.parlament_demographics) {
+            var amount = 0.12*Q["erc_parlament_" + c + "_" + d + "_support"] + 0.09*Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"];
+            Q["erc_parlament_" + c + "_" + d + "_support"] -= 0.12*Q["erc_parlament_" + c + "_" + d + "_support"];
+            Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"] -= 0.09*Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"];
+
+            Q["abstain_parlament_" + c + "_" + d + "_support"] += 0.8*amount;
+            Q["fnc_parlament_" + c + "_" + d + "_support"] += 0.05*amount;
+            Q["cup_parlament_" + c + "_" + d + "_support"] += 0.15*amount;
+        }
+    }
+    Q.independence_trust = 0.5*Q.independence_trust;
+    G.spaSupportInject(Q, "abstain", 3, "catalunya", "erc");
+    G.spaSupportInject(Q, "abstain", 3, "catalunya", Q.parlament_current_ciu);
+
+    // TODO: Local votes transfer, probably the most hardcore consequence
+!}
+
+Gaining their confidence back is going to be an uphill battle, and we are set to struggle against other pro-independence parties. 
+
+
+@cup_broken
+# TODO: CUP consequences for a broken roadmap

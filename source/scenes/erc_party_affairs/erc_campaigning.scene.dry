@@ -15,6 +15,7 @@ role: card-party
 Whether or not we are in an electoral campaign, the party is always trying to broaden its voter base. Who should we focus our campaign efforts on?
 
 # TODO: Actual effects on congreso & local elections
+# TODO: proper vote transfers rather than flat additions
 
 - @workers: The industrial working class, including factory workers, construction workers, and service workers.
 - @redbelt: The working class in the metropolitan area of Barcelona, the traditional stronghold of the PSC.

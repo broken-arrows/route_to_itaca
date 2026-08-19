@@ -143,6 +143,104 @@ body.dark-mode {
   line-height: 1.35;
 }
 
+/* Party roadmaps widget */
+.roadmaps-widget__spectrum {
+  display: grid;
+  position: relative;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 1.25em 0 0.5em;
+}
+.roadmaps-widget__spectrum::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  right: 7.5%;
+  bottom: 7.1em;
+  left: 7.5%;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--text-color);
+  opacity: 0.45;
+}
+.roadmaps-widget__level {
+  display: grid;
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  grid-template-rows: minmax(0, 1fr) 6.8em;
+  justify-items: center;
+  border-bottom: 0;
+  padding: 0;
+}
+.roadmaps-widget__level:first-child {
+  padding-top: 0;
+}
+.roadmaps-widget__level:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.roadmaps-widget__parties {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35em;
+  padding: 0 0.25em 0.75em;
+  border-left: 0;
+  box-sizing: border-box;
+}
+.roadmaps-widget__parties:empty::before {
+  display: none;
+  content: "—";
+  color: var(--unavailable-color);
+}
+.roadmaps-widget__party {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.35em;
+  box-sizing: border-box;
+  padding: 0.2em 0;
+  white-space: nowrap;
+}
+.roadmaps-widget__logo {
+  width: 1.45em;
+  height: 1.45em;
+  flex: 0 0 auto;
+  object-fit: contain;
+  border-radius: 3px;
+}
+.roadmaps-widget__name {
+  min-width: 0;
+}
+.roadmaps-widget__label {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.6em 0.35em 0;
+  font-size: 0.8em;
+  line-height: 1.15;
+  text-align: left;
+}
+.roadmaps-widget__label strong {
+  font-size: 1.15em;
+  margin-bottom: 0.35em;
+  text-align: center;
+}
+
+@media (max-width: 540px) {
+  .roadmaps-widget__party {
+    flex-direction: column;
+    gap: 0.1em;
+  }
+  .roadmaps-widget__label {
+    font-size: 0.72em;
+  }
+}
+
 /* Current laws widget */
 .law-grid {
   display: flex;

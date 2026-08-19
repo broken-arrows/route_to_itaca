@@ -18,6 +18,7 @@ if (Q.independence_trust > 100) Q.independence_trust = 100;
 if (Q.cat_spa_relations < 0) Q.cat_spa_relations = 0;
 if (Q.cat_spa_relations > 100) Q.cat_spa_relations = 100;
 
+Q.player_roadmap = Q[Q.player_party + "_roadmap"];
 
 for (var c of Q.parlament_constituencies) {
     for (var d of Q.parlament_demographics) {
@@ -72,21 +73,23 @@ if (has_time_passed) {
     console.info("Time has passed. Current date: ", Q.year, Q.month, Q.week);
     G.engineTick(Q);
     // 2.1. Timers
-    for (timer of Q.rubicon_timers) {
-        if (Q[timer+'_timer'] && Q[timer+'_timer'] > 0) {
-            Q[timer+'_timer'] -= 1;
-        }
-    }
-    if (!Q.rubicon) {
-        for (timer of Q.timers) {
+    if (Q.rubcion) {
+        for (timer of Q.rubicon_timers) {
             if (Q[timer+'_timer'] && Q[timer+'_timer'] > 0) {
                 Q[timer+'_timer'] -= 1;
             }
         }
     }
+    for (timer of Q.timers) {
+        if (Q[timer+'_timer'] && Q[timer+'_timer'] > 0) {
+            Q[timer+'_timer'] -= 1;
+        }
+    }
+
     // 2.2. Checks
-    if (Q.roadmap_year > 0 && Q.year > Q.roadmap_year) {
+    if (Q.roadmap_year > 0 && Q.year > Q.roadmap_year && Q.roadmap_year != 0) {
         Q.broken_roadmap = 1;
+        Q.broken_roadmap_trigger = true;
     }
 
     if (Q.month == 1 && Q.week == 1) {
@@ -215,12 +218,12 @@ if (has_time_passed) {
 
     // 2.3. Ripple effects from time passing.
     if (Q.unemployment >= 20 && (Q.erc_supporting == 1 || Q.erc_in_gob == 1)) {
-        Q.erc_left_dissent += 0.5;
+        Q.erc_left_dissent += 0.25;
     }
     if (Q.broken_roadmap == 1) {
         Q.erc_civic_dissent += 1;
     }
-    // TODO: Ripple effect for CUP
+    // TODO: Ripple effect for CUP-player
 
     // 2.4. Historical records
     // Parlament
@@ -329,6 +332,10 @@ if (Q.congreso_coalition_sorpasso && (Q.spanish_pm_party == "podemos" || Q.spani
 }
 
 // 5. Hidden triggers
+if (Q.broken_roadmap_expires_trigger) {
+    Q.broken_roadmap_expires_trigger = false;
+    Q.broken_roadmap = 0;
+}
 if (!Q.hidden_right_consolidation && (Q.year == 2019 && Q.month == 10)) {
     Q.hidden_right_consolidation = true;
     // TODO: un-hardcode this? how? via condition of cs giving too much to the pp??

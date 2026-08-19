@@ -5,8 +5,8 @@ view-if: 1==0
 on-arrival: month_actions += 1; erc_base_timer = 3
 max-visits: 36
 is-card: true
-card-image: img/erc/ampliarbase.jpg
-face-image: img/erc/ampliarbase.jpg
+card-image: img/erc/relleu.jpg
+face-image: img/erc/relleu.jpg
 frequency: 100
 tags: erc_party
 role: card-party
@@ -14,3 +14,7 @@ role: card-party
 = Widening the Base
 
 The party is growing at a rate hard to imagine a few years ago. From a secondary, deeply pro-independence option, ERC is now becoming an believable contender to take on the Generalitat.
+
+- @return: We don't need to reach out to any of them at the moment
+- @easy_discard
+- @cancel_advisor_action

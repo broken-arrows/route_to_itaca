@@ -6,6 +6,8 @@ new-page: true
 on-arrival: {!
     Q.congreso_party_tour_timer = 5;
 
+    Q.party_reaching_out_map = false;
+    
     Q.spanish_pm_coalition = [Q.spanish_pm_party];
     Q.spa_caretaker_gov = true;
     Q.spanish_coalition_disp = Q.spanish_pm_party + "<span style=\"font-style:italic;\"> caretaker gov.</span>";
@@ -76,7 +78,7 @@ go-to: choices
 
 Here in **Catalonia**, [? if player_party == "erc": [? if not (jxsi_in_congreso and erc_in_jxsi) and not (erc_in_jxcat): we'll of course be in the fight! ?][? if jxsi_in_congreso and erc_in_jxsi: as agreed, we'll be running in the unprecedented joint coalition of JxSí.?][? if erc_in_jxcat: we'll be standing together as part of our agreed JxCat coalition.?]?][? if player_party == "cup": [? if spa_cup_active: we'll of course be running!?][? if not spa_cup_active: our party will not be running for such a foreign election!?] ERC, on their end, will be [? if erc_in_jxcat: running as part of the JxCat coalition.?][? if erc_in_jxsi and jxsi_in_congreso: running as part of the JxSí coalition.?][? if not erc_in_jxcat and not (erc_in_jxsi and jxsi_in_congreso): running as always.?]?] [? if not (jxsi_in_congreso and not erc_in_jxcat): Besides us, [+ parlament_current_ciu +] will also be fighting for their spot. ?]
 
-[? if spa_fr_active: Since [? if player_party == "cup": we're not running,?][? if player_party != "cup": the CUP is not running,?] it looks like FR will be taking their natural spot. ?][+ parlament_current_icv +], on their end, will be running as part of [? if iu_in_up: UP. ?][? if not iu_in_up: Podemos. ?][? if psc_split: The PSC will, after everything, be running independently. ?][? if unio_split and unio_congreso_catalunya_support > 0: Meanwhile, after their split, UDC will also try to retain their spot. ?][? if pdcat_split and pdcat_congreso_catalunya_support > 0: Meanwhile, after their split, the pdcat will also try to retain their spot. ?]
+[? if spa_fr_active: Since [? if player_party == "cup": we're not running,?][? if player_party != "cup": the CUP is not running,?] it looks like FR will be taking their natural spot. ?][? if spa_cup_active: [? if player_party == "cup": We, as recently ratified, ?][? if player_party != "cup": The CUP will be breaking with its historical party line and ?] will be running. ?][+ parlament_current_icv +], on their end, will be running as part of [? if iu_in_up: UP. ?][? if not iu_in_up: Podemos. ?][? if psc_split: The PSC will, after everything, be running independently. ?][? if unio_split and unio_congreso_catalunya_support > 0: Meanwhile, after their split, UDC will also try to retain their spot. ?][? if pdcat_split and pdcat_congreso_catalunya_support > 0: Meanwhile, after their split, the pdcat will also try to retain their spot. ?]
 
 @ppcc
 title: Valencia and the Balearic Islands

@@ -1,0 +1,336 @@
+title: Roadmaps
+new-page: true
+view-if: roadmap_card_timer = 0 and year > 2012 and player_roadmap != 0 and not broken_roadmap
+on-arrival: month_actions += 1; roadmap_card_timer = 6
+max-visits: 36
+is-card: true
+card-image: img/events/full_de_ruta_anc.jpg
+frequency: 100
+tags: erc_party cup_party jxsi_party jxcat_party
+go-to: roadmaps_choices
+role: card-party
+
+@roadmaps_choices
+new-page: true
+
+= Roadmaps
+
+While independence may be the ultimate objective, the spectrum of parties supporting it is very broad. Not only on the socio-economic left-right spectrum, but also in the ways to get there. It is in this latter one that we have a chance to influence their positions and align them with ours.
+
+{! <div id="roadmaps" data-widget="roadmaps" style="height:15em"></div>!}
+
+- @change_erc
+- @change_cup
+- @move_erc
+- @move_ciu
+- @move_jxsi
+- @move_jxcat
+- @move_cup
+- @move_pdcat_split
+- @move_fnc
+- @return: No need to discuss anything at the moment.
+- @easy_discard
+
+@change_erc
+title: Let's revisit our own Roadmap
+subtitle: [? if roadmap_year = 0: We don't have any date goal for our roadmap, which is kind of expected of such a plan. We may want to set one up. ?]
+view-if: player_party = "erc" and not erc_in_jxsi and not erc_in_jxcat
+choose-if: not consultation_pending and not referendum_pending and not (congreso_decidir_countdown > 0 and player_roadmap < 2) and player_roadmap_change_trigger
+unavailable-subtitle: [? if consultation_pending: We can't change our Roadmap with a consultation on independence being just around the corner. ?][? if referendum_pending: We can't change our Roadmap with a referendum on independence being just around the corner. ?][? if congreso_decidir_countdown > 0 and player_roadmap < 2: We can't change our Roadmap when we are waiting for the Congreso to vote on the right to decide. ?][? if not player_roadmap_change_trigger: We've changed our roadmap recently, we'll have to wait before we can do that again. ?]
+
+We are currently defending a [+ player_roadmap : roadmap +] roadmap[?if not roadmap_year: .?] [? if roadmap_year: , to be achieved by [+ roadmap_year +]. ?]
+
+- @erc_relax_roadmap
+- @erc_strengthen_roadmap
+- @roadmap_setdate
+- @pull_roadmap_date
+- @push_roadmap_date
+- @roadmaps_choices: Let's talk with someone else instead
+
+@erc_relax_roadmap
+title: Maybe we should pursue a less radical Roadmap
+subtitle: This may be disappointing for some, while for others it's the realistic option.
+choose-if: player_roadmap > 1 and erc_civic_strength < 30
+unavailable-subtitle: [? if player_roadmap <= 1: It is not possible for us to relax our Roadmap any further without alienating the party. ?] [? if erc_civic_strength >= 30: Pro-independence civic organizations tied to the party have too much strength for this to happen. ?]
+on-arrival: {!
+    Q.erc_roadmap -= 1;
+    Q.independence_trust -= 15;
+    Q.erc_civic_dissent += 10;
+    Q.erc_pragmatic_dissent -= 5;
+    Q.erc_pragmatic_strength += 5;
+    Q.player_roadmap_change_countdown = 9;
+    Q.player_roadmap_change_trigger = false;
+!}
+
+We've changed our discursive line to be one following a [+ player_roadmap : roadmap +] roadmap. Let's now make that happen!
+
+@erc_strengthen_roadmap
+title: Let's push for a more ambitious Roadmap
+subtitle: While the most pro-independence people in the party will celebrate this, some cooler-headed voters may be alienated.
+choose-if: player_roadmap < 3 and erc_pragmatic_strength < 30
+unavailable-subtitle: [? if player_roadmap >= 3: It is not possible for us to relax our Roadmap any further without alienating the party. ?] [? if erc_pragmatic_strength >= 30: The pragmatists in the party have too much strength for this to happen. ?]
+on-arrival: {!
+    Q.erc_roadmap += 1;
+    Q.independence_trust += 5;
+    Q.erc_pragmatic_dissent += 10;
+    Q.erc_civic_dissent -= 5;
+    Q.erc_civic_strength += 5;
+    Q.player_roadmap_change_countdown = 9;
+    Q.player_roadmap_change_trigger = false;
+!}
+
+We've changed our discursive line to be one following a [+ player_roadmap : roadmap +] roadmap. Let's now make that happen!
+
+@roadmap_setdate
+title: Let's set a deadline for our Roadmap
+subtitle: This is sort of expected from us.
+view-if: roadmap_year = 0
+
+@pull_roadmap_date
+title: Let's make our date goal more ambitious!
+subtitle: We can choose to move our target year forward by [? if roadmap_year - year > 3: a couple of years. ?][? if roadmap_year - year <= 3: a year. ?]
+view-if: roadmap_year > 0 
+choose-if: roadmap_year != year
+unavailable-subtitle: We have the present year already as the target!
+on-arrival: {!
+    if (Q.roadmap_year - Q.year > 3) {
+        Q.roadmap_year -= 2;
+    } else {
+        Q.roadmap_year -= 1;
+    }
+    Q.independence_trust += 5;
+    Q.independence_momentum += 5;
+    Q.erc_civic_strength += 3;
+    Q.erc_civic_dissent -= 5;
+    Q.erc_pragmatic_dissent += 3;
+
+    // TODO: more effects here?
+!}
+
+We are now taking an new level of commitment, and we have updated our official line to promise we'll fulfill our [+ player_roadmap : roadmap +] roadmap by [+ roadmap_year +].
+
+@push_roadmap_date
+title: Let's try to relax our date goal expectations
+view-if: roadmap_year > 0 
+choose-if: roadmap_year < 2020 and ((player_party == "erc" and not erc_in_gob and not erc_supporting) or (player_party == "cup" and not cup_in_gob and not cup_supporting))
+subtitle: We can try to quietly push our target by one year
+unavailable-subtitle: [? if roadmap_year >= 2020: Our target year is already quite a late one... ?][? if (player_party == "erc" and erc_in_gob) or (player_party == "cup" and cup_in_gob): We are governing right now, and we are expected to keep our commitments. ?][? if (player_party == "erc" and erc_supporting) or (player_party == "cup" and cup_supporting): We are supporting the current government right now, and we are expected to keep our commitments. ?]
+on-arrival: {!
+    Q.roadmap_year += 1;
+    Q.independence_trust -= 7;
+    Q.independence_momentum -= 2;
+    Q.erc_pragmatic_dissent -= 5;
+    Q.erc_civic_dissent += 5;
+    Q.erc_pragmatic_strength += 5;
+
+    // TODO: more effects here?
+!}
+
+Quietly and hoping it flies under the radar, we are now talking about fulfilling our [+ player_roadmap : roadmap +] roadmap by [+ roadmap_year +] instead.
+
+
+@change_cup
+title: Let's revisit our own Roadmap
+subtitle: [? if roadmap_year = 0: We don't have any date goal for our roadmap, which is kind of expected of such a plan. We may want to set one up. ?]
+view-if: player_party = "cup" and not cup_in_jxsi and not cup_in_jxcat
+choose-if: not consultation_pending and not referendum_pending and not (congreso_decidir_countdown > 0 and player_roadmap < 2)
+unavailable-subtitle: [? if consultation_pending: We can't change our Roadmap with a consultation on independence being just around the corner. ?][? if referendum_pending: We can't change our Roadmap with a referendum on independence being just around the corner. ?][? if congreso_decidir_countdown > 0 and player_roadmap < 2: We can't change our Roadmap when we are waiting for the Congreso to vote on the right to decide. ?]
+
+TODO!
+
+- @roadmap_setdate
+- @pull_roadmap_date
+- @push_roadmap_date
+- @roadmaps_choices: Let's talk with someone else instead
+
+
+@move_to_player
+title: Try to push [+ roadmaps_target +] towards [+ player_roadmap : roadmap +]
+subtitle: [? if roadmaps_target_reach < 3: This will take significant efforts. \[-1 resources \] ?] 
+choose-if: player_roadmap != 0 and roadmaps_target_current_roadmap != player_roadmap and (party_resources >= 1 or roadmaps_target_reach = 3) and roadmaps_target_relations > 55
+unavailable-subtitle: [? if roadmaps_target_current_roadmap = player_roadmap: Our roadmaps are already aligned! ?][? if roadmaps_target_relations <= 55: We don't have good enough relations with [+ roadmaps_target +]. ?][? if party_resources < 1 and roadmaps_target_reach < 3: Not enough resources. ?]
+on-arrival: {!
+    if (Q.roadmaps_target_reach != 3) {
+        Q.party_resources -= 1;
+    }
+
+    if (Q.player_roadmap <  Q.roadmaps_target_current_roadmap) {
+        Q.independence_trust -= 5;
+    }
+
+    if (Q["roadmaps_card_" + Q.roadmaps_target + "_reach"] >= 1) {
+        // Can we even move the target party to such a roadmap, even after lobbying?
+        if (Q[Q.roadmaps_target+ "_ideology"].includes("Unilateralism")) {
+            if (Q.player_roadmap < 2 || (Q.roadmaps_target == "cup" && Q.cup_faction != "Poble Lliure")) {
+                Q["roadmaps_card_" + Q.roadmaps_target + "_reach"] = 3;
+            } else {
+                Q["roadmaps_card_" + Q.roadmaps_target + "_reach"] = 0;
+                Q[Q.roadmaps_target + "_roadmap"] = Q.player_roadmap;
+            }
+        } else if (Q[Q.roadmaps_target+ "_ideology"].includes("Pragmati")) { // includes both Pragmatic Independence and Pact-Pragmatism
+            if (Q.roadmaps_target_current_roadmap > 2 ) {
+                Q["roadmaps_card_" + Q.roadmaps_target + "_reach"] = 3;
+            } else {
+                Q["roadmaps_card_" + Q.roadmaps_target + "_reach"] = 0;
+                Q[Q.roadmaps_target + "_roadmap"] += 1;
+            }
+        } else if (Q[Q.roadmaps_target+ "_ideology"].includes("Independence")) {
+            Q["roadmaps_card_" + Q.roadmaps_target + "_reach"] = 0;
+            if (Q.roadmaps_target_current_roadmap > Q.player_roadmap ) {
+                Q[Q.roadmaps_target + "_roadmap"] -= 1;
+            } else {
+                Q[Q.roadmaps_target + "_roadmap"] += 1;
+            }
+        } else {
+            Q["roadmaps_card_" + Q.roadmaps_target + "_reach"] = 3;
+        }
+    } else {
+        Q["roadmaps_card_" + Q.roadmaps_target + "_reach"] = 1;
+    }
+
+    Q[Q.roadmaps_target + "_relations"] += 2;
+    Q.roadmaps_target_reach = Q["roadmaps_card_" + Q.roadmaps_target + "_reach"];
+    Q.roadmaps_target_current_roadmap = Q[Q.roadmaps_target + "_roadmap"];
+!}
+
+[? if roadmaps_target_reach = 3: The differences between our positions seem to be too large at the moment. It's not like they are uninterested at our talking points after this much insisting, but for them to move closer to us we may actually have to compromise a bit too.  ?]
+[? if roadmaps_target_reach = 1: The representatives from [? if roadmaps_target = "pdcat" or roadmaps_target = "cup": the ?][+ roadmaps_target +] have been quite attentive listening to us and are not outright discarding our ideas, not all in the party are ready yet to embrace such positions openly. We may need to push them a bit further for this to happen. ?]
+[? if roadmaps_target_reach = 0: Our outreach towards [? if roadmaps_target = "pdcat" or roadmaps_target = "cup": the ?][+ roadmaps_target +] has been successful! After some difficult deliberations, they will be openly adopting a [+ roadmaps_target_current_roadmap : roadmap  +]  ?]
+
+[? if roadmaps_target_reach != 0  and roadmaps_target_reach != 1 and roadmaps_target_reach != 3: This seems to be a BUG and you should NOT be seeing this text. Please report it!  ?]
+
+@erc_improve
+title: Let's instead focus on improving our relations
+subtitle: \[-1 resources\]
+choose-if: party_resources >= 1
+view-if: player_party = "erc"
+unavailable-subtitle: Not enough resources. 
+go-to: erc_inter_party.ciu_relations if roadmaps_target = "ciu"; erc_inter_party.pdcat_nosplit_relations if roadmaps_target = "pdcat" and not pdcat_split; erc_inter_party.cdc_relations if roadmaps_target = "cdc";erc_inter_party.dl_relations if roadmaps_target = "dl"; erc_inter_party.jxcat_noerc_relations if roadmaps_target = "jxcat"; erc_inter_party.junts_relations if roadmaps_target = "junts"; erc_inter_party.cup_relations if roadmaps_target = "cup"; erc_inter_party.fnc_relations if roadmaps_target = "fnc"; erc_inter_party.pdcat_split_relations if roadmaps_target = "pdcat" and pdcat_split
+
+@cup_improve
+title: Let's instead focus on improving our relations
+subtitle: \[-1 resources\]
+choose-if: party_resources >= 1
+view-if: player_party = "cup"
+unavailable-subtitle: Not enough resources. 
+# TODO: Same as above but with CUP party relations
+
+@move_erc
+title: Discuss the Roadmap with ERC
+view-if: erc_parlament_s > 0 and player_party != "erc"
+on-arrival: roadmaps_target = "erc"; roadmaps_target_current_roadmap = erc_roadmap; roadmaps_target_relations = erc_relations; roadmaps_target_reach = roadmaps_card_erc_reach;
+
+ERC is currently defending a [+ erc_roadmap: roadmap +] roadmap.
+
+- @move_to_player
+- @cup_improve
+- @roadmaps_choices: Let's talk with someone else instead
+
+@move_ciu
+title: Discuss the Roadmap with CiU
+view-if: player_party != "ciu" and ciu_parlament_s > 0
+on-arrival: roadmaps_target = "ciu"
+
+CiU is playing a difficult balancing act. While CDC is moving towards openly calling for independence, UDC not so much. Pushing beyond a demand for a referendum may strain the formation.
+
+- @move_ciu_to_player
+- @erc_improve
+- @cup_improve
+- @roadmaps_choices: Let's talk with someone else instead
+
+@move_ciu_to_player
+title: Try to push CiU towards [+ player_roadmap : roadmap +]
+subtitle: This will take significant efforts. \[-1 resources\]
+choose-if: player_roadmap != 0 and ciu_roadmap != player_roadmap and party_resources >= 1 and ciu_relations > 55 and congreso_decidir_trigger and parlament_sovereignty_declaration
+unavailable-subtitle: [? if ciu_roadmap = player_roadmap: Our roadmaps are already aligned! ?][? if ciu_roadmap = player_roadmap and not congreso_decidir_trigger and not parlament_sovereignty_declaration: CiU is adamant that we at least give the referendum-on-agreement path a try first. ?][? if ciu_relations <= 55: We don't have good enough relations with CiU. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: {!
+    Q.party_resources -= 1;
+    if (Q.roadmaps_card_ciu_reach >= 1 && Q.ciu_roadmap == 1) {
+        Q.ciu_roadmap = 2;
+        Q.roadmaps_card_ciu_reach += 1;
+    } else {
+        Q.roadmaps_card_ciu_reach = 1;
+    }
+    Q.ciu_relations += 2;
+!}
+
+[? if roadmaps_card_ciu_reach = 1: While [+ ciu_leader +] and some around [? if ciu_leader_gender = "m": him ?][? if ciu_leader_gender = "f": her ?] may now be a bit more favorable towards open and strategic confrontation with the state, not all in the party are ready yet to embrace such positions openly. We may need to push them a bit further for this to happen. ?]
+[? if roadmaps_card_ciu_reach = 2: It seems like our insistence is paying off, and CiU will be embracing a roadmap of [+ ciu_roadmap : roadmap +]. ?]
+[? if roadmaps_card_ciu_reach > 2: CiU has already been pushed by us toward a [+ ciu_roadmap : roadmap +] roadmap. [? if player_roadmap = 3: It is quite unlikely that they will embrace any more radical position as long as UDC is still part of the club. ?][? if player_roadmap <= 1: It is unlikely that they will revert this quite radical change in their strategy so soon after adopting it. ?]?]
+
+@move_cdc
+title: Discuss the Roadmap with [+ parlament_current_ciu +]
+view-if: player_party != parlament_current_ciu and (parlament_current_ciu = "cdc" or parlament_current_ciu = "dl" or parlament_current_ciu = "pdcat" or parlament_current_ciu = "junts")
+on-arrival: {!
+    Q.roadmaps_target = Q.parlament_current_ciu;
+    Q.roadmaps_target_current_roadmap = Q[Q.parlament_current_ciu + "_roadmap"]; 
+    Q.roadmaps_target_relations = Q[Q.parlament_current_ciu + "_relations"]; 
+    Q.roadmaps_target_reach = Q["roadmaps_card_" + Q.parlament_current_ciu + "_reach"];
+!}
+
+[+ parlament_current_ciu +] is currently defending a [+ roadmaps_target_current_roadmap: roadmap +] roadmap.
+
+- @move_to_player
+- @erc_improve
+- @cup_improve
+- @roadmaps_choices: Let's talk with someone else instead
+
+@move_jxsi
+title: Discuss the Roadmap with jxsi
+view-if: jxsi_formed and not player_in_jxsi and not jxsi_dissolved
+on-arrival: roadmaps_target = "jxsi"; roadmaps_target_current_roadmap = jxsi_roadmap; roadmaps_target_relations = jxsi_relations; roadmaps_target_reach = roadmaps_card_jxsi_reach;
+
+jxsi is currently defending a [+ jxsi_roadmap: roadmap +] roadmap.
+
+- @move_to_player
+- @erc_improve
+- @cup_improve
+- @roadmaps_choices: Let's talk with someone else instead
+
+@move_jxcat
+title: Discuss the Roadmap with JxCat
+view-if: jxcat_formed and not player_in_jxcat and not jxcat_dissolved
+on-arrival: roadmaps_target = "jxcat"; roadmaps_target_current_roadmap = jxcat_roadmap; roadmaps_target_relations = jxcat_relations; roadmaps_target_reach = roadmaps_card_jxcat_reach;
+
+jxcat is currently defending a [+ jxcat_roadmap: roadmap +] roadmap.
+
+- @move_to_player
+- @erc_improve
+- @cup_improve
+- @roadmaps_choices: Let's talk with someone else instead
+
+@move_cup
+title: Discuss the Roadmap with the CUP
+view-if: player_party != "cup" and cup_parlament_s > 0
+on-arrival: roadmaps_target = "cup"; roadmaps_target_current_roadmap = cup_roadmap; roadmaps_target_relations = cup_relations; roadmaps_target_reach = roadmaps_card_cup_reach;
+
+The CUP is currently defending a [+ cup_roadmap: roadmap +] roadmap.
+
+- @move_to_player
+- @erc_improve
+- @cup_improve
+- @roadmaps_choices: Let's talk with someone else instead
+
+@move_pdcat_split
+title: Discuss the Roadmap with the pdcat
+view-if: pdcat_parlament_s > 0 and pdcat_split
+on-arrival: roadmaps_target = "pdcat"; roadmaps_target_current_roadmap = pdcat_roadmap; roadmaps_target_relations = pdcat_relations; roadmaps_target_reach = roadmaps_card_pdcat_reach;
+
+The pdcat is currently defending a [+ pdcat_roadmap: roadmap +] roadmap.
+
+- @move_to_player
+- @erc_improve
+- @cup_improve
+- @roadmaps_choices: Let's talk with someone else instead
+
+@move_fnc
+title: Discuss the Roadmap with the FNC
+view-if: fnc_parlament_s > 0
+on-arrival: roadmaps_target = "fnc"; roadmaps_target_current_roadmap = fnc_roadmap; roadmaps_target_relations = fnc_relations; roadmaps_target_reach = roadmaps_card_fnc_reach;
+
+The FNC is currently defending a [+ fnc_roadmap: roadmap +] roadmap.
+
+- @move_to_player
+- @erc_improve
+- @cup_improve
+- @roadmaps_choices: Let's talk with someone else instead

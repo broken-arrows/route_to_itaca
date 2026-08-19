@@ -7,7 +7,7 @@ on-arrival: {!
     Q.parlament_action_open = Q.parlament_timer <= 0 && !Q.cat_caretaker_gov;
     Q.coming_from_parlament = Q.parlament_action_open;
     if (Q.parlament_action_open) {
-        Q.parlament_timer += 6;
+        Q.parlament_timer += 7;
         Q.month_actions += 1;
     }
 !}
@@ -224,8 +224,15 @@ on-arrival: {!
 - @finances
 - @sovereignty
 - @budget
-- @root: We don't need to do anything in the Parlament right now
+- @no_action: We don't need to do anything in the Parlament right now
 
+@no_action
+on-arrival: {!
+    if (Q.parlament_action_open) {
+        Q.month_actions -= 1;
+    }
+!}
+go-to: root
 
 @politica_social
 title: Política social

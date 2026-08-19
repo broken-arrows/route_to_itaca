@@ -62,7 +62,7 @@ role: info-tab
 title: Party
 role: info-tab
 
-<div class="brief-box brief-ghost"><span class="brief-stamp">[? if player_party = "erc": [+ erc_roadmap : roadmap +]?][? if player_party = "jxsi": [+ jxsi_roadmap : roadmap +]?][? if player_party = "ciu": [+ ciu_roadmap : roadmap +]?][? if player_party = "cup": [+ cup_roadmap : roadmap +]?][? if player_party=None: [+ player_party : roadmap +]?]</span><span>Roadmap[? if roadmap_year: · [+ roadmap_year +]?]</span></div>
+<div class="brief-box brief-ghost"><span class="brief-stamp">[? if player_party = "erc" and not player_in_jxsi and not player_in_jxcat: [+ erc_roadmap : roadmap +]?][? if player_in_jxsi: [+ jxsi_roadmap : roadmap +]?][? if player_in_jxcat: [+ jxcat_roadmap : roadmap +]?][? if player_party = "ciu" and not player_in_jxsi and not player_in_jxcat: [+ ciu_roadmap : roadmap +]?][? if player_party = "cup" and not player_in_jxsi and not player_in_jxcat: [+ cup_roadmap : roadmap +]?]</span><span>Roadmap[? if roadmap_year: · [+ roadmap_year +]?]</span></div>
 
 [? if player_party == "erc": Internal dissent: [+ erc_dissent : dissent +]?][? if player_party == "cup": Internal dissent: [+ cup_dissent : dissent +]?]
 

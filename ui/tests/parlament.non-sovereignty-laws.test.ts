@@ -109,9 +109,6 @@ describe('non-sovereignty law pilots', () => {
     ]) {
       expect(law).toContain(`"${leader}"`);
     }
-    expect(law).toContain(
-      "TODO: Revisit the CUP's votes once CUP leadership dynamics are modelled.",
-    );
   });
 
   it('leaves inheritance tax outside the constitutional countdown system', () => {

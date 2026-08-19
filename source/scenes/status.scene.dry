@@ -79,7 +79,7 @@ for (var party of Q.parties) {
 
 = [+ player_party +] Factions
 
-**Roadmap:** [? if player_party = "erc": [+ erc_roadmap : roadmap +]?][? if player_party = "jxsi": [+ jxsi_roadmap : roadmap +]?][? if player_party = "ciu": [+ ciu_roadmap : roadmap +]?][? if player_party = "cup": [+ cup_roadmap : roadmap +]?][? if player_party=None: [+ player_party : roadmap +] ?] [? if roadmap_year: ([+ roadmap_year +]) ?]
+**Roadmap:** [? if player_party = "erc" and not player_in_jxsi and not player_in_jxcat: [+ erc_roadmap : roadmap +]?][? if player_in_jxsi: [+ jxsi_roadmap : roadmap +]?][? if player_in_jxcat: [+ jxcat_roadmap : roadmap +]?][? if player_party = "ciu" and not player_in_jxsi and not player_in_jxcat: [+ ciu_roadmap : roadmap +]?][? if player_party = "cup" and not player_in_jxsi and not player_in_jxcat: [+ cup_roadmap : roadmap +]?] [? if roadmap_year: · [+ roadmap_year +]?][? if broken_roadmap: · BROKEN!?]
 
 [? if player_party = "erc": <div style="display:flex;"><div style="display:flex; align-items:center; justify-content:left; font-weight: bold; width: 40%;"> Left </div><div style="display:flex; font-size: 0.8em; margin-left: 1em; flex-direction:column;"> <div> Strength: [+ erc_left_strength : dissent +] </div><div> Dissent: [+ erc_left_dissent : dissent +]</div> </div> </div>?]
 

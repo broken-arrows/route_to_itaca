@@ -43,6 +43,45 @@
     }
   }
 
+  // Parties which can carry a Catalan independence roadmap. Successor parties
+  // keep separate entries because their parliamentary seats and roadmap state
+  // move between different Q keys over the course of the game.
+  var ROADMAP_PARTIES = [
+    { key: "ciu", label: "CiU", logo: "img/parties/logo_ciu.png" },
+    { key: "cdc", label: "CDC", logo: "img/parties/logo_cdc.png" },
+    { key: "dl", label: "DL", logo: "img/parties/logo_dl.png" },
+    { key: "pdcat", label: "PDeCAT", logo: "img/parties/logo_pdecat.svg" },
+    { key: "jxsi", label: "JxSí", logo: "img/parties/logo_jxsi.png" },
+    { key: "jxcat", label: "JxCat", logo: "img/parties/logo_jxcat.svg" },
+    { key: "junts", label: "Junts", logo: "img/parties/logo_junts.png" },
+    { key: "erc", label: "ERC", logo: "img/parties/logo_erc.png" },
+    { key: "cup", label: "CUP", logo: "img/parties/logo_cup.svg" },
+    { key: "fnc", label: "FNC", logo: "img/parties/logo_fnc.png" },
+    { key: "unio", label: "UDC", logo: "img/parties/logo_unio.png" },
+  ];
+
+  var ROADMAP_LEVELS = [
+    {
+      label: "No roadmap",
+      description: "",
+    },
+    {
+      label: "Vote on agreement",
+      description:
+        "Focus is put on negotiating a referendum on independence with the Gobierno.",
+    },
+    {
+      label: "Hybrid Confrontation",
+      description:
+        "A delicate balance between escalating tensions and openness to dialogue, hoping to force the hand of the Gobierno and the EU.",
+    },
+    {
+      label: "Unilateralism",
+      description:
+        "Independence is to be achieved by exercising sovereignty, not asking for permission.",
+    },
+  ];
+
   // Dispatch table for names declared via `data-widget`. Each handler owns
   // reading whatever data-props it needs; the shell's renderers themselves
   // are called exactly as they always were (by id + Q [+ config]).
@@ -104,7 +143,9 @@
       }
       var parliament = d3.parliament();
       parliament.width(width).height(height).innerRadiusCoef(0.4);
-      parliament.enter.fromCenter(Boolean(props.animate)).smallToBig(Boolean(props.animate));
+      parliament.enter
+        .fromCenter(Boolean(props.animate))
+        .smallToBig(Boolean(props.animate));
       parliament.exit.toCenter(false).bigToSmall(false);
       parliament.highlightedParty(Q.player_party);
       d3.select(svg).datum(data).call(parliament);
@@ -293,20 +334,79 @@
 
       if (grid.childNodes.length) el.appendChild(grid);
     },
+    roadmaps: function (el, Q) {
+      var partiesByLevel = ROADMAP_LEVELS.map(function () {
+        return [];
+      });
+
+      ROADMAP_PARTIES.forEach(function (party) {
+        if (!(Number(Q[party.key + "_parlament_s"]) > 0)) return;
+
+        var roadmap = Number(Q[party.key + "_roadmap"]);
+        if (!Number.isFinite(roadmap)) roadmap = 0;
+        roadmap = Math.max(0, Math.min(3, Math.round(roadmap)));
+        partiesByLevel[roadmap].push(party);
+      });
+
+      el.innerHTML = "";
+
+      var spectrum = document.createElement("div");
+      spectrum.className = "roadmaps-widget__spectrum";
+      spectrum.setAttribute("role", "list");
+      spectrum.setAttribute("aria-label", "Party roadmaps to independence");
+
+      [3, 2, 1, 0].forEach(function (level) {
+        var position = ROADMAP_LEVELS[level];
+        var column = document.createElement("div");
+        column.className = "roadmaps-widget__level";
+        column.setAttribute("data-roadmap", String(level));
+
+        var parties = document.createElement("div");
+        parties.className = "roadmaps-widget__parties";
+
+        partiesByLevel[level].forEach(function (party) {
+          var item = document.createElement("div");
+          item.className = "roadmaps-widget__party";
+          item.setAttribute("role", "listitem");
+          item.setAttribute("aria-label", party.label + ": " + position.label);
+
+          var logo = document.createElement("img");
+          logo.className = "roadmaps-widget__logo";
+          logo.src = party.logo;
+          logo.alt = "";
+
+          var name = document.createElement("span");
+          name.className = "roadmaps-widget__name";
+          name.innerHTML =
+            typeof window.applyWholesome === "function"
+              ? window.applyWholesome(party.label)
+              : party.label;
+
+          item.appendChild(logo);
+          item.appendChild(name);
+          parties.appendChild(item);
+        });
+
+        var levelLabel = document.createElement("div");
+        levelLabel.className = "roadmaps-widget__label";
+        var levelTitle = document.createElement("strong");
+        levelTitle.textContent = position.label;
+        var levelDescription = document.createElement("span");
+        levelDescription.textContent = position.description;
+        levelLabel.appendChild(levelTitle);
+        levelLabel.appendChild(levelDescription);
+
+        column.appendChild(parties);
+        column.appendChild(levelLabel);
+        spectrum.appendChild(column);
+      });
+
+      el.appendChild(spectrum);
+    },
     "poll-map": function (el, Q) {
       initCataloniaPolls(el.id, Q, el.id === "cat-polls-widget-wide");
     },
     "achievement-gallery": function (el, Q) {
-      // Phase 2.5 Task 8: the registry (source/data/achievements.json ->
-      // game.json.data.achievements) replaces the 13 hand-written HTML
-      // blocks that used to live directly in game_over.scene.dry's
-      // @achievements section. `data-props`'s "scope" picks WHICH quality
-      // prefix marks a row unlocked: "ever" reads Q.achievement_* (the
-      // engine's cross-save set, pre-seeded at boot from localStorage);
-      // "playthrough" reads Q.game_achievement_* (reset every new game).
-      // Regenerates the SAME markup game.css already styles
-      // (.achievement--unlocked/--locked, .achievement-image/-title/-stars/
-      // -body/-description) so the gallery is visually identical to before.
       var props = readDataProps(el);
       var scope = props.scope === "playthrough" ? "playthrough" : "ever";
       var prefix =

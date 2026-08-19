@@ -70,6 +70,10 @@ on-arrival: {!
     };
 
     if (Q.congreso_decidir_no >= Q.congreso_decidir_si) {
+        Q.new_roadmap_congreso_trigger = Q.player_roadmap <= 1;
+        if (Q.player_party != "erc" && Q.erc_roadmap <= 1) {
+            Q.erc_roadmap = 1;
+        }
         Q.non_binding_consultation_law_countdown = 9;
         Q.countdowns.push("non_binding_consultation_law");
     }

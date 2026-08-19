@@ -1,6 +1,6 @@
 title: A United National Concentration list?
 face-image: img/events/jxsi_formation.jpg
-view-if: unio_split and next_election_time - time < 9 and next_election_time - time >= 3 and (cdc_roadmap > 1 or dl_roadmap > 1 or pdcat_roadmap > 1) and (player_party == "cup" or (player_party == "erc" and (cdc_relations >= 30 or dl_relations >= 30 or pdcat_relations >= 30))) and not consultation_pending and not referendum_pending and not referendum_happened
+view-if: unio_split and next_election_time - time < 8 and next_election_time - time >= 3 and (cdc_roadmap > 1 or dl_roadmap > 1 or pdcat_roadmap > 1) and erc_roadmap > 0 and (player_party == "cup" or (player_party == "erc" and (cdc_relations >= 30 or dl_relations >= 30 or pdcat_relations >= 30))) and not consultation_pending and not referendum_pending and not referendum_happened
 tags: event
 new-page: true
 max-visits: 1
@@ -230,7 +230,7 @@ on-arrival: {!
     Q.independence_trust += 15;
 !}
 
-The jxsi coalition has been formed! It now counts with ample support from civil society organizations, minor parties like SI, as well as, of course, the big players in the Parlament, [? if cdc_in_jxsi > 0: CDC?][? if dl_in_jxsi > 0: DL?][? if pdcat_in_jxsi > 0: the PDeCAT?] and ERC. Can it, however, be expanded further? Everyone is looking right now at the CUP, who so far has been skeptical of the whole formation process. Will they join in as well to build true National unity?
+The jxsi coalition has been formed! With an ambitious 2-year roadmap, it now counts with ample support from civil society organizations, minor parties like SI, as well as, of course, the big players in the Parlament, [? if cdc_in_jxsi > 0: CDC?][? if dl_in_jxsi > 0: DL?][? if pdcat_in_jxsi > 0: the PDeCAT?] and ERC. Can it, however, be expanded further? Everyone is looking right now at the CUP, who so far has been skeptical of the whole formation process. Will they join in as well to build true National Unity?
 
 -@jxsi_cup_in
 -@jxsi_cup_no

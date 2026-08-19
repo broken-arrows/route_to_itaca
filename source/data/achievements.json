@@ -36,6 +36,13 @@
       "image": "img/achievements/perrosanxe.png"
     },
     {
+      "id": "junts_pel_bluf",
+      "name": "Junts pel Bluf",
+      "description": "Playing as a party part of the JxSí or JxCat coalitions, have your promised Roadmap to Independence go unfulfilled.",
+      "stars": 2,
+      "image": "img/events/nay.webp"
+    },
+    {
       "id": "je_me_souviens",
       "name": "Je me Souviens",
       "description": "Have an independence consultation with an almost incomprehensible question.",
@@ -87,14 +94,14 @@
     {
       "id": "jxsi_de_debo",
       "name": "Junts (de debò) pel Sí",
-      "description": "Include the CUP into the JxSí electoral coalition or, as the CUP, join into the JxSí coaltion.",
+      "description": "Include the CUP into the JxSí electoral coalition or, as the CUP, join into the JxSí coalition.",
       "stars": 4,
       "image": "img/achievements/jxsi_dedebo.jpg"
     },
     {
       "id": "majoria_no_silenciosa",
       "name": "Majoria No Silenciosa",
-      "description": "Somehow, manage to lose a non-agreement referndum or non-binding consultation to the \"No\" option.",
+      "description": "Somehow, manage to lose a non-agreement referendum or non-binding consultation to the \"No\" option.",
       "stars": 5,
       "image": "img/achievements/majoria_silenciosa.jpg"
     }

@@ -1,13 +1,14 @@
 title: Will the CUP run for the Spanish General Election?
 subtitle: The anti-capitalist formation decides now
-view-if: next_spanish_election_time - time <= 5 and cup_parlament_s > 0 and not cup_in_jxsi and not cup_in_jxcat
+view-if: next_spanish_election_time - time <= 5 and cup_parlament_s > 0 and cup_congreso_decides_timer = 0 and not cup_in_jxsi and not cup_in_jxcat
 tags: event
 new-page: true
 face-image: img/events/cup_congreso.webp 
+on-arrival: cup_congreso_decides_timer = 7
 go-to: player_cup if player_party = "cup"; not_player if player_party != "cup"
 role: event
 
-= The ​CUP decides weather to run for the Congreso
+= The ​CUP decides wether to run for the Congreso
 
 @player_cup
 
@@ -48,8 +49,8 @@ Following the historical party line, the CUP will not be running for the Congres
 @cup_run
 title: The CUP will run for the Congreso!
 subtitle: [? if spa_cup_active: The anti-capitalist formation will again be there in the ballots. ?][? if not spa_cup_active: The anti-capitalist formation will break with its historical position. ?][? if cup_faction = "Third Sector": It will take a bit of convincing though. \[-1 resources\] ?]
-choose-if: (cup_faction = "Poble Lliure" or (cup_faction = "Third Sector" and (cup_relations > 55 and party_resources >= 1) or spa_fr_active)) and cup_parlament_s > 3 and independence_movement > 75
-unavailable-subtitle: [? if cup_faction = "Endavant": With Endavant currently holding so much power within the CUP, this is basically ruled out. ?][? if cup_parlament_s <= 3: The party feels like it lacks the popular support for such a move. ?][? if cup_faction != "Endavant" and not spa_fr_active: [? if cup_relations <= 55: We don't have good enough relations with the CUP. ?][? if party_resources < 1: Not enough resources. ?]?]
+choose-if: (cup_faction = "Poble Lliure" or (cup_faction = "Third Sector" and (cup_relations > 55 and party_resources >= 1) or spa_fr_active)) and cup_parlament_s >= 3 and independence_movement > 75
+unavailable-subtitle: [? if cup_faction = "Endavant": With Endavant currently holding so much power within the CUP, this is basically ruled out. ?][? if cup_parlament_s < 3: The party feels like it lacks the popular support for such a move. ?][? if independence_movement <= 75: Given the relatively low independence momentum at the moment, the CUP feels that the Congreso should not be the priority. ?][? if cup_faction != "Endavant": [? if cup_relations <= 55: We don't have good enough relations with the CUP. ?][? if party_resources < 1: Not enough resources. ?]?]
 on-arrival: {!
     if (Q.cup_faction != "Poble Lliure" && !Q.spa_fr_active) {
         Q.party_resources -= 1;

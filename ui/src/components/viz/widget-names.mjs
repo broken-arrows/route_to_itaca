@@ -36,6 +36,7 @@ export const WIDGET_NAMES = [
   "trail",
   "chamber-vote",
   "law-grid",
+  "roadmaps",
 ];
 
 /**

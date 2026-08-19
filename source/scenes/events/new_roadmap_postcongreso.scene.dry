@@ -1,0 +1,86 @@
+title: A new roadmap for [+ player_party +]?
+tags: event
+view-if: new_roadmap_congreso_trigger and (player_party = "erc" or player_party = parlament_current_ciu)
+on-arrival: new_roadmap_congreso_trigger = false
+go-to: erc_roadmap if player_party = "erc"; ciu_roadmap
+role: event
+
+@ciu_roadmap
+new-page: true
+# TODO: non-erc case
+
+
+
+@erc_roadmap
+new-page: true
+face-image: img/erc/executiva.jpg
+
+= A new roadmap for ​[+ player_party +]?
+
+The recent vote at the Congreso regarding the right to decide for the people of Catalonia has, for all intents and purposes, closed the door to an agreed-upon referendum, at the very least for this legislature, if not until some day somehow the Constitution is reformed.
+
+While not an unexpected outcome, it has triggered deep internal debates within the party regarding what the official party roadmap should be now. 
+
+- @agreement
+- @hybrid
+- @unilateral
+
+@agreement
+title: Keep the position of working only towards an agreed-upon referendum
+subtitle: Not that this is set to work any time soon, but it is of course possible to bet on radical change happening in Madrid at some point.
+choose-if: erc_civic_strength < 5
+unavailable-subtitle: [? if erc_civic_strength >= 5: Pro-independence civil organizations with close ties to the party have too much strength at the moment. ?]
+on-arrival: {!
+    Q.independence_trust -= 20;
+    Q.erc_civic_dissent += 20;
+    for (var c of Q.parlament_constituencies) {
+        for (var d of Q.parlament_demographics) {
+            var amount = 0.1*Q["erc_parlament_" + c + "_" + d + "_support"];
+            Q["erc_parlament_" + c + "_" + d + "_support"] -= 0.1*Q["erc_parlament_" + c + "_" + d + "_support"];
+            Q["abstain_parlament_" + c + "_" + d + "_support"] += 0.2*amount;
+            Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"] += 0.5*amount;
+            Q["cup_parlament_" + c + "_" + d + "_support"] += 0.3*amount;
+        }
+    }
+    Q.erc_roadmap = 1;
+!}
+
+Keeping a roadmap that has, effectively, already failed does not give our party the best image out there. ERC has been historically a party willing to push forward ideas firmly, and this may feel like a regression for many. Only time will tell if we are making the right bet here.
+
+@hybrid
+title: Switch to a Hybrid Confrontation strategy
+subtitle: A strategy based on institutional confrontation while keeping doors open for, hoping to force the hand of the Gobierno and maybe the EU.
+on-arrival: {!
+    Q.independence_trust += 5;
+    Q.independence_momentum += 3;
+    Q.erc_civic_dissent -= 3;
+    Q.erc_roadmap = 2;
+!}
+
+Taking a more flexible and daring approach is pretty much expected by everyone at this point, and it is very much in line with all of our campaigning since the Statute of Autonomy was struck down. Let's hope it's the winning bet.
+
+@unilateral
+title: Adopt an Unilateralist roadmap
+subtitle: Rather than ask for permission, the Unilateral roadmap calls for exercising sovereignty directly and unapologetically.
+choose-if: erc_civic_strength >= 30 and erc_pragmatic_strength < 15
+unavailable-subtitle: [? if erc_pragmatic_strength >= 15: The Pragmatic's faction is too strong at the moment for this to be our chosen roadmap. ?][? if erc_civic_strength < 30: Pro-independence civil organizations close to the party are not strong enough at the moment. ?]
+on-arrival: {!
+    Q.independence_trust += 8;
+    Q.independence_momentum += 5;
+    Q.erc_civic_strength += 5;
+    Q.erc_civic_dissent -= 5;
+    Q.erc_pragmatic_dissent += 10;
+    Q.erc_roadmap = 3;
+    for (var c of Q.parlament_constituencies) {
+        for (var d of Q.parlament_demographics) {
+            var amount = 0.05*Q["erc_parlament_" + c + "_" + d + "_support"];
+            Q["erc_parlament_" + c + "_" + d + "_support"] -= 0.05*Q["erc_parlament_" + c + "_" + d + "_support"];
+            Q["abstain_parlament_" + c + "_" + d + "_support"] += 0.1*amount;
+            Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"] += 0.7*amount;
+            Q[Q.parlament_current_icv + "_parlament_" + c + "_" + d + "_support"] += 0.2*amount;
+        }
+    }
+!}
+
+Betting on a radical approach, so far only truly embraced by those in the fringes like the CUP or SI is, even if understandable to some extent, a bit unexpected. Many in the party still hope to achieve, at least at some point, some sort of agreement, if not with the Gobierno, at least with the EU. Be it as it may, this is our path now.
+

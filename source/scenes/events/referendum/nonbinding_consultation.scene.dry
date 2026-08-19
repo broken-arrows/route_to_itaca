@@ -7,10 +7,11 @@ view-if: consultation_day_trigger
 max-visits: 1
 on-arrival: {!
     // TODO: How does the preparation event affect this?
-    // TODO: Roadmap updating if required?
+
     this.achieve("calcotada");
     Q.consultation_happened = true;
     Q.consultation_pending = false;
+    Q.roadmap_year = 0;
 !}
 role: event
 

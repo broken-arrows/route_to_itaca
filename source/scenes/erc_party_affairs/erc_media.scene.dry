@@ -108,7 +108,7 @@ Our newly expanded social media presence is reaching new and specially younger a
 
 @social_media_2
 title: Our social media presence is still raw, we need to put some more effort into it.
-subtitle: -1 resource
+subtitle:  \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources
 view-if: social_media = 1
@@ -205,7 +205,7 @@ Our social media is now a fully integrated and essential part of our communicati
 
 @social_media_4
 title: What are the latest social media trends? We need to be on top of them.
-subtitle: -1 resource
+subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources
 view-if: social_media >= 3 and year >= 2016

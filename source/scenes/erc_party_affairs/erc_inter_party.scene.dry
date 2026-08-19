@@ -52,7 +52,7 @@ SI are already quite aligned with us, and already eager to work together. Let's 
 @jxsi_relations
 subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
-view-if: jxsi_formed and erc_in_jxsi
+view-if: jxsi_formed 
 unavailable-subtitle: Not enough resources
 on-arrival: {!
     Q.party_resources -= 1;
@@ -79,7 +79,7 @@ The JxSí coalition is a naturally unstable one, but in the name of National Uni
 @jxcat_relations
 subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
-view-if: jxcat_formed and erc_in_jxcat
+view-if: jxcat_formed
 unavailable-subtitle: Not enough resources
 on-arrival: {!
     Q.party_resources -= 1;
@@ -134,7 +134,7 @@ on-arrival: {!
     Q.cat_coalition_includes_ciu = Q.cat_coalition.includes("ciu");
 !}
 
-[? if erc_supporting and cat_coalition_includes_ciu: We are currently supporting a CiU government, which they already appreciate. Maybe this can bring us closer together? ?][? if erc_in_gob and cat_coalition_includes_ciu: We are currently governing together with CiU, which already creates some tensions. These move will hopefully smooth some of that over. ?][? if (not erc_supporting or not cat_coalition_includes_ciu) or (not erc_in_gob or not cat_coalition_includes_ciu): Without official institutional obligations to eachother for the moment, building ties with CiU is always easier. ?]The left parties are not particularly happy about these moves though.
+[? if erc_supporting and cat_coalition_includes_ciu: We are currently supporting a CiU government, which they already appreciate. Maybe this can bring us closer together? ?][? if erc_in_gob and cat_coalition_includes_ciu: We are currently governing together with CiU, which already creates some tensions. These move will hopefully smooth some of that over. ?][? if (not erc_supporting and not cat_coalition_includes_ciu) or (not erc_in_gob and not cat_coalition_includes_ciu): Without official institutional obligations to eachother for the moment, building ties with CiU is always easier. ?]The left parties are not particularly happy about these moves though.
 
 @pdcat_nosplit_relations
 subtitle: \[-1 resources\]
@@ -294,7 +294,7 @@ on-arrival: {!
     Q.cat_coalition_includes_junts = Q.cat_coalition.includes("junts");
 !}
 
-[? if erc_supporting and cat_coalition_includes_junts: We are currently supporting a junts government, which they already appreciate. Maybe this can bring us closer together? ?][? if erc_in_gob and cat_coalition_includes_junts: We are currently governing together with junts, which already creates some tensions. These move will hopefully smooth some of that over. ?][? if (not erc_supporting and cat_coalition_includes_junts) or (not erc_in_gob and cat_coalition_includes_junts): Without official institutional obligations to eachother for the moment, building ties with junts is always easier. ?]The left parties are not particularly happy about these moves though.
+[? if erc_supporting and cat_coalition_includes_junts: We are currently supporting a Junts government, which they already appreciate. Maybe this can bring us closer together? ?][? if erc_in_gob and cat_coalition_includes_junts: We are currently governing together with Junts, which already creates some tensions. These move will hopefully smooth some of that over. ?][? if (not erc_supporting and cat_coalition_includes_junts) or (not erc_in_gob and cat_coalition_includes_junts): Without official institutional obligations to eachother for the moment, building ties with Junts is always easier. ?]The left parties are not particularly happy about these moves though.
 
 @cup_relations
 subtitle: \[-1 resources\]
@@ -315,7 +315,7 @@ on-arrival: {!
     Q.cat_coalition_includes_cup = Q.cat_coalition.includes("cup");
 !}
 
-[? if cup_supporting and cat_coalition_includes_erc: The CUP is currently supporting our government, which is already a balancing act. Hopefully this can bring us closer together. ?][? if erc_in_gob and cat_coalition_includes_cup: We are currently governing together with the CUP, which alread demonstrates our commitment to leftist values. Let's hope this formula can hold up for some time. ?][? if (not cup_supporting and cat_coalition_includes_erc) or (not erc_in_gob and cat_coalition_includes_cup): Without official institutional obligations to eachother for the moment, building ties with the CUP is always easier. ?]
+[? if cup_supporting and cat_coalition_includes_erc: The CUP is currently supporting our government, which is already a balancing act. Hopefully this can bring us closer together. ?][? if erc_in_gob and cat_coalition_includes_cup: We are currently governing together with the CUP, which alread demonstrates our commitment to leftist values. Let's hope this formula can hold up for some time. ?][? if (not erc_in_gob and cat_coalition_includes_cup) or (not cup_supporting): Without official institutional obligations to eachother for the moment, building ties with the CUP is always easier. ?]
 
 @icv_relations
 subtitle: \[-1 resources\]

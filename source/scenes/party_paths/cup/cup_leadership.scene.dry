@@ -1,6 +1,6 @@
 title: CUP's National Assembly chooses new leadership
 face-image: img/cup/congres.jpg
-view-if: year > 2012 and cup_leadership_timer = 0 and player_party != "cup"
+view-if: year > 2012 and cup_leadership_timer = 0 and player_party != "cup" and next_election_time - time < 10 and next_election_time - time > 1
 tags: event
 new-page: true
 on-arrival: {!
@@ -49,7 +49,7 @@ on-arrival: {!
     if (Q.independence_trust > 60) {
         Q.cup_poble_lliure_points += Math.floor(Q.independence_trust / 10) - 4;
     } else {
-        Q.cup_endavant_points += 10 - Math.ceil(Q.independence_trust / 10);
+        Q.cup_endavant_points += 5 - Math.ceil(Q.independence_trust / 10);
     }
     Q.cup_third_sector_points = Math.abs(Q.cup_endavant_points - Q.cup_poble_lliure_points);
 
@@ -60,7 +60,7 @@ on-arrival: {!
 
 The anti-capitalist party is now going through the ordinary processes to renew its leadership and visible faces. Following its strict term limits, these roles need renewal each election cycle, and with Catalan elections just around the corner, party representatives from all over are convening in its National Assembly. 
 
-While names may change around, the general currents within the party keep falling along the usual lines. While Endavant and Poble Lliure will keep arguing endlessly about the fight beyond the institutions or within them, respectively, the rest of the associative network that makes up the party may end up proposing a figurehead that's less divisive. 
+Even if names change around, the general currents within the party keep falling along the usual lines. While Endavant and Poble Lliure will keep arguing endlessly about the fight beyond the institutions or within them, respectively, the rest of the associative network that makes up the party may end up proposing a figurehead that's less divisive. 
 
 - @third_sector
 - @endavant
@@ -79,7 +79,7 @@ on-arrival: {!
     var new_candidate = Q.cup_leader;
     var new_candidate_gender = Q.cup_leader_gender;
     var rnd = 0;
-    while (new_candidate == Q.cup_leader || new_candidate_gender == Q.cup_leader_gender) {
+    while (new_candidate == Q.cup_leader) {
         rnd = Math.floor(Math.random() * 4);
         switch (rnd) {
             default:
@@ -121,7 +121,7 @@ on-arrival: {!
     var new_candidate = Q.cup_leader;
     var new_candidate_gender = Q.cup_leader_gender;
     var rnd = 0;
-    while (new_candidate == Q.cup_leader || new_candidate_gender == Q.cup_leader_gender) {
+    while (new_candidate == Q.cup_leader) {
         rnd = Math.floor(Math.random() * 5);
         switch (rnd) {
             default:
@@ -167,7 +167,7 @@ on-arrival: {!
     var new_candidate = Q.cup_leader;
     var new_candidate_gender = Q.cup_leader_gender;
     var rnd = 0;
-    while (new_candidate == Q.cup_leader || new_candidate_gender == Q.cup_leader_gender) {
+    while (new_candidate == Q.cup_leader) {
         rnd = Math.floor(Math.random() * 3);
         switch (rnd) {
             default:

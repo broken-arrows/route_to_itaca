@@ -6,7 +6,6 @@ new-page: true
 max-visits: 1
 tags: event
 on-arrival: {!
-    // TODO: A way for ciu_roadmap to be > 1 without going through the non-binding consultation?
     Q.unio_split = true;
     Q.parlament_current_ciu = "cdc";
 
