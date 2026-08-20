@@ -615,10 +615,17 @@ on-arrival: {!
         Q.icv_relations -= 3;
     }
     Q.cup_relations -= 3;
-    Q.erc_parlament_barcelona_ind_support -= 1.5;
-    Q.erc_parlament_girona_ind_support -= 1;
-    Q.erc_parlament_lleida_ind_support -= 1;
-    Q.erc_parlament_tarragona_ind_support -= 1.5;
+    for (var c of Q.parlament_constituencies) {
+        var outreachLoss = (c == "barcelona" || c == "tarragona") ? 0.75 : 0.5;
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "erc", amount: outreachLoss * 0.5, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "erc", amount: outreachLoss * 0.25, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: outreachLoss * 0.25, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+    }
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "abstain", from: "erc", amount: 0.2, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "federal_left", from: "erc", amount: 0.1, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "bcomu", from: "erc", amount: 0.15, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "cup", from: "erc", amount: 0.1, maxDonorFraction: 0.5 });
+    Q.erc_interior_mod = Math.max(-5, Q.erc_interior_mod - 0.2);
 
     Q.erc_left_dissent += 5;
 !}
@@ -656,10 +663,17 @@ on-arrival: {!
         Q.icv_relations -= 3;
     }
     Q.cup_relations -= 3;
-    Q.erc_parlament_barcelona_ind_support -= 2;
-    Q.erc_parlament_girona_ind_support -= 1.5;
-    Q.erc_parlament_lleida_ind_support -= 1.5;
-    Q.erc_parlament_tarragona_ind_support -= 2;
+    for (var c of Q.parlament_constituencies) {
+        var outreachLoss = (c == "barcelona" || c == "tarragona") ? 1.0 : 0.75;
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "erc", amount: outreachLoss * 0.5, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "erc", amount: outreachLoss * 0.25, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: outreachLoss * 0.25, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+    }
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "abstain", from: "erc", amount: 0.25, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "federal_left", from: "erc", amount: 0.15, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "bcomu", from: "erc", amount: 0.2, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "cup", from: "erc", amount: 0.1, maxDonorFraction: 0.5 });
+    Q.erc_interior_mod = Math.max(-5, Q.erc_interior_mod - 0.3);
 
     Q.erc_left_dissent += 5;
 !} 
@@ -686,14 +700,20 @@ on-arrival: {!
     Q.cup_relations -= 7;
     Q.psc_relations -= 4;
 
-    Q.erc_parlament_barcelona_ind_support -= 2;
-    Q.erc_parlament_girona_ind_support -= 1.5;
-    Q.erc_parlament_lleida_ind_support -= 1.5;
-    Q.erc_parlament_tarragona_ind_support -= 2;
-    Q.erc_parlament_barcelona_middle_support -= 1;
-    Q.erc_parlament_girona_middle_support -= 1;
-    Q.erc_parlament_lleida_middle_support -= 1;
-    Q.erc_parlament_tarragona_middle_support -= 1;
+    for (var c of Q.parlament_constituencies) {
+        var indyLoss = (c == "barcelona" || c == "tarragona") ? 1.0 : 0.75;
+        for (var d of ["ind", "middle"]) {
+            var outreachLoss = d == "ind" ? indyLoss : 0.5;
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "erc", amount: outreachLoss * 0.5, maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "erc", amount: outreachLoss * 0.2, maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: outreachLoss * 0.3, maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+        }
+    }
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "abstain", from: "erc", amount: 0.35, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "federal_left", from: "erc", amount: 0.2, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "bcomu", from: "erc", amount: 0.25, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "psc", from: "erc", amount: 0.15, maxDonorFraction: 0.5 });
+    Q.erc_redbelt_mod = Math.max(-10, Q.erc_redbelt_mod - 0.4);
 
     Q.erc_left_dissent += 10;
     Q.erc_core_dissent += 5;
@@ -722,14 +742,20 @@ on-arrival: {!
     Q.cup_relations -= 7;
     Q.psc_relations -= 4;
 
-    Q.erc_parlament_barcelona_ind_support -= 2;
-    Q.erc_parlament_girona_ind_support -= 1.5;
-    Q.erc_parlament_lleida_ind_support -= 1.5;
-    Q.erc_parlament_tarragona_ind_support -= 2;
-    Q.erc_parlament_barcelona_middle_support -= 1;
-    Q.erc_parlament_girona_middle_support -= 1;
-    Q.erc_parlament_lleida_middle_support -= 1;
-    Q.erc_parlament_tarragona_middle_support -= 1;
+    for (var c of Q.parlament_constituencies) {
+        var indyLoss = (c == "barcelona" || c == "tarragona") ? 1.0 : 0.75;
+        for (var d of ["ind", "middle"]) {
+            var outreachLoss = d == "ind" ? indyLoss : 0.5;
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "erc", amount: outreachLoss * 0.5, maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "erc", amount: outreachLoss * 0.3, maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: outreachLoss * 0.2, maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+        }
+    }
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "abstain", from: "erc", amount: 0.35, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "federal_left", from: "erc", amount: 0.2, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "bcomu", from: "erc", amount: 0.2, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "cup", from: "erc", amount: 0.2, maxDonorFraction: 0.5 });
+    Q.erc_redbelt_mod = Math.max(-10, Q.erc_redbelt_mod - 0.4);
     Q.erc_left_dissent += 10;
     Q.erc_core_dissent += 5;
     Q.erc_civic_dissent += 7.5;

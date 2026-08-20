@@ -1,6 +1,6 @@
 title: Reaching Out
 new-page: true
-view-if: erc_reachout_timer <= 0
+view-if: erc_reachout_timer <= 0 and player_party = "erc"
 on-arrival: {! 
     Q.month_actions += 1; 
     Q.erc_reachout_timer = 9; 
@@ -19,7 +19,7 @@ is-card: true
 card-image: img/erc/ararepubliques.jpg
 # face-image: img/erc/ararepubliques.jpg
 frequency: 100
-tags: erc_party
+tags: erc_party jxsi_party jxcat_party
 role: card-party
 
 = Reaching Out

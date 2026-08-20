@@ -9,92 +9,54 @@ face-image: img/erc/nomesfaltestu.jpg
 tags: erc_party
 role: card-party
 
-# TODO: proper revision of conditionals for CiU party variants, there's a mess here
-# TODO: Actual effects on congreso & local elections
-
 = Choosing our enemies
 
 In our media and campaign materials, who should we consider as our main opponents?
 
 [? if erc_enemies != 0 : Previously, we had considered the [+ erc_enemies +] as our prior enemies. Is a change of direction necessary? ?]
 
-- @right_parties: All right-wing parties, no matter the nation: [? if not unio_split: CiU?][? if pdcat_formed and not pdcat_split: pdcat?][? if unio_split: CDC?][? if dl_formed: DL?][?if not erc_in_jxcat and jxcat_formed: JxCat?][? if erc_in_jxcat and jxcat_formed: CDC?][? if junts_formed: Junts ?][? if unio_split: , UDC?][? if pdcat_split: , pdcat?], PP/PPC, Cs, [? if vox_formed: VOX, ?][? if not pxc_dissolved: PxC, ?][? if fnc_formed: FNC, ?]...
-- @spanish_right: The Spanish right, the cornerstone of the regime of '78: PP/PPC, [? if vox_formed: VOX, ?]and Cs.
-- @all_spanish: Those parties against or unwilling to commit to true reform and self-determination, whether right or left: PP/PPC, [? if psc_leader != 'Àngel Ros' and psc_leader != 'Montserrat Tura': PSC/?]PSOE, [? if ecp_formed: ECP, ?][? if vox_formed: VOX, ?][? if not pxc_dissolved: PxC, ?]and Cs.
-- @extremes: Both extremes, the far-right: [? if vox_formed: VOX, and ?][? if not pxc_dissolved: PxC?][? if fnc_formed: FNC?]; and the far-left: CUP [? if csqp_leader = "Arcadi Oliveres": and CSQP ?][? if cecp_leader = "Arcadi Oliveres": and CECP?].
-- @far_right: The far-right: [? if vox_formed: VOX, and ?][? if not pxc_dissolved: PxC?][? if fnc_formed: FNC?].
+- @right_parties: All right-wing parties, no matter the nation: [+ parlament_current_ciu +][? if unio_split: , UDC?][? if pdcat_split: , pdcat?], PP/PPC, Cs, [? if vox_active: VOX, ?][? if not pxc_dissolved: PxC, ?][? if fnc_formed: FNC, ?]...
+- @spanish_right: The Spanish right, the cornerstone of the regime of '78: PP/PPC, [? if vox_active: VOX, ?]and Cs.
+- @all_spanish: Those parties against or unwilling to commit to true reform and self-determination, whether right or left: PP/PPC, [? if psc_leader != 'Àngel Ros' and psc_leader != 'Montserrat Tura': PSC/?]PSOE, [? if ecp_formed: ECP, ?][? if vox_active: VOX, ?][? if not pxc_dissolved: PxC, ?]and Cs.
+- @extremes: Both extremes, the far-right: [? if vox_active: VOX, and ?][? if not pxc_dissolved: PxC?][? if fnc_formed: FNC?]; and the far-left: CUP [? if csqp_leader = "Arcadi Oliveres": and CSQP ?][? if cecp_leader = "Arcadi Oliveres": and CECP?].
+- @far_right: The far-right: [? if vox_active: VOX, and ?][? if not pxc_dissolved: PxC?][? if fnc_formed: FNC?].
 - @easy_discard
 
 @right_parties
 on-arrival: {!
     Q.erc_enemies = "all right parties"; 
-    Q.erc_core_strength =+ 5; 
-    Q.erc_left_strength =+ 10;
-    Q.erc_pragmatic_dissent =+ 10; 
-    Q.erc_civic_dissent =+ 5;
+    Q.erc_core_strength += 5;
+    Q.erc_left_strength += 10;
+    Q.erc_pragmatic_dissent += 10;
+    Q.erc_civic_dissent += 5;
     if (!Q.unio_split) {
         Q.ciu_relations -= 10;
-        Q.ciu_parlament_barcelona_middle_support -= 5;
-        Q.ciu_parlament_tarragona_middle_support -= 5;
-        Q.ciu_parlament_girona_middle_support -= 5;
-        Q.ciu_parlament_lleida_middle_support -= 5;
     }
     if (Q.pdcat_formed) {
         Q.pdcat_relations -= 10;
-        Q.pdcat_parlament_barcelona_middle_support -= 5;
-        Q.pdcat_parlament_tarragona_middle_support -= 5;
-        Q.pdcat_parlament_girona_middle_support -= 5;
-        Q.pdcat_parlament_lleida_middle_support -= 5;
     }
     if (Q.unio_split) {
         Q.cdc_relations -= 10;
-        Q.cdc_parlament_barcelona_middle_support -= 5; 
     }
     if (Q.dl_formed) {
         Q.dl_relations -= 10;
-        Q.dl_parlament_barcelona_middle_support -= 5; 
     } 
     if (Q.jxcat_formed && !Q.erc_in_jxcat) {
         Q.jxcat_relations -= 10;
-        Q.jxcat_parlament_barcelona_middle_support -= 5; 
     }
     if (Q.junts_formed) {
         Q.junts_relations -= 10;
-        Q.junts_parlament_barcelona_middle_support -= 5; 
-        Q.junts_parlament_tarragona_middle_support -= 5;
-        Q.junts_parlament_girona_middle_support -= 5;
-        Q.junts_parlament_lleida_middle_support -= 5;
     }
     Q.ppc_relations -= 10;
-    Q.ppc_parlament_barcelona_ind_support -= 3;
-    Q.ppc_parlament_tarragona_ind_support -= 3;
-    Q.ppc_parlament_girona_ind_support -= 3;
-    Q.ppc_parlament_lleida_ind_support -= 3;
     Q.cs_relations -= 10;
-    Q.cs_parlament_barcelona_young_support -= 3;
-    Q.cs_parlament_tarragona_young_support -= 3;
-    Q.cs_parlament_girona_young_support -= 3;
-    Q.cs_parlament_lleida_young_support -= 3;
-    if (Q.vox_formed) {
+    if (Q.vox_active) {
         Q.vox_relations -= 10;
-        Q.vox_parlament_barcelona_middle_support -= 5;
-        Q.vox_parlament_tarragona_middle_support -= 5;
-        Q.vox_parlament_girona_middle_support -= 5;
-        Q.vox_parlament_lleida_middle_support -= 5;
     }
     if (!Q.pxc_dissolved) {
         Q.pxc_relations -= 10;
-        Q.pxc_parlament_barcelona_middle_support -= 5;
-        Q.pxc_parlament_tarragona_middle_support -= 5;
-        Q.pxc_parlament_girona_middle_support -= 5;
-        Q.pxc_parlament_lleida_middle_support -= 5;
     }
     if (Q.fnc_formed) {
         Q.fnc_relations -= 10;
-        Q.fnc_parlament_barcelona_young_support -= 3;
-        Q.fnc_parlament_tarragona_young_support -= 3;
-        Q.fnc_parlament_girona_young_support -= 3;
-        Q.fnc_parlament_lleida_young_support -= 3;
     }
     if (Q.csqp_formed) {
         Q.csqp_relations += 5;
@@ -105,35 +67,36 @@ on-arrival: {!
     } else {
         Q.icv_relations += 5;
     }
+    var attackEfficiency = Math.max(0, Math.min(1, 1 - Q.erc_dissent / 100));
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "ciu", amount: 0.8 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "pp", amount: 0.3 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["ind"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "cs", amount: 0.3 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    if (Q.vox_active) G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "vox", amount: 0.3 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    if (!Q.pxc_dissolved) G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "pxc", amount: 0.3 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    if (Q.fnc_formed) G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "fnc", amount: 0.3 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "ciu", amount: 0.35 * attackEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "pp", amount: 0.15 * attackEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "cs", amount: 0.15 * attackEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "ciu", amount: 0.3 * attackEfficiency, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "pp", amount: 0.1 * attackEfficiency, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "cs", amount: 0.1 * attackEfficiency, maxDonorFraction: 0.5 });
 !}
 
 We have Republican and Left in our name, and this is the general approach we have always taken. Nonetheless, at a moment of high tide for the independence movement, this may prove an added challenge when building national unity with [? if not unio_split: CiU?][? if pdcat_formed and not pdcat_split: pdcat?][? if unio_split: CDC?][? if dl_formed: DL?][?if not erc_in_jxcat and jxcat_formed: JxCat?][? if erc_in_jxcat and jxcat_formed: CDC?][? if junts_formed: Junts?].
 
 @spanish_right
 on-arrival: {!
-    Q.erc_enemies = "Spanish right";
-    Q.erc_core_strength =+ 5;
-    Q.erc_pragmatic_strength =+ 5;
-    Q.erc_civic_strength =+ 10;
+    Q.erc_enemies = "the Spanish-right";
+    Q.erc_core_strength += 5;
+    Q.erc_pragmatic_strength += 5;
+    Q.erc_civic_strength += 10;
     Q.erc_civic_dissent -= 5;
     Q.erc_core_dissent -= 5;
     
     Q.ppc_relations -= 10;
-    Q.ppc_parlament_barcelona_ind_support -= 3;
-    Q.ppc_parlament_tarragona_ind_support -= 3;
-    Q.ppc_parlament_girona_ind_support -= 3;
-    Q.ppc_parlament_lleida_ind_support -= 3;
     Q.cs_relations -= 10;
-    Q.cs_parlament_barcelona_young_support -= 3;
-    Q.cs_parlament_tarragona_young_support -= 3;
-    Q.cs_parlament_girona_young_support -= 3;
-    Q.cs_parlament_lleida_young_support -= 3;
-    if (Q.vox_formed) {
+    if (Q.vox_active) {
         Q.vox_relations -= 10;
-        Q.vox_parlament_barcelona_middle_support -= 5;
-        Q.vox_parlament_tarragona_middle_support -= 5;
-        Q.vox_parlament_girona_middle_support -= 5;
-        Q.vox_parlament_lleida_middle_support -= 5;
     }
 
     Q.cup_relations += 10;
@@ -155,41 +118,33 @@ on-arrival: {!
     if (Q.junts_formed) {
         Q.junts_relations += 5;
     }
+    var attackEfficiency = Math.max(0, Math.min(1, 1 - Q.erc_dissent / 100));
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "pp", amount: 0.45 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["ind"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "cs", amount: 0.45 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    if (Q.vox_active) G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "vox", amount: 0.35 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "pp", amount: 0.25 * attackEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "cs", amount: 0.2 * attackEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "pp", amount: 0.2 * attackEfficiency, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "cs", amount: 0.2 * attackEfficiency, maxDonorFraction: 0.5 });
 !}
 
-Focusing on the Spanish right and the "regime of '78" is popular among the entire party, even if not including the Catalan moderate-right might sound a bit iffy to [? if not csqp_formed and not cecp_formed and not ecp_formed: ICV-EUiA?][? if csqp_formed: CSQP?][? if cecp_formed: CECP?][? if ecp_formed: ECP?].
+Focusing on the Spanish right and the "regime of '78" is popular among the entire party, even if not including the Catalan moderate-right might sound a bit iffy to the rest of the left parties.
 
 @all_spanish
 on-arrival: {!
     Q.erc_enemies = "parties against reform and self-determination"; 
-    Q.erc_civic_strength =+ 10;
+    Q.erc_civic_strength += 10;
     Q.erc_left_dissent += 10;
     Q.erc_core_strength += 5;
     Q.erc_pragmatic_dissent += 5;
 
     Q.ppc_relations -= 10;
-    Q.ppc_parlament_barcelona_ind_support -= 3;
-    Q.ppc_parlament_tarragona_ind_support -= 3;
-    Q.ppc_parlament_girona_ind_support -= 3;
-    Q.ppc_parlament_lleida_ind_support -= 3;
     Q.cs_relations -= 10;
-    Q.cs_parlament_barcelona_young_support -= 3;
-    Q.cs_parlament_tarragona_young_support -= 3;
-    Q.cs_parlament_girona_young_support -= 3;
-    Q.cs_parlament_lleida_young_support -= 3;
-    if (Q.vox_formed) {
+    if (Q.vox_active) {
         Q.vox_relations -= 10;
-        Q.vox_parlament_barcelona_middle_support -= 5;
-        Q.vox_parlament_tarragona_middle_support -= 5;
-        Q.vox_parlament_girona_middle_support -= 5;
-        Q.vox_parlament_lleida_middle_support -= 5;
     }
     if (!Q.pxc_dissolved) {
         Q.pxc_relations -= 10;
-        Q.pxc_parlament_barcelona_middle_support -= 5;
-        Q.pxc_parlament_tarragona_middle_support -= 5;
-        Q.pxc_parlament_girona_middle_support -= 5;
-        Q.pxc_parlament_lleida_middle_support -= 5;
     }
     if (Q.csqp_formed && !Q.csqp_leader == "Arcadi Oliveres") {
         Q.csqp_relations -= 5;
@@ -202,10 +157,6 @@ on-arrival: {!
     }
     if (Q.psc_leader != "Àngel Ros" && Q.psc_leader != "Montserrat Tura") {
         Q.psc_relations -= 10;
-        Q.psc_parlament_barcelona_middle_support -= 5;
-        Q.psc_parlament_tarragona_middle_support -= 5;
-        Q.psc_parlament_girona_middle_support -= 5;
-        Q.psc_parlament_lleida_middle_support -= 5;
     }
 
     if (Q.dl_formed) {
@@ -216,9 +167,22 @@ on-arrival: {!
         Q.junts_relations += 5;
     }
     Q.cup_relations += 5;
+    var attackEfficiency = Math.max(0, Math.min(1, 1 - Q.erc_dissent / 100));
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "pp", amount: 0.25 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["ind"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "cs", amount: 0.25 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "psc", amount: 0.4 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "federal_left", amount: 0.2 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    if (Q.vox_active) G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "vox", amount: 0.25 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    if (!Q.pxc_dissolved) G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "pxc", amount: 0.25 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "psoe", amount: 0.3 * attackEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "pp", amount: 0.15 * attackEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "cs", amount: 0.15 * attackEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "psc", amount: 0.25 * attackEfficiency, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "pp", amount: 0.1 * attackEfficiency, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "cs", amount: 0.1 * attackEfficiency, maxDonorFraction: 0.5 });
 !}
 
-This focus on pure focus on the Spanish parties feels radical, and will alienate some of our traditional allies in the left, but it is a sure way of building National unity. 
+This focus on pure focus on the Spanish parties feels radical, and will alienate some of our traditional allies in the left, but it is a sure way of building National Unity. 
 
 @far_right
 on-arrival: {!
@@ -227,26 +191,14 @@ on-arrival: {!
     Q.erc_left_strength += 5;
     Q.erc_pragmatic_dissent += 5;
     Q.erc_core_dissent += 5;
-    if (Q.vox_formed) {
+    if (Q.vox_active) {
         Q.vox_relations -= 10;
-        Q.vox_parlament_barcelona_middle_support -= 5;
-        Q.vox_parlament_tarragona_middle_support -= 5;
-        Q.vox_parlament_girona_middle_support -= 5;
-        Q.vox_parlament_lleida_middle_support -= 5;
     }
     if (!Q.pxc_dissolved) {
         Q.pxc_relations -= 10;
-        Q.pxc_parlament_barcelona_middle_support -= 5;
-        Q.pxc_parlament_tarragona_middle_support -= 5;
-        Q.pxc_parlament_girona_middle_support -= 5;
-        Q.pxc_parlament_lleida_middle_support -= 5;
     }
     if (Q.fnc_formed) {
         Q.fnc_relations -= 10;
-        Q.fnc_parlament_barcelona_young_support -= 3;
-        Q.fnc_parlament_tarragona_young_support -= 3;
-        Q.fnc_parlament_girona_young_support -= 3;
-        Q.fnc_parlament_lleida_young_support -= 3;
     }
     Q.cup_relations += 5;
     if (!Q.csqp_formed && !Q.cecp_formed && !Q.ecp_formed) {
@@ -258,6 +210,14 @@ on-arrival: {!
     } else if (Q.ecp_formed) {
         Q.ecp_relations += 5;
     }
+    var attackEfficiency = Math.max(0, Math.min(1, 1 - Q.erc_dissent / 100));
+    if (Q.vox_active) G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "vox", amount: 0.25 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    if (!Q.pxc_dissolved) G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "pxc", amount: 0.25 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    if (Q.fnc_formed) G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "fnc", amount: 0.25 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: 0.2 * attackEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young", "middle"] });
+    if (Q.vox_active) G.cardSupportTransfer(Q, { contest: "congreso", to: "abstain", from: "vox", amount: 0.2 * attackEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "abstain", amount: 0.15 * attackEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "cs", amount: 0.1 * attackEfficiency, maxDonorFraction: 0.5 });
 !}
 
 Focusing on the far-right feels like an odd choice at this point. A general anti-fascist position is always welcome and will be applauded specially by the CUP and [? if not csqp_formed and not cecp_formed and not ecp_formed: ICV-EUiA?][? if csqp_formed: CSQP?][? if cecp_formed: CECP?][? if ecp_formed: ECP?], but other than that it seems to fall on deaf ears. The far-right is such a minority at this point, and specially in Catalonia. We'll never have to worry about such thing in Catalonia!
@@ -275,8 +235,16 @@ on-arrival: {!
         Q.csqp_relations -= 10;
     } else if (Q.cecp_formed && Q.cecp_leader == "Arcadi Oliveres") {
         Q.cecp_relations -= 10;
+    } else if (Q.csqp_formed) {
+        Q.csqp_relations -= 5;
+    } else if (Q.cecp_formed) {
+        Q.cecp_relations -= 5;
+    } else if (Q.ecp_formed) {
+        Q.ecp_relations -= 3;
+    } else {
+        Q.icv_relations -= 5;
     }
-    if (Q.vox_formed) {
+    if (Q.vox_active) {
         Q.vox_relations -= 10;
     }
     if (!Q.pxc_dissolved) {
@@ -285,7 +253,13 @@ on-arrival: {!
     if (Q.fnc_formed) {
         Q.fnc_relations -= 10;
     }
+    var attackBacklash = Math.max(0, Math.min(1, 1 - Q.erc_dissent / 100));
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "erc", amount: 0.25 * attackBacklash, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle", "young"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: 0.2 * attackBacklash, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle", "young"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "abstain", from: "erc", amount: 0.2 * attackBacklash, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "federal_left", from: "erc", amount: 0.15 * attackBacklash, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "bcomu", from: "erc", amount: 0.2 * attackBacklash, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "psc", from: "erc", amount: 0.1 * attackBacklash, maxDonorFraction: 0.5 });
 !}
 
 This is a very weird position to take and it makes us sound like Cs: *"Not far-right, not far-left"*... No one is really happy about this, but some time hard positions need to be taken, I guess?
-

@@ -713,7 +713,7 @@ var cs_rb = _cl(
 var erc_rb = _cl(
     _cl(it - 12, 0, 48) * rb.erc_trust_coeff
     + _cl(im - 30, 0, 40) * rb.erc_im_coeff
-    + (Q.erc_redbelt_mod || -10),   // -10 default = no outreach penalty
+    + (Number.isFinite(Q.erc_redbelt_mod) ? Q.erc_redbelt_mod : -10),
     0, 100);
 
 var comuns_rb = _cl(
@@ -751,7 +751,7 @@ var erc_int = _cl(
     _cl(it - 10, 0, 50) * intr.erc_trust_coeff
     + _cl(im - 25, 0, 45) * intr.erc_im_coeff
     + intr.erc_base_bonus
-    + (Q.erc_interior_mod || 0),
+    + (Q.erc_interior_mod),
     0, 100);
 
 var cup_int = _cl(

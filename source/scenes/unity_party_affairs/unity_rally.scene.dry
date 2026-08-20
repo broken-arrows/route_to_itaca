@@ -12,20 +12,134 @@ role: card-party
 
 The independence movement has mobilized millions in the streets every September for the past few years. Local, county, and Catalan-wide repeats of these rallies, specially at a time where the streets are hot, are pretty much expected. What should they focus on at the moment?
 
-- @independence
-- @welfare
-- @local_barcelona
-- @local_red_belt
-- @local_tarragona
-- @local_lleida
-- @local_girona
+- @independence: The struggle for Catalan independence and self-determination
+- @welfare: Política Social - the unique chance that independence brings us to build the social welfare system we want
+- @local_barcelona: Rally in Barcelona, the capital of the future Catalan Republic!
+- @local_red_belt: Rally around the Red Belt, focusing on how workers there would also benefit from independence!
+- @local_tarragona: Rally in Tarragona and the Ebre counties
+- @local_lleida: Rally in Lleida and the Pyrenees.
+- @local_girona: Rally in Girona
 - @easy_discard
 
 
 @independence
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    var credibility = Q.broken_roadmap ? 0.25 : 1;
+    Q.independence_movement += Q.broken_roadmap ? 1 : 5;
+    for (var c of Q.parlament_constituencies) {
+        for (var d of ["middle", "young", "retired", "rural"]) {
+            G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.45*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.2*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            if (Q.broken_roadmap && !Q.cup_in_jxsi && !Q.cup_in_jxcat) {
+                G.cardSupportTransfer(Q, {contest:"parlament", to:"cup", from:"abstain", amount:0.12*effectiveness, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            }
+        }
+    }
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.5*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psoe", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.4*effectiveness*credibility, maxDonorFraction:0.5});
+    Q.erc_interior_mod += 0.45*effectiveness*credibility;
+    Q.ciu_interior_mod += 0.4*effectiveness*credibility;
+    if ((Q.player_in_jxsi && Q.cup_in_jxsi) || (Q.player_in_jxcat && Q.cup_in_jxcat)) {
+        Q.cup_interior_mod += 0.1*effectiveness;
+    }
+!}
+
+The filling the streets behind a common demand for self-determination and independence is not hard for [? if jxsi_formed and not jxcat_formed: jxsi. ?][? if jxcat_formed: jxcat. ?][? if broken_roadmap: The crowds still turn out, but not as much as a few years ago, as our failure to deliver the last roadmap has destroyed much of the coalition's credibility. [? if not cup_in_jxsi and not cup_in_jxcat: The CUP captures part of the enthusiasm we can no longer channel. ?] ?]
+
 @welfare
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    var governing = Q.cat_coalition.includes(Q.player_in_jxsi ? "jxsi" : "jxcat");
+    var credibility = Q.burdens_broken && governing ? 0.3 : 1;
+    for (var c of Q.parlament_constituencies) {
+        for (var d of ["ind", "young", "unemployed", "retired"]) {
+            G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.35*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:0.2*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+        }
+    }
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.35*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psoe", amount:0.3*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:0.2*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.35*effectiveness*credibility, maxDonorFraction:0.5});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5});
+    Q.erc_redbelt_mod += 0.25*effectiveness*credibility;
+    if ((Q.player_in_jxsi && Q.cup_in_jxsi) || (Q.player_in_jxcat && Q.cup_in_jxcat)) {
+        Q.cup_redbelt_mod += 0.1*effectiveness;
+    }
+!}
+
+The rally has linked national liberation to pensions, healthcare, housing, and a stronger welfare state. [? if burdens_broken: Having broken those same commitments in government makes the message much less effective. ?]
+
 @local_barcelona
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.55*effectiveness, maxDonorFraction:0.5, constituencies:["barcelona"], demographics:["middle", "young"]});
+    G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:0.35*effectiveness, maxDonorFraction:0.5, constituencies:["barcelona"], demographics:["middle", "young"]});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.65*effectiveness, maxDonorFraction:0.5});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:0.45*effectiveness, maxDonorFraction:0.5});
+!}
+
+The coalition has staged a major rally in Barcelona, combining the national message with housing, mobility, and the future of the Catalan capital.
+
 @local_red_belt
+view-if: gabriel_rufian_advisor = 1 or erc_break_red_belt = 1 or cup_break_red_belt = 1
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    for (var d of ["ind", "young", "unemployed"]) {
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.5*effectiveness, maxDonorFraction:0.5, constituencies:["barcelona"], demographics:[d]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:0.3*effectiveness, maxDonorFraction:0.5, constituencies:["barcelona"], demographics:[d]});
+    }
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.35*effectiveness, maxDonorFraction:0.5});
+    Q.erc_redbelt_mod += 0.75*effectiveness;
+    if ((Q.player_in_jxsi && Q.cup_in_jxsi) || (Q.player_in_jxcat && Q.cup_in_jxcat)) {
+        Q.cup_redbelt_mod += 0.2*effectiveness;
+    }
+!}
+
+The rally has taken the independence case into the metropolitan working-class cities, where social concerns matter at the very least as much as national identity.
+
 @local_tarragona
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    for (var d of ["ind", "middle", "rural"]) {
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.45*effectiveness, maxDonorFraction:0.5, constituencies:["tarragona"], demographics:[d]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.3*effectiveness, maxDonorFraction:0.5, constituencies:["tarragona"], demographics:[d]});
+    }
+!}
+
+The rally in Tarragona and the Ebre counties has focused on infrastructure, territorial neglect, and local control over development.
+
 @local_lleida
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    for (var d of ["middle", "retired", "rural"]) {
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.3*effectiveness, maxDonorFraction:0.5, constituencies:["lleida"], demographics:[d]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.45*effectiveness, maxDonorFraction:0.5, constituencies:["lleida"], demographics:[d]});
+    }
+    Q.erc_interior_mod += 0.35*effectiveness;
+    Q.ciu_interior_mod += 0.3*effectiveness;
+    if ((Q.player_in_jxsi && Q.cup_in_jxsi) || (Q.player_in_jxcat && Q.cup_in_jxcat)) {
+        Q.cup_interior_mod += 0.1*effectiveness;
+    }
+!}
+
+The coalition has rallied Lleida and the Pyrenees around rural services, agriculture, and a stronger political voice for the interior.
+
 @local_girona
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    for (var d of ["middle", "young", "rural"]) {
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.25*effectiveness, maxDonorFraction:0.5, constituencies:["girona"], demographics:[d]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.5*effectiveness, maxDonorFraction:0.5, constituencies:["girona"], demographics:[d]});
+    }
+    Q.erc_interior_mod += 0.25*effectiveness;
+    Q.ciu_interior_mod += 0.3*effectiveness;
+    if ((Q.player_in_jxsi && Q.cup_in_jxsi) || (Q.player_in_jxcat && Q.cup_in_jxcat)) {
+        Q.cup_interior_mod += 0.1*effectiveness;
+    }
+!}
+
+Rallying in Girona has reinforced the coalition in one of the movement's strongest territories. 

@@ -36,6 +36,10 @@ on-arrival: {!
   ];
 
   Q.player_roadmap_change_countdown = 6;
+  Q.burdens_broken = 0;
+  Q.burdens_time = 0;
+  Q.burdens_done = 0;
+  Q.burdens_goal = 0;
 
   // start situation
   Q.president = "Artur Mas";

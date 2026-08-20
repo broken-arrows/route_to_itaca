@@ -10,8 +10,6 @@ role: card-party
 
 = Communications and Media
 
-# TODO: Actual effects on congreso & local elections
-
 What should be our strategy for all our party media and communication efforts?
 
 - @donations
@@ -29,25 +27,27 @@ What should be our strategy for all our party media and communication efforts?
 title: We could use a fundraising campaign.
 subtitle: This may have mixed effects depending on the public, but it would certainly help with our finances.
 on-arrival: {!
- Q.party_resources += 1;
- Q.erc_parlament_barcelona_unemployed_support -= 1; 
- Q.erc_parlament_girona_unemployed_support -= 1;
- Q.erc_parlament_lleida_unemployed_support -= 1;
- Q.erc_parlament_tarragona_unemployed_support -= 1;
- Q.erc_parlament_barcelona_ind_support -= 1;
- Q.erc_parlament_lleida_ind_support -= 1;
- Q.erc_parlament_girona_ind_support -= 1;
- Q.erc_parlament_tarragona_ind_support -= 1;
- Q.erc_parlament_barcelona_middle_support += 3*(1-Q.erc_dissent/100);    
- Q.erc_parlament_girona_middle_support += 3*(1-Q.erc_dissent/100);
- Q.erc_parlament_lleida_middle_support += 3*(1-Q.erc_dissent/100);
- Q.erc_parlament_tarragona_middle_support += 2*(1-Q.erc_dissent/100);
- Q.erc_parlament_barcelona_buss_support += 1*(1-Q.erc_dissent/100);
- Q.erc_parlament_girona_buss_support += 1*(1-Q.erc_dissent/100);
- Q.erc_parlament_lleida_buss_support += 1*(1-Q.erc_dissent/100);
- Q.erc_parlament_tarragona_buss_support += 1*(1-Q.erc_dissent/100);
- Q.erc_left_dissent += 10;
- Q.erc_core_dissent += 10;
+    Q.party_resources += 1;
+    Q.erc_left_dissent += 10;
+    Q.erc_core_dissent += 10;
+    var mediaEfficiency = Math.max(0, Math.min(1, 1 - Q.erc_dissent / 100));
+    for (var c of Q.parlament_constituencies) {
+        for (var d of ["unemployed", "ind"]) {
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "erc", amount: 0.3, maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: 0.2, maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+        }
+        var middleGain = (c == "tarragona" ? 0.7 : 1.0) * mediaEfficiency;
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "ciu", amount: middleGain * 0.6, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "psc", amount: middleGain * 0.2, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: middleGain * 0.2, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "ciu", amount: 0.25 * mediaEfficiency, maxDonorFraction: 0.5, constituencies: [c], demographics: ["buss"] });
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "psc", amount: 0.15 * mediaEfficiency, maxDonorFraction: 0.5, constituencies: [c], demographics: ["buss"] });
+    }
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "abstain", from: "erc", amount: 0.15, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "ciu", amount: 0.2 * mediaEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "bcomu", from: "erc", amount: 0.1, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "ciu", amount: 0.15 * mediaEfficiency, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "psc", amount: 0.15 * mediaEfficiency, maxDonorFraction: 0.5 });
 !}
 
 We are definitely bringing more funds, but the Left faction and the Republican Core are not specially happy about using this strategy. 
@@ -57,21 +57,23 @@ title: The purpose of party media is to get more ERC seats.
 subtitle: Party media will focus on the electoral campaigning.
 on-arrival: {!
     Q.erc_campaign_media += 1;
-    Q.erc_parlament_girona_middle_support += 2*(1-Q.erc_dissent/100);
-    Q.erc_parlament_lleida_middle_support += 2*(1-Q.erc_dissent/100);
-    Q.erc_parlament_tarragona_middle_support += 2*(1-Q.erc_dissent/100);
-    Q.erc_parlament_girona_buss_support += 2*(1-Q.erc_dissent/100);
-    Q.erc_parlament_lleida_buss_support += 2*(1-Q.erc_dissent/100);
-    Q.erc_parlament_tarragona_buss_support += 2*(1-Q.erc_dissent/100);
-    Q.erc_parlament_girona_ind_support += 1*(1-Q.erc_dissent/100);
-    Q.erc_parlament_lleida_ind_support += 1*(1-Q.erc_dissent/100);
-    Q.erc_parlament_tarragona_ind_support += 1*(1-Q.erc_dissent/100);
-    Q.erc_parlament_girona_rural_support += 2*(1-Q.erc_dissent/100);
-    Q.erc_parlament_lleida_rural_support += 2*(1-Q.erc_dissent/100);
-    Q.erc_parlament_tarragona_rural_support += 2*(1-Q.erc_dissent/100);
-    Q.erc_parlament_girona_young_support += 1*(1-Q.erc_dissent/100);
-    Q.erc_parlament_lleida_young_support += 1*(1-Q.erc_dissent/100);
-    Q.erc_parlament_tarragona_young_support += 1*(1-Q.erc_dissent/100);
+    var campaignEfficiency = Math.max(0, Math.min(1, 1 - Q.erc_dissent / 100));
+    if (Q.broken_roadmap) campaignEfficiency *= 0.3;
+    for (var c of ["girona", "lleida", "tarragona"]) {
+        for (var d of ["middle", "buss", "rural"]) {
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "ciu", amount: 0.45 * campaignEfficiency, maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: 0.15 * campaignEfficiency, maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "psc", amount: 0.1 * campaignEfficiency, maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+        }
+        for (var d of ["ind", "young"]) {
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "ciu", amount: 0.2 * campaignEfficiency, maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: 0.15 * campaignEfficiency, maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+        }
+    }
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "ciu", amount: 0.3 * campaignEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "abstain", amount: 0.15 * campaignEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "psoe", amount: 0.1 * campaignEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    Q.erc_interior_mod = Q.erc_interior_mod + 0.5 * campaignEfficiency;
 !}
 
 This strategy mostly reaches our traditional voter strongholds outside urban Barcelona, who are already familiar with our party's message. Hopefully someone new has been reached as well. 
@@ -94,14 +96,15 @@ on-arrival: {!
     Q.social_media = 1;
     Q.erc_pragmatic_dissent += 10;
     Q.erc_core_dissent += 5;
-    Q.erc_parlament_barcelona_young_support += (1-Q.erc_dissent/100);
-    Q.erc_parlament_girona_young_support += (1-Q.erc_dissent/100);
-    Q.erc_parlament_lleida_young_support += (1-Q.erc_dissent/100);
-    Q.erc_parlament_tarragona_young_support += (1-Q.erc_dissent/100);
-    Q.erc_parlament_barcelona_middle_support += 4*(1-Q.erc_dissent/100);
-    Q.erc_parlament_girona_middle_support += 4*(1-Q.erc_dissent/100);
-    Q.erc_parlament_lleida_middle_support += 4*(1-Q.erc_dissent/100);
-    Q.erc_parlament_tarragona_middle_support += 4*(1-Q.erc_dissent/100);
+    var socialEfficiency = Math.max(0, Math.min(1, 1 - Q.erc_dissent / 100));
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: 0.2 * socialEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "federal_left", amount: 0.15 * socialEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "psc", amount: 0.4 * socialEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "federal_left", amount: 0.3 * socialEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: 0.3 * socialEfficiency, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "abstain", amount: 0.2 * socialEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "bcomu", amount: 0.15 * socialEfficiency, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "psc", amount: 0.15 * socialEfficiency, maxDonorFraction: 0.5 });
 !}
 
 Our newly expanded social media presence is reaching new and specially younger audiences, but we're still not particularly good at it. It's unclear how much of an electoral effect this has, which does not please some of our more pragmatically-minded and core members.
@@ -115,18 +118,21 @@ view-if: social_media = 1
 on-arrival: {!
     Q.party_resources -= 1;
     Q.social_media = 2;
-    Q.erc_parlament_barcelona_young_support += 2*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
-    Q.erc_parlament_girona_young_support += 2*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
-    Q.erc_parlament_lleida_young_support += 2*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
-    Q.erc_parlament_tarragona_young_support += 2*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
-    Q.erc_parlament_barcelona_middle_support += 2*(1-Q.erc_dissent/100) + Q.sergi_sabria_advisor;
-    Q.erc_parlament_girona_middle_support += 2*(1-Q.erc_dissent/100) + Q.sergi_sabria_advisor;
-    Q.erc_parlament_lleida_middle_support += 2*(1-Q.erc_dissent/100) + Q.sergi_sabria_advisor;
-    Q.erc_parlament_tarragona_middle_support += 2*(1-Q.erc_dissent/100) + Q.sergi_sabria_advisor;
-    Q.erc_parlament_barcelona_ind_support += 2*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
-    Q.erc_parlament_girona_ind_support += 3*(1-Q.erc_dissent/100);
-    Q.erc_parlament_lleida_ind_support += 3*(1-Q.erc_dissent/100);
-    Q.erc_parlament_tarragona_ind_support += 2*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
+    var socialEfficiency = Math.max(0, Math.min(1, 1 - Q.erc_dissent / 100));
+    var youngReach = (0.6 + 0.3 * Q.gabriel_rufian_advisor) * socialEfficiency;
+    var middleReach = (0.5 + 0.2 * Q.sergi_sabria_advisor) * socialEfficiency;
+    var indyCredibility = Q.broken_roadmap ? 0.25 : 1;
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: youngReach * 0.6, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "federal_left", amount: youngReach * 0.4, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "psc", amount: middleReach * 0.5, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "federal_left", amount: middleReach * 0.3, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: middleReach * 0.2, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "ciu", amount: 0.35 * socialEfficiency * indyCredibility, maxDonorFraction: 0.5, constituencies: "all", demographics: ["ind"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: 0.25 * socialEfficiency * indyCredibility, maxDonorFraction: 0.5, constituencies: "all", demographics: ["ind"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "abstain", amount: 0.3 * socialEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "federal_left", amount: 0.15 * socialEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "bcomu", amount: 0.25 * socialEfficiency, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "psc", amount: 0.2 * socialEfficiency, maxDonorFraction: 0.5 });
 !}
 
 We're getting better at this thing. Our local ERC branches are playing the Twitter game, while targeted ads on Instagram and Facebook are reaching a wider and more diverse audience than even imagined.
@@ -137,68 +143,34 @@ subtitle: We are playing the right game, but we're far from being the best at it
 view-if: social_media = 2 and year >= 2015
 on-arrival: {!
     Q.social_media = 3;
-    Q.erc_parlament_barcelona_young_support += 5*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
-    Q.erc_parlament_girona_young_support += 5*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
-    Q.erc_parlament_lleida_young_support += 5*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
-    Q.erc_parlament_tarragona_young_support += 5*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
-    Q.erc_parlament_barcelona_middle_support += 3*(1-Q.erc_dissent/100) + Q.sergi_sabria_advisor;
-    Q.erc_parlament_girona_middle_support += 3*(1-Q.erc_dissent/100) + Q.sergi_sabria_advisor;
-    Q.erc_parlament_lleida_middle_support += 3*(1-Q.erc_dissent/100) + Q.sergi_sabria_advisor;
-    Q.erc_parlament_tarragona_middle_support += 3*(1-Q.erc_dissent/100) + Q.sergi_sabria_advisor;
-    Q.erc_parlament_barcelona_ind_support += 2*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
-    Q.erc_parlament_girona_ind_support += 4*(1-Q.erc_dissent/100);
-    Q.erc_parlament_lleida_ind_support += 4*(1-Q.erc_dissent/100);
-    Q.erc_parlament_tarragona_ind_support += 2*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
-
-    // boost at a smaller scale other parties
+    var socialEfficiency = Math.max(0, Math.min(1, 1 - Q.erc_dissent / 100));
+    var youngReach = (1.4 + 0.3 * Q.gabriel_rufian_advisor) * socialEfficiency;
+    var middleReach = (0.8 + 0.2 * Q.sergi_sabria_advisor) * socialEfficiency;
+    var indyCredibility = Q.broken_roadmap ? 0.25 : 1;
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: youngReach * 0.55, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "federal_left", amount: youngReach * 0.3, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "psc", amount: youngReach * 0.15, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "psc", amount: middleReach * 0.45, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "federal_left", amount: middleReach * 0.3, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: middleReach * 0.25, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    for (var c of Q.parlament_constituencies) {
+        var indyReach = (c == "girona" || c == "lleida" ? 1.0 : 0.65) * socialEfficiency * indyCredibility;
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "ciu", amount: indyReach * 0.6, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: indyReach * 0.4, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+    }
+    // A mature presence helps the nearby ecosystem, but all gains still have a source.
     var relevant_demos = ["young", "middle", "ind"];
-    if (Q.cup_in_jxsi != 0 && Q.cup_in_jxcat != 0) {
-        for (var d of relevant_demos) {
-            Q.cup_parlament_barcelona_[d+"_support"] += 1*(Q.cup_relations/100);
-            Q.cup_parlament_girona_[d+"_support"] += 1*(Q.cup_relations/100);
-            Q.cup_parlament_lleida_[d+"_support"] += 1*(Q.cup_relations/100);
-            Q.cup_parlament_tarragona_[d+"_support"] += 1*(Q.cup_relations/100);
-        }
-    } 
-    if (Q.jxcat_formed) {
-        // we can assume that if we're here ERC is NOT part of JxCat.
-        for (var d of relevant_demos) {
-            Q.jxcat_parlament_barcelona_[d+"_support"] += 1*(Q.jxcat_relations/100);
-            Q.jxcat_parlament_girona_[d+"_support"] += 1*(Q.jxcat_relations/100);
-            Q.jxcat_parlament_lleida_[d+"_support"] += 1*(Q.jxcat_relations/100);
-            Q.jxcat_parlament_tarragona_[d+"_support"] += 1*(Q.jxcat_relations/100);
-        }
-    }
-    if (Q.csqp_formed) {
-        for (var d of relevant_demos) {
-            Q.csqp_parlament_barcelona_[d+"_support"] += 1*(Q.csqp_relations/100);
-            Q.csqp_parlament_girona_[d+"_support"] += 1*(Q.csqp_relations/100);
-            Q.csqp_parlament_lleida_[d+"_support"] += 1*(Q.csqp_relations/100);
-            Q.csqp_parlament_tarragona_[d+"_support"] += 1*(Q.csqp_relations/100);
-        }
+    var cupEcosystem = 0.2 * Math.max(0, Math.min(1, Q.cup_relations / 100));
+    var ciuEcosystem = 0.15 * Math.max(0, Math.min(1, (Number(Q[Q.parlament_current_ciu + "_relations"]) || 0) / 100));
+    var leftEcosystem = 0.2 * Math.max(0, Math.min(1, (Number(Q[Q.parlament_current_icv + "_relations"]) || 0) / 100));
+    if (!Q.cup_in_jxsi && !Q.cup_in_jxcat) G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "abstain", amount: cupEcosystem, maxDonorFraction: 0.5, constituencies: "all", demographics: relevant_demos });
+    if (!Q.erc_in_jxsi && !Q.erc_in_jxcat) G.cardSupportTransfer(Q, { contest: "parlament", to: "ciu", from: "abstain", amount: ciuEcosystem, maxDonorFraction: 0.5, constituencies: "all", demographics: relevant_demos });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "abstain", amount: leftEcosystem, maxDonorFraction: 0.5, constituencies: "all", demographics: relevant_demos });
 
-    } else if (Q.cecp_formed) {
-        for (var d of relevant_demos) {
-            Q.cecp_parlament_barcelona_[d+"_support"] += 1*(Q.cecp_relations/100);
-            Q.cecp_parlament_girona_[d+"_support"] += 1*(Q.cecp_relations/100);
-            Q.cecp_parlament_lleida_[d+"_support"] += 1*(Q.cecp_relations/100);
-            Q.cecp_parlament_tarragona_[d+"_support"] += 1*(Q.cecp_relations/100);
-        }
-    } else if (Q.ecp_formed) {
-        for (var d of relevant_demos) {
-            Q.ecp_parlament_barcelona_[d+"_support"] += 1*(Q.ecp_relations/100);
-            Q.ecp_parlament_girona_[d+"_support"] += 1*(Q.ecp_relations/100);
-            Q.ecp_parlament_lleida_[d+"_support"] += 1*(Q.ecp_relations/100);
-            Q.ecp_parlament_tarragona_[d+"_support"] += 1*(Q.ecp_relations/100);
-        }
-    } else {
-        for (var d of relevant_demos) {
-            Q.icv_parlament_barcelona_[d+"_support"] += 1*(Q.icv_relations/100);
-            Q.icv_parlament_girona_[d+"_support"] += 1*(Q.icv_relations/100);
-            Q.icv_parlament_lleida_[d+"_support"] += 1*(Q.icv_relations/100);
-            Q.icv_parlament_tarragona_[d+"_support"] += 1*(Q.icv_relations/100);
-        }
-    }
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "abstain", amount: 0.45 * socialEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "federal_left", amount: 0.2 * socialEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "bcomu", amount: 0.35 * socialEfficiency, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "psc", amount: 0.25 * socialEfficiency, maxDonorFraction: 0.5 });
 !}
 
 Our social media is now a fully integrated and essential part of our communication strategy. Stories, lives, and all sorts of content are buzzing every day, and it seems that is benefiting not only us, but in general the whole pro-independence and left-wing ecosystem. 
@@ -212,70 +184,21 @@ view-if: social_media >= 3 and year >= 2016
 on-arrival: {!
     Q.party_resources -= 1; 
     Q.social_media = 4;
-
-    Q.erc_parlament_barcelona_young_support += 4*(1-Q.erc_dissent/100) + Q.gabriel_rufian_advisor;
-    Q.erc_parlament_girona_young_support += 4*(1-Q.erc_dissent/100) + Q.gabriel_rufian_advisor;
-    Q.erc_parlament_lleida_young_support += 4*(1-Q.erc_dissent/100) + Q.gabriel_rufian_advisor;
-    Q.erc_parlament_tarragona_young_support += 4*(1-Q.erc_dissent/100) + Q.gabriel_rufian_advisor;
-    Q.erc_parlament_barcelona_middle_support += 2*(1-Q.erc_dissent/100) + Q.sergi_sabria_advisor;
-    Q.erc_parlament_girona_middle_support += 2*(1-Q.erc_dissent/100) + Q.sergi_sabria_advisor;
-    Q.erc_parlament_lleida_middle_support += 2*(1-Q.erc_dissent/100) + Q.sergi_sabria_advisor;
-    Q.erc_parlament_tarragona_middle_support += 2*(1-Q.erc_dissent/100) + Q.sergi_sabria_advisor;
-    Q.erc_parlament_barcelona_ind_support += 2*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
-    Q.erc_parlament_girona_ind_support += 3*(1-Q.erc_dissent/100);
-    Q.erc_parlament_lleida_ind_support += 3*(1-Q.erc_dissent/100);
-    Q.erc_parlament_tarragona_ind_support += 2*(1-Q.erc_dissent/100) + 2*Q.gabriel_rufian_advisor;
-
-    // boost at a smaller scale other parties
-    var relevant_demos = ["young", "middle", "ind"];
-    if (Q.cup_in_jxsi != 0 && Q.cup_in_jxcat != 0) {
-        for (var d of relevant_demos) {
-            Q.cup_parlament_barcelona_[d+"_support"] += 1*(Q.cup_relations/100);
-            Q.cup_parlament_girona_[d+"_support"] += 1*(Q.cup_relations/100);
-            Q.cup_parlament_lleida_[d+"_support"] += 1*(Q.cup_relations/100);
-            Q.cup_parlament_tarragona_[d+"_support"] += 1*(Q.cup_relations/100);
-        }
-    } 
-    if (Q.jxcat_formed) {
-        // we can assume that if we're here ERC is NOT part of JxCat.
-        for (var d of relevant_demos) {
-            Q.jxcat_parlament_barcelona_[d+"_support"] += 1*(Q.jxcat_relations/100);
-            Q.jxcat_parlament_girona_[d+"_support"] += 1*(Q.jxcat_relations/100);
-            Q.jxcat_parlament_lleida_[d+"_support"] += 1*(Q.jxcat_relations/100);
-            Q.jxcat_parlament_tarragona_[d+"_support"] += 1*(Q.jxcat_relations/100);
-        }
-    }
-    if (Q.csqp_formed) {
-        for (var d of relevant_demos) {
-            Q.csqp_parlament_barcelona_[d+"_support"] += 1*(Q.csqp_relations/100);
-            Q.csqp_parlament_girona_[d+"_support"] += 1*(Q.csqp_relations/100);
-            Q.csqp_parlament_lleida_[d+"_support"] += 1*(Q.csqp_relations/100);
-            Q.csqp_parlament_tarragona_[d+"_support"] += 1*(Q.csqp_relations/100);
-        }
-
-    } else if (Q.cecp_formed) {
-        for (var d of relevant_demos) {
-            Q.cecp_parlament_barcelona_[d+"_support"] += 1*(Q.cecp_relations/100);
-            Q.cecp_parlament_girona_[d+"_support"] += 1*(Q.cecp_relations/100);
-            Q.cecp_parlament_lleida_[d+"_support"] += 1*(Q.cecp_relations/100);
-            Q.cecp_parlament_tarragona_[d+"_support"] += 1*(Q.cecp_relations/100);
-        }
-    } else if (Q.ecp_formed) {
-        for (var d of relevant_demos) {
-            Q.ecp_parlament_barcelona_[d+"_support"] += 1*(Q.ecp_relations/100);
-            Q.ecp_parlament_girona_[d+"_support"] += 1*(Q.ecp_relations/100);
-            Q.ecp_parlament_lleida_[d+"_support"] += 1*(Q.ecp_relations/100);
-            Q.ecp_parlament_tarragona_[d+"_support"] += 1*(Q.ecp_relations/100);
-        }
-    } else {
-        for (var d of relevant_demos) {
-            Q.icv_parlament_barcelona_[d+"_support"] += 1*(Q.icv_relations/100);
-            Q.icv_parlament_girona_[d+"_support"] += 1*(Q.icv_relations/100);
-            Q.icv_parlament_lleida_[d+"_support"] += 1*(Q.icv_relations/100);
-            Q.icv_parlament_tarragona_[d+"_support"] += 1*(Q.icv_relations/100);
-        }
-    }
+    var socialEfficiency = Math.max(0, Math.min(1, 1 - Q.erc_dissent / 100));
+    var repeatedReach = 0.35 * socialEfficiency;
+    var indyCredibility = Q.broken_roadmap ? 0.25 : 1;
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: repeatedReach, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "federal_left", amount: repeatedReach * 0.5, maxDonorFraction: 0.5, constituencies: "all", demographics: ["young"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "psc", amount: repeatedReach * 0.5, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: repeatedReach * 0.5, maxDonorFraction: 0.5, constituencies: "all", demographics: ["middle"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "ciu", amount: repeatedReach * indyCredibility, maxDonorFraction: 0.5, constituencies: "all", demographics: ["ind"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: repeatedReach * 0.5 * indyCredibility, maxDonorFraction: 0.5, constituencies: "all", demographics: ["ind"] });
+    var ecosystemReach = 0.05;
+    if (!Q.cup_in_jxsi && !Q.cup_in_jxcat) G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "abstain", amount: ecosystemReach * Math.max(0, Math.min(1, Q.cup_relations / 100)), maxDonorFraction: 0.5, constituencies: "all", demographics: ["young", "middle", "ind"] });
+    G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "abstain", amount: ecosystemReach * Math.max(0, Math.min(1, (Number(Q[Q.parlament_current_icv + "_relations"]) || 0) / 100)), maxDonorFraction: 0.5, constituencies: "all", demographics: ["young", "middle", "ind"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "abstain", amount: 0.15 * socialEfficiency, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "bcomu", amount: 0.1 * socialEfficiency, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "psc", amount: 0.1 * socialEfficiency, maxDonorFraction: 0.5 });
 !}
 
 Continuing to invest in social media ensures we stay relevant and keep up with the fast-paced landscape of online communication. It is, however, harder to stand out as what we're doing is starting to become what's expected
-

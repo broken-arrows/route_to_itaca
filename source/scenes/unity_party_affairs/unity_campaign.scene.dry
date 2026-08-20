@@ -17,14 +17,183 @@ Whether or not we are in an electoral campaign, it's always a good idea for the 
 - @middle: The middle working class of professionals, public employees, and highly qualified workers.
 - @business: Small business owners and the self-employed.
 - @rural: Rural workers and small farmers from rural Catalonia.
+- @retirees: The retired and elderly population.
 - @unemployed: The unemployed.
+- @local_election: Focus the coalition's resources on the upcoming local elections.
+- @congreso_election: Focus the coalition's resources on the upcoming Congreso election.
 - @root: We either don't want to or cannot campaign right now.
 - @easy_discard
 
 @workers
-@redbelt
-@middle
-@business
-@rural
-@unemployed
+subtitle: \[-1 resources\]
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    var governing = Q.cat_coalition.includes(Q.player_in_jxsi ? "jxsi" : "jxcat");
+    var credibility = Q.burdens_broken && governing ? 0.35 : 1;
+    var weights = {barcelona:0.45, girona:1.2, lleida:1.2, tarragona:0.75};
+    for (var c of Q.parlament_constituencies) {
+        var amount = weights[c]*effectiveness*credibility;
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:amount*0.5, maxDonorFraction:0.5, constituencies:[c], demographics:["ind"]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:amount*0.3, maxDonorFraction:0.5, constituencies:[c], demographics:["ind"]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:amount*0.2, maxDonorFraction:0.5, constituencies:[c], demographics:["ind"]});
+    }
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psoe", amount:0.4*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    Q.party_resources -= 1;
+!}
 
+The coalition has broadened its campaign among industrial and service workers across Catalonia. [? if burdens_broken: Our record in government makes the social promises behind the campaign much harder to believe, though. ?]
+
+@redbelt
+subtitle: \[-1 resources\]
+view-if: gabriel_rufian_advisor = 1 or erc_break_red_belt = 1 or cup_break_red_belt = 1
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    var governing = Q.cat_coalition.includes(Q.player_in_jxsi ? "jxsi" : "jxcat");
+    var credibility = Q.burdens_broken && governing ? 0.35 : 1;
+    for (var d of ["ind", "unemployed"]) {
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.8*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["barcelona"], demographics:[d]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:0.3*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["barcelona"], demographics:[d]});
+    }
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psoe", amount:0.6*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.65*effectiveness*credibility, maxDonorFraction:0.5});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5});
+    Q.erc_redbelt_mod += 0.65*effectiveness*credibility;
+    Q.party_resources -= 1;
+!}
+
+We have concentrated the coalition's campaigning in Barcelona's red belt, where breaking the PSC's long dominance remains hard, but no longer a pipe dream.
+
+@middle
+subtitle: \[-1 resources\]
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    var credibility = Q.broken_roadmap ? 0.35 : 1;
+    for (var c of Q.parlament_constituencies) {
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.55*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["middle"]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"cs", amount:0.35*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["middle"]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["middle"]});
+    }
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psoe", amount:0.35*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"cs", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.3*effectiveness*credibility, maxDonorFraction:0.5});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"cs", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5});
+    Q.party_resources -= 1;
+!}
+
+The unity list has presented independence as a practical project for professionals, public employees, and the urban middle class. [? if broken_roadmap: Having already failed to deliver the coalition's roadmap badly weakens that claim. ?]
+
+@business
+subtitle: \[-1 resources\]
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    var credibility = Q.broken_roadmap ? 0.4 : 1;
+    for (var c of Q.parlament_constituencies) {
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"ppc", amount:0.55*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["buss"]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"cs", amount:0.35*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["buss"]});
+    }
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"pp", amount:0.35*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"cs", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"pp", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"cs", amount:0.2*effectiveness*credibility, maxDonorFraction:0.5});
+    Q.party_resources -= 1;
+!}
+
+We have leaned on the coalition's broad ideological range to reassure small businesses and the self-employed that the independence project can offer stability as well as change.
+
+@rural
+subtitle: \[-1 resources\]
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    var credibility = Q.broken_roadmap ? 0.35 : 1;
+    for (var c of Q.parlament_constituencies) {
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.65*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["rural"]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.35*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["rural"]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"unio", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["rural"]});
+    }
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.45*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psoe", amount:0.2*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    Q.erc_interior_mod += 0.55*effectiveness*credibility;
+    Q.party_resources -= 1;
+!}
+
+The coalition has taken its campaign beyond the large cities, stressing territorial representation and the survival of rural communities. [? if broken_roadmap: The broken roadmap makes another promise of national transformation difficult to sell. ?]
+
+@retirees
+subtitle: \[-1 resources\]
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    var credibility = Q.broken_roadmap ? 0.45 : 1;
+    for (var c of Q.parlament_constituencies) {
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.55*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["retired"]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"ppc", amount:0.3*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["retired"]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["retired"]});
+    }
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psoe", amount:0.4*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"pp", amount:0.2*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.3*effectiveness*credibility, maxDonorFraction:0.5});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"pp", amount:0.2*effectiveness*credibility, maxDonorFraction:0.5});
+    Q.party_resources -= 1;
+!}
+
+We have emphasized pensions, healthcare, and an orderly transition in an effort to make the unity project less intimidating to older voters.
+
+@unemployed
+subtitle: \[-1 resources\]
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    var governing = Q.cat_coalition.includes(Q.player_in_jxsi ? "jxsi" : "jxcat");
+    var credibility = Q.burdens_broken && governing ? 0.3 : 1;
+    for (var c of Q.parlament_constituencies) {
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.65*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["unemployed"]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:0.4*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["unemployed"]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:[c], demographics:["unemployed"]});
+    }
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.4*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:0.3*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:0.35*effectiveness*credibility, maxDonorFraction:0.5});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psc", amount:0.2*effectiveness*credibility, maxDonorFraction:0.5});
+    Q.party_resources -= 1;
+!}
+
+We have argued that a new state can break with the economic settlement that left so many people without work. [? if burdens_broken: Our own record in government makes that argument ring hollow. ?]
+
+@local_election
+view-if: next_local_election_time - time <= 12
+subtitle: \[-1 resources\]
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+call: erc_campaigning.local_election if player_party = "erc"
+
+# TODO: text + cases for jxsi/jxcat going together in local elections, etc
+
+@congreso_election
+view-if: next_spanish_election_time - time <= 12 and jxsi_in_congreso
+subtitle: \[-1 resources\]
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-(Q.player_in_jxsi ? (Q.jxsi_dissent || 0) : (Q.jxcat_dissent || 0))/100);
+    var credibility = Q.broken_roadmap ? 0.45 : 1;
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"psoe", amount:0.55*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"federal_left", amount:0.3*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"cs", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to: (Q.player_in_jxsi ? "jxsi" : "jxcat"), from:"abstain", amount:0.3*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    Q.party_resources -= 1;
+!}
+
+The coalition has concentrated its resources on the Congreso race, arguing that a single united Catalan delegation can exert more pressure than its component parties could separately. [? if broken_roadmap: After the failure of our proimised roadmap to independence, however, it is undeniable that we face considerable skepticism. ?]

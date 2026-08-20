@@ -1755,6 +1755,382 @@
     }
   }
 
+  // ===========================================================================
+  // CARD-SCALE SUPPORT TRANSFERS
+  //
+  // This is deliberately narrower than a general support mutation primitive.
+  // Recurring cards use bounded persuasion/mobilisation transfers; formations,
+  // mergers and successor operations keep their separate structural semantics.
+  // The donor cap is a required call-site argument so content cannot conceal the
+  // fact that one card may take at most half of a donor's current support.
+  // ===========================================================================
+
+  const CARD_TRANSFER_CONTESTS = new Set([
+    "parlament",
+    "congreso",
+    "barcelona",
+  ]);
+  const CARD_CIU_PARTIES = [
+    "jxsi",
+    "jxcat",
+    "junts",
+    "pdcat",
+    "dl",
+    "cdc",
+    "ciu",
+  ];
+  const CARD_FEDERAL_LEFT_PARTIES = ["ecp", "cecp", "csqp", "icv"];
+  const CARD_INDEPENDENCE_PARTIES = new Set([
+    "erc",
+    "cup",
+    "si",
+    "ciu",
+    "cdc",
+    "dl",
+    "pdcat",
+    "jxsi",
+    "jxcat",
+    "junts",
+    "fnc",
+    "fr",
+    "primaries",
+  ]);
+
+  function cardTransferError(message) {
+    throw new Error("cardSupportTransfer: " + message);
+  }
+
+  function cardTransferList(value, known, label) {
+    let selected;
+    if (value === "all") selected = known.slice();
+    else if (Array.isArray(value)) selected = value.slice();
+    else if (typeof value === "string") selected = [value];
+    else cardTransferError(label + ' must be a name, an array, or "all"');
+
+    if (selected.length === 0)
+      cardTransferError(label + " must select at least one value");
+    const unique = [];
+    for (const item of selected) {
+      if (typeof item !== "string" || known.indexOf(item) === -1) {
+        cardTransferError(
+          'unknown ' + label.replace(/s$/, "") + ' "' + item + '"',
+        );
+      }
+      if (unique.indexOf(item) === -1) unique.push(item);
+    }
+    return unique;
+  }
+
+  function cardSupportKey(contest, party, constituency, demographic) {
+    if (contest === "parlament") {
+      return (
+        party +
+        "_parlament_" +
+        constituency +
+        "_" +
+        demographic +
+        "_support"
+      );
+    }
+    if (contest === "congreso")
+      return party + "_congreso_" + constituency + "_support";
+    return party + "_local_barcelona_support";
+  }
+
+  function cardCellParties(Q, contest, constituency) {
+    if (contest === "parlament") return (Q.parties || []).concat([ABSTAIN]);
+    if (contest === "congreso")
+      return (Q["congreso_parties_" + constituency] || []).concat([ABSTAIN]);
+    return (Q.parties_bcn || []).slice();
+  }
+
+  function cardLiveAmong(Q, contest, constituency, demographic, candidates) {
+    for (const party of candidates) {
+      const key = cardSupportKey(contest, party, constituency, demographic);
+      if (Number(Q[key]) > 0) return party;
+    }
+    return null;
+  }
+
+  function cardCoalitionCarrier(Q, contest, constituency, demographic, party) {
+    const memberships =
+      party === "erc"
+        ? [
+            ["jxsi", "erc_in_jxsi"],
+            ["jxcat", "erc_in_jxcat"],
+          ]
+        : [
+            ["jxsi", "cup_in_jxsi"],
+            ["jxcat", "cup_in_jxcat"],
+          ];
+    for (const membership of memberships) {
+      if (!Q[membership[1]]) continue;
+      const carrier = membership[0];
+      const key = cardSupportKey(
+        contest,
+        carrier,
+        constituency,
+        demographic,
+      );
+      if (Number(Q[key]) > 0) return carrier;
+    }
+    return party;
+  }
+
+  function resolveCardParty(Q, contest, constituency, demographic, requested) {
+    if (typeof requested !== "string" || !requested)
+      cardTransferError("to/from must be non-empty party names");
+
+    if (requested === "erc" || requested === "cup") {
+      return cardCoalitionCarrier(
+        Q,
+        contest,
+        constituency,
+        demographic,
+        requested,
+      );
+    }
+
+    if (requested === "ciu") {
+      return (
+        cardLiveAmong(
+          Q,
+          contest,
+          constituency,
+          demographic,
+          CARD_CIU_PARTIES,
+        ) || (contest === "parlament" ? Q.parlament_current_ciu : null) || "ciu"
+      );
+    }
+
+    if (requested === "federal_left" || requested === "fl") {
+      if (contest === "congreso") {
+        return (
+          cardLiveAmong(Q, contest, constituency, null, [
+            "sumar",
+            "mpais",
+            "up",
+            "podemos",
+            "iu",
+          ]) || "iu"
+        );
+      }
+      if (contest === "barcelona") {
+        return (
+          cardLiveAmong(Q, contest, null, null, ["bcomu", "icv"]) || "bcomu"
+        );
+      }
+      return (
+        cardLiveAmong(
+          Q,
+          contest,
+          constituency,
+          demographic,
+          CARD_FEDERAL_LEFT_PARTIES,
+        ) || Q.parlament_current_icv || "icv"
+      );
+    }
+
+    if (requested === "podemos" && contest === "congreso")
+      return podKey(Q, constituency);
+    if (requested === "psoe") {
+      if (contest === "congreso") return psoeKey(Q, constituency);
+      return "psc";
+    }
+    if (requested === "pp" && contest === "parlament") return "ppc";
+    return requested;
+  }
+
+  function cardIndependenceShare(
+    Q,
+    contest,
+    constituency,
+    demographic,
+    lineup,
+  ) {
+    let total = 0;
+    let independence = 0;
+    for (const party of lineup) {
+      const key = cardSupportKey(
+        contest,
+        party,
+        constituency,
+        demographic,
+      );
+      const support = Q[key];
+      if (
+        typeof support !== "number" ||
+        !Number.isFinite(support) ||
+        support < 0
+      ) {
+        cardTransferError(key + " must hold finite, non-negative support");
+      }
+      total += support;
+      if (CARD_INDEPENDENCE_PARTIES.has(party)) independence += support;
+    }
+    if (!(total > 0)) cardTransferError("affected support pool has no support");
+    return (independence / total) * 100;
+  }
+
+  function cardSupportTransfer(Q, options) {
+    if (!Q || typeof Q !== "object") cardTransferError("Q must be an object");
+    if (!options || typeof options !== "object")
+      cardTransferError("options must be an object");
+
+    const contest = options.contest;
+    if (!CARD_TRANSFER_CONTESTS.has(contest))
+      cardTransferError('unknown contest "' + contest + '"');
+
+    const amount = options.amount;
+    if (typeof amount !== "number" || !Number.isFinite(amount) || amount < 0)
+      cardTransferError("amount must be a finite, non-negative number");
+    if (options.maxDonorFraction !== 0.5) {
+      cardTransferError("maxDonorFraction must be explicitly set to 0.5");
+    }
+    if (options.to === options.from)
+      cardTransferError("source and destination must be distinct parties");
+
+    let constituencies;
+    let demographics;
+    if (contest === "parlament") {
+      constituencies = cardTransferList(
+        options.constituencies,
+        Q.parlament_constituencies || [],
+        "constituencies",
+      );
+      demographics = cardTransferList(
+        options.demographics,
+        Q.parlament_demographics || [],
+        "demographics",
+      );
+    } else if (contest === "congreso") {
+      constituencies = cardTransferList(
+        options.constituencies,
+        Q.congreso_constituencies || [],
+        "constituencies",
+      );
+      if (options.demographics !== undefined)
+        cardTransferError("demographics are only valid for Parlament");
+      demographics = [null];
+    } else {
+      if (
+        options.constituencies !== undefined ||
+        options.demographics !== undefined
+      ) {
+        cardTransferError(
+          "Barcelona transfers do not accept constituencies or demographics",
+        );
+      }
+      constituencies = [null];
+      demographics = [null];
+    }
+
+    // Validate and calculate every cell before mutating any of them. A typo in
+    // one selector or a corrupt support value must never leave a partial effect.
+    const transfers = [];
+    for (const constituency of constituencies) {
+      for (const demographic of demographics) {
+        const lineup = cardCellParties(Q, contest, constituency);
+        if (lineup.length === 0)
+          cardTransferError("affected contest has no configured party lineup");
+
+        const to = resolveCardParty(
+          Q,
+          contest,
+          constituency,
+          demographic,
+          options.to,
+        );
+        const from = resolveCardParty(
+          Q,
+          contest,
+          constituency,
+          demographic,
+          options.from,
+        );
+        if (lineup.indexOf(to) === -1)
+          cardTransferError('unknown party "' + options.to + '" in affected pool');
+        if (lineup.indexOf(from) === -1)
+          cardTransferError(
+            'unknown party "' + options.from + '" in affected pool',
+          );
+        // Distinct components of a united list can legitimately resolve to the
+        // same live carrier. There is then no electorate-level movement in this
+        // cell; other selected cells must still be validated before any mutate.
+        if (to === from) continue;
+
+        const toKey = cardSupportKey(
+          contest,
+          to,
+          constituency,
+          demographic,
+        );
+        const fromKey = cardSupportKey(
+          contest,
+          from,
+          constituency,
+          demographic,
+        );
+        const toCurrent = Q[toKey];
+        const fromCurrent = Q[fromKey];
+        if (
+          typeof toCurrent !== "number" ||
+          !Number.isFinite(toCurrent) ||
+          toCurrent < 0
+        )
+          cardTransferError(toKey + " must hold finite, non-negative support");
+        if (
+          typeof fromCurrent !== "number" ||
+          !Number.isFinite(fromCurrent) ||
+          fromCurrent < 0
+        )
+          cardTransferError(fromKey + " must hold finite, non-negative support");
+
+        let effectiveRequest = amount;
+        if (
+          CARD_INDEPENDENCE_PARTIES.has(to) &&
+          !CARD_INDEPENDENCE_PARTIES.has(from)
+        ) {
+          const independenceShare = cardIndependenceShare(
+            Q,
+            contest,
+            constituency,
+            demographic,
+            lineup,
+          );
+          const pressure = Math.max(0, independenceShare - 35) / 15;
+          effectiveRequest *= 1 / (1 + pressure * pressure);
+        }
+
+        const actual = Math.min(
+          effectiveRequest,
+          fromCurrent * options.maxDonorFraction,
+        );
+        if (!Number.isFinite(actual) || actual < 0)
+          cardTransferError("calculated transfer is invalid");
+        transfers.push({ toKey, fromKey, toCurrent, fromCurrent, actual });
+      }
+    }
+
+    let totalTransferred = 0;
+    for (const transfer of transfers) {
+      const nextFrom = transfer.fromCurrent - transfer.actual;
+      const nextTo = transfer.toCurrent + transfer.actual;
+      if (
+        !Number.isFinite(nextFrom) ||
+        !Number.isFinite(nextTo) ||
+        nextFrom < 0 ||
+        nextTo < 0
+      ) {
+        cardTransferError("transfer would create invalid support");
+      }
+      Q[transfer.fromKey] = nextFrom;
+      Q[transfer.toKey] = nextTo;
+      totalTransferred += transfer.actual;
+    }
+    return totalTransferred;
+  }
+
   function spaSupportInject(Q, family, c, delta, from) {
     // Every way this call can fail used to fail SILENTLY: a misspelled
     // constituency ("calaunya") just skipped the loop, and a decimal-comma
@@ -2088,6 +2464,7 @@
   // forwards the whole thing, so it needs no edit.
   var api = {
     engineTick: monthPasses,
+    cardSupportTransfer: cardSupportTransfer,
     spaSupportInject: spaSupportInject,
     reconcileCongresoLineup: reconcileCongresoLineup,
     registerLaw: registerLaw,

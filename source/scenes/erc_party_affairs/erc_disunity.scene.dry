@@ -31,34 +31,31 @@ Something must be done to reinforce party unity.
 @enforce_unity
 title: Enforce party discipline.
 on-arrival: {!
-    Q.erc_civic_dissent -= 8; Q.erc_pragmatics_dissent -= 8; Q.erc_core_dissent -= 8; Q.erc_left_dissent -= 8; 
-    Q.erc_parlament_barcelona_middle_support -= (Q.erc_dissent/100 * 7); 
-    Q.erc_parlament_girona_middle_support -= (Q.erc_dissent/100 * 7);
-    Q.erc_parlament_lleida_middle_support -= (Q.erc_dissent/100 * 7);
-    Q.erc_parlament_tarragona_middle_support -= (Q.erc_dissent/100 * 7);
-    Q.erc_parlament_barcelona_ind_support -= (Q.erc_dissent/100 * 3); 
-    Q.erc_parlament_girona_ind_support -= (Q.erc_dissent/100 * 3);
-    Q.erc_parlament_lleida_ind_support -= (Q.erc_dissent/100 * 3);
-    Q.erc_parlament_tarragona_ind_support -= (Q.erc_dissent/100 * 3);
-    Q.erc_parlament_barcelona_rural_support -= (Q.erc_dissent/100 * 3);
-    Q.erc_parlament_girona_rural_support -= (Q.erc_dissent/100 * 3);
-    Q.erc_parlament_lleida_rural_support -= (Q.erc_dissent/100 * 3);
-    Q.erc_parlament_tarragona_rural_support -= (Q.erc_dissent/100 * 3);
-    Q.erc_parlament_barcelona_young_support -= (Q.erc_dissent/100 * 3)
-    Q.erc_parlament_girona_young_support -= (Q.erc_dissent/100 * 3)
-    Q.erc_parlament_lleida_young_support -= (Q.erc_dissent/100 * 3)
-    Q.erc_parlament_tarragona_young_support -= (Q.erc_dissent/100 * 3);
-    Q.erc_parlament_barcelona_unemployed_support -= (Q.erc_dissent/100 * 2);
-    Q.erc_parlament_girona_unemployed_support -= (Q.erc_dissent/100 * 2);
-    Q.erc_parlament_lleida_unemployed_support -= (Q.erc_dissent/100 * 2);
-    Q.erc_parlament_tarragona_unemployed_support -= (Q.erc_dissent/100 * 2);
+    Q.erc_civic_dissent -= 8; Q.erc_pragmatic_dissent -= 8; Q.erc_core_dissent -= 8; Q.erc_left_dissent -= 8;
+
+    var dissentScale = Math.max(0, Math.min(1, Q.erc_dissent / 100));
+    var disciplineLoss = {
+        middle: 3.5 * dissentScale,
+        ind: 1.5 * dissentScale,
+        rural: 1.5 * dissentScale,
+        young: 1.5 * dissentScale,
+        unemployed: 1.0 * dissentScale
+    };
+    for (var demographic in disciplineLoss) {
+        var loss = disciplineLoss[demographic];
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "erc", amount: loss * 0.6, maxDonorFraction: 0.5, constituencies: "all", demographics: [demographic] });
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "erc", amount: loss * 0.2, maxDonorFraction: 0.5, constituencies: "all", demographics: [demographic] });
+        G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: loss * 0.2, maxDonorFraction: 0.5, constituencies: "all", demographics: [demographic] });
+    }
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "abstain", from: "erc", amount: 0.5 * dissentScale, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "federal_left", from: "erc", amount: 0.25 * dissentScale, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "bcomu", from: "erc", amount: 0.3 * dissentScale, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "psc", from: "erc", amount: 0.2 * dissentScale, maxDonorFraction: 0.5 });
+    Q.erc_redbelt_mod = Math.max(-10, Q.erc_redbelt_mod - 0.5 * dissentScale);
+    Q.erc_interior_mod = Math.max(-5, Q.erc_interior_mod - 0.5 * dissentScale);
 !}
 
 Enforcing party discipline reduces dissent, but it could lead to an exit of dissenting members.
-
-# enforcing party discipline applies to all parties.
-
-# each party has a concessions action and an expulsions action.
 
 @concessions_civic
 title: Give concessions to the civil organizations.
@@ -97,4 +94,3 @@ Let the factions bicker; perhaps dissent is healthy for the party.
 
 
 # TODO: Add expel actions?
-

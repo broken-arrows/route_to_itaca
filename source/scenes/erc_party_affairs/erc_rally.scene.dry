@@ -12,8 +12,6 @@ role: card-party
 
 Mass rallies, protests, and student strikes are a common feature of left and pro-independence parties and civic organizations. ERC is no stranger to these, specially in politically charged times like now. What should these focus on at the current moment?
 
-# TODO: Actual effects on congreso & local elections + remove flat support assignment
-
 - @independence: The struggle for Catalan independence and self-determination.
 - @welfare: Política Social - the maintenance and expansion of social welfare programs.
 - @reform: Democratization, republicanism, and the fight for a new system for the Spanish state.
@@ -25,55 +23,54 @@ Mass rallies, protests, and student strikes are a common feature of left and pro
 on-arrival: {!
     Q.erc_civic_dissent -= 5;
     Q.erc_civic_strength += 5;
-    if (Q.roadmap_year < Q.year) {
-        for (var c of Q.parlament_constituencies) {
-            Q["erc_parlament_" + c + "_middle_support"] += 2*(1-Q.erc_dissent/100);
-            Q["erc_parlament_" + c + "_young_support"] += 1*(1-Q.erc_dissent/100);
-            Q["erc_parlament_" + c + "_rural_support"] += 1*(1-Q.erc_dissent/100);
-        }
+    var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
+    if (Q.broken_roadmap) {
         Q.independence_movement += 1;
+        for (var c of Q.parlament_constituencies) {
+            for (var d of ["middle", "young", "rural"]) {
+                G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"abstain", amount:0.12*effectiveness, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+                G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"ciu", amount:0.08*effectiveness, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+                G.cardSupportTransfer(Q, {contest:"parlament", to:"cup", from:"abstain", amount:0.15*effectiveness, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            }
+        }
+        G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"abstain", amount:0.15*effectiveness, maxDonorFraction:0.5, constituencies:["catalunya"]});
+        G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"ciu", amount:0.1*effectiveness, maxDonorFraction:0.5, constituencies:["catalunya"]});
+        G.cardSupportTransfer(Q, {contest:"congreso", to:"cup", from:"abstain", amount:0.15*effectiveness, maxDonorFraction:0.5, constituencies:["catalunya"]});
+        G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"ciu", amount:0.15*effectiveness, maxDonorFraction:0.5});
+        G.cardSupportTransfer(Q, {contest:"barcelona", to:"cup", from:"ciu", amount:0.15*effectiveness, maxDonorFraction:0.5});
+        Q.erc_interior_mod = (Q.erc_interior_mod) + 0.15*effectiveness;
     } else {
         Q.independence_movement += 5;
+        var profile;
         switch (Q.erc_roadmap) {
             default:
-            // Should not happen?
-                for (var c of Q.parlament_constituencies) {
-                    Q["erc_parlament_" + c + "_middle_support"] += 2*(1-Q.erc_dissent/100);
-                    Q["erc_parlament_" + c + "_young_support"] += 1*(1-Q.erc_dissent/100);
-                    Q["erc_parlament_" + c + "_rural_support"] += 1*(1-Q.erc_dissent/100);
-                }
+                profile = {middle:0.5, young:0.25, rural:0.25};
                 break;
             case 1:
-            // vote on agreement
-                for (var c of Q.parlament_constituencies) {
-                    Q["erc_parlament_" + c + "_ind_support"] += 1*(1-Q.erc_dissent/100);
-                    Q["erc_parlament_" + c + "_middle_support"] += 3*(1-Q.erc_dissent/100);
-                    Q["erc_parlament_" + c + "_young_support"] += 2*(1-Q.erc_dissent/100);
-                    Q["erc_parlament_" + c + "_rural_support"] += 2*(1-Q.erc_dissent/100);
-                }
+                profile = {ind:0.25, middle:0.75, young:0.5, rural:0.5};
                 break;
             case 2:
-            // generic independence push
-                for (var c of Q.parlament_constituencies) {
-                    Q["erc_parlament_" + c + "_ind_support"] += 0.5*(1-Q.erc_dissent/100);
-                    Q["erc_parlament_" + c + "_middle_support"] += 3*(1-Q.erc_dissent/100);
-                    Q["erc_parlament_" + c + "_young_support"] += 3*(1-Q.erc_dissent/100);
-                    Q["erc_parlament_" + c + "_rural_support"] += 3*(1-Q.erc_dissent/100);
-                }
+                profile = {ind:0.15, middle:0.75, young:0.75, rural:0.75};
                 break;
             case 3:
-            // unilateral independence
-                for (var c of Q.parlament_constituencies) {
-                    Q["erc_parlament_" + c + "_middle_support"] += 2*(1-Q.erc_dissent/100);
-                    Q["erc_parlament_" + c + "_young_support"] += 4*(1-Q.erc_dissent/100);
-                    Q["erc_parlament_" + c + "_rural_support"] += 4*(1-Q.erc_dissent/100);
-                }
+                profile = {middle:0.5, young:1, rural:1};
                 break;
         }
+        for (var c of Q.parlament_constituencies) {
+            for (var d in profile) {
+                var amount = profile[d]*effectiveness;
+                G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"abstain", amount:amount*0.55, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+                G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"ciu", amount:amount*0.45, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            }
+        }
+        G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"abstain", amount:0.5*effectiveness, maxDonorFraction:0.5, constituencies:["catalunya"]});
+        G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"ciu", amount:0.4*effectiveness, maxDonorFraction:0.5, constituencies:["catalunya"]});
+        G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"ciu", amount:0.45*effectiveness, maxDonorFraction:0.5});
+        Q.erc_interior_mod = (Q.erc_interior_mod) + 0.6*effectiveness;
     }
 !}
 
-Rallying around independence and building a new state is the core of ERC, and also serves as a foundation to talk about all it can achieve regarding other issues, from social welfare to a new democracy. [? if roadmap_year < year: However, the fact that we've not fulfilled our Roadmap to Independence makes us sound hard to believe. ?][? if roadmap_year >= year and roadmap = 1: Our current Roadmap to Independence focuses on reaching an agreement with the central government. This is hard to believe as achievable, but does seem to sway more on-the-fence people. ?][? if roadmap_year >= year and roadmap = 2: Our current Roadmap to Independence focuses on a more generic push for independence, open to opportunities as they arise, be it for agreement or for unilateral action. While not the most clear, people seem willing to at least give it a chance for now. ?][? if roadmap_year >= year and roadmap = 3: Our current Roadmap to Independence focuses on unilateral action. Ambitious and hardcore-sounding, it is loved by hardliners, but it may be hard to digest by those on the fence. ?]
+Rallying around independence and building a new state is the core of ERC, and also serves as a foundation to talk about all it can achieve regarding other issues, from social welfare to a new democracy. [? if broken_roadmap: The fact that we've not fulfilled our Roadmap to Independence makes our appeal much less effective, while the CUP captures some of the renewed pro-independence enthusiasm. ?][? if not broken_roadmap and erc_roadmap = 1: Our current Roadmap to Independence focuses on reaching an agreement with the central government. This is hard to believe as achievable, but does seem to sway more on-the-fence people. ?][? if not broken_roadmap and erc_roadmap = 2: Our current Roadmap to Independence focuses on a more generic push for independence, open to opportunities as they arise, be it for agreement or for unilateral action. While not the most clear, people seem willing to at least give it a chance for now. ?][? if not broken_roadmap and erc_roadmap = 3: Our current Roadmap to Independence focuses on unilateral action. Ambitious and hardcore-sounding, it is loved by hardliners, but it may be hard to digest by those on the fence. ?]
 
 
 @welfare
@@ -82,44 +79,26 @@ on-arrival: {!
     Q.erc_left_strength += 5;
     Q.erc_pragmatic_dissent -= 3;
     Q.erc_pragmatic_strength += 3;
-    if (Q.erc_supporting) {
-        if (Q.welfare_index > 65) {
-            for (var c of Q.parlament_constituencies) {
-                Q["erc_parlament_" + c + "_unemployed_support"] += 3*(1-Q.erc_dissent/100);
-                Q["erc_parlament_" + c + "_young_support"] += 2*(1-Q.erc_dissent/100);
-                Q["erc_parlament_" + c + "_ind_support"] += 1.5*(1-Q.erc_dissent/100);
-            }
-        } else {
-            for (var c of Q.parlament_constituencies) {
-                Q["erc_parlament_" + c + "_unemployed_support"] -= 2*(1-Q.erc_dissent/100);
-                Q["erc_parlament_" + c + "_young_support"] -= 1*(1-Q.erc_dissent/100);
-                Q["erc_parlament_" + c + "_ind_support"] -= 1*(1-Q.erc_dissent/100);
-            }
-        }
-    } else if (Q.erc_in_gob) {
-        if (Q.welfare_index > 72) {
-            for (var c of Q.parlament_constituencies) {
-                Q["erc_parlament_" + c + "_unemployed_support"] += 4*(1-Q.erc_dissent/100);
-                Q["erc_parlament_" + c + "_young_support"] += 3*(1-Q.erc_dissent/100);
-                Q["erc_parlament_" + c + "_ind_support"] += 2.5*(1-Q.erc_dissent/100);
-            }
-        } else {
-            for (var c of Q.parlament_constituencies) {
-                Q["erc_parlament_" + c + "_unemployed_support"] -= 3*(1-Q.erc_dissent/100);
-                Q["erc_parlament_" + c + "_young_support"] -= 2*(1-Q.erc_dissent/100);
-                Q["erc_parlament_" + c + "_ind_support"] -= 2*(1-Q.erc_dissent/100);
-            }
-        }
-    } else {
-        for (var c of Q.parlament_constituencies) {
-            Q["erc_parlament_" + c + "_unemployed_support"] += 3*(1-Q.erc_dissent/100);
-            Q["erc_parlament_" + c + "_young_support"] += 2*(1-Q.erc_dissent/100);
-            Q["erc_parlament_" + c + "_ind_support"] += 1.5*(1-Q.erc_dissent/100);
+    var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
+    var credibility = Q.burdens_broken && (Q.erc_supporting || Q.erc_in_gob) ? 0.3 : 1;
+    var profile = {unemployed:1.2, young:0.8, ind:0.5};
+    for (var c of Q.parlament_constituencies) {
+        for (var d in profile) {
+            var amount = profile[d]*effectiveness*credibility;
+            G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"abstain", amount:amount*0.45, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"psc", amount:amount*0.3, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"federal_left", amount:amount*0.25, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
         }
     }
+    G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"abstain", amount:0.45*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"psoe", amount:0.3*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"federal_left", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"psc", amount:0.35*effectiveness*credibility, maxDonorFraction:0.5});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"federal_left", amount:0.3*effectiveness*credibility, maxDonorFraction:0.5});
+    Q.erc_redbelt_mod = Q.erc_redbelt_mod + 0.3*effectiveness*credibility;
 !} 
 
-The focus on social welfare is something ERC has always championed, and does resonate with workers and the youth. [? if erc_supporting and welfare_index > 65 : With us supporting a government that is saving the welfare system, at least so far, makes us look as the a sure bet to ensure this continues to be the case. ?][? if erc_supporting and welfare_index <= 65 : Our support for a government that is largely seen as responsible for austerity makes our rally around this issue notably more challenging. ?][? if erc_in_gob and welfare_index > 72: Our government's work towards restoring the welfare system has been well received by the public, and makes us the more beliveable. ?][? if erc_in_gob and welfare_index <= 72: Despite our government's efforts, the public remains skeptical about the effectiveness of our welfare policies. ?]
+The focus on social welfare is something ERC has always championed, and does resonate with workers and the youth. [? if (erc_supporting or erc_in_gob) and not burdens_broken: Meeting the commitments we assumed in government makes the appeal credible. ?][? if burdens_broken and (erc_supporting or erc_in_gob): However, having broken the commitments we took on when entering the Generalitat makes the rally much less convincing. ?]
 
 @reform
 on-arrival: {!
@@ -135,25 +114,30 @@ on-arrival: {!
     var sum_psoe_spain = 0;
     for (var c of Q.congreso_constituencies) {
         for (var p of Q.congreso_parties_left) {
-            sum_left_spain += Q["congreso_" + c + "_" + p + "_support"];
+            sum_left_spain += Q[p + "_congreso_" + c + "_support"] || 0;
         }
-        sum_psoe_spain += Q["congreso_" + c + "_psoe_support"];
+        sum_psoe_spain += Q["psoe_congreso_" + c + "_support"] || 0;
     }
-    if (sum_left_spain >= 0.95*sum_psoe_spain) {
+    var viable = sum_left_spain >= 0.95*sum_psoe_spain;
+    var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
+    var profile = viable ? {ind:0.8, middle:0.5, young:0.6} : {ind:0.4, middle:0.2, young:0.3};
+    if (viable) {
         Q.erc_pragmatic_dissent -= 2;
-        for (var c of Q.parlament_constituencies) {
-            Q["erc_parlament_" + c + "_ind_support"] += 4*(1-Q.erc_dissent/100);
-            Q["erc_parlament_" + c + "_middle_support"] += 2.5*(1-Q.erc_dissent/100);
-            Q["erc_parlament_" + c + "_young_support"] += 3*(1-Q.erc_dissent/100);
-        }
     } else {
         Q.erc_pragmatic_dissent += 2;
-        for (var c of Q.parlament_constituencies) {
-            Q["erc_parlament_" + c + "_ind_support"] += 2*(1-Q.erc_dissent/100);
-            Q["erc_parlament_" + c + "_middle_support"] += 1*(1-Q.erc_dissent/100);
-            Q["erc_parlament_" + c + "_young_support"] += 1.5*(1-Q.erc_dissent/100);
+    }
+    for (var c of Q.parlament_constituencies) {
+        for (var d in profile) {
+            var amount = profile[d]*effectiveness;
+            G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"federal_left", amount:amount*0.5, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"psc", amount:amount*0.3, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"abstain", amount:amount*0.2, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
         }
     }
+    var congressAmount = (viable ? 0.9 : 0.45)*effectiveness;
+    G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"psoe", amount:congressAmount*0.45, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"federal_left", amount:congressAmount*0.35, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"abstain", amount:congressAmount*0.2, maxDonorFraction:0.5, constituencies:["catalunya"]});
 !}
 
 Republicanism is in the very name of ERC, and we have a longstanding fame of battling in the Congreso grounds for true radical transformation for Spain. Nonetheless, the idea of "saving Spain from itself" is not always popular with everyone, unless a true leftist alternative to the PSOE-PP duopoly manages to become a viable and believable option.
@@ -164,25 +148,44 @@ on-arrival: {!
     Q.erc_left_strength += 5;
     Q.erc_core_dissent -= 3;
     Q.erc_core_strength += 3;
-    if (Q.vox_congreso_s < 10 && !Q.pxc_parlament_s && !Q.fnc_parlament_s) {
-        for (var c of Q.parlament_constituencies) {
-            Q["erc_parlament_" + c + "_middle_support"] += 2*(1-Q.erc_dissent/100);
-            Q["erc_parlament_" + c + "_young_support"] += 1*(1-Q.erc_dissent/100);
-            Q["erc_parlament_" + c + "_ind_support"] += 1*(1-Q.erc_dissent/100);
-        }
-    } else {
-        for (var c of Q.parlament_constituencies) {
-            Q["erc_parlament_" + c + "_middle_support"] += 4*(1-Q.erc_dissent/100);
-            Q["erc_parlament_" + c + "_young_support"] += 2*(1-Q.erc_dissent/100);
-            Q["erc_parlament_" + c + "_ind_support"] += 2*(1-Q.erc_dissent/100);
+    var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
+    var threat = !((Q.vox_congreso_s || 0) < 10 && !Q.pxc_parlament_s && !Q.fnc_parlament_s);
+    var scale = threat ? 1 : 0.5;
+    var profile = {middle:0.8, young:0.4, ind:0.4};
+    for (var c of Q.parlament_constituencies) {
+        for (var d in profile) {
+            var amount = profile[d]*scale*effectiveness;
+            G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"abstain", amount:amount*0.55, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"federal_left", amount:amount*0.25, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"psc", amount:amount*0.2, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
         }
     }
+    G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"abstain", amount:0.5*scale*effectiveness, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"federal_left", amount:0.3*scale*effectiveness, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"psc", amount:0.4*scale*effectiveness, maxDonorFraction:0.5});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"federal_left", amount:0.3*scale*effectiveness, maxDonorFraction:0.5});
+    Q.erc_redbelt_mod = Q.erc_redbelt_mod + 0.3*scale*effectiveness;
 !}
 
-[? if vox_congreso_s < 10 and (not pxc_parlament_s and not fnc_parlament_s): The far-right is hardly seen as a threat now, but it's always good to remain vigilant, even if voters don't really follow along that much. ?]
+[? if vox_congreso_s < 10 and (not pxc_parlament_s and not fnc_parlament_s): The far-right is hardly seen as a threat now, but it's always good to remain vigilant, even if voters don't really follow along that much. ?][? if vox_congreso_s > 0: With VOX having seats in the Congreso now, some are starting to worry about a new rise of the far-right, and like our positioning. ?][? if pxc_parlament_s > 0 or fnc_parlament_s > 0: With [? if pxc_parlament_s > 0 : PxC ?][? if fnc_parlament_s > 0 : the FNC ?] now having entered the Parlament, this positioning is seen as quite necessary by many! ?]
 
 @local
-on-arrival: erc_parlament_barcelona_middle_support += 3*(1-dissent); erc_parlament_girona_middle_support += 3*(1-dissent); erc_parlament_lleida_middle_support += 3*(1-dissent); erc_parlament_tarragona_middle_support += 3*(1-dissent); erc_parlament_barcelona_young_support += 1*(1-dissent); erc_parlament_girona_young_support += 1*(1-dissent); erc_parlament_lleida_young_support += 1*(1-dissent); erc_parlament_tarragona_young_support += 1*(1-dissent); erc_parlament_barcelona_rural_support += 2*(1-dissent); erc_parlament_girona_rural_support += 2*(1-dissent); erc_parlament_lleida_rural_support += 2*(1-dissent); erc_parlament_tarragona_rural_support += 2*(1-dissent);
+on-arrival: {!
+    var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
+    var profile = {middle:0.75, young:0.25, rural:0.5};
+    for (var c of Q.parlament_constituencies) {
+        for (var d in profile) {
+            var amount = profile[d]*effectiveness;
+            G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"psc", amount:amount*0.4, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"federal_left", amount:amount*0.35, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+            G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"ciu", amount:amount*0.25, maxDonorFraction:0.5, constituencies:[c], demographics:[d]});
+        }
+    }
+    G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"psc", amount:0.5*effectiveness, maxDonorFraction:0.5});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"federal_left", amount:0.3*effectiveness, maxDonorFraction:0.5});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"ciu", amount:0.2*effectiveness, maxDonorFraction:0.5});
+    Q.erc_redbelt_mod = Q.erc_redbelt_mod + 0.2*effectiveness;
+    Q.erc_interior_mod = Q.erc_interior_mod + 0.4*effectiveness;
+!}
 
 Our speakers have gauged the mood and are speaking to the issues that seem to most affect the people in this moment.
-

@@ -16,6 +16,36 @@ export interface AllegianceEntry {
 
 export interface GameLib {
   engineTick(Q: Record<string, unknown>): void;
+  /** Bounded, conserved support movement for recurring card effects. Structural
+   *  party formation/succession code deliberately uses separate helpers. */
+  cardSupportTransfer(
+    Q: Record<string, unknown>,
+    options:
+      | {
+          contest: 'parlament';
+          to: string;
+          from: string;
+          amount: number;
+          maxDonorFraction: 0.5;
+          constituencies: string | string[];
+          demographics: string | string[];
+        }
+      | {
+          contest: 'congreso';
+          to: string;
+          from: string;
+          amount: number;
+          maxDonorFraction: 0.5;
+          constituencies: string | string[];
+        }
+      | {
+          contest: 'barcelona';
+          to: string;
+          from: string;
+          amount: number;
+          maxDonorFraction: 0.5;
+        },
+  ): number;
   spaSupportInject(
     Q: Record<string, unknown>,
     family: string,

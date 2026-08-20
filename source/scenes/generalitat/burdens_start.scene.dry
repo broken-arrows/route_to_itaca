@@ -10,7 +10,7 @@ on-arrival: {!
     // TODO: Dynamic burdens depending on governing coalition 
     Q.burdens_goal = 4;
     Q.burdens_time = 12;
-    Q.burdens_broken = false;
+    Q.burdens_broken = 0;
     Q.burdens_done = 0;
 
     Q.burdens_start_trigger = false;

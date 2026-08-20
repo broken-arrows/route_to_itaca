@@ -340,7 +340,7 @@ if (Q.player_in_jxsi) {
             Q.jxsi_dissent += 100 - Q[p + "_relations"];
         }
     }
-    Q.jxsi_dissent = Q.jxsi_dissent / (2*jxsi_count);
+    Q.jxsi_dissent = Q.jxsi_dissent / jxsi_count;
 } else if (Q.player_in_jxcat) {
     Q.jxcat_dissent = 0;
     var jxcat_count = 0;
@@ -351,7 +351,7 @@ if (Q.player_in_jxsi) {
         }
     }
     if (jxcat_count > 1) {
-        Q.jxcat_dissent = Q.jxcat_dissent / (2*jxcat_count);
+        Q.jxcat_dissent = Q.jxcat_dissent / jxcat_count;
     } else {
         Q.jxcat_dissent = 0;
     }
