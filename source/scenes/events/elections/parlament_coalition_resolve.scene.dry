@@ -52,5 +52,10 @@ on-arrival: {!
             ramp_ticks: 6,
         });
     }
+
+    if (Q[Q.player_party + "_in_gob"]) {
+        Q.burdens_start_countdown = 1;
+        Q.countdowns.push("burdens_start");
+    }
 !}
 go-to: post_event

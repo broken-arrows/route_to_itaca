@@ -1,12 +1,12 @@
 title: Party Disunity
 new-page: true
 is-card: true
-view-if: erc_disunity_timer = 0 and (erc_dissent >= 30 or (erc_left_dissent > 30 and not erc_left_resign) or (erc_core_dissent > 30 and not erc_core_resign) or (erc_civic_dissent > 30 and not erc_civic_resign) or (erc_pragmatic_dissent > 30 and not erc_pragmatic_resign))
+view-if: player_party = "erc" and erc_disunity_timer = 0 and (erc_dissent >= 30 or (erc_left_dissent > 30 and not erc_left_resign) or (erc_core_dissent > 30 and not erc_core_resign) or (erc_civic_dissent > 30 and not erc_civic_resign) or (erc_pragmatic_dissent > 30 and not erc_pragmatic_resign))
 on-arrival: month_actions += 1; erc_disunity_timer = 4
 card-image: img/erc/disunity.jpeg
 face-image: img/erc/disunity.jpeg
 frequency: 200
-tags: erc_party
+tags: erc_party jxsi_party jxcat_party
 role: card-party
 
 = Party Disunity

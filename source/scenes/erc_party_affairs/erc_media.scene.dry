@@ -1,11 +1,11 @@
 title: Communications
 new-page: true
-view-if: erc_media_timer <= 0
+view-if: erc_media_timer <= 0 and player_party = "erc"
 on-arrival: erc_media_timer += 6; month_actions += 1
 is-card: true
 card-image: img/erc/media.jpg
 face-image: img/erc/media.jpg
-tags: erc_party
+tags: erc_party jxsi_party jxcat_party
 role: card-party
 
 = Communications and Media

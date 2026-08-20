@@ -1,14 +1,14 @@
 title: Widening the Base
 new-page: true
 view-if: 1==0
-# view-if: not rubicon and erc_base_timer <= 0 and erc_parlament_s >= 20
+# view-if: not rubicon and erc_base_timer <= 0 and erc_parlament_s >= 20 and player_party = "erc"
 on-arrival: month_actions += 1; erc_base_timer = 3
 max-visits: 36
 is-card: true
 card-image: img/erc/relleu.jpg
 face-image: img/erc/relleu.jpg
 frequency: 100
-tags: erc_party
+tags: erc_party jxsi_party jxcat_party
 role: card-party
 
 = Widening the Base

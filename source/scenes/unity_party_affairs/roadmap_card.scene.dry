@@ -60,9 +60,11 @@ on-arrival: {!
     Q.erc_pragmatic_strength += 5;
     Q.player_roadmap_change_countdown = 9;
     Q.player_roadmap_change_trigger = false;
+
+    // TODO: higher consequences for this
 !}
 
-We've changed our discursive line to be one following a [+ player_roadmap : roadmap +] roadmap. Let's now make that happen!
+We've changed our discursive line to be one following a [+ erc_roadmap : roadmap +] roadmap. Let's now make that happen!
 
 @erc_strengthen_roadmap
 title: Let's push for a more ambitious Roadmap
@@ -77,14 +79,59 @@ on-arrival: {!
     Q.erc_civic_strength += 5;
     Q.player_roadmap_change_countdown = 9;
     Q.player_roadmap_change_trigger = false;
+    // TODO: higher consequences for this
 !}
 
-We've changed our discursive line to be one following a [+ player_roadmap : roadmap +] roadmap. Let's now make that happen!
+We've changed our discursive line to be one following a [+ erc_roadmap : roadmap +] roadmap. Let's now make that happen!
 
 @roadmap_setdate
 title: Let's set a deadline for our Roadmap
 subtitle: This is sort of expected from us.
 view-if: roadmap_year = 0
+on-arrival: {!
+    Q.player_roadmap_change_countdown = 9;
+    Q.player_roadmap_change_trigger = false;
+!}
+
+What should our roadmap horizon be?
+
+- @roadmap_setdate_legislature
+- @roadmap_setdate_next
+- @roadmap_setdate_decade
+
+@roadmap_setdate_legislature
+title: Goal should be by the end of this legislature ([+ next_election_year +])
+on-arrival: {!
+    Q.roadmap_year = Q.next_election_year;
+    Q.erc_civic_dissent -= 5;
+    Q.independence_trust += 5;
+    Q.independence_momentum += 5;
+    // TODO: More benefits for actually setting up a roadmap
+!}
+
+Ambitiously, we've set [+ roadmap_year +] as our Roadmap's target.
+
+@roadmap_setdate_next
+title: Goal should be during the next legislature ([+ next_election_year + 2 +])
+on-arrival: {!
+    Q.roadmap_year = Q.next_election_year + 2;
+    // TODO: More benefits for actually setting up a roadmap
+!}
+
+The party leadership agrees that [+ roadmap_year +] is a nice balanced goal. 
+
+@roadmap_setdate_decade
+title: We are not in any rush, let's set the goal by the end of the decade (2020)
+on-arrival: {!
+    Q.roadmap_year = 2020;
+    Q.erc_civic_dissent += 5;
+    Q.independence_trust -= 10;
+    Q.erc_pragmatic_dissent -= 5;
+
+    // TODO: More penalites for such a shit roadmap 
+!}
+
+While receiving criticism from the most pro-independence among our lines, [+ roadmap_year +] keeps a date while to having to immediately worry about it. Worth it?
 
 @pull_roadmap_date
 title: Let's make our date goal more ambitious!

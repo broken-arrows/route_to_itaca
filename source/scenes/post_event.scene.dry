@@ -51,6 +51,13 @@ if (Q.rubicon) {
         Q.time += 1;
         Q.month_actions = 0;
     }
+    if (Q.week >= 5) {
+        Q.month += 1;
+        Q.week = 1;
+        if (Q.burdens_time > 0) {
+            Q.burdens_time -= 1;
+        }
+    }
     Q.month_actions_last = Q.month_actions;
 } else {
     if (Q.month_actions >= 1) {
@@ -58,12 +65,12 @@ if (Q.rubicon) {
         Q.month_actions = 0;
         Q.time += 1;
         Q.month += 1;
+        if (Q.burdens_time > 0) {
+        Q.burdens_time -= 1;
+    }
     }
 } 
-if (Q.week >= 5) {
-    Q.month += 1;
-    Q.week = 1;
-}
+
 if (Q.month >= 13) {
     Q.month = 1;
     Q.year += 1;
@@ -217,8 +224,12 @@ if (has_time_passed) {
     
 
     // 2.3. Ripple effects from time passing.
-    if (Q.unemployment >= 20 && (Q.erc_supporting == 1 || Q.erc_in_gob == 1)) {
-        Q.erc_left_dissent += 0.25;
+    if (Q.unemployment >= 20) {
+        if (Q.erc_supporting) {
+            Q.erc_left_dissent += 0.25;
+        } else if (Q.erc_in_gob) {
+            Q.erc_left_dissent += 0.5;
+        }
     }
     if (Q.broken_roadmap == 1) {
         Q.erc_civic_dissent += 1;
@@ -318,6 +329,36 @@ for (var p of Q.parties) {
         }
         Q[p+'_dissent'] = total_dissent;
     }
+}
+
+if (Q.player_in_jxsi) {
+    Q.jxsi_dissent = 0;
+    var jxsi_count = 0;
+    for (var p of Q.parties) {
+        if (p != Q.player_party && Q[p + "_in_jxsi"]) {
+            jxsi_count += 1;
+            Q.jxsi_dissent += 100 - Q[p + "_relations"];
+        }
+    }
+    Q.jxsi_dissent = Q.jxsi_dissent / (2*jxsi_count);
+} else if (Q.player_in_jxcat) {
+    Q.jxcat_dissent = 0;
+    var jxcat_count = 0;
+    for (var p of Q.parties) {
+        if (p != Q.player_party && Q[p + "_in_jxcat"]) {
+            jxcat_count += 1;
+            Q.jxcat_dissent += 100 - Q[p + "_relations"];
+        }
+    }
+    if (jxcat_count > 1) {
+        Q.jxcat_dissent = Q.jxcat_dissent / (2*jxcat_count);
+    } else {
+        Q.jxcat_dissent = 0;
+    }
+}
+
+if (Q[Q.player_party + "_in_gob"]) {
+    // Q.cat_coalition_dissent calcs?? TODO
 }
 
 // 4. Achievement check

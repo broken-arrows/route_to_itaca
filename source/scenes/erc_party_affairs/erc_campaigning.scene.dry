@@ -1,7 +1,7 @@
 title: Campaigning
 new-page: true
 view-if: not rubicon or erc_campaigning_timer <= 0
-on-arrival: month_actions += 1; erc_campaigning_timer =2 if rubicon
+on-arrival: month_actions += 1; erc_campaigning_timer = 2 if rubicon
 max-visits: 36
 is-card: true
 card-image: img/erc/campaign.jpeg

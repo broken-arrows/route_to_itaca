@@ -1,0 +1,49 @@
+title: The burden of governance
+face-image: img/events/manifestacio_sant_jaume_cgt.jpg
+view-if: burdens_start_trigger
+tags: event
+new-page: true
+max-visits: 1
+on-arrival: {!
+    // TODO: Actual ways to achieve the burdens
+    // TODO: Burden breaking consequences
+    // TODO: Dynamic burdens depending on governing coalition 
+    Q.burdens_goal = 4;
+    Q.burdens_time = 12;
+    Q.burdens_broken = false;
+    Q.burdens_done = 0;
+
+    Q.burdens_start_trigger = false;
+!}
+role: event
+
+= The burden of governance
+
+After having protested austerity politics for years, us stepping into the Generalitat means our voters and supporters expect decisive action. Fulfilling these expectations can take many different forms, from exercising Catalan sovereignty decisively or by enacting much demanded social policies. But we are expected to do *something*. 
+
+These goals, or burdens, for our governance can be achieved by taking at least [+ burdens_goal +] of the following actions durning the coming [+ burdens_time +] months.
+
+· Making taxes more progressive.
+
+[? if cup_in_gob: · Raising taxes on business and the rich. ?]
+
+[? if cup_in_gob: · Democratizing police practices. ?]
+
+· Expanding the funding and capabilities of social services.
+
+· Supporting workers demands.
+
+· Enacting social protection laws in the Parlament.
+
+· Expanding the Generalitat's governing capabilities.
+
+[? if player_roadmap > 0 or cup_in_gob: · Exercising Catalan sovereignty in the Parlament. ?]
+
+[? if cup_in_gob: · Making clear progress towards Catalan self-determination and independence. ?]
+
+- @burdens_continue
+
+@burdens_continue
+title: We better do our best!
+subtitle: The current progress with this burdens can be consulted in the government tab.
+go-to: post_event

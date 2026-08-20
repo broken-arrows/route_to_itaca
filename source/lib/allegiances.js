@@ -93,31 +93,55 @@
       return [{ colour: "#b8a12b", label: "CUP" }];
     },
     carles_riera: function (Q) {
-      return [{ colour: "#b8a12b", label: "CUP" }];
+      return [
+        { colour: "#c50000", label: "Endavant" },
+        { colour: "#b8a12b", label: "CUP" },
+      ];
     },
     mireia_vehi: function (Q) {
-      return [{ colour: "#b8a12b", label: "CUP" }];
+      return [
+        { colour: "#c50000", label: "Endavant" },
+        { colour: "#b8a12b", label: "CUP" },
+      ];
     },
     vial_aragones: function (Q) {
-      return [{ colour: "#b8a12b", label: "CUP" }];
+      return [
+        { colour: "#c50000", label: "Endavant" },
+        { colour: "#b8a12b", label: "CUP" },
+      ];
     },
     eulalia_reguant: function (Q) {
-      return [{ colour: "#b8a12b", label: "CUP" }];
+      return [
+        { colour: "#c50000", label: "Endavant" },
+        { colour: "#b8a12b", label: "CUP" },
+      ];
     },
     anna_gabriel: function (Q) {
-      return [{ colour: "#b8a12b", label: "CUP" }];
+      return [
+        { colour: "#c50000", label: "Endavant" },
+        { colour: "#b8a12b", label: "CUP" },
+      ];
     },
     albert_botran: function (Q) {
-      return [{ colour: "#b8a12b", label: "CUP" }];
+      return [
+        { colour: "#c11d4e", label: "Poble Lliure" },
+        { colour: "#b8a12b", label: "CUP" },
+      ];
     },
     antonio_banos: function (Q) {
       if (Q.jxsi_formed && Q.pressing_cup_happened) {
         return [{ colour: "indp", label: "indp." }];
       }
-      return [{ colour: "#b8a12b", label: "CUP" }];
+      return [
+        { colour: "#c11d4e", label: "Poble Lliure" },
+        { colour: "#b8a12b", label: "CUP" },
+      ];
     },
     mireia_boya: function (Q) {
-      return [{ colour: "#b8a12b", label: "CUP" }];
+      return [
+        { colour: "#c11d4e", label: "Poble Lliure" },
+        { colour: "#b8a12b", label: "CUP" },
+      ];
     },
     albert_rivera: function (Q) {
       return [{ colour: "cs", label: "Cs" }];

@@ -1,0 +1,30 @@
+title: Unitary Campaigning
+new-page: true
+is-card: true
+view-if: not rubicon or unity_campaign_timer <= 0
+on-arrival: month_actions += 1; unity_campaign_timer = 2 if rubicon
+card-image: img/jxsi/campaign.jpeg
+face-image: img/jxsi/campaign.jpeg
+tags: jxsi_party jxcat_party
+role: card-party
+
+= Unitary Campaigning!
+
+Whether or not we are in an electoral campaign, it's always a good idea for the [? if jxsi_formed and not jxsi_dissolved: jxsi?][? if jxcat_formed and not jxcat_dissolved: jxcat?] coalition to try its best to have its message reach as much people as possible. Who should we focus our campaign efforts on?
+
+- @workers: The industrial working class, including factory workers, construction workers, and service workers.
+- @redbelt: The working class in the metropolitan area of Barcelona, the traditional stronghold of the PSC.
+- @middle: The middle working class of professionals, public employees, and highly qualified workers.
+- @business: Small business owners and the self-employed.
+- @rural: Rural workers and small farmers from rural Catalonia.
+- @unemployed: The unemployed.
+- @root: We either don't want to or cannot campaign right now.
+- @easy_discard
+
+@workers
+@redbelt
+@middle
+@business
+@rural
+@unemployed
+

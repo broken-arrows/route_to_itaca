@@ -1,0 +1,31 @@
+title: Unitary Rally
+new-page: true
+is-card: true
+view-if: unity_rally_timer <= 0
+on-arrival: unity_rally_timer = 6 if next_election_time - time > 6; unity_rally_timer = 2 if next_election_time - time <= 6; month_actions += 1
+card-image: img/jxsi/rally.jpg
+face-image: img/jxsi/rally.jpg
+tags: jxsi_party jxcat_party
+role: card-party
+
+= Unitary Rally!
+
+The independence movement has mobilized millions in the streets every September for the past few years. Local, county, and Catalan-wide repeats of these rallies, specially at a time where the streets are hot, are pretty much expected. What should they focus on at the moment?
+
+- @independence
+- @welfare
+- @local_barcelona
+- @local_red_belt
+- @local_tarragona
+- @local_lleida
+- @local_girona
+- @easy_discard
+
+
+@independence
+@welfare
+@local_barcelona
+@local_red_belt
+@local_tarragona
+@local_lleida
+@local_girona

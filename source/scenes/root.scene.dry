@@ -1395,12 +1395,12 @@ on-arrival: {!
   Q.position_disp = "<span style='font-style: italic;'>Opposition</span>"; 
 
   Q.ciu_relations = 55;
-  Q.cup_relations = 65;
+  Q.cup_relations = 60;
   Q.cs_relations = 3;
   Q.psc_relations = 30;
   Q.ppc_relations = 2;
   Q.si_relations = 65;
-  Q.icv_relations = 60;
+  Q.icv_relations = 55;
   Q.vox_relations = 0;
   Q.pxc_relations = 1;
 

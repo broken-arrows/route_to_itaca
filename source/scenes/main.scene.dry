@@ -34,9 +34,10 @@ role: desk
 
 # Here, the main deck will be displayed. Clicking on the deck draws a card into your hand. Clicking on a card activates that card.
 
-
 - @party_erc
 - @party_cup
+- @party_jxsi
+- @party_jxcat
 - @cat_gov
 - @debug_deck
 - #advisor
@@ -82,6 +83,8 @@ role: desk
 
 - @party_erc
 - @party_cup
+- @party_jxsi
+- @party_jxcat
 - @cat_gov
 - @debug_deck
 - #advisor
@@ -128,6 +131,8 @@ role: desk
 
 - @party_erc
 - @party_cup
+- @party_jxsi
+- @party_jxcat
 - @cat_gov
 - @debug_deck
 - #advisor
@@ -138,7 +143,7 @@ role: desk
 title: Party Affairs
 card-image: img/erc/araerc.jpg
 is-deck: true
-view-if: player_party = "erc"
+view-if: player_party = "erc" and not erc_in_jxsi and not erc_in_jxcat
 role: deck-party
 
 - #erc_party
@@ -147,10 +152,30 @@ role: deck-party
 title: Party Affairs
 card-image: img/cup/seunacional.jpg
 is-deck: true
-view-if: player_party = "cup"
+view-if: player_party = "cup" and not cup_in_jxsi and not cup_in_jxcat
 role: deck-party
 
 - #cup_party
+
+@party_jxsi
+title: Party Affairs
+card-image: img/jxsi/cartell.jpg
+is-deck: true
+view-if: player_in_jxsi
+role: deck-party
+
+- #jxsi_party
+
+@party_jxcat
+title: Party Affairs
+card-image: img/jxsi/cartell.jpg
+is-deck: true
+view-if: player_in_jxcat
+role: deck-party
+
+# TODO: proper image!
+
+- #jxsi_party
 
 @cat_gov
 title: Generalitat
