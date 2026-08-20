@@ -1,11 +1,11 @@
-title: A new roadmap for [+ player_party +]?
+title: A new roadmap for ​[+ player_party +]?
 tags: event
 view-if: new_roadmap_congreso_trigger and (player_party = "erc" or player_party = parlament_current_ciu)
 on-arrival: new_roadmap_congreso_trigger = false
-go-to: erc_roadmap if player_party = "erc"; ciu_roadmap
+go-to: erc_roadmap if player_party = "erc"; cup_roadmap if player_party = "cup"
 role: event
 
-@ciu_roadmap
+@cup_roadmap
 new-page: true
 # TODO: non-erc case
 

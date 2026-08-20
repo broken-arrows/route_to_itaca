@@ -19,7 +19,7 @@ Whether or not we are in an electoral campaign, it's always a good idea for the 
 - @rural: Rural workers and small farmers from rural Catalonia.
 - @retirees: The retired and elderly population.
 - @unemployed: The unemployed.
-- @local_election: Focus the coalition's resources on the upcoming local elections.
+- @local_election_erc: Focus on the upcoming local elections instead.
 - @congreso_election: Focus the coalition's resources on the upcoming Congreso election.
 - @root: We either don't want to or cannot campaign right now.
 - @easy_discard
@@ -172,12 +172,12 @@ on-arrival: {!
 
 We have argued that a new state can break with the economic settlement that left so many people without work. [? if burdens_broken: Our own record in government makes that argument ring hollow. ?]
 
-@local_election
-view-if: next_local_election_time - time <= 12
+@local_election_erc
+view-if: next_local_election_time - time <= 12 and player_party = "erc"
 subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
-call: erc_campaigning.local_election if player_party = "erc"
+call: erc_campaigning.local_election
 
 # TODO: text + cases for jxsi/jxcat going together in local elections, etc
 

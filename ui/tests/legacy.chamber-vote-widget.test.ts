@@ -6,6 +6,10 @@ const WIDGETS_JS = readFileSync(
   path.join(__dirname, '..', '..', 'out', 'html', 'widgets.js'),
   'utf8',
 );
+const GAME_CSS = readFileSync(
+  path.join(__dirname, '..', '..', 'out', 'html', 'game.css'),
+  'utf8',
+);
 
 describe('the old shell chamber-vote handler', () => {
   beforeEach(() => {
@@ -98,5 +102,14 @@ describe('the old shell chamber-vote handler', () => {
     ).toBeCloseTo((68 / 135) * 100);
     expect(bar.title).toBe('Majority: 68 yes votes');
     expect(bar.dataset.majority).toBe('68');
+  });
+
+  it('lets hover pass through overlapping breakdown boxes to actual tooltip labels', () => {
+    expect(GAME_CSS).toMatch(
+      /\.chamber-vote__breakdown\s*{[^}]*pointer-events:\s*none;/s,
+    );
+    expect(GAME_CSS).toMatch(
+      /\.chamber-vote__breakdown \.mytooltip\s*{[^}]*pointer-events:\s*auto;/s,
+    );
   });
 });

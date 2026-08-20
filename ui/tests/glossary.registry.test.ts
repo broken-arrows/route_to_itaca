@@ -56,12 +56,12 @@ describe('game.json.data.glossary', () => {
       'utf8',
     );
     const tokens = new Set(
-      [...allegiancesSrc.matchAll(/colour:\s*'([^']+)'/g)]
-        .map((m) => m[1])
+      [...allegiancesSrc.matchAll(/colour:\s*(['"])([^'"]+)\1/g)]
+        .map((m) => m[2])
         .filter((c) => !c.startsWith('#')),
     );
     // Sanity on the scan itself — a change to the source's quoting style
-    // (e.g. double quotes) would silently make this test vacuous otherwise.
+    // Both quote styles are valid formatter output.
     expect(tokens.size).toBeGreaterThan(0);
     for (const token of tokens) {
       expect(tokensCss, `--${token} missing from tokens.css (source/lib/allegiances.js)`).toContain(

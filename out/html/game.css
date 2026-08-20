@@ -142,6 +142,17 @@ body.dark-mode {
   font-size: 1em;
   line-height: 1.35;
 }
+/* The abstention breakdown is translated to align with its proportional bar
+   segment. Its equal-width, transparent box can therefore overlap a neighbour
+   and intercept hover well beyond the visible party label. Keep structural
+   breakdown boxes out of hit-testing and opt only real tooltip triggers back
+   in, so overlapping empty space passes through to the label underneath. */
+.chamber-vote__breakdown {
+  pointer-events: none;
+}
+.chamber-vote__breakdown .mytooltip {
+  pointer-events: auto;
+}
 
 /* Party roadmaps widget */
 .roadmaps-widget__spectrum {
@@ -1523,6 +1534,33 @@ table {
   text-indent: 0;
   text-align: left;
   color: var(--text-color);
+}
+
+.message-dialog {
+  width: min(340px, calc(100vw - 32px));
+  padding: 0;
+  border: 1px solid var(--card-border-color);
+  border-radius: 8px;
+  background: var(--content-bg-color);
+  color: var(--text-color);
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.35);
+}
+.message-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.42);
+}
+.message-dialog__body {
+  padding: 24px 18px 16px 18px;
+}
+.message-dialog p {
+  margin: 0;
+  font-size: 1.1em;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.message-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.9em;
 }
 
 .mytooltip-main-text {

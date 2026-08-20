@@ -2,6 +2,19 @@
   var game;
   var ui;
 
+  var browserAlert = window.alert.bind(window);
+  window.alert = function (message) {
+    var dialog = document.getElementById("message_dialog");
+    var text = document.getElementById("message_dialog_text");
+    if (!dialog || !text || typeof dialog.showModal !== "function") {
+      browserAlert(message);
+      return;
+    }
+    text.textContent = String(message == null ? "" : message);
+    if (dialog.open) dialog.close();
+    dialog.showModal();
+  };
+
   var DateOptions = {
     hour: "numeric",
     minute: "numeric",
@@ -667,7 +680,8 @@
     const gap = 10; // gap between the word and the tooltip (room for the arrow)
 
     tip.classList.remove("below"); // measure in the default (above) state
-    const a = anchor.getBoundingClientRect();
+    const fragments = anchor.getClientRects();
+    const a = fragments.length ? fragments[0] : anchor.getBoundingClientRect();
     const tw = tip.offsetWidth;
     const th = tip.offsetHeight;
     const vw = document.documentElement.clientWidth;
