@@ -33,7 +33,7 @@ on-arrival: {!
     if (Q.psc_leader == "Montserrat Tura" || Q.psc_leader == "Àngel Ros") {
         Q.congreso_decidir_si += psc_congreso;
         Q.psc_breakup_countdown = 10; // TODO: ensure this happens before the next congreso elections!
-        Q.countdowns.push("psc_breakup_countdown");
+        if (!Q.countdowns.includes("psc_breakup_countdown")) Q.countdowns.push("psc_breakup_countdown");
     } else {
         Q.congreso_decidir_abst += psc_congreso;
     }    
@@ -75,7 +75,7 @@ on-arrival: {!
             Q.erc_roadmap = 1;
         }
         Q.non_binding_consultation_law_countdown = 9;
-        Q.countdowns.push("non_binding_consultation_law");
+        if (!Q.countdowns.includes("non_binding_consultation_law")) Q.countdowns.push("non_binding_consultation_law");
     }
 
     // TODO: What happens if successful constitutional reform

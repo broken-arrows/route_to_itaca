@@ -17,9 +17,41 @@ You should not be seeing this in a normal game. Please report a bug!
 - @inject_global
 - @inject_party
 - @add_remove_support
+- @burdens
 - @set_time
 - @pass_time: Pass time
 - @easy_discard
+
+@burdens
+title: Pass/Fail Government burdens
+new-page: true
+
+= Government Burdens cheats!
+
+- @pass_all
+- @fail_all
+- @debug_menu: Go Back
+- @post_event: Done
+
+@pass_all
+title: Fulfill government burdens!
+on-arrival: {!
+    Q.burdens_done = Q.burdens_goal;
+!}
+go-to: burdens
+
+All government burdens **fulfilled**!
+
+@fail_all
+title: Fail government burdens!
+on-arrival: {!
+    Q.burdens_done = 0;
+    Q.burdens_time = 0;
+!}
+go-to: burdens
+
+All government burdens **failed**!
+(may need time passing to take effect)
 
 @pass_time
 on-arrival: month_actions += 1
@@ -30,6 +62,7 @@ title: Inject party situation
 new-page: true
 
 = Party situation injector
+
 May (very probably) mess up your save
 
 - @debug_menu: Back
@@ -288,15 +321,106 @@ Injected congreso 2019 (nov.) situation!
 - @inject_global: Back
 - @post_event: Done
 
-
 @add_remove_support
 title: Add/remove support
-choose-if: 1==0
+subtitle: Targets only [+ player_party +] [? if player_in_jxsi: (jxsi)?][? if player_in_jxcat: (jxcat)?]
+new-page: true
 
-** WIP! **
+= Add/remove party support
 
+Targets only [+ player_party +] [? if player_in_jxsi: (jxsi)?][? if player_in_jxcat: (jxcat)?]. Very WIP!
+
+- @add_cat_bcn
+- @add_cat_gro
+- @add_cat_tarr
+- @add_cat_lle
+- @add_congreso
 - @debug_menu:  Back
 - @post_event: Done
+
+@add_cat_bcn
+title: Add Parlament support in Barcelona
+on-arrival: {!
+    var target = Q.player_party;
+    if (Q.player_in_jxsi) {
+        target = "jxsi";
+    } else if (Q.player_in_jxcat) {
+        target = "jxcat";
+    }
+    for (var d of Q.parlament_demographics) {
+        Q[target + "_parlament_barcelona_" + d + "_support"] += 5;
+    }
+!}
+go-to: add_remove_support
+
+Increased support in Barcelona.
+
+@add_cat_gro
+title: Add Parlament support in Girona
+on-arrival: {!
+    var target = Q.player_party;
+    if (Q.player_in_jxsi) {
+        target = "jxsi";
+    } else if (Q.player_in_jxcat) {
+        target = "jxcat";
+    }
+    for (var d of Q.parlament_demographics) {
+        Q[target + "_parlament_girona_" + d + "_support"] += 5;
+    }
+!}
+go-to: add_remove_support
+
+Increased support in Girona.
+
+@add_cat_tarr
+title: Add Parlament support in Tarragona
+on-arrival: {!
+    var target = Q.player_party;
+    if (Q.player_in_jxsi) {
+        target = "jxsi";
+    } else if (Q.player_in_jxcat) {
+        target = "jxcat";
+    }
+    for (var d of Q.parlament_demographics) {
+        Q[target + "_parlament_tarragona_" + d + "_support"] += 5;
+    }
+!}
+go-to: add_remove_support
+
+Increased support in Tarragona.
+
+@add_cat_lle
+title: Add Parlament support in Lleida
+on-arrival: {!
+    var target = Q.player_party;
+    if (Q.player_in_jxsi) {
+        target = "jxsi";
+    } else if (Q.player_in_jxcat) {
+        target = "jxcat";
+    }
+    for (var d of Q.parlament_demographics) {
+        Q[target + "_parlament_lleida_" + d + "_support"] += 5;
+    }
+!}
+go-to: add_remove_support
+
+Increased support in Lleida.
+
+@add_congreso
+title: Add Congreso support
+on-arrival: {!
+    var target = Q.player_party;
+    if (Q.player_in_jxsi && Q.jxsi_in_congreso) {
+        target = "jxsi";
+    } else if (Q.player_in_jxcat) {
+        target = "jxcat";
+    }
+    G.spaSupportInjecT(Q, target, "catalunya", 5)
+!}
+go-to: add_remove_support
+
+Increased support in the Congreso
+
 
 @set_time
 title: Set time

@@ -1,17 +1,20 @@
 title: The burden of governance
-face-image: img/events/manifestacio_sant_jaume_cgt.jpg
+face-image: img/events/manifestacio_st_jaume_cgt.jpg
 view-if: burdens_start_trigger
 tags: event
 new-page: true
-max-visits: 1
 on-arrival: {!
     // TODO: Actual ways to achieve the burdens
-    // TODO: Burden breaking consequences
+    // TODO: Burden breaking consequences event
     // TODO: Dynamic burdens depending on governing coalition 
     Q.burdens_goal = 4;
     Q.burdens_time = 12;
     Q.burdens_broken = 0;
     Q.burdens_done = 0;
+
+    if (Q.parlament_coalition_concessions_social) {
+        Q.burdens_done += 1;
+    }
 
     Q.burdens_start_trigger = false;
 !}
@@ -45,5 +48,4 @@ These goals, or burdens, for our governance can be achieved by taking at least [
 
 @burdens_continue
 title: We better do our best!
-subtitle: The current progress with this burdens can be consulted in the government tab.
 go-to: post_event

@@ -92,7 +92,9 @@ describe('non-sovereignty law pilots', () => {
   it('uses a countdown rather than a hardcoded court year for both digital drafts', () => {
     const law = scene('parlament/parlament_digital.scene.dry');
 
-    expect(law).toContain('Q.countdowns.push("constitutional_digital")');
+    expect(law).toContain(
+      'if (!Q.countdowns.includes("constitutional_digital")) Q.countdowns.push("constitutional_digital")',
+    );
     expect(law).not.toMatch(/constitutional_digital.+20\d{2}/);
   });
 

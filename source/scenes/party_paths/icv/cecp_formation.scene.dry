@@ -72,7 +72,7 @@ on-arrival: {!
     }
 
     Q.ecp_formation_countdown = 12;
-    Q.countdowns.push("ecp_formation");   
+    if (!Q.countdowns.includes("ecp_formation")) Q.countdowns.push("ecp_formation");   
 !}
 
 = The new shape of ​CSQP

@@ -56,18 +56,18 @@ We have collaborated and talked before with the BNG, as we share many points in 
 title: Campaign together with the BNG
 on-arrival: {!
     if (Q.podemos_surged) {
-        G.spaSupportInject(Q, "bng", "galicia", "3", "podemos");
-        G.spaSupportInject(Q, "erc", "catalunya", "2", "podemos");
+        G.spaSupportInject(Q, "bng", "galicia", 3, "podemos");
+        G.spaSupportInject(Q, "erc", "catalunya", 2, "podemos");
     } else {
-        G.spaSupportInject(Q, "bng", "galicia", "3", "iu");
-        G.spaSupportInject(Q, "erc", "catalunya", "3", "iu");
+        G.spaSupportInject(Q, "bng", "galicia", 3, "iu");
+        G.spaSupportInject(Q, "erc", "catalunya", 3, "iu");
     }
-    G.spaSupportInject(Q, "bng", "galicia", "3", "psoe");
-    G.spaSupportInject(Q, "bng", "galicia", "1", "pp");
+    G.spaSupportInject(Q, "bng", "galicia", 3, "psoe");
+    G.spaSupportInject(Q, "bng", "galicia", 1, "pp");
     if (Q.psc_split) {
-        G.spaSupportInject(Q, "erc", "catalunya", "1", "psc");
+        G.spaSupportInject(Q, "erc", "catalunya", 1, "psc");
     } else {
-        G.spaSupportInject(Q, "erc", "catalunya", "1", "psoe");
+        G.spaSupportInject(Q, "erc", "catalunya", 1, "psoe");
     }  
 !}
 
@@ -90,9 +90,9 @@ on-arrival: {!
     Q.independence_trust -= 3;
 
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "cup", "catalunya", "1", "erc");
+        G.spaSupportInject(Q, "cup", "catalunya", 1, "erc");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "fr", "catalunya", "1", "erc");
+        G.spaSupportInject(Q, "fr", "catalunya", 1, "erc");
     }
 !}
 
@@ -114,9 +114,9 @@ on-arrival: {!
     
     Q.independence_trust += 1;
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "cup");
+        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "cup");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "fr");
+        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "fr");
     }
 !}
 
@@ -133,24 +133,24 @@ unavailable-subtitle: Not enough resources.
 on-arrival: {!
     Q.party_resources -= 1
     if (Q.podemos_surged) {
-        G.spaSupportInject(Q, "pnv", "euskadi", "2", "podemos");
-        G.spaSupportInject(Q, "podemos", "catalunya", "1", "erc");
-        G.spaSupportInject(Q, "gbai", "navarra", "1", "podemos");
+        G.spaSupportInject(Q, "pnv", "euskadi", 2, "podemos");
+        G.spaSupportInject(Q, "podemos", "catalunya", 1, "erc");
+        G.spaSupportInject(Q, "gbai", "navarra", 1, "podemos");
     } else {
-        G.spaSupportInject(Q, "pnv", "euskadi", "2", "iu");
-        G.spaSupportInject(Q, "iu", "catalunya", "1", "erc");
-        G.spaSupportInject(Q, "gbai", "navarra", "1", "iu");
+        G.spaSupportInject(Q, "pnv", "euskadi", 2, "iu");
+        G.spaSupportInject(Q, "iu", "catalunya", 1, "erc");
+        G.spaSupportInject(Q, "gbai", "navarra", 1, "iu");
     }
     if (Q.psc_split) {
-        G.spaSupportInject(Q, "erc", "catalunya", "1", "psc");
+        G.spaSupportInject(Q, "erc", "catalunya", 1, "psc");
     } else {
-        G.spaSupportInject(Q, "erc", "catalunya", "1", "psoe");
+        G.spaSupportInject(Q, "erc", "catalunya", 1, "psoe");
     }
-    G.spaSupportInject(Q, "erc", "catalunya", "1", "ciu");
-    G.spaSupportInject(Q, "pnv", "euskadi", "1", "psoe");
-    G.spaSupportInject(Q, "pnv", "euskadi", "2", "ehbildu");
-    G.spaSupportInject(Q, "gbai", "navarra", "2", "ehbildu");
-    G.spaSupportInject(Q, "gbai", "navarra", "1", "psoe");
+    G.spaSupportInject(Q, "erc", "catalunya", 1, "ciu");
+    G.spaSupportInject(Q, "pnv", "euskadi", 1, "psoe");
+    G.spaSupportInject(Q, "pnv", "euskadi", 2, "ehbildu");
+    G.spaSupportInject(Q, "gbai", "navarra", 2, "ehbildu");
+    G.spaSupportInject(Q, "gbai", "navarra", 1, "psoe");
 !}
 
 Campaigning with EAJ-PNV is an unusual move from our end. We do not really share that much on the social and economic fronts, but we do both represent aspirations for sovereignty and independence. The message sent is, nonetheless, mixed if not confusing.
@@ -168,23 +168,22 @@ on-arrival: {!
     // TODO: path for them joining UP? or too implausible?
     Q.party_resources -= 1;
     if (Q.podemos_surged) {
-        G.spaSupportInject(Q, "ehbildu", "euskadi", "3", "podemos");
-        G.spaSupportInject(Q, "erc", "catalunya", "2", "podemos");
-        G.spaSupportInject(Q, "ehbildu", "navarra", "1", "podemos");
-
+        G.spaSupportInject(Q, "ehbildu", "euskadi", 3, "podemos");
+        G.spaSupportInject(Q, "erc", "catalunya", 2, "podemos");
+        G.spaSupportInject(Q, "ehbildu", "navarra", 1, "podemos");
     } else {
         G.spaSupportInject(Q, "ehbildu", "euskadi", "3", "iu");
         G.spaSupportInject(Q, "ehbildu", "navarra", "1", "iu");
         G.spaSupportInject(Q, "erc", "catalunya", "3", "iu");
     }
-    G.spaSupportInject(Q, "ehbildu", "euskadi", "2", "psoe");
-    G.spaSupportInject(Q, "ehbildu", "euskadi", "1", "pnv");
-    G.spaSupportInject(Q, "ehbildu", "navarra", "1", "gbai");
-    G.spaSupportInject(Q, "ehbildu", "navarra", "1", "psoe");
+    G.spaSupportInject(Q, "ehbildu", "euskadi", 2, "psoe");
+    G.spaSupportInject(Q, "ehbildu", "euskadi", 1, "pnv");
+    G.spaSupportInject(Q, "ehbildu", "navarra", 1, "gbai");
+    G.spaSupportInject(Q, "ehbildu", "navarra", 1, "psoe");
     if (Q.psc_split) {
-        G.spaSupportInject(Q, "erc", "catalunya", "1", "psc");
+        G.spaSupportInject(Q, "erc", "catalunya", 1, "psc");
     } else {
-        G.spaSupportInject(Q, "erc", "catalunya", "1", "psoe");
+        G.spaSupportInject(Q, "erc", "catalunya", 1, "psoe");
     }
 !}
 
@@ -202,22 +201,22 @@ on-arrival: {!
     // TODO: path for them joining UP? or too implausible?
     Q.party_resources -= 1
     if (Q.podemos_surged) {
-        G.spaSupportInject(Q, "pnv", "euskadi", "1", "podemos");
-        G.spaSupportInject(Q, "gbai", "navarra", "3", "podemos");
+        G.spaSupportInject(Q, "pnv", "euskadi", 1, "podemos");
+        G.spaSupportInject(Q, "gbai", "navarra", 3, "podemos");
     } else {
-        G.spaSupportInject(Q, "pnv", "euskadi", "1", "iu");
-        G.spaSupportInject(Q, "gbai", "navarra", "4", "iu");
+        G.spaSupportInject(Q, "pnv", "euskadi", 1, "iu");
+        G.spaSupportInject(Q, "gbai", "navarra", 4, "iu");
     }
     if (Q.psc_split) {
-        G.spaSupportInject(Q, "erc", "catalunya", "1", "psc");
+        G.spaSupportInject(Q, "erc", "catalunya", 1, "psc");
     } else {
-        G.spaSupportInject(Q, "erc", "catalunya", "1", "psoe");
+        G.spaSupportInject(Q, "erc", "catalunya", 1, "psoe");
     }
-    G.spaSupportInject(Q, "erc", "catalunya", "1", "ciu");
-    G.spaSupportInject(Q, "pnv", "euskadi", "0.5", "psoe");
-    G.spaSupportInject(Q, "pnv", "euskadi", "2", "ehbildu");
-    G.spaSupportInject(Q, "gbai", "navarra", "3", "ehbildu");
-    G.spaSupportInject(Q, "gbai", "navarra", "2", "psoe");
+    G.spaSupportInject(Q, "erc", "catalunya", 1, "ciu");
+    G.spaSupportInject(Q, "pnv", "euskadi", 0.5, "psoe");
+    G.spaSupportInject(Q, "pnv", "euskadi", 2, "ehbildu");
+    G.spaSupportInject(Q, "gbai", "navarra", 3, "ehbildu");
+    G.spaSupportInject(Q, "gbai", "navarra", 2, "psoe");
 !}
 
 The gbai coalition is a mix of regionalist and pro-independence parties in Navarre, ranging from centre-left to centre-right, including the Navarrese branch of EAJ-PNV. Campaigning with them is a tad unusual for us, but we do both represent aspirations for sovereignty and independence. 
@@ -234,22 +233,22 @@ unavailable-subtitle: Not enough resources.
 on-arrival: {!
     Q.party_resources -= 1;
     if (Q.podemos_surged) {
-        G.spaSupportInject(Q, "amaiur", "euskadi", "4", "podemos");
-        G.spaSupportInject(Q, "erc", "catalunya", "4", "podemos");
-        G.spaSupportInject(Q, "amaiur", "navarra", "3", "podemos");
+        G.spaSupportInject(Q, "amaiur", "euskadi", 4, "podemos");
+        G.spaSupportInject(Q, "erc", "catalunya", 4, "podemos");
+        G.spaSupportInject(Q, "amaiur", "navarra", 3, "podemos");
     } else {
-        G.spaSupportInject(Q, "amaiur", "euskadi", "5", "iu");
-        G.spaSupportInject(Q, "amaiur", "navarra", "5", "iu");
-        G.spaSupportInject(Q, "erc", "catalunya", "5", "iu");
+        G.spaSupportInject(Q, "amaiur", "euskadi", 5, "iu");
+        G.spaSupportInject(Q, "amaiur", "navarra", 5, "iu");
+        G.spaSupportInject(Q, "erc", "catalunya", 5, "iu");
     }
-    G.spaSupportInject(Q, "amaiur", "euskadi", "3", "psoe");
-    G.spaSupportInject(Q, "amaiur", "euskadi", "1", "pnv");
-    G.spaSupportInject(Q, "amaiur", "navarra", "1", "gbai");
-    G.spaSupportInject(Q, "amaiur", "navarra", "3", "psoe");
+    G.spaSupportInject(Q, "amaiur", "euskadi", 3, "psoe");
+    G.spaSupportInject(Q, "amaiur", "euskadi", 1, "pnv");
+    G.spaSupportInject(Q, "amaiur", "navarra", 1, "gbai");
+    G.spaSupportInject(Q, "amaiur", "navarra", 3, "psoe");
     if (Q.psc_split) {
-        G.spaSupportInject(Q, "erc", "catalunya", "2", "psc");
+        G.spaSupportInject(Q, "erc", "catalunya", 2, "psc");
     } else {
-        G.spaSupportInject(Q, "erc", "catalunya", "4", "psoe");
+        G.spaSupportInject(Q, "erc", "catalunya", 4, "psoe");
     }
 !}
 
@@ -275,18 +274,18 @@ compromis is a relatively new coalition of broadly regionalist, federalist, repu
 title: Campaign together with compromis
 on-arrival: {!
     if (Q.podemos_surged) {
-        G.spaSupportInject(Q, "compromis", "valencia", "4", "podemos");
-        G.spaSupportInject(Q, "erc", "catalunya", "2", "podemos");
+        G.spaSupportInject(Q, "compromis", "valencia", 4, "podemos");
+        G.spaSupportInject(Q, "erc", "catalunya", 2, "podemos");
     } else {
-        G.spaSupportInject(Q, "compromis", "valencia", "3", "iu");
-        G.spaSupportInject(Q, "erc", "catalunya", "3", "iu");
+        G.spaSupportInject(Q, "compromis", "valencia", 3, "iu");
+        G.spaSupportInject(Q, "erc", "catalunya", 3, "iu");
     }
-    G.spaSupportInject(Q, "compromis", "valencia", "2.5", "psoe");
-    G.spaSupportInject(Q, "compromis", "valencia", "1", "pp");  
+    G.spaSupportInject(Q, "compromis", "valencia", 2.5, "psoe");
+    G.spaSupportInject(Q, "compromis", "valencia", 1, "pp");  
     if (Q.psc_split) {
-        G.spaSupportInject(Q, "erc", "catalunya", "1", "psc");
+        G.spaSupportInject(Q, "erc", "catalunya", 1, "psc");
     } else {
-        G.spaSupportInject(Q, "erc", "catalunya", "1.5", "psoe");
+        G.spaSupportInject(Q, "erc", "catalunya", 1.5, "psoe");
     }
 !}
 
@@ -309,9 +308,9 @@ on-arrival: {!
     Q.independence_trust -= 3;
 
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "cup", "catalunya", "1", "erc");
+        G.spaSupportInject(Q, "cup", "catalunya", 1, "erc");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "fr", "catalunya", "1", "erc");
+        G.spaSupportInject(Q, "fr", "catalunya", 1, "erc");
     }
 !}
 
@@ -333,9 +332,9 @@ on-arrival: {!
     
     Q.independence_trust += 1;
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "cup");
+        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "cup");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "fr");
+        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "fr");
     }
 !}
 
@@ -361,18 +360,18 @@ MES is a small group, but we do have many shared fights with them, like those on
 title: Campaign together with MES
 on-arrival: {!
     if (Q.podemos_surged) {
-        G.spaSupportInject(Q, "mes", "balears", "3", "podemos");
-        G.spaSupportInject(Q, "erc", "catalunya", "1", "podemos");
+        G.spaSupportInject(Q, "mes", "balears", 3, "podemos");
+        G.spaSupportInject(Q, "erc", "catalunya", 1, "podemos");
     } else {
-        G.spaSupportInject(Q, "mes", "balears", "3", "iu");
-        G.spaSupportInject(Q, "erc", "catalunya", "2", "iu");
+        G.spaSupportInject(Q, "mes", "balears", 3, "iu");
+        G.spaSupportInject(Q, "erc", "catalunya", 2, "iu");
     }
-    G.spaSupportInject(Q, "mes", "balears", "2", "psoe");
-    G.spaSupportInject(Q, "mes", "balears", "0.5", "pp");  
+    G.spaSupportInject(Q, "mes", "balears", 2, "psoe");
+    G.spaSupportInject(Q, "mes", "balears", 0.5, "pp");  
     if (Q.psc_split) {
-        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "psc");
+        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "psc");
     } else {
-        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "psoe");
+        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "psoe");
     }
 !}
 
@@ -395,9 +394,9 @@ on-arrival: {!
     Q.independence_trust -= 3;
 
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "cup", "catalunya", "1", "erc");
+        G.spaSupportInject(Q, "cup", "catalunya", 1, "erc");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "fr", "catalunya", "1", "erc");
+        G.spaSupportInject(Q, "fr", "catalunya", 1, "erc");
     }
 !}
 
@@ -418,9 +417,9 @@ on-arrival: {!
     
     Q.independence_trust += 1;
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "cup");
+        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "cup");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "erc", "catalunya", "0.5", "fr");
+        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "fr");
     }
 !}
 
@@ -430,5 +429,5 @@ We've tried our best to highlight the need to have different political opinions 
 
 @clean_map
 title: Continue...
-on-arrival: party_reaching_out_map = 0;
+on-arrival: party_reaching_out_map = false;
 go-to: post_event

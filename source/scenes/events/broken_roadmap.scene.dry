@@ -10,7 +10,7 @@ on-arrival: {!
     }
     Q.broken_roadmap_trigger = false;
     Q.broken_roadmap_expires_countdown = 12;
-    Q.countdowns.push("broken_roadmap_expires");
+    if (!Q.countdowns.includes("broken_roadmap_expires")) Q.countdowns.push("broken_roadmap_expires");
 
 !}
 role: event
@@ -33,7 +33,12 @@ on-arrival: {!
 
             Q["abstain_parlament_" + c + "_" + d + "_support"] += 0.8*amount;
             Q["fnc_parlament_" + c + "_" + d + "_support"] += 0.05*amount;
-            Q["cup_parlament_" + c + "_" + d + "_support"] += 0.15*amount;
+            if (!Q.cup_in_jxsi && !Q.cup_in_jxcat) {
+                Q["cup_parlament_" + c + "_" + d + "_support"] += 0.15*amount;
+            } else {
+                Q["fnc_parlament_" + c + "_" + d + "_support"] += 0.05*amount;
+                Q["abstain_parlament_" + c + "_" + d + "_support"] += 0.1*amount;
+            }
         }
     }
     Q.independence_trust = 0.5*Q.independence_trust;

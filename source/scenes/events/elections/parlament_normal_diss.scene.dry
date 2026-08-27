@@ -20,7 +20,7 @@ on-arrival: {!
 
     Q.next_election_event_trigger = 0;
     Q.next_election_event_countdown = 2;
-    Q.countdowns.push("next_election_event");
+    if (!Q.countdowns.includes("next_election_event")) Q.countdowns.push("next_election_event");
 !}
 role: event
 

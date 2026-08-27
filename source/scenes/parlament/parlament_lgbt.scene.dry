@@ -125,6 +125,7 @@ on-arrival: {!
             Q.welfare_index += 0.4;
             G.registerLaw(Q, {id:"lgbt_rights_services",title:"LGBTI Rights and Services",group:"rights",icon:"img/rainbow_icon.svg",targets:{generalitat_surplus:-0.0025},ramp_ticks:4});
         }
+        Q.burdens_done += 1;
     }
 !}
 

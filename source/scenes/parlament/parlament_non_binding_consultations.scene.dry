@@ -132,12 +132,12 @@ on-arrival: {!
 
        G.registerLaw(Q, {id:"consultations",title:"Law on Non-Binding Consultations",icon:"img/politics_icon.svg",targets:{independence_trust: 0.5}});
 
-        Q.countdowns.push("constitutional_consultations");
+        if (!Q.countdowns.includes("constitutional_consultations")) Q.countdowns.push("constitutional_consultations");
         Q.constitutional_consultations_countdown = 2;
 
         if (Q.president_party != Q.player_party) {
             Q.consultation_pending = true;
-            Q.countdowns.push("question_of_the_question");
+            if (!Q.countdowns.includes("question_of_the_question")) Q.countdowns.push("question_of_the_question");
                 if (Q.congreso_decidir_countdown == 3) {
                     Q.question_of_the_question_countdown = 6;    
                 } else {
@@ -148,6 +148,7 @@ on-arrival: {!
         Q.parlament_non_binding_consultations = false;
     }
     Q.coming_from_parlament = false;
+    Q.burdens_done += 1;
 !}
 
 <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_consultations_vote_result"}'></div>

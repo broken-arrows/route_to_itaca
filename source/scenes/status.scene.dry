@@ -21,6 +21,8 @@ if (Q.unemployment) {
 
 [? if player_party != 0 and position_disp != 0: [+ player_party +] [? if player_in_jxsi: (jxsi)?][?if player_in_jxcat: (JxCat)?] position: [+ position_disp +] ?]
 
+[? if ((player_party == "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)): Government Budget: [+ government_budget +] ?]
+
 Party resources: [+ party_resources +]
 
 [? if player_party == "erc": Internal dissent: [+ erc_dissent : dissent +] ?]
@@ -36,6 +38,8 @@ Party resources: [+ party_resources +]
 <div style="display: flex; gap: 0.62em;margin-bottom: -0.75em;"><div style="flex: 0 0 15%;padding-left:0.2em"><img src="img/cat_seal.svg"></div><div style="flex: 1 1 84%;"><p style="font-weight:bold; margin-top:-0.25em; margin-bottom:0.25em;">Generalitat</p><p style="white-space:nowrap; overflow:visible; text-overflow:ellipsis;max-width:95%;">[+ cat_coalition_disp +]</p></div></div>
 
 [? if president_gender = "m": President ?][? if president_gender = "f": Presidenta ?][+ president +] ([+ president_party +])
+
+[? if ((player_party == "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) and burdens_goal > 0 :<div style="display:flex; align-items:center;"><div> **Government Burdens** <br/><span style="font-size:1em">[+ burdens_time +] [? if months_left != 1 : months?][? if months_left = 1: month?] left</span></div><div style="width: 3em; align-items: center; justify-content: center;"><div style="font-size:1.75em; font-family: UbuntuCustom;display:flex;align-items:center;justify-content:center;padding-left:0.75em;">[? if burdens_broken: X ?][? if not burdens_broken: <div style="margin-bottom: 0.5em;">[+ burdens_done +]</div><span style="font-size:0.75em">/</span> <div style="margin-top: 0.5em;">[+ burdens_goal +]</div> ?]</div></div></div>?]
 
 Next election: [+ next_election_month : month +] [+ next_election_year +]
 
@@ -170,13 +174,14 @@ on-arrival: {!
     Q.surplus_dataviz = Q.generalitat_surplus.toFixed(1)
     Q.gdp_growth_dataviz = Q.gdp_growth.toFixed(1)
     Q.unemployment_dataviz = Q.unemployment.toFixed(1)
+    Q.coalition_dissent_dataviz = ((Q.player_party == "erc" && Q.erc_in_gob)  || (Q.player_party == "cup" && Q.cup_in_gob) || (Q.player_in_jxsi && Q.jxsi_in_gob) || (Q.player_in_jxcat && Q.jxcat_in_gob)) && Q.cat_coalition.length > 1;
 !}
 
-** [+ cat_coalition_disp +] **
+= [+ cat_coalition_disp +] 
 
-[? if ((player_party == "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob)) and burdens_goal > 0 :<div style="display:flex; align-content:center;"><div> **Burdens of Government** <br/><span style="font-size:0.8em">[+ burdens_time +] months left</span></div><div style="width: 2em; align-content: center"><span style="font-size:2em;">[? if burdens_broken: X ?][? if not burdens_broken: [+ burdens_done +] / [+ burdens_goal +] ?]</span></div></div>?]
+[? if ((player_party == "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) and burdens_goal > 0 :<div style="display:flex; align-items:center;"><div> **Government Burdens** <br/><span style="font-size:1em">[+ burdens_time +] [? if months_left != 1 : months?][? if months_left = 1: month?] left</span></div><div style="width: 3em; align-items: center; justify-content: center;"><div style="font-size:1.75em; font-family: UbuntuCustom;display:flex;align-items:center;justify-content:center;padding-left:0.75em;">[? if burdens_broken: X ?][? if not burdens_broken: <div style="margin-bottom: 0.5em;">[+ burdens_done +]</div><span style="font-size:0.75em">/</span> <div style="margin-top: 0.5em;">[+ burdens_goal +]</div> ?]</div></div></div>?]
 
-[? if (player_party == "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) : Coalition dissent: [+ cat_coalition_dissent : dissent +] ?]
+[? if coalition_dissent_dataviz : Coalition dissent: [+ cat_coalition_dissent : dissent +] ?]
 
 <div style="display:flex; align-content:center;"><div style="width:20%; align-content:center"><img src="img/cat_seal.svg"></div><div style="width:80%; padding-left: 1em;"> **M.H.** [? if president_gender = "m": **President** ?][? if president_gender = "f": **Presidenta** ?]<br/>**[+ president +]** ([+ president_party +])<br/> <span style="font-size:0.8em;">**VP.** [+ vicepresident +] ([+ vicepresident_party +])</span></div></div></div>
 

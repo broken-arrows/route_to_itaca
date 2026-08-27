@@ -99,7 +99,7 @@ on-arrival: {!
     }
 
     Q.junts_split_countdown = 9;
-    Q.countdowns.push("junts_split");
+    if (!Q.countdowns.includes("junts_split")) Q.countdowns.push("junts_split");
 !}
 role: event
 

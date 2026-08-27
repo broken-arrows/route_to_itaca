@@ -552,8 +552,6 @@
   // --- ENGINE ---
 
   function monthPasses(Q) {
-    console.log("Running engine tick for", Q.month, Q.year);
-
     // Advance policy-modifier lifecycle BEFORE any formula reads mod(Q, ...).
     advanceMods(Q);
 
@@ -1474,8 +1472,6 @@
   // --- MAIN MONTHLY TICK ---
 
   function monthPassesCongreso(Q) {
-    console.log("Running congreso engine tick for", Q.month, Q.year);
-
     const constituencies = Q.congreso_constituencies;
     if (!constituencies) return;
 
@@ -1813,7 +1809,7 @@
     for (const item of selected) {
       if (typeof item !== "string" || known.indexOf(item) === -1) {
         cardTransferError(
-          'unknown ' + label.replace(/s$/, "") + ' "' + item + '"',
+          "unknown " + label.replace(/s$/, "") + ' "' + item + '"',
         );
       }
       if (unique.indexOf(item) === -1) unique.push(item);
@@ -1824,12 +1820,7 @@
   function cardSupportKey(contest, party, constituency, demographic) {
     if (contest === "parlament") {
       return (
-        party +
-        "_parlament_" +
-        constituency +
-        "_" +
-        demographic +
-        "_support"
+        party + "_parlament_" + constituency + "_" + demographic + "_support"
       );
     }
     if (contest === "congreso")
@@ -1866,12 +1857,7 @@
     for (const membership of memberships) {
       if (!Q[membership[1]]) continue;
       const carrier = membership[0];
-      const key = cardSupportKey(
-        contest,
-        carrier,
-        constituency,
-        demographic,
-      );
+      const key = cardSupportKey(contest, carrier, constituency, demographic);
       if (Number(Q[key]) > 0) return carrier;
     }
     return party;
@@ -1899,7 +1885,9 @@
           constituency,
           demographic,
           CARD_CIU_PARTIES,
-        ) || (contest === "parlament" ? Q.parlament_current_ciu : null) || "ciu"
+        ) ||
+        (contest === "parlament" ? Q.parlament_current_ciu : null) ||
+        "ciu"
       );
     }
 
@@ -1927,7 +1915,9 @@
           constituency,
           demographic,
           CARD_FEDERAL_LEFT_PARTIES,
-        ) || Q.parlament_current_icv || "icv"
+        ) ||
+        Q.parlament_current_icv ||
+        "icv"
       );
     }
 
@@ -1951,12 +1941,7 @@
     let total = 0;
     let independence = 0;
     for (const party of lineup) {
-      const key = cardSupportKey(
-        contest,
-        party,
-        constituency,
-        demographic,
-      );
+      const key = cardSupportKey(contest, party, constituency, demographic);
       const support = Q[key];
       if (
         typeof support !== "number" ||
@@ -2049,7 +2034,9 @@
           options.from,
         );
         if (lineup.indexOf(to) === -1)
-          cardTransferError('unknown party "' + options.to + '" in affected pool');
+          cardTransferError(
+            'unknown party "' + options.to + '" in affected pool',
+          );
         if (lineup.indexOf(from) === -1)
           cardTransferError(
             'unknown party "' + options.from + '" in affected pool',
@@ -2059,12 +2046,7 @@
         // cell; other selected cells must still be validated before any mutate.
         if (to === from) continue;
 
-        const toKey = cardSupportKey(
-          contest,
-          to,
-          constituency,
-          demographic,
-        );
+        const toKey = cardSupportKey(contest, to, constituency, demographic);
         const fromKey = cardSupportKey(
           contest,
           from,
@@ -2084,7 +2066,9 @@
           !Number.isFinite(fromCurrent) ||
           fromCurrent < 0
         )
-          cardTransferError(fromKey + " must hold finite, non-negative support");
+          cardTransferError(
+            fromKey + " must hold finite, non-negative support",
+          );
 
         let effectiveRequest = amount;
         if (

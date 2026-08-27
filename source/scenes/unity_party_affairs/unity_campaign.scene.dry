@@ -177,7 +177,7 @@ view-if: next_local_election_time - time <= 12 and player_party = "erc"
 subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
-call: erc_campaigning.local_election
+go-to: erc_campaigning.local_election
 
 # TODO: text + cases for jxsi/jxcat going together in local elections, etc
 

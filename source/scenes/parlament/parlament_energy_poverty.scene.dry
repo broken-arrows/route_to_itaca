@@ -223,7 +223,8 @@ on-arrival: {!
             G.registerLaw(Q, {id:"energy_poverty_public_guarantee",title:"Essential-Supply Guarantee",icon:"img/lightbulb_icon.svg",targets:{welfare_index_growth:0.10,generalitat_surplus:-0.025,social_dissent_eq:-1.5},ramp_ticks:4});
         }
         Q.constitutional_energy_poverty_countdown = 24;
-        Q.countdowns.push("constitutional_energy_poverty");
+        if (!Q.countdowns.includes("constitutional_energy_poverty")) Q.countdowns.push("constitutional_energy_poverty");
+        Q.burdens_done += 1;
     }
 !}
 

@@ -230,6 +230,7 @@ on-arrival: {!
 on-arrival: {!
     if (Q.parlament_action_open) {
         Q.month_actions -= 1;
+        Q.parlament_timer = 0;
     }
 !}
 go-to: root

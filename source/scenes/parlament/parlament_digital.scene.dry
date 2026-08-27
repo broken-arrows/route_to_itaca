@@ -249,9 +249,10 @@ on-arrival: {!
         if (nationalScope) {
             G.registerLaw(Q, {id:"digital_agency_national_scope",title:"National Cybersecurity Framework",icon:"img/comms_icon.svg",targets:{gdp_growth:0.020,generalitat_surplus:-0.015},ramp_ticks:8});
             Q.independence_trust += 1;
+            Q.burdens_done += 1;
         }
         Q.constitutional_digital_countdown = 24;
-        Q.countdowns.push("constitutional_digital");
+        if (!Q.countdowns.includes("constitutional_digital")) Q.countdowns.push("constitutional_digital");
     }
 !}
 

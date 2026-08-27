@@ -301,7 +301,7 @@ if (has_time_passed) {
             Q[countdown + "_countdown"] = -1;
             console.info("Countdown for " + countdown + " reached trigger.");
             Q[countdown + '_trigger'] = 1;
-        } else {
+        } else if (Q[countdown + "_countdown"] > 0) {
             console.log("Countdown " + countdown + ": " + Q[countdown + "_countdown"] + " ticks remaining.");
         }
     }

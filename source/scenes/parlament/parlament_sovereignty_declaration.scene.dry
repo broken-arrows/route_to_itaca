@@ -306,11 +306,11 @@ This has not been without its share bit of turbulence. [? if parlament_sovereign
 @cracks_show
 on-arrival: {!
     Q.psc_implosion_countdown = 3;
-    Q.countdowns.push("psc_implosion");
+    if (!Q.countdowns.includes("psc_implosion")) Q.countdowns.push("psc_implosion");
     Q.congreso_decidir_countdown = 8;
-    Q.countdowns.push("congreso_decidir");
+    if (!Q.countdowns.includes("congreso_decidir")) Q.countdowns.push("congreso_decidir");
     Q.constitutional_sovereignty_countdown = 12;
-    Q.countdowns.push("constitutional_sovereignty");
+    if (!Q.countdowns.includes("constitutional_sovereignty")) Q.countdowns.push("constitutional_sovereignty");
 !}
 
 Cracks are starting to show, but it is still early to tell what will this mean for the PSC. [? if not parlament_sovereignty_declaration: In the mean time, we may eventually want to try to convince more parties to join in for the next attempt at approving this declaration if we ever want to move forward with our roadmap. ?][? if parlament_sovereignty_declaration: In the mean time, this Declaration of sovereignty will also be passed for approval to local, county, and province levels for added relevance. We can expect it to pass with similar arithmetics. A delegation will also be sent to the Congreso to formally ask for a negotiated referendum on independence. ?]

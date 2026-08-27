@@ -1,0 +1,12 @@
+title: A new proposal for National Unity
+subtitle: Can a jxsi-like formula be repeated?
+view-if: jxsi_formed and not jxsi_dissolved and jxcat_formation_trigger and cat_caretaker_gov and not jxcat_formed
+tags: event
+new-page: true
+max-visits: 1
+
+= A new proposal for National Unity
+
+
+TODO!
+

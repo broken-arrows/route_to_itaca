@@ -21,7 +21,7 @@ on-arrival: {!
     Q.psoe_leader_gender = "f";
     Q.psoe_ideology = "Centrist Social Democracy, Autonomism";
     Q.psoe_party_congres_countdown = 12;
-    Q.countdown.push("psoe_party_congres");
+    if (!Q.countdowns.includes("psoe_party_congres")) Q.countdowns.push("psoe_party_congres");
 !}
 
 - @congreso_coalition: So what's the PSOE going to do?

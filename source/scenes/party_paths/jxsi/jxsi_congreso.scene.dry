@@ -1,0 +1,9 @@
+title: Unity lists in the Congreso?
+subtitle: Maybe jxsi work out in the Spanish General election...
+view-if: 1==0
+# view-if: jxsi_formed and not jxsi_dissolved and next_spanish_election_time - time <= 6
+tags: event
+new-page: true
+on-arrival: {!
+    // TODO!
+!}

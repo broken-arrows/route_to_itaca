@@ -247,6 +247,7 @@ on-arrival: {!
         } else {
             G.registerLaw(Q, {id:"public_order_focused_reform",title:"Public Order Reform",group:"rights",icon:"img/interior_icon.svg",targets:{social_dissent_eq:-1},ramp_ticks:3});
         }
+        Q.burdens_done += 1;
     }
 !}
 

@@ -34,7 +34,7 @@ on-arrival: {!
 
     if (!Q.unio_breakdown_countdown) {
         Q.unio_breakup_countdown = 2;
-        Q.countdowns.push("unio_breakup");
+        if (!Q.countdowns.includes("unio_breakup")) Q.countdowns.push("unio_breakup");
     }
 
     if (Q[Q.parlament_current_ciu + "_roadmap"] <= 1) {

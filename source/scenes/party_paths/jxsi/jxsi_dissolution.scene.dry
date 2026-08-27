@@ -1,19 +1,27 @@
-title: Junts pel Sí dissolves
-subtitle: Separate lists for the 21-D 2017 election
-view-if: jxsi_formed and not jxsi_dissolved and year = 2017 and month = 12
+title: The end of jxsi
+view-if: jxsi_formed and not jxsi_dissolved and jxsi_dissolution_trigger and cat_caretaker_gov and not (jxcat_formed and (erc_in_jxcat or cup_in_jxcat))
 tags: event
 new-page: true
 max-visits: 1
+
+= The end of ​JxSí
+
+@rip_jxsi
 on-arrival: {!
-    // JxSí splits back into separate lists for 21-D 2017: the post-CDC carrier
-    // becomes JxCat, ERC runs alone again.
-    // cal: economic_engine.py EVENTS['jxsi_dissolution'] + vote_model jxsi_dissolved flag
-    // TODO: tie the trigger to the actual 21-D / Art.155 election call, not a bare date.
     Q.jxsi_dissolved = true;
     Q.independence_trust -= 1.5;
 
-    // ERC's share of the coalition, fixed at formation (40/45/50/60). Default 50.
     var _ercFrac = (Q.jxsi_formation_num || 50) / 100;
+    var _cupFrac = 0;
+    var _cdcFrac = 1 - _ercFrac;
+    if (Q.cup_in_jxsi) {
+         _cupFrac = 6;
+        if (Q.roadmap_broken) {
+            _cupFrac = 12;
+        }
+        _ercFrac -= _cupFrac*0.5;
+        _cdcFrac -= _cupFrac*0.5;
+    }
 
     // Seats: split the JxSí bloc into JxCat (carrier) + ERC.
     Q.erc_parlament_s = Math.round(Q.jxsi_parlament_s * _ercFrac);

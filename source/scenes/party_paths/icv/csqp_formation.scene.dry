@@ -72,7 +72,7 @@ on-arrival: {!
     }
 
     Q.cecp_formation_countdown = 12;
-    Q.countdowns.push("cecp_formation");   
+    if (!Q.countdowns.includes("cecp_formation")) Q.countdowns.push("cecp_formation");   
 !}
 role: event
 

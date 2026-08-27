@@ -229,7 +229,8 @@ on-arrival: {!
             G.registerLaw(Q, {id:"housing_public_stock",title:"Public Housing Expansion",icon:"img/community_icon.svg",targets:{unemployment_recovery:0.04,welfare_index_growth:0.14,generalitat_surplus:-0.05,social_dissent_eq:-2},ramp_ticks:9});
         }
         Q.constitutional_housing_countdown = 20;
-        Q.countdowns.push("constitutional_housing");
+        if (!Q.countdowns.includes("constitutional_housing")) Q.countdowns.push("constitutional_housing");
+        Q.burdens_done += 1;
     }
 !}
 

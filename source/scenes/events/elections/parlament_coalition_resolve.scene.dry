@@ -55,7 +55,12 @@ on-arrival: {!
 
     if (Q[Q.player_party + "_in_gob"]) {
         Q.burdens_start_countdown = 1;
-        Q.countdowns.push("burdens_start");
+        if (!Q.countdowns.includes("burdens_start")) Q.countdowns.push("burdens_start");
+        Q.government_budget = 1 - Q.difficulty;
+    }
+    if (Q.jxsi_formed) {
+        Q.jxsi_dissolution_countdown = 3;
+        if (!Q.countdowns.includes("jxcat_formation")) Q.countdowns.push("jxcat_formation");
     }
 !}
 go-to: post_event

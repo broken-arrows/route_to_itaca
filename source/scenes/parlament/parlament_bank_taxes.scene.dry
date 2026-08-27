@@ -136,8 +136,9 @@ on-arrival: {!
         } else {
             G.registerLaw(Q, {id:"bank_deposit_tax", title: "Bank Deposits Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.08,gdp_growth:-0.04},ramp_ticks: 2});
             Q.constitutional_bank_taxes_countdown = 24;
-            Q.countdowns.push("constitutional_bank_taxes");
+            if (!Q.countdowns.includes("constitutional_bank_taxes")) Q.countdowns.push("constitutional_bank_taxes");
         }
+        Q.burdens_done += 1;
     }
 !}
 

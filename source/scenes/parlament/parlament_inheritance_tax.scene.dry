@@ -228,6 +228,7 @@ on-arrival: {!
         } else {
             G.registerLaw(Q, {id:"inheritance_tax_partial",title:"Restored Inheritance Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.035,gdp_growth:-0.01},ramp_ticks:2});
         }
+        Q.burdens_done += 1;
     }
 !}
 

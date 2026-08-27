@@ -1,6 +1,6 @@
 title: DL's continued identity crisis
 subtitle: The burden of dl's legacy continues to weigh down on the Catalan centre-right
-view-if: player_party != "dl" and pdcat_formation_trigger and next_election_time - time > 3
+view-if: player_party != "dl" and pdcat_formation_trigger and next_election_time - time >= 3 and (next_election_time - time <= 12 or next_spanish_election_time - time <= 6 or next_local_election_time - time <= 4)
 face-image: img/events/pdcat_founding.jpg
 new-page: true
 max-visits: 1
@@ -98,7 +98,7 @@ on-arrival: {!
     }
 
     Q.pdcat_split_countdown = 9;
-    Q.countdowns.push("pdcat_split");
+    if (!Q.countdowns.includes("pdcat_split")) Q.countdowns.push("pdcat_split");
 !}
 role: event
 

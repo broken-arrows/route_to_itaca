@@ -212,7 +212,8 @@ on-arrival: {!
         if (protective) {
             G.registerLaw(Q, {id:"commerce_protective_controls",title:"Protective Commerce Controls",icon:"img/store_icon.svg",targets:{gdp_growth:0.02,unemployment_recovery:0.005,welfare_index_growth:0.04},ramp_ticks:5});
             Q.constitutional_commerce_countdown = 24;
-            Q.countdowns.push("constitutional_commerce");
+            if (!Q.countdowns.includes("constitutional_commerce")) Q.countdowns.push("constitutional_commerce");
+            Q.burdens_done += 1;
         }
     }
 !}

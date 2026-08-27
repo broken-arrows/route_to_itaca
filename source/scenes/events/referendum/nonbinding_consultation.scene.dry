@@ -226,8 +226,8 @@ title: Independence won!
 subtitle: ... what now?
 view-if: consultation_yes_pc > consultation_no_pc
 on-arrival: {!
-    Q.countdowns.push("unio_breakup");
-    Q.countdowns.push("jxsi_formation");
+    if (!Q.countdowns.includes("unio_breakup")) Q.countdowns.push("unio_breakup");
+    if (!Q.countdowns.includes("jxsi_formation")) Q.countdowns.push("jxsi_formation");
     Q.unio_breakup_countdown = 5;
     Q.jxsi_formation_countdown = 6;
     Q.plebiscite_election_countdown = 3;
@@ -246,7 +246,7 @@ on-arrival: {!
     Q.independence_trust -= 30;
     Q.cat_spa_relations += 25;
 
-    Q.countdowns.push("parlament_snap_election");
+    if (!Q.countdowns.includes("parlament_snap_election")) Q.countdowns.push("parlament_snap_election");
     Q.parlament_snap_election_countdown = 1;
 
     // TODO: ramifications of what happens here besides the snap election, specially for CiU. It's virutally impossible to get to this scene though.

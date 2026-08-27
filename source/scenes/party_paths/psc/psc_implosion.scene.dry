@@ -29,7 +29,7 @@ Even in the current state of absolute crisis within the PSC, any real alternativ
 @perenavarro_leadership
 subtitle: Without PSC's internal opposition being organized enough, the current leadership remains in place.
 on-arrival: {!
-    Q.countdowns.push("ernest_maragall_erc");
+    if (!Q.countdowns.includes("ernest_maragall_erc")) Q.countdowns.push("ernest_maragall_erc");
     Q.ernest_maragall_erc_countdown = 3;
 !}
 
@@ -40,14 +40,14 @@ choose-if: party_resources >= 1 and psc_relations >= 40
 unavailable-subtitle: [? if party_resources < 1: Not enough resources. ?][? if psc_relations < 40: We don't have good enough relations with the PSC. ?]
 subtitle: \[-1 resources\]
 on-arrival: {!
-    Q.countdowns.push("ernest_maragall_erc");
+    if (!Q.countdowns.includes("ernest_maragall_erc")) Q.countdowns.push("ernest_maragall_erc");
     Q.ernest_maragall_erc_countdown = 3;
     Q.psc_leader = "Àngel Ros";
     Q.psc_ideology = "Centrist Social Democracy, Plurinationalism";
     Q.psc_recovery_mult = 1.5;
     
     Q.psc_breakup_countdown = 6;
-    Q.countdowns.push("psc_breakup");
+    if (!Q.countdowns.includes("psc_breakup")) Q.countdowns.push("psc_breakup");
 !}
 
 # TODO: Actual text
@@ -63,7 +63,7 @@ on-arrival: {!
     Q.psc_recovery_mult = 1.75;
 
     Q.psc_breakup_countdown = 6;
-    Q.countdowns.push("psc_breakup");
+    if (!Q.countdowns.includes("psc_breakup")) Q.countdowns.push("psc_breakup");
 !}
 
 # TODO: Actual text
