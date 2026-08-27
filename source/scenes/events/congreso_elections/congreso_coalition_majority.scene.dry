@@ -3,7 +3,7 @@ title: congreso single-party majority
 You should not be here? Report a bug if you see this text.
 
 @party
-title: [? if congreso_coalition_majority_party == "cs": csspa ?][? if congreso_coalition_majority_party != "cs": [+ congreso_coalition_majority_party +]?] Majority Government
+title: [? if congreso_coalition_majority_party == "cs": csspa ?][? if congreso_coalition_majority_party != "cs": [+ congreso_coalition_majority_party +]?] <span class="gobierno-coalition" data-parties="[+ congreso_coalition_majority_party +]" data-summary="Majority government - [+ congreso_coalition_majority_s +]/[+ congreso_s_majority +]">Majority Government</span>
 subtitle: With these results, what other option is even there?
 view-if: congreso_coalition_majority_s > 0
 choose-if: congreso_coalition_majority_reach
@@ -13,8 +13,8 @@ on-arrival: {!
     Q.spanish_pm_gender = Q[Q.congreso_coalition_majority_party + "_gender"];
     Q.spanish_pm_party = Q.congreso_coalition_majority_party;
     Q.spanish_coalition = [Q.congreso_coalition_majority_party];
-    
-    Q.spanish_coalition_disp = '[? if congreso_coalition_majority_party == "cs": csspa ?][? if congreso_coalition_majority_party != "cs": [+ congreso_coalition_majority_party +]?] <span style="color: var(--' + Q.congreso_coalition_majority_party + '); font-style: italic;">Majority Government</span>';
+    var display_party = Q.congreso_coalition_majority_party == "cs" ? "csspa" : Q.congreso_coalition_majority_party;
+    Q.spanish_coalition_disp = display_party + " " + G.governmentTooltip("gobierno", Q.spanish_coalition, "Majority government - " + Q.congreso_coalition_majority_s + "/" + Q.congreso_s_majority, '<span style="color: var(--' + Q.congreso_coalition_majority_party + '); font-style: italic;">Majority Government</span>');
 !}
 
 **A new government is formed!**

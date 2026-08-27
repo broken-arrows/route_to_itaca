@@ -8,7 +8,7 @@ on-arrival: {!
     // PSOE wins the no-confidence vote; Sánchez becomes PM. Government changes,
     // PSOE consolidates the anti-PP left and partially resets its corruption stain.
     Q.spanish_coalition = ["psoe"];
-    Q.spanish_coalition_disp = "PSOE <span style='color: var(--psoe);'>minority government</span>";
+    Q.spanish_coalition_disp = "PSOE " + G.governmentTooltip("gobierno", Q.spanish_coalition, "Minority government - " + Q.psoe_congreso_s + "/" + Q.congreso_s_majority, "<span style='color: var(--psoe);'>minority government</span>");
     Q.spanish_pm = "Pedro Sánchez";
     Q.spanish_pm_party = "psoe";
     Q.spanish_pm_gender = "m";

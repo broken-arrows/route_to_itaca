@@ -3,7 +3,7 @@ title: parlament left tripartite negotiations phase 0
 You should not be here? Report a bug if you see this text.
 
 @erc
-title: <span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span> government (ERC-PSC-[+ parlament_current_icv +])
+title: <span class="generalitat-coalition" data-parties="erc psc [+ parlament_current_icv +]" data-summary="Majority government - [+ parlament_coalition_erc_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span> government</span> (ERC-PSC-[+ parlament_current_icv +])
 choose-if: parlament_coalition_erc_psc_icv_s >= parlament_s_majority and (parlament_current_icv_relations > 55 or ((parlament_current_icv_leader == "Arcadi Oliveres" or party_resources > 1) and parlament_current_icv_relations > 40)) and ((psc_relations > 55 or ((psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros" or party_resources > 1) and psc_relations > 40)))
 view-if: parlament_coalition_erc_psc_icv_s and player_party == "erc"
 unavailable-subtitle: [? if parlament_coalition_erc_psc_icv_s < parlament_s_majority: Not enough parliamentary support. ?][? if parlament_current_icv_relations <= 40: [+ parlament_current_icv +] does not trust us enough. ?][? if psc_relations <= 40: The PSC does not trust us enough. ?][? if party_resources < 1: Not enough resources. ?]
@@ -76,7 +76,7 @@ go-to: post_speaker
 - @post_event: And so, time passes...
 
 @cup
-title: <span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span> government (ERC-PSC-[+ parlament_current_icv +])
+title: <span class="generalitat-coalition" data-parties="erc psc [+ parlament_current_icv +]" data-summary="Majority government - [+ parlament_coalition_erc_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span> government</span> (ERC-PSC-[+ parlament_current_icv +])
 choose-if: parlament_coalition_erc_psc_icv_s >= parlament_s_majority and ((psc_relations >= 55 or (psc_relations > 40 and psc_relations < 55 and party_resources >= 1)) or (erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or (erc_roadmap < 1))
 subtitle: [? if not ((erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or erc_roadmap < 1) and psc_relations >= 40: Push the PSC to support an ERC-lead coalition. [? if psc_relations < 55: \[-1 resources\] ?]?][? if (erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or (erc_roadmap < 1): ERC will lead a Tripartite coalition.?]
 view-if: parlament_coalition_erc_psc_icv_s and player_party == "cup"
@@ -86,13 +86,13 @@ on-arrival: {!
         Q.party_resources -= 1;
     }
 
-    Q.cat_coalition_disp = "<span style='color: var(--erc); font-style: italic;'>Left</span> <span style='color: var(--" + Q.parlament_current_icv + "); font-style: italic;'>Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span>";
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cup_in_gob = false;
     Q.cup_supporting = false;
     Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
     Q.cat_coalition = ["erc", "psc", Q.parlament_current_icv];
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_erc_psc_icv_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>Left</span> <span style='color: var(--" + Q.parlament_current_icv + "); font-style: italic;'>Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span>");
     Q.cat_coalition_dissent = 0;
 
     Q.parlament_coalition_proposal_president = "erc";

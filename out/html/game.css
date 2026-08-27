@@ -1475,6 +1475,33 @@ table {
   width: calc(100% - 10px);
 }
 
+.generalitat-coalition,
+.gobierno-coalition,
+.ajuntament-coalition {
+  position: relative;
+  cursor: help;
+  padding: 2px 5px;
+  margin-right: -5px;
+  margin-left: -5px;
+}
+.generalitat-coalition::after,
+.gobierno-coalition::after,
+.ajuntament-coalition::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  bottom: 2px;
+  width: 0;
+  height: 1.5px;
+  background: var(--mytooltip-color, currentColor);
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.generalitat-coalition:hover::after,
+.gobierno-coalition:hover::after,
+.ajuntament-coalition:hover::after {
+  width: calc(100% - 10px);
+}
+
 .mytooltiptext {
   position: fixed;
   z-index: 999999;
@@ -1527,6 +1554,32 @@ table {
   object-position: center;
   border-radius: 4px;
   flex-shrink: 0;
+}
+
+.coalition-tooltip-content { display: block; }
+.coalition-tooltip-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.coalition-tooltip-content .mytooltip-sub-text { margin-bottom: 0; }
+.coalition-tooltip-logos .coalition-tooltip-logo {
+  width: 52px;
+  height: 52px;
+  max-height: none;
+  object-fit: contain;
+}
+.coalition-tooltip-logo-fallback {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 .mytooltip-text {

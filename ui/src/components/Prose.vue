@@ -18,7 +18,9 @@
 // root avoids re-attaching N listeners on every prose update).
 import { getCurrentInstance, h, onBeforeUnmount, onMounted, ref, render as renderVNode, watch } from 'vue';
 import { useGlossary } from '../glossary/useGlossary';
+import { useGameStore } from '../stores/game';
 import GlossaryTerm from './GlossaryTerm.vue';
+import CoalitionTooltip from './CoalitionTooltip.vue';
 import WidgetHost from './viz/WidgetHost.vue';
 
 // This SFC has TWO root nodes (the prose div + the conditional popover), so
@@ -36,13 +38,18 @@ defineOptions({ inheritAttrs: false });
 const props = withDefaults(defineProps<{ html: string; tag?: string }>(), { tag: 'div' });
 
 const root = ref<HTMLElement | null>(null);
+const game = useGameStore();
 const { termFor, colourValue } = useGlossary();
 
 const activeTermId = ref<string | null>(null);
+type Institution = 'generalitat' | 'gobierno' | 'ajuntament';
+interface CoalitionTip { institution: Institution; parties: string[]; summary: string; accent?: string }
+const activeCoalition = ref<CoalitionTip | null>(null);
 const activeAnchor = ref<HTMLElement | null>(null);
 
 function closeTip(): void {
   activeTermId.value = null;
+  activeCoalition.value = null;
   activeAnchor.value = null;
 }
 
@@ -119,18 +126,57 @@ function findTermEl(target: EventTarget | null): HTMLElement | null {
   return el && root.value?.contains(el) ? el : null;
 }
 
+const COALITION_SELECTOR = '.generalitat-coalition, .gobierno-coalition, .ajuntament-coalition';
+
+function findCoalitionEl(target: EventTarget | null): HTMLElement | null {
+  if (!(target instanceof HTMLElement)) return null;
+  const el = target.closest<HTMLElement>(COALITION_SELECTOR);
+  return el && root.value?.contains(el) ? el : null;
+}
+
+function coalitionFor(el: HTMLElement): CoalitionTip | null {
+  const institution: Institution | null = el.classList.contains('generalitat-coalition')
+    ? 'generalitat'
+    : el.classList.contains('gobierno-coalition')
+      ? 'gobierno'
+      : el.classList.contains('ajuntament-coalition') ? 'ajuntament' : null;
+  if (!institution) return null;
+  const parties = (el.dataset.parties ?? '').split(/\s+/).filter(Boolean);
+  const firstParty = parties[0]?.toLowerCase();
+  const firstTerm = firstParty
+    ? game.glossary.find((term) => term.match.some((match) => match.toLowerCase() === firstParty))
+    : undefined;
+  const accent = colourValue(firstTerm?.colour);
+  if (accent) el.style.setProperty('--coalition-tooltip-color', accent);
+  return {
+    institution,
+    parties,
+    summary: el.dataset.summary ?? '',
+    accent,
+  };
+}
+
 function onOver(e: MouseEvent): void {
   const el = findTermEl(e.target);
-  if (!el) return;
-  const term = termFor(el.dataset.term);
-  if (!term?.tooltip) return;
-  if (activeAnchor.value === el) return; // already open for this anchor
-  activeTermId.value = term.id;
-  activeAnchor.value = el;
+  if (el) {
+    const term = termFor(el.dataset.term);
+    if (!term?.tooltip || activeAnchor.value === el) return;
+    activeCoalition.value = null;
+    activeTermId.value = term.id;
+    activeAnchor.value = el;
+    return;
+  }
+  const coalitionEl = findCoalitionEl(e.target);
+  if (!coalitionEl || activeAnchor.value === coalitionEl) return;
+  const coalition = coalitionFor(coalitionEl);
+  if (!coalition) return;
+  activeTermId.value = null;
+  activeCoalition.value = coalition;
+  activeAnchor.value = coalitionEl;
 }
 
 function onOut(e: MouseEvent): void {
-  const leaving = findTermEl(e.target);
+  const leaving = findTermEl(e.target) ?? findCoalitionEl(e.target);
   if (!leaving || leaving !== activeAnchor.value) return;
   const to = e.relatedTarget;
   if (to instanceof Node && leaving.contains(to)) return; // moved to a child, still inside
@@ -176,12 +222,28 @@ onBeforeUnmount(unmountWidgets);
     @mouseout="onOut"
   ></component>
   <GlossaryTerm v-if="activeTermId" :term-id="activeTermId" :anchor="activeAnchor" />
+  <CoalitionTooltip
+    v-else-if="activeCoalition"
+    :institution="activeCoalition.institution"
+    :parties="activeCoalition.parties"
+    :summary="activeCoalition.summary"
+    :accent="activeCoalition.accent"
+    :anchor="activeAnchor"
+  />
 </template>
 
 <style scoped>
 .prose :deep([data-term].term-hoverable) {
   cursor: help;
   text-decoration: underline dotted currentColor 1px;
+  text-underline-offset: 2px;
+}
+.prose :deep(.generalitat-coalition),
+.prose :deep(.gobierno-coalition),
+.prose :deep(.ajuntament-coalition) {
+  cursor: help;
+  text-decoration: underline dotted currentColor 1px;
+  text-decoration-color: var(--coalition-tooltip-color, currentColor);
   text-underline-offset: 2px;
 }
 </style>

@@ -15,6 +15,12 @@ export interface AllegianceEntry {
 }
 
 export interface GameLib {
+  governmentTooltip(
+    institution: 'generalitat' | 'gobierno' | 'ajuntament',
+    parties: string[],
+    summary: string,
+    labelHtml: string,
+  ): string;
   engineTick(Q: Record<string, unknown>): void;
   /** Bounded, conserved support movement for recurring card effects. Structural
    *  party formation/succession code deliberately uses separate helpers. */

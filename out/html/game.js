@@ -240,53 +240,83 @@
     return _wholesomeCompiled;
   }
 
+  // Dendry calls displayText once per content fragment, not once per assembled HTML string! We need to work around that for more complex tooltips
+  var _wholesomeTagBuffer = "";
+  var _wholesomeProtectedDepth = 0;
+
+  function decorateWholesomeText(segment, compiled) {
+    if (_wholesomeProtectedDepth > 0) return segment;
+    const byWord = compiled.byWord;
+    const regex = compiled.regex;
+    regex.lastIndex = 0;
+
+    return segment.replace(regex, (match, _word, offset) => {
+      const t = byWord[match];
+
+      // Zero-width space and '--' are the two authored opt-out conventions.
+      if (segment.slice(Math.max(0, offset - 1), offset) === "\u200B")
+        return match;
+      if (segment.slice(Math.max(0, offset - 2), offset) === "--") return match;
+
+      const textColor = t.colour ? cssColour(t.colour) : "inherit";
+      const style = t.bold ? "font-weight: bold;" : "";
+      const innerText = match;
+
+      if (t.tooltip) {
+        const displayText = t.display || innerText;
+        return `<span class='mytooltip' style='--mytooltip-color:${textColor}; ${style}' data-term='${t.id}'>${displayText}</span>`;
+      } else if (t.colour) {
+        return `<span style='color: ${textColor}; ${style}'>${t.display || innerText}</span>`;
+      }
+
+      return match;
+    });
+  }
+
   function applyWholesome(str) {
     const compiled = compileWholesome(glossary().terms);
     if (!compiled) return str;
-    const byWord = compiled.byWord;
-    const regex = compiled.regex;
 
-    return str.replace(
-      /(<(?:span|strong)[^>]*>.*?<\/(?:span|strong)>|<[^>]+>|[^<]+)/g,
-      (segment) => {
-        if (segment.startsWith("<")) return segment;
+    let result = "";
+    let visibleText = "";
+    const flushVisibleText = function () {
+      if (!visibleText) return;
+      result += decorateWholesomeText(visibleText, compiled);
+      visibleText = "";
+    };
 
-        return segment.replace(regex, (match) => {
-          const t = byWord[match];
-
-          // skip if preceded by zero-width space
-          const zwspIndex = segment.indexOf("\u200B" + match);
-          if (zwspIndex !== -1) {
-            return match;
-          }
-
-          // find if just before the match there was "--"
-          const matchStart = segment.lastIndexOf(
-            "--",
-            segment.indexOf(match) - 2,
+    for (let i = 0; i < str.length; i += 1) {
+      const char = str[i];
+      if (_wholesomeInsideTag) {
+        result += char;
+        _wholesomeTagBuffer += char;
+        if (char === ">") {
+          const tag = _wholesomeTagBuffer.match(
+            /^<\s*(\/?)\s*(span|strong)\b/i,
           );
-          if (matchStart !== -1 && matchStart === segment.indexOf(match) - 2) {
-            return match;
+          const selfClosing = /\/\s*>$/.test(_wholesomeTagBuffer);
+          if (tag && tag[1]) {
+            _wholesomeProtectedDepth = Math.max(
+              0,
+              _wholesomeProtectedDepth - 1,
+            );
+          } else if (tag && !selfClosing) {
+            _wholesomeProtectedDepth += 1;
           }
-
-          const textColor = t.colour ? cssColour(t.colour) : "inherit";
-          const style = t.bold ? "font-weight: bold;" : "";
-          const innerText = match;
-
-          if (t.tooltip) {
-            // Lightweight trigger only. The tooltip body is built on demand at
-            // hover time against the shared singleton (see renderTipContent and
-            // addTooltipEventListeners); data-term keys into glossary().terms.
-            const displayText = t.display || innerText;
-            return `<span class='mytooltip' style='--mytooltip-color:${textColor}; ${style}' data-term='${t.id}'>${displayText}</span>`;
-          } else if (t.colour) {
-            return `<span style='color: ${textColor}; ${style}'>${t.display || innerText}</span>`;
-          }
-
-          return match;
-        });
-      },
-    );
+          _wholesomeInsideTag = false;
+          _wholesomeTagBuffer = "";
+        }
+      } else if (char === "<") {
+        flushVisibleText();
+        _wholesomeInsideTag = true;
+        _wholesomeTagBuffer = "<";
+        result += char;
+      } else {
+        visibleText += char;
+      }
+    }
+    flushVisibleText();
+    return result;
   }
 
   window.applyWholesome = applyWholesome;
@@ -673,6 +703,51 @@
     return `<span class='mytooltip-content'>${imgHtml}<span class='mytooltip-text'><span class='mytooltip-main-text'>${tooltip.title}</span>${subText}${ledBy}${ideology}${allegiances}</span></span>`;
   }
 
+  const COALITION_TITLES = {
+    "generalitat-coalition": "Generalitat de Catalunya",
+    "gobierno-coalition": "Gobierno de España",
+    "ajuntament-coalition": "Ajuntament de Barcelona",
+  };
+
+  function coalitionDetails(anchor) {
+    const className = Object.keys(COALITION_TITLES).find((name) =>
+      anchor.classList.contains(name),
+    );
+    if (!className) return null;
+    const parties = (anchor.getAttribute("data-parties") || "")
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
+    return {
+      title: COALITION_TITLES[className],
+      parties: parties,
+      summary: anchor.getAttribute("data-summary") || "",
+    };
+  }
+
+  function coalitionTerm(party) {
+    const key = party.toLowerCase();
+    return glossary().terms.find((term) =>
+      (term.match || []).some((match) => String(match).toLowerCase() === key),
+    );
+  }
+
+  function renderCoalitionTipContent(details) {
+    const summary = details.summary
+      ? `<span class='mytooltip-sub-text'>${details.summary}</span>`
+      : "";
+    const logos = details.parties
+      .map((party) => {
+        const term = coalitionTerm(party);
+        const src = term && term.tooltip && term.tooltip.img;
+        return src
+          ? `<img class='coalition-tooltip-logo' src='${src}' alt='${party} logo' data-party='${party}'/>`
+          : `<span class='coalition-tooltip-logo-fallback' data-party='${party}'>${party}</span>`;
+      })
+      .join("");
+    return `<span class='mytooltip-content coalition-tooltip-content'><span class='mytooltip-text'><span class='coalition-tooltip-logos'>${logos}</span><span class='mytooltip-main-text'>${details.title}</span>${summary}</span></span>`;
+  }
+
   // Position the singleton over an anchor, clamped/flipped to stay on screen.
   function positionTip(anchor) {
     const tip = _tipEl;
@@ -709,16 +784,25 @@
   }
 
   function showTipFor(anchor) {
+    const details = coalitionDetails(anchor);
     const termId = anchor.getAttribute("data-term");
-    const term = glossary().terms.find((t) => t.id === termId);
-    if (!term || !term.tooltip) return;
+    const term = termId && glossary().terms.find((t) => t.id === termId);
+    if (!details && (!term || !term.tooltip)) return;
     const qualities = window.dendryUI.dendryEngine.state.qualities;
-    _tipEl.innerHTML = renderTipContent(term, qualities, anchor.textContent);
+    _tipEl.innerHTML = details
+      ? renderCoalitionTipContent(details)
+      : renderTipContent(term, qualities, anchor.textContent);
     // The trigger no longer wraps the tooltip, so carry its colour across.
-    _tipEl.style.setProperty(
-      "--mytooltip-color",
-      anchor.style.getPropertyValue("--mytooltip-color") || "inherit",
-    );
+    const firstCoalitionTerm =
+      details && details.parties.length
+        ? coalitionTerm(details.parties[0])
+        : null;
+    const accent =
+      firstCoalitionTerm && firstCoalitionTerm.colour
+        ? cssColour(firstCoalitionTerm.colour)
+        : anchor.style.getPropertyValue("--mytooltip-color") || "inherit";
+    _tipEl.style.setProperty("--mytooltip-color", accent);
+    if (details) anchor.style.setProperty("--mytooltip-color", accent);
     positionTip(anchor);
     _tipEl.classList.add("visible");
     _tipAnchor = anchor;
@@ -768,12 +852,16 @@
     // devices can't fight the click toggle below.
     document.addEventListener("mouseover", function (e) {
       if (!canHover || _tipPinned) return; // pinned tooltip ignores hover
-      const t = e.target.closest(".mytooltip");
+      const t = e.target.closest(
+        ".mytooltip, .generalitat-coalition, .gobierno-coalition, .ajuntament-coalition",
+      );
       if (t && t !== _tipAnchor) showTipFor(t);
     });
     document.addEventListener("mouseout", function (e) {
       if (!canHover || _tipPinned) return; // don't hide a pinned tooltip
-      const t = e.target.closest(".mytooltip");
+      const t = e.target.closest(
+        ".mytooltip, .generalitat-coalition, .gobierno-coalition, .ajuntament-coalition",
+      );
       if (t && t === _tipAnchor) hideTip();
     });
 
@@ -781,7 +869,9 @@
     // devices a click over a trigger is a no-op (hover already shows it, so a
     // click must not close it).
     document.addEventListener("click", function (e) {
-      const t = e.target.closest(".mytooltip");
+      const t = e.target.closest(
+        ".mytooltip, .generalitat-coalition, .gobierno-coalition, .ajuntament-coalition",
+      );
       if (t) {
         e.stopPropagation();
         if (!canHover) {

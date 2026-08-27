@@ -19,6 +19,7 @@ import { useI18n } from 'vue-i18n';
 import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/vue';
 import { useGameStore } from '../stores/game';
 import { useGlossary } from '../glossary/useGlossary';
+import '../styles/tooltips.css';
 
 const props = defineProps<{
   termId: string;
@@ -111,46 +112,3 @@ const allegianceLabel = computed(() =>
     </div>
   </Teleport>
 </template>
-
-<style scoped>
-.glossary-popover {
-  z-index: 1000;
-  width: 260px;
-  display: flex;
-  gap: 10px;
-  background: var(--paper-0);
-  border: 1px solid var(--ink-0);
-  border-radius: 3px;
-  padding: 10px 12px;
-  box-shadow: 0 10px 24px rgba(46, 42, 34, 0.3);
-  font-family: var(--font-body);
-  color: var(--ink-0);
-  pointer-events: none; /* a hover popover; never eats the pointer */
-}
-.popover-img {
-  flex: none;
-  width: 44px;
-  height: 44px;
-  object-fit: cover;
-  border: 1px solid var(--ink-0);
-  border-radius: 2px;
-}
-.popover-text {
-  flex: 1;
-  min-width: 0;
-  font-size: 12px;
-  line-height: 1.45;
-}
-.popover-title {
-  font-family: var(--font-news);
-  font-size: 14px;
-  font-weight: bold;
-}
-.popover-subtitle {
-  font-style: italic;
-  opacity: 0.85;
-}
-.popover-line {
-  margin-top: 4px;
-}
-</style>

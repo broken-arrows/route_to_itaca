@@ -25,8 +25,10 @@ on-arrival: {!
     // Left govt partner: Sumar → UP → Podemos → (IU as last resort).
     var leftCarrier = S("sumar") ? "sumar" : S("up") ? "up" : S("podemos") ? "podemos" : (!Q.iu_in_up && S("iu") ? "iu" : "podemos");
     Q.congreso_left_carrier = leftCarrier;
+    Q.congreso_left_carrier_s = S(leftCarrier);
     // IU as a *separate* junior partner only when it didn't fold and isn't itself the carrier.
     var iuSupport = (!Q.iu_in_up && S("iu") > 0 && leftCarrier !== "iu") ? S("iu") : 0;
+    Q.congreso_left_iu_s = iuSupport;
 
     Q.congreso_coalition_sorpasso = S(leftCarrier) > S("psoe");
 
@@ -666,5 +668,3 @@ on-arrival: {!
 While definitely an unpopular option with some, we've decided that these results were not for us. 
 
 - @post_event: We have to hope this is for the better...
-
-

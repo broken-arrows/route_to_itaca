@@ -3,18 +3,18 @@ title: parlament progressist coalition
 You should not be here? Report a bug if you see this text.
 
 @any
-title: <span style="color: var(--psc); font-style: italic;">Progressist</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Government</span> (PSC-[+ parlament_current_icv +])
+title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Majority government - [+ parlament_coalition_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Progressist</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Government</span></span> (PSC-[+ parlament_current_icv +])
 view-if: parlament_coalition_psc_icv_s
 choose-if: parlament_coalition_psc_icv_s >= parlament_s_majority
 unavailable-subtitle: Not enough parliamentary support for a PSC-[+ parlament_current_icv +] government.
 subtitle: [? if player_party == "erc": A centre-left government without us.?][? if player_party == "cup": A reformist coalition firmly against national liberation.?]
 on-arrival: {!
-    Q.cat_coalition_disp = "<span style='color: var(--psc); font-style: italic;'>Progressist</span> <span style='color: var(--" + Q.parlament_current_icv + "); font-style: italic;'>Government</span> ";
     Q.erc_in_gob = false;
     Q.erc_supporting = false;
     Q.cup_in_gob = false;
     Q.cup_supporting = false;
     Q.cat_coalition = ["psc", Q.parlament_current_icv];
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_psc_icv_s + "/" + Q.parlament_s_majority, "<span style='color: var(--psc); font-style: italic;'>Progressist</span> <span style='color: var(--" + Q.parlament_current_icv + "); font-style: italic;'>Government</span>");
     Q.cat_coalition_dissent = 0;
     Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
     Q.month_actions += 1;

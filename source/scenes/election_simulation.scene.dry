@@ -2754,11 +2754,11 @@ Q.election_simulation_parlament_hemicycle = {
 
 **Government Formation**
 
-[? if ciu_parlament_showviz: CiU will be able to form a <span style='color: var(--ciu); font-style: italic;'>minority government</span> with ERC's support. ?]
+[? if ciu_parlament_showviz: CiU will be able to form a <span class="generalitat-coalition" data-parties="ciu" data-summary="Minority government - [+ ciu_parlament_s +]/[+ parlament_s_majority +]"><span style='color: var(--ciu); font-style: italic;'>minority government</span></span> with ERC's support. ?]
 
-[? if jxsi_parlament_showviz: jxsi will need CUP's support to form a <span style='color: var(--jxsi); font-style: italic;'>Sovereignty government</span>. ?]
+[? if jxsi_parlament_showviz: jxsi will need CUP's support to form a <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]"><span style='color: var(--jxsi); font-style: italic;'>Sovereignty government</span></span>. ?]
 
-[? if jxcat_parlament_showviz: JxCat and ERC will form a <span style='color: var(--jxcat); font-style: italic;'>sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span> with CUP's support. ?]
+[? if jxcat_parlament_showviz: JxCat and ERC will form a <span class="generalitat-coalition" data-parties="jxcat erc" data-summary="Minority government - [+ jxcat_parlament_s + erc_parlament_s +]/[+ parlament_s_majority +]"><span style='color: var(--jxcat); font-style: italic;'>sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span></span> with CUP's support. ?]
 [? if not (ciu_parlament_showviz or jxsi_parlament_showviz or jxcat_parlament_showviz): How did we get here??? ?]
 
 - @election_simulation: Reset simulation
@@ -3121,9 +3121,9 @@ Author's note: Congreso election simulations are more imperfect than Parlament o
 **Government Formation**
 
 [? if dl_congreso_showviz: No candidacy has been able to secure enough support to form a new government. New elections will happen in **June 2016**. ?]
-[? if pdcat_congreso_showviz: Mariano Rajoy will lead a PP <span style='color: #1d84ce;'>minority government</span> with the support of Cs, CC-PNC, and the toleration of a broken PSOE.?]
+[? if pdcat_congreso_showviz: Mariano Rajoy will lead a PP <span class="gobierno-coalition" data-parties="pp" data-summary="Minority government - [+ pp_congreso_s +]/[+ congreso_s_majority +]"><span style='color: #1d84ce;'>minority government</span></span> with the support of Cs, CC-PNC, and the toleration of a broken PSOE.?]
 [? if jxcat_congreso_showviz and fr_congreso_showviz: No candidacy has been able to secure enough support to form a new government. New elections will happen in **November 2019**. ?]
-[? if jxcat_congreso_showviz and not fr_congreso_showviz: Pedro Sánchez will lead a <span style='color: #da291c; font-weight: bold;'>progressist</span> <span style='color: #5a205a; font-weight: bold;'>government</span> (PSOE-UP) with the support of EAJ-PNV, Más País, BNG, CC-PNC, texiste and the toleration of ERC and EH Bildu. ?]
+[? if jxcat_congreso_showviz and not fr_congreso_showviz: Pedro Sánchez will lead a <span class="gobierno-coalition" data-parties="psoe up" data-summary="Minority government - [+ psoe_congreso_s + up_congreso_s +]/[+ congreso_s_majority +]"><span style='color: #da291c; font-weight: bold;'>progressist</span> <span style='color: #5a205a; font-weight: bold;'>government</span></span> (PSOE-UP) with the support of EAJ-PNV, Más País, BNG, CC-PNC, texiste and the toleration of ERC and EH Bildu. ?]
 
 [? if not (dl_congreso_showviz or pdcat_congreso_showviz or jxcat_congreso_showviz): How did we get here??? ?]
 
@@ -3135,6 +3135,24 @@ set-bg: img/salo_de_cent.jpg
 on-arrival: {!
     Q.local_barcelona_seats = 41;
     Q.barcelona_s_majority = Math.floor(Q.local_barcelona_seats/2) + 1;
+
+    Q.barcelona_coalition_disp = "What?";
+    if (Q.bcomu_local_barcelona_s >= 11) {
+        Q.barcelona_coalition_disp = "Ada Colau will lead a bcomu " + G.governmentTooltip(
+            "ajuntament",
+            ["bcomu"],
+            "Minority government - " + Q.bcomu_local_barcelona_s + "/" + Q.barcelona_s_majority,
+            '<span style="color: var(--bcomu); font-style: italic;">minority government</span>'
+        ) + " with the support of ERC, PSC, and the CUP.";
+    } else if (Q.bcomu_local_barcelona_s <= 10) {
+        var barcelona_government_seats = Q.bcomu_local_barcelona_s + Q.psc_local_barcelona_s;
+        Q.barcelona_coalition_disp = "Ada Colau will lead a bcomu-pscbcn " + G.governmentTooltip(
+            "ajuntament",
+            ["bcomu", "psc"],
+            (barcelona_government_seats >= Q.barcelona_s_majority ? "Majority government - " : "Minority government - ") + barcelona_government_seats + "/" + Q.barcelona_s_majority,
+            '<span style="color: var(--bcomu); font-style: italic;">coalition</span> <span style="color: var(--psc); font-style: italic;">government</span>'
+        ) + " with the support of csbcn.";
+    }
 !}
 on-display: {!
     const data = [];
@@ -3327,8 +3345,7 @@ on-display: {!
 {!</table>!}
 
 
-[? if bcomu_local_barcelona_s = 11: Ada Colau will lead a bcomu <span style="color: var(--bcomu); font-style: italic;"> minority government</span> with the support of ERC, PSC, and the CUP. ?]
-[? if bcomu_local_barcelona_s = 10: Ada Colau will lead a bcomu-pscbcn <span style="color: var(--bcomu); font-style: italic;">coalition</span> <span style="color: var(--psc); font-style: italic;">government</span> with the support of csbcn. ?]
+[+ barcelona_coalition_disp +]
 
 - @local_cat_results: Catalonia is not only Barcelona, though...
 

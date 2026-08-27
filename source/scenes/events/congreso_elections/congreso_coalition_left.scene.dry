@@ -3,7 +3,7 @@ title: left congreso coalitions
 You should not be here? Report a bug if you see this text.
 
 @change
-title: <span style="color: var(--up); font-style: italic;">Change</span> <span style="color: var(--psoe); font-style: italic;">Coalition</span> ([? if congreso_left_carrier == "up": UP?][?if congreso_left_carrier != "up": [+ congreso_left_carrier +]?] - PSOE [? if iu_congreso_s > 0: - IU?])
+title: <span class="gobierno-coalition" data-parties="[+ congreso_left_carrier +] psoe[? if congreso_left_iu_s > 0:  iu?]" data-summary="[? if congreso_left_carrier_s + psoe_congreso_s + congreso_left_iu_s >= congreso_s_majority: Majority government?][? if congreso_left_carrier_s + psoe_congreso_s + congreso_left_iu_s < congreso_s_majority: Minority government?] - [+ congreso_left_carrier_s + psoe_congreso_s + congreso_left_iu_s +]/[+ congreso_s_majority +]"><span style="color: var(--up); font-style: italic;">Change</span> <span style="color: var(--psoe); font-style: italic;">Coalition</span></span> ([? if congreso_left_carrier == "up": UP?][?if congreso_left_carrier != "up": [+ congreso_left_carrier +]?] - PSOE [? if congreso_left_iu_s > 0: - IU?])
 subtitle: A difficult arithmetic made possible by kingmaker smaller parties. [? if congreso_coalition_change_talks: Given the numbers, we have a chance to negotiate the conditions to make this possible. ?]
 view-if: congreso_coalition_change_s > 0
 choose-if: congreso_coalition_change_reach and not congreso_coalition_psoe_cs_wtf and not congreso_coalition_grand_preferred
@@ -18,10 +18,11 @@ on-arrival: {!
     Q.spanish_pm_gender = Q[Q.congreso_left_carrier + "_gender"];
     Q.spanish_pm_party = Q.congreso_left_carrier;
     Q.spanish_coalition = [Q.congreso_left_carrier, "psoe"];
-    if (Q.iu_congreso_s > 0) {
+    if (Q.congreso_left_iu_s > 0) {
         Q.spanish_coalition.push("iu");
     }
-    Q.spanish_coalition_disp = '<span style="color: var(--up); font-style: italic;">Change</span> <span style="color: var(--psoe); font-style: italic;">Coalition</span>';
+    var government_seats = Q.spanish_coalition.reduce(function (sum, party) { return sum + (Q[party + "_congreso_s"] || 0); }, 0);
+    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority, '<span style="color: var(--up); font-style: italic;">Change</span> <span style="color: var(--psoe); font-style: italic;">Coalition</span>');
 !}
 
 **A new government is formed!**
@@ -31,7 +32,7 @@ The recently appointed [+ spanish_coalition_disp +] Gobierno will be lead by [? 
 -@post_event: Let's hope this really is a sign of change!
 
 @left
-title: <span style="color: var(--up); font-style: italic;">Left</span> <span style="color: var(--iu); font-style: italic;">Front</span> Government ([? if congreso_left_carrier == "up": UP?][?if congreso_left_carrier != "up": [+ congreso_left_carrier +]?][? if iu_congreso_s > 0:  - IU?])
+title: <span class="gobierno-coalition" data-parties="[+ congreso_left_carrier +][? if congreso_left_iu_s > 0:  iu?]" data-summary="[? if congreso_left_carrier_s + congreso_left_iu_s >= congreso_s_majority: Majority government?][? if congreso_left_carrier_s + congreso_left_iu_s < congreso_s_majority: Minority government?] - [+ congreso_left_carrier_s + congreso_left_iu_s +]/[+ congreso_s_majority +]"><span style="color: var(--up); font-style: italic;">Left</span> <span style="color: var(--iu); font-style: italic;">Front</span> Government</span> ([? if congreso_left_carrier == "up": UP?][?if congreso_left_carrier != "up": [+ congreso_left_carrier +]?][? if congreso_left_iu_s > 0:  - IU?])
 subtitle: A difficult arithmetic made possible by kingmaker smaller parties.  [? if congreso_coalition_left_talks: Given the numbers, we have a chance to negotiate the conditions to make this possible. ?]
 view-if: congreso_coalition_left_s > 0
 choose-if: congreso_coalition_left_reach
@@ -46,10 +47,11 @@ on-arrival: {!
     Q.spanish_pm_gender = Q[Q.congreso_left_carrier + "_gender"];
     Q.spanish_pm_party = Q.congreso_left_carrier;
     Q.spanish_coalition = [Q.congreso_left_carrier];
-    if (Q.iu_congreso_s > 0) {
+    if (Q.congreso_left_iu_s > 0) {
         Q.spanish_coalition.push("iu");
     }
-    Q.spanish_coalition_disp = '<span style="color: var(--up); font-style: italic;">Left</span> <span style="color: var(--iu); font-style: italic;">Front</span>';
+    var government_seats = Q.spanish_coalition.reduce(function (sum, party) { return sum + (Q[party + "_congreso_s"] || 0); }, 0);
+    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority, '<span style="color: var(--up); font-style: italic;">Left</span> <span style="color: var(--iu); font-style: italic;">Front</span>');
 !}
 
 **A new government is formed!**

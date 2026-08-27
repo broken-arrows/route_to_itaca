@@ -373,12 +373,12 @@ choose-if: not parlament_coalition_changes
 unavailable-subtitle: We have proposed changes which will require PSC and [+ parlament_current_icv +] approval.
 on-arrival: {!
     Q.psc_tripartite_coalition_phase = 0;
-    Q.cat_coalition_disp = "<span style='color: var(--psc); font-style: italic;'>New Tripartite</span> Government";
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cup_in_gob = false;
     Q.cup_supporting = false;
     Q.cat_coalition = ["psc", "erc", Q.parlament_current_icv];
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_psc_erc_icv_s + "/" + Q.parlament_s_majority, "<span style='color: var(--psc); font-style: italic;'>New Tripartite</span> Government");
     Q.cat_coalition_dissent = 0;
     Q.position_disp = "Generalitat";
     Q.independence_trust -= 5;

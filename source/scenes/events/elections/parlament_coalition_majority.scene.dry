@@ -1,4 +1,4 @@
-title: Single-Party Majority Government
+title: <span class="generalitat-coalition" data-parties="[+ parlament_coalition_majority_party +]" data-summary="Majority government - [+ parlament_coalition_majority_s +]/[+ parlament_s_majority +]">Single-Party Majority Government</span>
 view-if: parlament_coalition_majority_s
 choose-if: parlament_coalition_majority_s >= parlament_s_majority
 subtitle: [? if parlament_coalition_majority_party == player_party: We won an absolute majority, we can govern on our own! ?][? if parlament_coalition_majority_party != player_party: [+ parlament_coalition_majority_party +] holds an absolute majority and will govern alone.?]
@@ -13,7 +13,7 @@ on-arrival: {!
     Q.month_actions += 1;
 
     Q.cat_coalition = [mp];
-    Q.cat_coalition_disp = "<span style='color: var(--" + mp + "); font-style: italic;'>" + mp + " Majority Government</span>";
+    Q.cat_coalition_disp = mp + " " + G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_majority_s + "/" + Q.parlament_s_majority, "<span style='color: var(--" + mp + "); font-style: italic;'>Majority Government</span>");
 
     Q.parlament_coalition_proposal_president = mp;
     Q.parlament_coalition_proposal_vp = mp;

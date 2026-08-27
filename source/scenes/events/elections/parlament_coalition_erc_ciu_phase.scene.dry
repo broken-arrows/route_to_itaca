@@ -1,4 +1,4 @@
-title: [? if erc_ciu_coalition_phase = 3: Yet another ?]ERC-[+ parlament_current_ciu +] <span style="color: var(--erc); font-style: italic;">Sovereignty</span> proposal[? if erc_ciu_coalition_phase = 2:  (revised)?][? if erc_ciu_coalition_phase = 3:  (final round)?]
+title: [? if erc_ciu_coalition_phase = 3: Yet another ?]ERC-[+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="Majority government - [+ parlament_coalition_erc_ciu_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">Sovereignty</span> proposal</span>[? if erc_ciu_coalition_phase = 2:  (revised)?][? if erc_ciu_coalition_phase = 3:  (final round)?]
 subtitle: [? if erc_ciu_coalition_phase = 2: ERC-[+ parlament_current_ciu +] negotiations advance.?][? if erc_ciu_coalition_phase = 3: This is set to be the final round of ERC-[+ parlament_current_ciu +] negotiations.?]
 tags: event
 new-page: true
@@ -309,7 +309,7 @@ choose-if: not parlament_coalition_changes
 unavailable-subtitle: We have proposed changes, which will require approval by [+ parlament_current_ciu +].
 on-arrival: {!
     Q.erc_ciu_coalition_phase = 0;
-    Q.cat_coalition_disp = "<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>government</span>";
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_erc_ciu_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>government</span>");
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cat_coalition = ["erc", Q.parlament_current_ciu];

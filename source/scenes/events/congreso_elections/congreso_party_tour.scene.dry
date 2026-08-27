@@ -10,7 +10,7 @@ on-arrival: {!
     
     Q.spanish_pm_coalition = [Q.spanish_pm_party];
     Q.spa_caretaker_gov = true;
-    Q.spanish_coalition_disp = Q.spanish_pm_party + "<span style=\"font-style:italic;\"> caretaker gov.</span>";
+    Q.spanish_coalition_disp = Q.spanish_pm_party + " " + G.governmentTooltip("gobierno", Q.spanish_coalition, "Caretaking capacities only", "<span style=\"font-style:italic;\">caretaker gov.</span>");
 
     Q.congreso_party_tour_highlight = [];
     Q.congreso_party_tour_viewed_rest = false;

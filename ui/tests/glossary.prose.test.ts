@@ -31,7 +31,18 @@ const GAME = {
   data: {
     glossary: {
       terms: [
-        { id: 'ciu', match: ['CiU'], display: 'CiU', colour: 'ciu' },
+        {
+          id: 'ciu', match: ['CiU', 'ciu'], display: 'CiU', colour: 'ciu',
+          tooltip: { title: 'Convergence and Union', img: 'img/parties/logo_ciu.png' },
+        },
+        {
+          id: 'erc', match: ['ERC', 'erc'], display: 'ERC', colour: 'erc',
+          tooltip: { title: 'Republican Left', img: 'img/parties/logo_erc.png' },
+        },
+        {
+          id: 'psc', match: ['PSC', 'psc'], display: 'PSC', colour: 'psc',
+          tooltip: { title: 'Socialist Party', img: 'img/parties/logo_psc.svg' },
+        },
         {
           id: 'llu_s_companys',
           match: ['Companys'],
@@ -144,6 +155,46 @@ describe('Prose', () => {
     const plain = wrapper.get('#plain').element;
     await term.trigger('mouseout', { relatedTarget: plain });
     expect(document.querySelector('[data-test="glossary-popover"]')).toBeNull();
+  });
+
+  it('opens a Generalitat coalition tooltip with authored summary and ordered formal-member logos', async () => {
+    const wrapper = mountProse(
+      'ERC <span class="generalitat-coalition" data-parties="erc psc" ' +
+      'data-summary="Majority government - 74/68">coalition government</span>',
+    );
+    await wrapper.get('.generalitat-coalition').trigger('mouseover');
+    const popover = document.querySelector('[data-test="coalition-popover"]')!;
+    expect(popover.textContent).toContain('Generalitat de Catalunya');
+    expect(popover.textContent).toContain('Majority government - 74/68');
+    expect(popover.textContent).not.toContain('seats');
+    expect(Array.from(popover.querySelectorAll('[data-party]')).map((el) => el.getAttribute('data-party')))
+      .toEqual(['erc', 'psc']);
+    expect(popover.querySelector('[data-test="coalition-logos"]')?.nextElementSibling?.classList)
+      .toContain('popover-title');
+    expect(wrapper.get('.generalitat-coalition').attributes('style'))
+      .toContain('--coalition-tooltip-color: var(--erc)');
+    expect((popover as HTMLElement).style.getPropertyValue('--coalition-tooltip-color'))
+      .toBe('var(--erc)');
+  });
+
+  it('uses the pinned Gobierno and Ajuntament titles and supports caretaker copy', async () => {
+    const gobierno = mountProse(
+      '<span class="gobierno-coalition" data-parties="ciu" ' +
+      'data-summary="Caretaking capacities only">caretaker government</span>',
+    );
+    await gobierno.get('.gobierno-coalition').trigger('mouseover');
+    expect(document.querySelector('[data-test="coalition-popover"]')?.textContent)
+      .toContain('Gobierno de España');
+    gobierno.unmount();
+    document.querySelector('[data-test="coalition-popover"]')?.remove();
+
+    const ajuntament = mountProse(
+      '<span class="ajuntament-coalition" data-parties="erc" ' +
+      'data-summary="Minority government - 10/21">government</span>',
+    );
+    await ajuntament.get('.ajuntament-coalition').trigger('mouseover');
+    expect(document.querySelector('[data-test="coalition-popover"]')?.textContent)
+      .toContain('Ajuntament de Barcelona');
   });
 
   it('re-decorates and closes any open popover when html changes', async () => {

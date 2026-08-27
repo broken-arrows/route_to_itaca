@@ -4,7 +4,7 @@ You should not be here? Report a bug if you see this text.
 
 
 @government
-title: <span style="color: var(--psoe); font-style: italic;">Social</span>-<span style="color: var(--cs); font-style: italic;">Centrist</span> Coalition (PSOE - csspa)
+title: <span class="gobierno-coalition" data-parties="psoe cs" data-summary="[? if psoe_congreso_s + cs_congreso_s >= congreso_s_majority: Majority government?][? if psoe_congreso_s + cs_congreso_s < congreso_s_majority: Minority government?] - [+ psoe_congreso_s + cs_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--psoe); font-style: italic;">Social</span>-<span style="color: var(--cs); font-style: italic;">Centrist</span> Coalition</span> (PSOE - csspa)
 subtitle: A PSOE + csspa cabinet, dragged over the line by a handful of minor parties. [? if congreso_coalition_psoe_cs_gov_talks: And even then it hangs on tolerations that have to be wrung out. ?]
 view-if: congreso_coalition_psoe_cs_gov_s > 0
 choose-if: congreso_coalition_psoe_cs_gov_reach
@@ -15,7 +15,8 @@ on-arrival: {!
     Q.spanish_pm_party = "psoe";
     Q.spanish_coalition = ["psoe", "cs"];
 
-    Q.spanish_coalition_disp = '<span style="color: var(--psoe); font-style: italic;">Social</span>-<span style="color: var(--cs); font-style: italic;">Centrist</span> Coalition (PSOE - csspa)';
+    var government_seats = Q.psoe_congreso_s + Q.cs_congreso_s;
+    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority, '<span style="color: var(--psoe); font-style: italic;">Social</span>-<span style="color: var(--cs); font-style: italic;">Centrist</span> Coalition') + ' (PSOE - csspa)';
 !}
 
 **A new government is formed!**
@@ -25,7 +26,7 @@ The recently appointed [+ spanish_coalition_disp +] Gobierno will be lead by [? 
 -@post_event: This cannot be good for anyone...
 
 @cs_government
-title: <span style="color: var(--cs); font-style: italic;">Centrist</span>-<span style="color: var(--psoe); font-style: italic;">Social</span> Coalition (csspa - PSOE)
+title: <span class="gobierno-coalition" data-parties="cs psoe" data-summary="[? if cs_congreso_s + psoe_congreso_s >= congreso_s_majority: Majority government?][? if cs_congreso_s + psoe_congreso_s < congreso_s_majority: Minority government?] - [+ cs_congreso_s + psoe_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--cs); font-style: italic;">Centrist</span>-<span style="color: var(--psoe); font-style: italic;">Social</span> Coalition</span> (csspa - PSOE)
 subtitle: A Cs-led cabinet with the PSOE as the junior partner, dragged over the line by a handful of non-nationalist regionalists. [? if congreso_coalition_psoe_cs_gov_talks: And even then it hangs on tolerations that have to be wrung out. ?]
 view-if: congreso_coalition_cs_psoe_gov_s > 0
 choose-if: congreso_coalition_psoe_cs_gov_reach and psoe_leader != "???"
@@ -35,7 +36,8 @@ on-arrival: {!
     Q.spanish_pm_gender = Q.csspa_leader_gender;
     Q.spanish_pm_party = "cs";
     Q.spanish_coalition = ["cs", "psoe"];
-    Q.spanish_coalition_disp = '<span style="color: var(--cs); font-style: italic;">Centrist</span>-<span style="color: var(--psoe); font-style: italic;">Social</span> Coalition (csspa - PSOE)';
+    var government_seats = Q.cs_congreso_s + Q.psoe_congreso_s;
+    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority, '<span style="color: var(--cs); font-style: italic;">Centrist</span>-<span style="color: var(--psoe); font-style: italic;">Social</span> Coalition') + ' (csspa - PSOE)';
 !}
 
 **A new government is formed!**
@@ -45,7 +47,7 @@ The recently appointed [+ spanish_coalition_disp +] Gobierno will be lead by [? 
 -@post_event: This cannot be good for anyone...
 
 @wtf
-title: <span style="color: var(--psoe); font-style: italic;">Social</span>-<span style="color: var(--cs); font-style: italic;">Centrist</span> Coalition (PSOE - csspa)
+title: <span class="gobierno-coalition" data-parties="psoe cs" data-summary="Minority government - [+ psoe_congreso_s + cs_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--psoe); font-style: italic;">Social</span>-<span style="color: var(--cs); font-style: italic;">Centrist</span> Coalition</span> (PSOE - csspa)
 subtitle: What the hell? The numbers really don't add up...
 view-if: congreso_coalition_psoe_cs_wtf
 face-image: img/events/rivera_sanchez.jpg

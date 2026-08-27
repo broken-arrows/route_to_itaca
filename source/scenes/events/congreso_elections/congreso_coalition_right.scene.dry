@@ -3,7 +3,7 @@ title: congreso right coalitions
 You should not be here? Report a bug if you see this text.
 
 @pp_cs
-title: <span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Right</span> Coalition (PP - csspa)
+title: <span class="gobierno-coalition" data-parties="pp cs" data-summary="[? if pp_congreso_s + cs_congreso_s >= congreso_s_majority: Majority government?][? if pp_congreso_s + cs_congreso_s < congreso_s_majority: Minority government?] - [+ pp_congreso_s + cs_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Right</span> Coalition</span> (PP - csspa)
 subtitle: A PP + csspa cabinet, backed by the centralist-right and other smaller parties. [? if congreso_coalition_pp_cs_talks: It leans on tolerations they'll have to negotiate. ?]
 view-if: congreso_coalition_pp_cs_s > 0
 choose-if: congreso_coalition_pp_cs_reach and congreso_coalition_majority_party != "pp"
@@ -13,7 +13,8 @@ on-arrival: {!
     Q.spanish_pm_gender = Q.pp_leader_gender;
     Q.spanish_pm_party = "pp";
     Q.spanish_coalition = ["pp", "cs"];
-    Q.spanish_coalition_disp = '<span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Right</span> Coalition';
+    var government_seats = Q.pp_congreso_s + Q.cs_congreso_s;
+    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority, '<span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Right</span> Coalition');
 !}
 
 **A new government is formed!**
@@ -23,7 +24,7 @@ The recently appointed [+ spanish_coalition_disp +] Gobierno will be lead by [? 
 -@post_event: This is terrible news...
 
 @cs_pp
-title: <span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Coalition</span> (csspa - PP)
+title: <span class="gobierno-coalition" data-parties="cs pp" data-summary="[? if cs_congreso_s + pp_congreso_s >= congreso_s_majority: Majority government?][? if cs_congreso_s + pp_congreso_s < congreso_s_majority: Minority government?] - [+ cs_congreso_s + pp_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Coalition</span></span> (csspa - PP)
 subtitle: A csspa-led cabinet with the PP as the junior partner, backed by the centralist-right and other smaller parties. [? if congreso_coalition_pp_cs_talks: It leans on tolerations they'll have to negotiate. ?]
 view-if: congreso_coalition_cs_pp_s > 0
 choose-if: congreso_coalition_pp_cs_reach
@@ -33,7 +34,8 @@ on-arrival: {!
     Q.spanish_pm_gender = Q.csspa_leader_gender;
     Q.spanish_pm_party = "cs";
     Q.spanish_coalition = ["cs", "pp"];
-    Q.spanish_coalition_disp = '<span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Coalition</span>';
+    var government_seats = Q.cs_congreso_s + Q.pp_congreso_s;
+    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority, '<span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Coalition</span>');
 !}
 
 **A new government is formed!**
@@ -44,7 +46,7 @@ The recently appointed [+ spanish_coalition_disp +] Gobierno will be lead by [? 
 
 
 @pp_vox
-title: <span style="color: var(--pp); font-style: italic;">National</span> <span style="color: var(--vox); font-style: italic;">Right</span> Coalition (PP - Vox)
+title: <span class="gobierno-coalition" data-parties="pp vox" data-summary="[? if pp_congreso_s + vox_congreso_s >= congreso_s_majority: Majority government?][? if pp_congreso_s + vox_congreso_s < congreso_s_majority: Minority government?] - [+ pp_congreso_s + vox_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--pp); font-style: italic;">National</span> <span style="color: var(--vox); font-style: italic;">Right</span> Coalition</span> (PP - Vox)
 subtitle: PP turns to Vox, a truly bleak prospect. [? if congreso_coalition_pp_vox_talks: And still needs every far-right vote it can find. ?]
 view-if: congreso_coalition_pp_vox_s > 0
 choose-if: congreso_coalition_pp_vox_reach and not congreso_coalition_pp_cs_reach and congreso_coalition_majority_party != "pp"
@@ -54,7 +56,8 @@ on-arrival: {!
     Q.spanish_pm_gender = Q.pp_leader_gender;
     Q.spanish_pm_party = "pp";
     Q.spanish_coalition = ["pp", "vox"];
-    Q.spanish_coalition_disp = '<span style="color: var(--pp); font-style: italic;">National</span> <span style="color: var(--vox); font-style: italic;">Right</span> Coalition';
+    var government_seats = Q.pp_congreso_s + Q.vox_congreso_s;
+    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority, '<span style="color: var(--pp); font-style: italic;">National</span> <span style="color: var(--vox); font-style: italic;">Right</span> Coalition');
 !}
 
 **A new government is formed!**
@@ -64,7 +67,7 @@ The recently appointed [+ spanish_coalition_disp +] Gobierno will be lead by [? 
 -@post_event: This is terrible news...
 
 @pp_minority
-title: <span style="color: var(--pp); font-style: italic;">PP</span> Minority Government
+title: PP <span class="gobierno-coalition" data-parties="pp" data-summary="Minority government - [+ pp_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--pp); font-style: italic;">Minority Government</span></span>
 subtitle: PP governs alone, tolerated from the outside. [? if congreso_coalition_pp_min_talks: Held up by tolerations they'll have to bargain for. ?]
 view-if: congreso_coalition_pp_min_s > 0
 choose-if: congreso_coalition_pp_min_reach
@@ -74,7 +77,7 @@ on-arrival: {!
     Q.spanish_pm_gender = Q.pp_leader_gender
     Q.spanish_pm_party = "pp";
     Q.spanish_coalition = ["pp"];
-    Q.spanish_coalition_disp = '<span style="color: var(--pp); font-style: italic;">PP</span> Minority Government';
+    Q.spanish_coalition_disp = 'PP ' + G.governmentTooltip("gobierno", Q.spanish_coalition, "Minority government - " + Q.pp_congreso_s + "/" + Q.congreso_s_majority, '<span style="color: var(--pp); font-style: italic;">Minority Government</span>');
 !}
 
 **A new government is formed!**

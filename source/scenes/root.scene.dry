@@ -46,7 +46,6 @@ on-arrival: {!
   Q.president_party = "ciu";
   Q.president_gender = "m";
   Q.cat_coalition = ["ciu"];
-  Q.cat_coalition_disp = "CiU <span style='color: var(--ciu);'>minority government</span>";
   Q.cat_coalition_dissent = 0;
 
   Q.speaker = "Núria de Gispert";
@@ -82,7 +81,6 @@ on-arrival: {!
   Q.spanish_pm_gender = "m";
   Q.spanish_pm_party = "pp";
   Q.spanish_coalition = ["pp"];
-  Q.spanish_coalition_disp = "PP <span style='color: var(--pp);'>majority government</span>";
   Q.spain_is_republic = 0; // lol
   Q.constitution_reformed = 0;
 
@@ -542,6 +540,8 @@ on-arrival: {!
       "galicia": 23,
       "rest": 216
   };
+  Q.congreso_size = 350;
+  Q.congreso_s_majority = Math.floor(Q.congreso_size/2) + 1;
   Q.congreso_constituencies = ["catalunya", "valencia", "balears", "navarra", "euskadi", "galicia", "rest"];
   Q.congreso_parties_left = ["podemos", "iu", "mpais", "sumar", "up", "csqp", "cecp", "ecp", "fr", "erc", "cup", "ehbildu", "amaiur", "bng", "compromis", "mes"];
 
@@ -614,6 +614,19 @@ on-arrival: {!
   Q.gbai_congreso_pv = 0.17;
   Q.amaiur_congreso_s = 7;
   Q.amaiur_congreso_pv = 1.37;
+
+  Q.cat_coalition_disp = "CiU " + G.governmentTooltip(
+    "generalitat",
+    Q.cat_coalition,
+    "Minority government - " + Q.ciu_parlament_s + "/" + Q.parlament_s_majority,
+    "<span style='color: var(--ciu);'>minority government</span>"
+  );
+  Q.spanish_coalition_disp = "PP " + G.governmentTooltip(
+    "gobierno",
+    Q.spanish_coalition,
+    "Majority government - " + Q.pp_congreso_s + "/" + Q.congreso_s_majority,
+    "<span style='color: var(--pp);'>majority government</span>"
+  );
 
   // Initialize ALL party suppports to zero
   for (var c of Q.parlament_constituencies) {

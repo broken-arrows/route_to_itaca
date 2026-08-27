@@ -5,7 +5,7 @@ You should not be here? Report a bug if you see this text.
 # TODO: add extra grand coalition psoe+pp+cs if they never add up
 
 @psoe_led
-title: PSOE-led <span style="color: var(--psoe); font-style: italic;">Grand</span> <span style="color: var(--pp); font-style: italic;">Coalition</span> (PSOE - PP)
+title: PSOE-led <span class="gobierno-coalition" data-parties="psoe" data-summary="Minority government - [+ psoe_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--psoe); font-style: italic;">Grand</span> <span style="color: var(--pp); font-style: italic;">Coalition</span></span> (PSOE - PP)
 subtitle: Is this the new normal?
 view-if: congreso_coalition_grand_s_psoe > 0 and psoe_leader != "???"
 choose-if: congreso_coalition_grand_s_psoe >= congreso_s_majority and congreso_coalition_grand_ok and not congreso_coalition_psoe_cs_wtf and (congreso_coalition_grand_toleration_happened or congreso_coalition_grand_s_ppcs < congreso_s_majority)
@@ -17,7 +17,7 @@ on-arrival: {!
     Q.spanish_pm_gender = Q.psoe_leader_gender;
     Q.spanish_pm_party = "psoe";
     Q.spanish_coalition = ["psoe"];
-    Q.spanish_coalition_disp = "PSOE <span style='font-style: italic; color: var(--psoe);'>minority government</span>";
+    Q.spanish_coalition_disp = "PSOE " + G.governmentTooltip("gobierno", Q.spanish_coalition, "Minority government - " + Q.psoe_congreso_s + "/" + Q.congreso_s_majority, "<span style='font-style: italic; color: var(--psoe);'>minority government</span>");
 
     // supporters shed votes
     G.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');
@@ -32,7 +32,7 @@ In [? if congreso_coalition_grand_toleration_happened: yet another ?][? if not c
 -@post_event: Let's hope that at least [? if spanish_pm_gender = "m": his ?][? if spanish_pm_gender = "f": her ?]tenure is not long...
 
 @pp_led
-title: PP-led <span style="color: var(--pp); font-style: italic;">Grand</span> <span style="color: var(--psoe); font-style: italic;">Coalition</span> (PP - PSOE)
+title: PP-led <span class="gobierno-coalition" data-parties="pp" data-summary="Minority government - [+ pp_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--pp); font-style: italic;">Grand</span> <span style="color: var(--psoe); font-style: italic;">Coalition</span></span> (PP - PSOE)
 subtitle: Is this the new normal?
 view-if: congreso_coalition_grand_s_pp > 0
 choose-if: congreso_coalition_grand_s_pp >= congreso_s_majority and congreso_coalition_grand_ok and not congreso_coalition_psoe_cs_wtf and (congreso_coalition_grand_toleration_happened or congreso_coalition_grand_s_ppcs < congreso_s_majority)
@@ -43,8 +43,8 @@ on-arrival: {!
     Q.spanish_pm = Q.pp_leader;
     Q.spanish_pm_gender = Q.pp_leader_gender;
     Q.spanish_pm_party = "pp";
-    Q.spanish_coalition = ["pp", "ppc"];
-    Q.spanish_coalition_disp = "PP <span style='font-style: italic; color: var(--pp);'>minority government</span>";
+    Q.spanish_coalition = ["pp"];
+    Q.spanish_coalition_disp = "PP " + G.governmentTooltip("gobierno", Q.spanish_coalition, "Minority government - " + Q.pp_congreso_s + "/" + Q.congreso_s_majority, "<span style='font-style: italic; color: var(--pp);'>minority government</span>");
 
     // supporters shed votes
     G.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');
@@ -58,7 +58,7 @@ In [? if congreso_coalition_grand_toleration_happened: yet another ?][? if not c
 -@post_event: Let's hope that at least [? if spanish_pm_gender = "m": his ?][? if spanish_pm_gender = "f": her ?]tenure is not long...
 
 @toleration
-title: <span style="color: var(--pp); font-style: italic;">Grand</span> <span style="color: var(--cs); font-style: italic;">Tole</span><span style="color: var(--psoe); font-style: italic;">ration</span> (PP - csspa - PSOE)
+title: <span class="gobierno-coalition" data-parties="pp" data-summary="Minority government - [+ pp_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--pp); font-style: italic;">Grand</span> <span style="color: var(--cs); font-style: italic;">Tole</span><span style="color: var(--psoe); font-style: italic;">ration</span></span> (PP - csspa - PSOE)
 subtitle: Truly, what even is going on?
 view-if: congreso_coalition_grand_s_ppcs > 0 and not congreso_coalition_grand_toleration_happened
 choose-if: congreso_coalition_grand_s_ppcs >= congreso_s_majority and congreso_coalition_grand_ok and not congreso_coalition_psoe_cs_wtf and not congreso_coalition_grand_toleration_happened
@@ -69,8 +69,8 @@ on-arrival: {!
     Q.spanish_pm = Q.pp_leader;
     Q.spanish_pm_gender = Q.pp_leader_gender;
     Q.spanish_pm_party = "pp";
-    Q.spanish_coalition = ["pp", "ppc"];
-    Q.spanish_coalition_disp = "PP <span style='font-style: italic; color: var(--pp);'>minority government</span>";
+    Q.spanish_coalition = ["pp"];
+    Q.spanish_coalition_disp = "PP " + G.governmentTooltip("gobierno", Q.spanish_coalition, "Minority government - " + Q.pp_congreso_s + "/" + Q.congreso_s_majority, "<span style='font-style: italic; color: var(--pp);'>minority government</span>");
 
     // supporters shed votes
     G.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');
