@@ -102,4 +102,55 @@ describe('old-shell coalition tooltip', () => {
       expect(term?.tooltip?.img, `${party} must resolve to a real logo`).toBeTruthy();
     }
   });
+
+  it('marks both valid party labels in the real status government roster', () => {
+    const adapter = DendryAdapter.fromJSONText(gameText);
+    adapter.beginGame([1, 2, 3, 4]);
+    Object.assign(window, {
+      dendryUI: {
+        game: adapter.engine.game,
+        dendryEngine: adapter.engine,
+        loadSettings: vi.fn(),
+        dark_mode: false,
+      },
+      mountWidgets: vi.fn(),
+      syncTabLocks: vi.fn(),
+      RTI_GAME_LIB: { allegiances: {} },
+    });
+    new Function(gameJs)();
+
+    const host = document.createElement('div');
+    host.innerHTML = adapter.renderView('status.government');
+    const seal = host.querySelector('img[src="img/cat_seal.svg"]');
+    const officeholders = seal?.parentElement?.parentElement;
+    const markedParties = Array.from(
+      officeholders?.querySelectorAll('[data-term="ciu"]') ?? [],
+    ).map((node) => node.textContent);
+
+    expect(markedParties).toEqual(['CiU', 'CiU']);
+    expect(officeholders?.textContent).toContain('Joana Ortega');
+  });
+
+  it('keeps an existing glossary marker opaque across streamed fragments', () => {
+    Object.assign(window, {
+      dendryUI: {
+        game: {
+          data: {
+            glossary: {
+              terms: [{ id: 'ciu', match: ['CiU'], colour: 'ciu' }],
+            },
+          },
+        },
+      },
+      RTI_GAME_LIB: { allegiances: {} },
+    });
+    new Function(gameJs)();
+    const applyWholesome = (window as unknown as {
+      applyWholesome: (text: string) => string;
+    }).applyWholesome;
+
+    expect(applyWholesome('<span data-term="ciu">')).toBe('<span data-term="ciu">');
+    expect(applyWholesome('CiU')).toBe('CiU');
+    expect(applyWholesome('</span>')).toBe('</span>');
+  });
 });

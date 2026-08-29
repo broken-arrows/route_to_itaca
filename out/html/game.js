@@ -241,8 +241,50 @@
   }
 
   // Dendry calls displayText once per content fragment, not once per assembled HTML string! We need to work around that for more complex tooltips
+  var _wholesomeInsideTag = false;
   var _wholesomeTagBuffer = "";
   var _wholesomeProtectedDepth = 0;
+  var _wholesomeTagStack = [];
+
+  function updateWholesomeTagState(tagHtml) {
+    const parsed = tagHtml.match(/^<\s*(\/?)\s*([a-z][\w:-]*)\b/i);
+    if (!parsed) return;
+
+    const closing = Boolean(parsed[1]);
+    const tagName = parsed[2].toLowerCase();
+    if (closing) {
+      let matchingIndex = -1;
+      for (let i = _wholesomeTagStack.length - 1; i >= 0; i -= 1) {
+        if (_wholesomeTagStack[i].name === tagName) {
+          matchingIndex = i;
+          break;
+        }
+      }
+      if (matchingIndex < 0) return;
+      while (_wholesomeTagStack.length > matchingIndex) {
+        const entry = _wholesomeTagStack.pop();
+        if (entry.protects) {
+          _wholesomeProtectedDepth = Math.max(
+            0,
+            _wholesomeProtectedDepth - 1,
+          );
+        }
+      }
+      return;
+    }
+
+    const selfClosing = /\/\s*>$/.test(tagHtml);
+    const voidElement = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/.test(
+      tagName,
+    );
+    if (selfClosing || voidElement) return;
+
+    const protects =
+      /\bdata-term\s*=/i.test(tagHtml) ||
+      /\bdata-glossary\s*=\s*(["']?)off\1/i.test(tagHtml);
+    _wholesomeTagStack.push({ name: tagName, protects: protects });
+    if (protects) _wholesomeProtectedDepth += 1;
+  }
 
   function decorateWholesomeText(segment, compiled) {
     if (_wholesomeProtectedDepth > 0) return segment;
@@ -266,7 +308,7 @@
         const displayText = t.display || innerText;
         return `<span class='mytooltip' style='--mytooltip-color:${textColor}; ${style}' data-term='${t.id}'>${displayText}</span>`;
       } else if (t.colour) {
-        return `<span style='color: ${textColor}; ${style}'>${t.display || innerText}</span>`;
+        return `<span style='color: ${textColor}; ${style}' data-term='${t.id}'>${t.display || innerText}</span>`;
       }
 
       return match;
@@ -291,18 +333,7 @@
         result += char;
         _wholesomeTagBuffer += char;
         if (char === ">") {
-          const tag = _wholesomeTagBuffer.match(
-            /^<\s*(\/?)\s*(span|strong)\b/i,
-          );
-          const selfClosing = /\/\s*>$/.test(_wholesomeTagBuffer);
-          if (tag && tag[1]) {
-            _wholesomeProtectedDepth = Math.max(
-              0,
-              _wholesomeProtectedDepth - 1,
-            );
-          } else if (tag && !selfClosing) {
-            _wholesomeProtectedDepth += 1;
-          }
+          updateWholesomeTagState(_wholesomeTagBuffer);
           _wholesomeInsideTag = false;
           _wholesomeTagBuffer = "";
         }

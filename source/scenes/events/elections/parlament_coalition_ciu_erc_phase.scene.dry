@@ -419,10 +419,10 @@ choose-if: not parlament_coalition_changes and not parlament_coalition_concessio
 unavailable-subtitle: We have proposed changes, which will require approval by [+ parlament_current_ciu +].
 on-arrival: {!
     Q.ciu_erc_coalition_phase = 0;
+    Q.cat_coalition = [Q.parlament_current_ciu, "erc"];
     Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_ciu_erc_s + "/" + Q.parlament_s_majority, "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span>");
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
-    Q.cat_coalition = [Q.parlament_current_ciu, "erc"];
     Q.cat_coalition_dissent = 0;
 
     Q.position_disp = "Generalitat";

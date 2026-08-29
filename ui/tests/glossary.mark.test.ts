@@ -22,8 +22,17 @@ describe('markGlossary', () => {
     expect(markGlossary('<img alt="ERC">', TERMS)).toBe('<img alt="ERC">');
   });
 
-  it('never marks inside an existing span or strong', () => {
-    const html = '<span style="color:red">ERC</span>';
+  it('marks visible text inside ordinary spans and strongs', () => {
+    expect(markGlossary('<span style="color:red">ERC</span>', TERMS)).toBe(
+      '<span style="color:red"><span class="term" data-term="erc">ERC</span></span>',
+    );
+    expect(markGlossary('<strong>CiU</strong>', TERMS)).toBe(
+      '<strong><span class="term" data-term="ciu">CiU</span></strong>',
+    );
+  });
+
+  it('never marks inside an existing glossary marker', () => {
+    const html = '<span class="term" data-term="erc">ERC</span>';
     expect(markGlossary(html, TERMS)).toBe(html);
   });
 

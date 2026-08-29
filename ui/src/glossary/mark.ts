@@ -32,10 +32,12 @@ export interface GlossaryTerm {
 
 const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-// Segments the string into tags, already-marked spans/strongs, and bare text
-// — so we only ever touch bare text. Mirrors applyWholesome's segmentation
-// exactly (same trust boundary: never rewrite inside existing markup).
-const SEGMENTS = /(<(?:span|strong)[^>]*>.*?<\/(?:span|strong)>|<[^>]+>|[^<]+)/g;
+// Segments the string into already-marked glossary spans, tags, and bare text.
+// Ordinary authored elements are transparent: their visible text still belongs
+// to the glossary, while their attributes never do. Only a marker we emitted
+// ourselves is opaque, which keeps repeated marking idempotent without making
+// presentational <span>/<strong> wrappers disable glossary coverage.
+const SEGMENTS = /(<span\b(?=[^>]*\bdata-term\s*=)[^>]*>.*?<\/span>|<[^>]+>|[^<]+)/gis;
 
 // Unicode-aware word boundary. `\b` is ASCII-only in JS: a match word that
 // starts or ends with an accented letter ("Àngel Ros", "JxSí", "BComú") or

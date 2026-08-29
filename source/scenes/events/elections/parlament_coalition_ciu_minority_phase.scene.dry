@@ -195,6 +195,7 @@ choose-if: not parlament_coalition_concessions
 unavailable-subtitle: We have proposed changes, which will require approval by [+ parlament_current_ciu +].
 on-arrival: {!
     Q.ciu_min_coalition_phase = 0;
+    Q.cat_coalition = [Q.parlament_current_ciu];
     Q.cat_coalition_disp = Q.parlament_current_ciu + " " + G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government - " + Q[Q.parlament_current_ciu + "_parlament_s"] + "/" + Q.parlament_s_majority, "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>minority government</span>");
     Q.erc_supporting = true
 
@@ -202,7 +203,6 @@ on-arrival: {!
 
     Q.cup_in_gob = false;
     Q.cup_supporting = false;
-    Q.cat_coalition = [Q.parlament_current_ciu];
     Q.cat_coalition_dissent = 0;
 
     Q.independence_trust += 10 * Q.erc_roadmap - (Q.year-2012);
