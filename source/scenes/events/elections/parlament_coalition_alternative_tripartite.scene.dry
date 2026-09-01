@@ -1,0 +1,86 @@
+title: alternative tripartite coalition negotiations
+
+You should not be here? Report a bug if you see this text.
+
+@erc
+title: <span class="generalitat-coalition" data-parties="[+ parlament_current_icv +] psc erc" data-summary="Majority government - [+ parlament_coalition_icv_psc_erc_s +]/[+ parlament_s_majority +]"><span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Alternative</span> <span style="color: var(--erc); font-style: italic;">Tripartite</span></span> ([+ parlament_current_icv +]-PSC-ERC)
+view-if: player_party == "erc" and parlament_current_icv_s > psc_parlament_s and parlament_current_icv_s > erc_parlament_s
+choose-if: parlament_coalition_icv_psc_erc_s >= parlament_s_majority and psc_relations > 40 and parlament_current_icv_relations > 40
+unavailable-subtitle: [? if parlament_coalition_icv_psc_erc_s < parlament_s_majority: Not enough parliamentary support. ?][? if psc_relations <= 40: The PSC will not enter this coalition with us. ?][? if parlament_current_icv_relations <= 40: [+ parlament_current_icv +] will not offer us a place in its government. ?]
+subtitle: The largest party of the left has invited ERC and PSC to negotiate an alternative tripartite.
+on-arrival: {!
+    Q.month_actions += 1;
+    Q.alternative_tripartite_coalition_phase = 1;
+    Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_leverage = Math.max(5, (Q.erc_parlament_s / Q.parlament_coalition_icv_psc_erc_s) * 55);
+!}
+
+Before formal negotiations can begin, the new Parlament must elect its Speaker. As the largest coalition partner, [+ parlament_current_icv +] expects ERC and PSC to choose which junior partner will hold the office.
+
+- @erc_speaker: Push for an ERC Speaker
+- @psc_speaker: Yield the Speaker to PSC
+
+@erc_speaker
+choose-if: erc_parlament_s >= psc_parlament_s or parlament_coalition_leverage >= 12
+unavailable-subtitle: PSC has the stronger claim among the junior partners, and ERC lacks the leverage to overcome it.
+on-arrival: {!
+    Q.speaker_party = "erc";
+    Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
+    Q.speaker_gender = Q.year < 2016 ? "f" : "m";
+    Q[Q.parlament_current_icv + "_relations"] -= 1;
+!}
+go-to: speaker_chosen
+
+@psc_speaker
+on-arrival: {!
+    Q.speaker_party = "psc";
+    Q.speaker = "Xabier Sabaté";
+    Q.speaker_gender = "m";
+    Q.psc_relations += 2;
+!}
+go-to: speaker_chosen
+
+@speaker_chosen
+
+[+ speaker +] will serve as Speaker of the House for the coming legislature. The three parties can now turn to the composition of the government.
+
+- @post_event: Hear the opening proposal.
+
+@cup
+title: <span class="generalitat-coalition" data-parties="[+ parlament_current_icv +] psc erc" data-summary="Majority government - [+ parlament_coalition_icv_psc_erc_s +]/[+ parlament_s_majority +]"><span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Alternative</span> <span style="color: var(--erc); font-style: italic;">Tripartite</span></span> ([+ parlament_current_icv +]-PSC-ERC)
+view-if: player_party == "cup" and parlament_current_icv_s > psc_parlament_s and parlament_current_icv_s > erc_parlament_s
+choose-if: parlament_coalition_icv_psc_erc_s >= parlament_s_majority and psc_relations > 40 and erc_relations > 40
+unavailable-subtitle: [? if parlament_coalition_icv_psc_erc_s < parlament_s_majority: Not enough parliamentary support. ?]The parties cannot agree on this cabinet.
+subtitle: A reformist government, led by [+ parlament_current_icv +], will take office without us.
+on-arrival: {!
+    Q.erc_in_gob = true;
+    Q.erc_supporting = true;
+    Q.cup_in_gob = false;
+    Q.cup_supporting = false;
+    Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
+    Q.cat_coalition = [Q.parlament_current_icv, "psc", "erc"];
+    Q.cat_coalition_support = [];
+    Q.cat_coalition_abstain = [];
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_icv_psc_erc_s + "/" + Q.parlament_s_majority, "<span style='color: var(--" + Q.parlament_current_icv + "); font-style: italic;'>Alternative Tripartite</span>");
+    Q.cat_coalition_dissent = 0;
+    Q.parlament_coalition_proposal_president = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_vp = "psc";
+    Q.parlament_coalition_proposal_economy = "psc";
+    Q.parlament_coalition_proposal_interior = "psc";
+    Q.parlament_coalition_proposal_health = "erc";
+    Q.parlament_coalition_proposal_foreign = "erc";
+    Q.parlament_coalition_proposal_education = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_territory = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_bnl = Q.parlament_current_icv;
+    Q.speaker_party = "erc";
+    Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
+    Q.speaker_gender = Q.year < 2016 ? "f" : "m";
+!}
+go-to: parlament_coalition_setnames
+set-jump: cup_display
+
+The <span class="generalitat-coalition" data-parties="[+ parlament_current_icv +] psc erc" data-summary="Majority government - [+ parlament_coalition_icv_psc_erc_s +]/[+ parlament_s_majority +]"><span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Alternative</span> <span style="color: var(--erc); font-style: italic;">Tripartite</span></span> will take office! The the new Speaker of the house will be [+ speaker +] ([+ speaker_party +]).
+
+@cup_display
+
+- @parlament_coalition_resolve: Back to the classics but with a twist?

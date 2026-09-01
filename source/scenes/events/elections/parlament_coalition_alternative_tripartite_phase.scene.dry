@@ -1,0 +1,190 @@
+title: <span class="generalitat-coalition" data-parties="[+ parlament_current_icv +] psc erc" data-summary="Majority government - [+ parlament_coalition_icv_psc_erc_s +]/[+ parlament_s_majority +]">Alternative Tripartite</span>
+subtitle: [? if alternative_tripartite_coalition_phase = 1: The first round of government formation negotiations begins.?][? if alternative_tripartite_coalition_phase = 2: The parties enter the second round of government formation negotiations.?][? if alternative_tripartite_coalition_phase = 3: The third and final round of government formation negotiations begins.?]
+tags: event
+new-page: true
+view-if: alternative_tripartite_coalition_phase > 0 and player_party == "erc"
+on-arrival: {!
+    Q.parlament_coalition_changes = false;
+    Q.parlament_coalition_leverage = Math.max(5, (Q.erc_parlament_s / Q.parlament_coalition_icv_psc_erc_s) * 55 + Q.alternative_tripartite_coalition_phase * 3);
+
+    Q.parlament_coalition_proposal_president = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_vp = "psc";
+    Q.parlament_coalition_proposal_economy = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_interior = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_health = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_foreign = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_education = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_territory = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_bnl = Q.parlament_current_icv;
+
+    var psc_claim = (Q.psc_parlament_s / Q.parlament_coalition_icv_psc_erc_s) * 55;
+    if (psc_claim >= 20) {
+        Q.parlament_coalition_proposal_vp = "psc";
+        psc_claim -= 20;
+    }
+    if (psc_claim >= 10) {
+        Q.parlament_coalition_proposal_interior = "psc";
+        psc_claim -= 10;
+    }
+    if (psc_claim >= 10) {
+        Q.parlament_coalition_proposal_economy = "psc";
+        psc_claim -= 10;
+    }
+    if (psc_claim >= 7) {
+        Q.parlament_coalition_proposal_health = "psc";
+        psc_claim -= 7;
+    }
+
+    var erc_claim = Q.parlament_coalition_leverage;
+    if (erc_claim >= 6) {
+        Q.parlament_coalition_proposal_foreign = "erc";
+        erc_claim -= 6;
+    }
+    if (erc_claim >= 5) {
+        Q.parlament_coalition_proposal_bnl = "erc";
+        erc_claim -= 5;
+    }
+    if (erc_claim >= 7) {
+        Q.parlament_coalition_proposal_health = "erc";
+        erc_claim -= 7;
+    }
+    if (Q.alternative_tripartite_coalition_phase >= 2 && erc_claim >= 7) {
+        Q.parlament_coalition_proposal_education = "erc";
+        erc_claim -= 7;
+    }
+    Q.parlament_coalition_leverage = erc_claim;
+!}
+go-to: parlament_coalition_setnames
+set-jump: choices
+role: event
+
+@choices
+
+[+ parlament_current_icv +] has submitted its [? if alternative_tripartite_coalition_phase = 1: opening?][? if alternative_tripartite_coalition_phase > 1: revised?] proposal for distributing the cabinet among the three partners.
+
+- @accept: Accept the proposed cabinet
+- @claim_health: Demand the Health Ministry
+- @claim_interior: Demand the Interior Ministry
+- @claim_economy: Demand the Economy Ministry
+- @claim_education: Demand the Education Ministry
+- @claim_foreign: Demand the Foreign Affairs Ministry
+- @claim_territory: Demand the Territory Ministry
+- @claim_bnl: Demand the Business & Labour Ministry
+- @revise: Reject the distribution and demand another round
+
+@claim_health
+choose-if: parlament_coalition_leverage >= 7 and parlament_coalition_proposal_health != "erc"
+unavailable-subtitle: We lack the leverage to add the Health Ministry to this proposal.
+on-arrival: {!
+    Q.parlament_coalition_proposal_health = "erc";
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_leverage -= 7;
+!}
+go-to: counter_decision
+
+@claim_interior
+choose-if: parlament_coalition_leverage >= 10 and parlament_coalition_proposal_interior != "erc"
+unavailable-subtitle: We lack the leverage to claim the Interior Ministry.
+on-arrival: {!
+    Q.parlament_coalition_proposal_interior = "erc";
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_leverage -= 10;
+!}
+go-to: counter_decision
+
+@claim_economy
+choose-if: parlament_coalition_leverage >= 10 and parlament_coalition_proposal_economy != "erc"
+unavailable-subtitle: We lack the leverage to claim the Economy Ministry.
+on-arrival: {!
+    Q.parlament_coalition_proposal_economy = "erc";
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_leverage -= 10;
+!}
+go-to: counter_decision
+
+@claim_education
+choose-if: parlament_coalition_leverage >= 7 and parlament_coalition_proposal_education != "erc"
+unavailable-subtitle: We lack the leverage to claim the Education Ministry.
+on-arrival: {!
+    Q.parlament_coalition_proposal_education = "erc";
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_leverage -= 7;
+!}
+go-to: counter_decision
+
+@claim_foreign
+choose-if: parlament_coalition_leverage >= 6 and parlament_coalition_proposal_foreign != "erc"
+unavailable-subtitle: We lack the leverage to claim the Foreign Affairs Ministry.
+on-arrival: {!
+    Q.parlament_coalition_proposal_foreign = "erc";
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_leverage -= 6;
+!}
+go-to: counter_decision
+
+@claim_territory
+choose-if: parlament_coalition_leverage >= 5 and parlament_coalition_proposal_territory != "erc"
+unavailable-subtitle: We lack the leverage to claim the Territory Ministry.
+on-arrival: {!
+    Q.parlament_coalition_proposal_territory = "erc";
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_leverage -= 5;
+!}
+go-to: counter_decision
+
+@claim_bnl
+choose-if: parlament_coalition_leverage >= 5 and parlament_coalition_proposal_bnl != "erc"
+unavailable-subtitle: We lack the leverage to claim the Business & Labour Ministry.
+on-arrival: {!
+    Q.parlament_coalition_proposal_bnl = "erc";
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_leverage -= 5;
+!}
+go-to: counter_decision
+
+@counter_decision
+go-to: accept if alternative_tripartite_coalition_phase >= 3 or parlament_coalition_leverage >= 3; revise
+
+@revise
+on-arrival: {!
+    Q.alternative_tripartite_coalition_phase += 1;
+    Q.month_actions += 1;
+    Q[Q.parlament_current_icv + "_relations"] -= 2;
+    Q.psc_relations -= 1;
+!}
+go-to: new_elections if alternative_tripartite_coalition_phase > 3; post_event
+
+The coalition partners will return with another distribution after a further round of talks.
+
+@accept
+on-arrival: {!
+    Q.alternative_tripartite_coalition_phase = 0;
+    Q.erc_in_gob = true;
+    Q.erc_supporting = true;
+    Q.cup_in_gob = false;
+    Q.cup_supporting = false;
+    Q.position_disp = "Generalitat";
+    Q.cat_coalition = [Q.parlament_current_icv, "psc", "erc"];
+    Q.cat_coalition_support = [];
+    Q.cat_coalition_abstain = [];
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_icv_psc_erc_s + "/" + Q.parlament_s_majority, "<span style='color: var(--" + Q.parlament_current_icv + "); font-style: italic;'>Alternative Tripartite</span>");
+    Q.cat_coalition_dissent = 0;
+!}
+
+The PSC and us have accepted the Alternative Tripartite proposed by [+ parlament_current_icv +].
+
+- @parlament_coalition_resolve: A new government is formed!
+
+@new_elections
+on-arrival: {!
+    Q.alternative_tripartite_coalition_phase = 0;
+    Q.parlament_repeat_election = true;
+    Q.snap_blame = Q.player_party;
+    Q.snap_counterparty = Q.parlament_current_icv;
+    Q.snap_severity = 0.12;
+!}
+call: snap_election
+
+The parties have exhausted the formation rounds without reaching an agreement...
+
+- @post_event

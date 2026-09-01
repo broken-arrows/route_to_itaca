@@ -1,0 +1,62 @@
+title: unthinkably grand PSC-Comuns coalition
+
+You should not be here? Report a bug if you see this text.
+
+@any
+title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Minority government"><span style="color: var(--psc); font-style: italic;">Unthinkably Grand</span> Coalition</span> (PSC-[+ parlament_current_icv +][? if parlament_emergency_psc_icv_use_cs: , supported by Cs?][? if parlament_emergency_psc_icv_use_ppc: , PPC?][? if parlament_emergency_psc_icv_use_unio: , and Unió?][? if parlament_emergency_psc_icv_use_vox: , with Vox abstaining?])
+view-if: parlament_emergency_psc_icv_available
+choose-if: parlament_emergency_psc_icv_politically_available
+unavailable-subtitle: [? if cat_spa_relations >= 40: Such  ?][? if parlament_current_icv_leader = "Arcadi Oliveres": Arcadi Oliveres will never accept such an agreement. ?][? if (parlament_current_icv_leader = "Joan Herrera" or parlament_current_icv_leader = "Lluís Rabell" or parlament_current_icv_leader = "Xavier Domènech" or parlament_current_icv_leader = "Jaume Asens") and not parlament_repeat_election: [+ parlament_current_icv_leader +] are, at least at the moment, contrary to such an agreement. ?][? if player_party = "cup" and erc_roadmap <= 1 and (parlament_ai_erc_better_available or parlament_coalition_psc_icv_erc_abst_available): ERC will choose a preferable left arrangement first.?]
+subtitle: The PSC and [+ parlament_current_icv +] will share the cabinet.[? if parlament_emergency_psc_icv_use_cs:  Cs will support its investiture.?][? if parlament_emergency_psc_icv_use_ppc:  PPC support is also required.?][? if parlament_emergency_psc_icv_use_unio:  Unió support is also required.?][? if parlament_emergency_psc_icv_use_vox:  Even Vox will abstain to make this possible.?]
+on-arrival: {!
+    Q.erc_in_gob = false;
+    Q.erc_supporting = false;
+    Q.cup_in_gob = false;
+    Q.cup_supporting = false;
+    Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
+
+    Q.cat_coalition = ["psc", Q.parlament_current_icv];
+    Q.cat_coalition_support = [];
+    if (Q.parlament_emergency_psc_icv_use_cs) {
+        Q.cat_coalition_support.push("cs");
+    }
+    if (Q.parlament_emergency_psc_icv_use_ppc) {
+        Q.cat_coalition_support.push("ppc");
+    }
+    if (Q.parlament_emergency_psc_icv_use_unio) {
+        Q.cat_coalition_support.push("unio");
+    }
+    Q.cat_coalition_abstain = Q.parlament_emergency_psc_icv_use_vox ? ["vox"] : [];
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Emergency minority government with external support", "<span style='color: var(--psc); font-style: italic;'>Unthinkably Grand Coalition</span>");
+    Q.cat_coalition_dissent = 0;
+
+    // TODO: revisit PSC's unconditional willingness after playtesting.
+    var psc_must_lead = Q.parlament_emergency_psc_icv_use_ppc || Q.parlament_emergency_psc_icv_use_unio || Q.parlament_emergency_psc_icv_use_vox;
+    var comuns_leads = !psc_must_lead && Q.parlament_current_icv_s > Q.psc_parlament_s;
+    Q.parlament_coalition_proposal_president = comuns_leads ? Q.parlament_current_icv : "psc";
+    Q.parlament_coalition_proposal_vp = comuns_leads ? "psc" : Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_economy = comuns_leads ? Q.parlament_current_icv : "psc";
+    Q.parlament_coalition_proposal_interior = "psc";
+    Q.parlament_coalition_proposal_health = "psc";
+    Q.parlament_coalition_proposal_foreign = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_education = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_territory = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_bnl = Q.parlament_current_icv;
+
+    Q.speaker_party = comuns_leads ? "psc" : Q.parlament_current_icv;
+    if (Q.speaker_party == "psc") {
+        Q.speaker = "Xabier Sabaté";
+        Q.speaker_gender = "m";
+    } else {
+        Q.speaker = Q.parlament_current_icv_leader == "Lluís Rabell" ? "Dolors Camats" : "Lluís Rabell";
+        Q.speaker_gender = Q.parlament_current_icv_leader == "Lluís Rabell" ? "f" : "m";
+    }
+!}
+go-to: parlament_coalition_setnames
+set-jump: resolved
+
+The PSC and [+ parlament_current_icv +] will be forming quite the unusual cabinet.[? if parlament_emergency_psc_icv_use_cs:  Cs will support it from outside.?][? if parlament_emergency_psc_icv_use_ppc:  PPC will also support it.?][? if parlament_emergency_psc_icv_use_unio:  Unió will also support it.?][? if parlament_emergency_psc_icv_use_vox:  Vox will permit the investiture through abstention.?]
+
+@resolved
+
+- @parlament_coalition_resolve: A new government is formed???

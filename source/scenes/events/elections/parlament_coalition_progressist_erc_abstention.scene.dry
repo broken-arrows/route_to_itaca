@@ -1,0 +1,85 @@
+title: progressive government with ERC abstention
+
+You should not be here? Report a bug if you see this text.
+
+@erc
+title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Minority government enabled by ERC abstention - [+ parlament_coalition_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Progressive</span> Government</span> with ERC abstention
+view-if: player_party == "erc"
+choose-if: parlament_coalition_psc_icv_erc_abst_available and parlament_current_icv_relations > 40 and psc_relations > 40
+unavailable-subtitle: [? if not parlament_coalition_psc_icv_erc_abst_available: Even ERC's abstention cannot install this cabinet. ?][? if parlament_current_icv_relations <= 40 or psc_relations <= 40: The prospective cabinet will not negotiate its investiture with us. ?]
+subtitle: Stand aside for a PSC-[+ parlament_current_icv +] cabinet and negotiate policy commitments from opposition.
+on-arrival: {!
+    Q.month_actions += 1;
+    Q.progressist_erc_abstention_phase = 1;
+    Q.parlament_coalition_concessions_social = false;
+    Q.parlament_coalition_concessions_independence = false;
+!}
+
+ERC has opened talks over an abstention that would allow PSC and [+ parlament_current_icv +] to form a minority government. Before the investiture negotiations begin, the parties must agree on the Speaker of the House.
+
+- @erc_speaker: Demand the Speaker for ERC
+- @government_speaker: Leave the Speaker to the prospective cabinet
+
+@erc_speaker
+on-arrival: {!
+    Q.speaker_party = "erc";
+    Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
+    Q.speaker_gender = Q.year < 2016 ? "f" : "m";
+    Q.psc_relations -= 2;
+!}
+go-to: speaker_chosen
+
+@government_speaker
+on-arrival: {!
+    Q.speaker_party = Q.parlament_current_icv;
+    Q.speaker = Q.parlament_current_icv_leader == "Lluís Rabell" ? "Dolors Camats" : "Lluís Rabell";
+    Q.speaker_gender = Q.parlament_current_icv_leader == "Lluís Rabell" ? "f" : "m";
+    Q[Q.parlament_current_icv + "_relations"] += 2;
+!}
+go-to: speaker_chosen
+
+@speaker_chosen
+
+[+ speaker +] will serve as Speaker of the House. The parties can now negotiate the terms of ERC's abstention.
+
+- @post_event: Receive their investiture offer.
+
+@cup
+title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Minority government enabled by ERC abstention - [+ parlament_coalition_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Progressive</span> Government</span> with ERC abstention
+view-if: player_party == "cup" and parlament_progressive_erc_abstention_ai_available
+choose-if: parlament_progressive_erc_abstention_ai_available
+unavailable-subtitle: ERC's abstention cannot install this cabinet.
+subtitle: ERC will abstain after exhausting its preferable governing options.
+on-arrival: {!
+    Q.erc_in_gob = false;
+    Q.erc_supporting = true;
+    Q.cup_in_gob = false;
+    Q.cup_supporting = false;
+    Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
+    Q.cat_coalition = ["psc", Q.parlament_current_icv];
+    Q.cat_coalition_support = [];
+    Q.cat_coalition_abstain = ["erc"];
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government enabled by ERC abstention - " + Q.parlament_coalition_psc_icv_s + "/" + Q.parlament_s_majority, "<span style='color: var(--psc); font-style: italic;'>Progressive Government</span>");
+    Q.cat_coalition_dissent = 0;
+    var comuns_leads = Q.parlament_current_icv_s > Q.psc_parlament_s;
+    Q.parlament_coalition_proposal_president = comuns_leads ? Q.parlament_current_icv : "psc";
+    Q.parlament_coalition_proposal_vp = comuns_leads ? "psc" : Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_economy = comuns_leads ? Q.parlament_current_icv : "psc";
+    Q.parlament_coalition_proposal_interior = "psc";
+    Q.parlament_coalition_proposal_health = "psc";
+    Q.parlament_coalition_proposal_foreign = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_education = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_territory = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_bnl = Q.parlament_current_icv;
+    Q.speaker_party = "erc";
+    Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
+    Q.speaker_gender = Q.year < 2016 ? "f" : "m";
+!}
+go-to: parlament_coalition_setnames
+set-jump: resolved
+
+ERC has chosen to abstain, allowing a Progressive Government to take office.
+
+@resolved
+
+- @parlament_coalition_resolve: A new government is formed.

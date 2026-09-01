@@ -1,14 +1,15 @@
-title: [? if ciu_erc_coalition_phase = 3: Yet another ?][+ parlament_current_ciu +][?if ciu_erc_coalition_phase <2 : 's?] [? if ciu_erc_coalition_phase = 2: new ?] coalition proposal 
-subtitle: [? if ciu_erc_coalition_phase = 2: [+ parlament_current_ciu +]-ERC coalition negotiations advance.?][? if ciu_erc_coalition_phase = 3: This is set to be the final round of [+ parlament_current_ciu +]-ERC negotiations.?]
+title: [? if pdcat_external_support: <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +] erc" data-summary="Minority government - [+ parlament_current_ciu_s + erc_parlament_s +]/[+ parlament_s_majority +]">Soft Sovereignty Government</span> proposal with PDeCAT support?][? if not pdcat_external_support: [? if ciu_erc_coalition_phase = 3: Yet another ?][+ parlament_current_ciu +][?if ciu_erc_coalition_phase <2 : 's?] [? if ciu_erc_coalition_phase = 2: new ?] coalition proposal?]
+subtitle: [? if pdcat_external_support and ciu_erc_coalition_phase = 1: PDeCAT would support the investiture while remaining outside the cabinet. This is the opening round of negotiations.?][? if pdcat_external_support and ciu_erc_coalition_phase = 2: PDeCAT remains willing to support the investiture. The governing parties have returned for a second round of negotiations.?][? if pdcat_external_support and ciu_erc_coalition_phase = 3: PDeCAT remains willing to support the investiture. This is the final round of negotiations.?][? if not pdcat_external_support and ciu_erc_coalition_phase = 2: [+ parlament_current_ciu +]-ERC coalition negotiations advance.?][? if not pdcat_external_support and ciu_erc_coalition_phase = 3: This is set to be the final round of [+ parlament_current_ciu +]-ERC negotiations.?]
 tags: event
 new-page: true
 view-if: ciu_erc_coalition_phase != 0 and player_party == "erc"
-on-arrival: {!    
+on-arrival: {!
     Q.parlament_coalition_changes = false;
+    Q.parlament_coalition_pdcat_support_resolved = false;
     Q.parlament_coalition_concessions_social = 0;
     Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_concessions = false;
-    
+
     Q.parlament_coalition_leverage = Math.max(10, 30 - (Q.parlament_current_ciu_s - Q.erc_parlament_s));
     if (Q.speaker_party == Q.parlament_current_ciu) {
         if (Q.parlament_current_ciu_s > 40) {
@@ -47,7 +48,7 @@ on-arrival: {!
     Q.parlament_coalition_proposal_territory = Q.parlament_current_ciu;
     Q.parlament_coalition_proposal_bnl = Q.parlament_current_ciu;
 
-    if (Q[Q.parlament_current_ciu + "_roadmap"] < 3 && Q[Q.parlament_current_ciu + "_roadmap"] > 0 && ciu_proposal_leverage > 7) {
+    if (Q[Q.parlament_current_ciu + "_roadmap"] < 3 && Q[Q.parlament_current_ciu + "_roadmap"] > 0 && ciu_proposal_leverage > 7 && (!Q.pdcat_external_support || Q.pdcat_roadmap >= Q[Q.parlament_current_ciu + "_roadmap"])) {
         Q.parlament_coalition_concessions_indy = 1;
         switch (Q[Q.parlament_current_ciu + "_roadmap"]) {
             case 1:
@@ -140,8 +141,8 @@ We've added policy requirements pushing for less austerity and more social spend
 @indy_concessions
 title: Catalan Independence Policies
 go-to: policy_concessions
-choose-if: parlament_coalition_concessions_indy < 1 and parlament_coalition_leverage >= 5
-unavailable-subtitle: [? if parlament_coalition_concessions_indy >= 1: We've already proposed independence-related concessions.?][? if parlament_coalition_leverage < 5: We don't have enough leverage to propose more concessions.?]
+choose-if: parlament_coalition_concessions_indy < 1 and parlament_coalition_leverage >= 5 and (not pdcat_external_support or pdcat_roadmap >= parlament_current_ciu_roadmap)
+unavailable-subtitle: [? if pdcat_external_support and pdcat_roadmap < parlament_current_ciu_roadmap: PDeCAT will not support a national commitment beyond its roadmap.?][? if parlament_coalition_concessions_indy >= 1: We've already proposed independence-related concessions.?][? if parlament_coalition_leverage < 5: We don't have enough leverage to propose more concessions.?]
 on-arrival: {!
     Q.parlament_coalition_concessions = true;
     Q.parlament_coalition_concessions_indy += 1;
@@ -420,7 +421,11 @@ unavailable-subtitle: We have proposed changes, which will require approval by [
 on-arrival: {!
     Q.ciu_erc_coalition_phase = 0;
     Q.cat_coalition = [Q.parlament_current_ciu, "erc"];
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_ciu_erc_s + "/" + Q.parlament_s_majority, "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span>");
+    Q.cat_coalition_support = Q.pdcat_external_support ? ["pdcat"] : [];
+    Q.cat_coalition_abstain = [];
+    var coalitionSeats = Q.pdcat_external_support ? Q.parlament_coalition_pdcat_support_s : Q.parlament_coalition_ciu_erc_s;
+    var coalitionName = Q.pdcat_external_support ? "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Soft-Sovereignty Government</span>" : "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span>";
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (Q.pdcat_external_support ? "Government supported by PDeCAT, " : "Majority government, ") + coalitionSeats + "/" + Q.parlament_s_majority, coalitionName);
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cat_coalition_dissent = 0;
@@ -431,9 +436,11 @@ on-arrival: {!
     Q.cup_supporting = false;
     
     Q.independence_trust += 10 * Q.erc_roadmap - (Q.year-2012);
+    Q.parlament_coalition_pdcat_support_resolved = Q.pdcat_external_support;
+    Q.pdcat_external_support = false;
 !}
 
-After some arduous negotiations, we have finally reached an agreement with [+ parlament_current_ciu +] to form a [+ cat_coalition_disp +]. Let's hope cooperation continues during this legislature, and that promises are kept!
+After some arduous negotiations, we have finally reached an agreement with [+ parlament_current_ciu +] to form a [+ cat_coalition_disp +]. [? if parlament_coalition_pdcat_support_resolved: PDeCAT will vote for the investiture while remaining outside the government.?] Let's hope cooperation continues during this legislature, and that promises are kept!
 
 - @parlament_coalition_resolve: A new government is formed
 
@@ -441,6 +448,8 @@ After some arduous negotiations, we have finally reached an agreement with [+ pa
 @new_elections
 title: new elections
 on-arrival: {!
+    Q.parlament_repeat_election = true;
+    Q.pdcat_external_support = false;
     Q.ciu_erc_coalition_phase = 0;
     Q[Q.parlament_current_ciu + "_relations"] -= 5;
     Q.independence_trust -= 10;

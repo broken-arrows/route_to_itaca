@@ -1,0 +1,117 @@
+title: Broad left coalition negotiations
+
+This scene must be entered through one of its coalition choices.
+
+@republican
+title: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_icv +]" data-summary="Government supported by CUP"><span style="color: var(--erc); font-style: italic;">Republican Government</span></span>
+view-if: erc_parlament_s > 0 and parlament_current_icv_s > 0 and cup_parlament_s > 0
+choose-if: parlament_republican_available
+unavailable-subtitle: The parties' roadmaps, leadership, or combined seats cannot sustain this government.
+on-arrival: {!
+    Q.cup_broad_kind = "republican";
+!}
+go-to: setup
+
+@popular_unity
+title: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_icv +] cup" data-summary="Majority government"><span style="color: var(--cup); font-style: italic;">Popular Unity Coalition</span></span>
+view-if: erc_parlament_s > 0 and parlament_current_icv_s > 0 and cup_parlament_s > 0
+choose-if: parlament_popular_unity_available
+unavailable-subtitle: The parties' roadmaps, leadership, relations, or combined seats block a cabinet agreement.
+on-arrival: {!
+    Q.cup_broad_kind = "popular_unity";
+!}
+go-to: setup
+
+@new_popular_front
+title: <span class="generalitat-coalition" data-parties="erc psc [+ parlament_current_icv +]" data-summary="Government supported by CUP"><span style="color: var(--erc); font-style: italic;">New Popular Front</span></span>
+view-if: erc_parlament_s > 0 and psc_parlament_s > 0 and parlament_current_icv_s > 0 and cup_parlament_s > 0
+choose-if: parlament_new_popular_front_available
+unavailable-subtitle: This arrangement requires Montserrat Tura, a nonzero ERC roadmap, and sufficient CUP support.
+on-arrival: {!
+    Q.cup_broad_kind = "new_popular_front";
+!}
+go-to: setup
+
+@minority_left_tripartite
+title: <span class="generalitat-coalition" data-parties="erc psc [+ parlament_current_icv +]" data-summary="Minority government tolerated by CUP"><span style="color: var(--erc); font-style: italic;">Minority Left Tripartite</span></span>
+view-if: erc_parlament_s > 0 and psc_parlament_s > 0 and parlament_current_icv_s > 0 and cup_parlament_s > 0
+choose-if: parlament_minority_left_tripartite_available
+unavailable-subtitle: This minority cabinet requires Tura or Ros, a nonzero ERC roadmap, and enough seats after CUP abstention.
+on-arrival: {!
+    Q.cup_broad_kind = "minority_left_tripartite";
+!}
+go-to: setup
+
+@setup
+on-arrival: {!
+    Q.cup_broad_coalition_phase = 1;
+    Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_cabinet_seats = Q.erc_parlament_s + Q.parlament_current_icv_s;
+    if (Q.cup_broad_kind == "new_popular_front" || Q.cup_broad_kind == "minority_left_tripartite") {
+        Q.parlament_coalition_cabinet_seats += Q.psc_parlament_s;
+    }
+    if (Q.cup_broad_kind == "popular_unity") {
+        Q.parlament_coalition_cabinet_seats += Q.cup_parlament_s;
+    }
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_cabinet_seats + ((Q.cup_broad_kind == "republican" || Q.cup_broad_kind == "new_popular_front") ? Q.cup_parlament_s : 0);
+    Q.parlament_coalition_leader = "erc";
+    if (Q.cup_broad_kind == "popular_unity" && Q.parlament_current_icv_s > Q.erc_parlament_s && Q.parlament_current_icv_s > Q.cup_parlament_s) {
+        Q.parlament_coalition_leader = Q.parlament_current_icv;
+    }
+    if (Q.cup_broad_kind == "popular_unity" && Q.cup_parlament_s > Q.erc_parlament_s && Q.cup_parlament_s > Q.parlament_current_icv_s) {
+        Q.parlament_coalition_leader = "cup";
+    }
+    // The cabinet leader normally nominates the largest junior cabinet partner.
+    Q.speaker_party = Q.parlament_current_icv;
+    if (Q.cup_broad_kind == "new_popular_front" || Q.cup_broad_kind == "minority_left_tripartite") {
+        Q.speaker_party = Q.psc_parlament_s >= Q.parlament_current_icv_s ? "psc" : Q.parlament_current_icv;
+    }
+    if (Q.cup_broad_kind == "popular_unity") {
+        if (Q.parlament_coalition_leader == "erc") {
+            Q.speaker_party = Q.parlament_current_icv_s >= Q.cup_parlament_s ? Q.parlament_current_icv : "cup";
+        }
+        if (Q.parlament_coalition_leader == Q.parlament_current_icv) {
+            Q.speaker_party = Q.erc_parlament_s >= Q.cup_parlament_s ? "erc" : "cup";
+        }
+        if (Q.parlament_coalition_leader == "cup") {
+            Q.speaker_party = Q.erc_parlament_s >= Q.parlament_current_icv_s ? "erc" : Q.parlament_current_icv;
+        }
+    }
+    if (Q.speaker_party == "erc") {
+        Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
+        Q.speaker_gender = Q.year < 2016 ? "f" : "m";
+    } else if (Q.speaker_party == "psc") {
+        Q.speaker = "Xabier Sabaté";
+        Q.speaker_gender = "m";
+    } else if (Q.speaker_party == "cup") {
+        Q.speaker = Q.year < 2017 ? "Julià de Jòdar" : "Vidal Aragonés";
+        Q.speaker_gender = "m";
+    } else {
+        Q.speaker = Q.parlament_current_icv_leader == "Lluís Rabell" ? "Dolors Camats" : "Lluís Rabell";
+        Q.speaker_gender = Q.parlament_current_icv_leader == "Lluís Rabell" ? "f" : "m";
+    }
+!}
+
+Before cabinet negotiations begin, the prospective partners must settle the Speakership. [? if player_party = "cup" and cup_broad_kind != "popular_unity": The prospective cabinet has nominated [+ speaker +] ([+ speaker_party +]). Since CUP remains outside the cabinet, we may accept that nominee or demand the office as part of our [? if cup_broad_kind = "minority_left_tripartite": abstention?][? if cup_broad_kind != "minority_left_tripartite": support?] agreement.?][? if player_party = "cup" and cup_broad_kind = "popular_unity" and parlament_coalition_leader != "cup": The leading party has nominated [+ speaker +] ([+ speaker_party +]). We may accept its proposal or demand the office for CUP.?][? if player_party = "cup" and cup_broad_kind = "popular_unity" and parlament_coalition_leader = "cup": As the leading party, we are expected to nominate the largest junior partner, [+ speaker_party +]. Retaining the office for CUP would reduce our leverage in the cabinet negotiations.?][? if player_party = "erc" and parlament_coalition_leader = "erc": As the leading party, we are expected to nominate the largest junior partner, [+ speaker_party +]. Retaining the office for ERC would reduce our leverage in the cabinet negotiations.?][? if player_party = "erc" and parlament_coalition_leader != "erc": The leading party has nominated [+ speaker +] ([+ speaker_party +]). We may accept its proposal or demand the office for ERC.?]
+
+- @accept_nominee
+- @player_speaker
+
+@accept_nominee
+title: [? if player_party = "cup" and cup_broad_kind != "popular_unity": Accept the cabinet's nominee?][? if player_party = "cup" and cup_broad_kind = "popular_unity" and parlament_coalition_leader != "cup": Accept the leader's proposal?][? if player_party = "cup" and cup_broad_kind = "popular_unity" and parlament_coalition_leader = "cup": Nominate [+ speaker_party +] for Speaker?][? if player_party = "erc" and parlament_coalition_leader = "erc": Nominate [+ speaker_party +] for Speaker?][? if player_party = "erc" and parlament_coalition_leader != "erc": Accept the leader's proposal?]
+go-to: parlament_coalition_cup_broad_phase
+
+@player_speaker
+title: [? if player_party = "cup" and cup_broad_kind != "popular_unity": Demand the Speaker for CUP?][? if player_party = "cup" and cup_broad_kind = "popular_unity" and parlament_coalition_leader = "cup": Retain the Speaker for CUP?][? if player_party = "cup" and cup_broad_kind = "popular_unity" and parlament_coalition_leader != "cup": Demand the Speaker for CUP?][? if player_party = "erc" and parlament_coalition_leader = "erc": Retain the Speaker for ERC?][? if player_party = "erc" and parlament_coalition_leader != "erc": Demand the Speaker for ERC?]
+view-if: speaker_party != player_party
+on-arrival: {!
+    Q.speaker_party = Q.player_party;
+    if (Q.player_party == "cup") {
+        Q.speaker = Q.year < 2017 ? "Julià de Jòdar" : "Vidal Aragonés";
+        Q.speaker_gender = "m";
+    } else {
+        Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
+        Q.speaker_gender = Q.year < 2016 ? "f" : "m";
+    }
+!}
+go-to: parlament_coalition_cup_broad_phase

@@ -88,6 +88,8 @@ unavailable-subtitle: [? if parlament_coalition_erc_ciu_s < parlament_s_majority
 subtitle: Push ERC and [+ parlament_current_ciu +] to reach a sovereignty coalition with ERC in the lead.
 on-arrival: {!
     Q.cat_coalition = ["erc", Q.parlament_current_ciu];
+    Q.cat_coalition_support = [];
+    Q.cat_coalition_abstain = [];
     Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_erc_ciu_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>government</span>");
     Q.erc_in_gob = true;
     Q.erc_supporting = true;

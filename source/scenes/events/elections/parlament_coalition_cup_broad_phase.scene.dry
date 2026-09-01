@@ -1,0 +1,288 @@
+title: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_icv +][? if cup_broad_kind = 'popular_unity':  cup?][? if cup_broad_kind = 'new_popular_front' or cup_broad_kind = 'minority_left_tripartite':  psc?]" data-summary="Cabinet seats - [+ parlament_coalition_cabinet_seats +]/[+ parlament_s_majority +]">[? if cup_broad_kind = "republican": Republican Government?][? if cup_broad_kind = "popular_unity": Popular Unity Coalition?][? if cup_broad_kind = "new_popular_front": New Popular Front?][? if cup_broad_kind = "minority_left_tripartite": Minority Left Tripartite?]</span> negotiations
+subtitle: [? if cup_broad_coalition_phase = 1: The parties have opened the first round of negotiations.?][? if cup_broad_coalition_phase = 2: The parties have returned for a second round with a revised proposal.?][? if cup_broad_coalition_phase = 3: This is the third and final round of negotiations.?]
+tags: event
+role: event
+new-page: true
+view-if: cup_broad_coalition_phase > 0
+on-arrival: {!
+    Q.parlament_coalition_changes = false;
+    Q.parlament_coalition_concessions = false;
+    Q.parlament_coalition_concessions_social = 0;
+    Q.parlament_coalition_concessions_indy = 0;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_vp = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_interior = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_economy = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_foreign = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_health = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_education = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_territory = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_bnl = Q.parlament_coalition_leader;
+
+    var partners = ["erc", Q.parlament_current_icv];
+    if (Q.cup_broad_kind == "popular_unity") {
+        partners.push("cup");
+    }
+    if (Q.cup_broad_kind == "new_popular_front" || Q.cup_broad_kind == "minority_left_tripartite") {
+        partners.push("psc");
+    }
+    var costs = { interior: 10, economy: 10, foreign: 6, health: 7, education: 7, territory: 5, bnl: 5 };
+    var prefs = {
+        erc: ["foreign", "bnl", "health", "interior", "economy", "education", "territory"],
+        cup: ["interior", "bnl", "territory", "education", "health", "economy", "foreign"],
+        psc: ["interior", "economy", "health", "education", "bnl", "territory", "foreign"]
+    };
+    prefs[Q.parlament_current_icv] = ["education", "territory", "bnl", "health", "economy", "interior", "foreign"];
+    for (var i = 0; i < partners.length; i++) {
+        var party = partners[i];
+        if (party == Q.parlament_coalition_leader) {
+            continue;
+        }
+        var leverage = Q[party + "_parlament_s"] * 55 / Math.max(1, Q.parlament_coalition_cabinet_seats);
+        var order = prefs[party];
+        for (var j = 0; j < order.length; j++) {
+            var office = order[j];
+            if (leverage >= costs[office]) {
+                Q["parlament_coalition_proposal_" + office] = party;
+                leverage -= costs[office];
+            }
+        }
+    }
+    var largestFollower = partners[0] == Q.parlament_coalition_leader ? partners[1] : partners[0];
+    for (var k = 0; k < partners.length; k++) {
+        if (partners[k] != Q.parlament_coalition_leader && Q[partners[k] + "_parlament_s"] > Q[largestFollower + "_parlament_s"]) {
+            largestFollower = partners[k];
+        }
+    }
+    Q.parlament_coalition_proposal_vp = largestFollower;
+    Q.parlament_coalition_leverage = Math.max(10, Q[Q.player_party + "_parlament_s"] * 55 / Math.max(1, Q.parlament_coalition_cabinet_seats)) + (Q.cup_broad_coalition_phase - 1) * 4;
+    if (Q.speaker_party == Q.player_party) {
+        Q.parlament_coalition_leverage -= 10;
+    }
+!}
+go-to: phase_text
+
+@phase_text
+new-page: true
+go-to: parlament_coalition_setnames
+set-jump: choices
+
+The negotiating teams have presented a cabinet proposal.
+
+@choices
+
+[? if parlament_coalition_concessions_social: **Social commitment:** [+ parlament_coalition_concessions_social_text +]?]
+
+- @ministries
+- @social
+- @indy
+- @push
+- @send
+- @accept
+
+@ministries
+title: Propose an alternative Government Composition
+view-if: player_party = "erc" or (player_party = "cup" and cup_broad_kind = "popular_unity")
+
+- @interior
+- @bnl
+- @territory
+- @education
+- @health
+- @economy
+- @foreign
+- @phase_text: Finish proposing changes
+
+@interior
+title: [? if parlament_coalition_proposal_interior != player_party: Demand the Interior Ministry?][? if parlament_coalition_proposal_interior = player_party: Give up the Interior Ministry?]
+choose-if: parlament_coalition_proposal_interior = player_party or parlament_coalition_leverage >= 10
+unavailable-subtitle: We lack enough leverage to demand the Interior Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_interior != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_interior = taking ? Q.player_party : Q.parlament_coalition_leader;
+    Q.parlament_coalition_leverage += taking ? -10 : 10;
+!}
+go-to: ministries
+
+@bnl
+title: [? if parlament_coalition_proposal_bnl != player_party: Demand the Business & Labour Ministry?][? if parlament_coalition_proposal_bnl = player_party: Give up the Business & Labour Ministry?]
+choose-if: parlament_coalition_proposal_bnl = player_party or parlament_coalition_leverage >= 5
+unavailable-subtitle: We lack enough leverage to demand the Business & Labour Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_bnl != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_bnl = taking ? Q.player_party : Q.parlament_coalition_leader;
+    Q.parlament_coalition_leverage += taking ? -5 : 5;
+!}
+go-to: ministries
+
+@territory
+title: [? if parlament_coalition_proposal_territory != player_party: Demand the Territory Ministry?][? if parlament_coalition_proposal_territory = player_party: Give up the Territory Ministry?]
+choose-if: parlament_coalition_proposal_territory = player_party or parlament_coalition_leverage >= 5
+unavailable-subtitle: We lack enough leverage to demand the Territory Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_territory != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_territory = taking ? Q.player_party : Q.parlament_coalition_leader;
+    Q.parlament_coalition_leverage += taking ? -5 : 5;
+!}
+go-to: ministries
+
+@education
+title: [? if parlament_coalition_proposal_education != player_party: Demand the Education Ministry?][? if parlament_coalition_proposal_education = player_party: Give up the Education Ministry?]
+choose-if: parlament_coalition_proposal_education = player_party or parlament_coalition_leverage >= 7
+unavailable-subtitle: We lack enough leverage to demand the Education Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_education != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_education = taking ? Q.player_party : Q.parlament_coalition_leader;
+    Q.parlament_coalition_leverage += taking ? -7 : 7;
+!}
+go-to: ministries
+
+@health
+title: [? if parlament_coalition_proposal_health != player_party: Demand the Health Ministry?][? if parlament_coalition_proposal_health = player_party: Give up the Health Ministry?]
+choose-if: parlament_coalition_proposal_health = player_party or parlament_coalition_leverage >= 7
+unavailable-subtitle: We lack enough leverage to demand the Health Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_health != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_health = taking ? Q.player_party : Q.parlament_coalition_leader;
+    Q.parlament_coalition_leverage += taking ? -7 : 7;
+!}
+go-to: ministries
+
+@economy
+title: [? if parlament_coalition_proposal_economy != player_party: Demand the Economy Ministry?][? if parlament_coalition_proposal_economy = player_party: Give up the Economy Ministry?]
+choose-if: parlament_coalition_proposal_economy = player_party or parlament_coalition_leverage >= 10
+unavailable-subtitle: We lack enough leverage to demand the Economy Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_economy != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_economy = taking ? Q.player_party : Q.parlament_coalition_leader;
+    Q.parlament_coalition_leverage += taking ? -10 : 10;
+!}
+go-to: ministries
+
+@foreign
+title: [? if parlament_coalition_proposal_foreign != player_party: Demand the Foreign Affairs Ministry?][? if parlament_coalition_proposal_foreign = player_party: Give up the Foreign Affairs Ministry?]
+choose-if: parlament_coalition_proposal_foreign = player_party or parlament_coalition_leverage >= 6
+unavailable-subtitle: We lack enough leverage to demand the Foreign Affairs Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_foreign != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_foreign = taking ? Q.player_party : Q.parlament_coalition_leader;
+    Q.parlament_coalition_leverage += taking ? -6 : 6;
+!}
+go-to: ministries
+
+@social
+title: Add a social-policy commitment
+choose-if: parlament_coalition_concessions_social = 0 and parlament_coalition_leverage >= 5
+unavailable-subtitle: [? if parlament_coalition_concessions_social: The commitment is already included.?][? if parlament_coalition_leverage < 5: We lack enough leverage.?]
+on-arrival: {!
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_concessions = true;
+    Q.parlament_coalition_concessions_social = 1;
+    Q.parlament_coalition_concessions_social_text = "The cabinet commits to reverse austerity and expand social spending.";
+    Q.parlament_coalition_leverage -= 5;
+!}
+go-to: phase_text
+
+@indy
+title: Add a stronger independence commitment
+choose-if: erc_roadmap < 0
+unavailable-subtitle: [? if cup_broad_kind = "new_popular_front" or cup_broad_kind = "minority_left_tripartite": The PSC will not accept a stronger independence commitment in this cabinet.?][? if cup_broad_kind = "republican" or cup_broad_kind = "popular_unity": The current [+ parlament_current_icv +] leadership will not accept an independence demand beyond the roadmap already agreed.?]
+go-to: phase_text
+
+@push
+title: Push for more leverage
+choose-if: parlament_coalition_push < cup_broad_coalition_phase and cup_broad_coalition_phase < 3
+unavailable-subtitle: We cannot push any further this round.
+on-arrival: {!
+    Q.parlament_coalition_push += 1;
+    Q.parlament_coalition_leverage += 4;
+    Q.cup_relations -= Q.cup_broad_coalition_phase == 1 ? 4 : 2;
+    Q[Q.parlament_current_icv + "_relations"] -= 2;
+!}
+go-to: phase_text
+
+@send
+title: Send the counter-proposal
+view-if: parlament_coalition_changes
+on-arrival: {!
+    Q.parlament_coalition_proposal_accept = Q.parlament_coalition_push < Q.cup_broad_coalition_phase;
+!}
+go-to: accepted if parlament_coalition_proposal_accept; next_phase if not parlament_coalition_proposal_accept
+
+@accept
+title: Accept the current proposal
+choose-if: not parlament_coalition_changes
+unavailable-subtitle: Our changes require the other parties' approval first.
+go-to: accepted
+
+@accepted
+on-arrival: {!
+    Q.cup_broad_coalition_phase = 0;
+    if (Q.cup_broad_kind == "republican") {
+        Q.cat_coalition = ["erc", Q.parlament_current_icv];
+    }
+    if (Q.cup_broad_kind == "popular_unity" && Q.parlament_coalition_leader == "erc") {
+        Q.cat_coalition = ["erc", Q.parlament_current_icv, "cup"];
+    }
+    if (Q.cup_broad_kind == "popular_unity" && Q.parlament_coalition_leader == Q.parlament_current_icv) {
+        Q.cat_coalition = [Q.parlament_current_icv, "erc", "cup"];
+    }
+    if (Q.cup_broad_kind == "popular_unity" && Q.parlament_coalition_leader == "cup") {
+        Q.cat_coalition = ["cup", "erc", Q.parlament_current_icv];
+    }
+    if (Q.cup_broad_kind == "new_popular_front" || Q.cup_broad_kind == "minority_left_tripartite") {
+        Q.cat_coalition = ["erc", "psc", Q.parlament_current_icv];
+    }
+    Q.cat_coalition_support = (Q.cup_broad_kind == "republican" || Q.cup_broad_kind == "new_popular_front") ? ["cup"] : [];
+    Q.cat_coalition_abstain = Q.cup_broad_kind == "minority_left_tripartite" ? ["cup"] : [];
+    var label = Q.cup_broad_kind == "republican" ? "Republican Government" : (Q.cup_broad_kind == "popular_unity" ? "Popular Unity Coalition" : (Q.cup_broad_kind == "new_popular_front" ? "New Popular Front" : "Minority Left Tripartite"));
+    var summary = (Q.cup_broad_kind == "minority_left_tripartite" ? "Minority government" : "Invested government") + " - " + Q.parlament_coalition_support_seats + "/" + Q.parlament_s_majority;
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, summary, "<span style='color: var(--erc); font-style: italic;'>" + label + "</span>");
+    Q.erc_in_gob = true;
+    Q.erc_supporting = true;
+    Q.cup_in_gob = Q.cup_broad_kind == "popular_unity";
+    Q.cup_supporting = Q.cup_broad_kind != "minority_left_tripartite";
+    Q.cat_coalition_dissent = 0;
+    Q.position_disp = Q.player_party == "cup" && !Q.cup_in_gob ? (Q.cup_supporting ? "<span style='font-style: italic'>Government Support</span>" : "<span style='font-style: italic'>Opposition</span>") : "Generalitat";
+!}
+
+The parties have completed their agreement and will install a [+ cat_coalition_disp +]. [? if cup_broad_kind = "republican" or cup_broad_kind = "new_popular_front": CUP will support it from outside government.?][? if cup_broad_kind = "minority_left_tripartite": CUP will abstain, but remains in opposition.?]
+
+- @parlament_coalition_resolve: A new government is formed
+
+@next_phase
+go-to: new_elections if cup_broad_coalition_phase >= 3; wait if cup_broad_coalition_phase < 3
+
+@wait
+on-arrival: {!
+    Q.cup_broad_coalition_phase += 1;
+    Q.month_actions += 1;
+    Q.social_dissent += 2;
+!}
+
+The parties will require another round of talks.
+
+- @post_event: And so, time passes...
+
+@new_elections
+on-arrival: {!
+    Q.parlament_repeat_election = true;
+    Q.cup_broad_coalition_phase = 0;
+    Q.cup_relations -= 5;
+    Q[Q.parlament_current_icv + "_relations"] -= 3;
+    Q.snap_blame = Q.player_party;
+    Q.snap_counterparty = "cup";
+    Q.snap_severity = 0.12;
+!}
+call: snap_election
+
+After all these negotiation rounds, the negotiations for a broad-left government  have failed. New elections will have to be the ones to decide the matter.
+
+- @post_event

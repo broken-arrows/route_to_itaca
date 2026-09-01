@@ -119,6 +119,8 @@ on-arrival: {!
     Q.parlament_coalition_proposal_interior = Q.parlament_current_ciu;
 
     Q.cat_coalition = [Q.parlament_current_ciu];
+    Q.cat_coalition_support = ["erc"];
+    Q.cat_coalition_abstain = [];
     Q.cat_coalition_disp = Q.parlament_current_ciu + " " + G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government - " + Q[Q.parlament_current_ciu + "_parlament_s"] + "/" + Q.parlament_s_majority, "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>minority government</span>");
     Q.erc_supporting = true;
 
@@ -246,6 +248,9 @@ on-arrival: {!
     }
 
     Q.cat_coalition = [Q.parlament_current_ciu];
+    Q.cat_coalition_support = ["ppc"];
+    if (Q.unio_parlament_s > 0) Q.cat_coalition_support.push("unio");
+    Q.cat_coalition_abstain = [];
     Q.cat_coalition_disp = Q.parlament_current_ciu + " " + G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government - " + Q[Q.parlament_current_ciu + "_parlament_s"] + "/" + Q.parlament_s_majority, "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>minority government</span>");
 
     Q.erc_in_gob = false;

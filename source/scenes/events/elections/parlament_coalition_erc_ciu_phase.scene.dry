@@ -1,10 +1,11 @@
-title: [? if erc_ciu_coalition_phase = 3: Yet another ?]ERC-[+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="Majority government - [+ parlament_coalition_erc_ciu_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">Sovereignty</span> proposal</span>[? if erc_ciu_coalition_phase = 2:  (revised)?][? if erc_ciu_coalition_phase = 3:  (final round)?]
-subtitle: [? if erc_ciu_coalition_phase = 2: ERC-[+ parlament_current_ciu +] negotiations advance.?][? if erc_ciu_coalition_phase = 3: This is set to be the final round of ERC-[+ parlament_current_ciu +] negotiations.?]
+title: [? if pdcat_external_support: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="Minority government - [+ erc_parlament_s + parlament_current_ciu_s +]/[+ parlament_s_majority +]">Soft Sovereignty Government</span> proposal with PDeCAT support?][? if not pdcat_external_support: [? if erc_ciu_coalition_phase = 3: Yet another ?]ERC-[+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="Majority government - [+ parlament_coalition_erc_ciu_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">Sovereignty</span> proposal</span>[? if erc_ciu_coalition_phase = 2:  (revised)?][? if erc_ciu_coalition_phase = 3:  (final round)?]?]
+subtitle: [? if pdcat_external_support and erc_ciu_coalition_phase = 1: PDeCAT would support the investiture while remaining outside the cabinet. This is the opening round of negotiations.?][? if pdcat_external_support and erc_ciu_coalition_phase = 2: PDeCAT remains willing to support the investiture. The governing parties have returned for a second round of negotiations.?][? if pdcat_external_support and erc_ciu_coalition_phase = 3: PDeCAT remains willing to support the investiture. This is the final round of negotiations.?][? if not pdcat_external_support and erc_ciu_coalition_phase = 2: ERC-[+ parlament_current_ciu +] negotiations advance.?][? if not pdcat_external_support and erc_ciu_coalition_phase = 3: This is set to be the final round of ERC-[+ parlament_current_ciu +] negotiations.?]
 tags: event
 new-page: true
 view-if: erc_ciu_coalition_phase != 0 and player_party == "erc"
 on-arrival: {!
     Q.parlament_coalition_changes = false;
+    Q.parlament_coalition_pdcat_support_resolved = false;
 
     Q.parlament_coalition_leverage = (Q.erc_parlament_s / Q.parlament_coalition_erc_ciu_s)*55;
     if (Q.speaker_party == "erc") {
@@ -271,7 +272,9 @@ on-arrival: {!
     Q.parlament_coalition_proposal_bnl = "erc";
 
     var ciu_leverage = (Q[Q.parlament_current_ciu + "_parlament_s"] / Q.parlament_coalition_erc_ciu_s)*55 + 12 - 3*Q.erc_ciu_coalition_phase;
-    if (Q.speaker_party == Q.parlament_current_ciu) ciu_leverage -= 10;
+    if (Q.speaker_party == Q.parlament_current_ciu) {
+        ciu_leverage -= 10;
+    }
 
     if (ciu_leverage > 10) {
         Q.parlament_coalition_proposal_economy = Q.parlament_current_ciu;
@@ -312,7 +315,11 @@ on-arrival: {!
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cat_coalition = ["erc", Q.parlament_current_ciu];
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_erc_ciu_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>government</span>");
+    Q.cat_coalition_support = Q.pdcat_external_support ? ["pdcat"] : [];
+    Q.cat_coalition_abstain = [];
+    var coalitionSeats = Q.pdcat_external_support ? Q.parlament_coalition_pdcat_support_s : Q.parlament_coalition_erc_ciu_s;
+    var coalitionName = Q.pdcat_external_support ? "<span style='color: var(--erc); font-style: italic;'>Soft-Sovereignty Government</span>" : "<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>government</span>";
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (Q.pdcat_external_support ? "Government supported by PDeCAT, " : "Majority government, ") + coalitionSeats + "/" + Q.parlament_s_majority, coalitionName);
     Q.cat_coalition_dissent = 0;
 
     Q.position_disp = "Generalitat";
@@ -321,15 +328,19 @@ on-arrival: {!
     Q.cup_supporting = false;
 
     Q.independence_trust += 10 * Q.erc_roadmap - (Q.year-2012);
+    Q.parlament_coalition_pdcat_support_resolved = Q.pdcat_external_support;
+    Q.pdcat_external_support = false;
 !}
 
-After some arduous negotiations, ERC and [+ parlament_current_ciu +] have reached an agreement to form a [+ cat_coalition_disp +]. As the leading partner, ERC will hold the Presidency. Some promises on independence commitments have been made, we'll have to monitor them closely as the legislature progresses.
+After some arduous negotiations, ERC and [+ parlament_current_ciu +] have reached an agreement to form a [+ cat_coalition_disp +]. As the leading partner, ERC will hold the Presidency. [? if parlament_coalition_pdcat_support_resolved: PDeCAT will vote for the investiture while remaining outside the government.?] Some promises on independence commitments have been made. We'll have to monitor them closely as the legislature progresses.
 
 - @parlament_coalition_resolve: A new government is formed
 
 @new_elections
 title: new elections
 on-arrival: {!
+    Q.parlament_repeat_election = true;
+    Q.pdcat_external_support = false;
     Q.erc_ciu_coalition_phase = 0;
     Q[Q.parlament_current_ciu + "_relations"] -= 5;
     Q.independence_trust -= 10;

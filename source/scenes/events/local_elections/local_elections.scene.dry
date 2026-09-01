@@ -1,0 +1,236 @@
+title: Local Elections - [+ next_local_election_month : month +] [+ next_local_election_year +]
+tags: election
+view-if: year = next_local_election_year and month = next_local_election_month and (week = next_local_election_week or not rubicon)
+new-page: true
+set-bg: img/salo_de_cent.jpg
+go-to: election_algorithm.local_elections
+set-jump: local_elections.post_election
+role: event
+
+@post_election
+new-page: true
+on-arrival: {!
+    Q.next_local_election_year = Q.year + 4;
+    Q.next_local_election_time = Q.time + 48;
+!}
+on-display: {!
+    const data = [];
+    if (Q.cup_local_barcelona_s) {
+        data.push({
+            "id": "cup",
+            "legend": "CUP",
+            "name": "CUP",
+            "seats": Q.cup_local_barcelona_s,
+        });
+    }
+    if (Q.primaries_local_barcelona_s) {
+        data.push({
+            "id": "primaries",
+            "legend": "Primàries",
+            "name": "Primàries",
+            "seats": Q.primaries_local_barcelona_s,
+        });
+    }
+    if (Q.bcomu_local_barcelona_s) {
+        data.push({
+            "id": "bcomu",
+            "legend": "BComú",
+            "name": "BComú",
+            "seats": Q.bcomu_local_barcelona_s,
+        });
+    }
+    if (Q.icv_local_barcelona_s) {
+        data.push({
+            "id": "icv",
+            "legend": "ICV-EUiA",
+            "name": "ICV-EUiA",
+            "seats": Q.icv_local_barcelona_s,
+        });
+    }
+    if (Q.erc_local_barcelona_s) {
+        data.push({
+            "id": "erc",
+            "legend": "ERC",
+            "name": "ERC",
+            "seats": Q.erc_local_barcelona_s,
+        });
+    }
+    if (Q.psc_local_barcelona_s) {
+        data.push({
+            "id": "psc",
+            "legend": "PSC",
+            "name": "PSC",
+            "seats": Q.psc_local_barcelona_s,
+        });
+    }
+    if (Q.cs_local_barcelona_s) {
+        data.push({
+            "id": "cs",
+            "legend": "Cs",
+            "name": "Cs",
+            "seats": Q.cs_local_barcelona_s,
+        });
+    }
+    if (Q.jxsi_local_barcelona_s) {
+        data.push({
+            "id": "jxsi",
+            "legend": "JxSí",
+            "name": "JxSí",
+            "seats": Q.jxsi_local_barcelona_s,
+        });
+    }
+    if (Q.jxcat_local_barcelona_s) {
+        data.push({
+            "id": "jxcat",
+            "legend": "JxCat",
+            "name": "JxCat",
+            "seats": Q.jxcat_local_barcelona_s,
+        });
+    }
+    if (Q.junts_local_barcelona_s) {
+        data.push({
+            "id": "junts",
+            "legend": "Junts",
+            "name": "Junts",
+            "seats": Q.junts_local_barcelona_s,
+        });
+    }
+    if (Q.cdc_local_barcelona_s) {
+        data.push({
+            "id": "cdc",
+            "legend": "CDC",
+            "name": "CDC",
+            "seats": Q.cdc_local_barcelona_s,
+        });
+    }
+    if (Q.ciu_local_barcelona_s) {
+        data.push({
+            "id": "ciu",
+            "legend": "CiU",
+            "name": "CiU",
+            "seats": Q.ciu_local_barcelona_s,
+        });
+    }
+    if (Q.pdcat_local_barcelona_s) {
+        data.push({
+            "id": "pdcat",
+            "legend": "PDeCAT",
+            "name": "PDeCAT",
+            "seats": Q.pdcat_local_barcelona_s,
+        });
+    }
+    if (Q.unio_local_barcelona_s) {
+        data.push({
+            "id": "unio",
+            "legend": "UDC",
+            "name": "UDC",
+            "seats": Q.unio_local_barcelona_s,
+        });
+    }
+    if (Q.dl_local_barcelona_s) {
+        data.push({
+            "id": "dl",
+            "legend": "DL",
+            "name": "DL",
+            "seats": Q.dl_local_barcelona_s,
+        });
+    }
+    if (Q.pp_local_barcelona_s) {
+        data.push({
+            "id": "pp",
+            "legend": "PP",
+            "name": "PP",
+            "seats": Q.pp_local_barcelona_s,
+        });
+    }
+    if (Q.fnc_local_barcelona_s) {
+        data.push({
+            "id": "fnc",
+            "legend": "FNC",
+            "name": "FNC",
+            "seats": Q.fnc_local_barcelona_s,
+        });
+    }
+    if (Q.pxc_local_barcelona_s) {
+        data.push({
+            "id": "pxc",
+            "legend": "PxC",
+            "name": "PxC",
+            "seats": Q.pxc_local_barcelona_s,
+        });
+    }
+    if (Q.vox_local_barcelona_s) {
+        data.push({
+            "id": "vox",
+            "legend": "Vox",
+            "name": "Vox",
+            "seats": Q.vox_local_barcelona_s,
+        });
+    }
+
+    Q.election_simulation_local_hemicycle = {
+        seats: data.map(function (party) {
+            return { party: party.id, seats: party.seats, colour: party.id };
+        }),
+        majority: Q.barcelona_s_majority,
+    };
+
+    // TODO: Actual BCN govt formation, etc
+!}
+
+= Local Election Results
+
+{!<div id="barcelonalocal" data-widget="hemicycle" data-props='{"configFrom":"election_simulation_local_hemicycle","animate":true}'></div>!}
+{!<div style='margin-top: -2em; width: 100%; font-style: italic; text-align: center'>!} Majority: [+ barcelona_s_majority +]{!</div>!}
+
+
+{!<table style='margin-left: 0.5em; display:table; width: 95%;'>!}
+{!<tr><td style='min-width: 6em; font-weight: bold;'>Party</td><td style='width: 7em; text-align: center; font-weight: bold;'>Popular Vote</td><td style='width: 7em; font-weight: bold;'>Change</td><td style='width: 3em; text-align: center; font-weight: bold;'>Seats</td><td style='width: 3em; font-weight: bold;'>Change</td></tr>!}
+[? if bcomu_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: var(--bcomu);'> </div> !} bcomu {!</td><td style='text-align: right;'>!}[+ bcomu_local_barcelona_pv +]% {!</td><td>!} [+ bcomu_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ bcomu_local_barcelona_s +] {!</td><td>!} [+ bcomu_local_barcelona_s_delta +] {!</td>!}?]
+[? if jxsi_bacelona_local_showviz: {!<tr><td><div class="box" style='background-color: #3ab6a5;'> </div> !} jxsibcn {!</td><td style='text-align: right;'>!}[+ jxsi_local_barcelona_pv +]% {!</td><td>!} [+ jxsi_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ jxsi_local_barcelona_s +] {!</td><td>!} [+ jxsi_local_barcelona_s_delta +] {!</td>!}?]
+[? if ciu_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #002782'> </div> !} ciubcn {!</td><td style='text-align: right;'>!}[+ ciu_local_barcelona_pv +]% {!</td><td>!} [+ ciu_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ ciu_local_barcelona_s +] {!</td><td>!} [+ ciu_local_barcelona_s_delta +] {!</td>!}?]
+[? if jxcat_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #ed5975; font-weight:bold;'> </div> !} jxcatbcn {!</td><td style='text-align: right;'>!}[+ jxcat_local_barcelona_pv +]% {!</td><td>!} [+ jxcat_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ jxcat_local_barcelona_s +] {!</td><td>!} [+ jxcat_local_barcelona_s_delta +] {!</td>!}?]
+[? if junts_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #20c0b2; font-weight:bold;'> </div> !} juntsbcn {!</td><td style='text-align: right;'>!}[+ junts_local_barcelona_pv +]% {!</td><td>!} [+ junts_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ junts_local_barcelona_s +] {!</td><td>!} [+ junts_local_barcelona_s_delta +] {!</td>!}?]
+[? if cdc_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #002782'> </div> !} cdcbcn {!</td><td style='text-align: right;'>!}[+ cdc_local_barcelona_pv +]% {!</td><td>!} [+ cdc_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ cdc_local_barcelona_s +] {!</td><td>!} [+ cdc_local_barcelona_s_delta +] {!</td>!}?]
+[? if pdcat_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #0081c2'> </div> !} pdcatbcn {!</td><td style='text-align: right;'>!}[+ pdcat_local_barcelona_pv +]% {!</td><td>!} [+ pdcat_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ pdcat_local_barcelona_s +] {!</td><td>!} [+ pdcat_local_barcelona_s_delta +] {!</td>!}?]
+[? if erc_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #FFB232'> </div> !} ercbcn {!</td><td style='text-align: right;'>!}[+ erc_local_barcelona_pv +]% {!</td><td>!} [+ erc_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ erc_local_barcelona_s +] {!</td><td>!} [+ erc_local_barcelona_s_delta +] {!</td>!}?]
+[? if psc_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #e73b39'> </div> !} pscbcn {!</td><td style='text-align: right;'>!}[+ psc_local_barcelona_pv +]% {!</td><td>!} [+ psc_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ psc_local_barcelona_s +] {!</td><td>!} [+ psc_local_barcelona_s_delta +] {!</td>!}?]
+[? if cs_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #EB6109'> </div> !} csbcn {!</td><td style='text-align: right;'>!}[+ cs_local_barcelona_pv +]% {!</td><td>!} [+ cs_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ cs_local_barcelona_s +] {!</td><td>!} [+ cs_local_barcelona_s_delta +] {!</td>!}?]
+[? if pp_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #007fff'> </div> !} ppbcn {!</td><td style='text-align: right;'>!}[+ pp_local_barcelona_pv +]% {!</td><td>!} [+ pp_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ pp_local_barcelona_s +] {!</td><td>!} [+ pp_local_barcelona_s_delta +] {!</td>!}?]
+[? if vox_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #63be21'> </div> !} voxbcn {!</td><td style='text-align: right;'>!}[+ vox_local_barcelona_pv +]% {!</td><td>!} [+ vox_local_barcelona_pv_delta +] {!</td><td>!} [+ vox_local_barcelona_s +] {!</td><td style='text-align: right;'>!} [+ vox_local_barcelona_s_delta +] {!</td>!}?]
+[? if cup_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #ffed00'> </div> !} cupbcn {!</td><td style='text-align: right;'>!}[+ cup_local_barcelona_pv +]% {!</td><td>!} [+ cup_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ cup_local_barcelona_s +] {!</td><td>!} [+ cup_local_barcelona_s_delta +] {!</td>!}?]
+[? if unio_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #0052a3'> </div> !} udcbcn {!</td><td style='text-align: right;'>!}[+ unio_local_barcelona_pv +]% {!</td><td>!} [+ unio_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ unio_local_barcelona_s +] {!</td><td>!} [+ unio_local_barcelona_s_delta +] {!</td>!}?]
+[? if pxc_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #00FFFF'> </div> !} pxcbcn {!</td><td style='text-align: right;'>!}[+ pxc_local_barcelona_pv +]% {!</td><td>!} [+ pxc_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ pxc_local_barcelona_s +] {!</td><td>!} [+ pxc_local_barcelona_s_delta +] {!</td>!}?]
+[? if fnc_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #55A0D9'> </div> !} fncbcn {!</td><td style='text-align: right;'>!}[+ fnc_local_barcelona_pv +]% {!</td><td>!} [+ fnc_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ fnc_local_barcelona_s +] {!</td><td>!} [+ fnc_local_barcelona_s_delta +] {!</td>!}?]
+[? if primaries_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: var(--primaries)'> </div> !} primariesbcn {!</td><td style='text-align: right;'>!}[+ primaries_local_barcelona_pv +]% {!</td><td>!} [+ primaries_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ primaries_local_barcelona_s +] {!</td><td>!} [+ primaries_local_barcelona_s_delta +] {!</td>!}?]
+{!</table>!}
+
+Local elections are WIP! Nothing happens here for now :/
+
+- @local_cat_results
+
+@local_cat_results
+title: Catalonia is not only Barcelona, though
+new-page: true
+
+= Local Election Results
+
+{! <div id="catalonia-local-map"> </div> !}
+
+**Red belt holdings**
+
+{!<table style='border-spacing: 0px; margin-right: 1em; margin-left: 1em; width:95%; table-layout: fixed; margin-top:-0.75em;'>!}
+<tr>[? if psc_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ psc_local_rb_pct +]%; height: 2em; background-color: var(--psc); color: white; text-align: center; font-weight: bold; border-radius: 3px 0 0 3px;'>[+ psc_local_rb_pct+]%</td>?][? if erc_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ erc_local_rb_pct +]%; height: 2em; background-color: var(--erc); color: var(--text-color); text-align: center; font-weight: bold;'>[+ erc_local_rb_pct+]%</td>?][? if cs_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ cs_local_rb_pct +]%; height: 2em; background-color: var(--cs); color: white; text-align: center; font-weight: bold;'>[+ cs_local_rb_pct+]%</td>?][? if ciu_local_rb_pct > 0: <td style='overflow:hidden; white-space: nowrap; width: [+ ciu_local_rb_pct +]%; height: 2em; background-color: var(--ciu); color: white; text-align: center; font-weight: bold; '>[+ ciu_local_rb_pct+]%</td>?][? if cdc_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ cdc_local_rb_pct +]%; height: 2em; background-color: var(--cdc); color: white; text-align: center; font-weight: bold;'>[+ cdc_local_rb_pct+]%</td>?][? if jxsi_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ jxsi_local_rb_pct +]%; height: 2em; background-color: var(--jxsi); color: white; text-align: center; font-weight: bold;'>[+ jxsi_local_rb_pct+]%</td>?][? if dl_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ dl_local_rb_pct +]%; height: 2em; background-color: var(--dl); color: white; text-align: center; font-weight: bold;'>[+ dl_local_rb_pct+]%</td>?][? if pdcat_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ pdcat_local_rb_pct +]%; height: 2em; background-color: var(--pdcat); color: white; text-align: center; font-weight: bold;'>[+ pdcat_local_rb_pct+]%</td>?][? if jxcat_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ jxcat_local_rb_pct +]%; height: 2em; background-color: var(--jxcat); color: white; text-align: center; font-weight: bold;;'>[+ jxcat_local_rb_pct+]%</td>?][? if junts_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ junts_local_rb_pct +]%; height: 2em; background-color: var(--junts); color: white; text-align: center; font-weight: bold;'>[+ junts_local_rb_pct+]%</td>?][? if cup_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ cup_local_rb_pct +]%; height: 2em; background-color: var(--cup); color: var(--text-color); text-align: center; font-weight: bold;'>[+ cup_local_rb_pct+]%</td>?][? if pp_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ pp_local_rb_pct +]%; height: 2em; background-color: var(--pp); color: white; text-align: center; font-weight: bold;'>[+ pp_local_rb_pct+]%</td>?][? if comuns_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ comuns_local_rb_pct +]%; height: 2em; [? if parlament_current_icv = "icv": background-color: var(--icv)?][? if parlament_current_icv = "csqp": background-color: var(--csqp)?][? if parlament_current_icv = "cecp": background-color: var(--cecp)?][? if parlament_current_icv = "ecp": background-color: var(--ecp)?]; color: white; text-align: center; font-weight: bold;'>[+ comuns_local_rb_pct+]%</td>?][? if others_local_rb_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ others_local_rb_pct +]%; height: 2em; background-color: var(--txt); color: white; text-align: center; font-weight: bold; border-radius: 0 3px 3px 0;'>[+ others_local_rb_pct+]%</td>?]</tr> 
+<tr>[? if psc_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ psc_local_rb_pct +]%'>psc</td>?][? if erc_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ erc_local_rb_pct +]%'>erc</td>?][? if cs_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ cs_local_rb_pct +]%'>cs</td>?][? if ciu_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ ciu_local_rb_pct +]%'>ciu</td>?][? if cdc_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ cdc_local_rb_pct +]%'>cdc</td>?][? if jxsi_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ jxsi_local_rb_pct +]%'>jxsi</td>?][? if dl_local_rb_pct > 0: <td style=' white-space: nowrap; width: [+ dl_local_rb_pct +]%'>dl</td>?][? if pdcat_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ pdcat_local_rb_pct +]%'>pdcat</td>?][? if jxcat_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ jxcat_local_rb_pct +]%'>jxcat</td>?][? if junts_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ junts_local_rb_pct +]%'>junts</td>?][? if cup_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ cup_local_rb_pct +]%'>cup</td>?][? if pp_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ pp_local_rb_pct +]%'>pp</td>?][? if comuns_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ comuns_local_rb_pct +]%'>[? if parlament_current_icv = "icv" : ICV-... ?][? if parlament_current_icv != "icv" : [+ parlament_current_icv +]?]</td>?][? if others_local_rb_pct > 0: <td style='white-space: nowrap; width: [+ others_local_rb_pct +]%; color: var(--txt); text-align: right; font-style: italic; font-size: 0.75em;'>others</td>?]</tr>
+{!</table>!}
+
+**Holdings beyond the metropolitan area**
+
+{!<table style='border-spacing: 0px; margin-right: 1em; margin-left: 1em; width:95%; table-layout: fixed; margin-top:-0.75em;'>!}
+<tr>[? if ciu_local_interior_pct > 0: <td style='overflow:hidden; white-space: nowrap; width: [+ ciu_local_interior_pct +]%; height: 2em; background-color: var(--ciu); color: white; text-align: center; font-weight: bold; border-radius: 3px 0 0 3px;'>[+ ciu_local_interior_pct+]%</td>?][? if cdc_local_interior_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ cdc_local_interior_pct +]%; height: 2em; background-color: var(--cdc); color: white; text-align: center; font-weight: bold; border-radius: 3px 0 0 3px;'>[+ cdc_local_interior_pct+]%</td>?][? if jxsi_local_interior_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ jxsi_local_interior_pct +]%; height: 2em; background-color: var(--jxsi); color: white; text-align: center; font-weight: bold; border-radius: 3px 0 0 3px;'>[+ jxsi_local_interior_pct+]%</td>?][? if dl_local_interior_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ dl_local_interior_pct +]%; height: 2em; background-color: var(--dl); color: white; text-align: center; font-weight: bold; border-radius: 3px 0 0 3px;'>[+ dl_local_interior_pct+]%</td>?][? if pdcat_local_interior_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ pdcat_local_interior_pct +]%; height: 2em; background-color: var(--pdcat); color: white; text-align: center; font-weight: bold; border-radius: 3px 0 0 3px;'>[+ pdcat_local_interior_pct+]%</td>?][? if jxcat_local_interior_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ jxcat_local_interior_pct +]%; height: 2em; background-color: var(--jxcat); color: white; text-align: center; font-weight: bold; border-radius: 3px 0 0 3px;'>[+ jxcat_local_interior_pct+]%</td>?][? if junts_local_interior_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ junts_local_interior_pct +]%; height: 2em; background-color: var(--junts); color: white; text-align: center; font-weight: bold; border-radius: 3px 0 0 3px;'>[+ junts_local_interior_pct+]%</td>?][? if erc_local_interior_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ erc_local_interior_pct +]%; height: 2em; background-color: var(--erc); color: var(--text-color); text-align: center; font-weight: bold;'>[+ erc_local_interior_pct+]%</td>?][? if psc_local_interior_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ psc_local_interior_pct +]%; height: 2em; background-color: var(--psc); color: white; text-align: center; font-weight: bold;'>[+ psc_local_interior_pct+]%</td>?][? if cup_local_interior_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ cup_local_interior_pct +]%; height: 2em; background-color: var(--cup); color: var(--text-color); text-align: center; font-weight: bold;'>[+ cup_local_interior_pct+]%</td>?][? if fnc_local_interior_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ fnc_local_interior_pct +]%; height: 2em; background-color: var(--fnc); color: white; text-align: center; font-weight: bold;'>[+ fnc_local_interior_pct+]%</td>?][? if others_local_interior_pct > 0:<td style='overflow:hidden; white-space: nowrap; width: [+ others_local_interior_pct +]%; height: 2em; background-color: var(--txt); color: white; text-align: center; font-weight: bold; border-radius: 0 3px 3px 0;'>[+ others_local_interior_pct+]%</td>?]</tr> 
+<tr>[? if ciu_local_interior_pct > 0: <td style='white-space: nowrap; width: [+ ciu_local_interior_pct +]%'>ciu</td>?][? if cdc_local_interior_pct > 0: <td style='white-space: nowrap; width: [+ cdc_local_interior_pct +]%'>cdc</td>?][? if jxsi_local_interior_pct > 0: <td style='white-space: nowrap; width: [+ jxsi_local_interior_pct +]%'>jxsi</td>?][? if dl_local_interior_pct > 0: <td style=' white-space: nowrap; width: [+ dl_local_interior_pct +]%'>dl</td>?][? if pdcat_local_interior_pct > 0: <td style='white-space: nowrap; width: [+ pdcat_local_interior_pct +]%'>pdcat</td>?][? if jxcat_local_interior_pct > 0: <td style='white-space: nowrap; width: [+ jxcat_local_interior_pct +]%'>jxcat</td>?][? if junts_local_interior_pct > 0: <td style='white-space: nowrap; width: [+ junts_local_interior_pct +]%'>junts</td>?][? if erc_local_interior_pct > 0: <td style='white-space: nowrap; width: [+ erc_local_interior_pct +]%'>erc</td>?][? if psc_local_interior_pct > 0: <td style='white-space: nowrap; width: [+ psc_local_interior_pct +]%'>psc</td>?][? if cup_local_interior_pct > 0: <td style='white-space: nowrap; width: [+ cup_local_interior_pct +]%'>cup</td>?][? if fnc_local_interior_pct > 0: <td style='white-space: nowrap; width: [+ fnc_local_interior_pct +]%'>fnc</td>?][? if others_local_interior_pct > 0: <td style='white-space: nowrap; width: [+ others_local_interior_pct +]%; color: var(--txt); text-align: right; font-style: italic; font-size: 0.75em;'>others</td>?]</tr>
+{!</table>!}
+
+Also WIP! 
+
+- @post_event

@@ -37,6 +37,7 @@ on-arrival: {!
     Q.bnl_minister_gender = Q.parlament_coalition_proposal_bnl_gender;
 
     Q.cat_caretaker_gov = false;
+    Q.parlament_repeat_election = false;
 
     Q.historical_event = "We have a new government in the Generalitat! President " + Q.president + " will lead a " + Q.cat_coalition_disp + " for this legistlature.";
 

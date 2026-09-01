@@ -13,6 +13,8 @@ on-arrival: {!
     Q.month_actions += 1;
 
     Q.cat_coalition = [mp];
+    Q.cat_coalition_support = [];
+    Q.cat_coalition_abstain = [];
     Q.cat_coalition_disp = mp + " " + G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_majority_s + "/" + Q.parlament_s_majority, "<span style='color: var(--" + mp + "); font-style: italic;'>Majority Government</span>");
 
     Q.parlament_coalition_proposal_president = mp;
@@ -27,22 +29,62 @@ on-arrival: {!
 
     // Speaker from the governing party (established second-figure names where known)
     Q.speaker_party = mp;
-    if (mp == "erc") {
-        if (Q.year < 2016) { Q.speaker = "Anna Simó"; Q.speaker_gender = "f"; }
-        else { Q.speaker = "Roger Torrent"; Q.speaker_gender = "m"; }
-    } else if (mp == "ciu") {
-        Q.speaker = "Núria de Gispert"; Q.speaker_gender = "f";
-    } else if (mp == "cdc" || mp == "dl") {
-        Q.speaker = "Carles Campuzano"; Q.speaker_gender = "m";
-    } else if (mp == "pdcat") {
-        Q.speaker = "Lluís Corominas"; Q.speaker_gender = "m";
-    } else if (mp == "jxcat" || mp == "junts") {
-        if (Q.junts_leader != "Laura Borràs") { Q.speaker = "Laura Borràs"; Q.speaker_gender = "f"; }
-        else { Q.speaker = "Albert Batet"; Q.speaker_gender = "m"; }
-    } else {
-        // TODO: Fix this gracious fallback, we have more speaker options in other govt formation paths
-        Q.speaker = Q[mp + "_leader"];
-        Q.speaker_gender = Q[mp + "_leader_gender"] || "m";
+    switch (mp) {
+        case "erc":
+            if (Q.year < 2016) {
+                Q.speaker = "Anna Simó";
+                Q.speaker_gender = "f";
+            } else {
+                Q.speaker = "Roger Torrent";
+                Q.speaker_gender = "m";
+            }
+            break;
+        case "ciu":
+            Q.speaker = "Núria de Gispert";
+            Q.speaker_gender = "f";
+            break;
+        case "cdc":
+        case "dl":
+            Q.speaker = "Carles Campuzano";
+            Q.speaker_gender = "m";
+            break;
+        case "pdcat":
+            Q.speaker = "Lluís Corominas";
+            Q.speaker_gender = "m";
+            break;
+        case "jxcat":
+        case "junts":
+            if (Q.junts_leader != "Laura Borràs") {
+                Q.speaker = "Laura Borràs";
+                Q.speaker_gender = "f";
+            } else {
+                Q.speaker = "Albert Batet";
+                Q.speaker_gender = "m";
+            }
+            break;
+        case "psc":
+            Q.speaker = "Eva Granados";
+            Q.speaker_gender = "f";
+            break;
+        case Q.parlament_current_icv:
+            Q.speaker = Q.parlament_current_icv_leader == "Lluís Rabell" ? "Dolors Camats" : "Lluís Rabell";
+            Q.speaker_gender = Q.parlament_current_icv_leader == "Lluís Rabell" ? "f" : "m";
+            break;
+        case "cs":
+            Q.speaker = "Carlos Carrizosa";
+            Q.speaker_gender = "m";
+            break;
+        case "cup":
+            Q.speaker = Q.year < 2017 ? "Julià de Jòdar" : "Vidal Aragonés";
+            Q.speaker_gender = "m";
+            break;
+        case "unio":
+            Q.speaker = "Ramon Espadaler";
+            Q.speaker_gender = "m";
+            break;
+        default:
+            Q.speaker = Q[mp + "_leader"];
+            Q.speaker_gender = Q[mp + "_leader_gender"] || "m";
     }
 
     if (mp == Q.player_party) {

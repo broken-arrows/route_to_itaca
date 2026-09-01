@@ -27,7 +27,7 @@ on-arrival: {!
     Q.parlament_coalition_leverage = Math.max(5, Q.parlament_coalition_leverage);
 !}
 
-Before the formal negotiations for the formation of a <span style="color: var(--psc); font-style: italic;">New</span> <span style="color: var(--erc); font-style: italic;">Tri</span><span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">partite</span> government can begin, the Parlament needs to convene. The first order of business is the Speaker of the House. The PSC has agreed to yield it to the coalition partners, but who gets to take it?
+Before the formal negotiations for the formation of a<span class="generalitat-coalition" data-parties="psc erc [+ parlament_current_icv +]" data-summary="Majority government - [+ parlament_coalition_psc_erc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">New</span> <span style="color: var(--erc); font-style: italic;">Tri</span><span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">partite</span></span> government can begin, the Parlament needs to convene. The first order of business is the Speaker of the House. The PSC has agreed to yield it to the coalition partners, but who gets to take it?
 
 - @erc_speaker: Push for the Speaker of the House for ERC
 - @icv_speaker: Yield the Speaker of the House to [+ parlament_current_icv +]
@@ -85,6 +85,8 @@ on-arrival: {!
     Q.cup_supporting = false;
     Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
     Q.cat_coalition = ["psc", "erc", Q.parlament_current_icv];
+    Q.cat_coalition_support = [];
+    Q.cat_coalition_abstain = [];
     Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_psc_erc_icv_s + "/" + Q.parlament_s_majority, "<span style='color: var(--psc); font-style: italic;'>New</span> <span style='color: var(--erc); font-style: italic;'>Tri</span><span style='color: var(--" + Q.parlament_current_icv + "); font-style: italic;'>partite</span> Government");
     Q.cat_coalition_dissent = 0;
     Q.independence_movement -= 10;

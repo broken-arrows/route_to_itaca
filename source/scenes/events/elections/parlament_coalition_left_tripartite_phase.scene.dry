@@ -1,11 +1,11 @@
-title: Putting together [? if left_tripartite_coalition_phase = 3: yet another ?][?if left_tripartite_coalition_phase <2 : a?] [? if left_tripartite_coalition_phase = 2: a new ?] ERC - PSC -[+ parlament_current_icv +] coalition proposal 
+title: Putting together [? if left_tripartite_coalition_phase = 3: yet another ?][?if left_tripartite_coalition_phase <2 : a?] [? if left_tripartite_coalition_phase = 2: a new ?] ERC - PSC -[+ parlament_current_icv +] coalition proposal
 subtitle: [? if left_tripartite_coalition_phase = 2: <span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span> negotiations advance.?][? if left_tripartite_coalition_phase = 3: This is set to be the final round of <span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span> negotiations.?]
 tags: event
 new-page: true
 view-if: left_tripartite_coalition_phase != 0 and player_party == "erc"
-on-arrival: {!    
+on-arrival: {!
     Q.parlament_coalition_changes = false;
-    
+
     Q.parlament_coalition_leverage = (Q.erc_parlament_s / Q.parlament_coalition_erc_psc_icv_s)*55;
     if (Q.speaker_party == "erc") {
         Q.parlament_coalition_leverage -= 10;
@@ -28,7 +28,7 @@ role: event
 @phase_text
 new-page: true
 go-to: parlament_coalition_setnames
-set-jump: choices 
+set-jump: choices
 
 [? if left_tripartite_coalition_phase = 1: As the leading force of the coalition, we're expected to make a government composition proposal to the PSC and [+ parlament_current_icv +]. [? if parlament_coalition_changes: Right now, the proposal looks as follows: ?] ?][? if left_tripartite_coalition_phase > 1: Answering to our previous proposal, PSC and [+ parlament_current_icv +] have pushed back with a few ideas of their own on what shape this coalition government should take. [? if parlament_coalition_changes: After our ammendmends, it looks as follows: ?] ?]
 
@@ -182,7 +182,7 @@ on-arrival: {!
                 Q["parlament_coalition_proposal_" + random_pos] = "psc";
                 psc_leverage -= 7; // weighted equally, whatever
                 empty_positions = empty_positions.filter(pos => pos != random_pos);
-            } 
+            }
         } else {
             if (empty_positions.includes("education") && icv_leverage >= 10) {
                 Q.parlament_coalition_proposal_education = Q.parlament_current_icv;
@@ -200,7 +200,7 @@ on-arrival: {!
                 Q["parlament_coalition_proposal_" + random_pos] = Q.parlament_current_icv;
                 icv_leverage -= 7; // weighted equally, whatever
                 empty_positions = empty_positions.filter(pos => pos != random_pos);
-            } 
+            }
         }
     }
 !}
@@ -465,6 +465,8 @@ on-arrival: {!
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cat_coalition = ["psc", "erc", Q.parlament_current_icv];
+    Q.cat_coalition_support = [];
+    Q.cat_coalition_abstain = [];
     Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_erc_psc_icv_s + "/" + Q.parlament_s_majority, `<span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: var(--${Q.parlament_current_icv}); font-style: italic;">Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span>`);
     Q.cat_coalition_dissent = 0;
 
@@ -484,6 +486,7 @@ After some ardous negotiations, we have finally reached an agreement with the PS
 @new_elections
 title: new elections
 on-arrival: {!
+    Q.parlament_repeat_election = true;
     Q.left_tripartite_coalition_phase = 0;
     Q[Q.parlament_current_icv + "_relations"] -= 5;
     Q.psc_relations -= 5;

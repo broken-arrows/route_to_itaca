@@ -92,6 +92,8 @@ choose-if: parlament_coalition_ciu_erc_s >= parlament_s_majority and parlament_c
 unavailable-subtitle: [? if parlament_coalition_ciu_erc_s < parlament_s_majority: Not enough parliamentary support. ?][? if not ((parlament_current_ciu == "ciu" and ciu_relations > 40) or (parlament_current_ciu == "pdcat" and pdcat_relations > 40) or (parlament_current_ciu == "cdc" and cdc_relations > 40) or (parlament_current_ciu == "dl" and dl_relations > 40) or (parlament_current_ciu == "jxcat" and jxcat_relations > 40) or (parlament_current_ciu == "junts" and junts_relations > 40)): We don't have good enough relations with [+ parlament_current_ciu +] to push them into this coalition. ?][? if not ((parlament_current_ciu == "ciu" and ciu_roadmap != 0) or (parlament_current_ciu == "pdcat" and pdcat_roadmap != 0) or (parlament_current_ciu == "cdc" and cdc_roadmap != 0) or (parlament_current_ciu == "dl" and dl_roadmap != 0) or (parlament_current_ciu == "jxcat" and jxcat_roadmap != 0) or (parlament_current_ciu == "junts" and junts_roadmap != 0)): [+ parlament_current_ciu +] has no Roadmap for Independence. ?][? if erc_relations <= 40: We don't have good enough relations with ERC to push them into this coalition. ?]
 on-arrival: {!
     Q.cat_coalition = [Q.parlament_current_ciu, "erc"];
+    Q.cat_coalition_support = [];
+    Q.cat_coalition_abstain = [];
     Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_ciu_erc_s + "/" + Q.parlament_s_majority, "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span>");
     Q.erc_in_gob = true;
     Q.erc_supporting = true;

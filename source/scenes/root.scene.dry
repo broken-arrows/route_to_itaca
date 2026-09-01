@@ -46,7 +46,23 @@ on-arrival: {!
   Q.president_party = "ciu";
   Q.president_gender = "m";
   Q.cat_coalition = ["ciu"];
+  Q.cat_coalition_support = [];
+  Q.cat_coalition_abstain = [];
   Q.cat_coalition_dissent = 0;
+  Q.parlament_repeat_election = false;
+  Q.cup_support_coalition_kind = "";
+  Q.cup_support_coalition_phase = 0;
+  Q.erc_cup_coalition_phase = 0;
+  Q.cup_broad_kind = "";
+  Q.cup_broad_coalition_phase = 0;
+  Q.parlament_coalition_cabinet_seats = 0;
+  Q.parlament_coalition_support_seats = 0;
+  Q.parlament_coalition_leader = "";
+  Q.parlament_coalition_follower = "";
+  Q.pdcat_external_support = false;
+  Q.parlament_current_ciu_roadmap = 0;
+  Q.parlament_coalition_pdcat_support_s = 0;
+  Q.parlament_coalition_pdcat_support_resolved = false;
 
   Q.speaker = "Núria de Gispert";
   Q.speaker_party = "ciu";
@@ -184,6 +200,10 @@ on-arrival: {!
   Q.fnc_parlament_s = 0;
 
   Q.abstain_parlament_pv = 41.2;
+
+  // Local eleciton thingies
+  Q.local_barcelona_seats = 41;
+  Q.barcelona_s_majority = Math.floor(Q.local_barcelona_seats/2) + 1;
 
   // Initial party positions
 

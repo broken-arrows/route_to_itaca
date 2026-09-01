@@ -3,7 +3,7 @@ title: parlament progressist coalition
 You should not be here? Report a bug if you see this text.
 
 @any
-title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Majority government - [+ parlament_coalition_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Progressist</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Government</span></span> (PSC-[+ parlament_current_icv +])
+title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Majority government - [+ parlament_coalition_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Progressive</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Government</span></span> ([? if parlament_current_icv_s > psc_parlament_s: [+ parlament_current_icv +]-PSC?][? if parlament_current_icv_s <= psc_parlament_s: PSC-[+ parlament_current_icv +]?])
 view-if: parlament_coalition_psc_icv_s
 choose-if: parlament_coalition_psc_icv_s >= parlament_s_majority
 unavailable-subtitle: Not enough parliamentary support for a PSC-[+ parlament_current_icv +] government.
@@ -14,26 +14,29 @@ on-arrival: {!
     Q.cup_in_gob = false;
     Q.cup_supporting = false;
     Q.cat_coalition = ["psc", Q.parlament_current_icv];
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_psc_icv_s + "/" + Q.parlament_s_majority, "<span style='color: var(--psc); font-style: italic;'>Progressist</span> <span style='color: var(--" + Q.parlament_current_icv + "); font-style: italic;'>Government</span>");
+    Q.cat_coalition_support = [];
+    Q.cat_coalition_abstain = [];
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_psc_icv_s + "/" + Q.parlament_s_majority, "<span style='color: var(--psc); font-style: italic;'>Progressive</span> <span style='color: var(--" + Q.parlament_current_icv + "); font-style: italic;'>Government</span>");
     Q.cat_coalition_dissent = 0;
     Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
     Q.month_actions += 1;
     Q.independence_trust -= 10;
 
-    Q.parlament_coalition_proposal_president = "psc";
-    Q.parlament_coalition_proposal_vp = Q.parlament_current_icv;
-    Q.parlament_coalition_proposal_economy = "psc";
+    var comuns_leads = Q.parlament_current_icv_s > Q.psc_parlament_s;
+    Q.parlament_coalition_proposal_president = comuns_leads ? Q.parlament_current_icv : "psc";
+    Q.parlament_coalition_proposal_vp = comuns_leads ? "psc" : Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_economy = comuns_leads ? Q.parlament_current_icv : "psc";
     Q.parlament_coalition_proposal_interior = "psc";
     Q.parlament_coalition_proposal_health = "psc";
-    Q.parlament_coalition_proposal_foreign = "psc";
+    Q.parlament_coalition_proposal_foreign = comuns_leads ? Q.parlament_current_icv : "psc";
     Q.parlament_coalition_proposal_education = Q.parlament_current_icv;
     Q.parlament_coalition_proposal_territory = Q.parlament_current_icv;
-    Q.parlament_coalition_proposal_bnl = "psc";
+    Q.parlament_coalition_proposal_bnl = comuns_leads ? Q.parlament_current_icv : "psc";
 
     var icv_leverage = (Q.parlament_current_icv_s / Q.parlament_coalition_psc_icv_s) * 55;
-    if (icv_leverage > 12) {
+    if (!comuns_leads && icv_leverage > 12) {
         Q.parlament_coalition_proposal_health = Q.parlament_current_icv;
-    } else if (icv_leverage > 7) {
+    } else if (!comuns_leads && icv_leverage > 7) {
         Q.parlament_coalition_proposal_bnl = Q.parlament_current_icv;
     }
 

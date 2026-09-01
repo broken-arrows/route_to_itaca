@@ -1,0 +1,27 @@
+title: Soft Sovereignty Government
+
+You should not be seeing this text! report a bug :)
+
+@ciu_led
+title: [+ parlament_current_ciu +]-ERC <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +] erc" data-summary="Minority government"><span style="font-style: italic; color: var(--[+ parlament_current_ciu +]);">Soft-Sovereignty Government</span></span>
+view-if: parlament_pdcat_support_available and parlament_current_ciu_s >= erc_parlament_s
+choose-if: parlament_pdcat_support_available and parlament_current_ciu_s >= erc_parlament_s
+subtitle: The pdcat is willing to support such government as long as the CUP is excluded from it.
+on-arrival: {!
+    Q.pdcat_external_support = true;
+    Q.parlament_current_ciu_roadmap = Q[Q.parlament_current_ciu + "_roadmap"];
+    Q.parlament_coalition_pdcat_support_s = Q.parlament_current_ciu_s + Q.erc_parlament_s + Q.pdcat_parlament_s;
+!}
+go-to: parlament_coalition_ciu_erc.erc
+
+@erc_led
+title: ERC-[+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="Minority government"><span style="font-style: italic; color: var(--erc);">Soft-Sovereignty Government</span></span>
+view-if: parlament_pdcat_support_available and erc_parlament_s > parlament_current_ciu_s
+choose-if: parlament_pdcat_support_available and erc_parlament_s > parlament_current_ciu_s
+subtitle: The pdcat is willing to support such government as long as the CUP is excluded from it.
+on-arrival: {!
+    Q.pdcat_external_support = true;
+    Q.parlament_current_ciu_roadmap = Q[Q.parlament_current_ciu + "_roadmap"];
+    Q.parlament_coalition_pdcat_support_s = Q.parlament_current_ciu_s + Q.erc_parlament_s + Q.pdcat_parlament_s;
+!}
+go-to: parlament_coalition_erc_ciu.erc

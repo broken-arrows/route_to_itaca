@@ -2,266 +2,335 @@ title: parlament unionist coalition
 
 You should not be here? Report a bug if you see this text.
 
-@cs_ppc
-title: Cs-led <span class="generalitat-coalition" data-parties="cs ppc" data-summary="Majority government - [+ cs_parlament_s + ppc_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--ppc); font-style: italic;">Constitutionalist</span> Pact</span>
-view-if: parlament_coalition_cs_ppc_s > 0
-choose-if: parlament_coalition_cs_ppc_s >= parlament_s_majority
-unavailable-subtitle: Cs and PPC together do not have a combined majority.
-subtitle: [? if player_party == "erc": A bleak option for the future of Catalonia. ?][? if player_party == "cup": The worst outcome both for the nation and for class struggle.?]
-on-arrival: {!
-    Q.erc_in_gob = false;
-    Q.erc_supporting = false;
-    Q.cup_in_gob = false;
-    Q.cup_supporting = false;
-    Q.cat_coalition_dissent = 0;
-    Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
-    Q.month_actions += 1;
-    Q.independence_movement += 10;
-    Q.independence_trust -= 15;
-
-    Q.cat_coalition = ["cs", "ppc"];
-    var government_seats = Q.cs_parlament_s + Q.ppc_parlament_s;
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (government_seats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.parlament_s_majority, "<span style='color: var(--cs); font-style: italic;'>Constitutionalist</span> <span style='color: var(--ppc); font-style: italic;'>Pact</span>");
-    Q.parlament_coalition_proposal_president = "cs";
-    Q.parlament_coalition_proposal_vp = "ppc";
-    Q.speaker_party = "ppc";
-    Q.speaker = Q.ppc_leader;
-    Q.speaker_gender = Q.ppc_leader_gender;
-
-    Q.parlament_coalition_proposal_economy = "cs";
-    Q.parlament_coalition_proposal_interior = "cs";
-    Q.parlament_coalition_proposal_foreign = "cs";
-    Q.parlament_coalition_proposal_health = "cs";
-    Q.parlament_coalition_proposal_education = "ppc";
-    Q.parlament_coalition_proposal_territory = "ppc";
-    Q.parlament_coalition_proposal_bnl = "ppc";
-
-    var ppc_leverage = (Q.ppc_parlament_s / (Q.cs_parlament_s + Q.ppc_parlament_s)) * 55;
-    if (ppc_leverage > 20) {
-        Q.parlament_coalition_proposal_health = "ppc";
-        Q.parlament_coalition_proposal_bnl = "cs";
-    }
-!}
-go-to: parlament_coalition_setnames
-set-jump: display_government
-
-The unionist parties have agreed to form a [+ cat_coalition_disp +]. The Speaker of the House will be [+ speaker +] ([+ speaker_party +]).
-
-@ppc_cs
-title: PPC-Cs <span class="generalitat-coalition" data-parties="ppc cs" data-summary="Majority government - [+ ppc_parlament_s + cs_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--ppc); font-style: italic;">Constitutionalist</span> <span style="color: var(--cs); font-style: italic;">Government</span></span>
-view-if: parlament_coalition_ppc_cs_s > 0
-choose-if: parlament_coalition_ppc_cs_s >= parlament_s_majority
-unavailable-subtitle: PPC and Cs together do not have a combined majority.
-subtitle: [? if player_party == "erc": A bleak option for the future of Catalonia. ?][? if player_party == "cup": The worst outcome both for the nation and for class struggle.?]
-on-arrival: {!
-    Q.erc_in_gob = false;
-    Q.erc_supporting = false;
-    Q.cup_in_gob = false;
-    Q.cup_supporting = false;
-    Q.cat_coalition_dissent = 0;
-    Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
-    Q.month_actions += 1;
-    Q.independence_movement += 10;
-    Q.independence_trust -= 15;
-
-    Q.cat_coalition = ["ppc", "cs"];
-    var government_seats = Q.ppc_parlament_s + Q.cs_parlament_s;
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (government_seats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.parlament_s_majority, "<span style='color: var(--ppc); font-style: italic;'>Constitutionalist</span> <span style='color: var(--cs); font-style: italic;'>Government</span>");
-    Q.parlament_coalition_proposal_president = "ppc";
-    Q.parlament_coalition_proposal_vp = "cs";
-    Q.speaker_party = "cs";
-    Q.speaker = Q.cs_leader;
-    Q.speaker_gender = "m";
-
-    Q.parlament_coalition_proposal_economy = "ppc";
-    Q.parlament_coalition_proposal_interior = "ppc";
-    Q.parlament_coalition_proposal_foreign = "ppc";
-    Q.parlament_coalition_proposal_health = "ppc";
-    Q.parlament_coalition_proposal_education = "cs";
-    Q.parlament_coalition_proposal_territory = "cs";
-    Q.parlament_coalition_proposal_bnl = "cs";
-
-    var cs_leverage = (Q.cs_parlament_s / (Q.cs_parlament_s + Q.ppc_parlament_s)) * 55;
-    if (cs_leverage > 20) {
-        Q.parlament_coalition_proposal_health = "cs";
-        Q.parlament_coalition_proposal_bnl = "ppc";
-    }
-!}
-go-to: parlament_coalition_setnames
-set-jump: display_government
-
-The unionist parties have agreed to form a [+ cat_coalition_disp +]. The Speaker of the House will be [+ speaker +] ([+ speaker_party +]).
-
-@cs_ppc_vox
-title: <span class="generalitat-coalition" data-parties="[? if cs_parlament_s >= ppc_parlament_s: cs ppc?][? if cs_parlament_s < ppc_parlament_s: ppc cs?] vox" data-summary="Majority government - [+ cs_parlament_s + ppc_parlament_s + vox_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Right</span>-<span style="color: var(--vox); font-style: italic;">Union</span> Coalition</span>
-view-if: parlament_coalition_cs_ppc_vox_s > 0
-choose-if: parlament_coalition_cs_ppc_vox_s >= parlament_s_majority
-unavailable-subtitle: The right bloc does not have a combined majority.
-subtitle: [? if player_party == "erc": A bleak option for the future of Catalonia. ?][? if player_party == "cup": The worst outcome both for the nation and for class struggle.?]
-on-arrival: {!
-    Q.erc_in_gob = false;
-    Q.erc_supporting = false;
-    Q.cup_in_gob = false;
-    Q.cup_supporting = false;
-    Q.cat_coalition_dissent = 0;
-    Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
-    Q.month_actions += 1;
-    Q.independence_movement += 10;
-    Q.independence_trust -= 15;
-
-    var right_pres = Q.cs_parlament_s >= Q.ppc_parlament_s ? "cs" : "ppc";
-    var right_vp = Q.cs_parlament_s >= Q.ppc_parlament_s ? "ppc" : "cs";
-
-    Q.cat_coalition = [right_pres, right_vp, "vox"];
-    var government_seats = Q.cs_parlament_s + Q.ppc_parlament_s + Q.vox_parlament_s;
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (government_seats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.parlament_s_majority, "<span style='color: var(--cs); font-style: italic;'>Right</span>-<span style='color: var(--vox); font-style: italic;'>Union</span> Coalition");
-    Q.parlament_coalition_proposal_president = right_pres;
-    Q.parlament_coalition_proposal_vp = right_vp;
-    Q.speaker_party = "vox";
-    Q.speaker = Q.vox_leader;
-    Q.speaker_gender = "m";
-
-    Q.parlament_coalition_proposal_economy = right_pres;
-    Q.parlament_coalition_proposal_interior = right_pres;
-    Q.parlament_coalition_proposal_foreign = right_pres;
-    Q.parlament_coalition_proposal_health = right_vp;
-    Q.parlament_coalition_proposal_education = right_vp;
-    Q.parlament_coalition_proposal_territory = "vox";
-    Q.parlament_coalition_proposal_bnl = "vox";
-
-    var vox_leverage = (Q.vox_parlament_s / (Q.cs_parlament_s + Q.ppc_parlament_s + Q.vox_parlament_s)) * 55;
-    if (vox_leverage > 15) {
-        Q.parlament_coalition_proposal_interior = "vox";
-        Q.parlament_coalition_proposal_territory = right_vp;
-    }
-!}
-go-to: parlament_coalition_setnames
-set-jump: display_government
-
-The unionist parties have agreed to form a [+ cat_coalition_disp +]. The Speaker of the House will be [+ speaker +] ([+ speaker_party +]).
-
-@cs_minority
-title: Cs <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s +]/[+ parlament_s_majority +]">Minority Government</span>
-view-if: parlament_coalition_cs_ppc_s > 0
-choose-if: parlament_coalition_cs_ppc_s >= parlament_s_majority
-unavailable-subtitle: Cs and the PPC together fall short of the seats needed to sustain a Cs minority government.
-subtitle: [? if player_party == "erc": A bleak option for the future of Catalonia. ?][? if player_party == "cup": The worst outcome both for the nation and for class struggle.?]
-on-arrival: {!
-    Q.erc_in_gob = false;
-    Q.erc_supporting = false;
-    Q.cup_in_gob = false;
-    Q.cup_supporting = false;
-    Q.cat_coalition_dissent = 0;
-    Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
-    Q.month_actions += 1;
-    Q.independence_movement += 10;
-    Q.independence_trust -= 15;
-
-    Q.cat_coalition = ["cs"];
-    Q.cat_coalition_disp = "Cs " + G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government - " + Q.cs_parlament_s + "/" + Q.parlament_s_majority, "<span style='color: var(--cs); font-style: italic;'>Minority Government</span>");
-    Q.parlament_coalition_proposal_president = "cs";
-    Q.parlament_coalition_proposal_vp = "cs";
-    Q.speaker_party = Q.ppc_parlament_s > 0 ? "ppc" : "cs";
-    Q.speaker = Q.ppc_parlament_s > 0 ? Q.ppc_leader : Q.cs_leader;
-    Q.speaker_gender = Q.ppc_parlament_s > 0 ? Q.ppc_leader_gender : "m";
-    Q.parlament_coalition_proposal_economy = "cs";
-    Q.parlament_coalition_proposal_interior = "cs";
-    Q.parlament_coalition_proposal_health = "cs";
-    Q.parlament_coalition_proposal_foreign = "cs";
-    Q.parlament_coalition_proposal_education = "cs";
-    Q.parlament_coalition_proposal_territory = "cs";
-    Q.parlament_coalition_proposal_bnl = "cs";
-!}
-go-to: parlament_coalition_setnames
-set-jump: display_government
-
-The unionist parties have agreed to form a [+ cat_coalition_disp +]. The Speaker of the House will be [+ speaker +] ([+ speaker_party +]).
-
 @psc_cs
-title: PSC-led <span class="generalitat-coalition" data-parties="psc cs" data-summary="[? if psc_parlament_s + cs_parlament_s >= parlament_s_majority: Majority government?][? if psc_parlament_s + cs_parlament_s < parlament_s_majority: Minority government?] - [+ psc_parlament_s + cs_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Moderation</span> Government</span>
-view-if: parlament_coalition_psc_cs_mod_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
-choose-if: parlament_coalition_psc_cs_mod_s >= parlament_s_majority
-unavailable-subtitle: PSC and Cs together do not have a combined majority.
-subtitle: [? if player_party == "erc": A "reconciliation" government, helping who? ?][? if player_party == "cup": Moderation-speak for more anti-Catalan politics.?]
+title: PSC-led <span class="generalitat-coalition" data-parties="psc" data-summary="Minority government - [+ psc_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Moderation</span> Government</span> with Cs support
+view-if: parlament_coalition_psc_cs_mod_s > 0
+choose-if: psc_parlament_s + cs_parlament_s >= parlament_s_majority
+unavailable-subtitle: The PSC and Cs lack a majority to form this government.
+subtitle: A government of supposed "reconciliation".
 on-arrival: {!
-    Q.erc_in_gob = false;
-    Q.erc_supporting = false;
-    Q.cup_in_gob = false;
-    Q.cup_supporting = false;
-    Q.cat_coalition_dissent = 0;
-    Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
-    Q.month_actions += 1;
-    Q.independence_movement += 10;
-    Q.independence_trust -= 15;
-
-    // PSC+Cs govern; Unió supports from outside (setnames has no Unió case, so it gets no named post)
-    Q.cat_coalition = ["psc", "cs"];
-    var government_seats = Q.psc_parlament_s + Q.cs_parlament_s;
-    Q.cat_coalition_disp = "PSC-led " + G.governmentTooltip("generalitat", Q.cat_coalition, (government_seats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.parlament_s_majority, "<span style='color: var(--cs); font-style: italic;'>Moderation</span> Government");
-    Q.parlament_coalition_proposal_president = "psc";
-    Q.parlament_coalition_proposal_vp = "cs";
-    Q.speaker_party = "cs";
-    Q.speaker = Q.cs_leader;
-    Q.speaker_gender = "m";
-
-    Q.parlament_coalition_proposal_economy = "psc";
-    Q.parlament_coalition_proposal_interior = "psc";
-    Q.parlament_coalition_proposal_foreign = "psc";
-    Q.parlament_coalition_proposal_health = "psc";
-    Q.parlament_coalition_proposal_education = "cs";
-    Q.parlament_coalition_proposal_territory = "cs";
-    Q.parlament_coalition_proposal_bnl = "cs";
-
-    var cs_leverage = (Q.cs_parlament_s / (Q.cs_parlament_s + Q.psc_parlament_s)) * 55;
-    if (cs_leverage > 20) {
-        Q.parlament_coalition_proposal_health = "cs";
-        Q.parlament_coalition_proposal_bnl = "psc";
-    }
+    Q.parlament_unionist_variant = "psc_cs_mod";
 !}
-go-to: parlament_coalition_setnames
-set-jump: display_government
+go-to: form
 
-The unionist parties have agreed to form a [+ cat_coalition_disp +]. The Speaker of the House will be [+ speaker +] ([+ speaker_party +]).
+@ppc_cs_psc_abst
+title: PPC-led <span class="generalitat-coalition" data-parties="ppc cs" data-summary="Minority government - [+ ppc_parlament_s + cs_parlament_s +]/[+ parlament_s_majority +]">Unity Pact</span> with PSC abstention
+view-if: parlament_coalition_ppc_cs_psc_abst_s > 0
+choose-if: ppc_parlament_s + cs_parlament_s + psc_parlament_s / 2 >= parlament_s_majority
+unavailable-subtitle: PSC abstention is insufficient to elect this government.
+subtitle: The constitutional parties would openly unite against any sort of pro-independence government.
+on-arrival: {!
+    Q.parlament_unionist_variant = "ppc_cs_psc_abst";
+!}
+go-to: form
 
-@cs_psc_ppc
-title: Cs-led <span class="generalitat-coalition" data-parties="cs ppc" data-summary="Minority government - [+ cs_parlament_s + ppc_parlament_s +]/[+ parlament_s_majority +]">Unity Pact</span> (Cs + PSC + PPC)
-view-if: parlament_coalition_cs_psc_ppc_sup_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
-choose-if: parlament_coalition_cs_psc_ppc_s >= parlament_s_majority
-unavailable-subtitle: Cs, PSC, and PPC together do not have a combined majority.
-subtitle: [? if player_party == "erc": A constitutional bloc against the independence project. ?][? if player_party == "cup": An anti-independence grand coalition.?]
-go-to: cs_ppc
+@ppc_cs_psc_sup
+title: PPC-led <span class="generalitat-coalition" data-parties="ppc cs" data-summary="Minority government - [+ ppc_parlament_s + cs_parlament_s +]/[+ parlament_s_majority +]">Grand Unity Pact</span> with PSC support
+view-if: parlament_coalition_ppc_cs_psc_sup_s > 0
+choose-if: ppc_parlament_s + cs_parlament_s + psc_parlament_s >= parlament_s_majority
+unavailable-subtitle: PPC, Cs, and PSC cannot elect this government.
+subtitle: The constitutional parties would openly unite against any sort of pro-independence government.
+on-arrival: {!
+    Q.parlament_unionist_variant = "ppc_cs_psc_sup";
+!}
+go-to: form
 
-@psc_cs_ppc
-title: PSC-led <span class="generalitat-coalition" data-parties="ppc cs" data-summary="Minority government - [+ ppc_parlament_s + cs_parlament_s +]/[+ parlament_s_majority +]">Unity Pact</span> (PSC + Cs + PPC)
-view-if: parlament_coalition_psc_cs_ppc_sup_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
-choose-if: parlament_coalition_psc_cs_ppc_s >= parlament_s_majority
-unavailable-subtitle: PSC, Cs, and PPC together do not have a combined majority.
-subtitle: [? if player_party == "erc": A Spanish-nationalist bloc, PSC-led. ?][? if player_party == "cup": The worst kind of social-democrat betrayal.?]
-go-to: ppc_cs
+@cs_ppc_psc_vox_abst
+title: <span class="generalitat-coalition" data-parties="[? if cs_parlament_s >= ppc_parlament_s: cs ppc?][? if cs_parlament_s < ppc_parlament_s: ppc cs?]" data-summary="Minority government - [+ cs_parlament_s + ppc_parlament_s +]/[+ parlament_s_majority +]">Unthinkably Grand Coalition</span> with PSC support and Vox abstention
+view-if: parlament_coalition_cs_ppc_psc_vox_abst_s > 0
+choose-if: cs_parlament_s + ppc_parlament_s + psc_parlament_s + vox_parlament_s / 2 >= parlament_s_majority
+unavailable-subtitle: Even a Vox abstention cannot elect this government.
+subtitle:  PSC support and Vox abstention would install an unprecedented constitutional bloc.
+on-arrival: {!
+    Q.parlament_unionist_variant = "cs_ppc_psc_vox_abst";
+!}
+go-to: form
+
+@cs_ppc_vox_psc_abst
+title: <span class="generalitat-coalition" data-parties="[? if cs_parlament_s >= ppc_parlament_s: cs ppc?][? if cs_parlament_s < ppc_parlament_s: ppc cs?]" data-summary="Minority government - [+ cs_parlament_s + ppc_parlament_s +]/[+ parlament_s_majority +]">Unthinkable Unity Pact</span> with Vox support and PSC abstention
+view-if: parlament_coalition_cs_ppc_vox_psc_abst_s > 0
+choose-if: cs_parlament_s + ppc_parlament_s + vox_parlament_s + psc_parlament_s / 2 >= parlament_s_majority
+unavailable-subtitle: PSC abstention is insufficient to elect this government.
+subtitle: A truly unprecedented move to ensure a pro-unity Generalitat.
+on-arrival: {!
+    Q.parlament_unionist_variant = "cs_ppc_vox_psc_abst";
+!}
+go-to: form
+
+@cs_ppc_vox_psc_sup
+title: <span class="generalitat-coalition" data-parties="[? if cs_parlament_s >= ppc_parlament_s: cs ppc?][? if cs_parlament_s < ppc_parlament_s: ppc cs?]" data-summary="Minority government - [+ cs_parlament_s + ppc_parlament_s +]/[+ parlament_s_majority +]">Salvation Government</span> with Vox and PSC support
+view-if: parlament_coalition_cs_ppc_vox_psc_sup_s > 0
+choose-if: cs_parlament_s + ppc_parlament_s + vox_parlament_s + psc_parlament_s >= parlament_s_majority
+unavailable-subtitle: The full constitutional bloc cannot elect this government.
+subtitle: A truly unprecedented move to ensure a pro-unity Generalitat.
+on-arrival: {!
+    Q.parlament_unionist_variant = "cs_ppc_vox_psc_sup";
+!}
+go-to: form
 
 @cs_psc_ppc_vox
-title: <span class="generalitat-coalition" data-parties="[? if cs_parlament_s >= ppc_parlament_s: cs ppc?][? if cs_parlament_s < ppc_parlament_s: ppc cs?] vox" data-summary="Minority government - [+ cs_parlament_s + ppc_parlament_s + vox_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Right</span>-<span style="color: var(--vox); font-style: italic;">Union</span> Grand Coalition</span>
-view-if: (parlament_coalition_cs_ppc_psc_vox_abst_s > 0 or parlament_coalition_cs_ppc_vox_psc_abst_s > 0 or parlament_coalition_cs_ppc_vox_psc_sup_s > 0) and parlament_coalition_cs_ppc_vox_s < parlament_s_majority and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
-choose-if: parlament_coalition_cs_psc_ppc_vox_s >= parlament_s_majority
-unavailable-subtitle: The constitutionalist and PSC bloc does not have a combined majority.
-subtitle: [? if player_party == "erc": An unprecedented anti-independence bloc. ?][? if player_party == "cup": As bad as it gets.?]
-go-to: cs_ppc_vox
+view-if: 1==0
+go-to: cs_ppc_psc_vox_abst
+
+@cs_emergency
+title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s +]/[+ parlament_s_majority +]">Unthinkably Grand Coalition</span>[? if psc_parlament_s > 0:  with PSC support?][? if cs_parlament_s + psc_parlament_s < parlament_s_majority and ppc_parlament_s > 0: , PPC support?][? if cs_parlament_s + psc_parlament_s + ppc_parlament_s < parlament_s_majority: , and [+ parlament_current_icv +] support?]
+view-if: parlament_coalition_cs_emergency_s > 0
+choose-if: parlament_coalition_cs_emergency_s >= parlament_s_majority
+unavailable-subtitle: Even an such an extreme agreement cannot elect a Cs government.
+subtitle: A Cs minority cabinet sustained by a constitutional majority.
+on-arrival: {!
+    Q.parlament_unionist_variant = "cs_emergency";
+!}
+go-to: form
+
+@ciu_unio
+title: <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +] unio" data-summary="[? if parlament_current_ciu_s + unio_parlament_s >= parlament_s_majority: Majority government?][? if parlament_current_ciu_s + unio_parlament_s < parlament_s_majority: Minority government?] - [+ parlament_current_ciu_s + unio_parlament_s +]/[+ parlament_s_majority +]">CiU 2.0 - Back Together</span>
+view-if: parlament_coalition_ciu_unio_s > 0
+choose-if: parlament_coalition_ciu_unio_s >= parlament_s_majority
+unavailable-subtitle: The reunited parties do not have a majority.
+subtitle: The former partners would restore their old conservative alliance.
+on-arrival: {!
+    Q.parlament_unionist_variant = "ciu_unio";
+!}
+go-to: form
 
 @cs_psc_unio
-title: Cs - PSC - UDC <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s +]/[+ parlament_s_majority +]">Moderation Pact</span>
-view-if: parlament_coalition_cs_psc_unio_mod_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
-choose-if: parlament_coalition_cs_psc_unio_s >= parlament_s_majority
-unavailable-subtitle: Cs, PSC, and Unió together do not have a combined majority.
-subtitle: [? if player_party == "erc": A centrist bloc without us. ?][? if player_party == "cup": Moderation-speak for blocking independence.?]
-go-to: cs_minority
+title: Cs <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Moderation</span> Government</span> with PSC and UDC support
+view-if: parlament_coalition_cs_psc_unio_mod_s > 0
+choose-if: cs_parlament_s + psc_parlament_s + unio_parlament_s >= parlament_s_majority
+unavailable-subtitle: Cs, PSC, and UDC cannot elect this government.
+subtitle: Constitutional unity with a flavour of centrism.
+on-arrival: {!
+    Q.parlament_unionist_variant = "cs_psc_unio_mod";
+!}
+go-to: form
 
 @psc_cs_unio
-title: PSC-led <span class="generalitat-coalition" data-parties="psc cs" data-summary="Minority government - [+ psc_parlament_s + cs_parlament_s +]/[+ parlament_s_majority +]">Moderation Pact</span> (PSC + Cs + Unió)
-view-if: parlament_coalition_psc_cs_unio_mod_s > 0 and parlament_coalition_cs_ppc_s < parlament_s_majority and parlament_coalition_ppc_cs_s < parlament_s_majority
-choose-if: parlament_coalition_psc_cs_unio_s >= parlament_s_majority
-unavailable-subtitle: PSC, Cs, and Unió together do not have a combined majority.
-subtitle: [? if player_party == "erc": A centrist unionist government. ?][? if player_party == "cup": Another form of blocking independence.?]
-go-to: psc_cs
+title: PSC-led <span class="generalitat-coalition" data-parties="psc" data-summary="Minority government - [+ psc_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Moderation</span> Government</span> with Cs and UDC support
+view-if: parlament_coalition_psc_cs_unio_mod_s > 0
+choose-if: psc_parlament_s + cs_parlament_s + unio_parlament_s >= parlament_s_majority
+unavailable-subtitle: PSC, Cs, and UDC cannot elect this government.
+subtitle: Constitutional unity with a flavour of centrism.
+on-arrival: {!
+    Q.parlament_unionist_variant = "psc_cs_unio_mod";
+!}
+go-to: form
+
+@psc_cs_unio_ppc_abst
+title: PSC-led <span class="generalitat-coalition" data-parties="psc" data-summary="Minority government - [+ psc_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Moderation</span> Government</span> with Cs and UDC support, PPC abstention
+view-if: parlament_coalition_psc_cs_unio_ppc_abst_s > 0
+choose-if: psc_parlament_s + cs_parlament_s + unio_parlament_s + ppc_parlament_s / 2 >= parlament_s_majority
+unavailable-subtitle: Even a PPC abstention cannot elect this government.
+subtitle: A broad constitutional agreement made possible by the PPC's abstention.
+on-arrival: {!
+    Q.parlament_unionist_variant = "psc_cs_unio_ppc_abst";
+!}
+go-to: form
+
+@cs_ppc
+title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--ppc); font-style: italic;">Constitutionalist</span> Pact</span> with PPC support
+view-if: parlament_coalition_cs_ppc_s > 0
+choose-if: cs_parlament_s + ppc_parlament_s >= parlament_s_majority
+unavailable-subtitle: Cs and PPC cannot elect this government.
+subtitle: The PPC's assent would place Cs in control of the Generalitat.
+on-arrival: {!
+    Q.parlament_unionist_variant = "cs_ppc";
+!}
+go-to: form
+
+@cs_minority
+view-if: false
+go-to: cs_ppc
+
+@cs_ppc_psc_abst
+title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s +]/[+ parlament_s_majority +]">Unity Pact</span> with PPC support and PSC abstention
+view-if: parlament_coalition_cs_ppc_psc_abst_s > 0
+choose-if: cs_parlament_s + ppc_parlament_s + psc_parlament_s / 2 >= parlament_s_majority
+unavailable-subtitle: PSC abstention is insufficient to elect this government.
+subtitle: The PSC would stand aside while the PPC makes a Cs cabinet possible.
+on-arrival: {!
+    Q.parlament_unionist_variant = "cs_ppc_psc_abst";
+!}
+go-to: form
+
+@cs_psc_ppc
+title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s +]/[+ parlament_s_majority +]">Grand Unity Pact</span> with PSC and PPC support
+view-if: parlament_coalition_cs_psc_ppc_sup_s > 0
+choose-if: cs_parlament_s + psc_parlament_s + ppc_parlament_s >= parlament_s_majority
+unavailable-subtitle: Cs, the PSC, and the PPC don't have enough seats for this government to be formed.
+subtitle: The constitutional parties would unite behind Cs.
+on-arrival: {!
+    Q.parlament_unionist_variant = "cs_psc_ppc_sup";
+!}
+go-to: form
+
+@psc_cs_ppc_abst
+title: PSC-led <span class="generalitat-coalition" data-parties="psc" data-summary="Minority government - [+ psc_parlament_s +]/[+ parlament_s_majority +]">Unity Pact</span> with Cs support and PPC abstention
+view-if: parlament_coalition_psc_cs_ppc_abst_s > 0
+choose-if: psc_parlament_s + cs_parlament_s + ppc_parlament_s / 2 >= parlament_s_majority
+unavailable-subtitle: Even with a PPC abstention there are not enough seats to support this government.
+subtitle: The PSC would provide social democratic cover for the constitutional right.
+on-arrival: {!
+    Q.parlament_unionist_variant = "psc_cs_ppc_abst";
+!}
+go-to: form
+
+@psc_cs_ppc
+title: PSC-led <span class="generalitat-coalition" data-parties="psc" data-summary="Minority government - [+ psc_parlament_s +]/[+ parlament_s_majority +]">Grand Unity Pact</span> with Cs and PPC support
+view-if: parlament_coalition_psc_cs_ppc_sup_s > 0
+choose-if: psc_parlament_s + cs_parlament_s + ppc_parlament_s >= parlament_s_majority
+unavailable-subtitle: There are not enough PSC, Cs, and PPC seats to elect this government.
+subtitle: The PSC would lead a government dependent on the constitutional right.
+on-arrival: {!
+    Q.parlament_unionist_variant = "psc_cs_ppc_sup";
+!}
+go-to: form
+
+@ppc_cs
+title: PPC-led <span class="generalitat-coalition" data-parties="ppc cs" data-summary="[? if ppc_parlament_s + cs_parlament_s >= parlament_s_majority: Majority government?][? if ppc_parlament_s + cs_parlament_s < parlament_s_majority: Minority government?] - [+ ppc_parlament_s + cs_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--ppc); font-style: italic;">Constitutionalist</span> Government</span>
+view-if: parlament_coalition_ppc_cs_s > 0
+choose-if: ppc_parlament_s + cs_parlament_s >= parlament_s_majority
+unavailable-subtitle: The PPC and Cs do not have a combined majority.
+subtitle: The unionist right would take direct control of the Generalitat.
+on-arrival: {!
+    Q.parlament_unionist_variant = "ppc_cs";
+!}
+go-to: form
+
+@cs_ppc_vox
+title: <span class="generalitat-coalition" data-parties="[? if cs_parlament_s >= ppc_parlament_s: cs ppc?][? if cs_parlament_s < ppc_parlament_s: ppc cs?]" data-summary="Minority government - [+ cs_parlament_s + ppc_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Right</span>-<span style="color: var(--vox); font-style: italic;">Union</span> Coalition</span> with Vox support
+view-if: parlament_coalition_cs_ppc_vox_s > 0
+choose-if: cs_parlament_s + ppc_parlament_s + vox_parlament_s >= parlament_s_majority
+unavailable-subtitle: Luckily, the right does not have enough seats to elect this government.
+subtitle: The unionist right would govern with far right support.
+on-arrival: {!
+    Q.parlament_unionist_variant = "cs_ppc_vox";
+!}
+go-to: form
+
+@form
+on-arrival: {!
+    Q.erc_in_gob = false;
+    Q.erc_supporting = false;
+    Q.cup_in_gob = false;
+    Q.cup_supporting = false;
+    Q.cat_coalition_dissent = 0;
+    Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
+    Q.month_actions += 1;
+    Q.independence_movement += 10;
+    Q.independence_trust -= 15;
+
+    var variant = Q.parlament_unionist_variant;
+    var president = "cs";
+    var vicePresident = "cs";
+    var cabinet = ["cs"];
+    var support = [];
+    var abstain = [];
+    var displayName = "<span style='color: var(--cs); font-style: italic;'>Moderation</span> Government";
+
+    if (variant == "psc_cs_mod") {
+        president = "psc"; vicePresident = "psc"; cabinet = ["psc"]; support = ["cs"];
+    } else if (variant == "cs_psc_unio_mod") {
+        support = ["psc", "unio"];
+    } else if (variant == "psc_cs_unio_mod") {
+        president = "psc"; vicePresident = "psc"; cabinet = ["psc"]; support = ["cs", "unio"];
+    } else if (variant == "psc_cs_unio_ppc_abst") {
+        president = "psc"; vicePresident = "psc"; cabinet = ["psc"]; support = ["cs", "unio"]; abstain = ["ppc"];
+    } else if (variant == "cs_ppc") {
+        support = ["ppc"]; displayName = "<span style='color: var(--ppc); font-style: italic;'>Constitutionalist</span> Pact";
+    } else if (variant == "cs_ppc_psc_abst") {
+        support = ["ppc"]; abstain = ["psc"]; displayName = "Unity Pact";
+    } else if (variant == "cs_psc_ppc_sup") {
+        support = ["psc", "ppc"]; displayName = "Grand Unity Pact";
+    } else if (variant == "psc_cs_ppc_abst") {
+        president = "psc"; vicePresident = "psc"; cabinet = ["psc"]; support = ["cs"]; abstain = ["ppc"]; displayName = "Unity Pact";
+    } else if (variant == "psc_cs_ppc_sup") {
+        president = "psc"; vicePresident = "psc"; cabinet = ["psc"]; support = ["cs", "ppc"]; displayName = "Grand Unity Pact";
+    } else if (variant == "ppc_cs") {
+        president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; displayName = "<span style='color: var(--ppc); font-style: italic;'>Constitutionalist</span> Government";
+    } else if (variant == "cs_ppc_vox") {
+        president = Q.cs_parlament_s >= Q.ppc_parlament_s ? "cs" : "ppc";
+        vicePresident = president == "cs" ? "ppc" : "cs";
+        cabinet = [president, vicePresident]; support = ["vox"];
+        displayName = "<span style='color: var(--cs); font-style: italic;'>Right</span>-<span style='color: var(--vox); font-style: italic;'>Union</span> Coalition";
+    } else if (variant == "ppc_cs_psc_abst") {
+        president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; abstain = ["psc"]; displayName = "Unity Pact";
+    } else if (variant == "ppc_cs_psc_sup") {
+        president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; support = ["psc"]; displayName = "Grand Unity Pact";
+    } else if (variant == "cs_ppc_psc_vox_abst") {
+        president = Q.cs_parlament_s >= Q.ppc_parlament_s ? "cs" : "ppc";
+        vicePresident = president == "cs" ? "ppc" : "cs";
+        cabinet = [president, vicePresident]; support = ["psc"]; abstain = ["vox"]; displayName = "Unthinkably Grand Coalition";
+    } else if (variant == "cs_ppc_vox_psc_abst") {
+        president = Q.cs_parlament_s >= Q.ppc_parlament_s ? "cs" : "ppc";
+        vicePresident = president == "cs" ? "ppc" : "cs";
+        cabinet = [president, vicePresident]; support = ["vox"]; abstain = ["psc"]; displayName = "Unthinkable Unity Pact";
+    } else if (variant == "cs_ppc_vox_psc_sup") {
+        president = Q.cs_parlament_s >= Q.ppc_parlament_s ? "cs" : "ppc";
+        vicePresident = president == "cs" ? "ppc" : "cs";
+        cabinet = [president, vicePresident]; support = ["vox", "psc"]; displayName = "Salvation Government";
+    } else if (variant == "cs_emergency") {
+        support = [];
+        if (Q.psc_parlament_s > 0) support.push("psc");
+        if (Q.cs_parlament_s + Q.psc_parlament_s < Q.parlament_s_majority && Q.ppc_parlament_s > 0) support.push("ppc");
+        if (Q.cs_parlament_s + Q.psc_parlament_s + Q.ppc_parlament_s < Q.parlament_s_majority) support.push(Q.parlament_current_icv);
+        displayName = "Unthinkably Grand Coalition";
+    } else if (variant == "ciu_unio") {
+        president = Q.parlament_current_ciu; vicePresident = "unio";
+        cabinet = [president, "unio"]; displayName = "CiU 2.0 - Back Together";
+    }
+
+    Q.cat_coalition = cabinet;
+    Q.cat_coalition_support = support;
+    Q.cat_coalition_abstain = abstain;
+    var governmentSeats = 0;
+    for (var ci = 0; ci < cabinet.length; ci++) governmentSeats += Q[cabinet[ci] + "_parlament_s"] || 0;
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (governmentSeats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + governmentSeats + "/" + Q.parlament_s_majority, displayName);
+
+    Q.parlament_coalition_proposal_president = president;
+    Q.parlament_coalition_proposal_vp = vicePresident;
+    Q.parlament_coalition_proposal_economy = president;
+    Q.parlament_coalition_proposal_interior = president;
+    Q.parlament_coalition_proposal_foreign = president;
+    Q.parlament_coalition_proposal_health = president;
+    Q.parlament_coalition_proposal_education = president;
+    Q.parlament_coalition_proposal_territory = president;
+    Q.parlament_coalition_proposal_bnl = president;
+
+    if (cabinet.length > 1 && variant != "ciu_unio") {
+        Q.parlament_coalition_proposal_health = vicePresident;
+        Q.parlament_coalition_proposal_education = vicePresident;
+        Q.parlament_coalition_proposal_territory = vicePresident;
+        var juniorLeverage = (Q[vicePresident + "_parlament_s"] / governmentSeats) * 55;
+        if (juniorLeverage > 20) Q.parlament_coalition_proposal_bnl = vicePresident;
+    }
+
+    if (variant == "ciu_unio") {
+        Q.speaker_party = "unio";
+        Q.speaker = "Ramon Espadaler";
+        Q.speaker_gender = "m";
+    } else if (cabinet.length > 1) {
+        Q.speaker_party = vicePresident;
+        Q.speaker = Q[vicePresident + "_leader"];
+        Q.speaker_gender = Q[vicePresident + "_leader_gender"];
+    } else if (president == "cs") {
+        Q.speaker_party = "cs";
+        Q.speaker = "Carlos Carrizosa";
+        Q.speaker_gender = "m";
+    } else if (president == "psc") {
+        Q.speaker_party = "psc";
+        Q.speaker = "Eva Granados";
+        Q.speaker_gender = "f";
+    } else {
+        Q.speaker_party = president;
+        Q.speaker = Q[president + "_leader"];
+        Q.speaker_gender = Q[president + "_leader_gender"];
+    }
+!}
+go-to: parlament_coalition_setnames
+set-jump: display_government
+
+The necessary parties have agreed to the investiture of a [+ cat_coalition_disp +]. The Speaker of the House will be [+ speaker +] ([+ speaker_party +]).
 
 @display_government
 

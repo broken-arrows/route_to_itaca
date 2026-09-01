@@ -92,6 +92,8 @@ on-arrival: {!
     Q.cup_supporting = false;
     Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
     Q.cat_coalition = ["erc", "psc", Q.parlament_current_icv];
+    Q.cat_coalition_support = [];
+    Q.cat_coalition_abstain = [];
     Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_erc_psc_icv_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>Left</span> <span style='color: var(--" + Q.parlament_current_icv + "); font-style: italic;'>Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span>");
     Q.cat_coalition_dissent = 0;
 

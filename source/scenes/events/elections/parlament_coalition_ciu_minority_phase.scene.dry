@@ -1,13 +1,13 @@
-title: [? if ciu_min_coalition_phase = 3: Yet another ?][+ parlament_current_ciu +][?if ciu_min_coalition_phase <2 : 's?] [? if ciu_min_coalition_phase = 2: new ?] governement formation proposal 
+title: [? if ciu_min_coalition_phase = 3: Yet another ?][+ parlament_current_ciu +][?if ciu_min_coalition_phase <2 : 's?] [? if ciu_min_coalition_phase = 2: new ?] governement formation proposal
 subtitle: [? if ciu_min_coalition_phase = 2: [+ parlament_current_ciu +]-ERC negotiations advance.?][? if ciu_min_coalition_phase = 3: This is set to be the final round of [+ parlament_current_ciu +]-ERC negotiations.?]
 tags: event
 new-page: true
 view-if: ciu_min_coalition_phase != 0 and player_party == "erc"
-on-arrival: {!    
+on-arrival: {!
     Q.parlament_coalition_concessions_social = 0;
     Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_concessions = false;
-    
+
     Q.parlament_coalition_leverage = Math.max(10, (Q.parlament_s_majority - Q.parlament_current_ciu_s));
     if (Q.parlament_coalition_push == 1) {
         Q.parlament_coalition_leverage += 4;
@@ -196,6 +196,8 @@ unavailable-subtitle: We have proposed changes, which will require approval by [
 on-arrival: {!
     Q.ciu_min_coalition_phase = 0;
     Q.cat_coalition = [Q.parlament_current_ciu];
+    Q.cat_coalition_support = ["erc"];
+    Q.cat_coalition_abstain = [];
     Q.cat_coalition_disp = Q.parlament_current_ciu + " " + G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government - " + Q[Q.parlament_current_ciu + "_parlament_s"] + "/" + Q.parlament_s_majority, "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>minority government</span>");
     Q.erc_supporting = true
 
@@ -216,6 +218,7 @@ After some arduous negotiations, we have finally reached an agreement with [+ pa
 @new_elections
 title: new elections
 on-arrival: {!
+    Q.parlament_repeat_election = true;
     Q.ciu_min_coalition_phase = 0;
     Q[Q.parlament_current_ciu + "_relations"] -= 5;
     Q.independence_trust -= 10;

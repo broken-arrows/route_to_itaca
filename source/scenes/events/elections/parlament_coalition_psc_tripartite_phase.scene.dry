@@ -1,4 +1,4 @@
-title: [? if psc_tripartite_coalition_phase = 1: PSC's New Tripartite coalition proposal?][? if psc_tripartite_coalition_phase = 2: A revised PSC coalition proposal?][? if psc_tripartite_coalition_phase = 3: Final round of tripartite negotiations?]
+title: [? if psc_tripartite_coalition_phase = 1: PSC's <span class="generalitat-coalition" data-parties="psc erc [+ parlament_current_icv +]" data-summary="Majority government - [+ parlament_coalition_psc_erc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">New</span> <span style="color: var(--erc); font-style: italic;">Tri</span><span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">partite</span></span> coalition proposal?][? if psc_tripartite_coalition_phase = 2: A revised PSC coalition proposal?][? if psc_tripartite_coalition_phase = 3: Final round of <span class="generalitat-coalition" data-parties="psc erc [+ parlament_current_icv +]" data-summary="Majority government - [+ parlament_coalition_psc_erc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">New</span> <span style="color: var(--erc); font-style: italic;">Tri</span><span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">partite</span></span> negotiations?]
 subtitle: [? if psc_tripartite_coalition_phase = 1: The PSC has submitted a government formation proposal to ERC and [+ parlament_current_icv +].?][? if psc_tripartite_coalition_phase = 2: PSC-ERC-[+ parlament_current_icv +] government negotiations advance.?][? if psc_tripartite_coalition_phase = 3: This is the final round of negotiations.?]
 tags: event
 new-page: true
@@ -378,6 +378,8 @@ on-arrival: {!
     Q.cup_in_gob = false;
     Q.cup_supporting = false;
     Q.cat_coalition = ["psc", "erc", Q.parlament_current_icv];
+    Q.cat_coalition_support = [];
+    Q.cat_coalition_abstain = [];
     Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_psc_erc_icv_s + "/" + Q.parlament_s_majority, "<span style='color: var(--psc); font-style: italic;'>New Tripartite</span> Government");
     Q.cat_coalition_dissent = 0;
     Q.position_disp = "Generalitat";
@@ -392,6 +394,7 @@ After rounds of negotiations, we've agreed to join PSC and [+ parlament_current_
 @new_elections
 title: new elections
 on-arrival: {!
+    Q.parlament_repeat_election = true;
     Q.psc_tripartite_coalition_phase = 0;
     Q.psc_relations -= 5;
     Q[Q.parlament_current_icv + "_relations"] -= 3;
