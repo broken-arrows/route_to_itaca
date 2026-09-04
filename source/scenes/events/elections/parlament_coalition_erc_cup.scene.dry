@@ -1,0 +1,119 @@
+title: ERC-CUP government negotiations
+
+See this? report a bug!
+
+@erc_player_erc_led
+title: <span class="generalitat-coalition" data-parties="erc cup" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">ERC-led Left-Independence Government</span></span>
+view-if: player_party = "erc" and erc_parlament_s >= cup_parlament_s and cup_parlament_s > 0
+choose-if: parlament_erc_cup_government_available
+unavailable-subtitle: ERC and the CUP need a majority, a shared independence roadmap, and enough mutual trust to govern together.
+on-arrival: {!
+    Q.erc_cup_coalition_phase = 1;
+    Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_erc_cup_s;
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_erc_cup_s;
+    Q.parlament_coalition_leader = "erc";
+    Q.parlament_coalition_follower = "cup";
+    Q.speaker_party = "cup";
+    Q.speaker = Q.year < 2017 ? "Julià de Jòdar" : "Vidal Aragonés";
+    Q.speaker_gender = "m";
+    Q.month_actions += 1;
+!}
+
+As the party that will hold the Presidency, ERC will lead the government negotiations. Before we present CUP with our opening cabinet proposal, the new Parlament must elect its Speaker. We are expected to nominate [+ speaker +] (CUP), leaving the Presidency and the position of the Speaker divided between the partners. Retaining both offices would reduce our leverage in the cabinet talks.
+
+- @erc_leader_accept_cup_speaker
+- @erc_leader_retain_speaker
+
+@erc_leader_accept_cup_speaker
+title: Nominate [+ speaker +] for Speaker
+go-to: parlament_coalition_erc_cup_phase_erc_player_erc_led
+
+@erc_leader_retain_speaker
+title: Retain the Speakership for ERC
+on-arrival: {!
+    Q.speaker_party = "erc";
+    Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
+    Q.speaker_gender = Q.year < 2016 ? "f" : "m";
+!}
+go-to: parlament_coalition_erc_cup_phase_erc_player_erc_led
+
+@erc_player_cup_led
+title: <span class="generalitat-coalition" data-parties="cup erc" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--cup); font-style: italic;">CUP-led Left-Independence Government</span></span>
+view-if: player_party = "erc" and cup_parlament_s > erc_parlament_s and erc_parlament_s > 0
+choose-if: parlament_erc_cup_government_available
+unavailable-subtitle: ERC and CUP need a majority, a shared independence roadmap, and enough mutual trust to govern together.
+on-arrival: {!
+    Q.erc_cup_coalition_phase = 1;
+    Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_erc_cup_s;
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_erc_cup_s;
+    Q.parlament_coalition_leader = "cup";
+    Q.parlament_coalition_follower = "erc";
+    Q.speaker_party = "erc";
+    Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
+    Q.speaker_gender = Q.year < 2016 ? "f" : "m";
+    Q.month_actions += 1;
+!}
+
+6H4 eCUP will hold the Presidency and lead the government negotiations. Its opening institutional proposal gives ERC the speaker before the CUP presents us with its cabinet offer.
+
+- @parlament_coalition_erc_cup_phase_erc_player_cup_led: Accept [+ speaker +] as Speaker
+
+@cup_player_erc_led
+title: <span class="generalitat-coalition" data-parties="erc cup" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">ERC-led Left-Independence Government</span></span>
+view-if: player_party = "cup" and erc_parlament_s >= cup_parlament_s and cup_parlament_s > 0
+choose-if: parlament_erc_cup_government_available
+unavailable-subtitle: ERC and CUP need a majority and a nonzero ERC independence roadmap to govern together.
+on-arrival: {!
+    Q.erc_cup_coalition_phase = 1;
+    Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_erc_cup_s;
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_erc_cup_s;
+    Q.parlament_coalition_leader = "erc";
+    Q.parlament_coalition_follower = "cup";
+    Q.speaker_party = "cup";
+    Q.speaker = Q.year < 2017 ? "Julià de Jòdar" : "Vidal Aragonés";
+    Q.speaker_gender = "m";
+    Q.month_actions += 1;
+!}
+
+ERC will hold the Presidency and lead the government negotiations. Its opening institutional proposal gives the CUP the Speaker of the House before ERC presents us with its cabinet offer.
+
+- @parlament_coalition_erc_cup_phase_cup_player_erc_led: Accept [+ speaker +] as Speaker
+
+@cup_player_cup_led
+title: <span class="generalitat-coalition" data-parties="cup erc" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--cup); font-style: italic;">CUP-led Left-Independence Government</span></span>
+view-if: player_party = "cup" and cup_parlament_s > erc_parlament_s and erc_parlament_s > 0
+choose-if: parlament_erc_cup_government_available
+unavailable-subtitle: ERC and the CUP need a majority and a nonzero ERC independence roadmap to govern together. FIXME: properly gate with [?if ?] blocks
+on-arrival: {!
+    Q.erc_cup_coalition_phase = 1;
+    Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_erc_cup_s;
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_erc_cup_s;
+    Q.parlament_coalition_leader = "cup";
+    Q.parlament_coalition_follower = "erc";
+    Q.speaker_party = "erc";
+    Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
+    Q.speaker_gender = Q.year < 2016 ? "f" : "m";
+    Q.month_actions += 1;
+!}
+
+As the party that will hold the Presidency, the CUP will lead the government negotiations. Before we present ERC with our opening cabinet proposal, the new Parlament must elect its Speaker. We are expected to nominate [+ speaker +] (ERC), leaving the Presidency and Speaker of the House divided between the partners. Retaining both offices would reduce our leverage in the cabinet talks.
+
+- @cup_leader_accept_erc_speaker
+- @cup_leader_retain_speaker
+
+@cup_leader_accept_erc_speaker
+title: Nominate [+ speaker +] (ERC) for Speaker
+go-to: parlament_coalition_erc_cup_phase_cup_player_cup_led
+
+@cup_leader_retain_speaker
+title: Retain the Speaker of the House for the CUP
+on-arrival: {!
+    Q.speaker_party = "cup";
+    Q.speaker = Q.year < 2017 ? "Julià de Jòdar" : "Vidal Aragonés";
+    Q.speaker_gender = "m";
+!}
+go-to: parlament_coalition_erc_cup_phase_cup_player_cup_led

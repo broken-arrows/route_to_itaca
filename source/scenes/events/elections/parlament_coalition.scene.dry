@@ -631,8 +631,13 @@ Given the election results, different coalition arithmetics can be imagined. Now
 - @parlament_coalition_erc_ciu.cup
 - @parlament_coalition_pdcat_support.ciu_led
 - @parlament_coalition_pdcat_support.erc_led
+- @parlament_coalition_pdcat_support.ciu_led_cup
+- @parlament_coalition_pdcat_support.erc_led_cup
 - @parlament_coalition_erc_cup_support.erc_minority
-- @parlament_coalition_erc_cup.government
+- @parlament_coalition_erc_cup.erc_player_erc_led
+- @parlament_coalition_erc_cup.erc_player_cup_led
+- @parlament_coalition_erc_cup.cup_player_erc_led
+- @parlament_coalition_erc_cup.cup_player_cup_led
 - @parlament_coalition_cup_broad.republican
 - @parlament_coalition_cup_broad.popular_unity
 - @parlament_coalition_cup_broad.new_popular_front

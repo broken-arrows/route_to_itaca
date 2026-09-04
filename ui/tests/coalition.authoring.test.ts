@@ -16,6 +16,202 @@ function renderTitle(sceneId: string, qualities: Record<string, unknown>) {
 }
 
 describe('authored coalition tooltip metadata', () => {
+  it('compiles all four ERC-CUP player/leader phase combinations', () => {
+    const adapter = DendryAdapter.fromJSONText(gameText);
+    const ids = [
+      'parlament_coalition_erc_cup_phase_erc_player_erc_led',
+      'parlament_coalition_erc_cup_phase_erc_player_cup_led',
+      'parlament_coalition_erc_cup_phase_cup_player_erc_led',
+      'parlament_coalition_erc_cup_phase_cup_player_cup_led',
+    ];
+
+    for (const id of ids) {
+      expect(adapter.engine.game.scenes[id], id).toBeTruthy();
+    }
+  });
+
+  it('exposes the four ERC-CUP combinations explicitly from the coalition menu', () => {
+    const source = readFileSync(
+      resolve(root, 'source/scenes/events/elections/parlament_coalition.scene.dry'),
+      'utf8',
+    );
+    const options = [
+      '@parlament_coalition_erc_cup.erc_player_erc_led',
+      '@parlament_coalition_erc_cup.erc_player_cup_led',
+      '@parlament_coalition_erc_cup.cup_player_erc_led',
+      '@parlament_coalition_erc_cup.cup_player_cup_led',
+    ];
+
+    for (const option of options) expect(source).toContain(`- ${option}`);
+    expect(source).not.toContain('- @parlament_coalition_erc_cup.government');
+  });
+
+  it.each([
+    ['erc', 'erc', 'cup', 'parlament_coalition_erc_cup.erc_player_erc_led', 'parlament_coalition_erc_cup_phase_erc_player_erc_led'],
+    ['erc', 'cup', 'erc', 'parlament_coalition_erc_cup.erc_player_cup_led', 'parlament_coalition_erc_cup_phase_erc_player_cup_led'],
+    ['cup', 'erc', 'cup', 'parlament_coalition_erc_cup.cup_player_erc_led', 'parlament_coalition_erc_cup_phase_cup_player_erc_led'],
+    ['cup', 'cup', 'erc', 'parlament_coalition_erc_cup.cup_player_cup_led', 'parlament_coalition_erc_cup_phase_cup_player_cup_led'],
+  ])('routes the explicit %s-player/%s-led menu entry to its own phase tree', (player, leader, follower, entryId, phaseId) => {
+    const adapter = DendryAdapter.fromJSONText(gameText);
+    adapter.beginGame([1, 2, 3, 4]);
+    Object.assign(adapter.qualities, {
+      player_party: player,
+      year: 2018,
+      erc_parlament_s: leader === 'erc' ? 40 : 32,
+      cup_parlament_s: leader === 'cup' ? 40 : 32,
+      parlament_coalition_erc_cup_s: 72,
+      parlament_s_majority: 68,
+      parlament_erc_cup_government_available: true,
+    });
+
+    const speakerFrame = adapter.goToScene(entryId);
+    const phaseFrame = adapter.choose(speakerFrame.choices.findIndex((choice) => choice.canChoose));
+
+    expect(adapter.qualities.parlament_coalition_leader).toBe(leader);
+    expect(adapter.qualities.parlament_coalition_follower).toBe(follower);
+    expect(phaseFrame.sceneId).toBe(`${phaseId}.choices`);
+  });
+
+  it.each([
+    ['erc', 'erc', 'cup', true, 'parlament_coalition_erc_cup_phase_erc_player_erc_led'],
+    ['erc', 'cup', 'erc', false, 'parlament_coalition_erc_cup_phase_erc_player_cup_led'],
+    ['cup', 'erc', 'cup', false, 'parlament_coalition_erc_cup_phase_cup_player_erc_led'],
+    ['cup', 'cup', 'erc', true, 'parlament_coalition_erc_cup_phase_cup_player_cup_led'],
+  ])('initializes the %s-player/%s-led phase according to the negotiation role', (player, leader, follower, playerLeads, sceneId) => {
+    const adapter = DendryAdapter.fromJSONText(gameText);
+    adapter.beginGame([1, 2, 3, 4]);
+    Object.assign(adapter.qualities, {
+      player_party: player,
+      parlament_coalition_leader: leader,
+      parlament_coalition_follower: follower,
+      erc_cup_coalition_phase: 1,
+      erc_parlament_s: leader === 'erc' ? 40 : 32,
+      cup_parlament_s: leader === 'cup' ? 40 : 32,
+      parlament_coalition_erc_cup_s: 72,
+      parlament_s_majority: 68,
+      speaker_party: follower,
+    });
+
+    const frame = adapter.goToScene(sceneId);
+    const choiceIds = frame.choices.map((choice) => choice.id);
+
+    expect(adapter.qualities.parlament_coalition_proposal_president).toBe(leader);
+    if (playerLeads) {
+      expect(adapter.qualities.parlament_coalition_proposal_vp).toBeNull();
+      expect(adapter.qualities.parlament_coalition_proposal_interior).toBeNull();
+      expect(choiceIds).not.toContain(`${sceneId}.accept`);
+      expect(choiceIds).not.toContain(`${sceneId}.send`);
+    } else {
+      expect(adapter.qualities.parlament_coalition_proposal_vp).toBe(player);
+      expect([leader, player]).toContain(adapter.qualities.parlament_coalition_proposal_interior);
+      expect(choiceIds).toContain(`${sceneId}.accept`);
+    }
+    expect(adapter.qualities.parlament_coalition_leverage).toBeGreaterThan(0);
+  });
+
+  it.each([
+    ['erc', 'cup', 'parlament_coalition_erc_cup_phase_erc_player_erc_led'],
+    ['cup', 'erc', 'parlament_coalition_erc_cup_phase_cup_player_cup_led'],
+  ])('has the %s leader receive the %s counter-offer in round two', (player, follower, sceneId) => {
+    const adapter = DendryAdapter.fromJSONText(gameText);
+    adapter.beginGame([1, 2, 3, 4]);
+    Object.assign(adapter.qualities, {
+      player_party: player,
+      parlament_coalition_leader: player,
+      parlament_coalition_follower: follower,
+      erc_cup_coalition_phase: 2,
+      erc_parlament_s: player === 'erc' ? 40 : 32,
+      cup_parlament_s: player === 'cup' ? 40 : 32,
+      parlament_coalition_erc_cup_s: 72,
+      parlament_s_majority: 68,
+      speaker_party: follower,
+    });
+
+    const frame = adapter.goToScene(sceneId);
+
+    expect(adapter.qualities.parlament_coalition_proposal_president).toBe(player);
+    expect(adapter.qualities.parlament_coalition_proposal_vp).toBe(follower);
+    expect(frame.choices.map((choice) => choice.id)).toContain(`${sceneId}.accept`);
+  });
+
+  it('persists ERC and CUP as cabinet partners when their phase succeeds', () => {
+    const adapter = DendryAdapter.fromJSONText(gameText);
+    adapter.beginGame([1, 2, 3, 4]);
+    Object.assign(adapter.qualities, {
+      parlament_coalition_leader: 'cup',
+      parlament_coalition_follower: 'erc',
+      parlament_coalition_erc_cup_s: 72,
+      parlament_s_majority: 68,
+      speaker: 'Roger Torrent',
+      speaker_party: 'erc',
+      erc_cup_coalition_phase: 2,
+    });
+
+    adapter.goToScene('parlament_coalition_erc_cup_phase_cup_player_cup_led.accepted');
+
+    expect(adapter.qualities.cat_coalition).toEqual(['cup', 'erc']);
+    expect(adapter.qualities.cat_coalition_support).toEqual([]);
+    expect(adapter.qualities.cat_coalition_abstain).toEqual([]);
+    expect(adapter.qualities.erc_in_gob).toBe(true);
+    expect(adapter.qualities.cup_in_gob).toBe(true);
+  });
+
+  it('keeps CUP outside an ERC minority cabinet that CUP supports', () => {
+    const adapter = DendryAdapter.fromJSONText(gameText);
+    adapter.beginGame([1, 2, 3, 4]);
+    Object.assign(adapter.qualities, {
+      player_party: 'cup',
+      parlament_coalition_erc_cup_s: 70,
+      parlament_s_majority: 68,
+      parlament_coalition_concessions_social: 1,
+      parlament_coalition_concessions_indy: 1,
+      speaker_party: 'cup',
+      cup_support_coalition_phase: 1,
+    });
+
+    adapter.goToScene('parlament_coalition_erc_cup_support.form');
+
+    expect(adapter.qualities.cat_coalition).toEqual(['erc']);
+    expect(adapter.qualities.cat_coalition_support).toEqual(['cup']);
+    expect(adapter.qualities.erc_in_gob).toBe(true);
+    expect(adapter.qualities.cup_in_gob).toBe(false);
+    expect(adapter.qualities.cup_supporting).toBe(true);
+  });
+
+  it.each([
+    ['CiU-family-led', 'parlament_coalition_ciu_erc.cup', 'jxcat', 35, 30],
+    ['ERC-led', 'parlament_coalition_erc_ciu.cup', 'jxcat', 30, 35],
+  ])('keeps PDeCAT outside the cabinet in the CUP-view %s route', (_label, sceneId, ciuParty, ciuSeats, ercSeats) => {
+    const adapter = DendryAdapter.fromJSONText(gameText);
+    adapter.beginGame([1, 2, 3, 4]);
+    Object.assign(adapter.qualities, {
+      player_party: 'cup',
+      year: 2018,
+      parlament_current_ciu: ciuParty,
+      parlament_current_ciu_s: ciuSeats,
+      jxcat_parlament_s: ciuSeats,
+      jxcat_leader: 'Carles Puigdemont',
+      erc_parlament_s: ercSeats,
+      erc_leader: 'Oriol Junqueras',
+      parlament_coalition_ciu_erc_s: ciuSeats + ercSeats,
+      parlament_coalition_erc_ciu_s: ciuSeats + ercSeats,
+      parlament_coalition_pdcat_support_s: ciuSeats + ercSeats + 5,
+      parlament_s_majority: 68,
+      pdcat_external_support: true,
+    });
+
+    const frame = adapter.goToScene(sceneId);
+
+    expect(adapter.qualities.cat_coalition).toEqual(sceneId.includes('ciu_erc') ? ['jxcat', 'erc'] : ['erc', 'jxcat']);
+    expect(adapter.qualities.cat_coalition_support).toEqual(['pdcat']);
+    expect(adapter.qualities.cat_coalition).not.toContain('pdcat');
+    expect(adapter.qualities.parlament_coalition_pdcat_support_resolved).toBe(true);
+    expect(adapter.qualities.pdcat_external_support).toBe(false);
+    expect(frame.html).not.toContain('Thanks to our mediation efforts');
+    expect(frame.html).not.toContain('Thanks to our efforts');
+    expect(frame.html).toContain('we remain in opposition');
+  });
+
   it('resolves Dendry arithmetic and party ids inside option-title attributes', () => {
     const html = renderTitle('congreso_coalition_right.pp_cs', {
       pp_congreso_s: 120,

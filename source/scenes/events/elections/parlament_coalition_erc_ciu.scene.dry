@@ -85,18 +85,22 @@ new-page: true
 view-if: parlament_coalition_erc_ciu_s and player_party == "cup"
 choose-if: parlament_coalition_erc_ciu_s >= parlament_s_majority and erc_parlament_s > parlament_current_ciu_s and ((parlament_current_ciu == "ciu" and ciu_roadmap != 0) or (parlament_current_ciu == "pdcat" and pdcat_roadmap != 0) or (parlament_current_ciu == "cdc" and cdc_roadmap != 0) or (parlament_current_ciu == "dl" and dl_roadmap != 0) or (parlament_current_ciu == "jxcat" and jxcat_roadmap != 0) or (parlament_current_ciu == "junts" and junts_roadmap != 0)) and ((parlament_current_ciu == "ciu" and ciu_relations > 40) or (parlament_current_ciu == "pdcat" and pdcat_relations > 40) or (parlament_current_ciu == "cdc" and cdc_relations > 40) or (parlament_current_ciu == "dl" and dl_relations > 40) or (parlament_current_ciu == "jxcat" and jxcat_relations > 40) or (parlament_current_ciu == "junts" and junts_relations > 40)) and erc_relations > 40
 unavailable-subtitle: [? if parlament_coalition_erc_ciu_s < parlament_s_majority: Not enough parliamentary support. ?][? if not ((parlament_current_ciu == "ciu" and ciu_roadmap != 0) or (parlament_current_ciu == "pdcat" and pdcat_roadmap != 0) or (parlament_current_ciu == "cdc" and cdc_roadmap != 0) or (parlament_current_ciu == "dl" and dl_roadmap != 0) or (parlament_current_ciu == "jxcat" and jxcat_roadmap != 0) or (parlament_current_ciu == "junts" and junts_roadmap != 0)): [+ parlament_current_ciu +] has no Roadmap for Independence. ?][? if erc_relations <= 40: We don't have good enough relations with ERC to push them into this coalition. ?]
-subtitle: Push ERC and [+ parlament_current_ciu +] to reach a sovereignty coalition with ERC in the lead.
+subtitle: [? if pdcat_external_support: The pdcat will support the investiture only if we remain outside the cabinet.?][? if not pdcat_external_support: Push ERC and [+ parlament_current_ciu +] to reach a sovereignty coalition with ERC in the lead.?]
 on-arrival: {!
     Q.cat_coalition = ["erc", Q.parlament_current_ciu];
-    Q.cat_coalition_support = [];
+    Q.cat_coalition_support = Q.pdcat_external_support ? ["pdcat"] : [];
     Q.cat_coalition_abstain = [];
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_erc_ciu_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>government</span>");
+    var coalitionSeats = Q.pdcat_external_support ? Q.parlament_coalition_pdcat_support_s : Q.parlament_coalition_erc_ciu_s;
+    var coalitionName = Q.pdcat_external_support ? "<span style='color: var(--erc); font-style: italic;'>Soft-Sovereignty Government</span>" : "<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>government</span>";
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (Q.pdcat_external_support ? "Minority government - " : "Majority government - ") + coalitionSeats + "/" + Q.parlament_s_majority, coalitionName);
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cup_in_gob = false;
     Q.cup_supporting = false;
     Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
     Q.cat_coalition_dissent = 0;
+    Q.parlament_coalition_pdcat_support_resolved = Q.pdcat_external_support;
+    Q.pdcat_external_support = false;
 
     Q.parlament_coalition_proposal_president = "erc";
     var erc_proposal_leverage = Math.max(10, 30 - (Q.erc_parlament_s - Q[Q.parlament_current_ciu + "_parlament_s"])) - 3;
@@ -182,7 +186,7 @@ on-arrival: {!
 go-to: parlament_coalition_setnames
 set-jump: cup_resolve
 
-Thanks to our efforts, ERC and [+ parlament_current_ciu +] have reached an agreement to form a [+ cat_coalition_disp +]. The Speaker of the House will be [+ speaker +] ([+ speaker_party +]), and the government has taken the following shape:
+[? if not parlament_coalition_pdcat_support_resolved: Thanks to our efforts, ?]ERC and [+ parlament_current_ciu +] have reached an agreement to form a [+ cat_coalition_disp +]. [? if parlament_coalition_pdcat_support_resolved: The pdcat will support the investiture explicitly to keep us out of any negotiations.?] The Speaker of the House will be [+ speaker +] ([+ speaker_party +]), and the government has taken the following shape:
 
 @cup_resolve
 

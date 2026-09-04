@@ -1,0 +1,249 @@
+title: <span class="generalitat-coalition" data-parties="erc cup" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]">ERC-led Left-Independence Government</span> negotiations
+subtitle: [? if erc_cup_coalition_phase = 1: ERC submits its opening government proposal to the CUP.?][? if erc_cup_coalition_phase = 2: The CUP and ERC enter the second round of negotiations.?][? if erc_cup_coalition_phase = 3: The third and final round of negotiations begins.?]
+tags: event
+role: event
+new-page: true
+view-if: erc_cup_coalition_phase > 0 and player_party = "cup" and parlament_coalition_leader = "erc"
+on-arrival: {!
+    Q.parlament_coalition_changes = false;
+    Q.parlament_coalition_concessions_social = 0;
+    Q.parlament_coalition_concessions_indy = 0;
+    Q.parlament_coalition_proposal_president = "erc";
+    Q.parlament_coalition_proposal_vp = "cup";
+    var offices = ["interior", "economy", "foreign", "health", "education", "territory", "bnl"];
+    for (var office of offices) Q["parlament_coalition_proposal_" + office] = "erc";
+    var leverage = Q.cup_parlament_s * 55 / Math.max(1, Q.parlament_coalition_erc_cup_s);
+    var preferences = [["interior", 10], ["bnl", 5], ["territory", 5], ["education", 7], ["health", 7], ["economy", 10], ["foreign", 6]];
+    for (var preference of preferences) if (leverage >= preference[1]) { Q["parlament_coalition_proposal_" + preference[0]] = "cup"; leverage -= preference[1]; }
+    Q.parlament_coalition_leverage = Q.cup_parlament_s * 55 / Math.max(1, Q.parlament_coalition_erc_cup_s) + (Q.erc_cup_coalition_phase - 1) * 4 - (Q.speaker_party == "cup" ? 10 : 0);
+!}
+go-to: phase_text
+@phase_text
+new-page: true
+go-to: parlament_coalition_setnames
+set-jump: choices
+
+[? if player_party = parlament_coalition_leader and erc_cup_coalition_phase = 1: As the leading party, we must submit the opening division of responsibilities to [+ parlament_coalition_follower +].?][? if player_party = parlament_coalition_leader and erc_cup_coalition_phase > 1: [+ parlament_coalition_follower +] has answered our previous offer with a revised distribution.?][? if player_party != parlament_coalition_leader: [+ parlament_coalition_leader +] has presented its proposal to us as the junior coalition partner.?]
+
+@choices
+
+[? if parlament_coalition_concessions_social: **Social commitment:** Reverse austerity measures and expand social spending.?]
+[? if parlament_coalition_concessions_indy: **Independence commitment:** Follow the more ambitious of the two parties' current roadmaps during this legislature.?]
+
+- @changes
+- @social
+- @indy
+- @push
+- @send
+- @accept
+
+@changes
+title: Propose an alternative Government Composition
+
+- @vp
+- @interior
+- @economy
+- @health
+- @education
+- @foreign
+- @territory
+- @bnl
+- @phase_text: Finish proposing changes
+
+@vp
+title: [? if parlament_coalition_proposal_vp != player_party: Demand the Vice-Presidency?][? if parlament_coalition_proposal_vp = player_party: Give up the Vice-Presidency?]
+choose-if: parlament_coalition_proposal_vp = player_party or parlament_coalition_leverage >= 20
+unavailable-subtitle: We lack enough leverage to demand the Vice-Presidency.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_vp != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_vp = taking ? Q.player_party : (Q.player_party == Q.parlament_coalition_leader ? Q.parlament_coalition_follower : Q.parlament_coalition_leader);
+    Q.parlament_coalition_leverage += taking ? -20 : 20;
+!}
+go-to: changes
+
+@interior
+title: [? if parlament_coalition_proposal_interior != player_party: Demand the Interior Ministry?][? if parlament_coalition_proposal_interior = player_party: Give up the Interior Ministry?]
+choose-if: parlament_coalition_proposal_interior = player_party or parlament_coalition_leverage >= 10
+unavailable-subtitle: We lack enough leverage to demand the Interior Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_interior != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_interior = taking ? Q.player_party : (Q.player_party == Q.parlament_coalition_leader ? Q.parlament_coalition_follower : Q.parlament_coalition_leader);
+    Q.parlament_coalition_leverage += taking ? -10 : 10;
+!}
+go-to: changes
+
+@economy
+title: [? if parlament_coalition_proposal_economy != player_party: Demand the Economy Ministry?][? if parlament_coalition_proposal_economy = player_party: Give up the Economy Ministry?]
+choose-if: parlament_coalition_proposal_economy = player_party or parlament_coalition_leverage >= 10
+unavailable-subtitle: We lack enough leverage to demand the Economy Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_economy != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_economy = taking ? Q.player_party : (Q.player_party == Q.parlament_coalition_leader ? Q.parlament_coalition_follower : Q.parlament_coalition_leader);
+    Q.parlament_coalition_leverage += taking ? -10 : 10;
+!}
+go-to: changes
+
+@health
+title: [? if parlament_coalition_proposal_health != player_party: Demand the Health Ministry?][? if parlament_coalition_proposal_health = player_party: Give up the Health Ministry?]
+choose-if: parlament_coalition_proposal_health = player_party or parlament_coalition_leverage >= 7
+unavailable-subtitle: We lack enough leverage to demand the Health Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_health != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_health = taking ? Q.player_party : (Q.player_party == Q.parlament_coalition_leader ? Q.parlament_coalition_follower : Q.parlament_coalition_leader);
+    Q.parlament_coalition_leverage += taking ? -7 : 7;
+!}
+go-to: changes
+
+@education
+title: [? if parlament_coalition_proposal_education != player_party: Demand the Education Ministry?][? if parlament_coalition_proposal_education = player_party: Give up the Education Ministry?]
+choose-if: parlament_coalition_proposal_education = player_party or parlament_coalition_leverage >= 7
+unavailable-subtitle: We lack enough leverage to demand the Education Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_education != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_education = taking ? Q.player_party : (Q.player_party == Q.parlament_coalition_leader ? Q.parlament_coalition_follower : Q.parlament_coalition_leader);
+    Q.parlament_coalition_leverage += taking ? -7 : 7;
+!}
+go-to: changes
+
+@foreign
+title: [? if parlament_coalition_proposal_foreign != player_party: Demand the Foreign Affairs Ministry?][? if parlament_coalition_proposal_foreign = player_party: Give up the Foreign Affairs Ministry?]
+choose-if: parlament_coalition_proposal_foreign = player_party or parlament_coalition_leverage >= 6
+unavailable-subtitle: We lack enough leverage to demand the Foreign Affairs Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_foreign != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_foreign = taking ? Q.player_party : (Q.player_party == Q.parlament_coalition_leader ? Q.parlament_coalition_follower : Q.parlament_coalition_leader);
+    Q.parlament_coalition_leverage += taking ? -6 : 6;
+!}
+go-to: changes
+
+@territory
+title: [? if parlament_coalition_proposal_territory != player_party: Demand the Territory Ministry?][? if parlament_coalition_proposal_territory = player_party: Give up the Territory Ministry?]
+choose-if: parlament_coalition_proposal_territory = player_party or parlament_coalition_leverage >= 5
+unavailable-subtitle: We lack enough leverage to demand the Territory Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_territory != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_territory = taking ? Q.player_party : (Q.player_party == Q.parlament_coalition_leader ? Q.parlament_coalition_follower : Q.parlament_coalition_leader);
+    Q.parlament_coalition_leverage += taking ? -5 : 5;
+!}
+go-to: changes
+
+@bnl
+title: [? if parlament_coalition_proposal_bnl != player_party: Demand the Business & Labour Ministry?][? if parlament_coalition_proposal_bnl = player_party: Give up the Business & Labour Ministry?]
+choose-if: parlament_coalition_proposal_bnl = player_party or parlament_coalition_leverage >= 5
+unavailable-subtitle: We lack enough leverage to demand the Business & Labour Ministry.
+on-arrival: {!
+    var taking = Q.parlament_coalition_proposal_bnl != Q.player_party;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_proposal_bnl = taking ? Q.player_party : (Q.player_party == Q.parlament_coalition_leader ? Q.parlament_coalition_follower : Q.parlament_coalition_leader);
+    Q.parlament_coalition_leverage += taking ? -5 : 5;
+!}
+go-to: changes
+
+@social
+title: Add a social-policy commitment
+choose-if: parlament_coalition_concessions_social = 0 and parlament_coalition_leverage >= 5
+unavailable-subtitle: [? if parlament_coalition_concessions_social: The commitment is already included.?][? if parlament_coalition_leverage < 5: We lack enough leverage.?]
+on-arrival: {!
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_concessions_social = 1;
+    Q.parlament_coalition_leverage -= 5;
+!}
+go-to: phase_text
+
+@indy
+title: Add the stronger independence roadmap
+choose-if: parlament_coalition_concessions_indy = 0 and parlament_coalition_leverage >= 5 and erc_roadmap != cup_roadmap
+unavailable-subtitle: [? if erc_roadmap = cup_roadmap: Both parties already share the same roadmap.?][? if parlament_coalition_concessions_indy: The commitment is already included.?][? if parlament_coalition_leverage < 5: We lack enough leverage.?]
+on-arrival: {!
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_concessions_indy = 1;
+    Q.parlament_coalition_leverage -= 5;
+!}
+go-to: phase_text
+
+@push
+title: Push for more leverage
+choose-if: parlament_coalition_push < erc_cup_coalition_phase and erc_cup_coalition_phase < 3
+unavailable-subtitle: We cannot push any further in this round.
+on-arrival: {!
+    Q.parlament_coalition_push += 1;
+    Q.parlament_coalition_leverage += 4;
+    if (Q.player_party == "erc") Q.cup_relations -= Q.erc_cup_coalition_phase == 1 ? 5 : 3;
+    else Q.erc_relations -= Q.erc_cup_coalition_phase == 1 ? 5 : 3;
+!}
+go-to: phase_text
+
+@send
+title: [? if player_party = parlament_coalition_leader and erc_cup_coalition_phase = 1: Submit the opening proposal?][? if not (player_party = parlament_coalition_leader and erc_cup_coalition_phase = 1): Send the counter-proposal?]
+view-if: parlament_coalition_changes or (player_party = parlament_coalition_leader and erc_cup_coalition_phase = 1)
+on-arrival: {!
+    Q.parlament_coalition_proposal_accept = Q.parlament_coalition_push < Q.erc_cup_coalition_phase;
+    if (Q.parlament_coalition_proposal_vp == Q.player_party && Q.erc_cup_coalition_phase < 2) Q.parlament_coalition_proposal_accept = false;
+    if (Q.parlament_coalition_proposal_interior == Q.player_party && Q.parlament_coalition_proposal_economy == Q.player_party && Q.erc_cup_coalition_phase < 3) Q.parlament_coalition_proposal_accept = false;
+!}
+go-to: accepted if parlament_coalition_proposal_accept; next_phase if not parlament_coalition_proposal_accept
+
+@accept
+title: Accept the current proposal
+view-if: player_party != parlament_coalition_leader or erc_cup_coalition_phase > 1
+choose-if: not parlament_coalition_changes
+unavailable-subtitle: Our changes require the other party's approval.
+go-to: accepted
+
+@accepted
+on-arrival: {!
+    Q.erc_cup_coalition_phase = 0;
+    Q.cat_coalition = [Q.parlament_coalition_leader, Q.parlament_coalition_follower];
+    Q.cat_coalition_support = [];
+    Q.cat_coalition_abstain = [];
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_erc_cup_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>Left-Independence</span> <span style='color: var(--cup); font-style: italic;'>Government</span>");
+    Q.cat_coalition_dissent = 0;
+    Q.erc_in_gob = true;
+    Q.erc_supporting = true;
+    Q.cup_in_gob = true;
+    Q.cup_supporting = true;
+    Q.position_disp = "Generalitat";
+    Q.independence_trust += 5;
+!}
+
+ERC and the CUP have reached an agreement to form a [+ cat_coalition_disp +], led by [+ parlament_coalition_leader +]. The Speaker of the House will be [+ speaker +] ([+ speaker_party +]).
+
+- @parlament_coalition_resolve: A new government is formed
+
+@next_phase
+go-to: new_elections if erc_cup_coalition_phase >= 3; wait if erc_cup_coalition_phase < 3
+
+@wait
+on-arrival: {!
+    Q.erc_cup_coalition_phase += 1;
+    Q.month_actions += 1;
+    Q.independence_trust -= 2;
+!}
+
+Our proposal has been seen as insufficient. The negotiating teams will have to reconvene for another round.
+
+- @post_event: And so, time passes...
+
+@new_elections
+on-arrival: {!
+    Q.parlament_repeat_election = true;
+    Q.erc_cup_coalition_phase = 0;
+    Q.erc_relations -= 5;
+    Q.cup_relations -= 5;
+    Q.independence_trust -= 10;
+    Q.snap_blame = Q.player_party;
+    Q.snap_counterparty = Q.player_party == "erc" ? "cup" : "erc";
+    Q.snap_severity = 0.12;
+!}
+call: snap_election
+
+Three rounds have ended without agreement. The investiture deadline has expired, forcing another election.
+
+- @post_event: We'll have to see if the result changes...

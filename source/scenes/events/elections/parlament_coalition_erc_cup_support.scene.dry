@@ -1,0 +1,101 @@
+title: ERC minority government with CUP support
+
+See this? report a bug!
+
+@erc_minority
+title: ERC <span class="generalitat-coalition" data-parties="erc" data-summary="Government supported by the CUP - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">minority Government</span></span> with CUP support
+view-if: erc_parlament_s > 0 and cup_parlament_s > 0
+choose-if: parlament_erc_cup_support_available
+unavailable-subtitle: ERC must lead a viable minority cabinet and the CUP must be willing to support it from outside government.
+on-arrival: {!
+    Q.cup_support_coalition_kind = "erc_minority";
+    Q.cup_support_coalition_phase = 1;
+    Q.parlament_coalition_leader = "erc";
+    Q.parlament_coalition_follower = "cup";
+    Q.parlament_coalition_cabinet_seats = Q.erc_parlament_s;
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_erc_cup_s;
+    Q.parlament_coalition_proposal_president = "erc";
+    Q.parlament_coalition_proposal_vp = "erc";
+    Q.parlament_coalition_proposal_interior = "erc";
+    Q.parlament_coalition_proposal_economy = "erc";
+    Q.parlament_coalition_proposal_foreign = "erc";
+    Q.parlament_coalition_proposal_health = "erc";
+    Q.parlament_coalition_proposal_education = "erc";
+    Q.parlament_coalition_proposal_territory = "erc";
+    Q.parlament_coalition_proposal_bnl = "erc";
+    Q.speaker_party = "cup";
+    Q.speaker = Q.year < 2017 ? "Julià de Jòdar" : "Vidal Aragonés";
+    Q.speaker_gender = "m";
+    Q.month_actions += 1;
+!}
+
+ERC has offered CUP the Speakership in return for supporting an ERC minority cabinet. [? if player_party = "cup": We can accept the office or leave it to ERC and preserve more leverage for the investiture agreement.?][? if player_party = "erc": We can confirm CUP's nominee or retain the office at the cost of a harder investiture negotiation.?]
+
+- @cup_speaker
+- @erc_speaker
+
+@cup_speaker
+title: Elect [+ speaker +] as Speaker
+go-to: demands
+
+@erc_speaker
+title: Retain the Speakership for ERC
+on-arrival: {!
+    Q.speaker_party = "erc";
+    Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
+    Q.speaker_gender = Q.year < 2016 ? "f" : "m";
+!}
+go-to: demands
+
+@demands
+new-page: true
+
+The CUP will remain outside the cabinet. The remaining question is what ERC must promise in exchange for the CUP's affirmative investiture vote.
+
+[? if parlament_coalition_concessions_social: **Social programme:** Reverse austerity and expand social spending.?]
+[? if parlament_coalition_concessions_indy: **National programme:** Follow CUP's stronger independence roadmap.?]
+
+- @social
+- @indy
+- @form
+
+@social
+title: Include a binding social programme
+choose-if: not parlament_coalition_concessions_social
+unavailable-subtitle: This commitment is already part of the agreement.
+on-arrival: {!
+    Q.parlament_coalition_concessions_social = 1;
+!}
+go-to: demands
+
+@indy
+title: Include CUP's independence roadmap
+choose-if: not parlament_coalition_concessions_indy and cup_roadmap > erc_roadmap
+unavailable-subtitle: [? if parlament_coalition_concessions_indy: This commitment is already part of the agreement.?][? if cup_roadmap <= erc_roadmap: ERC's roadmap is already at least as ambitious.?]
+on-arrival: {!
+    Q.parlament_coalition_concessions_indy = 1;
+!}
+go-to: demands
+
+@form
+title: Conclude the investiture agreement
+choose-if: (speaker_party = "cup" and (parlament_coalition_concessions_social or parlament_coalition_concessions_indy)) or (speaker_party = "erc" and parlament_coalition_concessions_social and (parlament_coalition_concessions_indy or cup_roadmap <= erc_roadmap))
+unavailable-subtitle: The CUP expects stronger guarantees before it will support the investiture.
+on-arrival: {!
+    Q.cup_support_coalition_phase = 0;
+    Q.cat_coalition = ["erc"];
+    Q.cat_coalition_support = ["cup"];
+    Q.cat_coalition_abstain = [];
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Government supported by CUP - " + Q.parlament_coalition_erc_cup_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>ERC minority Government</span>");
+    Q.cat_coalition_dissent = 0;
+    Q.erc_in_gob = true;
+    Q.erc_supporting = true;
+    Q.cup_in_gob = false;
+    Q.cup_supporting = true;
+    Q.position_disp = Q.player_party == "erc" ? "Generalitat" : "<span style='font-style: italic'>External support</span>";
+    Q.independence_trust += Q.parlament_coalition_concessions_indy ? 5 : 1;
+!}
+
+ERC will form a [+ cat_coalition_disp +]. The CUP has secured written commitments but will hold no ministries.
+
+- @parlament_coalition_resolve: A new government is formed!
