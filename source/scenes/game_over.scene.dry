@@ -12,6 +12,8 @@ on-arrival: {!
       // TODO: Actual way for this to fail
       this.achieve("ni_un_paper");
     }
+
+    // TODO: actual ending cards
 !}
 
 = End

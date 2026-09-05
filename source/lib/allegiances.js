@@ -33,9 +33,12 @@
     },
     jordi_pujol: function (Q) {
       return [
-        { colour: "ciu", label: "CDC" },
+        { colour: "cdc", label: "CDC" },
         { colour: "ciu", label: "CiU" },
       ];
+    },
+    ferrusola: function (Q) {
+      return [{ colour: "cdc", label: "CDC" }];
     },
     artur_mas: function (Q) {
       var list = [
@@ -184,6 +187,9 @@
       }
     },
     mariano_rajoy: function (Q) {
+      return [{ colour: "pp", label: "PP" }];
+    },
+    aznar: function (Q) {
       return [{ colour: "pp", label: "PP" }];
     },
     pedro_s_nchez: function (Q) {

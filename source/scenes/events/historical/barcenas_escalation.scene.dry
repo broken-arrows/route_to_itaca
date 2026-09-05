@@ -1,5 +1,7 @@
-title: Bárcenas escalation
+title: PP's Bárcenas Papers now shown to include a "M.​Rajoy"
+subtitle: "Unclear" who this may refer to, judge says
 view-if: year = 2013 and month = 7
+face-image: img/events/mrajoy.jpeg
 tags: event
 new-page: true
 max-visits: 1
@@ -9,4 +11,10 @@ on-arrival: {!
 !}
 role: event
 
-- @post_event: TODO
+= Who is "M.​Rajoy"?
+
+Months ago, the Bárcenas Papers were uncovered, showing years of PP corruption benefiting the PP's top leadership. Now, new revelations have exposed more of the actual notes by the former treasurer, this time with detailed records showing names and payments. Among them, including old and current leaderships and close allies, some suspicious payments seem to have targeted someone under the alias "M.​Rajoy". 
+
+The party so far has maintained the stance that there is hardly any proof to link this alias to Presidente Mariano Rajoy, despite heavy and understandable skepticism. The convenient destruction of hard drives just before the judicial visit to the party's headquarters in Madrid also does not help.
+
+- @post_event: How is that name unclear to anyone?

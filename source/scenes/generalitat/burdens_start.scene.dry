@@ -5,7 +5,7 @@ tags: event
 new-page: true
 on-arrival: {!
     // TODO: Actual ways to achieve the burdens
-    // TODO: Burden breaking consequences event
+    // TODO: Burden breaking consequences event + Burdens renewal when broken
     // TODO: Dynamic burdens depending on governing coalition 
     Q.burdens_goal = 4;
     Q.burdens_time = 12;

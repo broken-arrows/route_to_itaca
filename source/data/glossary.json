@@ -1035,11 +1035,23 @@
     },
     {
       "id": "jordi_pujol",
-      "match": ["Jordi Pujol"],
+      "match": ["Jordi Pujol", "Pujol"],
       "colour": "ciu",
       "tooltip": {
         "title": "Jordi Pujol i Soley",
         "img": "img/ciu/jordipujol.jpg",
+        "q": {
+          "ideology": "Center-right Liberalism, Catalan Nationalism"
+        }
+      }
+    },
+    {
+      "id": "ferrusola",
+      "match": ["Marta Ferrusola"],
+      "colour": "ciu",
+      "tooltip": {
+        "title": "Marta Ferrusola i Lladós",
+        "img": "img/ciu/ferrusola.jpg",
         "q": {
           "ideology": "Center-right Liberalism, Catalan Nationalism"
         }
@@ -1204,6 +1216,18 @@
       "tooltip": {
         "title": "Mariano Rajoy Brey",
         "img": "img/other_leaders/rajoy.jpg",
+        "q": {
+          "ideology": "Conservatism, Centralism"
+        }
+      }
+    },
+    {
+      "id": "aznar",
+      "match": ["José María Aznar", "Aznar", "aznar"],
+      "colour": "pp",
+      "tooltip": {
+        "title": "José María Aznar López",
+        "img": "img/other_leaders/aznar.jpg",
         "q": {
           "ideology": "Conservatism, Centralism"
         }

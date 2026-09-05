@@ -83,7 +83,7 @@ on-arrival: {!
         rnd = Math.floor(Math.random() * 4);
         switch (rnd) {
             default:
-                new_candidate = "David Fernández";
+                new_candidate = "David Fernàndez";
                 new_candidate_gender = "m";
                 break;
             case 0:

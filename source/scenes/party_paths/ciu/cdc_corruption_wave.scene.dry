@@ -1,15 +1,73 @@
-title: CDC corruption case deepens
+title: CDC's corruption case deepens
+subtitle: The "problem of the 3%" may have indeed more than slander
 view-if: year = 2015 and month = 1
 tags: event
 new-page: true
+face-image: img/events/trespercent.webp
 max-visits: 1
 on-arrival: {!
-    // Second CDC corruption wave (cal: local_calibrator CORRUPTION_MONTHS, m=30).
-    // Feeds the centre-right's local + parlament decay via corruption_events_ciu
-    // (see election_algorithm decay_corr_coeff).
-    // TODO: which concrete case (Palau / "3%" financing / Método 3)? + text + vote movement
+    for (var c of Q.parlament_constituencies) {
+        if (Q.jxsi_formed) {
+            if (Q.cup_in_jxsi) {
+                Q["jxsi_parlament_" + c + "_unemployed_support"] -= 0.75;
+                Q["abstain_parlament_" + c + "_unemployed_support"] += 0.75;
+                Q["jxsi_parlament_" + c + "_young_support"] -= 0.5;
+                Q["abstain_parlament_" + c + "_young_support"] += 0.5;
+                Q["jxsi_parlament_" + c + "_middle_support"] -= 0.25;
+                Q["abstain_parlament_" + c + "_middle_support"] += 0.25;
+            } else {
+                Q["jxsi_parlament_" + c + "_unemployed_support"] -= 0.75;
+                Q["abstain_parlament_" + c + "_unemployed_support"] += 0.5;
+                Q["cup_parlament_" + c + "_unemployed_support"] += 0.25;
+                Q["jxsi_parlament_" + c + "_young_support"] -= 0.6;
+                Q["abstain_parlament_" + c + "_young_support"] += 0.1;
+                Q["cup_parlament_" + c + "_young_support"] += 0.5;
+                Q["jxsi_parlament_" + c + "_middle_support"] -= 0.5;
+                Q["cup_parlament_" + c + "_middle_support"] += 0.4;
+                Q["abstain_parlament_" + c + "_middle_support"] += 0.1;
+            }
+        } else if (Q.jxcat_formed && Q.erc_in_jxcat) {
+            if (Q.cup_in_jxcat) {
+                Q["jxcat_parlament_" + c + "_unemployed_support"] -= 0.75;
+                Q["abstain_parlament_" + c + "_unemployed_support"] += 0.75;
+                Q["jxcat_parlament_" + c + "_young_support"] -= 0.5;
+                Q["abstain_parlament_" + c + "_young_support"] += 0.5;
+                Q["jxcat_parlament_" + c + "_middle_support"] -= 0.25;
+                Q["abstain_parlament_" + c + "_middle_support"] += 0.25;
+            } else {
+                Q["jxcat_parlament_" + c + "_unemployed_support"] -= 0.75;
+                Q["abstain_parlament_" + c + "_unemployed_support"] += 0.5;
+                Q["cup_parlament_" + c + "_unemployed_support"] += 0.25;
+                Q["jxcat_parlament_" + c + "_young_support"] -= 0.6;
+                Q["abstain_parlament_" + c + "_young_support"] += 0.1;
+                Q["cup_parlament_" + c + "_young_support"] += 0.5;
+                Q["jxcat_parlament_" + c + "_middle_support"] -= 0.5;
+                Q["cup_parlament_" + c + "_middle_support"] += 0.4;
+                Q["abstain_parlament_" + c + "_middle_support"] += 0.1;
+            }
+        } else {
+            Q[Q.parlament_current_ciu + "_parlament_" + c + "_unemployed_support"] -= 1;
+            Q["erc_parlament_" + c + "_unemployed_support"] += 0.5;
+            Q["cup_parlament_" + c + "_unemployed_support"] += 0.1;
+            Q["abstain_parlament_" + c + "_unemployed_support"] += 0.4;
+            Q[Q.parlament_current_ciu + "_parlament_" + c + "_young_support"] -= 1;
+            Q["erc_parlament_" + c + "_young_support"] += 0.3;
+            Q["cup_parlament_" + c + "_young_support"] += 0.4;
+            Q["abstain_parlament_" + c + "_young_support"] += 0.3;
+            Q[Q.parlament_current_ciu + "_parlament_" + c + "_middle_support"] -= 1;
+            Q["erc_parlament_" + c + "_middle_support"] += 0.4;
+            Q["cup_parlament_" + c + "_middle_support"] += 0.4;
+            Q["abstain_parlament_" + c + "_middle_support"] += 0.2;
+        }
+    } 
+    G.spaSupportInject(Q, "erc", "catalunya", 0.5, Q.parlament_current_ciu);
+    G.spaSupportInject(Q, "abstain", "catalunya", 0.5, Q.parlament_current_ciu);
     Q.corruption_events_ciu += 1;
 !}
 role: event
 
-- @post_event: TODO
+= The deepening of ​CDC's corruption cases
+
+The multiple cases orbiting around CDC, from the Palau case to the Pujol family affair, have now for years hit heavily the credibility of the party. Nonetheless, the big rumoured corruption network has been, for years, the unproven but loudly rumoured "3%-system". In this scheme, businessmen across Catalonia would benefit from rigged public contracts in exchange for a donation of roughly 3% of the contract's value to foundations linked to the party. A recent police investigation in CDC-ruled Torredembarra (near Tarragona) may have finally have provided enough proof to open an official investigation, and former party members are starting to get indicted. 
+
+- @post_event: Pasqual Maragall already said it in 2005...

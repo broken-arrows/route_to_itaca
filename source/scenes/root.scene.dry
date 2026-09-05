@@ -1303,7 +1303,7 @@ on-arrival: {!
   Q.pau_juvilla_advisor = 0;
 
 
-  Q.random_seed = Math.floor(Math.random() * 6);
+  Q.random_seed = Math.floor(Math.random() * 7);
   console.log("Random Seed: " + Q.random_seed);
 
   switch (Q.random_seed) {
@@ -1327,8 +1327,12 @@ on-arrival: {!
       Q.random_seed_author = "Artur Mas, President de la Generalitat, 2012";
       break;
     case 4:
-      Q.random_seed_quote_text = "\"What cannot be, cannot be, on top of that it is impossible.\"";
+      Q.random_seed_quote_text = "What cannot be, cannot be, on top of that it is impossible.";
       Q.random_seed_author = "Mariano Rajoy, Presidente del Gobierno, 2017";
+      break;
+    case 5:
+      Q.random_seed_quote_text = "You have a problem, and this problem is about \"the 3%\"";
+      Q.random_seed_author = "Pasqual Maragall, President de la Generalitat, 2005";
       break;
   }
 !}

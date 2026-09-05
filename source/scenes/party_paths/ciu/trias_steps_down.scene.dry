@@ -1,5 +1,5 @@
 title: Trias no longer leads the Barcelona bid
-view-if: year = 2017 and month = 9
+view-if: year = 2017 and month = 9 and 1==0
 tags: event
 new-page: true
 max-visits: 1

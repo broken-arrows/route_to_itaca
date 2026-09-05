@@ -1,4 +1,4 @@
-title: Post Event
+title: Continue...
 new-page: true
 on-arrival: {!
 Q.last_advisor_action = 0;
@@ -407,6 +407,12 @@ if ((!Q.hidden_bng_surge) && (Q.year == 2019)) {
     } else {
         G.spaSupportInject(Q, 'bng', 'galicia', 5.5, 'up');
     }
+}
+if ((!Q.hidden_erc_ciu_transfer) && (Q.year == 2016 && Q.month == 5)) {
+    // TBD/FIXME: Make this dynamic
+    Q.hidden_erc_ciu_transfer = true;
+    G.spaSupportInject(Q, 'erc', 'catalunya', 2.0, 'ciu');
+    G.spaSupportInject(Q, 'erc', 'catalunya', 2.0, 'abstain');
 }
 if ((!Q.podemos_hidden_surge) && (Q.year == 2014 && Q.month == 5)) {
     Q.podemos_hidden_surge = true;

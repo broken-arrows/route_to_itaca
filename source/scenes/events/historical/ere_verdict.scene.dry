@@ -1,12 +1,19 @@
-title: The ERE case
-view-if: year = 2015 and month = 10
+title: ERE case conclusions deepen
+subtitle: The "largest political corruption case in Spanish history" unequivocally imply former PSOE top-brass
+view-if: year = 2015 and month = 6
+face-image: img/events/ere_case.jpeg
 tags: event
 new-page: true
 max-visits: 1
 on-arrival: {!
-    // Andalusia ERE corruption verdict against PSOE officials.
     Q.corruption_psoe += 20;
 !}
 role: event
 
-- @post_event: TODO
+= ERE case conclusions deepen
+
+Under investigation since 2011, the ERE case has only continued to grow as more and more is progressively discovered about the PSOE's Andalusian branch massive embezzlement of public funds. The socialists, who have been ruling the region since the death of Franco without interruption and virtually undisputed, would have deviated, between 2000 and 2010, more than €680 million (and, potentially, up to a billion) in public funds meant for early retirement and aid to struggling companies, to the benefit of top-party officials and other friendly actors in the private sphere. 
+
+The case has, at this point, grow too big and unmanageable for the Seville court, and has been officially taken over by the Supreme Court. This has also allowed, finally, the indictment of two former regional presidents, who have now ben found "likely" to have knowingly enabled the scheme. Trials will still take time to complete, yet the blow to the PSOE's credibility can't hardly be more severe. 
+
+- @post_event: PSOE and PP, two faces of the same coin...

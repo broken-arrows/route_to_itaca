@@ -1,5 +1,5 @@
 title: Jordi Pujol addresses the Parlament
-subtitle: The former President will testify about his financial holdings abroad
+subtitle: The former President to testify about his financial holdings abroad
 view-if: month == 9 and year == 2014
 face-image: img/events/pujol_parlament.jpg
 new-page: true
@@ -10,11 +10,9 @@ on-arrival: {!
     Q.corruption_events_ciu += 1;
     Q.independence_trust -= 10;
 
-    // TODO: move some votes arround
-
     // Reset DL formation trigger so it does not happen the same month
-    if (Q.countdowns.includes("dl_formation") && Q.dl_formation_countdown < 3 && !Q.dl_formation_trigger) {
-        Q.dl_formation_countdown = 3;
+    if (Q.countdowns.includes("dl_formation") && Q.dl_formation_countdown < 2 && !Q.dl_formation_trigger) {
+        Q.dl_formation_countdown = 2;
         Q.dl_formation_trigger = false;
     }
 
@@ -23,6 +21,44 @@ role: event
 
 = ​Jordi Pujol addresses the Parlament
 
-TODO: text, Pujol talks to the Parlament about his financial holdings, it's a complete shitshow as he starts scolding MPs who question him, his wife and suspected main financial manager, Marta Ferrusola, concludes with "Catalunya no s'ho mereix això!" (Catalonia does not deserve this!) which is both ridiculous and insulting.
+Former President for over two decades, Jordi Pujol has been cited to the Parlament to testify regarding the alleged undeclared fortune held abroad in Tax Havens, in Andorra, and potentially also Switzerland. Pujol is considered one of the fathers of modern-day autonomic Catalonia, and has been elevated to myth-level by many, specially in rural areas and by the upper-middle class. Needless to say, this investigations regarding him and his family may take him, and CDC, the party carrying out his legacy, down from the pedestal where they have stood in public regard. 
+
+- @be_chill
+- @push_hard
+
+@be_chill
+title: Go light on the former President
+choose-if: player_party != "cup"
+unavailable-subtitle: There is no way our party can refuse the chance to bash at such a massive wrongdoing by CDC
+on-arrival: {!
+    Q[Q.parlament_current_ciu + "_relations"] += 5;
+    Q.cup_relations -= 7;
+    Q[Q.parlament_current_icv + "_relations"] -= 7;
+!}
+go-to: conclusion
+
+Our members of the Parlament have been quite concise with their questions and have tried their best to not overstep while keeping up with appearances. This has been quietly noticed by [+ parlament_current_ciu +] members, who are clearly struggling during this extraordinary plenary session. 
+
+Yet, despite our best efforts, the session has gotten out of hand regardless.
+
+@push_hard
+title: Push for him to admit to as much as possible
+on-arrival: {!
+    Q[Q.parlament_current_ciu + "_relations"] -= 7;
+    Q.cup_relations += 5;
+    Q[Q.parlament_current_icv + "_relations"] += 5;
+    Q.psc_relations += 4;
+!}
+go-to: conclusion
+
+Our members of the Parlament have not had any filters, and have been pushing the former President hard to explain as much as possible about the party's dealings, the relation it has with his family, and how the rest of the corruption cases hovering around CDC are linked. 
+
+With our pressure, summed to that added by other parties, the session has gotten completely out of hand.
+
+@conclusion
+
+Jordi Pujol has had no filter. Not only he has basically not answered meaningfully regarding anything, but has scolded every single MP who has questioned him. CUP MP David Fernàndez has received the most of this scolding, after he has pushed hard for him to explain how his family and specially his sons have benefitted personally from his time in power. 
+
+In a final moment of complete surreality, Pujol's wife and alleged main financial mastermind of the operation Marta Ferrusola has, during her testimony, has behaved as a disappointed mother, concluding her speech with "Catalonia does not deserve this!".
 
 - @post_event: What even was that?

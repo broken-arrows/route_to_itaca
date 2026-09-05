@@ -2,11 +2,17 @@ title: The Bárcenas Papers
 view-if: year = 2013 and month = 1
 tags: event
 new-page: true
+face-image: img/events/barcenaspapers.jpg
 max-visits: 1
 on-arrival: {!
-    // El País publishes Bárcenas's secret accounts — PP slush-fund crisis.
     Q.corruption_pp += 35;
 !}
 role: event
 
-- @post_event: TODO
+= The Bárcenas Papers
+
+In a shocking revelation, the El Mundo and El País newspapers have published leaked documents from the PP's former treasurer, Luis Bárceas under the leadership of Presidente José María Aznar. In these hand-written documents and notes, the PP's top leadership and close associates are shown to have been receiving large sums of money in cash. The supposed blank envelopes would have included under-the-table payments of up to 15 thousand euros per month, coming from the party's subsidies and private donations.
+
+The party has not only denied any wrongdoing and challenged the authenticity of the documents, but also risen tensions with the former treasurer who, on his side, has now sued the party for improperly dismissing him. The trials for the now called "Bárcenas Case" are expected to be long and complex to say the least.
+
+- @post_event: PP corruption is hardly shocking though...

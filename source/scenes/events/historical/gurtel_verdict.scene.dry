@@ -1,13 +1,21 @@
-title: The Gürtel verdict
+title: Gürtel case reaches a verdict
 view-if: year = 2018 and month = 5
 tags: event
 new-page: true
+face-image: img/events/gurtel.jpg
 max-visits: 1
 on-arrival: {!
-    // Supreme Court confirms PP benefited from the Gürtel network — triggers the
-    // no-confidence vote.
+    // TODO: Trigger confidence vote?
     Q.corruption_pp += 25;
+
+    Q.gurtel_includes_gob = Q.spanish_coalition.includes("pp");
 !}
 role: event
 
-- @post_event: TODO
+= Gürtel case reaches a verdict
+
+After an almost decade-long investigation, the courts have finally reached a verdict regarding the Gürtel case. The case, of incredible complexity, is also tightly linked to the Bárcenas affair, and would explain part of the "B-side financing" of the PP. The head of the operation, Francisco Correa (hence the case name, the literal translation of "Correa", belt, to German), has now been proven to have been running a massive network to funnel illegal kickbacks to the PP across many regions it governed, with the top dogs being Madrid and Valencia. Wealthy businessmen and big contracting companies would, by funding these kickbacks, benefit from rigged public tenders, with instances of these practices going back, at least, to the party's foundation in 1989. 
+
+The ruling has not only proven these facts, but also defined them not as a rogue deviation, but as a structural feature of the party for decades. To top it of, Mariano Rajoy has also been found to no have been truthful in his testimony. [? if gurtel_includes_gob: This may very well threaten the current [+ spanish_coalition_disp +]. ?][? if not gurtel_includes_gob: As if Rajoy's legacy could not get murkier. ?]
+
+- @post_event
