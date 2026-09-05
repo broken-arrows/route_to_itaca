@@ -176,6 +176,7 @@ on-display: {!
     };
 
     // TODO: Actual BCN govt formation, etc
+    Q.local_barcelona_wp = "bcomu";
 !}
 
 = Local Election Results

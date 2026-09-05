@@ -40,6 +40,21 @@
     ferrusola: function (Q) {
       return [{ colour: "cdc", label: "CDC" }];
     },
+    josep_anglada: function (Q) {
+      if (Q.year < 2015) {
+        return [{ colour: "pxc", label: "PxC" }];
+      }
+      return [
+        { colour: "pxc", label: "PxC", note: "former" },
+        { colour: "indp", label: "indp." },
+      ];
+    },
+    jordi_casacuberta: function (Q) {
+      if (Q.year >= 2015) {
+        return [{ colour: "fnc", label: "FNC" }];
+      }
+      return [{ colour: "indp", label: "indp." }];
+    },
     artur_mas: function (Q) {
       var list = [
         { colour: "cdc", label: "CDC" },

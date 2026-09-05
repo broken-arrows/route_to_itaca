@@ -1,15 +1,18 @@
-title: Barcelona's new left surge
-view-if: next_local_election_time - time <= 6 and 0
-face-image: img/events/podemos_formation.jpg
+title: Barcelona's new left
+subtitle: Ada Colau unveils a new political project
+view-if: next_local_election_time - time <= 9
+face-image: img/events/bcomu_formation.jpg
 tags: event
 new-page: true
 max-visits: 1
 on-arrival: {!
-    // TODO: complete 
-    Q.podemos_surged = true; // TODO: check if this should be flagged as true here??
-    Q.podemos_channeling = 1;
-    Q.social_dissent += 5;
-
-    // whatever is missing
+    Q.bcomu_local_barcelona_support += Q.icv_local_barcelona_support;
+    Q.icv_local_barcelona_support = 0;
 !}
 role: event
+
+= Barcelona, "in Common"?
+
+In a truly commendable project of local and neighbourhood networking and root-based platform building, housing-rights advocate and social activist Ada Colau has kickstarted a new left-wing, anti-austerity political project to dispute the currently CiU-held Barcelona mayorship. bcomu, the new political space, has already gathered the support of ICV-EUiA and Podemos, who have already joined in support, as well as many in the social activism sphere, unions, and other left spaces.
+
+- @post_event: We'll soon see how she fares...

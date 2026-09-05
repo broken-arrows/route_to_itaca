@@ -815,6 +815,30 @@
       }
     },
     {
+      "id": "josep_anglada",
+      "match": ["Josep Anglada"],
+      "colour": "pxc",
+      "tooltip": {
+        "title": "Josep Anglada i Rius",
+        "img": "img/other_leaders/anglada.jpg",
+        "q": {
+          "ideology": "Far-right Nationalism, Centralism"
+        }
+      }
+    },
+    {
+      "id": "jordi_casacuberta",
+      "match": ["Jordi Casacuberta"],
+      "colour": "fnc",
+      "tooltip": {
+        "title": "Jordi Casacuberta i Pérez",
+        "img": "img/other_leaders/casacuberta.png",
+        "q": {
+          "ideology": "Far-right Nationalism, Unilateralism"
+        }
+      }
+    },
+    {
       "id": "fncbcn",
       "match": ["fncbcn"],
       "display": "FNC",
