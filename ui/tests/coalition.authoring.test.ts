@@ -209,7 +209,7 @@ describe('authored coalition tooltip metadata', () => {
     expect(adapter.qualities.pdcat_external_support).toBe(false);
     expect(frame.html).not.toContain('Thanks to our mediation efforts');
     expect(frame.html).not.toContain('Thanks to our efforts');
-    expect(frame.html).toContain('we remain in opposition');
+    expect(frame.html).toContain('keep the CUP out of the negotiations');
   });
 
   it('resolves Dendry arithmetic and party ids inside option-title attributes', () => {

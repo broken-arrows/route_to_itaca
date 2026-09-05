@@ -1,4 +1,4 @@
-title: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_icv +][? if cup_broad_kind = 'popular_unity':  cup?][? if cup_broad_kind = 'new_popular_front' or cup_broad_kind = 'minority_left_tripartite':  psc?]" data-summary="Cabinet - [+ parlament_coalition_cabinet_seats +]/[+ parlament_s_majority +]"><span style="color: [? if parlament_coalition_leader = 'erc': var(--erc)?][? if parlament_coalition_leader = 'cup': var(--cup)?][? if parlament_coalition_leader = parlament_current_icv: var(--[+ parlament_current_icv +])?]; font-style: italic;">[? if cup_broad_kind = "republican": Republican Government?][? if cup_broad_kind = "popular_unity": Popular Unity Coalition?][? if cup_broad_kind = "new_popular_front": New Popular Front?][? if cup_broad_kind = "minority_left_tripartite": Minority Left Tripartite?]</span></span> negotiations
+title: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_icv +][? if cup_broad_kind = 'popular_unity':  cup?][? if cup_broad_kind = 'new_popular_front' or cup_broad_kind = 'minority_left_tripartite':  psc?]" data-summary="Cabinet - [+ parlament_coalition_cabinet_seats +]/[+ parlament_s_majority +]">[? if cup_broad_kind = "republican": <span style="color: var(--erc); font-style: italic;">Republican</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Government</span>?][? if cup_broad_kind = "popular_unity": <span style="color: var(--erc); font-style: italic;">Popular</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Unity</span> <span style="color: var(--cup); font-style: italic;">Coalition</span>?][? if cup_broad_kind = "new_popular_front": <span style="color: var(--erc); font-style: italic;">New</span> <span style="color: var(--psc); font-style: italic;">Popular</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Front</span>?][? if cup_broad_kind = "minority_left_tripartite": <span style="color: var(--erc); font-style: italic;">Minority Left</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Tri</span><span style="color: var(--psc); font-style: italic;">partite</span>?]</span> negotiations
 subtitle: [? if cup_broad_coalition_phase = 1: The parties have opened the first round of negotiations.?][? if cup_broad_coalition_phase = 2: The parties have returned for a second round with a revised proposal.?][? if cup_broad_coalition_phase = 3: This is the third and final round of negotiations.?]
 tags: event
 role: event
@@ -242,9 +242,19 @@ on-arrival: {!
     }
     Q.cat_coalition_support = (Q.cup_broad_kind == "republican" || Q.cup_broad_kind == "new_popular_front") ? ["cup"] : [];
     Q.cat_coalition_abstain = Q.cup_broad_kind == "minority_left_tripartite" ? ["cup"] : [];
-    var label = Q.cup_broad_kind == "republican" ? "Republican Government" : (Q.cup_broad_kind == "popular_unity" ? "Popular Unity Coalition" : (Q.cup_broad_kind == "new_popular_front" ? "New Popular Front" : "Minority Left Tripartite"));
+    var comunsStyle = "color: var(--" + Q.parlament_current_icv + "); font-style: italic;";
+    var label = "";
+    if (Q.cup_broad_kind == "republican") {
+        label = "<span style='color: var(--erc); font-style: italic;'>Republican</span> <span style='" + comunsStyle + "'>Government</span>";
+    } else if (Q.cup_broad_kind == "popular_unity") {
+        label = "<span style='color: var(--erc); font-style: italic;'>Popular</span> <span style='" + comunsStyle + "'>Unity</span> <span style='color: var(--cup); font-style: italic;'>Coalition</span>";
+    } else if (Q.cup_broad_kind == "new_popular_front") {
+        label = "<span style='color: var(--erc); font-style: italic;'>New</span> <span style='color: var(--psc); font-style: italic;'>Popular</span> <span style='" + comunsStyle + "'>Front</span>";
+    } else {
+        label = "<span style='color: var(--erc); font-style: italic;'>Minority Left</span> <span style='" + comunsStyle + "'>Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span>";
+    }
     var summary = (Q.cup_broad_kind == "minority_left_tripartite" ? "Minority government" : "Invested government") + " - " + Q.parlament_coalition_support_seats + "/" + Q.parlament_s_majority;
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, summary, "<span style='color: var(--erc); font-style: italic;'>" + label + "</span>");
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, summary, label);
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cup_in_gob = Q.cup_broad_kind == "popular_unity";
