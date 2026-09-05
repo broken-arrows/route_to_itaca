@@ -1,5 +1,5 @@
 title: National Day of Catalonia (2017)
-view-if: year = 2017 and month = 9
+view-if: year = 2017 and month = 9 and not rubicon
 tags: event
 new-page: true
 max-visits: 1
@@ -43,6 +43,12 @@ on-arrival: {!
     Q.diada_size = clamp((0.35 + 0.020 * gap + 0.60 * voteDraw) * antag * (1 - 0.40 * grief), 0.2, 2.0);
     Q.diada_size = Math.round(Q.diada_size * 100) / 100;
 !}
+set-bg: img/diada/2010.jpg
+face-image: img/diada/2017.jpg
 role: event
 
-- @post_event: TODO
+= National Day for the "Yes"
+
+Another year, another National Day of Catalonia, another massive show of force by the ANC and Omnium Cultural. The "Day of the Yes" (to the Catalan Republic) has seen [+ diada_size +] million people flooding the Passeig de Gràcia and Aragó streets in Barcelona, forming a giant "+" sign. 
+
+- @post_event: The message needs no spelling out

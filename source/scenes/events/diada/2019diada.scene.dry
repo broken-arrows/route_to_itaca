@@ -1,5 +1,5 @@
 title: National Day of Catalonia (2019)
-view-if: year = 2019 and month = 9
+view-if: year = 2019 and month = 9 and not rubicon
 tags: event
 new-page: true
 max-visits: 1
@@ -43,6 +43,12 @@ on-arrival: {!
     Q.diada_size = clamp((0.35 + 0.020 * gap + 0.60 * voteDraw) * antag * (1 - 0.40 * grief), 0.2, 2.0);
     Q.diada_size = Math.round(Q.diada_size * 100) / 100;
 !}
+set-bg: img/diada/2010.jpg
+face-image: img/diada/2019.jpg
 role: event
 
-- @post_event: TODO
+= Goal: Independence
+
+Yet again, the National Day of Catalonia has been marked by the ANC and Omnium Cultural's massive demonstrations in the Catalan capital. With [+ diada_size +] million on the streets, the message now borders on desperation: let's not forget that the goal is Independence, and that, despite everything, the Catalan Republic is still not a reality. 
+
+- @post_event: We may be failing somewhere here...

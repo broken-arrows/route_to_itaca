@@ -1,5 +1,5 @@
 title: National Day of Catalonia (2015)
-view-if: year = 2015 and month = 9
+view-if: year = 2015 and month = 9 and not rubicon
 tags: event
 new-page: true
 max-visits: 1
@@ -43,6 +43,14 @@ on-arrival: {!
     Q.diada_size = clamp((0.35 + 0.020 * gap + 0.60 * voteDraw) * antag * (1 - 0.40 * grief), 0.2, 2.0);
     Q.diada_size = Math.round(Q.diada_size * 100) / 100;
 !}
+set-bg: img/diada/2010.jpg
+face-image: img/diada/2015.jpg
 role: event
 
-- @post_event: TODO
+= Free Way to the Catalan Republic
+
+One more year, the ANC and Omnium Cultural have filled the streets of Barcelona, loudly demanding independence. [+ diada_size +] million people have filled this time the entire length of the Meridiana avenue, with a whole organized show simbolizing the need to build, together, the way or the path to a new Catalan Republic. 
+
+While all pro-independence parties have unanimously supported the event and partaken in it, the Spanish Government reaction has been, still, to keep quiet about it. The only official reaction has been a tweet by Vicepresidenta Soraya Sáenz de Santamaría saying that "democracy is not only about going to the polls" and that "law and the ruling of the courts needs to be respected".
+
+- @post_event

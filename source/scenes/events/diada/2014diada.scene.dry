@@ -1,5 +1,5 @@
-title: National Day of Catalonia (2014)
-view-if: year = 2014 and month = 9
+title: National Day of Catalonia
+view-if: year = 2014 and month = 9 and not rubicon
 tags: event
 new-page: true
 max-visits: 1
@@ -43,6 +43,14 @@ on-arrival: {!
     Q.diada_size = clamp((0.35 + 0.020 * gap + 0.60 * voteDraw) * antag * (1 - 0.40 * grief), 0.2, 2.0);
     Q.diada_size = Math.round(Q.diada_size * 100) / 100;
 !}
+set-bg: img/diada/2010.jpg
+face-image: img/diada/2014.jpg
 role: event
 
-- @post_event: TODO
+= The 2014 Catalan Way
+
+In a new show of force for the independence movement, the ANC and Omnium Cultural have filled the streets of Barcelona with yet another rally of unprecedented scale. [+ diadia_size +] million Catalans have formed a giant human "V". Coordinating at scale, the "V" for "Victory" and for "Way" (in Catalan, understood as a "way to the Catalan Republic") the protest filled Barcelona's Diagonal and Gran Via avenues.
+
+One more year, the protest has remained peaceful and festive, with people from all walks of life (though mostly middle-class families) organizing and cleaning up after every act. 
+
+- @post_event: One more year, the message is hard to miss

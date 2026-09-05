@@ -91,7 +91,9 @@ on-arrival: {!
     Q.cat_coalition_support = Q.pdcat_external_support ? ["pdcat"] : [];
     Q.cat_coalition_abstain = [];
     var coalitionSeats = Q.pdcat_external_support ? Q.parlament_coalition_pdcat_support_s : Q.parlament_coalition_erc_ciu_s;
-    var coalitionName = Q.pdcat_external_support ? "<span style='color: var(--erc); font-style: italic;'>Soft-Sovereignty Government</span>" : "<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>government</span>";
+    var coalitionName = Q.pdcat_external_support 
+        ? "<span style='color: var(--pdcat); font-style: italic;'>Soft</span>-<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Government</span>"
+        : "<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Government</span>";
     Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (Q.pdcat_external_support ? "Minority government - " : "Majority government - ") + coalitionSeats + "/" + Q.parlament_s_majority, coalitionName);
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
@@ -186,7 +188,7 @@ on-arrival: {!
 go-to: parlament_coalition_setnames
 set-jump: cup_resolve
 
-[? if not parlament_coalition_pdcat_support_resolved: Thanks to our efforts, ?]ERC and [+ parlament_current_ciu +] have reached an agreement to form a [+ cat_coalition_disp +]. [? if parlament_coalition_pdcat_support_resolved: The pdcat will support the investiture explicitly to keep us out of any negotiations.?] The Speaker of the House will be [+ speaker +] ([+ speaker_party +]), and the government has taken the following shape:
+[? if not parlament_coalition_pdcat_support_resolved: Thanks to our efforts, ?]ERC and [+ parlament_current_ciu +] have reached an agreement to form a [+ cat_coalition_disp +]. [? if parlament_coalition_pdcat_support_resolved: The pdcat will support the investiture explicitly to keep the CUP out of the negotiations.?] The Speaker of the House will be [+ speaker +] ([+ speaker_party +]), and the government has taken the following shape:
 
 @cup_resolve
 

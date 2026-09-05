@@ -6,7 +6,7 @@ This scene must be entered through one of its coalition choices.
 title: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_icv +]" data-summary="Government supported by CUP"><span style="color: var(--erc); font-style: italic;">Republican Government</span></span>
 view-if: erc_parlament_s > 0 and parlament_current_icv_s > 0 and cup_parlament_s > 0
 choose-if: parlament_republican_available
-unavailable-subtitle: The parties' roadmaps, leadership, or combined seats cannot sustain this government.
+unavailable-subtitle: [? if parlament_route_cup_broad_block_roadmap: [+ parlament_current_icv +] cannot deal with ERC's current roadmap. ?][? if parlament_route_cup_broad_block_relations: Relations with [+ parlament_current_icv +] are too poor, and we lack the resources to bridge them. ?][? if parlament_route_republican_block_leadership: ERC is not the largest prospective cabinet party. ?][? if parlament_route_republican_block_cup_needed: ERC and [+ parlament_current_icv +] can govern without the CUP's support. ?][? if parlament_route_republican_block_seats: Even with the CUP's support there is no majority to cannot elect this cabinet. ?][? if parlament_route_republican_block_cup_role: The CUP is demanding to enter the cabinet instead of merely supporting it. ?]
 on-arrival: {!
     Q.cup_broad_kind = "republican";
 !}
@@ -16,7 +16,7 @@ go-to: setup
 title: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_icv +] cup" data-summary="Majority government"><span style="color: var(--cup); font-style: italic;">Popular Unity Coalition</span></span>
 view-if: erc_parlament_s > 0 and parlament_current_icv_s > 0 and cup_parlament_s > 0
 choose-if: parlament_popular_unity_available
-unavailable-subtitle: The parties' roadmaps, leadership, relations, or combined seats block a cabinet agreement.
+unavailable-subtitle: [? if parlament_route_cup_broad_block_roadmap: [+ parlament_current_icv +] cannot deal with ERC's current Roadmap. ?][? if parlament_route_cup_broad_block_relations: Relations with [+ parlament_current_icv +] are too poor and we lack the resources to bridge them. ?][? if parlament_route_popular_unity_block_seats: ERC, [+ parlament_current_icv +], and the CUP do not have a combined majority. ?][? if parlament_route_popular_unity_block_cup_cabinet: The CUP seems willing to support an ERC cabinet, but will not join it. ?]
 on-arrival: {!
     Q.cup_broad_kind = "popular_unity";
 !}
@@ -26,7 +26,7 @@ go-to: setup
 title: <span class="generalitat-coalition" data-parties="erc psc [+ parlament_current_icv +]" data-summary="Government supported by CUP"><span style="color: var(--erc); font-style: italic;">New Popular Front</span></span>
 view-if: erc_parlament_s > 0 and psc_parlament_s > 0 and parlament_current_icv_s > 0 and cup_parlament_s > 0
 choose-if: parlament_new_popular_front_available
-unavailable-subtitle: This arrangement requires Montserrat Tura, a nonzero ERC roadmap, and sufficient CUP support.
+unavailable-subtitle: [? if erc_roadmap <= 0: ERC has no active independence roadmap on which to base the agreement. ?][? if parlament_route_new_popular_front_block_psc: The current PSC leadership is unwilling to join such an outrageous government agreement. ?][? if parlament_route_new_popular_front_block_leadership: ERC is not leading in seats in the Parlament, so it can hardly propose a leading such coalition. ?][? if parlament_route_new_popular_front_block_cup_needed: The cabinet already has a majority and does not need the CUP's support. ?][? if parlament_route_new_popular_front_block_seats: Even with the CUP's support, this prospective government is lacking a majority. ?][? if parlament_route_new_popular_front_block_cup_role: The CUP would rather enter a smaller cabinet instead of merely supporting this one. ?]
 on-arrival: {!
     Q.cup_broad_kind = "new_popular_front";
 !}
@@ -36,7 +36,7 @@ go-to: setup
 title: <span class="generalitat-coalition" data-parties="erc psc [+ parlament_current_icv +]" data-summary="Minority government tolerated by CUP"><span style="color: var(--erc); font-style: italic;">Minority Left Tripartite</span></span>
 view-if: erc_parlament_s > 0 and psc_parlament_s > 0 and parlament_current_icv_s > 0 and cup_parlament_s > 0
 choose-if: parlament_minority_left_tripartite_available
-unavailable-subtitle: This minority cabinet requires Tura or Ros, a nonzero ERC roadmap, and enough seats after CUP abstention.
+unavailable-subtitle: [? if erc_roadmap <= 0: ERC has no active independence roadmap on which to base the agreement. ?][? if parlament_route_minority_left_block_psc: The current PSC leadership is unwilling to join such an outrageous government agreement. ?][? if parlament_route_minority_left_block_leadership: ERC is not leading in seats in the Parlament, so it can hardly propose a leading such coalition. ?][? if parlament_route_minority_left_block_cup_needed: The cabinet already has a majority and does not need the CUP's abstention. ?][? if parlament_route_minority_left_block_seats: Even a CUP abstention is insufficient to elect this cabinet. ?][? if parlament_route_minority_left_block_cup_role: The CUP would rather enter a smaller cabinet instead of merely abstaining. ?]
 on-arrival: {!
     Q.cup_broad_kind = "minority_left_tripartite";
 !}
@@ -58,7 +58,7 @@ on-arrival: {!
     if (Q.cup_broad_kind == "popular_unity" && Q.parlament_current_icv_s > Q.erc_parlament_s && Q.parlament_current_icv_s > Q.cup_parlament_s) {
         Q.parlament_coalition_leader = Q.parlament_current_icv;
     }
-    if (Q.cup_broad_kind == "popular_unity" && Q.cup_parlament_s > Q.erc_parlament_s && Q.cup_parlament_s > Q.parlament_current_icv_s) {
+    if (Q.cup_broad_kind == "popular_unity" && Q.cup_parlament_s > Q.erc_parlament_s && Q.cup_parlament_s >= Q.parlament_current_icv_s) {
         Q.parlament_coalition_leader = "cup";
     }
     // The cabinet leader normally nominates the largest junior cabinet partner.

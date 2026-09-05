@@ -224,21 +224,19 @@ describe('authored coalition tooltip metadata', () => {
     expect(html).toMatch(/<\/span> \(PP - csspa\)$/);
   });
 
-  it('keeps legacy colour spans nested inside semantic coalition triggers', () => {
-    const directories = [
-      resolve(root, 'source/scenes/events/elections'),
-      resolve(root, 'source/scenes/events/congreso_elections'),
-    ];
+  it('gives every semantic coalition title a nested custom colour span', () => {
+    const directories = [resolve(root, 'source/scenes/events/elections')];
     const titleLines = directories.flatMap((directory) =>
       readdirSync(directory)
         .filter((name) => /^(parlament|congreso)_coalition.*\.scene\.dry$/.test(name))
         .flatMap((name) => readFileSync(resolve(directory, name), 'utf8').split(/\r?\n/))
-        .filter((line) => line.startsWith('title:') && line.includes('<span style=')),
+        .filter((line) => line.startsWith('title:') && /class="(?:generalitat|gobierno)-coalition"/.test(line)),
     );
 
     expect(titleLines.length).toBeGreaterThan(0);
     for (const line of titleLines) {
       const semantic = line.search(/class="(?:generalitat|gobierno)-coalition"/);
+      expect(line, line).toContain('<span style=');
       expect(semantic, line).toBeGreaterThanOrEqual(0);
       expect(semantic, line).toBeLessThan(line.indexOf('<span style='));
     }

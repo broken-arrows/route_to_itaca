@@ -1,4 +1,4 @@
-title: <span class="generalitat-coalition" data-parties="erc cup" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]">ERC-led Left-Independence Government</span> negotiations
+title: ERC-led <span class="generalitat-coalition" data-parties="erc cup" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">Left-Independence</span> <span style="color: var(--cup); font-style: italic;">Government</span></span> negotiations
 subtitle: [? if erc_cup_coalition_phase = 1: ERC submits its opening government proposal to the CUP.?][? if erc_cup_coalition_phase = 2: The CUP and ERC enter the second round of negotiations.?][? if erc_cup_coalition_phase = 3: The third and final round of negotiations begins.?]
 tags: event
 role: event

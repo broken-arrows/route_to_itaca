@@ -1,5 +1,5 @@
 title: National Day of Catalonia (2016)
-view-if: year = 2016 and month = 9
+view-if: year = 2016 and month = 9 and not rubicon
 tags: event
 new-page: true
 max-visits: 1
@@ -43,6 +43,12 @@ on-arrival: {!
     Q.diada_size = clamp((0.35 + 0.020 * gap + 0.60 * voteDraw) * antag * (1 - 0.40 * grief), 0.2, 2.0);
     Q.diada_size = Math.round(Q.diada_size * 100) / 100;
 !}
+set-bg: img/diada/2010.jpg
+face-image: img/diada/2016.jpg
 role: event
 
-- @post_event: TODO
+= We are ready!
+
+This year, the National Day of Catalonia acts organized by the ANC and Omnium Cultural have been decentralized, and have instead filled the streets of many Catalan cities beyond those of Barcelona. Now about being "Ready" for the Catalan Republic, the acts have focused on different goals of the future Republic in different cities, from solidarity and diversity, to culture, territorial equilibrium, and civil freedoms. With a combined assistance of [+ diada_size +] million, the acts have once again remained peaceful and festive.
+
+- @post_event

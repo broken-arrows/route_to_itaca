@@ -1,9 +1,9 @@
-title: Soft Sovereignty Government
+title: Soft-Sovereignty Government
 
 You should not be seeing this text! report a bug :)
 
 @ciu_led
-title: [+ parlament_current_ciu +]-ERC <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +] erc" data-summary="Minority government"><span style="font-style: italic; color: var(--[+ parlament_current_ciu +]);">Soft-Sovereignty Government</span></span>
+title: [+ parlament_current_ciu +]-ERC <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +] erc" data-summary="Minority government"><span style="color: var(--pdcat); font-style: italic;">Soft</span>-<span style="font-style: italic; color: var(--[+ parlament_current_ciu +]);">Sovereignty</span> <span style="color: var(--erc); font-style: italic;">Government</span></span>
 view-if: parlament_pdcat_support_available and parlament_current_ciu_s >= erc_parlament_s and player_party = "erc"
 choose-if: parlament_pdcat_support_available and parlament_current_ciu_s >= erc_parlament_s
 subtitle: The pdcat is willing to support such government as long as the CUP is excluded from it.
@@ -15,7 +15,7 @@ on-arrival: {!
 go-to: parlament_coalition_ciu_erc.erc
 
 @erc_led
-title: ERC-[+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="Minority government"><span style="font-style: italic; color: var(--erc);">Soft-Sovereignty Government</span></span>
+title: ERC-[+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="Minority government"><span style="color: var(--pdcat); font-style: italic;">Soft</span>-<span style="font-style: italic; color: var(--erc);">Sovereignty</span> <span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">Government</span></span>
 view-if: parlament_pdcat_support_available and erc_parlament_s > parlament_current_ciu_s and player_party = "erc"
 choose-if: parlament_pdcat_support_available and erc_parlament_s > parlament_current_ciu_s
 subtitle: The pdcat is willing to support such government as long as the CUP is excluded from it.
@@ -27,10 +27,10 @@ on-arrival: {!
 go-to: parlament_coalition_erc_ciu.erc
 
 @ciu_led_cup
-title: [+ parlament_current_ciu +]-ERC <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +] erc" data-summary="Minority government"><span style="font-style: italic; color: var(--[+ parlament_current_ciu +]);">Soft-Sovereignty Government</span></span>
+title: [+ parlament_current_ciu +]-ERC <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +] erc" data-summary="Minority government"><span style="color: var(--pdcat); font-style: italic;">Soft</span>-<span style="font-style: italic; color: var(--[+ parlament_current_ciu +]);">Sovereignty</span> <span style="color: var(--erc); font-style: italic;">Government</span></span>
 view-if: parlament_pdcat_support_available and parlament_current_ciu_s >= erc_parlament_s and player_party = "cup"
 choose-if: parlament_pdcat_support_available and parlament_current_ciu_s >= erc_parlament_s and erc_relations > 40
-subtitle: The pdcat will provide the missing votes only if the CUP remains outside the cabinet. We can stand aside and allow [+ parlament_current_ciu +] and ERC to attempt this arrangement.
+subtitle: The pdcat will provide the missing votes only if the CUP remains outside the cabinet. It is always an option for us to stand aside and allow [+ parlament_current_ciu +] and ERC to attempt this arrangement.
 unavailable-subtitle: We need better relations with ERC before we can mediate this agreement.
 on-arrival: {!
     Q.pdcat_external_support = true;
@@ -40,7 +40,7 @@ on-arrival: {!
 go-to: parlament_coalition_ciu_erc.cup
 
 @erc_led_cup
-title: ERC-[+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="Minority government"><span style="font-style: italic; color: var(--erc);">Soft-Sovereignty Government</span></span>
+title: ERC-[+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="Minority government"><span style="color: var(--pdcat); font-style: italic;">Soft</span>-<span style="font-style: italic; color: var(--erc);">Sovereignty</span> <span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">Government</span></span>
 view-if: parlament_pdcat_support_available and erc_parlament_s > parlament_current_ciu_s and player_party = "cup"
 choose-if: parlament_pdcat_support_available and erc_parlament_s > parlament_current_ciu_s and erc_relations > 40
 subtitle: The pdcat will provide the missing votes only if the CUP remains outside the cabinet. We can stand aside and allow ERC and [+ parlament_current_ciu +] to attempt this arrangement.

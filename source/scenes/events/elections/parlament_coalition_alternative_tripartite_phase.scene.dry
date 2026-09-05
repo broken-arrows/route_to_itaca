@@ -1,4 +1,4 @@
-title: <span class="generalitat-coalition" data-parties="[+ parlament_current_icv +] psc erc" data-summary="Majority government - [+ parlament_coalition_icv_psc_erc_s +]/[+ parlament_s_majority +]">Alternative Tripartite</span>
+title: <span class="generalitat-coalition" data-parties="[+ parlament_current_icv +] psc erc" data-summary="Majority government - [+ parlament_coalition_icv_psc_erc_s +]/[+ parlament_s_majority +]"><span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Alternative</span> <span style="color: var(--erc); font-style: italic;">Tripartite</span></span>
 subtitle: [? if alternative_tripartite_coalition_phase = 1: The first round of government formation negotiations begins.?][? if alternative_tripartite_coalition_phase = 2: The parties enter the second round of government formation negotiations.?][? if alternative_tripartite_coalition_phase = 3: The third and final round of government formation negotiations begins.?]
 tags: event
 new-page: true

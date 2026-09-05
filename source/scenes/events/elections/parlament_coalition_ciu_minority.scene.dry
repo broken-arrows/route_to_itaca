@@ -4,9 +4,9 @@ You should not be here? Report a bug if you see this text.
 
 @erc
 title: [+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +]" data-summary="Minority government - [+ parlament_current_ciu_s +]/[+ parlament_s_majority +]"><span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">minority government</span></span> (with ERC support)
-choose-if: parlament_coalition_ciu_erc_s >= parlament_s_majority and parlament_current_ciu_s > erc_parlament_s and ((parlament_current_ciu == "ciu" and ciu_roadmap != 0 and ciu_relations > 30) or (parlament_current_ciu == "pdcat" and pdcat_roadmap != 0 and pdcat_relations > 30) or (parlament_current_ciu == "cdc" and cdc_roadmap != 0 and cdc_relations > 30) or (parlament_current_ciu == "dl" and dl_roadmap != 0 and dl_relations > 30) or (parlament_current_ciu == "jxcat" and jxcat_roadmap != 0 and jxcat_relations > 30) or (parlament_current_ciu == "junts" and junts_roadmap != 0 and junts_relations > 30))
-view-if: parlament_coalition_ciu_erc_s and player_party == "erc"
-unavailable-subtitle: [? if parlament_coalition_ciu_erc_s < parlament_s_majority: Not enough parliamentary support. ?][? if (player_party == "erc" and not ((parlament_current_ciu == "ciu" and ciu_relations > 30) or (parlament_current_ciu == "pdcat" and pdcat_relations > 30) or (parlament_current_ciu == "cdc" and cdc_relations > 30) or (parlament_current_ciu == "dl" and dl_relations > 30) or (parlament_current_ciu == "jxcat" and jxcat_relations > 30) or (parlament_current_ciu == "junts" and junts_relations > 30))): [+ parlament_current_ciu +] does not trust us enough to form a government together. ?][? if not ((parlament_current_ciu == "ciu" and ciu_roadmap != 0) or (parlament_current_ciu == "pdcat" and pdcat_roadmap != 0) or (parlament_current_ciu == "cdc" and cdc_roadmap != 0) or (parlament_current_ciu == "dl" and dl_roadmap != 0) or (parlament_current_ciu == "jxcat" and jxcat_roadmap != 0) or (parlament_current_ciu == "junts" and junts_roadmap != 0)): [+ parlament_current_ciu +] has no Roadmap for Independence. ?]
+choose-if: parlament_route_ciu_minority_erc_available
+view-if: parlament_route_ciu_minority_erc_visible and player_party == "erc"
+unavailable-subtitle: [? if parlament_route_ciu_minority_erc_block_seats: Not enough parliamentary support. ?][? if parlament_route_ciu_minority_erc_block_relations: [+ parlament_current_ciu +] does not trust us enough to reach an investiture agreement. ?][? if parlament_route_ciu_minority_erc_block_roadmap: [+ parlament_current_ciu +] has no Roadmap for Independence. ?]
 subtitle: [? if parlament_current_ciu_s > 40: Given the results, we're expected to support [+ parlament_current_ciu_leader +] ?][? if parlament_current_ciu_s <= 40: [+ parlament_current_ciu +] expects a coalition government given the results. ?]
 on-arrival: {!
     Q.parlament_coalition_proposal_president = Q.parlament_current_ciu;
@@ -99,14 +99,14 @@ go-to: post_speaker
 
 @cup
 title: [+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +]" data-summary="Minority government - [+ parlament_current_ciu_s +]/[+ parlament_s_majority +]"><span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">minority government</span></span> (with ERC support)
-view-if: parlament_coalition_ciu_erc_s and player_party == "cup"
+view-if: parlament_route_ciu_minority_erc_visible and player_party == "cup"
 subtitle: [? if parlament_current_ciu_s <= 40: Push ERC to support a [+ parlament_current_ciu +]-only government. ?][? if parlament_current_ciu_s > 40: [+ parlament_current_ciu +] is expecting ERC to support their minority government. ?] 
-choose-if: parlament_coalition_ciu_erc_s >= parlament_s_majority and parlament_current_ciu_s > erc_parlament_s and ((parlament_current_ciu == "ciu" and ciu_roadmap != 0) or (parlament_current_ciu == "pdcat" and pdcat_roadmap != 0) or (parlament_current_ciu == "cdc" and cdc_roadmap != 0) or (parlament_current_ciu == "dl" and dl_roadmap != 0) or (parlament_current_ciu == "jxcat" and jxcat_roadmap != 0) or (parlament_current_ciu == "junts" and junts_roadmap != 0)) and (erc_relations > 40 or parlament_current_ciu_s > 40)
-unavailable-subtitle: [? if parlament_coalition_ciu_erc_s < parlament_s_majority: Not enough parliamentary support. ?][? if not ((parlament_current_ciu == "ciu" and ciu_roadmap != 0) or (parlament_current_ciu == "pdcat" and pdcat_roadmap != 0) or (parlament_current_ciu == "cdc" and cdc_roadmap != 0) or (parlament_current_ciu == "dl" and dl_roadmap != 0) or (parlament_current_ciu == "jxcat" and jxcat_roadmap != 0) or (parlament_current_ciu == "junts" and junts_roadmap != 0)): [+ parlament_current_ciu +] has no Roadmap for Independence. ?][? if erc_relations <= 40: We don't have good enough relations with ERC to push them into this. ?]
+choose-if: parlament_route_ciu_minority_erc_available
+unavailable-subtitle: [? if parlament_route_ciu_minority_erc_block_seats: Not enough parliamentary support. ?][? if parlament_route_ciu_minority_erc_block_roadmap: [+ parlament_current_ciu +] has no Roadmap for Independence. ?][? if parlament_route_ciu_minority_erc_block_relations: We don't have good enough relations with ERC to push them into this. ?]
 on-arrival: {!
     if (Q.parlament_current_ciu_s < 40) {
         Q.erc_relations -= 10;
-        Q.ciu_relations += 15;
+        Q[Q.parlament_current_ciu + "_relations"] += 15;
     }
     Q.parlament_coalition_proposal_president = Q.parlament_current_ciu;
     Q.parlament_coalition_proposal_vp = Q.parlament_current_ciu;
@@ -122,7 +122,10 @@ on-arrival: {!
     Q.cat_coalition_support = ["erc"];
     Q.cat_coalition_abstain = [];
     Q.cat_coalition_disp = Q.parlament_current_ciu + " " + G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government - " + Q[Q.parlament_current_ciu + "_parlament_s"] + "/" + Q.parlament_s_majority, "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>minority government</span>");
+    Q.erc_in_gob = false;
     Q.erc_supporting = true;
+    Q.cup_in_gob = false;
+    Q.cup_supporting = false;
 
     if (Q.parlament_current_ciu_s > 50) {
         Q.speaker_party = Q.parlament_current_ciu;
@@ -168,8 +171,12 @@ on-arrival: {!
 
     Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
 !}
+go-to: parlament_coalition_setnames
+set-jump: cup_display
 
-[+ parlament_current_ciu +] and ERC have reach an agreement for the formation of a [+ cat_coalition_disp +]. The Speaker of the House will be [+ speaker +] ([+ speaker_party +]), and the government has taken the following shape:
+@cup_display
+
+[+ parlament_current_ciu +] and ERC have reached an agreement for the formation of a [+ cat_coalition_disp +]. The Speaker of the House will be [+ speaker +] ([+ speaker_party +]), and the government has taken the following shape:
 
 <div style="display:flex; align-content:center;"><div style="width: 2em; align-content:center"><img src="img/cat_seal.svg"></div><div style="width:80%; padding-left: 1em;"> **M.H.** [? if parlament_coalition_proposal_president_gender = "m": **President** ?][? if parlament_coalition_proposal_president_gender = "f": **Presidenta** ?] **[+ parlament_coalition_proposal_president_name +]** ([+ parlament_coalition_proposal_president +])<br/> <span style="font-size:0.9em;"> [? if parlament_coalition_proposal_vp_gender = "m": **H. Vicepresident** ?][? if parlament_coalition_proposal_vp_gender = "f": **H. Vicepresidenta** ?] [+ parlament_coalition_proposal_vp_name +] ([+ parlament_coalition_proposal_vp +])</span></div></div></div>
 
@@ -189,15 +196,15 @@ on-arrival: {!
 
 Some promises on independence commitments have been made, we'll have to monitor them closely as the legislature progresses. 
 
-- @post_event: Yet another "convergent" bourgeois government...
+- @parlament_coalition_resolve: Yet another "convergent" bourgeois government...
 
 
 @ppc_any
-title: [+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +]" data-summary="Minority government - [+ parlament_current_ciu_s +]/[+ parlament_s_majority +]"><span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">minority government</span></span> (with PPC [? if unio_parlament_s > 0: + unio?] support)
-choose-if: parlament_coalition_ciu_ppc_unio_s >= parlament_s_majority and ((parlament_current_ciu == "ciu" and ciu_roadmap == 0) or (parlament_current_ciu == "pdcat" and pdcat_roadmap == 0) or (parlament_current_ciu == "cdc" and cdc_roadmap == 0) or (parlament_current_ciu == "dl" and dl_roadmap == 0) or (parlament_current_ciu == "jxcat" and jxcat_roadmap == 0) or (parlament_current_ciu == "junts" and junts_roadmap == 0)) and cat_spa_relations > 50
-view-if: parlament_coalition_ciu_ppc_unio_s
-unavailable-subtitle: [? if parlament_coalition_ciu_ppc_unio_s < parlament_s_majority: Not enough parliamentary support. ?][? if (parlament_current_ciu == "ciu" and ciu_roadmap != 0) or (parlament_current_ciu == "pdcat" and pdcat_roadmap != 0 and not pdcat_split) or (parlament_current_ciu == "cdc" and cdc_roadmap != 0) or (parlament_current_ciu == "dl" and dl_roadmap != 0) or (parlament_current_ciu == "jxcat" and jxcat_roadmap != 0) or (parlament_current_ciu == "junts" and junts_roadmap != 0): [+ parlament_current_ciu +] has an ongoing Roadmap to Independence, which the PPC will not tolerate. ?][? if cat_spa_relations <= 50: Catalonia-Spain relations are too strained. ?]
-subtitle: Let the classical right reach an undestanding like the "good" old times. Pujolism will be back.
+title: [+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +]" data-summary="Minority government - [+ parlament_current_ciu_s +]/[+ parlament_s_majority +]"><span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">minority government</span></span> (with PPC[? if parlament_route_ciu_right_use_unio:  + Unio?][? if parlament_route_ciu_right_use_pdcat:  + pdcat?] support)
+choose-if: parlament_route_ciu_right_available
+view-if: parlament_route_ciu_right_visible
+unavailable-subtitle: [? if parlament_route_ciu_right_block_seats: Not enough parliamentary support. ?][? if parlament_route_ciu_right_block_roadmap: [+ parlament_current_ciu +] has an ongoing Roadmap to Independence, which the PPC will not tolerate. ?][? if parlament_route_ciu_right_block_relations: Catalonia-Spain relations are too strained. ?]
+subtitle: Let the classical right reach an understanding like in the "good" old times. Pujolism will be back.
 on-arrival: {!
     // TODO: What happens here besides govt assignments?
     Q.parlament_coalition_proposal_president = Q.parlament_current_ciu;
@@ -249,7 +256,8 @@ on-arrival: {!
 
     Q.cat_coalition = [Q.parlament_current_ciu];
     Q.cat_coalition_support = ["ppc"];
-    if (Q.unio_parlament_s > 0) Q.cat_coalition_support.push("unio");
+    if (Q.parlament_route_ciu_right_use_unio) Q.cat_coalition_support.push("unio");
+    if (Q.parlament_route_ciu_right_use_pdcat) Q.cat_coalition_support.push("pdcat");
     Q.cat_coalition_abstain = [];
     Q.cat_coalition_disp = Q.parlament_current_ciu + " " + G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government - " + Q[Q.parlament_current_ciu + "_parlament_s"] + "/" + Q.parlament_s_majority, "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>minority government</span>");
 
@@ -260,6 +268,10 @@ on-arrival: {!
 
     Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
 !}
+go-to: parlament_coalition_setnames
+set-jump: ppc_display
+
+@ppc_display
 
 After the events leading to the premature ending of Artur Mas's first mandate in 2012, no one would have imagined that CDC [? if parlament_current_ciu != "cdc" and parlament_current_ciu != "ciu": (now [+ parlament_current_ciu +])?] would be able to reach a governing agreement with the PPC for a long while. Yet here we are. This legislature's Speaker of the House will be [+ speaker +] ([+ speaker_party +]), and the government has taken the following shape:
 
@@ -279,4 +291,4 @@ After the events leading to the premature ending of Artur Mas's first mandate in
 
 <div style="display:flex; align-content:center;"><div style="width: 2em; align-content: center"><img style="height:1.5em;" src="img/territory_icon.svg"/></div><div style="width: 100%"> **Territory** ([+ parlament_coalition_proposal_territory +])<br/><span style="font-size:0.9em">[+ parlament_coalition_proposal_territory_name +]</span></div></div>
 
-- @post_event: We can only hope this is not as bad as it looks...
+- @parlament_coalition_resolve: We can only hope this is not as bad as it looks...

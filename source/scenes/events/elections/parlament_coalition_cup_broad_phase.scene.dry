@@ -1,4 +1,4 @@
-title: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_icv +][? if cup_broad_kind = 'popular_unity':  cup?][? if cup_broad_kind = 'new_popular_front' or cup_broad_kind = 'minority_left_tripartite':  psc?]" data-summary="Cabinet seats - [+ parlament_coalition_cabinet_seats +]/[+ parlament_s_majority +]">[? if cup_broad_kind = "republican": Republican Government?][? if cup_broad_kind = "popular_unity": Popular Unity Coalition?][? if cup_broad_kind = "new_popular_front": New Popular Front?][? if cup_broad_kind = "minority_left_tripartite": Minority Left Tripartite?]</span> negotiations
+title: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_icv +][? if cup_broad_kind = 'popular_unity':  cup?][? if cup_broad_kind = 'new_popular_front' or cup_broad_kind = 'minority_left_tripartite':  psc?]" data-summary="Cabinet - [+ parlament_coalition_cabinet_seats +]/[+ parlament_s_majority +]"><span style="color: [? if parlament_coalition_leader = 'erc': var(--erc)?][? if parlament_coalition_leader = 'cup': var(--cup)?][? if parlament_coalition_leader = parlament_current_icv: var(--[+ parlament_current_icv +])?]; font-style: italic;">[? if cup_broad_kind = "republican": Republican Government?][? if cup_broad_kind = "popular_unity": Popular Unity Coalition?][? if cup_broad_kind = "new_popular_front": New Popular Front?][? if cup_broad_kind = "minority_left_tripartite": Minority Left Tripartite?]</span></span> negotiations
 subtitle: [? if cup_broad_coalition_phase = 1: The parties have opened the first round of negotiations.?][? if cup_broad_coalition_phase = 2: The parties have returned for a second round with a revised proposal.?][? if cup_broad_coalition_phase = 3: This is the third and final round of negotiations.?]
 tags: event
 role: event
@@ -278,7 +278,9 @@ on-arrival: {!
     Q.cup_relations -= 5;
     Q[Q.parlament_current_icv + "_relations"] -= 3;
     Q.snap_blame = Q.player_party;
-    Q.snap_counterparty = "cup";
+    Q.snap_counterparty = Q.player_party == "cup"
+        ? (Q.parlament_coalition_leader == "cup" ? "erc" : Q.parlament_coalition_leader)
+        : "cup";
     Q.snap_severity = 0.12;
 !}
 call: snap_election

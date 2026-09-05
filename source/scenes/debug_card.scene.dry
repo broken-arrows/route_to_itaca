@@ -218,7 +218,7 @@ DL formed from CDC.
 @pdcat_inject
 title: Form PDeCAT
 choose-if: dl_formed and not pdcat_formed
-unavailable-subtitle: PDeCAT has already been formed, or DL has not been formed yet
+unavailable-subtitle: The PDeCAT has already been formed, or DL has not been formed yet
 call: pdcat_formation
 
 PDeCAT formed from CDC.

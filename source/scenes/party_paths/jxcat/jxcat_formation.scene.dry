@@ -8,5 +8,7 @@ max-visits: 1
 = A new proposal for National Unity
 
 
+Careful: jxcat_formation trigger and countdown are never initialized. Maybe trigger event via jxsi dissolution?
+
 TODO!
 

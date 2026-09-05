@@ -119,7 +119,7 @@ on-arrival: {!
     }
 
     // Coalition seat totals
-    Q.parlament_coalition_ciu_erc_s = (Q[Q.parlament_current_ciu + "_parlament_s"] > Q.erc_parlament_s) ? Q[Q.parlament_current_ciu + "_parlament_s"] + Q.erc_parlament_s : 0;
+    Q.parlament_coalition_ciu_erc_s = (Q[Q.parlament_current_ciu + "_parlament_s"] >= Q.erc_parlament_s && Q.erc_parlament_s > 0) ? Q[Q.parlament_current_ciu + "_parlament_s"] + Q.erc_parlament_s : 0;
     Q.parlament_coalition_erc_ciu_s = (Q[Q.parlament_current_ciu + "_parlament_s"] < Q.erc_parlament_s) ? Q[Q.parlament_current_ciu + "_parlament_s"] + Q.erc_parlament_s : 0;
     Q.parlament_coalition_ciu_erc_cup_s = (Q[Q.parlament_current_ciu + "_parlament_s"] > Q.erc_parlament_s) ? Q[Q.parlament_current_ciu + "_parlament_s"] + Q.erc_parlament_s + Q.cup_parlament_s : 0;
     Q.parlament_coalition_erc_ciu_cup_s = (Q[Q.parlament_current_ciu + "_parlament_s"] < Q.erc_parlament_s) ? Q[Q.parlament_current_ciu + "_parlament_s"] + Q.erc_parlament_s + Q.cup_parlament_s : 0;
@@ -179,6 +179,76 @@ on-arrival: {!
         }
         return (Math.floor(yes + abst / 2) >= majP - NEAR) ? raw : 0;
     };
+
+    var liveCiuRoadmap = +Q[Q.parlament_current_ciu + "_roadmap"] || 0;
+    var liveCiuRelations = +Q[Q.parlament_current_ciu + "_relations"] || 0;
+
+    // CiU-family right support is a single minimum-package ladder: PPC, then Unio, then split PDeCAT.
+    var ciuRightMembers = [ { party: "ciu_alias", type: "government" } ];
+    var ciuRightVotes = sP("ciu_alias");
+    Q.parlament_route_ciu_right_use_ppc = sP("ppc") > 0;
+    Q.parlament_route_ciu_right_use_unio = false;
+    Q.parlament_route_ciu_right_use_pdcat = false;
+    if (Q.parlament_route_ciu_right_use_ppc) {
+        ciuRightMembers.push({ party: "ppc", type: "support" });
+        ciuRightVotes += sP("ppc");
+    }
+    if (ciuRightVotes < majP && sP("unio") > 0) {
+        ciuRightMembers.push({ party: "unio", type: "support" });
+        ciuRightVotes += sP("unio");
+        Q.parlament_route_ciu_right_use_unio = true;
+    }
+    if (ciuRightVotes < majP && Q.pdcat_split && sP("pdcat") > 0) {
+        ciuRightMembers.push({ party: "pdcat", type: "support" });
+        ciuRightVotes += sP("pdcat");
+        Q.parlament_route_ciu_right_use_pdcat = true;
+    }
+    Q.parlament_route_ciu_right_block_seats = ciuRightVotes < majP;
+    Q.parlament_route_ciu_right_block_roadmap = liveCiuRoadmap != 0;
+    Q.parlament_route_ciu_right_block_relations = Q.cat_spa_relations <= 50;
+    Q.parlament_route_ciu_right_available = (
+        sP("ciu_alias") > 0 && sP("ciu_alias") < majP && Q.parlament_route_ciu_right_use_ppc &&
+        !Q.parlament_route_ciu_right_block_seats && !Q.parlament_route_ciu_right_block_roadmap &&
+        !Q.parlament_route_ciu_right_block_relations
+    );
+    Q.parlament_coalition_ciu_right_s = barSeats(
+        sP("ciu_alias") > 0 && sP("ciu_alias") < majP && Q.parlament_route_ciu_right_use_ppc,
+        ciuRightMembers
+    );
+    Q.parlament_route_ciu_right_visible = Q.parlament_coalition_ciu_right_s > 0;
+
+    // Unionist packages are mutually exclusive tiers. A wider pact appears only when every narrower tier fails.
+    var unionistBase = sP("cs") + sP("ppc");
+    var unionistPscAbst = Math.floor(unionistBase + sP("psc") / 2);
+    var unionistPscSupport = unionistBase + sP("psc");
+    var csLeadsUnionist = sP("cs") > sP("ppc") && sP("cs") > sP("psc") && sP("ppc") > 0;
+    var ppcLeadsUnionist = sP("ppc") >= sP("cs") && sP("ppc") > sP("psc") && sP("cs") > 0;
+    var pscLeadsUnionist = sP("psc") > sP("cs") && sP("psc") > sP("ppc") && sP("cs") > 0;
+    var pscUnionistBase = sP("psc") + sP("cs");
+    Q.parlament_route_unionist_psc_cs_available = pscLeadsUnionist && pscUnionistBase >= majP;
+    Q.parlament_route_unionist_psc_cs_ppc_abst_available = pscLeadsUnionist && pscUnionistBase < majP && Math.floor(pscUnionistBase + sP("ppc") / 2) >= majP;
+    Q.parlament_route_unionist_psc_cs_ppc_sup_available = pscLeadsUnionist && Math.floor(pscUnionistBase + sP("ppc") / 2) < majP && pscUnionistBase + sP("ppc") >= majP;
+    Q.parlament_route_unionist_cs_ppc_available = csLeadsUnionist && unionistBase >= majP;
+    Q.parlament_route_unionist_cs_ppc_psc_abst_available = csLeadsUnionist && unionistBase < majP && unionistPscAbst >= majP;
+    Q.parlament_route_unionist_cs_psc_ppc_sup_available = csLeadsUnionist && unionistPscAbst < majP && unionistPscSupport >= majP;
+    Q.parlament_route_unionist_ppc_cs_available = ppcLeadsUnionist && unionistBase >= majP;
+    Q.parlament_route_unionist_ppc_cs_psc_abst_available = ppcLeadsUnionist && unionistBase < majP && unionistPscAbst >= majP;
+    Q.parlament_route_unionist_ppc_cs_psc_sup_available = ppcLeadsUnionist && unionistPscAbst < majP && unionistPscSupport >= majP;
+    var unionistCoreUnavailable = !Q.parlament_route_unionist_cs_ppc_available &&
+        !Q.parlament_route_unionist_cs_ppc_psc_abst_available && !Q.parlament_route_unionist_cs_psc_ppc_sup_available &&
+        !Q.parlament_route_unionist_ppc_cs_available && !Q.parlament_route_unionist_ppc_cs_psc_abst_available &&
+        !Q.parlament_route_unionist_ppc_cs_psc_sup_available;
+    Q.parlament_route_unionist_cs_ppc_vox_available = unionistCoreUnavailable && sP("vox") > 0 && unionistBase + sP("vox") >= majP;
+    Q.parlament_route_unionist_cs_ppc_psc_vox_abst_available = unionistCoreUnavailable &&
+        !Q.parlament_route_unionist_cs_ppc_vox_available && sP("psc") > 0 && sP("vox") > 0 &&
+        unionistPscSupport < majP && Math.floor(unionistPscSupport + sP("vox") / 2) >= majP;
+    Q.parlament_route_unionist_cs_ppc_vox_psc_abst_available = unionistCoreUnavailable &&
+        !Q.parlament_route_unionist_cs_ppc_vox_available && !Q.parlament_route_unionist_cs_ppc_psc_vox_abst_available &&
+        sP("psc") > 0 && sP("vox") > 0 && Math.floor(unionistBase + sP("vox") + sP("psc") / 2) >= majP;
+    Q.parlament_route_unionist_cs_ppc_vox_psc_sup_available = unionistCoreUnavailable &&
+        !Q.parlament_route_unionist_cs_ppc_vox_available && !Q.parlament_route_unionist_cs_ppc_psc_vox_abst_available &&
+        !Q.parlament_route_unionist_cs_ppc_vox_psc_abst_available && sP("psc") > 0 && sP("vox") > 0 &&
+        unionistBase + sP("vox") + sP("psc") >= majP;
 
     // TODO: Revisit PSC leadership gates after the completed coalition families have had a balance/playtesting pass.
 
@@ -257,9 +327,15 @@ on-arrival: {!
         Q.erc_roadmap > 0 &&
         (Q.player_party == "cup" || Q.cup_roadmap == Q.erc_roadmap || Q.cup_relations > 65)
     );
+    Q.parlament_route_erc_cup_block_seats = Q.erc_parlament_s + Q.cup_parlament_s < majP;
+    Q.parlament_route_erc_cup_block_roadmap = Q.erc_roadmap <= 0;
+    Q.parlament_route_erc_cup_block_relations = (
+        Q.player_party == "erc" && Q.erc_roadmap > 0 &&
+        Q.cup_roadmap != Q.erc_roadmap && Q.cup_relations <= 65
+    );
     Q.parlament_erc_cup_government_available = (
-        Q.erc_parlament_s + Q.cup_parlament_s >= majP &&
-        Q.parlament_cup_can_join_erc_government
+        !Q.parlament_route_erc_cup_block_seats && !Q.parlament_route_erc_cup_block_roadmap &&
+        !Q.parlament_route_erc_cup_block_relations
     );
     Q.parlament_erc_cup_support_available = (
         Q.erc_roadmap > 0 && Q.erc_parlament_s > Q.cup_parlament_s &&
@@ -281,29 +357,46 @@ on-arrival: {!
         Q.erc_roadmap > 0 && Q.erc_roadmap < 3 && comunsCupRoadmapOk &&
         (Q.parlament_current_icv_relations > 40 || Q.party_resources > 1)
     );
+    Q.parlament_route_cup_broad_block_roadmap = !(Q.erc_roadmap > 0 && Q.erc_roadmap < 3 && comunsCupRoadmapOk);
+    Q.parlament_route_cup_broad_block_relations = Q.parlament_current_icv_relations <= 40 && Q.party_resources <= 1;
+    var republicanCabinetSeats = Q.erc_parlament_s + current_icv_seats;
+    var broadCabinetSeats = republicanCabinetSeats + Q.psc_parlament_s;
+    var broadAllSeats = republicanCabinetSeats + Q.cup_parlament_s;
+    Q.parlament_route_republican_block_leadership = Q.erc_parlament_s < current_icv_seats;
+    Q.parlament_route_republican_block_cup_needed = republicanCabinetSeats >= majP;
+    Q.parlament_route_republican_block_seats = broadAllSeats < majP;
+    Q.parlament_route_republican_block_cup_role = Q.player_party != "cup" && Q.parlament_cup_can_join_erc_government;
     Q.parlament_republican_available = (
-        Q.parlament_comuns_cup_compatible && Q.erc_parlament_s >= current_icv_seats &&
-        Q.erc_parlament_s + current_icv_seats < majP &&
-        Q.erc_parlament_s + current_icv_seats + Q.cup_parlament_s >= majP &&
-        (Q.player_party == "cup" || !Q.parlament_cup_can_join_erc_government)
+        Q.parlament_comuns_cup_compatible && !Q.parlament_route_republican_block_leadership &&
+        !Q.parlament_route_republican_block_cup_needed && !Q.parlament_route_republican_block_seats &&
+        !Q.parlament_route_republican_block_cup_role
     );
+    Q.parlament_route_popular_unity_block_seats = broadAllSeats < majP;
+    Q.parlament_route_popular_unity_block_cup_cabinet = Q.erc_roadmap > 0 && !Q.parlament_cup_can_join_erc_government;
     Q.parlament_popular_unity_available = (
-        Q.parlament_comuns_cup_compatible &&
-        Q.erc_parlament_s + current_icv_seats + Q.cup_parlament_s >= majP &&
-        Q.parlament_cup_can_join_erc_government
+        Q.parlament_comuns_cup_compatible && !Q.parlament_route_popular_unity_block_seats &&
+        !Q.parlament_route_popular_unity_block_cup_cabinet
     );
-    var cupExtendedTripartiteSeats = Q.erc_parlament_s + Q.psc_parlament_s + current_icv_seats;
+    var cupExtendedTripartiteSeats = broadCabinetSeats;
+    Q.parlament_route_new_popular_front_block_psc = Q.psc_leader != "Montserrat Tura";
+    Q.parlament_route_new_popular_front_block_leadership = Q.erc_parlament_s <= Q.psc_parlament_s || Q.erc_parlament_s <= current_icv_seats;
+    Q.parlament_route_new_popular_front_block_cup_needed = cupExtendedTripartiteSeats >= majP;
+    Q.parlament_route_new_popular_front_block_seats = cupExtendedTripartiteSeats + Q.cup_parlament_s < majP;
+    Q.parlament_route_new_popular_front_block_cup_role = Q.player_party != "cup" && Q.parlament_cup_can_join_erc_government;
     Q.parlament_new_popular_front_available = (
-        Q.erc_roadmap > 0 && Q.psc_leader == "Montserrat Tura" &&
-        Q.erc_parlament_s > Q.psc_parlament_s && Q.erc_parlament_s > current_icv_seats &&
-        cupExtendedTripartiteSeats < majP && cupExtendedTripartiteSeats + Q.cup_parlament_s >= majP &&
-        (Q.player_party == "cup" || !Q.parlament_cup_can_join_erc_government)
+        Q.erc_roadmap > 0 && !Q.parlament_route_new_popular_front_block_psc &&
+        !Q.parlament_route_new_popular_front_block_leadership && !Q.parlament_route_new_popular_front_block_cup_needed &&
+        !Q.parlament_route_new_popular_front_block_seats && !Q.parlament_route_new_popular_front_block_cup_role
     );
+    Q.parlament_route_minority_left_block_psc = Q.psc_leader != "Montserrat Tura" && Q.psc_leader != "Àngel Ros";
+    Q.parlament_route_minority_left_block_leadership = Q.erc_parlament_s <= Q.psc_parlament_s || Q.erc_parlament_s <= current_icv_seats;
+    Q.parlament_route_minority_left_block_cup_needed = cupExtendedTripartiteSeats >= majP;
+    Q.parlament_route_minority_left_block_seats = Math.floor(cupExtendedTripartiteSeats + Q.cup_parlament_s / 2) < majP;
+    Q.parlament_route_minority_left_block_cup_role = Q.player_party != "cup" && Q.parlament_cup_can_join_erc_government;
     Q.parlament_minority_left_tripartite_available = (
-        Q.erc_roadmap > 0 && (Q.psc_leader == "Montserrat Tura" || Q.psc_leader == "Àngel Ros") &&
-        Q.erc_parlament_s > Q.psc_parlament_s && Q.erc_parlament_s > current_icv_seats &&
-        cupExtendedTripartiteSeats < majP && Math.floor(cupExtendedTripartiteSeats + Q.cup_parlament_s / 2) >= majP &&
-        (Q.player_party == "cup" || !Q.parlament_cup_can_join_erc_government)
+        Q.erc_roadmap > 0 && !Q.parlament_route_minority_left_block_psc &&
+        !Q.parlament_route_minority_left_block_leadership && !Q.parlament_route_minority_left_block_cup_needed &&
+        !Q.parlament_route_minority_left_block_seats && !Q.parlament_route_minority_left_block_cup_role
     );
 
     Q.parlament_pdcat_support_available = (
@@ -321,14 +414,8 @@ on-arrival: {!
         { label: Q.parlament_current_ciu + " minority Government", seatsVar: "parlament_coalition_ciu_erc_s",
           members: [ { party: "ciu_alias", type: "government" }, { party: "erc", type: "support" } ] },
 
-        { label: Q.parlament_current_ciu + " minority Government", seatsVar: "parlament_coalition_ciu_ppc_unio_s",
-          members: [ { party: "ciu_alias", type: "government" }, { party: "ppc", type: "support" },
-                     { party: "unio", type: "support" } ] },
-
-        { label: Q.parlament_current_ciu + " minority Government", key: "ciu_ppc_pdcat_unio",
-          cond: sP("ciu_alias") > 40 && sP("ciu_alias") < majP && Q.pdcat_split && sP("pdcat") > 0,
-          members: [ { party: "ciu_alias", type: "government" }, { party: "ppc", type: "support" },
-                     { party: "pdcat", type: "support" }, { party: "unio", type: "support" } ] },
+        { label: Q.parlament_current_ciu + " minority Government", seatsVar: "parlament_coalition_ciu_right_s",
+          members: ciuRightMembers },
 
         { label: "JxSí minority Government", key: "jxsi_min_cup",
           cond: sP("jxsi") > 40 && sP("jxsi") < majP,
@@ -416,7 +503,7 @@ on-arrival: {!
                      { party: "icv_alias", type: "government" }, { party: "cup", type: "abstain" } ] },
 
         { label: "PSC-led Moderation Government", key: "psc_cs_mod",
-          cond: sP("psc") > sP("cs") && sP("cs") > 0,
+          cond: Q.parlament_route_unionist_psc_cs_available,
           members: [ { party: "psc", type: "government" }, { party: "cs", type: "support" } ] },
 
         { label: "Moderation Government", key: "cs_psc_unio_mod",
@@ -442,58 +529,61 @@ on-arrival: {!
                 sP("ciu_alias") + sP("unio") > 50,
           members: [ { party: "ciu_alias", type: "government" }, { party: "unio", type: "government" } ] },
 
-        { label: "Cs-led Constitutionalist Pact", seatsVar: "parlament_coalition_cs_ppc_s",
+        { label: "Cs-led Constitutionalist Pact", key: "cs_ppc",
+          cond: Q.parlament_route_unionist_cs_ppc_available,
           members: [ { party: "cs", type: "government" }, { party: "ppc", type: "support" } ] },
 
         { label: "Cs-led Unity Pact", key: "cs_ppc_psc_abst",
-          cond: sP("cs") > sP("psc") && sP("ppc") > 0 && sP("cs") + sP("ppc") + sP("psc") / 2 < majP,
+          cond: Q.parlament_route_unionist_cs_ppc_psc_abst_available,
           members: [ { party: "cs", type: "government" }, { party: "ppc", type: "support" },
                      { party: "psc", type: "abstain" } ] },
 
         { label: "Cs-led Grand Unity Pact", key: "cs_psc_ppc_sup",
-          cond: sP("cs") > sP("psc") && sP("ppc") > 0 && sP("cs") + sP("ppc") + sP("psc") / 2 < majP,
+          cond: Q.parlament_route_unionist_cs_psc_ppc_sup_available,
           members: [ { party: "cs", type: "government" }, { party: "psc", type: "support" },
                      { party: "ppc", type: "support" } ] },
 
         { label: "PSC-led Unity Pact", key: "psc_cs_ppc_abst",
-          cond: sP("psc") > sP("cs") && sP("ppc") > 0,
+          cond: Q.parlament_route_unionist_psc_cs_ppc_abst_available,
           members: [ { party: "psc", type: "government" }, { party: "cs", type: "support" },
                      { party: "ppc", type: "abstain" } ] },
 
         { label: "PSC-led Grand Unity Pact", key: "psc_cs_ppc_sup",
-          cond: sP("psc") > sP("cs") && sP("ppc") > 0,
+          cond: Q.parlament_route_unionist_psc_cs_ppc_sup_available,
           members: [ { party: "psc", type: "government" }, { party: "cs", type: "support" },
                      { party: "ppc", type: "support" } ] },
 
-        { label: "Constitutionalist Government", seatsVar: "parlament_coalition_ppc_cs_s",
+        { label: "Constitutionalist Government", key: "ppc_cs",
+          cond: Q.parlament_route_unionist_ppc_cs_available,
           members: [ { party: "ppc", type: "government" }, { party: "cs", type: "government" } ] },
 
-        { label: "Right-Union Coalition", seatsVar: "parlament_coalition_cs_ppc_vox_s",
+        { label: "Right-Union Coalition", key: "cs_ppc_vox",
+          cond: Q.parlament_route_unionist_cs_ppc_vox_available,
           members: [ { party: "cs", type: "government" }, { party: "ppc", type: "government" },
                      { party: "vox", type: "support" } ] },
 
         { label: "Unity Pact", key: "ppc_cs_psc_abst",
-          cond: sP("ppc") > sP("cs") && sP("cs") > 0 && sP("cs") + sP("ppc") + sP("psc") / 2 < majP,
+          cond: Q.parlament_route_unionist_ppc_cs_psc_abst_available,
           members: [ { party: "cs", type: "government" }, { party: "ppc", type: "government" },
                      { party: "psc", type: "abstain" } ] },
 
         { label: "Grand Unity Pact", key: "ppc_cs_psc_sup",
-          cond: sP("ppc") > sP("cs") && sP("cs") > 0 && sP("cs") + sP("ppc") + sP("psc") < majP,
+          cond: Q.parlament_route_unionist_ppc_cs_psc_sup_available,
           members: [ { party: "cs", type: "government" }, { party: "ppc", type: "government" },
                      { party: "psc", type: "support" } ] },
 
         { label: "Unthinkably Grand Coalition", key: "cs_ppc_psc_vox_abst",
-          cond: sP("vox") > 0 && sP("cs") > 0 && sP("psc") > 0 && sP("ppc") > 0 && sP("cs") + sP("ppc") + sP("vox") / 2 + sP("psc") < majP,
+          cond: Q.parlament_route_unionist_cs_ppc_psc_vox_abst_available,
           members: [ { party: "cs", type: "government" }, { party: "ppc", type: "government" },
                      { party: "psc", type: "support" }, { party: "vox", type: "abstain" } ] },
 
         { label: "Unthinkable Unity Pact", key: "cs_ppc_vox_psc_abst",
-          cond: sP("vox") > 0 && sP("cs") > 0 && sP("psc") > 0 && sP("ppc") > 0 && sP("cs") + sP("ppc") + sP("vox") + sP("psc") / 2 >= majP,
+          cond: Q.parlament_route_unionist_cs_ppc_vox_psc_abst_available,
           members: [ { party: "cs", type: "government" }, { party: "ppc", type: "government" },
                      { party: "vox", type: "support" }, { party: "psc", type: "abstain" } ] },
 
         { label: "Salvation Government", key: "cs_ppc_vox_psc_sup",
-          cond: sP("vox") > 0 && sP("cs") > 0 && sP("psc") > 0 && sP("ppc") > 0 && sP("cs") + sP("ppc") + sP("vox") + sP("psc") >= majP,
+          cond: Q.parlament_route_unionist_cs_ppc_vox_psc_sup_available,
           members: [ { party: "cs", type: "government" }, { party: "ppc", type: "government" },
                      { party: "vox", type: "support" }, { party: "psc", type: "support" } ] }
     ];
@@ -525,14 +615,21 @@ on-arrival: {!
     }
 
     // Political availability drives the repeat-election choice
-    var liveCiuRoadmap = +Q[Q.parlament_current_ciu + "_roadmap"] || 0;
-    var liveCiuRelations = +Q[Q.parlament_current_ciu + "_relations"] || 0;
     var ciuErcArithmetic = Q.parlament_current_ciu_s + Q.erc_parlament_s >= majP;
-    var ciuErcAvailable = ciuErcArithmetic && liveCiuRoadmap != 0 && (
-        (Q.player_party == "erc" && liveCiuRelations > 30) ||
-        (Q.player_party == "cup" && (liveCiuRelations > 40 || Q.erc_relations > 40 || Q.parlament_current_ciu_s > 40))
+    var ciuLeadsErc = Q.parlament_current_ciu_s >= Q.erc_parlament_s && Q.erc_parlament_s > 0;
+    Q.parlament_route_ciu_minority_erc_visible = ciuLeadsErc;
+    Q.parlament_route_ciu_minority_erc_block_seats = !ciuErcArithmetic;
+    Q.parlament_route_ciu_minority_erc_block_roadmap = liveCiuRoadmap == 0;
+    Q.parlament_route_ciu_minority_erc_block_relations = (
+        (Q.player_party == "erc" && liveCiuRelations <= 30) ||
+        (Q.player_party == "cup" && Q.erc_relations <= 40 && Q.parlament_current_ciu_s <= 40)
     );
-    var ciuRightAvailable = Q.parlament_coalition_ciu_ppc_unio_s >= majP && liveCiuRoadmap == 0 && Q.cat_spa_relations > 50;
+    Q.parlament_route_ciu_minority_erc_available = ciuLeadsErc &&
+        !Q.parlament_route_ciu_minority_erc_block_seats && !Q.parlament_route_ciu_minority_erc_block_roadmap &&
+        !Q.parlament_route_ciu_minority_erc_block_relations;
+    var ciuErcCabinetAvailable = ciuLeadsErc && ciuErcArithmetic && liveCiuRoadmap != 0 &&
+        liveCiuRelations > 40 && (Q.player_party != "cup" || Q.erc_relations > 40);
+    var ciuErcAvailable = Q.parlament_route_ciu_minority_erc_available || ciuErcCabinetAvailable;
 
     var pscTripartiteAvailable = false;
     if (Q.player_party == "erc") {
@@ -574,26 +671,49 @@ on-arrival: {!
         Q.cat_spa_relations < 40 && comunsEmergencyLeaderOk && emergencyLeftErcAllows;
 
     var unionistAvailable =
-        (Q.parlament_coalition_psc_cs_mod_s > 0 && Q.psc_parlament_s + Q.cs_parlament_s >= majP) ||
+        Q.parlament_route_unionist_psc_cs_available ||
         (Q.parlament_coalition_cs_psc_unio_mod_s > 0 && Q.cs_parlament_s + Q.psc_parlament_s + Q.unio_parlament_s >= majP) ||
         (Q.parlament_coalition_psc_cs_unio_mod_s > 0 && Q.psc_parlament_s + Q.cs_parlament_s + Q.unio_parlament_s >= majP) ||
         (Q.parlament_coalition_psc_cs_unio_ppc_abst_s > 0 && Math.floor(Q.psc_parlament_s + Q.cs_parlament_s + Q.unio_parlament_s + Q.ppc_parlament_s / 2) >= majP) ||
-        (Q.parlament_coalition_cs_ppc_s > 0 && Q.cs_parlament_s + Q.ppc_parlament_s >= majP) ||
-        (Q.parlament_coalition_cs_ppc_psc_abst_s > 0 && Math.floor(Q.cs_parlament_s + Q.ppc_parlament_s + Q.psc_parlament_s / 2) >= majP) ||
-        (Q.parlament_coalition_cs_psc_ppc_sup_s > 0 && Q.cs_parlament_s + Q.psc_parlament_s + Q.ppc_parlament_s >= majP) ||
-        (Q.parlament_coalition_psc_cs_ppc_abst_s > 0 && Math.floor(Q.psc_parlament_s + Q.cs_parlament_s + Q.ppc_parlament_s / 2) >= majP) ||
-        (Q.parlament_coalition_psc_cs_ppc_sup_s > 0 && Q.psc_parlament_s + Q.cs_parlament_s + Q.ppc_parlament_s >= majP) ||
-        (Q.parlament_coalition_ppc_cs_s > 0 && Q.ppc_parlament_s + Q.cs_parlament_s >= majP) ||
-        (Q.parlament_coalition_cs_ppc_vox_s > 0 && Q.cs_parlament_s + Q.ppc_parlament_s + Q.vox_parlament_s >= majP) ||
-        (Q.parlament_coalition_ppc_cs_psc_abst_s > 0 && Math.floor(Q.ppc_parlament_s + Q.cs_parlament_s + Q.psc_parlament_s / 2) >= majP) ||
-        (Q.parlament_coalition_ppc_cs_psc_sup_s > 0 && Q.ppc_parlament_s + Q.cs_parlament_s + Q.psc_parlament_s >= majP) ||
-        (Q.parlament_coalition_cs_ppc_psc_vox_abst_s > 0 && Math.floor(Q.cs_parlament_s + Q.ppc_parlament_s + Q.psc_parlament_s + Q.vox_parlament_s / 2) >= majP) ||
-        (Q.parlament_coalition_cs_ppc_vox_psc_abst_s > 0 && Math.floor(Q.cs_parlament_s + Q.ppc_parlament_s + Q.vox_parlament_s + Q.psc_parlament_s / 2) >= majP) ||
-        (Q.parlament_coalition_cs_ppc_vox_psc_sup_s > 0 && Q.cs_parlament_s + Q.ppc_parlament_s + Q.vox_parlament_s + Q.psc_parlament_s >= majP) ||
+        Q.parlament_route_unionist_cs_ppc_available ||
+        Q.parlament_route_unionist_cs_ppc_psc_abst_available ||
+        Q.parlament_route_unionist_cs_psc_ppc_sup_available ||
+        Q.parlament_route_unionist_psc_cs_ppc_abst_available ||
+        Q.parlament_route_unionist_psc_cs_ppc_sup_available ||
+        Q.parlament_route_unionist_ppc_cs_available ||
+        Q.parlament_route_unionist_cs_ppc_vox_available ||
+        Q.parlament_route_unionist_ppc_cs_psc_abst_available ||
+        Q.parlament_route_unionist_ppc_cs_psc_sup_available ||
+        Q.parlament_route_unionist_cs_ppc_psc_vox_abst_available ||
+        Q.parlament_route_unionist_cs_ppc_vox_psc_abst_available ||
+        Q.parlament_route_unionist_cs_ppc_vox_psc_sup_available ||
         Q.parlament_coalition_cs_emergency_s >= majP || Q.parlament_coalition_ciu_unio_s >= majP;
 
-    Q.parlament_coalition_has_working_majority =
-        Q.parlament_coalition_majority_s >= majP || ciuErcAvailable || ciuRightAvailable ||
+    var commonNonPlayerAvailable = Q.parlament_route_ciu_right_available ||
+        Q.parlament_coalition_psc_icv_s >= majP || Q.parlament_emergency_psc_icv_politically_available || unionistAvailable;
+    var playerRouteAvailable = false;
+    var nonPlayerRouteAvailable = commonNonPlayerAvailable;
+    if (Q.parlament_coalition_majority_s >= majP) {
+        if (Q.parlament_coalition_majority_party == Q.player_party) playerRouteAvailable = true;
+        else nonPlayerRouteAvailable = true;
+    }
+    var ercOrCupJointAvailable = Q.parlament_erc_cup_government_available || Q.parlament_erc_cup_support_available ||
+        Q.parlament_republican_available || Q.parlament_popular_unity_available ||
+        Q.parlament_new_popular_front_available || Q.parlament_minority_left_tripartite_available;
+    if (Q.player_party == "erc") {
+        playerRouteAvailable = playerRouteAvailable || ciuErcAvailable || pscTripartiteAvailable || ercTripartiteAvailable ||
+            alternativeTripartiteAvailable || ercAbstentionAvailable || ercOrCupJointAvailable || Q.parlament_pdcat_support_available;
+    } else {
+        playerRouteAvailable = playerRouteAvailable || ercOrCupJointAvailable;
+        nonPlayerRouteAvailable = nonPlayerRouteAvailable || ciuErcAvailable || pscTripartiteAvailable || ercTripartiteAvailable ||
+            alternativeTripartiteAvailable || ercAbstentionAvailable || Q.parlament_pdcat_support_available;
+    }
+    Q.parlament_player_can_force_repeat = playerRouteAvailable && !nonPlayerRouteAvailable;
+    Q.parlament_coalition_erc_critical = Q.player_party == "erc" && Q.parlament_player_can_force_repeat;
+    Q.parlament_coalition_cup_critical = Q.player_party == "cup" && Q.parlament_player_can_force_repeat;
+
+    Q.parlament_coalition_has_working_majority = playerRouteAvailable || nonPlayerRouteAvailable ||
+        Q.parlament_coalition_majority_s >= majP || ciuErcAvailable || Q.parlament_route_ciu_right_available ||
         pscTripartiteAvailable || ercTripartiteAvailable || alternativeTripartiteAvailable ||
         Q.parlament_coalition_psc_icv_s >= majP || ercAbstentionAvailable ||
         Q.parlament_emergency_psc_icv_politically_available || unionistAvailable ||
@@ -670,6 +790,7 @@ Given the election results, different coalition arithmetics can be imagined. Now
 - @parlament_coalition_unionist.cs_ppc_vox_psc_sup
 - @parlament_coalition_unionist.cs_emergency
 - @parlament_coalition_unionist.ciu_unio
+- @refuse_negotiations
 - @parlament_no_majority
 
 @parlament_no_majority
@@ -727,8 +848,8 @@ An ungovernable Catalonia will see another election round in a couple months.
 
 @refuse_negotiations
 title: Refuse to negotiate at all
-view-if: not parlament_coalition_no_possible_majority
-choose-if: (parlament_coalition_erc_critical and player_party == "erc") or (parlament_coalition_cup_critical and player_party == "cup")
+view-if: parlament_player_can_force_repeat
+choose-if: parlament_player_can_force_repeat
 subtitle: This will be disliked by pretty much everyone, and will most probably result in new elections.
 unavailable-subtitle: Sadly, we're not that critical. There are coalition options without our votes.
 on-arrival: {!

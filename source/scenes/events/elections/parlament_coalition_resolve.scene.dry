@@ -1,5 +1,71 @@
 title: resolve coalition
 on-arrival: {!
+    var rawCabinet = Array.isArray(Q.cat_coalition) ? Q.cat_coalition : [];
+    var rawSupport = Array.isArray(Q.cat_coalition_support) ? Q.cat_coalition_support : [];
+    var rawAbstain = Array.isArray(Q.cat_coalition_abstain) ? Q.cat_coalition_abstain : [];
+    var uniqueParties = function (parties) {
+        return parties.filter(function (party, index) {
+            return party && parties.indexOf(party) == index;
+        });
+    };
+    var cabinet = uniqueParties(rawCabinet);
+    var support = uniqueParties(rawSupport).filter(function (party) {
+        return cabinet.indexOf(party) < 0;
+    });
+    var abstain = uniqueParties(rawAbstain).filter(function (party) {
+        return cabinet.indexOf(party) < 0 && support.indexOf(party) < 0;
+    });
+
+    Q.parlament_coalition_resolution_errors = [];
+    var resolutionError = function (message) {
+        Q.parlament_coalition_resolution_errors.push(message);
+        console.error("Coalition resolution: " + message);
+    };
+    for (var overlapParty of uniqueParties(rawSupport.concat(rawAbstain))) {
+        if (rawCabinet.indexOf(overlapParty) >= 0 || (rawSupport.indexOf(overlapParty) >= 0 && rawAbstain.indexOf(overlapParty) >= 0)) {
+            resolutionError(overlapParty + " appeared in more than one parliamentary role");
+        }
+    }
+
+    Q.cat_coalition = cabinet;
+    Q.cat_coalition_support = support;
+    Q.cat_coalition_abstain = abstain;
+
+    Q.erc_in_gob = cabinet.indexOf("erc") >= 0;
+    Q.erc_supporting = Q.erc_in_gob || support.indexOf("erc") >= 0;
+    Q.cup_in_gob = cabinet.indexOf("cup") >= 0;
+    Q.cup_supporting = Q.cup_in_gob || support.indexOf("cup") >= 0;
+
+    var playerInCabinet = cabinet.indexOf(Q.player_party) >= 0;
+    var playerSupports = support.indexOf(Q.player_party) >= 0;
+    if (playerInCabinet) {
+        Q.position_disp = "Generalitat";
+    } else if (playerSupports) {
+        Q.position_disp = "<span style='font-style: italic'>Government Support</span>";
+    } else {
+        Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
+    }
+
+    if (cabinet.indexOf(Q.parlament_coalition_proposal_president) < 0) {
+        resolutionError("the proposed President does not belong to the formal cabinet");
+    }
+    for (var cabinetParty of cabinet) {
+        if (!(Q[cabinetParty + "_parlament_s"] > 0)) {
+            resolutionError(cabinetParty + " has no parliamentary seats but appears in the cabinet");
+        }
+    }
+    if (!Q.speaker_party || !Q.speaker || !Q.speaker_gender) {
+        resolutionError("the Speaker was not fully settled before government resolution");
+    }
+    var ministryKeys = ["vp", "economy", "interior", "health", "education", "territory", "foreign", "bnl"];
+    for (var ministryKey of ministryKeys) {
+        var ministryParty = Q["parlament_coalition_proposal_" + ministryKey];
+        if (ministryParty && cabinet.indexOf(ministryParty) < 0) {
+            resolutionError(ministryParty + " holds " + ministryKey + " despite remaining outside the cabinet");
+        }
+    }
+    Q.parlament_coalition_resolution_valid = Q.parlament_coalition_resolution_errors.length == 0;
+
     Q.president_party = Q.parlament_coalition_proposal_president;
     Q.president_gender = Q.parlament_coalition_proposal_president_gender;
     Q.president = Q.parlament_coalition_proposal_president_name;
@@ -39,7 +105,7 @@ on-arrival: {!
     Q.cat_caretaker_gov = false;
     Q.parlament_repeat_election = false;
 
-    Q.historical_event = "We have a new government in the Generalitat! President " + Q.president + " will lead a " + Q.cat_coalition_disp + " for this legistlature.";
+    Q.historical_event = "We have a new government in the Generalitat! President " + Q.president + " will lead a " + Q.cat_coalition_disp + " for this legislature.";
 
     if (Q.parlament_coalition_concessions_social) {
         G.registerLaw(Q, {
@@ -61,7 +127,7 @@ on-arrival: {!
     }
     if (Q.jxsi_formed) {
         Q.jxsi_dissolution_countdown = 3;
-        if (!Q.countdowns.includes("jxcat_formation")) Q.countdowns.push("jxcat_formation");
+        if (!Q.countdowns.includes("jxsi_dissolution")) Q.countdowns.push("jxsi_dissolution");
     }
 !}
 go-to: post_event

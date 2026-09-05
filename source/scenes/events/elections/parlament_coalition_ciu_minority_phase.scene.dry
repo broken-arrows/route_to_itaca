@@ -1,5 +1,5 @@
-title: [? if ciu_min_coalition_phase = 3: Yet another ?][+ parlament_current_ciu +][?if ciu_min_coalition_phase <2 : 's?] [? if ciu_min_coalition_phase = 2: new ?] governement formation proposal
-subtitle: [? if ciu_min_coalition_phase = 2: [+ parlament_current_ciu +]-ERC negotiations advance.?][? if ciu_min_coalition_phase = 3: This is set to be the final round of [+ parlament_current_ciu +]-ERC negotiations.?]
+title: [? if ciu_min_coalition_phase = 3: Yet another ?]<span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +]" data-summary="Minority government - [+ parlament_current_ciu_s +]/[+ parlament_s_majority +]"><span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">[+ parlament_current_ciu +] minority government</span></span>[?if ciu_min_coalition_phase < 2: 's?] [? if ciu_min_coalition_phase = 2: new ?] formation proposal
+subtitle: [? if ciu_min_coalition_phase = 1: [+ parlament_current_ciu +] makes its opening proposal to ERC.?][? if ciu_min_coalition_phase = 2: [+ parlament_current_ciu +]-ERC negotiations advance.?][? if ciu_min_coalition_phase = 3: This is set to be the final round of [+ parlament_current_ciu +]-ERC negotiations.?]
 tags: event
 new-page: true
 view-if: ciu_min_coalition_phase != 0 and player_party == "erc"
@@ -199,6 +199,7 @@ on-arrival: {!
     Q.cat_coalition_support = ["erc"];
     Q.cat_coalition_abstain = [];
     Q.cat_coalition_disp = Q.parlament_current_ciu + " " + G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government - " + Q[Q.parlament_current_ciu + "_parlament_s"] + "/" + Q.parlament_s_majority, "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>minority government</span>");
+    Q.erc_in_gob = false;
     Q.erc_supporting = true
 
     Q.position_disp = "<span style='font-style: italic'>Government Support</span>";

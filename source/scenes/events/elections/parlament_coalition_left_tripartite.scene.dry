@@ -7,7 +7,7 @@ title: <span class="generalitat-coalition" data-parties="erc psc [+ parlament_cu
 choose-if: parlament_coalition_erc_psc_icv_s >= parlament_s_majority and (parlament_current_icv_relations > 55 or ((parlament_current_icv_leader == "Arcadi Oliveres" or party_resources > 1) and parlament_current_icv_relations > 40)) and ((psc_relations > 55 or ((psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros" or party_resources > 1) and psc_relations > 40)))
 view-if: parlament_coalition_erc_psc_icv_s and player_party == "erc"
 unavailable-subtitle: [? if parlament_coalition_erc_psc_icv_s < parlament_s_majority: Not enough parliamentary support. ?][? if parlament_current_icv_relations <= 40: [+ parlament_current_icv +] does not trust us enough. ?][? if psc_relations <= 40: The PSC does not trust us enough. ?][? if party_resources < 1: Not enough resources. ?]
-subtitle: We'll lead a new Tripartie coalition. [[? if (psc_relations <= 55 and not (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) and (parlament_current_icv_relations <= 55 and not (parlament_current_icv_leader == "Arcadi Oliveres")): -2?][? if ((psc_relations <= 55 and not (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or (parlament_current_icv_relations <= 55 and not (parlament_current_icv_leader == "Arcadi Oliveres"))) and not ((psc_relations <= 55 and not (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) and (parlament_current_icv_relations <= 55 and not(parlament_current_icv_leader == "Arcadi Oliveres"))): -1?] resources]
+subtitle: We'll lead a new Tripartite coalition. [[? if (psc_relations <= 55 and not (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) and (parlament_current_icv_relations <= 55 and not (parlament_current_icv_leader == "Arcadi Oliveres")): -2?][? if ((psc_relations <= 55 and not (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or (parlament_current_icv_relations <= 55 and not (parlament_current_icv_leader == "Arcadi Oliveres"))) and not ((psc_relations <= 55 and not (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) and (parlament_current_icv_relations <= 55 and not(parlament_current_icv_leader == "Arcadi Oliveres"))): -1?] resources]
 on-arrival: {!
     if (Q.parlament_current_icv_leader != "Arcadi Oliveres" && Q.parlament_current_icv_relations <= 55) {
         Q.party_resources -= 1;
@@ -23,7 +23,7 @@ on-arrival: {!
         Q.parlament_coalition_leverage -= 50-Q.psc_relations;
     }
     if (Q.parlament_current_icv_relations <= 55) {
-        Q.parlament_coalition_leverage -= 50-Q.psc_relations;
+        Q.parlament_coalition_leverage -= 50-Q.parlament_current_icv_relations;
     }
 !}
 
@@ -80,9 +80,9 @@ title: <span class="generalitat-coalition" data-parties="erc psc [+ parlament_cu
 choose-if: parlament_coalition_erc_psc_icv_s >= parlament_s_majority and ((psc_relations >= 55 or (psc_relations > 40 and psc_relations < 55 and party_resources >= 1)) or (erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or (erc_roadmap < 1))
 subtitle: [? if not ((erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or erc_roadmap < 1) and psc_relations >= 40: Push the PSC to support an ERC-lead coalition. [? if psc_relations < 55: \[-1 resources\] ?]?][? if (erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or (erc_roadmap < 1): ERC will lead a Tripartite coalition.?]
 view-if: parlament_coalition_erc_psc_icv_s and player_party == "cup"
-unavailable-subtitle: [? if parlament_coalition_erc_psc_icv_s < parlament_s_majority: Not enough parliamentary support. ?][? if psc_relations < 40 and ((erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or (erc_roadmap < 1)): We don't have good enough relations with the PSC to push them into this. ?][? if erc_roadmap < 1 or (erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")): ERC has a Roadmap to Independence that's too ambitious for the current PSC leadership. ?][? if psc_relations < 55 and psc_relations >= 40 and party_resources < 1: Not enough resources. ?]
+unavailable-subtitle: [? if parlament_coalition_erc_psc_icv_s < parlament_s_majority: Not enough parliamentary support. ?][? if psc_relations <= 40 and not ((erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or erc_roadmap < 1): We don't have good enough relations with the PSC to push them into this. ?][? if erc_roadmap >= 1 and not (erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")): ERC's Roadmap to Independence is too ambitious for the current PSC leadership. ?][? if psc_relations < 55 and psc_relations > 40 and party_resources < 1: Not enough resources to overcome any of the PSC's reservations. ?]
 on-arrival: {!
-    if (Q.psc_relations >= 40 && Q.psc_relations < 55 && !((Q.erc_roadmap < 2 && (Q.psc_leader == "Montserrat Tura"|| Q.psc_leader == "Àngel Ros")) && (Q.erc_roadmap < 1))) {
+    if (Q.psc_relations >= 40 && Q.psc_relations < 55 && !((Q.erc_roadmap < 2 && (Q.psc_leader == "Montserrat Tura"|| Q.psc_leader == "Àngel Ros")) || Q.erc_roadmap < 1)) {
         Q.party_resources -= 1;
     }
 
@@ -157,7 +157,7 @@ on-arrival: {!
 !}
 
 
-[? if not ((erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or erc_roadmap < 1): Thanks to our mediation efforts, ?][? if (erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or erc_roadmap < 1: After some difficult negotiations given the parties' pasts, ?] [+ parlament_current_ciu +] ERC has reached an agreement with the PSC and [+ parlament_current_icv +] to form a [+ cat_coalition_disp +]. The Speaker of the House will be [+ speaker +] ([+ speaker_party +]), and the government has taken the following shape:
+[? if not ((erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or erc_roadmap < 1): Thanks to our mediation efforts, ?][? if (erc_roadmap < 2 and (psc_leader == "Montserrat Tura" or psc_leader == "Àngel Ros")) or erc_roadmap < 1: After some difficult negotiations given the parties' pasts, ?]ERC has reached an agreement with the PSC and [+ parlament_current_icv +] to form a [+ cat_coalition_disp +]. The Speaker of the House will be [+ speaker +] ([+ speaker_party +]), and the government is set to take the following shape:
 
 <div style="display:flex; align-content:center;"><div style="width: 2em; align-content:center"><img src="img/cat_seal.svg"></div><div style="width:80%; padding-left: 1em;"> **M.H.** [? if parlament_coalition_proposal_president_gender = "m": **President** ?][? if parlament_coalition_proposal_president_gender = "f": **Presidenta** ?] **[+ parlament_coalition_proposal_president_name +]** ([+ parlament_coalition_proposal_president +])<br/> <span style="font-size:0.9em;"> [? if parlament_coalition_proposal_vp_gender = "m": **H. Vicepresident** ?][? if parlament_coalition_proposal_vp_gender = "f": **H. Vicepresidenta** ?] [+ parlament_coalition_proposal_vp_name +] ([+ parlament_coalition_proposal_vp +])</span></div></div></div>
 

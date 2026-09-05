@@ -1,5 +1,5 @@
-title: Putting together [? if left_tripartite_coalition_phase = 3: yet another ?][?if left_tripartite_coalition_phase <2 : a?] [? if left_tripartite_coalition_phase = 2: a new ?] ERC - PSC -[+ parlament_current_icv +] coalition proposal
-subtitle: [? if left_tripartite_coalition_phase = 2: <span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span> negotiations advance.?][? if left_tripartite_coalition_phase = 3: This is set to be the final round of <span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span> negotiations.?]
+title: [? if left_tripartite_coalition_phase = 1: Opening proposal for the ?][? if left_tripartite_coalition_phase = 2: Revised proposal for the ?][? if left_tripartite_coalition_phase = 3: Final proposal for the ?]<span class="generalitat-coalition" data-parties="erc psc [+ parlament_current_icv +]" data-summary="Majority government - [+ parlament_coalition_erc_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Tri</span><span style="color: var(--psc); font-style: italic;">partite</span></span>
+subtitle: [? if left_tripartite_coalition_phase = 1: ERC presents its opening cabinet proposal to the PSC and [+ parlament_current_icv +].?][? if left_tripartite_coalition_phase = 2: <span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span> negotiations advance.?][? if left_tripartite_coalition_phase = 3: This is set to be the final round of <span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span> negotiations.?]
 tags: event
 new-page: true
 view-if: left_tripartite_coalition_phase != 0 and player_party == "erc"
@@ -15,7 +15,7 @@ on-arrival: {!
         Q.parlament_coalition_leverage -= 50-Q.psc_relations;
     }
     if (Q.parlament_current_icv_relations <= 55 && Q.left_tripartite_coalition_phase == 1) {
-        Q.parlament_coalition_leverage -= 50-Q.psc_relations;
+        Q.parlament_coalition_leverage -= 50-Q.parlament_current_icv_relations;
     }
     
     Q.parlament_coalition_leverage += Q.left_tripartite_coalition_phase*4 - 4;
@@ -30,7 +30,7 @@ new-page: true
 go-to: parlament_coalition_setnames
 set-jump: choices
 
-[? if left_tripartite_coalition_phase = 1: As the leading force of the coalition, we're expected to make a government composition proposal to the PSC and [+ parlament_current_icv +]. [? if parlament_coalition_changes: Right now, the proposal looks as follows: ?] ?][? if left_tripartite_coalition_phase > 1: Answering to our previous proposal, PSC and [+ parlament_current_icv +] have pushed back with a few ideas of their own on what shape this coalition government should take. [? if parlament_coalition_changes: After our ammendmends, it looks as follows: ?] ?]
+[? if left_tripartite_coalition_phase = 1: As the leading force of the coalition, we're expected to make a government composition proposal to the PSC and [+ parlament_current_icv +]. [? if parlament_coalition_changes: Right now, the proposal looks as follows: ?] ?][? if left_tripartite_coalition_phase > 1: Answering to our previous proposal, the PSC and [+ parlament_current_icv +] have pushed back with a few ideas of their own on what shape this coalition government should take. [? if parlament_coalition_changes: After our amendments, it looks as follows: ?] ?]
 
 @choices
 
@@ -79,7 +79,7 @@ on-arrival: {!
             psc_leverage -= 10;
             break;
         case Q.parlament_current_icv:
-            psc_leverage -= 10;
+            icv_leverage -= 10;
             break;
         default:
             break;
@@ -92,7 +92,7 @@ on-arrival: {!
             psc_leverage -= 10;
             break;
         case Q.parlament_current_icv:
-            psc_leverage -= 10;
+            icv_leverage -= 10;
             break;
         default:
             break;
@@ -105,7 +105,7 @@ on-arrival: {!
             psc_leverage -= 6;
             break;
         case Q.parlament_current_icv:
-            psc_leverage -= 6;
+            icv_leverage -= 6;
             break;
         default:
             break;
@@ -118,7 +118,7 @@ on-arrival: {!
             psc_leverage -= 7;
             break;
         case Q.parlament_current_icv:
-            psc_leverage -= 7;
+            icv_leverage -= 7;
             break;
         default:
             break;
@@ -131,7 +131,7 @@ on-arrival: {!
             psc_leverage -= 7;
             break;
         case Q.parlament_current_icv:
-            psc_leverage -= 7;
+            icv_leverage -= 7;
             break;
         default:
             break;
@@ -144,7 +144,7 @@ on-arrival: {!
             psc_leverage -= 5;
             break;
         case Q.parlament_current_icv:
-            psc_leverage -= 5;
+            icv_leverage -= 5;
             break;
         default:
             break;
@@ -157,7 +157,7 @@ on-arrival: {!
             psc_leverage -= 5;
             break;
         case Q.parlament_current_icv:
-            psc_leverage -= 5;
+            icv_leverage -= 5;
             break;
         default:
             break;
@@ -380,7 +380,7 @@ on-arrival: {!
         if (Q.parlament_coalition_proposal_vp == "erc" && Q.left_tripartite_coalition_phase != 3) {
             Q.parlament_coalition_proposal_accept = false;
         }
-        if ((Q.parlament_coalition_proposal_interior || Q.parlament_coalition_proposal_education) && Q.left_tripartite_coalition_phase < 2) {
+        if ((Q.parlament_coalition_proposal_interior == "erc" || Q.parlament_coalition_proposal_education == "erc") && Q.left_tripartite_coalition_phase < 2) {
             Q.parlament_coalition_proposal_accept = false;
         }
     }

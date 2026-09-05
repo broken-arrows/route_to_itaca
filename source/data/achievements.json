@@ -22,6 +22,13 @@
       "image": "img/parties/logo_jxsi.png"
     },
     {
+      "id": "ni_un_paper",
+      "name": "Ni un paper al terra",
+      "description": "Reach the end of the game without seeing any \"order-breaking\" pro-independence riot.",
+      "stars": 1,
+      "image": "img/achievements/ni_un_paper.jpg"
+    },
+    {
       "id": "y2020",
       "name": "Pandemic Year",
       "description": "End the game by reaching the year 2020.",

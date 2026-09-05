@@ -1,4 +1,4 @@
-title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Minority government - [+ parlament_coalition_psc_icv_s +]/[+ parlament_s_majority +]">Progressive Government</span>
+title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Minority government - [+ parlament_coalition_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Progressive</span><span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Government</span></span>
 subtitle: [? if progressist_erc_abstention_phase = 1: The first round of investiture negotiations begins.?][? if progressist_erc_abstention_phase = 2: The parties enter the second round of investiture negotiations.?][? if progressist_erc_abstention_phase = 3: The third and final round of investiture negotiations begins.?] ERC will remain outside the cabinet.
 tags: event
 new-page: true
@@ -23,8 +23,8 @@ on-arrival: {!
 go-to: terms
 
 @independence
-choose-if: false
-unavailable-subtitle: PSC and [+ parlament_current_icv +] will not accept an independence commitment as the price of ERC's abstention.
+choose-if: 1==0
+unavailable-subtitle: The PSC and [+ parlament_current_icv +] will not accept an independence commitment as the price of ERC's abstention.
 
 @terms
 
@@ -42,7 +42,7 @@ on-arrival: {!
 !}
 go-to: failed if progressist_erc_abstention_phase > 3; post_event
 
-The parties adjourn without agreement and will return with a finalised offer.
+The parties adjourn without agreement and will return with a finalized offer.
 
 @accept
 on-arrival: {!
@@ -55,7 +55,7 @@ on-arrival: {!
     Q.cat_coalition = ["psc", Q.parlament_current_icv];
     Q.cat_coalition_support = [];
     Q.cat_coalition_abstain = ["erc"];
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government enabled by ERC abstention - " + Q.parlament_coalition_psc_icv_s + "/" + Q.parlament_s_majority, "<span style='color: var(--psc); font-style: italic;'>Progressive Government</span>");
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government enabled by ERC abstention - " + Q.parlament_coalition_psc_icv_s + "/" + Q.parlament_s_majority, '<span style="color: var(--psc); font-style: italic;">Progressive</span><span style="color: var(--' + Q.parlament_current_icv + '); font-style: italic;">Government</span>');
     Q.cat_coalition_dissent = 0;
     var comuns_leads = Q.parlament_current_icv_s > Q.psc_parlament_s;
     Q.parlament_coalition_proposal_president = comuns_leads ? Q.parlament_current_icv : "psc";

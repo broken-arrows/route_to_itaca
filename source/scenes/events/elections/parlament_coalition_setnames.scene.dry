@@ -30,9 +30,15 @@ on-arrival: {!
                         Q.parlament_coalition_proposal_vp_gender = "f";
                     }
                 } else {
-                    // FIXME: with ERC in JxCAT, the VP should be decided based on whatever the jxcat composition ends up being
-                    Q.parlament_coalition_proposal_vp_name = "JXCAT WHO?";
-                    Q.parlament_coalition_proposal_vp_gender = "?";
+                    // (FIXME) Until the internal JxCat composition has its own negotiation,
+                    // use the established ERC second figure instead of exposing a placeholder.
+                    if (Q.erc_leader != "Marta Rovira" && Q.speaker != "Marta Rovira") {
+                        Q.parlament_coalition_proposal_vp_name = "Marta Rovira";
+                        Q.parlament_coalition_proposal_vp_gender = "f";
+                    } else {
+                        Q.parlament_coalition_proposal_vp_name = "Pere Aragonès";
+                        Q.parlament_coalition_proposal_vp_gender = "m";
+                    }
                 }
                 break;
             case "junts":
