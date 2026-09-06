@@ -17,7 +17,6 @@ on-arrival: {!
     // is near, which drains the marginal effect to the ballot — but still draws crowds.
     var mobilise = (Q.referendum_pending || Q.consultation_pending) ? 1 : 0;
     var channel  = Q.cat_caretaker_gov ? 1 : 0;
-    var voteDraw = (mobilise || channel) ? 1 : 0;
 
     // Magnitude: autonomous street floor (IM-IT gap, widest when parties haven't earned
     // trust) + mobilisation, amplified by antagonism, drained by an imminent election.
@@ -40,7 +39,13 @@ on-arrival: {!
     Q.cat_spa_relations     += -0.30 * mag;
 
     // Street turnout for flavour text, in millions of participants (display only).
-    Q.diada_size = clamp((0.35 + 0.020 * gap + 0.60 * voteDraw) * antag * (1 - 0.40 * grief), 0.2, 2.0);
+    var turnoutAnchor = 0.75;
+    var stateAdjustment = clamp(
+        0.008 * (IM - 60) + 0.006 * (gap - 25) + 0.004 * (40 - CSR),
+        -0.35, 0.35
+    );
+    var voteBoost = 0.20 * mobilise + 0.05 * channel;
+    Q.diada_size = clamp((turnoutAnchor + stateAdjustment + voteBoost) * (1 - 0.40 * grief), 0.2, 2.0);
     Q.diada_size = Math.round(Q.diada_size * 100) / 100;
 !}
 set-bg: img/diada/2010.jpg

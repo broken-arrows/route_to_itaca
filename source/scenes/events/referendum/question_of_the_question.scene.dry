@@ -8,6 +8,7 @@ max-visits: 1
 on-arrival: {!
     // TODO: Reach this from the Presidency card
 
+    Q.consultation_pending = true;
     if (!Q.countdowns.includes("consultation_day")) Q.countdowns.push("consultation_day");
     Q.consultation_day_countdown = 3;
 !}

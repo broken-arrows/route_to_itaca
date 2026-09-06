@@ -40,7 +40,6 @@ on-arrival: {!
     Q.erc_cup_coalition_phase = 0;
     Q.psc_tripartite_coalition_phase = 0;
     Q.alternative_tripartite_coalition_phase = 0;
-    Q.progressist_erc_abstention_phase = 0;
     Q.republican_coalition_phase = 0;
     Q.left_indy_front_coalition_phase = 0;
     Q.cup_support_coalition_kind = "";
@@ -265,9 +264,6 @@ on-arrival: {!
 
     // Minimum viable PSC-led emergency bridge package.
     var progressiveSeats = sP("psc") + sP("icv_alias");
-    Q.parlament_coalition_psc_icv_erc_abst_available = (
-        progressiveSeats < majP && Math.floor(progressiveSeats + sP("erc") / 2) >= majP
-    );
     var leftEmergencyParties = ["psc", "icv_alias"];
     var leftEmergencyYes = progressiveSeats;
     var leftEmergencyTier = null;
@@ -516,11 +512,6 @@ on-arrival: {!
           cond: sP("psc") > 0 && sP("icv_alias") > 0,
           members: [ { party: "psc", type: "government" }, { party: "icv_alias", type: "government" } ] },
 
-        { label: "Progressive Government", key: "psc_icv_erc_abst",
-          cond: Q.parlament_coalition_psc_icv_erc_abst_available && sP("psc") > 0 && sP("icv_alias") > 0 && sP("erc") > 0,
-          members: [ { party: "psc", type: "government" }, { party: "icv_alias", type: "government" },
-                     { party: "erc", type: "abstain" } ] },
-
         { label: "Republican Government", key: "erc_icv_cup_sup",
           cond: sP("erc") >= sP("icv_alias") && sP("icv_alias") > 0 && sP("cup") > 0,
           members: [ { party: "erc", type: "government" }, { party: "icv_alias", type: "government" },
@@ -695,15 +686,9 @@ on-arrival: {!
         Q.parlament_popular_unity_available || Q.parlament_new_popular_front_available ||
         Q.parlament_minority_left_tripartite_available || Q.parlament_pdcat_support_available;
     Q.parlament_ai_erc_better_available = ercCabinetAvailable;
-    Q.parlament_progressive_erc_abstention_ai_available = Q.erc_roadmap <= 1 &&
-        !ercCabinetAvailable && Q.parlament_coalition_psc_icv_erc_abst_available;
-    var ercAbstentionAvailable = (
-        (Q.player_party == "erc" && Q.parlament_coalition_psc_icv_erc_abst_available && Q.parlament_current_icv_relations > 40 && Q.psc_relations > 40) ||
-        (Q.player_party == "cup" && Q.parlament_progressive_erc_abstention_ai_available)
-    );
 
     var emergencyLeftErcAllows = Q.player_party == "erc" || Q.erc_roadmap > 1 ||
-        (!ercCabinetAvailable && !Q.parlament_coalition_psc_icv_erc_abst_available);
+        !ercCabinetAvailable;
     Q.parlament_emergency_psc_icv_politically_available = Q.parlament_emergency_psc_icv_available &&
         Q.cat_spa_relations < 40 && comunsEmergencyLeaderOk && emergencyLeftErcAllows;
 
@@ -738,11 +723,11 @@ on-arrival: {!
         Q.parlament_new_popular_front_available || Q.parlament_minority_left_tripartite_available;
     if (Q.player_party == "erc") {
         playerRouteAvailable = playerRouteAvailable || ciuErcAvailable || pscTripartiteAvailable || ercTripartiteAvailable ||
-            alternativeTripartiteAvailable || ercAbstentionAvailable || ercOrCupJointAvailable || Q.parlament_pdcat_support_available;
+            alternativeTripartiteAvailable || ercOrCupJointAvailable || Q.parlament_pdcat_support_available;
     } else {
         playerRouteAvailable = playerRouteAvailable || ercOrCupJointAvailable;
         nonPlayerRouteAvailable = nonPlayerRouteAvailable || ciuErcAvailable || pscTripartiteAvailable || ercTripartiteAvailable ||
-            alternativeTripartiteAvailable || ercAbstentionAvailable || Q.parlament_pdcat_support_available;
+            alternativeTripartiteAvailable || Q.parlament_pdcat_support_available;
     }
     Q.parlament_player_can_force_repeat = playerRouteAvailable && !nonPlayerRouteAvailable;
     Q.parlament_coalition_erc_critical = Q.player_party == "erc" && Q.parlament_player_can_force_repeat;
@@ -751,7 +736,7 @@ on-arrival: {!
     Q.parlament_coalition_has_working_majority = playerRouteAvailable || nonPlayerRouteAvailable ||
         Q.parlament_coalition_majority_s >= majP || ciuErcAvailable || Q.parlament_route_ciu_right_available ||
         pscTripartiteAvailable || ercTripartiteAvailable || alternativeTripartiteAvailable ||
-        Q.parlament_coalition_psc_icv_s >= majP || ercAbstentionAvailable ||
+        Q.parlament_coalition_psc_icv_s >= majP ||
         Q.parlament_emergency_psc_icv_politically_available || unionistAvailable ||
         Q.parlament_erc_cup_government_available || Q.parlament_erc_cup_support_available ||
         Q.parlament_republican_available || Q.parlament_popular_unity_available ||
@@ -805,8 +790,6 @@ Given the election results, different coalition arithmetics can be imagined. Now
 - @parlament_coalition_alternative_tripartite.erc
 - @parlament_coalition_alternative_tripartite.cup
 - @parlament_coalition_progressist.any
-- @parlament_coalition_progressist_erc_abstention.erc
-- @parlament_coalition_progressist_erc_abstention.cup
 - @parlament_coalition_unthinkably_grand.any
 - @parlament_coalition_unionist.psc_cs
 - @parlament_coalition_unionist.cs_psc_unio

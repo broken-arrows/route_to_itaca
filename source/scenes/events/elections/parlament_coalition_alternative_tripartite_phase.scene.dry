@@ -171,18 +171,23 @@ on-arrival: {!
     Q.alternative_tripartite_reject_comuns_health = Q.alternative_tripartite_coalition_phase < 3 && Q.alternative_tripartite_comuns_health_protected && Q.parlament_coalition_proposal_health != Q.parlament_current_icv;
     Q.parlament_coalition_proposal_accept = !Q.alternative_tripartite_reject_vp && !Q.alternative_tripartite_reject_psc_economy && !Q.alternative_tripartite_reject_psc_interior && !Q.alternative_tripartite_reject_comuns_bnl && !Q.alternative_tripartite_reject_comuns_health;
 !}
-go-to: accept if parlament_coalition_proposal_accept; revise
+go-to: accept if parlament_coalition_proposal_accept; next_phase
 
-@revise
+@next_phase
+go-to: new_elections if alternative_tripartite_coalition_phase >= 3; new_phase_2 if alternative_tripartite_coalition_phase < 3
+
+@new_phase_2
 on-arrival: {!
+    Q.parlament_coalition_changes = false;
     Q.alternative_tripartite_coalition_phase += 1;
     Q.month_actions += 1;
     Q[Q.parlament_current_icv + "_relations"] -= 2;
     Q.psc_relations -= 1;
 !}
-go-to: new_elections if alternative_tripartite_coalition_phase > 3; post_event
 
 The PSC and [+ parlament_current_icv +] have rejected our counter-proposal. [? if alternative_tripartite_reject_vp: The Vice-Presidency seems to remain a red line.?][? if alternative_tripartite_reject_psc_economy or alternative_tripartite_reject_psc_interior: The PSC remains dissatisfied with the balance of high-responsibility ministries.?][? if alternative_tripartite_reject_comuns_bnl or alternative_tripartite_reject_comuns_health: [+ parlament_current_icv +] does not believe the proposal gives it sufficient influence over the government's social programme.?] The negotiating teams will reconvene.
+
+- @post_event: And so, time passes...
 
 @accept
 choose-if: not parlament_coalition_changes

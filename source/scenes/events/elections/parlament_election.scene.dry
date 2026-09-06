@@ -17,7 +17,7 @@ on-arrival: {!
     if (Q.player_party == "cup" && Q.cup_parlament_s > 0 && Q.year == 2012) {
         Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
     } 
-    if ((Q.player_party == "cup" && Q.cup_parlament_s <= 0) || (Q.player_party == "erc" && Q.erc_parlament_s <= 0)) {
+    if ((Q.player_party == "cup" && Q.cup_parlament_s <= 0 && !Q.cup_in_jxsi && !Q.cup_in_jxcat) || (Q.player_party == "erc" && Q.erc_parlament_s <= 0 && !Q.erc_in_jxsi && !Q.erc_in_jxcat)) {
         Q.game_over_trigger = true;
     }
     if (Q.fnc_parlament_s > 0) {

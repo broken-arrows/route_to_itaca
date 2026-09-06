@@ -17,7 +17,6 @@ on-arrival: {!
     // is near, which drains the marginal effect to the ballot — but still draws crowds.
     var mobilise = (Q.referendum_pending || Q.consultation_pending) ? 1 : 0;
     var channel  = Q.cat_caretaker_gov ? 1 : 0;
-    var voteDraw = (mobilise || channel) ? 1 : 0;
 
     // Magnitude: autonomous street floor (IM-IT gap, widest when parties haven't earned
     // trust) + mobilisation, amplified by antagonism, drained by an imminent election.
@@ -40,7 +39,15 @@ on-arrival: {!
     Q.cat_spa_relations     += -0.30 * mag;
 
     // Street turnout for flavour text, in millions of participants (display only).
-    Q.diada_size = clamp((0.35 + 0.020 * gap + 0.60 * voteDraw) * antag * (1 - 0.40 * grief), 0.2, 2.0);
+    // The giant V's organizational capacity anchors the estimate; the 9-N
+    // consultation adds mobilization without being required for a mass turnout.
+    var turnoutAnchor = 1.55;
+    var stateAdjustment = clamp(
+        0.008 * (IM - 60) + 0.006 * (gap - 25) + 0.004 * (40 - CSR),
+        -0.35, 0.35
+    );
+    var voteBoost = 0.20 * mobilise + 0.05 * channel;
+    Q.diada_size = clamp((turnoutAnchor + stateAdjustment + voteBoost) * (1 - 0.40 * grief), 0.2, 2.0);
     Q.diada_size = Math.round(Q.diada_size * 100) / 100;
 !}
 set-bg: img/diada/2010.jpg
@@ -49,7 +56,7 @@ role: event
 
 = The 2014 Catalan Way
 
-In a new show of force for the independence movement, the ANC and Omnium Cultural have filled the streets of Barcelona with yet another rally of unprecedented scale. [+ diadia_size +] million Catalans have formed a giant human "V". Coordinating at scale, the "V" for "Victory" and for "Way" (in Catalan, understood as a "way to the Catalan Republic") the protest filled Barcelona's Diagonal and Gran Via avenues.
+In a new show of force for the independence movement, the ANC and Omnium Cultural have filled the streets of Barcelona with yet another rally of unprecedented scale. [+ diada_size +] million Catalans have formed a giant human "V". Coordinating at scale, the "V" for "Victory" and for "Way" (in Catalan, understood as a "way to the Catalan Republic") the protest filled Barcelona's Diagonal and Gran Via avenues.
 
 One more year, the protest has remained peaceful and festive, with people from all walks of life (though mostly middle-class families) organizing and cleaning up after every act. 
 

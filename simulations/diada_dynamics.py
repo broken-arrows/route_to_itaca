@@ -21,8 +21,9 @@ Two hard constraints from the design brief:
           referendum_pending              (bool flag)   — 1-O 2017 style vote pending
           consultation_pending            (bool flag)   — 9-N 2014 style consulta pending
           cat_caretaker_gov               (bool flag)   — ordinary election imminent
-      Every input is an existing Q flag/variable; nothing new is introduced. The
-      vote flags are situational reads of the calendar the spine already tracks.
+      Every political-state input is an existing Q flag/variable; nothing new is
+      introduced. Each authored Diada additionally supplies a local turnout anchor
+      for the event's format and organizational capacity. It is not persisted in Q.
 
   (2) THE STREET IS AUTONOMOUS FROM THE PARTIES (esp. up to 2015).
       In the early procés, the momentum was in the street, not in the parties.
@@ -56,7 +57,7 @@ hope). The model below separates those three jobs cleanly:
     valence   (the sign) =  hope by default; grief when the roadmap is broken and trust has collapsed
 
 Run it:  python diada_dynamics.py
-Tune it: every coefficient is a top-of-file constant in PARAMS.
+Tune it: global coefficients live in PARAMS; event turnout anchors live in SITUATION.
 """
 
 from __future__ import annotations
@@ -68,7 +69,7 @@ from dataclasses import dataclass, asdict
 @dataclass
 class Params:
     # --- magnitude: the three additive sources of street size -------------------
-    BASE:        float = 1.5   # always-on baseline turnout (a Diada is always *something*)
+    BASE:        float = 1.5   # always-on baseline political magnitude
     GAP_GAIN:    float = 0.18  # autonomous street floor per point of (IM - IT). The
                                #   "momentum is in the street" knob. Crank it up and the
                                #   early Diadas grow regardless of what the parties do.
@@ -104,10 +105,14 @@ class Params:
     MAG_CAP: float = 16.0  # hard ceiling on raw magnitude (sanity guard)
 
     # --- street turnout (Q.diada_size, in MILLIONS) — display only, for flavour text
-    TURN_BASE:  float = 0.35   # a Diada always pulls ~this many million
-    TURN_GAP:   float = 0.020  # extra millions per point of the IM-IT street floor
-    TURN_VOTE:  float = 0.60   # extra millions when ANY vote looms (referendum, consulta,
-                               #   OR a plebiscitary/ordinary election — all draw crowds)
+    # Each authored event supplies its format's turnout anchor. State can move
+    # the estimate substantially without erasing organizational capacity.
+    TURN_IM:    float = 0.008  # current movement strength around a neutral 60
+    TURN_GAP:   float = 0.006  # unmet demand around a neutral 25-point IM-IT gap
+    TURN_CSR:   float = 0.004  # grievance turnout per relation point below 40
+    TURN_STATE_CAP: float = 0.35
+    TURN_MOBIL: float = 0.20   # referendum/consultation proximity
+    TURN_ELECTION: float = 0.05  # ordinary caretaker election proximity
     TURN_GRIEF: float = 0.40   # grief Diadas are smaller / more somber
     TURN_MIN:   float = 0.20   # clamp the turnout estimate to a believable band
     TURN_MAX:   float = 2.00
@@ -179,11 +184,20 @@ def street_diada(state: dict, p: Params = PARAMS) -> dict:
     d_csr = -p.CSR_FROM_SIZE * mag                       # size confronts Madrid either way
 
     # 6. Street turnout (Q.diada_size, millions) — bodies in the street, NOT the
-    #    political punch. A plebiscitary/ordinary election still draws huge crowds
-    #    (2015), even though it drains the marginal political effect above.
-    vote_draw = 1.0 if (mobilise or channel) else 0.0
+    #    political punch. The event format provides organizational capacity;
+    #    political state adjusts it within a bounded range. A consultation or
+    #    referendum mobilizes more than an ordinary caretaker election.
+    turnout_anchor = state['turnout_anchor']
+    state_adjustment = _clamp(
+        p.TURN_IM * (IM - 60.0)
+        + p.TURN_GAP * (gap - 25.0)
+        + p.TURN_CSR * (40.0 - CSR),
+        -p.TURN_STATE_CAP,
+        p.TURN_STATE_CAP,
+    )
+    vote_boost = p.TURN_MOBIL * mobilise + p.TURN_ELECTION * channel
     diada_size = _clamp(
-        (p.TURN_BASE + p.TURN_GAP * gap + p.TURN_VOTE * vote_draw) * antag * (1.0 - p.TURN_GRIEF * grief),
+        (turnout_anchor + state_adjustment + vote_boost) * (1.0 - p.TURN_GRIEF * grief),
         p.TURN_MIN, p.TURN_MAX,
     )
 
@@ -224,15 +238,15 @@ FALLBACK_AUGUST = {
 # SITUATIONAL flags for the IRL timeline — all existing Q bools. broken_roadmap is
 # set true once the DUI/155 sequence has collapsed the institutional route.
 SITUATION = {
-    #          referendum_pending  consultation_pending  cat_caretaker_gov  broken_roadmap   why
-    2012: dict(referendum_pending=False, consultation_pending=False, cat_caretaker_gov=False, broken_roadmap=False),  # watershed; snap election called AFTER the Diada
-    2013: dict(referendum_pending=False, consultation_pending=False, cat_caretaker_gov=False, broken_roadmap=False),  # Via Catalana, consolidating
-    2014: dict(referendum_pending=False, consultation_pending=True,  cat_caretaker_gov=False, broken_roadmap=False),  # 9-N consulta pending
-    2015: dict(referendum_pending=False, consultation_pending=False, cat_caretaker_gov=True,  broken_roadmap=False),  # caretaker into 27-S -> drains to ballot
-    2016: dict(referendum_pending=False, consultation_pending=False, cat_caretaker_gov=False, broken_roadmap=False),  # post-27S gridlock, no vote near
-    2017: dict(referendum_pending=True,  consultation_pending=False, cat_caretaker_gov=False, broken_roadmap=False),  # 1-O referendum pending
-    2018: dict(referendum_pending=False, consultation_pending=False, cat_caretaker_gov=False, broken_roadmap=True),   # post-155, roadmap broken -> grief
-    2019: dict(referendum_pending=False, consultation_pending=False, cat_caretaker_gov=False, broken_roadmap=True),   # still broken, but anger has subsided -> rebuild
+    #          referendum_pending  consultation_pending  cat_caretaker_gov  broken_roadmap  turnout_anchor   why
+    2012: dict(referendum_pending=False, consultation_pending=False, cat_caretaker_gov=False, broken_roadmap=False, turnout_anchor=1.37),  # watershed; election called AFTER
+    2013: dict(referendum_pending=False, consultation_pending=False, cat_caretaker_gov=False, broken_roadmap=False, turnout_anchor=1.45),  # 400-km Via Catalana
+    2014: dict(referendum_pending=False, consultation_pending=True,  cat_caretaker_gov=False, broken_roadmap=False, turnout_anchor=1.55),  # giant V + 9-N pending
+    2015: dict(referendum_pending=False, consultation_pending=False, cat_caretaker_gov=True,  broken_roadmap=False, turnout_anchor=1.20),  # Via Lliure + 27-S
+    2016: dict(referendum_pending=False, consultation_pending=False, cat_caretaker_gov=False, broken_roadmap=False, turnout_anchor=0.75),  # post-27S gridlock
+    2017: dict(referendum_pending=True,  consultation_pending=False, cat_caretaker_gov=False, broken_roadmap=False, turnout_anchor=0.70),  # 1-O pending
+    2018: dict(referendum_pending=False, consultation_pending=False, cat_caretaker_gov=False, broken_roadmap=True,  turnout_anchor=0.95),  # post-155 grief
+    2019: dict(referendum_pending=False, consultation_pending=False, cat_caretaker_gov=False, broken_roadmap=True,  turnout_anchor=0.43),  # fatigue/rebuild
 }
 
 # Calibration IM/IT/SD/CSR deltas straight from EVENTS (the numbers we want to
