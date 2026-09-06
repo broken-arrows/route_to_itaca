@@ -228,6 +228,13 @@ on-arrival: {!
 
     Q.independence_movement += 5;
     Q.independence_trust += 15;
+
+    // Clear the hand to avoid previous party cards from appearing randomly
+    if (Q.difficulty >= 0) {
+    window.dendryUI.dendryEngine.state.currentHands['main'] = [];
+    } else {
+        window.dendryUI.dendryEngine.state.currentHands['main.main_easy'] = [];
+    }
 !}
 
 The jxsi coalition has been formed! With an ambitious 2-year roadmap, it now counts with ample support from civil society organizations, minor parties like SI, as well as, of course, the big players in the Parlament, [? if cdc_in_jxsi > 0: CDC?][? if dl_in_jxsi > 0: DL?][? if pdcat_in_jxsi > 0: the PDeCAT?] and ERC. Can it, however, be expanded further? Everyone is looking right now at the CUP, who so far has been skeptical of the whole formation process. Will they join in as well to build true National Unity?
@@ -462,6 +469,13 @@ on-arrival: {!
     Q.cup_poblelliure_strength += 10;
     Q.cup_poblelliure_dissent -= 5;
     Q.cup_thirdsector_dissent += 5;
+
+    // Clear the hand to avoid previous party cards from appearing randomly
+    if (Q.difficulty >= 0) {
+    window.dendryUI.dendryEngine.state.currentHands['main'] = [];
+    } else {
+        window.dendryUI.dendryEngine.state.currentHands['main.main_easy'] = [];
+    }
 !}
 
 This is highly unexpected and has angered many on the left of the party, specially those in Endavant already skeptical of institutional participation. Be it as it may, a decision has now been taken.
@@ -542,6 +556,13 @@ on-arrival: {!
     Q.cup_poblelliure_strength += 10;
     Q.cup_poblelliure_dissent -= 5;
     Q.cup_thirdsector_dissent += 2;
+
+    // Clear the hand to avoid previous party cards from appearing randomly
+    if (Q.difficulty >= 0) {
+    window.dendryUI.dendryEngine.state.currentHands['main'] = [];
+    } else {
+        window.dendryUI.dendryEngine.state.currentHands['main.main_easy'] = [];
+    }
 !}
 
 While an easier sell, joining in with centrist and center-right movements in a single list is still a hard sell for some sectors of the party. Be it as it may, a decision has now been taken.
