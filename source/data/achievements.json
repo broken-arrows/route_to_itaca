@@ -106,6 +106,13 @@
       "image": "img/achievements/jxsi_dedebo.jpg"
     },
     {
+      "id": "independencia_socialisme_feminisme",
+      "name": "Independència, Socialisme, i Feminisme",
+      "description": "As an ERC-CUP government, declare independence and keep the new republic alive until the end of the game.",
+      "stars": 5,
+      "image": "img/achievements/independencia_socialisme_feminisme.webp"
+    },
+    {
       "id": "majoria_no_silenciosa",
       "name": "Majoria No Silenciosa",
       "description": "Somehow, manage to lose a non-agreement referendum or non-binding consultation to the \"No\" option.",

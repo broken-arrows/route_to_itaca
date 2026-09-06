@@ -229,18 +229,20 @@ d3.parliament = function () {
       /* hit circles for better UX */
       var hitCircles = container.selectAll(".seat-hit").data(seats);
       var hitCirclesEnter = hitCircles.enter().append("circle");
-      hitCirclesEnter.attr("class", hitClasses);
-      hitCirclesEnter.attr("cx", seatX);
-      hitCirclesEnter.attr("cy", seatY);
-      hitCirclesEnter.attr("r", function (d) {
+      hitCircles.exit().remove();
+      hitCircles = hitCirclesEnter.merge(hitCircles);
+      hitCircles.attr("class", hitClasses);
+      hitCircles.attr("cx", seatX);
+      hitCircles.attr("cy", seatY);
+      hitCircles.attr("r", function (d) {
         return seatRadius(d) * 2; // 100% larger hit area
       });
-      hitCirclesEnter.attr("fill", "transparent");
-      hitCirclesEnter.attr("pointer-events", "all");
+      hitCircles.attr("fill", "transparent");
+      hitCircles.attr("pointer-events", "all");
 
       /* hover effect to highlight party members */
-      hitCirclesEnter.on("mouseenter", function (e) {
-        var partyId = e.target.classList[1];
+      hitCircles.on("mouseenter", function (e, seat) {
+        var partyId = seat && seat.party && seat.party.id;
         if (partyId) {
           container.selectAll(".seat").classed("party-hovered", function (d) {
             return d.party && d.party.id === partyId;
@@ -251,9 +253,10 @@ d3.parliament = function () {
               return !(d.party && d.party.id === partyId);
             });
 
-          var nSeatsInParty = d.filter(function (p) {
-            return p.id === partyId;
-          })[0].seats;
+          var nSeatsInParty =
+            typeof seat.party.seats === "number"
+              ? seat.party.seats
+              : seat.party.seats.length;
 
           var glossaryTerms = window.glossary().terms;
           let colour = glossaryTerms.find(
@@ -312,29 +315,18 @@ d3.parliament = function () {
         }
       });
 
-      hitCirclesEnter.on("mousemove", function (event) {
+      hitCircles.on("mousemove", function (event) {
         /* position tooltip near mouse */
         tooltip
           .style("left", event.pageX + 10 + "px")
           .style("top", event.pageY - 50 + "px");
       });
 
-      hitCirclesEnter.on("mouseleave", function (e) {
+      hitCircles.on("mouseleave", function () {
         container.selectAll(".seat").classed("party-hovered", false);
         container.selectAll(".seat").classed("party-nothovered", false);
         tooltip.classed("visible", false);
       });
-
-      /* update hit circles */
-      hitCircles
-        .attr("cx", seatX)
-        .attr("cy", seatY)
-        .attr("r", function (d) {
-          return seatRadius(d) * 2; // 100% larger hit area
-        });
-
-      /* remove exiting hit circles */
-      hitCircles.exit().remove();
 
       /* animation updating seats in the parliament */
       if (update.animate) {

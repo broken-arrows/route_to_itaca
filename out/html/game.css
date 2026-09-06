@@ -1685,6 +1685,17 @@ table {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 1;
+  filter: grayscale(0);
+  transform: scale(1);
+  transition: transform 220ms cubic-bezier(.2, .8, .2, 1), filter 220ms ease;
+}
+
+.achievement:hover .achievement-image {
+  z-index: 2;
+  filter: grayscale(0);
+  transform: scale(1.16);
 }
 
 .achievement-image--unlocked {
@@ -1696,6 +1707,12 @@ table {
   background: #1c1c24;
   filter: grayscale(1);
   opacity: .4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .achievement-image {
+    transition: none;
+  }
 }
 
 .achievement-body {

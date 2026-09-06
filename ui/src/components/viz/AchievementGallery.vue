@@ -148,6 +148,9 @@ function imgSrc(row: Row): string | null {
 .achievement-row--locked .achievement-row-image img {
   filter: grayscale(1);
 }
+.achievement-row--locked:hover .achievement-row-image img {
+  filter: grayscale(0);
+}
 .achievement-row-image {
   flex: 0 0 auto;
   width: 72px;
@@ -155,11 +158,21 @@ function imgSrc(row: Row): string | null {
   overflow: hidden;
   border-radius: 2px;
   border: 1px solid var(--ink-0);
+  position: relative;
+  z-index: 1;
+  transform: scale(1);
+  transition: transform 220ms cubic-bezier(.2, .8, .2, 1);
+}
+.achievement-row:hover .achievement-row-image {
+  z-index: 2;
+  transform: scale(1.16);
 }
 .achievement-row-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  filter: grayscale(0);
+  transition: filter 220ms ease;
 }
 .art-placeholder {
   width: 100%;
@@ -213,6 +226,13 @@ function imgSrc(row: Row): string | null {
   font-size: 11px;
   font-style: italic;
   color: var(--ink-1, var(--ink-0));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .achievement-row-image,
+  .achievement-row-image img {
+    transition: none;
+  }
 }
 
 @media (max-width: 560px) {

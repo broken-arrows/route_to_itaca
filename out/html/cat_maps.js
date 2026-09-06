@@ -1524,10 +1524,14 @@
       eh() {
         const parties = ["pnv"];
 
-        if (!Q.spa_nsuma_formed && Q.upn_in_pp === false) {
+        if (
+          !Q.party_reaching_out_map &&
+          !Q.spa_nsuma_formed &&
+          Q.upn_in_pp === false
+        ) {
           parties.push("upn");
         }
-        if (Q.spa_nsuma_formed) {
+        if (!Q.party_reaching_out_map && Q.spa_nsuma_formed) {
           parties.push("nsuma");
         }
         if (Q.spa_ehbildu_active) {
@@ -1871,7 +1875,7 @@
         const labelWidth = getLabelWidth(partyId);
 
         const clipId =
-          `congreso-party-logo-${interestRegion}-${partyId}-${index}`.replace(
+          `congreso-party-logo-${interestRegion}-${anchor.x}-${anchor.y}-${partyId}-${index}`.replace(
             /[^a-zA-Z0-9_-]/g,
             "-",
           );
