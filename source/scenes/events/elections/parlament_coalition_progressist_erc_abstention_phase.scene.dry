@@ -1,4 +1,4 @@
-title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Minority government - [+ parlament_coalition_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Progressive</span><span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Government</span></span>
+title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Minority government with ERC abstention"><span style="color: var(--psc); font-style: italic;">Progressive</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Government</span></span>
 subtitle: [? if progressist_erc_abstention_phase = 1: The first round of investiture negotiations begins.?][? if progressist_erc_abstention_phase = 2: The parties enter the second round of investiture negotiations.?][? if progressist_erc_abstention_phase = 3: The third and final round of investiture negotiations begins.?] ERC will remain outside the cabinet.
 tags: event
 new-page: true
@@ -10,7 +10,7 @@ PSC and [+ parlament_current_icv +] ask ERC to permit their investiture. No mini
 - @accept: Abstain on the current terms
 - @social: Demand binding social-policy commitments
 - @independence: Demand an independence commitment
-- @reject: Reject the offer and request another round
+- @reject: Refuse to abstain on these terms
 
 @social
 choose-if: not parlament_coalition_concessions_social
@@ -31,7 +31,7 @@ unavailable-subtitle: The PSC and [+ parlament_current_icv +] will not accept an
 The revised abstention terms now include [? if parlament_coalition_concessions_social: binding social-policy guarantees?][? if not parlament_coalition_concessions_social: no binding social-policy guarantees?].
 
 - @accept: Accept these terms
-- @reject: Ask for a further round
+- @reject: Refuse to abstain on these terms
 
 @reject
 on-arrival: {!
@@ -42,7 +42,7 @@ on-arrival: {!
 !}
 go-to: failed if progressist_erc_abstention_phase > 3; post_event
 
-The parties adjourn without agreement and will return with a finalized offer.
+We have refused to abstain on the terms currently offered. The parties will continue negotiations.
 
 @accept
 on-arrival: {!
@@ -55,7 +55,7 @@ on-arrival: {!
     Q.cat_coalition = ["psc", Q.parlament_current_icv];
     Q.cat_coalition_support = [];
     Q.cat_coalition_abstain = ["erc"];
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government enabled by ERC abstention - " + Q.parlament_coalition_psc_icv_s + "/" + Q.parlament_s_majority, '<span style="color: var(--psc); font-style: italic;">Progressive</span><span style="color: var(--' + Q.parlament_current_icv + '); font-style: italic;">Government</span>');
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government - " + Q.parlament_coalition_psc_icv_s + "/" + Q.parlament_s_majority, '<span style="color: var(--psc); font-style: italic;">Progressive</span><span style="color: var(--' + Q.parlament_current_icv + '); font-style: italic;">Government</span>');
     Q.cat_coalition_dissent = 0;
     var comuns_leads = Q.parlament_current_icv_s > Q.psc_parlament_s;
     Q.parlament_coalition_proposal_president = comuns_leads ? Q.parlament_current_icv : "psc";
@@ -71,11 +71,11 @@ on-arrival: {!
 go-to: parlament_coalition_setnames
 set-jump: resolved
 
-ERC will abstain and allow the Progressive Government to take office...
+ERC will abstain and allow the Progressive Government to take office.
 
 @resolved
 
-- @parlament_coalition_resolve: A new government is formed!
+- @parlament_coalition_resolve: A new government is formed
 
 @failed
 on-arrival: {!
@@ -87,6 +87,6 @@ on-arrival: {!
 !}
 call: snap_election
 
-No abstention agreement was reached. Parliament returns to the voters.
+Three rounds have ended without an abstention agreement. The investiture deadline has expired, forcing a repeat election.
 
 - @post_event

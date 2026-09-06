@@ -3,8 +3,8 @@ title: progressive government with ERC abstention
 You should not be here? Report a bug if you see this text.
 
 @erc
-title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Minority government enabled by ERC abstention - [+ parlament_coalition_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Progressive</span> Government</span> with ERC abstention
-view-if: player_party == "erc"
+title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Minority government with ERC abstention"><span style="color: var(--psc); font-style: italic;">Progressive</span> Government</span> with ERC abstention
+view-if: parlament_coalition_option_psc_icv_erc_abst_visible and player_party == "erc"
 choose-if: parlament_coalition_psc_icv_erc_abst_available and parlament_current_icv_relations > 40 and psc_relations > 40
 unavailable-subtitle: [? if not parlament_coalition_psc_icv_erc_abst_available: Even ERC's abstention cannot install this cabinet. ?][? if parlament_current_icv_relations <= 40 or psc_relations <= 40: The prospective cabinet will not negotiate its investiture with us. ?]
 subtitle: Stand aside for a PSC-[+ parlament_current_icv +] cabinet and negotiate policy commitments from opposition.
@@ -45,8 +45,8 @@ go-to: speaker_chosen
 - @post_event: Receive their investiture offer.
 
 @cup
-title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Minority government enabled by ERC abstention - [+ parlament_coalition_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Progressive</span> Government</span> with ERC abstention
-view-if: player_party == "cup" and parlament_progressive_erc_abstention_ai_available
+title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Minority government with ERC abstention"><span style="color: var(--psc); font-style: italic;">Progressive</span> Government</span> with ERC abstention
+view-if: parlament_coalition_option_psc_icv_erc_abst_visible and player_party == "cup"
 choose-if: parlament_progressive_erc_abstention_ai_available
 unavailable-subtitle: ERC's abstention cannot install this cabinet.
 subtitle: ERC will abstain after exhausting its preferable governing options.
@@ -59,7 +59,7 @@ on-arrival: {!
     Q.cat_coalition = ["psc", Q.parlament_current_icv];
     Q.cat_coalition_support = [];
     Q.cat_coalition_abstain = ["erc"];
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government enabled by ERC abstention - " + Q.parlament_coalition_psc_icv_s + "/" + Q.parlament_s_majority, "<span style='color: var(--psc); font-style: italic;'>Progressive Government</span>");
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government - " + Q.parlament_coalition_psc_icv_s + "/" + Q.parlament_s_majority, "<span style='color: var(--psc); font-style: italic;'>Progressive Government</span>");
     Q.cat_coalition_dissent = 0;
     var comuns_leads = Q.parlament_current_icv_s > Q.psc_parlament_s;
     Q.parlament_coalition_proposal_president = comuns_leads ? Q.parlament_current_icv : "psc";

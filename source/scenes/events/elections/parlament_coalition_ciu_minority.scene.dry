@@ -3,9 +3,9 @@ title: parlament coalition ciu minority negotiations phase 0
 You should not be here? Report a bug if you see this text.
 
 @erc
-title: [+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +]" data-summary="Minority government - [+ parlament_current_ciu_s +]/[+ parlament_s_majority +]"><span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">minority government</span></span> (with ERC support)
+title: [+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +]" data-summary="Minority government with ERC support"><span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">minority government</span></span> (with ERC support)
 choose-if: parlament_route_ciu_minority_erc_available
-view-if: parlament_route_ciu_minority_erc_visible and player_party == "erc"
+view-if: parlament_coalition_option_ciu_min_erc_visible and player_party == "erc"
 unavailable-subtitle: [? if parlament_route_ciu_minority_erc_block_seats: Not enough parliamentary support. ?][? if parlament_route_ciu_minority_erc_block_relations: [+ parlament_current_ciu +] does not trust us enough to reach an investiture agreement. ?][? if parlament_route_ciu_minority_erc_block_roadmap: [+ parlament_current_ciu +] has no Roadmap for Independence. ?]
 subtitle: [? if parlament_current_ciu_s > 40: Given the results, we're expected to support [+ parlament_current_ciu_leader +] ?][? if parlament_current_ciu_s <= 40: [+ parlament_current_ciu +] expects a coalition government given the results. ?]
 on-arrival: {!
@@ -98,8 +98,8 @@ go-to: post_speaker
 - @post_event: And so, time passes...
 
 @cup
-title: [+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +]" data-summary="Minority government - [+ parlament_current_ciu_s +]/[+ parlament_s_majority +]"><span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">minority government</span></span> (with ERC support)
-view-if: parlament_route_ciu_minority_erc_visible and player_party == "cup"
+title: [+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +]" data-summary="Minority government with ERC support"><span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">minority government</span></span> (with ERC support)
+view-if: parlament_coalition_option_ciu_min_erc_visible and player_party == "cup"
 subtitle: [? if parlament_current_ciu_s <= 40: Push ERC to support a [+ parlament_current_ciu +]-only government. ?][? if parlament_current_ciu_s > 40: [+ parlament_current_ciu +] is expecting ERC to support their minority government. ?] 
 choose-if: parlament_route_ciu_minority_erc_available
 unavailable-subtitle: [? if parlament_route_ciu_minority_erc_block_seats: Not enough parliamentary support. ?][? if parlament_route_ciu_minority_erc_block_roadmap: [+ parlament_current_ciu +] has no Roadmap for Independence. ?][? if parlament_route_ciu_minority_erc_block_relations: We don't have good enough relations with ERC to push them into this. ?]
@@ -200,9 +200,9 @@ Some promises on independence commitments have been made, we'll have to monitor 
 
 
 @ppc_any
-title: [+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +]" data-summary="Minority government - [+ parlament_current_ciu_s +]/[+ parlament_s_majority +]"><span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">minority government</span></span> (with PPC[? if parlament_route_ciu_right_use_unio:  + Unio?][? if parlament_route_ciu_right_use_pdcat:  + pdcat?] support)
+title: [+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +]" data-summary="Minority government with PPC[? if parlament_route_ciu_right_use_unio: , UDC?][? if parlament_route_ciu_right_use_pdcat: , PDeCAT?] support"><span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">minority government</span></span> (with PPC[? if parlament_route_ciu_right_use_unio:  + Unio?][? if parlament_route_ciu_right_use_pdcat:  + pdcat?] support)
 choose-if: parlament_route_ciu_right_available
-view-if: parlament_route_ciu_right_visible
+view-if: parlament_coalition_option_ciu_right_visible
 unavailable-subtitle: [? if parlament_route_ciu_right_block_seats: Not enough parliamentary support. ?][? if parlament_route_ciu_right_block_roadmap: [+ parlament_current_ciu +] has an ongoing Roadmap to Independence, which the PPC will not tolerate. ?][? if parlament_route_ciu_right_block_relations: Catalonia-Spain relations are too strained. ?]
 subtitle: Let the classical right reach an understanding like in the "good" old times. Pujolism will be back.
 on-arrival: {!

@@ -4,7 +4,7 @@ You should not be here? Report a bug if you see this text.
 
 @erc
 title: <span class="generalitat-coalition" data-parties="[+ parlament_current_icv +] psc erc" data-summary="Majority government - [+ parlament_coalition_icv_psc_erc_s +]/[+ parlament_s_majority +]"><span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Alternative</span> <span style="color: var(--erc); font-style: italic;">Tripartite</span></span> ([+ parlament_current_icv +]-PSC-ERC)
-view-if: player_party == "erc" and parlament_current_icv_s > psc_parlament_s and parlament_current_icv_s > erc_parlament_s
+view-if: parlament_coalition_option_icv_tripartite_visible and player_party == "erc"
 choose-if: parlament_coalition_icv_psc_erc_s >= parlament_s_majority and psc_relations > 40 and parlament_current_icv_relations > 40
 unavailable-subtitle: [? if parlament_coalition_icv_psc_erc_s < parlament_s_majority: Not enough parliamentary support. ?][? if psc_relations <= 40: The PSC will not enter this coalition with us. ?][? if parlament_current_icv_relations <= 40: [+ parlament_current_icv +] will not offer us a place in its government. ?]
 subtitle: The largest party of the left has invited ERC and PSC to negotiate an alternative tripartite.
@@ -48,7 +48,7 @@ go-to: speaker_chosen
 
 @cup
 title: <span class="generalitat-coalition" data-parties="[+ parlament_current_icv +] psc erc" data-summary="Majority government - [+ parlament_coalition_icv_psc_erc_s +]/[+ parlament_s_majority +]"><span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Alternative</span> <span style="color: var(--erc); font-style: italic;">Tripartite</span></span> ([+ parlament_current_icv +]-PSC-ERC)
-view-if: player_party == "cup" and parlament_current_icv_s > psc_parlament_s and parlament_current_icv_s > erc_parlament_s
+view-if: parlament_coalition_option_icv_tripartite_visible and player_party == "cup"
 choose-if: parlament_coalition_icv_psc_erc_s >= parlament_s_majority
 # TODO-FIXME: gate on erc_roadmap rather than relations. 
 unavailable-subtitle: [? if parlament_coalition_icv_psc_erc_s < parlament_s_majority: Not enough parliamentary support. ?]

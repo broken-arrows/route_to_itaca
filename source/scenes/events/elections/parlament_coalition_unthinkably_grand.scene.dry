@@ -1,13 +1,13 @@
-title: unthinkably grand PSC-Comuns coalition
+title: unthinkably grand emergency coalition
 
 You should not be here? Report a bug if you see this text.
 
 @any
-title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Minority government"><span style="color: var(--psc); font-style: italic;">Unthinkably Grand</span> Coalition</span> (PSC-[+ parlament_current_icv +][? if parlament_emergency_psc_icv_use_cs: , supported by Cs?][? if parlament_emergency_psc_icv_use_ppc: , PPC?][? if parlament_emergency_psc_icv_use_unio: , and Unió?][? if parlament_emergency_psc_icv_use_vox: , with Vox abstaining?])
-view-if: parlament_emergency_psc_icv_available
+title: <span class="generalitat-coalition" data-parties="psc[? if parlament_emergency_psc_icv_core = 'psc_comuns':  [+ parlament_current_icv +]?][? if parlament_emergency_psc_icv_core = 'psc_cs':  cs?]" data-summary="Minority government with cross-bloc support"><span style="color: var(--psc); font-style: italic;">Unthinkably</span> <span style="color: [? if parlament_emergency_psc_icv_core = 'psc_comuns': var(--[+ parlament_current_icv +])?][? if parlament_emergency_psc_icv_core = 'psc_cs': var(--cs)?][? if parlament_emergency_psc_icv_core = 'psc_solo': var(--psc)?]; font-style: italic;">Grand</span> <span style="color: var(--cs); font-style: italic;">Coalition</span></span> ([? if parlament_emergency_psc_icv_core = "psc_solo": PSC minority cabinet, supported by [+ parlament_current_icv +] and Cs?][? if parlament_emergency_psc_icv_core = "psc_comuns": PSC-[+ parlament_current_icv +] cabinet, supported by Cs?][? if parlament_emergency_psc_icv_core = "psc_cs": PSC-Cs cabinet, supported by [+ parlament_current_icv +]?][? if parlament_emergency_psc_icv_use_ppc: , PPC?][? if parlament_emergency_psc_icv_use_unio: , and Unió?][? if parlament_emergency_psc_icv_use_vox: , with Vox abstaining?])
+view-if: parlament_coalition_option_unthinkable_left_visible
 choose-if: parlament_emergency_psc_icv_politically_available
 unavailable-subtitle: [? if cat_spa_relations >= 40: The leaders of these parties do not see any urgency that would justify such an agreement. ?][? if parlament_current_icv_leader = "Arcadi Oliveres": Arcadi Oliveres will never accept such an agreement. ?][? if (parlament_current_icv_leader = "Joan Herrera" or parlament_current_icv_leader = "Lluís Rabell" or parlament_current_icv_leader = "Xavier Domènech" or parlament_current_icv_leader = "Jaume Asens") and not parlament_repeat_election: [+ parlament_current_icv_leader +] is, at least at the moment, opposed to such an agreement. ?][? if player_party = "cup" and erc_roadmap <= 1 and (parlament_ai_erc_better_available or parlament_coalition_psc_icv_erc_abst_available): ERC will choose a preferable left arrangement first. ?]
-subtitle: The PSC and [+ parlament_current_icv +] will share the cabinet.[? if parlament_emergency_psc_icv_use_cs:  Cs will support its investiture.?][? if parlament_emergency_psc_icv_use_ppc:  PPC support is also required.?][? if parlament_emergency_psc_icv_use_unio:  Unió support is also required.?][? if parlament_emergency_psc_icv_use_vox:  Even Vox will abstain to make this possible.?]
+subtitle: [? if parlament_emergency_psc_icv_core = "psc_solo": The PSC will form a minority cabinet because Cs and [+ parlament_current_icv +] are too evenly matched for either to join it; both will support the investiture.?][? if parlament_emergency_psc_icv_core = "psc_comuns": The PSC will lead a cabinet with [+ parlament_current_icv +], supported by Cs.?][? if parlament_emergency_psc_icv_core = "psc_cs": The PSC will lead a cabinet with Cs, supported by [+ parlament_current_icv +].?] [? if parlament_emergency_psc_icv_use_ppc:  PPC support is also required.?] [? if parlament_emergency_psc_icv_use_unio:  The favourable vote by udc will also be required.?] [? if parlament_emergency_psc_icv_use_vox:  Even Vox will abstain to make this possible.?]
 on-arrival: {!
     Q.erc_in_gob = false;
     Q.erc_supporting = false;
@@ -15,11 +15,13 @@ on-arrival: {!
     Q.cup_supporting = false;
     Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
 
-    Q.cat_coalition = ["psc", Q.parlament_current_icv];
+    var emergencyCore = Q.parlament_emergency_psc_icv_core;
+    Q.cat_coalition = ["psc"];
+    if (emergencyCore == "psc_comuns") Q.cat_coalition.push(Q.parlament_current_icv);
+    if (emergencyCore == "psc_cs") Q.cat_coalition.push("cs");
     Q.cat_coalition_support = [];
-    if (Q.parlament_emergency_psc_icv_use_cs) {
-        Q.cat_coalition_support.push("cs");
-    }
+    if (emergencyCore != "psc_comuns") Q.cat_coalition_support.push(Q.parlament_current_icv);
+    if (emergencyCore != "psc_cs") Q.cat_coalition_support.push("cs");
     if (Q.parlament_emergency_psc_icv_use_ppc) {
         Q.cat_coalition_support.push("ppc");
     }
@@ -27,36 +29,56 @@ on-arrival: {!
         Q.cat_coalition_support.push("unio");
     }
     Q.cat_coalition_abstain = Q.parlament_emergency_psc_icv_use_vox ? ["vox"] : [];
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Emergency minority government with external support", "<span style='color: var(--psc); font-style: italic;'>Unthinkably Grand Coalition</span>");
+    var emergencyGovernmentSeats = Q.psc_parlament_s;
+    if (emergencyCore == "psc_comuns") emergencyGovernmentSeats += Q.parlament_current_icv_s;
+    if (emergencyCore == "psc_cs") emergencyGovernmentSeats += Q.cs_parlament_s;
+    var emergencyAccent = emergencyCore == "psc_comuns" ? Q.parlament_current_icv : (emergencyCore == "psc_cs" ? "cs" : "psc");
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (emergencyGovernmentSeats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + emergencyGovernmentSeats + "/" + Q.parlament_s_majority, "<span style='color: var(--psc); font-style: italic;'>Unthinkably</span> <span style='color: var(--" + emergencyAccent + "); font-style: italic;'>Grand</span> <span style='color: var(--cs); font-style: italic;'>Coalition</span>");
     Q.cat_coalition_dissent = 0;
 
-    // TODO: revisit PSC's unconditional willingness after playtesting.
-    var psc_must_lead = Q.parlament_emergency_psc_icv_use_ppc || Q.parlament_emergency_psc_icv_use_unio || Q.parlament_emergency_psc_icv_use_vox;
-    var comuns_leads = !psc_must_lead && Q.parlament_current_icv_s > Q.psc_parlament_s;
-    Q.parlament_coalition_proposal_president = comuns_leads ? Q.parlament_current_icv : "psc";
-    Q.parlament_coalition_proposal_vp = comuns_leads ? "psc" : Q.parlament_current_icv;
-    Q.parlament_coalition_proposal_economy = comuns_leads ? Q.parlament_current_icv : "psc";
+    // TODO: revisit PSC's unconditional willingness after playtesting + Voting penalties for all parties involved??
+    Q.parlament_coalition_proposal_president = "psc";
+    Q.parlament_coalition_proposal_vp = "psc";
+    Q.parlament_coalition_proposal_economy = "psc";
     Q.parlament_coalition_proposal_interior = "psc";
     Q.parlament_coalition_proposal_health = "psc";
-    Q.parlament_coalition_proposal_foreign = Q.parlament_current_icv;
-    Q.parlament_coalition_proposal_education = Q.parlament_current_icv;
-    Q.parlament_coalition_proposal_territory = Q.parlament_current_icv;
-    Q.parlament_coalition_proposal_bnl = Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_foreign = "psc";
+    Q.parlament_coalition_proposal_education = "psc";
+    Q.parlament_coalition_proposal_territory = "psc";
+    Q.parlament_coalition_proposal_bnl = "psc";
 
-    Q.speaker_party = comuns_leads ? "psc" : Q.parlament_current_icv;
+    if (emergencyCore == "psc_comuns") {
+        Q.parlament_coalition_proposal_vp = Q.parlament_current_icv;
+        Q.parlament_coalition_proposal_foreign = Q.parlament_current_icv;
+        Q.parlament_coalition_proposal_education = Q.parlament_current_icv;
+        Q.parlament_coalition_proposal_territory = Q.parlament_current_icv;
+        Q.parlament_coalition_proposal_bnl = Q.parlament_current_icv;
+    }
+    if (emergencyCore == "psc_cs") {
+        Q.parlament_coalition_proposal_vp = "cs";
+        Q.parlament_coalition_proposal_health = "cs";
+        Q.parlament_coalition_proposal_education = "cs";
+        Q.parlament_coalition_proposal_territory = "cs";
+        if ((Q.cs_parlament_s / emergencyGovernmentSeats) * 55 > 20) Q.parlament_coalition_proposal_bnl = "cs";
+    }
+
+    Q.speaker_party = emergencyCore == "psc_comuns" ? Q.parlament_current_icv : (emergencyCore == "psc_cs" ? "cs" : "psc");
     if (Q.speaker_party == "psc") {
-        Q.speaker = "Xabier Sabaté";
-        Q.speaker_gender = "m";
-    } else {
+        Q.speaker = "Eva Granados";
+        Q.speaker_gender = "f";
+    } else if (Q.speaker_party == Q.parlament_current_icv) {
         Q.speaker = Q.parlament_current_icv_leader == "Lluís Rabell" ? "Dolors Camats" : "Lluís Rabell";
         Q.speaker_gender = Q.parlament_current_icv_leader == "Lluís Rabell" ? "f" : "m";
+    } else {
+        Q.speaker = Q.cs_leader;
+        Q.speaker_gender = Q.cs_leader_gender;
     }
 !}
 go-to: parlament_coalition_setnames
 set-jump: resolved
 
-The PSC and [+ parlament_current_icv +] will be forming quite the unusual cabinet.[? if parlament_emergency_psc_icv_use_cs:  Cs will support it from outside.?][? if parlament_emergency_psc_icv_use_ppc:  PPC will also support it.?][? if parlament_emergency_psc_icv_use_unio:  Unió will also support it.?][? if parlament_emergency_psc_icv_use_vox:  Vox will permit the investiture through abstention.?]
+[? if parlament_emergency_psc_icv_core = "psc_solo": The PSC will form a minority cabinet with external support from [+ parlament_current_icv +] and Cs.?][? if parlament_emergency_psc_icv_core = "psc_comuns": The PSC and [+ parlament_current_icv +] will form the cabinet, with Cs supporting it from outside government.?][? if parlament_emergency_psc_icv_core = "psc_cs": The PSC and Cs will form the cabinet, with [+ parlament_current_icv +] supporting it from outside government.?] [? if parlament_emergency_psc_icv_use_ppc:  The votes of the PPC will also be needed.?][? if parlament_emergency_psc_icv_use_unio:  The votes of udc will be needed as well.?][? if parlament_emergency_psc_icv_use_vox:  A tactical abstention by vox will complete the investiture majority.?]
 
 @resolved
 
-- @parlament_coalition_resolve: A new government is formed???
+- @parlament_coalition_resolve: A new government is formed

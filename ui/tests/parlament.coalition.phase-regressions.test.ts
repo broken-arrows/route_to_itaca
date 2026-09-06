@@ -1,9 +1,11 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { DendryAdapter } from '../src/engine/adapter';
 
 const elections = resolve(import.meta.dirname, '..', '..', 'source', 'scenes', 'events', 'elections');
 const scene = (name: string) => readFileSync(resolve(elections, name), 'utf8');
+const gameText = readFileSync(resolve(import.meta.dirname, '..', '..', 'out', 'game.json'), 'utf8');
 
 function arrival(source: string, marker = '') {
   const start = marker ? source.search(new RegExp(`^${marker}\\r?$`, 'm')) : 0;
@@ -14,6 +16,54 @@ function arrival(source: string, marker = '') {
 }
 
 describe('Parlament coalition phase regressions', () => {
+  it('blocks every leverage push in the final negotiation round', () => {
+    const adapter = DendryAdapter.fromJSONText(gameText);
+    adapter.beginGame([1, 2, 3, 4]);
+    const cases = [
+      ['parlament_coalition_ciu_erc_phase.push_leverage_concessions', 'ciu_erc_coalition_phase'],
+      ['parlament_coalition_ciu_erc_phase.push_leverage_positions', 'ciu_erc_coalition_phase'],
+      ['parlament_coalition_ciu_minority_phase.push_leverage_concessions', 'ciu_min_coalition_phase'],
+      ['parlament_coalition_erc_ciu_phase.push_leverage_positions', 'erc_ciu_coalition_phase'],
+      ['parlament_coalition_left_tripartite_phase.push_leverage_positions', 'left_tripartite_coalition_phase'],
+      ['parlament_coalition_psc_tripartite_phase.push_leverage_positions', 'psc_tripartite_coalition_phase'],
+      ['parlament_coalition_cup_broad_phase.push', 'cup_broad_coalition_phase'],
+      ['parlament_coalition_erc_cup_phase_erc_player_erc_led.push', 'erc_cup_coalition_phase'],
+      ['parlament_coalition_erc_cup_phase_erc_player_cup_led.push', 'erc_cup_coalition_phase'],
+      ['parlament_coalition_erc_cup_phase_cup_player_erc_led.push', 'erc_cup_coalition_phase'],
+      ['parlament_coalition_erc_cup_phase_cup_player_cup_led.push', 'erc_cup_coalition_phase'],
+    ] as const;
+
+    for (const [sceneId, phaseKey] of cases) {
+      adapter.qualities.parlament_coalition_push = 0;
+      adapter.qualities[phaseKey] = 3;
+      const push = adapter.engine.game.scenes[sceneId];
+      expect(push, sceneId).toBeTruthy();
+      expect(adapter.engine._runPredicate(push.viewIf, true), sceneId).toBe(false);
+      expect(adapter.engine._runPredicate(push.chooseIf, false), sceneId).toBe(false);
+    }
+  });
+
+  it('keeps engine round controls out of player-facing wording', () => {
+    const phaseFiles = readdirSync(elections).filter((name) => name.includes('_phase') && name.endsWith('.scene.dry'));
+    const proceduralChoices = /- @revise:|return without sending|request another round|demand another round|ask for a further round|reject the distribution/i;
+
+    for (const phaseFile of phaseFiles) {
+      expect(scene(phaseFile), phaseFile).not.toMatch(proceduralChoices);
+    }
+  });
+
+  it('does not offer cabinet ministries to an external CUP supporter', () => {
+    const adapter = DendryAdapter.fromJSONText(gameText);
+    adapter.beginGame([1, 2, 3, 4]);
+    const ministries = adapter.engine.game.scenes['parlament_coalition_cup_broad_phase.ministries'];
+
+    Object.assign(adapter.qualities, { player_party: 'cup', cup_broad_kind: 'republican' });
+    expect(adapter.engine._runPredicate(ministries.viewIf, true)).toBe(false);
+
+    adapter.qualities.cup_broad_kind = 'popular_unity';
+    expect(adapter.engine._runPredicate(ministries.viewIf, true)).toBe(true);
+  });
+
   it('charges the correct Left Tripartite partner and only applies the first-round ERC portfolio veto', () => {
     const setup = arrival(scene('parlament_coalition_left_tripartite.scene.dry'), '@erc');
     const phase = scene('parlament_coalition_left_tripartite_phase.scene.dry');
@@ -90,7 +140,7 @@ describe('Parlament coalition phase regressions', () => {
     const source = scene('parlament_coalition_cup_broad.scene.dry');
     const setup = arrival(source, '@setup');
     const fail = arrival(scene('parlament_coalition_cup_broad_phase.scene.dry'), '@new_elections');
-    const makeQ = (erc: number, comuns: number, cup: number) => ({
+    const makeQ = (erc: number, comuns: number, cup: number): Record<string, any> => ({
       cup_broad_kind: 'popular_unity',
       erc_parlament_s: erc,
       parlament_current_icv: 'icv',

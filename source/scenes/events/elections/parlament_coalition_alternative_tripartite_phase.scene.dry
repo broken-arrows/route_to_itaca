@@ -5,10 +5,16 @@ new-page: true
 view-if: alternative_tripartite_coalition_phase > 0 and player_party == "erc"
 on-arrival: {!
     Q.parlament_coalition_changes = false;
+    Q.alternative_tripartite_reject_vp = false;
+    Q.alternative_tripartite_reject_psc_economy = false;
+    Q.alternative_tripartite_reject_psc_interior = false;
+    Q.alternative_tripartite_reject_comuns_bnl = false;
+    Q.alternative_tripartite_reject_comuns_health = false;
     Q.parlament_coalition_leverage = Math.max(5, (Q.erc_parlament_s / Q.parlament_coalition_icv_psc_erc_s) * 55 + Q.alternative_tripartite_coalition_phase * 3);
 
     Q.parlament_coalition_proposal_president = Q.parlament_current_icv;
-    Q.parlament_coalition_proposal_vp = "psc";
+    Q.alternative_tripartite_expected_vp = Q.psc_parlament_s >= Q.erc_parlament_s ? "psc" : "erc";
+    Q.parlament_coalition_proposal_vp = Q.alternative_tripartite_expected_vp;
     Q.parlament_coalition_proposal_economy = Q.parlament_current_icv;
     Q.parlament_coalition_proposal_interior = Q.parlament_current_icv;
     Q.parlament_coalition_proposal_health = Q.parlament_current_icv;
@@ -18,8 +24,7 @@ on-arrival: {!
     Q.parlament_coalition_proposal_bnl = Q.parlament_current_icv;
 
     var psc_claim = (Q.psc_parlament_s / Q.parlament_coalition_icv_psc_erc_s) * 55;
-    if (psc_claim >= 20) {
-        Q.parlament_coalition_proposal_vp = "psc";
+    if (Q.alternative_tripartite_expected_vp == "psc") {
         psc_claim -= 20;
     }
     if (psc_claim >= 10) {
@@ -36,6 +41,9 @@ on-arrival: {!
     }
 
     var erc_claim = Q.parlament_coalition_leverage;
+    if (Q.alternative_tripartite_expected_vp == "erc") {
+        erc_claim -= 20;
+    }
     if (erc_claim >= 6) {
         Q.parlament_coalition_proposal_foreign = "erc";
         erc_claim -= 6;
@@ -52,7 +60,11 @@ on-arrival: {!
         Q.parlament_coalition_proposal_education = "erc";
         erc_claim -= 7;
     }
-    Q.parlament_coalition_leverage = erc_claim;
+    Q.parlament_coalition_leverage = Math.max(0, erc_claim);
+    Q.alternative_tripartite_psc_economy_protected = Q.parlament_coalition_proposal_economy == "psc";
+    Q.alternative_tripartite_psc_interior_protected = Q.parlament_coalition_proposal_interior == "psc";
+    Q.alternative_tripartite_comuns_bnl_protected = Q.parlament_coalition_proposal_bnl == Q.parlament_current_icv;
+    Q.alternative_tripartite_comuns_health_protected = Q.parlament_coalition_proposal_health == Q.parlament_current_icv;
 !}
 go-to: parlament_coalition_setnames
 set-jump: choices
@@ -60,9 +72,14 @@ role: event
 
 @choices
 
-[+ parlament_current_icv +] has submitted its [? if alternative_tripartite_coalition_phase = 1: opening?][? if alternative_tripartite_coalition_phase > 1: revised?] proposal for distributing the cabinet among the three partners.
+[+ parlament_current_icv +] has submitted its [? if alternative_tripartite_coalition_phase = 1: opening?][? if alternative_tripartite_coalition_phase > 1: revised?] cabinet proposal.
 
-- @accept: Accept the proposed cabinet
+- @accept: Accept the current proposal
+- @counterproposal
+
+@counterproposal
+title: [? if parlament_coalition_changes: Revisit our counter-proposal?][? if not parlament_coalition_changes: Draw a counter-proposal?]
+
 - @claim_health: Demand the Health Ministry
 - @claim_interior: Demand the Interior Ministry
 - @claim_economy: Demand the Economy Ministry
@@ -70,7 +87,8 @@ role: event
 - @claim_foreign: Demand the Foreign Affairs Ministry
 - @claim_territory: Demand the Territory Ministry
 - @claim_bnl: Demand the Business & Labour Ministry
-- @revise: Reject the distribution and demand another round
+- @send: Send the counter-proposal
+- @choices: Review the current proposal
 
 @claim_health
 choose-if: parlament_coalition_leverage >= 7 and parlament_coalition_proposal_health != "erc"
@@ -80,7 +98,7 @@ on-arrival: {!
     Q.parlament_coalition_changes = true;
     Q.parlament_coalition_leverage -= 7;
 !}
-go-to: counter_decision
+go-to: counterproposal
 
 @claim_interior
 choose-if: parlament_coalition_leverage >= 10 and parlament_coalition_proposal_interior != "erc"
@@ -90,7 +108,7 @@ on-arrival: {!
     Q.parlament_coalition_changes = true;
     Q.parlament_coalition_leverage -= 10;
 !}
-go-to: counter_decision
+go-to: counterproposal
 
 @claim_economy
 choose-if: parlament_coalition_leverage >= 10 and parlament_coalition_proposal_economy != "erc"
@@ -100,7 +118,7 @@ on-arrival: {!
     Q.parlament_coalition_changes = true;
     Q.parlament_coalition_leverage -= 10;
 !}
-go-to: counter_decision
+go-to: counterproposal
 
 @claim_education
 choose-if: parlament_coalition_leverage >= 7 and parlament_coalition_proposal_education != "erc"
@@ -110,7 +128,7 @@ on-arrival: {!
     Q.parlament_coalition_changes = true;
     Q.parlament_coalition_leverage -= 7;
 !}
-go-to: counter_decision
+go-to: counterproposal
 
 @claim_foreign
 choose-if: parlament_coalition_leverage >= 6 and parlament_coalition_proposal_foreign != "erc"
@@ -120,7 +138,7 @@ on-arrival: {!
     Q.parlament_coalition_changes = true;
     Q.parlament_coalition_leverage -= 6;
 !}
-go-to: counter_decision
+go-to: counterproposal
 
 @claim_territory
 choose-if: parlament_coalition_leverage >= 5 and parlament_coalition_proposal_territory != "erc"
@@ -130,7 +148,7 @@ on-arrival: {!
     Q.parlament_coalition_changes = true;
     Q.parlament_coalition_leverage -= 5;
 !}
-go-to: counter_decision
+go-to: counterproposal
 
 @claim_bnl
 choose-if: parlament_coalition_leverage >= 5 and parlament_coalition_proposal_bnl != "erc"
@@ -140,10 +158,20 @@ on-arrival: {!
     Q.parlament_coalition_changes = true;
     Q.parlament_coalition_leverage -= 5;
 !}
-go-to: counter_decision
+go-to: counterproposal
 
-@counter_decision
-go-to: accept if alternative_tripartite_coalition_phase >= 3 or parlament_coalition_leverage >= 3; revise
+@send
+view-if: parlament_coalition_changes
+on-arrival: {!
+    var expectedVP = Q.psc_parlament_s >= Q.erc_parlament_s ? "psc" : "erc";
+    Q.alternative_tripartite_reject_vp = Q.alternative_tripartite_coalition_phase < 3 && expectedVP != "erc" && Q.parlament_coalition_proposal_vp != expectedVP;
+    Q.alternative_tripartite_reject_psc_economy = Q.alternative_tripartite_coalition_phase == 1 && Q.alternative_tripartite_psc_economy_protected && Q.parlament_coalition_proposal_economy != "psc";
+    Q.alternative_tripartite_reject_psc_interior = Q.alternative_tripartite_coalition_phase < 3 && Q.alternative_tripartite_psc_interior_protected && Q.parlament_coalition_proposal_interior != "psc";
+    Q.alternative_tripartite_reject_comuns_bnl = Q.alternative_tripartite_coalition_phase < 3 && Q.alternative_tripartite_comuns_bnl_protected && Q.parlament_coalition_proposal_bnl != Q.parlament_current_icv;
+    Q.alternative_tripartite_reject_comuns_health = Q.alternative_tripartite_coalition_phase < 3 && Q.alternative_tripartite_comuns_health_protected && Q.parlament_coalition_proposal_health != Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_accept = !Q.alternative_tripartite_reject_vp && !Q.alternative_tripartite_reject_psc_economy && !Q.alternative_tripartite_reject_psc_interior && !Q.alternative_tripartite_reject_comuns_bnl && !Q.alternative_tripartite_reject_comuns_health;
+!}
+go-to: accept if parlament_coalition_proposal_accept; revise
 
 @revise
 on-arrival: {!
@@ -154,9 +182,11 @@ on-arrival: {!
 !}
 go-to: new_elections if alternative_tripartite_coalition_phase > 3; post_event
 
-The coalition partners will return with another distribution after a further round of talks.
+The PSC and [+ parlament_current_icv +] have rejected our counter-proposal. [? if alternative_tripartite_reject_vp: The Vice-Presidency seems to remain a red line.?][? if alternative_tripartite_reject_psc_economy or alternative_tripartite_reject_psc_interior: The PSC remains dissatisfied with the balance of high-responsibility ministries.?][? if alternative_tripartite_reject_comuns_bnl or alternative_tripartite_reject_comuns_health: [+ parlament_current_icv +] does not believe the proposal gives it sufficient influence over the government's social programme.?] The negotiating teams will reconvene.
 
 @accept
+choose-if: not parlament_coalition_changes
+unavailable-subtitle: Our counter-proposal will require approval by both coalition partners.
 on-arrival: {!
     Q.alternative_tripartite_coalition_phase = 0;
     Q.erc_in_gob = true;
@@ -171,9 +201,9 @@ on-arrival: {!
     Q.cat_coalition_dissent = 0;
 !}
 
-The PSC and us have accepted the Alternative Tripartite proposed by [+ parlament_current_icv +].
+ERC and the PSC have accepted [+ parlament_current_icv +]'s proposal for a new coalition to take on the Generalitat.
 
-- @parlament_coalition_resolve: A new government is formed!
+- @parlament_coalition_resolve: A new government is formed
 
 @new_elections
 on-arrival: {!

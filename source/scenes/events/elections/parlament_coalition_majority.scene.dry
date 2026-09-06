@@ -1,5 +1,5 @@
 title: [+ parlament_coalition_majority_party +] <span class="generalitat-coalition" data-parties="[+ parlament_coalition_majority_party +]" data-summary="Majority government - [+ parlament_coalition_majority_s +]/[+ parlament_s_majority +]"><span style="color: var(--[+ parlament_coalition_majority_party +]); font-style: italic;">Majority Government</span></span>
-view-if: parlament_coalition_majority_s
+view-if: parlament_coalition_option_majority_visible
 choose-if: parlament_coalition_majority_s >= parlament_s_majority
 subtitle: [? if parlament_coalition_majority_party == player_party: We won an absolute majority, we can govern on our own! ?][? if parlament_coalition_majority_party != player_party: [+ parlament_coalition_majority_party +] holds an absolute majority and will govern alone.?]
 on-arrival: {!

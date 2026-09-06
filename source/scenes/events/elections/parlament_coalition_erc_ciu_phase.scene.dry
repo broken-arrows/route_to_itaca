@@ -1,4 +1,4 @@
-title: [? if pdcat_external_support: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="Minority government - [+ erc_parlament_s + parlament_current_ciu_s +]/[+ parlament_s_majority +]"><span style="color: var(--pdcat); font-style: italic;">Soft</span>-<span style="color: var(--erc); font-style: italic;">Sovereignty</span> <span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">Government</span></span> proposal with pdcat support?][? if not pdcat_external_support: [? if erc_ciu_coalition_phase = 3: Yet another ?]<span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="Majority government - [+ parlament_coalition_erc_ciu_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">ERC-led Sovereignty</span> <span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">government</span></span> proposal[? if erc_ciu_coalition_phase = 2:  (revised)?][? if erc_ciu_coalition_phase = 3:  (final round)?]?]
+title: [? if pdcat_external_support: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="Minority government with PDeCAT support"><span style="color: var(--pdcat); font-style: italic;">Soft</span>-<span style="color: var(--erc); font-style: italic;">Sovereignty</span> <span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">Government</span></span> proposal with pdcat support?][? if not pdcat_external_support: [? if erc_ciu_coalition_phase = 3: Yet another ?]ERC-led <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="Majority government - [+ parlament_coalition_erc_ciu_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">Sovereignty</span> <span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">government</span></span> proposal?]
 subtitle: [? if pdcat_external_support and erc_ciu_coalition_phase = 1: The pdcat would support the investiture while remaining outside the cabinet. This is the opening round of negotiations.?][? if pdcat_external_support and erc_ciu_coalition_phase = 2: The pdcat remains willing to support the investiture. The governing parties have returned for a second round of negotiations.?][? if pdcat_external_support and erc_ciu_coalition_phase = 3: The pdcat seems to remain willing to support the investiture. This is the final round of negotiations.?][? if not pdcat_external_support and erc_ciu_coalition_phase = 1: ERC presents its opening cabinet proposal to [+ parlament_current_ciu +].?][? if not pdcat_external_support and erc_ciu_coalition_phase = 2: ERC-[+ parlament_current_ciu +] negotiations advance.?][? if not pdcat_external_support and erc_ciu_coalition_phase = 3: This is set to be the final round of ERC-[+ parlament_current_ciu +] negotiations.?]
 tags: event
 new-page: true
@@ -213,7 +213,7 @@ go-to: changes
 
 @push_leverage_positions
 title: Push for more positions
-view-if: parlament_coalition_leverage < 10
+view-if: parlament_coalition_leverage < 10 and erc_ciu_coalition_phase < 3
 choose-if: parlament_coalition_push < erc_ciu_coalition_phase and erc_ciu_coalition_phase < 3
 unavailable-subtitle: We've already pushed for more demands. [? if erc_ciu_coalition_phase < 3: We'll have to wait for the next round of negotiations to try again. ?]
 on-arrival: {!
@@ -317,11 +317,11 @@ on-arrival: {!
     Q.cat_coalition = ["erc", Q.parlament_current_ciu];
     Q.cat_coalition_support = Q.pdcat_external_support ? ["pdcat"] : [];
     Q.cat_coalition_abstain = [];
-    var coalitionSeats = Q.pdcat_external_support ? Q.parlament_coalition_pdcat_support_s : Q.parlament_coalition_erc_ciu_s;
+    var coalitionSeats = Q.parlament_coalition_erc_ciu_s;
     var coalitionName = Q.pdcat_external_support 
         ? "<span style='color: var(--pdcat); font-style: italic;'>Soft</span>-<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Government</span>"
         : "<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Government</span>";
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (Q.pdcat_external_support ? "Minority government, " : "Majority government, ") + coalitionSeats + "/" + Q.parlament_s_majority, coalitionName);
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (coalitionSeats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + coalitionSeats + "/" + Q.parlament_s_majority, coalitionName);
     Q.cat_coalition_dissent = 0;
 
     Q.position_disp = "Generalitat";

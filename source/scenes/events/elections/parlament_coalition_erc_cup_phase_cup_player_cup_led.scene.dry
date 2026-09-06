@@ -34,7 +34,7 @@ new-page: true
 go-to: parlament_coalition_setnames
 set-jump: choices
 
-[? if player_party = parlament_coalition_leader and erc_cup_coalition_phase = 1: As the leading party, we must submit the opening division of responsibilities to [+ parlament_coalition_follower +].?][? if player_party = parlament_coalition_leader and erc_cup_coalition_phase > 1: [+ parlament_coalition_follower +] has answered our previous offer with a revised distribution.?][? if player_party != parlament_coalition_leader: [+ parlament_coalition_leader +] has presented its proposal to us as the junior coalition partner.?]
+[? if erc_cup_coalition_phase = 1: As the leading party, we must prepare our opening proposal.?][? if erc_cup_coalition_phase > 1: ERC has answered our previous proposal with a new counter-proposal.?]
 
 @choices
 
@@ -49,7 +49,7 @@ set-jump: choices
 - @accept
 
 @changes
-title: Propose an alternative Government Composition
+title: [? if erc_cup_coalition_phase = 1: Propose a government composition?][? if erc_cup_coalition_phase > 1: Revise the government composition?]
 
 - @vp
 - @interior
@@ -59,7 +59,7 @@ title: Propose an alternative Government Composition
 - @foreign
 - @territory
 - @bnl
-- @finish_changes: Finish proposing changes
+- @finish_changes: Review the current proposal
 
 @finish_changes
 on-arrival: {!
@@ -169,7 +169,7 @@ on-arrival: {!
 go-to: changes
 
 @social
-title: Add a social-policy commitment
+title: Include a social-policy commitment
 choose-if: parlament_coalition_concessions_social = 0 and parlament_coalition_leverage >= 5
 unavailable-subtitle: [? if parlament_coalition_concessions_social: The commitment is already included.?][? if parlament_coalition_leverage < 5: We lack enough leverage.?]
 on-arrival: {!
@@ -180,7 +180,7 @@ on-arrival: {!
 go-to: phase_text
 
 @indy
-title: Add the stronger independence roadmap
+title: Include the stronger independence roadmap
 choose-if: parlament_coalition_concessions_indy = 0 and parlament_coalition_leverage >= 5 and erc_roadmap != cup_roadmap
 unavailable-subtitle: [? if erc_roadmap = cup_roadmap: Both parties already share the same roadmap.?][? if parlament_coalition_concessions_indy: The commitment is already included.?][? if parlament_coalition_leverage < 5: We lack enough leverage.?]
 on-arrival: {!
@@ -192,6 +192,7 @@ go-to: phase_text
 
 @push
 title: Push for more leverage
+view-if: erc_cup_coalition_phase < 3
 choose-if: parlament_coalition_push < erc_cup_coalition_phase and erc_cup_coalition_phase < 3
 unavailable-subtitle: We cannot push any further in this round.
 on-arrival: {!
@@ -206,9 +207,15 @@ go-to: phase_text
 title: [? if player_party = parlament_coalition_leader and erc_cup_coalition_phase = 1: Submit the opening proposal?][? if not (player_party = parlament_coalition_leader and erc_cup_coalition_phase = 1): Send the counter-proposal?]
 view-if: parlament_coalition_changes
 on-arrival: {!
-    Q.parlament_coalition_proposal_accept = Q.parlament_coalition_push < Q.erc_cup_coalition_phase;
-    if (Q.parlament_coalition_proposal_vp == Q.player_party && Q.erc_cup_coalition_phase < 2) Q.parlament_coalition_proposal_accept = false;
-    if (Q.parlament_coalition_proposal_interior == Q.player_party && Q.parlament_coalition_proposal_economy == Q.player_party && Q.erc_cup_coalition_phase < 3) Q.parlament_coalition_proposal_accept = false;
+    var ministries = ["interior", "economy", "foreign", "health", "education", "territory", "bnl"];
+    var cupMinistries = 0;
+    for (var ministry of ministries) if (Q["parlament_coalition_proposal_" + ministry] == "cup") cupMinistries += 1;
+    Q.erc_cup_reject_pressure = Q.parlament_coalition_push >= Q.erc_cup_coalition_phase;
+    Q.erc_cup_reject_vp = Q.erc_cup_coalition_phase < 3 && Q.parlament_coalition_proposal_vp != Q.parlament_coalition_follower;
+    Q.erc_cup_reject_economy = Q.player_party == "cup" && Q.erc_cup_coalition_phase < 3 && Q.parlament_coalition_proposal_economy != "erc";
+    Q.erc_cup_reject_interior = Q.player_party == "cup" && Q.erc_cup_coalition_phase < 2 && Q.parlament_coalition_proposal_interior != "erc";
+    Q.erc_cup_reject_cup_ministries = Q.player_party == "erc" && cupMinistries < 2;
+    Q.parlament_coalition_proposal_accept = !(Q.erc_cup_reject_pressure || Q.erc_cup_reject_vp || Q.erc_cup_reject_economy || Q.erc_cup_reject_interior || Q.erc_cup_reject_cup_ministries);
 !}
 go-to: accepted if parlament_coalition_proposal_accept; next_phase if not parlament_coalition_proposal_accept
 
@@ -249,7 +256,7 @@ on-arrival: {!
     Q.independence_trust -= 2;
 !}
 
-Our proposal has been rejected... The negotiating teams will reconvene for another round in a month's time.
+[? if erc_cup_reject_vp: ERC insists that they should retain the Vice-Presidency. ?][? if erc_cup_reject_economy or erc_cup_reject_interior: ERC has considered the proposed allocation of high-responsibility ministries unacceptable. ?]All in all, our proposal has been rejected. The negotiating teams will reconvene.
 
 - @post_event: And so, time passes...
 
@@ -266,6 +273,6 @@ on-arrival: {!
 !}
 call: snap_election
 
-Three rounds have ended without agreement. The investiture deadline has expired, forcing another election.
+[? if erc_cup_reject_vp: ERC would not accept without their Vice-Presidency. ?][? if erc_cup_reject_economy or erc_cup_reject_interior: ERC judged the proposed allocation of high-responsibility ministries unacceptable. ?]Now, with all deadlines expired, we can only take the matter back to the polls.
 
 - @post_event: We'll have to see if the result changes...

@@ -3,8 +3,8 @@ title: ERC minority government with CUP support
 See this? report a bug!
 
 @erc_minority
-title: ERC <span class="generalitat-coalition" data-parties="erc" data-summary="Government supported by the CUP - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">minority Government</span></span> with CUP support
-view-if: erc_parlament_s > 0 and cup_parlament_s > 0
+title: ERC <span class="generalitat-coalition" data-parties="erc" data-summary="Minority government with CUP support"><span style="color: var(--erc); font-style: italic;">minority Government</span></span> with CUP support
+view-if: parlament_coalition_option_erc_min_cup_visible
 choose-if: parlament_erc_cup_support_available
 unavailable-subtitle: ERC must lead a viable minority cabinet and the CUP must be willing to support it from outside government.
 on-arrival: {!
@@ -86,7 +86,7 @@ on-arrival: {!
     Q.cat_coalition = ["erc"];
     Q.cat_coalition_support = ["cup"];
     Q.cat_coalition_abstain = [];
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Government supported by CUP - " + Q.parlament_coalition_erc_cup_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>ERC minority Government</span>");
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government - " + Q.erc_parlament_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>ERC minority Government</span>");
     Q.cat_coalition_dissent = 0;
     Q.erc_in_gob = true;
     Q.erc_supporting = true;

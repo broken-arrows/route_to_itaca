@@ -1,4 +1,4 @@
-title: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_icv +][? if cup_broad_kind = 'popular_unity':  cup?][? if cup_broad_kind = 'new_popular_front' or cup_broad_kind = 'minority_left_tripartite':  psc?]" data-summary="Cabinet - [+ parlament_coalition_cabinet_seats +]/[+ parlament_s_majority +]">[? if cup_broad_kind = "republican": <span style="color: var(--erc); font-style: italic;">Republican</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Government</span>?][? if cup_broad_kind = "popular_unity": <span style="color: var(--erc); font-style: italic;">Popular</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Unity</span> <span style="color: var(--cup); font-style: italic;">Coalition</span>?][? if cup_broad_kind = "new_popular_front": <span style="color: var(--erc); font-style: italic;">New</span> <span style="color: var(--psc); font-style: italic;">Popular</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Front</span>?][? if cup_broad_kind = "minority_left_tripartite": <span style="color: var(--erc); font-style: italic;">Minority Left</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Tri</span><span style="color: var(--psc); font-style: italic;">partite</span>?]</span> negotiations
+title: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_icv +][? if cup_broad_kind = 'popular_unity':  cup?][? if cup_broad_kind = 'new_popular_front' or cup_broad_kind = 'minority_left_tripartite':  psc?]" data-summary="[? if cup_broad_kind = 'popular_unity': Majority government?][? if cup_broad_kind = 'republican' or cup_broad_kind = 'new_popular_front': Minority government with CUP support?][? if cup_broad_kind = 'minority_left_tripartite': Minority government with CUP abstention?]">[? if cup_broad_kind = "republican": <span style="color: var(--erc); font-style: italic;">Republican</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Government</span>?][? if cup_broad_kind = "popular_unity": <span style="color: var(--erc); font-style: italic;">Popular</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Unity</span> <span style="color: var(--cup); font-style: italic;">Coalition</span>?][? if cup_broad_kind = "new_popular_front": <span style="color: var(--erc); font-style: italic;">New</span> <span style="color: var(--psc); font-style: italic;">Popular</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Front</span>?][? if cup_broad_kind = "minority_left_tripartite": <span style="color: var(--erc); font-style: italic;">Minority Left</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Tri</span><span style="color: var(--psc); font-style: italic;">partite</span>?]</span> negotiations
 subtitle: [? if cup_broad_coalition_phase = 1: The parties have opened the first round of negotiations.?][? if cup_broad_coalition_phase = 2: The parties have returned for a second round with a revised proposal.?][? if cup_broad_coalition_phase = 3: This is the third and final round of negotiations.?]
 tags: event
 role: event
@@ -55,6 +55,11 @@ on-arrival: {!
         }
     }
     Q.parlament_coalition_proposal_vp = largestFollower;
+    Q.cup_broad_expected_vp = Q.parlament_coalition_proposal_vp;
+    Q.cup_broad_expected_interior = Q.parlament_coalition_proposal_interior;
+    Q.cup_broad_expected_economy = Q.parlament_coalition_proposal_economy;
+    Q.cup_broad_expected_health = Q.parlament_coalition_proposal_health;
+    Q.cup_broad_expected_bnl = Q.parlament_coalition_proposal_bnl;
     Q.parlament_coalition_leverage = Math.max(10, Q[Q.player_party + "_parlament_s"] * 55 / Math.max(1, Q.parlament_coalition_cabinet_seats)) + (Q.cup_broad_coalition_phase - 1) * 4;
     if (Q.speaker_party == Q.player_party) {
         Q.parlament_coalition_leverage -= 10;
@@ -67,7 +72,7 @@ new-page: true
 go-to: parlament_coalition_setnames
 set-jump: choices
 
-The negotiating teams have presented a cabinet proposal.
+[? if player_party = parlament_coalition_leader and cup_broad_coalition_phase = 1: As the leading party, we must prepare the opening proposal.?][? if player_party = parlament_coalition_leader and cup_broad_coalition_phase > 1: The other parties have answered our previous proposal with a new counter-proposal.?][? if player_party != parlament_coalition_leader and cup_broad_coalition_phase = 1: [+ parlament_coalition_leader +] have presented their opening cabinet proposal.?][? if player_party != parlament_coalition_leader and cup_broad_coalition_phase > 1: [+ parlament_coalition_leader +] has presented a revised cabinet proposal.?]
 
 @choices
 
@@ -81,7 +86,7 @@ The negotiating teams have presented a cabinet proposal.
 - @accept
 
 @ministries
-title: Propose an alternative Government Composition
+title: [? if player_party = parlament_coalition_leader and cup_broad_coalition_phase = 1: Propose a government composition?][? if not (player_party = parlament_coalition_leader and cup_broad_coalition_phase = 1): Revise the government composition?]
 view-if: player_party = "erc" or (player_party = "cup" and cup_broad_kind = "popular_unity")
 
 - @interior
@@ -91,7 +96,7 @@ view-if: player_party = "erc" or (player_party = "cup" and cup_broad_kind = "pop
 - @health
 - @economy
 - @foreign
-- @phase_text: Finish proposing changes
+- @phase_text: Review the current proposal
 
 @interior
 title: [? if parlament_coalition_proposal_interior != player_party: Demand the Interior Ministry?][? if parlament_coalition_proposal_interior = player_party: Give up the Interior Ministry?]
@@ -178,7 +183,7 @@ on-arrival: {!
 go-to: ministries
 
 @social
-title: Add a social-policy commitment
+title: Demand a social-policy commitment
 choose-if: parlament_coalition_concessions_social = 0 and parlament_coalition_leverage >= 5
 unavailable-subtitle: [? if parlament_coalition_concessions_social: The commitment is already included.?][? if parlament_coalition_leverage < 5: We lack enough leverage.?]
 on-arrival: {!
@@ -191,13 +196,14 @@ on-arrival: {!
 go-to: phase_text
 
 @indy
-title: Add a stronger independence commitment
+title: Demand a stronger independence commitment
 choose-if: erc_roadmap < 0
 unavailable-subtitle: [? if cup_broad_kind = "new_popular_front" or cup_broad_kind = "minority_left_tripartite": The PSC will not accept a stronger independence commitment in this cabinet.?][? if cup_broad_kind = "republican" or cup_broad_kind = "popular_unity": The current [+ parlament_current_icv +] leadership will not accept an independence demand beyond the roadmap already agreed.?]
 go-to: phase_text
 
 @push
-title: Push for more leverage
+title: Press for further concessions
+view-if: cup_broad_coalition_phase < 3
 choose-if: parlament_coalition_push < cup_broad_coalition_phase and cup_broad_coalition_phase < 3
 unavailable-subtitle: We cannot push any further this round.
 on-arrival: {!
@@ -209,10 +215,58 @@ on-arrival: {!
 go-to: phase_text
 
 @send
-title: Send the counter-proposal
+title: [? if player_party = parlament_coalition_leader and cup_broad_coalition_phase = 1: Submit the opening proposal?][? if not (player_party = parlament_coalition_leader and cup_broad_coalition_phase = 1): Send the counter-proposal?]
 view-if: parlament_coalition_changes
 on-arrival: {!
-    Q.parlament_coalition_proposal_accept = Q.parlament_coalition_push < Q.cup_broad_coalition_phase;
+    var playerInCabinet = Q.player_party == "erc" || (Q.player_party == "cup" && Q.cup_broad_kind == "popular_unity");
+    var earlyRound = Q.cup_broad_coalition_phase <= 2;
+
+    Q.cup_broad_reject_pressure = Q.parlament_coalition_push >= Q.cup_broad_coalition_phase;
+    Q.cup_broad_reject_erc_positions = false;
+    Q.cup_broad_reject_psc_positions = false;
+    Q.cup_broad_reject_psc_cup_power = false;
+    Q.cup_broad_reject_comuns_positions = false;
+    Q.cup_broad_reject_cup_share = false;
+
+    if (playerInCabinet) {
+        if (Q.player_party == "cup" && Q.cup_broad_kind == "popular_unity") {
+            Q.cup_broad_reject_erc_positions =
+                (earlyRound && Q.cup_broad_expected_vp == "erc" && Q.parlament_coalition_proposal_vp != "erc") ||
+                (earlyRound && Q.cup_broad_expected_economy == "erc" && Q.parlament_coalition_proposal_economy != "erc") ||
+                (Q.cup_broad_coalition_phase == 1 && Q.cup_broad_expected_interior == "erc" && Q.parlament_coalition_proposal_interior != "erc");
+        }
+
+        if (Q.player_party == "erc" && (Q.cup_broad_kind == "new_popular_front" || Q.cup_broad_kind == "minority_left_tripartite")) {
+            Q.cup_broad_reject_psc_positions =
+                (earlyRound && Q.cup_broad_expected_vp == "psc" && Q.parlament_coalition_proposal_vp != "psc") ||
+                (Q.cup_broad_coalition_phase == 1 && Q.cup_broad_expected_economy == "psc" && Q.parlament_coalition_proposal_economy != "psc") ||
+                (earlyRound && Q.cup_broad_expected_interior == "psc" && Q.parlament_coalition_proposal_interior != "psc");
+            Q.cup_broad_reject_psc_cup_power = Q.parlament_coalition_proposal_interior == "cup" || Q.parlament_coalition_proposal_economy == "cup";
+        }
+
+        Q.cup_broad_reject_comuns_positions =
+            (earlyRound && Q.cup_broad_expected_vp == Q.parlament_current_icv && Q.parlament_coalition_proposal_vp != Q.parlament_current_icv) ||
+            (earlyRound && Q.cup_broad_expected_bnl == Q.parlament_current_icv && Q.parlament_coalition_proposal_bnl != Q.parlament_current_icv) ||
+            (earlyRound && Q.cup_broad_expected_health == Q.parlament_current_icv && Q.parlament_coalition_proposal_health != Q.parlament_current_icv);
+
+        if (Q.player_party == "erc" && Q.cup_broad_kind == "popular_unity") {
+            var cupMinistries = 0;
+            var ministries = ["interior", "economy", "foreign", "health", "education", "territory", "bnl"];
+            for (var i = 0; i < ministries.length; i++) {
+                if (Q["parlament_coalition_proposal_" + ministries[i]] == "cup") {
+                    cupMinistries += 1;
+                }
+            }
+            Q.cup_broad_reject_cup_share = cupMinistries < 2;
+        }
+    }
+
+    Q.parlament_coalition_proposal_accept = !Q.cup_broad_reject_pressure &&
+        !Q.cup_broad_reject_erc_positions &&
+        !Q.cup_broad_reject_psc_positions &&
+        !Q.cup_broad_reject_psc_cup_power &&
+        !Q.cup_broad_reject_comuns_positions &&
+        !Q.cup_broad_reject_cup_share;
 !}
 go-to: accepted if parlament_coalition_proposal_accept; next_phase if not parlament_coalition_proposal_accept
 
@@ -253,7 +307,10 @@ on-arrival: {!
     } else {
         label = "<span style='color: var(--erc); font-style: italic;'>Minority Left</span> <span style='" + comunsStyle + "'>Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span>";
     }
-    var summary = (Q.cup_broad_kind == "minority_left_tripartite" ? "Minority government" : "Invested government") + " - " + Q.parlament_coalition_support_seats + "/" + Q.parlament_s_majority;
+    var governmentSeats = Q.cat_coalition.reduce(function (total, party) {
+        return total + (Q[party + "_parlament_s"] || 0);
+    }, 0);
+    var summary = (governmentSeats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + governmentSeats + "/" + Q.parlament_s_majority;
     Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, summary, label);
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
@@ -263,7 +320,7 @@ on-arrival: {!
     Q.position_disp = Q.player_party == "cup" && !Q.cup_in_gob ? (Q.cup_supporting ? "<span style='font-style: italic'>Government Support</span>" : "<span style='font-style: italic'>Opposition</span>") : "Generalitat";
 !}
 
-The parties have completed their agreement and will install a [+ cat_coalition_disp +]. [? if cup_broad_kind = "republican" or cup_broad_kind = "new_popular_front": CUP will support it from outside government.?][? if cup_broad_kind = "minority_left_tripartite": CUP will abstain, but remains in opposition.?]
+The parties have reached an agreement to form a [+ cat_coalition_disp +]. [? if cup_broad_kind = "republican" or cup_broad_kind = "new_popular_front": The CUP will support it from outside government.?][? if cup_broad_kind = "minority_left_tripartite": The CUP will abstain and remain in opposition.?]
 
 - @parlament_coalition_resolve: A new government is formed
 
@@ -277,7 +334,7 @@ on-arrival: {!
     Q.social_dissent += 2;
 !}
 
-The parties will require another round of talks.
+[? if player_party = parlament_coalition_leader and cup_broad_coalition_phase = 2: The other parties have rejected our proposal.?][? if not (player_party = parlament_coalition_leader and cup_broad_coalition_phase = 2): The other parties have rejected our counter-proposal.?] [? if cup_broad_reject_erc_positions: ERC considers the proposed balance of government powers inadequate.?][? if cup_broad_reject_psc_positions: The PSC is not satisfied with the distribution of high-responsibility ministries.?][? if cup_broad_reject_psc_cup_power: The PSC considers the ministries assigned to the CUP unacceptable.?][? if cup_broad_reject_comuns_positions: [+ parlament_current_icv +] does not believe the proposal gives it sufficient influence over the government's social programme.?][? if cup_broad_reject_cup_share: The CUP does not believe the proposed cabinet gives it sufficient weight in government.?] The negotiating teams will have to reconvene in a month's time.
 
 - @post_event: And so, time passes...
 
@@ -295,6 +352,6 @@ on-arrival: {!
 !}
 call: snap_election
 
-After all these negotiation rounds, the negotiations for a broad-left government  have failed. New elections will have to be the ones to decide the matter.
+Three rounds have ended without agreement... [? if cup_broad_reject_erc_positions: ERC would not accept the proposed government-power balance.?][? if cup_broad_reject_psc_positions: The PSC remained dissatisfied with the distribution of high-responsibility ministries.?][? if cup_broad_reject_psc_cup_power: The PSC maintained its objection to the powers assigned to the CUP.?][? if cup_broad_reject_comuns_positions: [+ parlament_current_icv +] did not believe the proposal gave it sufficient influence over the government's social programme.?][? if cup_broad_reject_cup_share: The CUP did not believe the proposed cabinet gave it sufficient weight in government.?] The investiture deadline has expired, forcing a repeat election.
 
 - @post_event

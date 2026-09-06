@@ -4,7 +4,7 @@ You should not be here? Report a bug if you see this text.
 
 @any
 title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Majority government - [+ parlament_coalition_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Progressive</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Government</span></span> ([? if parlament_current_icv_s > psc_parlament_s: [+ parlament_current_icv +]-PSC?][? if parlament_current_icv_s <= psc_parlament_s: PSC-[+ parlament_current_icv +]?])
-view-if: parlament_coalition_psc_icv_s
+view-if: parlament_coalition_option_psc_icv_visible
 choose-if: parlament_coalition_psc_icv_s >= parlament_s_majority
 unavailable-subtitle: Not enough parliamentary support for a PSC-[+ parlament_current_icv +] government.
 subtitle: [? if player_party == "erc": A centre-left government without us.?][? if player_party == "cup": A reformist coalition firmly against national liberation.?]

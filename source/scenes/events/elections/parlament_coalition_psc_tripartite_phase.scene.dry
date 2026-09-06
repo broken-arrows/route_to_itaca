@@ -5,6 +5,12 @@ new-page: true
 view-if: psc_tripartite_coalition_phase != 0 and player_party == "erc"
 on-arrival: {!
     Q.parlament_coalition_changes = false;
+    Q.psc_tripartite_reject_push = false;
+    Q.psc_tripartite_reject_vp = false;
+    Q.psc_tripartite_reject_psc_economy = false;
+    Q.psc_tripartite_reject_psc_interior = false;
+    Q.psc_tripartite_reject_comuns_bnl = false;
+    Q.psc_tripartite_reject_comuns_health = false;
 
     Q.parlament_coalition_leverage = Math.max(10, (Q.erc_parlament_s / Q.parlament_coalition_psc_erc_icv_s) * 55);
     if (Q.speaker_party == "erc") {
@@ -19,7 +25,8 @@ on-arrival: {!
 
     // PSC's initial proposal: PSC takes everything
     Q.parlament_coalition_proposal_president = "psc";
-    Q.parlament_coalition_proposal_vp = "psc";
+    Q.psc_tripartite_expected_vp = Q.erc_parlament_s >= Q.parlament_current_icv_s ? "erc" : Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_vp = Q.psc_tripartite_expected_vp;
     Q.parlament_coalition_proposal_interior = "psc";
     Q.parlament_coalition_proposal_economy = "psc";
     Q.parlament_coalition_proposal_foreign = "psc";
@@ -30,6 +37,16 @@ on-arrival: {!
 
     // ICV gets a natural share based on seat proportion
     var icv_natural = (Q.parlament_current_icv_s / Q.parlament_coalition_psc_erc_icv_s) * 55;
+    if (Q.psc_tripartite_expected_vp == Q.parlament_current_icv) icv_natural -= 20;
+    if (Q.speaker_party == Q.parlament_current_icv) icv_natural -= 10;
+    if (icv_natural > 7) {
+        Q.parlament_coalition_proposal_health = Q.parlament_current_icv;
+        icv_natural -= 7;
+    }
+    if (icv_natural > 5) {
+        Q.parlament_coalition_proposal_bnl = Q.parlament_current_icv;
+        icv_natural -= 5;
+    }
     if (icv_natural > 7) {
         Q.parlament_coalition_proposal_education = Q.parlament_current_icv;
         icv_natural -= 7;
@@ -38,13 +55,10 @@ on-arrival: {!
         Q.parlament_coalition_proposal_territory = Q.parlament_current_icv;
         icv_natural -= 5;
     }
-    if (icv_natural > 5) {
-        Q.parlament_coalition_proposal_bnl = Q.parlament_current_icv;
-        icv_natural -= 5;
-    }
 
     // PSC offers ERC positions based on ERC's leverage
     var erc_claim = Q.parlament_coalition_leverage - 3 + Q.psc_tripartite_coalition_phase;
+    if (Q.psc_tripartite_expected_vp == "erc") erc_claim -= 20;
 
     if (erc_claim > 6) {
         Q.parlament_coalition_proposal_foreign = "erc";
@@ -63,6 +77,10 @@ on-arrival: {!
         erc_claim -= 10;
     }
 
+    Q.psc_tripartite_psc_economy_protected = Q.parlament_coalition_proposal_economy == "psc";
+    Q.psc_tripartite_psc_interior_protected = Q.parlament_coalition_proposal_interior == "psc";
+    Q.psc_tripartite_comuns_bnl_protected = Q.parlament_coalition_proposal_bnl == Q.parlament_current_icv;
+    Q.psc_tripartite_comuns_health_protected = Q.parlament_coalition_proposal_health == Q.parlament_current_icv;
     Q.parlament_coalition_leverage = erc_claim + 3 - Q.psc_tripartite_coalition_phase;
 !}
 go-to: phase_text
@@ -73,7 +91,7 @@ new-page: true
 go-to: parlament_coalition_setnames
 set-jump: choices
 
-[? if psc_tripartite_coalition_phase = 1: The PSC's negotiators have come forward with a proposal for forming a New Tripartite government.  ?][? if psc_tripartite_coalition_phase > 1: After our counter-proposal, the PSC has submitted a revised offer. ?][? if parlament_coalition_changes: After our adjustments, the current position looks as follows: ?]
+[? if psc_tripartite_coalition_phase = 1: The PSC has presented its opening proposal for a New Tripartite government. ?][? if psc_tripartite_coalition_phase > 1: The PSC has answered our counter-proposal with a revised proposal. ?][? if parlament_coalition_changes: After our amendments, the proposal is: ?]
 
 @choices
 
@@ -82,7 +100,7 @@ set-jump: choices
 - @accept
 
 @changes
-title: Propose an alternative Government Composition
+title: Revise the government composition
 
 [? if not parlament_coalition_changes: We can try to demand or give up ministries before sending a counter-proposal to the PSC. Unclaimed positions will be distributed between PSC and [+ parlament_current_icv +]. ?]
 
@@ -95,7 +113,7 @@ title: Propose an alternative Government Composition
 - @territory
 - @bnl
 - @push_leverage_positions
-- @go_back: Finish proposing changes
+- @go_back: Review the current proposal
 
 @go_back
 on-arrival: {!
@@ -103,6 +121,11 @@ on-arrival: {!
     var icv_leverage = (Q.parlament_current_icv_s / Q.parlament_coalition_psc_erc_icv_s) * 55 + 8 - 3 * Q.psc_tripartite_coalition_phase;
 
     var empty_positions = [];
+    if (Q.parlament_coalition_proposal_vp == null && Q.psc_tripartite_coalition_phase < 3) {
+        Q.parlament_coalition_proposal_vp = Q.psc_tripartite_expected_vp;
+    }
+    if (Q.parlament_coalition_proposal_vp == "psc") psc_leverage -= 20;
+    if (Q.parlament_coalition_proposal_vp == Q.parlament_current_icv) icv_leverage -= 20;
     if (Q.parlament_coalition_proposal_vp == null)        empty_positions.push("vp");
     if (Q.parlament_coalition_proposal_economy == null)    empty_positions.push("economy");
     if (Q.parlament_coalition_proposal_interior == null)   empty_positions.push("interior");
@@ -137,7 +160,15 @@ on-arrival: {!
                 empty_positions = empty_positions.filter(p => p != pos);
             }
         } else {
-            if (empty_positions.includes("education") && icv_leverage >= 7) {
+            if (empty_positions.includes("health") && icv_leverage >= 7) {
+                Q.parlament_coalition_proposal_health = Q.parlament_current_icv;
+                icv_leverage -= 7;
+                empty_positions = empty_positions.filter(p => p != "health");
+            } else if (empty_positions.includes("bnl") && icv_leverage >= 5) {
+                Q.parlament_coalition_proposal_bnl = Q.parlament_current_icv;
+                icv_leverage -= 5;
+                empty_positions = empty_positions.filter(p => p != "bnl");
+            } else if (empty_positions.includes("education") && icv_leverage >= 7) {
                 Q.parlament_coalition_proposal_education = Q.parlament_current_icv;
                 icv_leverage -= 7;
                 empty_positions = empty_positions.filter(p => p != "education");
@@ -145,10 +176,6 @@ on-arrival: {!
                 Q.parlament_coalition_proposal_territory = Q.parlament_current_icv;
                 icv_leverage -= 5;
                 empty_positions = empty_positions.filter(p => p != "territory");
-            } else if (empty_positions.includes("bnl") && icv_leverage >= 5) {
-                Q.parlament_coalition_proposal_bnl = Q.parlament_current_icv;
-                icv_leverage -= 5;
-                empty_positions = empty_positions.filter(p => p != "bnl");
             } else if (empty_positions.includes("vp") && icv_leverage >= 20) {
                 Q.parlament_coalition_proposal_vp = Q.parlament_current_icv;
                 icv_leverage -= 20;
@@ -309,7 +336,7 @@ go-to: changes
 
 @push_leverage_positions
 title: Push for more positions
-view-if: parlament_coalition_leverage < 10
+view-if: parlament_coalition_leverage < 10 and psc_tripartite_coalition_phase < 3
 choose-if: parlament_coalition_push < psc_tripartite_coalition_phase and psc_tripartite_coalition_phase < 3
 unavailable-subtitle: We've already pushed for more. [? if psc_tripartite_coalition_phase < 3: We'll have to wait for the next round of negotiations to try again. ?]
 on-arrival: {!
@@ -330,18 +357,15 @@ title: Send this counter-proposal
 view-if: parlament_coalition_changes
 subtitle: [? if parlament_coalition_push >= psc_tripartite_coalition_phase: Back-and-forth will take time but may give us a better position. ?]
 on-arrival: {!
-    Q.parlament_coalition_proposal_accept = true;
-    if (Q.parlament_coalition_push >= Q.psc_tripartite_coalition_phase) {
-        Q.parlament_coalition_proposal_accept = false;
-    } else {
-        Q.psc_relations -= 2;
-        if (Q.parlament_coalition_proposal_vp == "erc" && Q.erc_parlament_s <= Q.parlament_current_icv_s && Q.psc_tripartite_coalition_phase != 3) {
-            Q.parlament_coalition_proposal_accept = false;
-        }
-        if (Q.parlament_coalition_proposal_economy == "erc" && Q.parlament_coalition_proposal_interior == "erc" && Q.psc_tripartite_coalition_phase < 2) {
-            Q.parlament_coalition_proposal_accept = false;
-        }
-    }
+    Q.psc_tripartite_reject_push = Q.parlament_coalition_push >= Q.psc_tripartite_coalition_phase;
+    var expectedVP = Q.erc_parlament_s >= Q.parlament_current_icv_s ? "erc" : Q.parlament_current_icv;
+    Q.psc_tripartite_reject_vp = Q.psc_tripartite_coalition_phase < 3 && expectedVP != "erc" && Q.parlament_coalition_proposal_vp != expectedVP;
+    Q.psc_tripartite_reject_psc_economy = Q.psc_tripartite_coalition_phase == 1 && Q.psc_tripartite_psc_economy_protected && Q.parlament_coalition_proposal_economy != "psc";
+    Q.psc_tripartite_reject_psc_interior = Q.psc_tripartite_coalition_phase < 3 && Q.psc_tripartite_psc_interior_protected && Q.parlament_coalition_proposal_interior != "psc";
+    Q.psc_tripartite_reject_comuns_bnl = Q.psc_tripartite_coalition_phase < 3 && Q.psc_tripartite_comuns_bnl_protected && Q.parlament_coalition_proposal_bnl != Q.parlament_current_icv;
+    Q.psc_tripartite_reject_comuns_health = Q.psc_tripartite_coalition_phase < 3 && Q.psc_tripartite_comuns_health_protected && Q.parlament_coalition_proposal_health != Q.parlament_current_icv;
+    Q.parlament_coalition_proposal_accept = !Q.psc_tripartite_reject_push && !Q.psc_tripartite_reject_vp && !Q.psc_tripartite_reject_psc_economy && !Q.psc_tripartite_reject_psc_interior && !Q.psc_tripartite_reject_comuns_bnl && !Q.psc_tripartite_reject_comuns_health;
+    if (!Q.psc_tripartite_reject_push) Q.psc_relations -= 2;
 !}
 go-to: decision
 
@@ -362,7 +386,7 @@ on-arrival: {!
     Q.social_dissent += 3;
 !}
 
-The PSC's and [+ parlament_current_icv +]'s representatives were not fully satisfied with our counter-proposal. [? if parlament_coalition_proposal_vp = "erc" and erc_parlament_s <= parlament_current_icv_s:  Demanding the Vice-Presidency when [+ parlament_current_icv +] is the larger partner raised eyebrows. ?][? if parlament_coalition_proposal_economy = "erc" and parlament_coalition_proposal_interior = "erc": Demanding both Economy and Interior at once was seen as overreaching. ?]We'll have to wait for the next round of negotiations.
+The PSC and [+ parlament_current_icv +] have rejected our counter-proposal. [? if psc_tripartite_reject_vp: The proposed Vice-Presidency is unacceptable to them.?][? if psc_tripartite_reject_psc_economy or psc_tripartite_reject_psc_interior: The PSC remains dissatisfied with the distribution of responsibilities.?][? if psc_tripartite_reject_comuns_bnl or psc_tripartite_reject_comuns_health: [+ parlament_current_icv +] does not believe the proposal gives it sufficient influence over the government's social programme.?] We'll have to wait for the next round of negotiations.
 
 - @post_event: And so, time passes...
 
@@ -386,7 +410,7 @@ on-arrival: {!
     Q.independence_trust -= 5;
 !}
 
-After rounds of negotiations, we've agreed to join PSC and [+ parlament_current_icv +] in a [+ cat_coalition_disp +].
+After negotiations, we have agreed to join the PSC and [+ parlament_current_icv +] in a [+ cat_coalition_disp +].
 
 - @parlament_coalition_resolve: A new government is formed
 
@@ -405,6 +429,6 @@ on-arrival: {!
 !}
 call: snap_election
 
-After three rounds of negotiations, we were unable to agree on a fair distribution of government positions with the PSC and [+ parlament_current_icv +]. New elections will have to decide the matter.
+Three rounds have ended without agreement. All possible deadlines have expired, the polls will have to decide now.
 
 - @post_event: We'll have to see if we fare any better this time...
