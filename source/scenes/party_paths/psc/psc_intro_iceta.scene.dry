@@ -9,7 +9,7 @@ role: event
 
 = ​Pere Navarro resigns as leader of the ​PSC
 
-After achieving the worst electoral results in the party's history and failing to mend the major internal rifts within the PSC, Pere Navarro has finally resigned. The party faces now a future of deep uncertainty that puts into question even its financial viability. All the major left-wing figures, as well as the Catalan core of the party have already either retired or left the party during the last couple of years. Local elections were already hard to deal with due to a severe lack of local and regional leadership and grasroots support, and without clear figures to rally around, one can only guess what's next for the PSC.
+After achieving the worst electoral results in the party's history and failing to mend the major internal rifts within the PSC, Pere Navarro has finally resigned. The party faces now a future of deep uncertainty that puts into question even its financial viability. All the major left-wing figures, as well as the Catalan core of the party have already either retired or left the party during the last couple of years. Local elections were already hard to deal with due to a severe lack of local and regional leadership and grassroots support, and without clear figures to rally around, one can only guess what's next for the PSC.
 
 - @iceta_leadership: A lone candidacy stands
 
@@ -21,6 +21,6 @@ on-arrival: {!
     Q.psc_recovery_mult = 1;
 !}
 
-# TODO: Actual text
+The book-definition of a party man, Miquel Iceta has been climbing the ranks of the PSC since he was a university student. He inherits a broken party and a hard position, with bleeding support, internal disfunction, and very strained relations with their federal partner, the PSOE. 
 
-- @post_event: Who's this guy?
+- @post_event: Who even is this guy?

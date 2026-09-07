@@ -664,8 +664,6 @@ on-arrival: {!
         }
     }
 
-    Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si', 'cdc', 'unio', 'jxsi', 'junts', 'jxcat', 'pdcat', 'csqp', 'cecp', 'ecp', 'vox', 'fnc', 'pxc'];
-
     Q.parlament_constituencies = ["barcelona", "girona", "lleida", "tarragona"];
     Q.parlament_seats = {
         "barcelona": 85,
@@ -1011,8 +1009,6 @@ on-arrival: {!
             }
         }
     }
-
-    Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si', 'cdc', 'unio', 'jxsi', 'junts', 'jxcat', 'pdcat', 'csqp', 'cecp', 'ecp', 'vox', 'fnc', 'pxc'];
 
     // New leaders:
     Q.psc_leader = "Miquel Iceta";
@@ -1836,8 +1832,6 @@ on-arrival: {!
             }
         }
     }
-
-    Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si', 'cdc', 'unio', 'jxsi', 'junts', 'jxcat', 'pdcat', 'csqp', 'cecp', 'ecp', 'vox', 'fnc', 'pxc'];
 
     // New leaders
     Q.psc_leader = "Miquel Iceta";

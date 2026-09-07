@@ -1,0 +1,47 @@
+title: [+ year +] PP Party Congress
+view-if: ((year = 2018 and month = 7) or (next_spanish_election_time - time >= 24 and next_spanish_election_time - time <= 36 and not spanish_pm = "Mariano Rajoy")) and (not rubicon or not spanish_pm = "Mariano Rajoy")
+tags: event
+new-page: true
+face-image: img/events/rajoy_end.jpg
+max-visits: 1
+on-arrival: {!
+    Q.pp_party_congress_gob_alone = Q.spanish_coalition.includes("pp") && Q.spanish_coaltion.length == 1;
+
+    Q.pp_party_congress_casado = false;
+    if ((!Q.spanish_coalition.includes("pp")) || (Q.pp_congreso_rest_support < (Q.cs_congreso_rest_support + Q.vox_congreso_rest_support))) {
+        Q.pp_party_congress_casado = true;
+    }
+!}
+role: event
+
+= [+ year +] ​PP Party Congress
+
+After years of political wear, corruption scandals, anti-austerity backlash, and a long etc, its now clear for the PP that Mariano Rajoy's leadership needs a succession. In this year's party congress, two main candidacies stand. On one hand, [? if not pp_party_congress_gob_alone: former ?] Vice-Presidenta Soraya Sáenz de Santamaría is the closest thing to a Rajoy-legacy candidate, having governed together for years. Yet just as it has taken a toll on Rajoy, corruption and political wear could see her struggle to reach the leadership. On the other hand, Pablo Casado is the "renewal" candidate. Young and energetic, he is a bet on a new PP, but his lack of political experience may end up proving a liability.
+
+@soraya_leadership
+title: Soraya Sáenz de Santamaría succeeds Rajoy as PP leader
+choose-if: not pp_party_congress_casado
+on-arrival: {!
+    Q.pp_leader = "Soraya Sáenz de Santamaría";
+    Q.pp_leader_gender = "f";
+    Q.pp_leadership_mult = 1.0;
+!}
+
+In a win for the party factions betting on continuity, Soraya Sáenz de Santamaría will become the new party leader. 
+
+
+@casado_leadership
+title: Pablo Casado takes the reigns of the PP
+choose-if: pp_party_congress_casado
+on-arrival: {!
+    Q.corruption_pp = Math.max(0, Q.corruption_pp - 15);
+    Q.pp_leadership_mult = 1.0;
+    Q.pp_leader = "Pablo Casado";
+    Q.pp_leader_gender = "m";
+!}
+
+In a win for the party factions betting on renewal, Pablo Casado will be taking the reigns of the PP. How much it really changes within the party remains to be seen, though...
+
+
+
+

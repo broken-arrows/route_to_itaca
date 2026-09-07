@@ -40,7 +40,7 @@ on-arrival: {!
         if (!Q.countdowns.includes("unio_breakup")) Q.countdowns.push("unio_breakup");
     }
 
-    if (Q[Q.parlament_current_ciu + "_roadmap"] <= 1) {
+    if (!Q[Q.parlament_current_ciu + "_roadmap"] || Q[Q.parlament_current_ciu + "_roadmap"] <= 1) {
         Q[Q.parlament_current_ciu + "_roadmap"] = 2;
     }
 

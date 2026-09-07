@@ -1651,6 +1651,18 @@
       }
     },
     {
+      "id": "pablo_casado",
+      "match": ["Pablo Casado", "pablo casado"],
+      "colour": "pp",
+      "tooltip": {
+        "title": "Pablo Casado Blanco",
+        "img": "img/other_leaders/pablo_casado.jpg",
+        "q": {
+          "ideology": "Conservatism, Centralism"
+        }
+      }
+    },
+    {
       "id": "sumar",
       "match": ["Sumar", "sumar"],
       "display": "Sumar",

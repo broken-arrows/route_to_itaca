@@ -202,10 +202,17 @@
       }
     },
     mariano_rajoy: function (Q) {
-      return [{ colour: "pp", label: "PP" }];
+      return [
+        { colour: "#ffd700", label: "AP", note: "former" },
+        { colour: "#0d2881", label: "UNE", note: "former" },
+        { colour: "pp", label: "PP" },
+      ];
     },
     aznar: function (Q) {
-      return [{ colour: "pp", label: "PP" }];
+      return [
+        { colour: "#ffd700", label: "AP", note: "former" },
+        { colour: "pp", label: "PP" },
+      ];
     },
     pedro_s_nchez: function (Q) {
       return [{ colour: "psoe", label: "PSOE" }];
@@ -292,6 +299,9 @@
       return [{ colour: "erc", label: "ERC" }];
     },
     soraya_s_enz_de_santamar_a: function (Q) {
+      return [{ colour: "pp", label: "PP" }];
+    },
+    pablo_casado: function (Q) {
       return [{ colour: "pp", label: "PP" }];
     },
     ra_l_romeva: function (Q) {

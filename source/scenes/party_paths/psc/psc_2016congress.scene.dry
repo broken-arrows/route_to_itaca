@@ -25,7 +25,7 @@ unavailable-subtitle: [? if party_resources < 1 and psc_parlament_s < 10: Not en
 subtitle: [? if psc_parlament_s >= 10: Without any intervention, that's bound to happen. ?][? if party_resources >= 1 and psc_parlament_s < 10: \[-1 resources\] ?]
 on-arrival: party_resources -= 1; psc_relations += 5;
 
-# TODO: Actual text
+Despite the challenge, Miquel Iceta seems to have manage to subdue internal criticism and lean on his allies to win the internal primaries. Questioning his leadership again may be hard from now on, leaving him free reign to further push his agenda of further collaboration and integration into the PSOE.
 
 - @post_event
  
@@ -36,7 +36,7 @@ unavailable-subtitle: [? if party_resources < 1 and psc_parlament_s < 24: Not en
 subtitle: [? if psc_parlament_s >= 24: Without any intervention, that's bound to happen. ?][? if party_resources >= 1 and psc_parlament_s < 24: \[-1 resources\] ?]
 on-arrival: party_resources -= 1; psc_relations += 5;
 
-# TODO: Actual text
+Despite the challenge, Montserrat Tura seems to have manage to subdue internal criticism and lean on her allies to win the internal primaries. Questioning her leadership again may be hard from now on, and it seems like the PSC-PSOE split will be here to stay.
 
 - @post_event
 
@@ -48,7 +48,7 @@ subtitle: [? if psc_parlament_s >= 24: Without any intervention, that's bound to
 on-arrival: party_resources -= 1; psc_relations += 5;
 
 
-# TODO: Actual text
+Despite the challenge, angel ros seems to have manage to subdue internal criticism and lean on his allies to win the internal primaries. Questioning his leadership again may be hard from now on, and it seems like the PSC-PSOE split will, at least for now, remain.
 
 - @post_event
 
@@ -61,9 +61,10 @@ on-arrival: {!
     Q.psc_leader = "Núria Parlon";
     Q.psc_leader_gender = "f";
     Q.psc_ideology = "Centrist Social Democracy, Federalism";
-    Q.psc_recovery_mult = 1.15;
+    Q.psc_recovery_mult = 1.1;
 !}
 
-# TODO: Actual text + acutally maintaining Tura or Ros should cost against Parlon.
+In a quite surprising turn of events, the coalition of local leaders led by nuria parlon has managed to claim the PSC's leadership. [? if psc_split: While the PSC-PSOE split may, at least for now, remain, nuria parlon has quite a more moderate position on sovereignty, so it is hard to bet if the forces behind the split will remain relevant from now onwards. We'll have to see how it goes for her from now onwards. ?][? if not psc_split: With her at the helm, it's hard to see the PSC getting closer to its federal allies in the PSOE than it is now. Combative and with a more nuanced view on sovereignty, we can only wait and see what she manages to achieve. ?]
+
 
 - @post_event

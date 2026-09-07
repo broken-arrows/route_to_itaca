@@ -23,7 +23,8 @@ if (Q.unemployment) {
 
 [? if ((player_party == "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)): Government Budget: [+ government_budget +] ?]
 
-Party resources: [+ party_resources +]
+[? if player_party: Party resources: [+ party_resources +]?]
+[? if not player_party: Game not started ?]
 
 [? if player_party == "erc": Internal dissent: [+ erc_dissent : dissent +] ?]
 [? if player_party == "cup": Internal dissent: [+ cup_dissent : dissent +] ?]
@@ -81,9 +82,9 @@ for (var party of Q.parties) {
 }
 !}
 
-= [+ player_party +] Factions
+=[? if player_party: [+ player_party +] Factions ?]
 
-**Roadmap:** [? if player_party = "erc" and not player_in_jxsi and not player_in_jxcat: [+ erc_roadmap : roadmap +]?][? if player_in_jxsi: [+ jxsi_roadmap : roadmap +]?][? if player_in_jxcat: [+ jxcat_roadmap : roadmap +]?][? if player_party = "ciu" and not player_in_jxsi and not player_in_jxcat: [+ ciu_roadmap : roadmap +]?][? if player_party = "cup" and not player_in_jxsi and not player_in_jxcat: [+ cup_roadmap : roadmap +]?] [? if roadmap_year: · [+ roadmap_year +]?][? if broken_roadmap: · BROKEN!?]
+[? if player_party: **Roadmap:** ?][? if player_party = "erc" and not player_in_jxsi and not player_in_jxcat: [+ erc_roadmap : roadmap +]?][? if player_in_jxsi: [+ jxsi_roadmap : roadmap +]?][? if player_in_jxcat: [+ jxcat_roadmap : roadmap +]?][? if player_party = "ciu" and not player_in_jxsi and not player_in_jxcat: [+ ciu_roadmap : roadmap +]?][? if player_party = "cup" and not player_in_jxsi and not player_in_jxcat: [+ cup_roadmap : roadmap +]?] [? if roadmap_year: · [+ roadmap_year +]?][? if broken_roadmap: · BROKEN!?]
 
 [? if player_party = "erc": <div style="display:flex;"><div style="display:flex; align-items:center; justify-content:left; font-weight: bold; width: 40%;"> Left </div><div style="display:flex; font-size: 0.8em; margin-left: 1em; flex-direction:column;"> <div> Strength: [+ erc_left_strength : dissent +] </div><div> Dissent: [+ erc_left_dissent : dissent +]</div> </div> </div>?]
 

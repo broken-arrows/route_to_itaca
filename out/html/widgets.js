@@ -290,7 +290,7 @@
         disputed:
           "Disputed: the Constitutional Court and the Parlament have varying interpretations of this law's status.",
         struck_down:
-          "Struck down: the Constitutional Court has ruled against the totality of this law.",
+          "Struck down: the Constitutional Court has ruled against this law.",
         imposed:
           "Imposed: this is a top-down law that has not been voted by the Parlament.",
       };

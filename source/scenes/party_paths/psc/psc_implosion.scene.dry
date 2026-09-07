@@ -33,7 +33,7 @@ on-arrival: {!
     Q.ernest_maragall_erc_countdown = 3;
 !}
 
-# TODO: Actual text
+It looks like Pere Navarro will hold on to the leadership after all. The internal party restructuring and purging have not been light, though. Montserrat Tura has gone on record saying she has torn her PSC membership card apart, and she is hardly the only one to have left the party. After this huge crisis, it is hard to predict what the future awaits for this political space.
 
 @angelros_leadership
 choose-if: party_resources >= 1 and psc_relations >= 40
@@ -44,13 +44,13 @@ on-arrival: {!
     Q.ernest_maragall_erc_countdown = 3;
     Q.psc_leader = "Àngel Ros";
     Q.psc_ideology = "Centrist Social Democracy, Plurinationalism";
-    Q.psc_recovery_mult = 1.5;
+    Q.psc_recovery_mult = 1.2;
     
     Q.psc_breakup_countdown = 6;
     if (!Q.countdowns.includes("psc_breakup")) Q.countdowns.push("psc_breakup");
 !}
 
-# TODO: Actual text
+With a bit of a push from our side, Àngel Ros has been able to articulate an internal opposition-led ousting of Pere Navarro. While still a heavily broken party, it seems like the Catalan-centered nature will be, to an extent, preserved. Now we can only wait and see how it goes for him.
 
 @montserrattura_leadership
 choose-if: party_resources >= 2 and psc_relations >= 55
@@ -60,10 +60,12 @@ on-arrival: {!
     Q.psc_leader = "Montserrat Tura";
     Q.psc_leader_gender = "f";
     Q.psc_ideology = "Social Democracy, Plurinationalism";
-    Q.psc_recovery_mult = 1.75;
+    Q.psc_recovery_mult = 1.15;
 
     Q.psc_breakup_countdown = 6;
     if (!Q.countdowns.includes("psc_breakup")) Q.countdowns.push("psc_breakup");
 !}
 
-# TODO: Actual text
+With a considerable effort and behind-the-scenes mobilization from our end, Montserrat Tura seems to have been able to, at least for now, lead a united internal front that has managed to oust Pere Navarro. Still unstable and with heavy internal fractures that will need serious tending, the PSC at least seems to have recovered his original identity. Now we can only wait and see how it goes for her.
+
+

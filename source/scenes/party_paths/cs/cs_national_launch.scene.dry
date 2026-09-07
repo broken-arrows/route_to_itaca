@@ -1,10 +1,10 @@
-title: Ciudadanos goes nationwide
+title: Ciudadanos goes state-wide
 view-if: year = 2015 and month = 2
 tags: event
 new-page: true
+face-image: img/events/cs_statewide.jpg
 max-visits: 1
 on-arrival: {!
-    // Cs runs state-wide for the first time, drawing anti-corruption PP voters + abstainers.
     Q.spa_cs_active = true;
     G.spaSupportInject(Q, 'cs', 'all', 9.0, 'pp');
     G.spaSupportInject(Q, 'cs', 'all', 2.0, 'abstain');
@@ -16,4 +16,10 @@ on-arrival: {!
 !}
 role: event
 
-- @post_event: TODO
+= ​Ciudadanos goes state-wide
+
+In the mids of a very strong crisis in the bipartisan PP-PSOE system, a new right-wing alternative is rising from the formerly Catalan-centered Ciutadans party. After networking with other minor regional liberal parties, Albert Rivera has announced that he would be indeed spearheading the Spain-wide run of Ciudadanos. The party aims to occupy a space between the two traditional parties, "not right nor left wing" with a strong stance against corruption, all in all hoping to be able to articulate alternatives to traditional coalitions, or even governing themselves.
+
+The bet is a high-risk high-reward one, and it remains to be seen if the recent success the party has had in Catalonia can be replicated throughout the Spanish State. Meanwhile, Inés Arrimadas will be taking over the leadership of Cs in Catalonia.
+
+- @post_event

@@ -160,6 +160,7 @@ This decision is highly disappointing not only for the leadership at [? if cdc_p
 on-arrival: {!
     this.achieve("jxsi");
 
+    Q.jxsi_formed = true;
     Q.jxsi_roadmap = 2;
     Q.roadmap_year = Q.year + 2;
     Q.erc_in_jxsi = true;
@@ -230,11 +231,10 @@ on-arrival: {!
     Q.independence_trust += 15;
 
     // Clear the hand to avoid previous party cards from appearing randomly
-    if (Q.difficulty >= 0) {
-    window.dendryUI.dendryEngine.state.currentHands['main'] = [];
-    } else {
-        window.dendryUI.dendryEngine.state.currentHands['main.main_easy'] = [];
-    }
+
+    this.state.currentHands['main'] = [];
+    this.state.currentHands['main.main_easy'] = [];
+    this.state.currentHands['main.main_hard'] = [];
 !}
 
 The jxsi coalition has been formed! With an ambitious 2-year roadmap, it now counts with ample support from civil society organizations, minor parties like SI, as well as, of course, the big players in the Parlament, [? if cdc_in_jxsi > 0: CDC?][? if dl_in_jxsi > 0: DL?][? if pdcat_in_jxsi > 0: the PDeCAT?] and ERC. Can it, however, be expanded further? Everyone is looking right now at the CUP, who so far has been skeptical of the whole formation process. Will they join in as well to build true National Unity?
@@ -472,9 +472,9 @@ on-arrival: {!
 
     // Clear the hand to avoid previous party cards from appearing randomly
     if (Q.difficulty >= 0) {
-    window.dendryUI.dendryEngine.state.currentHands['main'] = [];
+    this.state.currentHands['main'] = [];
     } else {
-        window.dendryUI.dendryEngine.state.currentHands['main.main_easy'] = [];
+        this.state.currentHands['main.main_easy'] = [];
     }
 !}
 
@@ -558,11 +558,9 @@ on-arrival: {!
     Q.cup_thirdsector_dissent += 2;
 
     // Clear the hand to avoid previous party cards from appearing randomly
-    if (Q.difficulty >= 0) {
-    window.dendryUI.dendryEngine.state.currentHands['main'] = [];
-    } else {
-        window.dendryUI.dendryEngine.state.currentHands['main.main_easy'] = [];
-    }
+    this.state.currentHands['main'] = [];
+    this.state.currentHands['main.main_easy'] = [];
+    this.state.currentHands['main.main_hard'] = [];
 !}
 
 While an easier sell, joining in with centrist and center-right movements in a single list is still a hard sell for some sectors of the party. Be it as it may, a decision has now been taken.
