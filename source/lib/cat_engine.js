@@ -30,6 +30,22 @@
     2019: 1.3,
   };
 
+  // Employment changes move population only among these four demographic
+  // buckets. The split follows demographics_data/README.md; young, retired,
+  // and rural populations are deliberately outside this monthly flow.
+  const PARLAMENT_EMPLOYMENT_DEMOS = ["buss", "ind", "middle"];
+  const PARLAMENT_EMPLOYMENT_SHARES = {
+    buss: 0.15,
+    ind: 0.3,
+    middle: 0.55,
+  };
+  const PARLAMENT_RECOVERY_LAG = {
+    barcelona: 1.1,
+    girona: 1.0,
+    tarragona: 0.9,
+    lleida: 0.8,
+  };
+
   const parlament_NONLIN_DEMO_SCALE = {
     buss: {
       dissent: 0.4,
@@ -551,6 +567,113 @@
 
   // --- ENGINE ---
 
+  function updateParlamentDemographicPopulations(
+    Q,
+    previousUnemployment,
+    newUnemployment,
+  ) {
+    const provinces = Q.parlament_constituencies || [];
+    const deltaRate = newUnemployment - previousUnemployment;
+    if (!Number.isFinite(deltaRate) || Math.abs(deltaRate) < 1e-9) return;
+
+    const populationKey = (province, demographic) =>
+      `parlament_${province}_${demographic}_pop`;
+    const population = (province, demographic) => {
+      const value = Number(Q[populationKey(province, demographic)]);
+      return Number.isFinite(value) ? Math.max(0, value) : 0;
+    };
+
+    // Use the same employment pool as demographics_data/adjust_unemployment:
+    // buss + ind + middle + unemployed. The live 2012 data has not been
+    // rewritten to the separately adjusted Python initialization, so this is
+    // intentionally a delta update rather than absolute-rate reconciliation.
+    const flowPools = {};
+    let nationalFlowPool = 0;
+    for (const province of provinces) {
+      const employed = PARLAMENT_EMPLOYMENT_DEMOS.reduce(
+        (total, demographic) => total + population(province, demographic),
+        0,
+      );
+      const unemployed = population(province, "unemployed");
+      flowPools[province] = { employed, unemployed };
+      nationalFlowPool += employed + unemployed;
+    }
+    if (nationalFlowPool <= 0) return;
+
+    const nationalUnemploymentChange =
+      (Math.abs(deltaRate) / 100) * nationalFlowPool;
+
+    if (deltaRate > 0) {
+      // Recession: job destruction is proportional to each province's
+      // currently employed pool, without a provincial lag.
+      const nationalEmployed = provinces.reduce(
+        (total, province) => total + flowPools[province].employed,
+        0,
+      );
+      if (nationalEmployed <= 0) return;
+
+      const transferable = Math.min(
+        nationalUnemploymentChange,
+        nationalEmployed,
+      );
+      for (const province of provinces) {
+        const provincialLoss =
+          transferable * (flowPools[province].employed / nationalEmployed);
+        let realizedLoss = 0;
+        for (const demographic of PARLAMENT_EMPLOYMENT_DEMOS) {
+          const key = populationKey(province, demographic);
+          const loss = Math.min(
+            provincialLoss * PARLAMENT_EMPLOYMENT_SHARES[demographic],
+            population(province, demographic),
+          );
+          Q[key] = population(province, demographic) - loss;
+          realizedLoss += loss;
+        }
+        const unemployedKey = populationKey(province, "unemployed");
+        Q[unemployedKey] = population(province, "unemployed") + realizedLoss;
+      }
+      return;
+    }
+
+    // Recovery: each province's share is based on its unemployed pool and the
+    // recovery lag from simulations/demographics.py, normalized nationally.
+    const nationalUnemployed = provinces.reduce(
+      (total, province) => total + flowPools[province].unemployed,
+      0,
+    );
+    if (nationalUnemployed <= 0) return;
+
+    const rawWeights = {};
+    let weightTotal = 0;
+    for (const province of provinces) {
+      const weight =
+        flowPools[province].unemployed *
+        (PARLAMENT_RECOVERY_LAG[province] || 1);
+      rawWeights[province] = weight;
+      weightTotal += weight;
+    }
+    if (weightTotal <= 0) return;
+
+    const transferable = Math.min(
+      nationalUnemploymentChange,
+      nationalUnemployed,
+    );
+    for (const province of provinces) {
+      const provincialGain = Math.min(
+        transferable * (rawWeights[province] / weightTotal),
+        population(province, "unemployed"),
+      );
+      for (const demographic of PARLAMENT_EMPLOYMENT_DEMOS) {
+        const key = populationKey(province, demographic);
+        Q[key] =
+          population(province, demographic) +
+          provincialGain * PARLAMENT_EMPLOYMENT_SHARES[demographic];
+      }
+      const unemployedKey = populationKey(province, "unemployed");
+      Q[unemployedKey] = population(province, "unemployed") - provincialGain;
+    }
+  }
+
   function monthPasses(Q) {
     // Advance policy-modifier lifecycle BEFORE any formula reads mod(Q, ...).
     advanceMods(Q);
@@ -610,6 +733,11 @@
       (gdp_m < 0 ? -gdp_m * 0.3 : -gdp_m * recover) - law_mod_unemp;
     Q.unemployment = clamp(Q.unemployment + u_delta, 10, 36);
     Q.unemployment_change = getArrowBadUp(prev_unemployment, Q.unemployment);
+    updateParlamentDemographicPopulations(
+      Q,
+      prev_unemployment,
+      Q.unemployment,
+    );
 
     // 3. SURPLUS & DEBT
     const base_drift = Q.SURPLUS_DRIFT_BY_GEN[gen_key] || 0.02;

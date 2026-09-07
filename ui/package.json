@@ -12,6 +12,7 @@
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest run",
+    "balance:no-action": "vitest run tests/no-action-monte-carlo.test.ts --reporter=verbose",
     "test:watch": "vitest"
   },
   "dependencies": {
