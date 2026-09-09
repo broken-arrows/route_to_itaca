@@ -33,6 +33,7 @@ on-arrival: {!
 
     for (var prov of Q.parlament_constituencies)  {
         for (var demo of Q.parlament_demographics) {
+            Q["abstain_parlament_" + prov + "_" + demo + "_support"] += Q["jxcat_parlament_" + prov + "_" + demo + "_support"] * 0.02;
             Q["junts_parlament_" + prov + "_" + demo + "_support"] = Q["jxcat_parlament_" + prov + "_" + demo + "_support"] * 0.98;
             Q["jxcat_parlament_" + prov + "_" + demo + "_support"] = 0;
         }

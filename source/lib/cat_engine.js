@@ -1,6 +1,330 @@
 (function () {
   "use strict";
 
+  const parlamentCompetition = (function () {
+    var NEUTRAL = Object.freeze({ channeling: 1, conflict: 1, retention: 1 });
+    // channeling: ability to convert existing Podemos momentum; conflict: appeal
+    // against PSC during worsening relations; retention: resistance to recovery.
+    var FEDERAL_LEFT_LEADERS = Object.freeze({
+      "Joan Herrera": Object.freeze({
+        channeling: 1,
+        conflict: 1,
+        retention: 1,
+      }),
+      "Lluís Rabell": Object.freeze({
+        channeling: 0.8,
+        conflict: 0.85,
+        retention: 0.85,
+      }),
+      "Arcadi Oliveres": Object.freeze({
+        channeling: 1.1,
+        conflict: 1.25,
+        retention: 1.1,
+      }),
+      "Xavier Domènech": Object.freeze({
+        channeling: 1.1,
+        conflict: 1.05,
+        retention: 1.15,
+      }),
+      "Joan Coscubiela": Object.freeze({
+        channeling: 0.9,
+        conflict: 0.7,
+        retention: 1.05,
+      }),
+      "Jaume Asens": Object.freeze({
+        channeling: 1.1,
+        conflict: 1.2,
+        retention: 1.1,
+      }),
+      "Jéssica Albiach": Object.freeze({
+        channeling: 1,
+        conflict: 0.9,
+        retention: 1.05,
+      }),
+    });
+    // Catalan/federalist PSC branches resist conflict-driven departures better.
+    var PSC_CONFLICT_EXPOSURE = Object.freeze({
+      "Pere Navarro": 1.1,
+      "Miquel Iceta": 1,
+      "Àngel Ros": 0.65,
+      "Montserrat Tura": 0.5,
+      "Núria Parlon": 0.7,
+    });
+
+    function finite(value, fallback) {
+      return typeof value === "number" && Number.isFinite(value)
+        ? value
+        : fallback;
+    }
+    function getFederalLeftLeadershipProfile(Q, activeFederalLeft) {
+      var carrier =
+        activeFederalLeft === "icv-euia" ? "icv" : activeFederalLeft;
+      var name = Q[carrier + "_leader"];
+      return Object.prototype.hasOwnProperty.call(FEDERAL_LEFT_LEADERS, name)
+        ? FEDERAL_LEFT_LEADERS[name]
+        : NEUTRAL;
+    }
+
+    function buildParlamentCompetitionTransfers(Q, context) {
+      var requests = [];
+      var support = context.support || {};
+      var scale = clamp(finite(context.scaleCatSpa, 1), 0, 4);
+      var psc = Math.max(0, finite(support.psc, 0));
+      var fl = Math.max(0, finite(support.fl, 0));
+      var profile = getFederalLeftLeadershipProfile(
+        Q,
+        context.activeFederalLeft,
+      );
+      var recovery = clamp(finite(Q.psc_recovery_mult, 0), 0, 2);
+      var exposure = Object.prototype.hasOwnProperty.call(
+        PSC_CONFLICT_EXPOSURE,
+        Q.psc_leader,
+      )
+        ? PSC_CONFLICT_EXPOSURE[Q.psc_leader]
+        : 1;
+      function request(mechanism, from, to, amount) {
+        if (Number.isFinite(amount) && amount > 0) {
+          requests.push({
+            mechanism: mechanism,
+            from: from,
+            to: to,
+            amount: amount,
+          });
+        }
+      }
+
+      if (context.activeFederalLeft && psc > 0 && fl > 0) {
+        // Signed response removes the old negative-noise-only ratchet. Stronger
+        // PSC recovery protects against departures, instead of magnifying them.
+        var conflict =
+          (-finite(context.dCatSpa, 0) *
+            0.06 *
+            scale *
+            exposure *
+            profile.conflict) /
+          (1 + 0.25 * recovery);
+        if (conflict > 0)
+          request("nonlinear.psc_federal_conflict", "psc", "fl", conflict);
+        else request("nonlinear.psc_federal_conflict", "fl", "psc", -conflict);
+
+        // Recovery competes for a limited pool; it cannot strip the federal left.
+        var targetPscShare = clamp(
+          0.5 + (0.1 * recovery) / profile.retention,
+          0.5,
+          0.7,
+        );
+        var recoveryGap = Math.max(0, (psc + fl) * targetPscShare - psc);
+        request(
+          "nonlinear.psc_federal_recovery",
+          "fl",
+          "psc",
+          (recoveryGap * 0.018 * recovery) / profile.retention,
+        );
+      }
+
+      var ppc = Math.max(0, finite(support.ppc, 0));
+      var cs = Math.max(0, finite(support.cs, 0));
+      // Movement supplies territorial salience; relations amplify it.
+      var movementPressure = clamp((finite(Q.independence_movement, 25) - 40) / 45, 0, 1);
+      var conflictPressure = clamp((50 - finite(Q.cat_spa_relations, 50)) / 40, 0, 1);
+      var campaignMonths = finite(Q.next_election_time, Infinity) - finite(Q.time, 0);
+      var campaign = Number.isFinite(campaignMonths) ? clamp(1 - Math.max(0, campaignMonths) / 6, 0, 1) : 0;
+      if (cs > 0 || finite(Q.cs_parlament_s, 0) > 0) {
+        var retention = (1 + .35 * recovery) / exposure;
+        var outward = psc * .025 * movementPressure * movementPressure *
+          (.75 + .25 * conflictPressure) / retention / (1 + cs / Math.max(psc, .01));
+        var inward = cs * .008 * (1 - movementPressure) * (1 - movementPressure) * retention;
+        var switching = (outward - inward) * (.5 + .5 * campaign) * Math.min(scale, 2);
+        if (switching > 0) request("nonlinear.psc_cs_movement", "psc", "cs", switching);
+        else request("nonlinear.cs_psc_reconciliation", "cs", "psc", -switching);
+      }
+      var pool = ppc + cs;
+      // A live Catalan organization or existing local voters makes Cs viable;
+      // national launch amplifies competition, rather than creating votes.
+      if (ppc > 0 && (cs > 0 || finite(Q.cs_parlament_s, 0) > 0)) {
+        var salience = movementPressure * (0.75 + 0.25 * conflictPressure);
+        var launch = Q.spa_cs_active === true ? 1 : 0;
+        var viability = clamp(cs / pool / 0.15, 0.35, 1);
+        // Persistent PP scandals increase Cs's share of the existing PPC/Cs pool.
+        var corruption = clamp(finite(Q.corruption_pp, 0) / 100, 0, 1);
+        var targetCsShare =
+          0.32 + 0.2 * salience + 0.12 * launch + 0.16 * corruption;
+        var gap = Math.max(0, pool * targetCsShare - cs);
+        var rate = clamp(
+          0.075 * (1 + 0.5 * launch + 0.35 * campaign) * scale * viability,
+          0,
+          0.3,
+        );
+        request("nonlinear.ppc_cs_competition", "ppc", "cs", gap * rate);
+      }
+      return requests;
+    }
+
+    return {
+      buildParlamentCompetitionTransfers: buildParlamentCompetitionTransfers,
+      getFederalLeftLeadershipProfile: getFederalLeftLeadershipProfile,
+    };
+  })();
+  // Finite marginal participation stocks; settlement owns realized transfers.
+  const parlamentParticipation = (function () {
+    var AFFINITY = Object.freeze({
+      icr: 0.18,
+      il: 0.16,
+      cup: 0.1,
+      unio: 0.025,
+      pdcat: 0.015,
+      fl: 0.1,
+      psc: 0.12,
+      cs: 0.2,
+      ppc: 0.08,
+      vox: 0.01,
+      fnc: 0.01,
+    });
+    // Relative reach among inactive voters: sovereignty, constitutional right,
+    // and federal/centrist families. This is not proportional to current votes.
+    var DEMOGRAPHICS = Object.freeze({
+      buss: [0.65, 1.1, 0.65],
+      ind: [0.85, 1.15, 1.15],
+      middle: [1, 1, 1],
+      young: [1.35, 0.8, 1.25],
+      rural: [1.35, 0.65, 0.7],
+      retired: [0.75, 0.9, 0.7],
+      unemployed: [1.1, 1, 1.2],
+    });
+    var REACHABLE_ABSTENTION = 0.45;
+    var MARGINAL_ACTIVE = 0.08;
+    var ACTIVATION_RATE = 0.055;
+    var RELEASE_RATE = 0.035;
+
+    function finite(value, fallback) {
+      return Number.isFinite(value) ? value : fallback;
+    }
+    function smooth(value) {
+      var x = clamp(value, 0, 1);
+      return x * x * (3 - 2 * x);
+    }
+    function group(family) {
+      if (["icr", "il", "cup", "pdcat", "fnc"].includes(family)) return 0;
+      if (["cs", "ppc", "vox"].includes(family)) return 1;
+      return 2;
+    }
+
+    function resetParlamentParticipation(Q) {
+      delete Q.parlament_participation;
+      delete Q.parlament_disappointment;
+    }
+
+    function cellState(Q, context) {
+      if (!Q.parlament_participation)
+        Q.parlament_participation = { version: 1, cells: {} };
+      var cells = Q.parlament_participation.cells;
+      var key = context.province + "." + context.demographic;
+      if (cells[key]) return cells[key];
+      var demo = DEMOGRAPHICS[context.demographic] || [1, 1, 1];
+      var weights = {};
+      var carrierWeights = {};
+      var total = 0;
+      Object.keys(AFFINITY).forEach(function (family) {
+        var weight = AFFINITY[family] * demo[group(family)];
+        weights[family] = weight;
+        total += weight;
+        var carrier = context.carriers[family];
+        if (carrier)
+          carrierWeights[carrier] = (carrierWeights[carrier] || 0) + weight;
+      });
+      var inactivePool =
+        Math.max(0, finite(context.support.abstain, 0)) * REACHABLE_ABSTENTION;
+      var state = {};
+      Object.keys(weights).forEach(function (family) {
+        var carrier = context.carriers[family];
+        // Several latent families can share one ballot carrier. Count its
+        // initial marginal active support once, divided among those families.
+        var active = carrier
+          ? (Math.max(0, finite(context.support[carrier], 0)) *
+              MARGINAL_ACTIVE *
+              weights[family]) /
+            carrierWeights[carrier]
+          : 0;
+        state[family] = {
+          active: active,
+          inactive: (inactivePool * weights[family]) / total,
+        };
+      });
+      cells[key] = state;
+      return state;
+    }
+
+    function buildParlamentParticipationTransfers(Q, context) {
+      var state = cellState(Q, context);
+      var conflict = smooth((60 - finite(Q.cat_spa_relations, 60)) / 60);
+      var movement = smooth((finite(Q.independence_movement, 25) - 25) / 70);
+      var months = finite(Q.next_election_time, Infinity) - finite(Q.time, 0);
+      var proximity = Number.isFinite(months)
+        ? clamp(1 - Math.max(0, months) / 6, 0, 1)
+        : 0;
+      var speed = 0.35 + 0.65 * proximity;
+      var requests = [];
+      Object.keys(state).forEach(function (family) {
+        if (!context.carriers[family]) return;
+        if (family === "cs") {
+          // Cs responds to current support; depletion and falling relative
+          // appeal produce diminishing returns.
+          var cs = Math.max(0, finite(context.support[context.carriers.cs], 0));
+          var abstention = Math.max(0, finite(context.support[context.carriers.abs], 0));
+          var csPressure = movement * (.82 + .18 * conflict);
+          var csFlow = abstention * .012 * csPressure * speed /
+            (1 + cs / Math.max(abstention, .01)) -
+            cs * .01 * (1 - csPressure) * (1 - .5 * proximity);
+          if (Math.abs(csFlow) > 1e-12) requests.push({
+            mechanism: csFlow > 0 ? "nonlinear.cs_mobilization" : "nonlinear.cs_demobilization",
+            from: csFlow > 0 ? "abs" : "cs", to: csFlow > 0 ? "cs" : "abs",
+            amount: Math.abs(csFlow),
+          });
+          return;
+        }
+        var kind = group(family);
+        var pressure =
+          kind === 0
+            ? 0.55 * movement + 0.25 * conflict + 0.2 * movement * conflict
+            : kind === 1
+              ? 0.9 * conflict + 0.1 * movement * conflict
+              : 0.35 * conflict;
+        var stock = state[family];
+        // Opposing rates act on a finite stock. Stable conditions converge;
+        // cooling conditions release marginal voters instead of resetting them
+        // on election day. Incoming votes cannot be spent within the same tick.
+        var amount =
+          stock.inactive * ACTIVATION_RATE * pressure * speed -
+          stock.active * RELEASE_RATE * (1 - pressure) * (1 - 0.5 * proximity);
+        if (Math.abs(amount) < 1e-12) return;
+        var mobilizing = amount > 0;
+        requests.push({
+          mechanism: mobilizing
+            ? "nonlinear.participation_mobilization"
+            : "nonlinear.participation_disengagement",
+          from: mobilizing ? "abs" : family,
+          to: mobilizing ? family : "abs",
+          amount: Math.abs(amount),
+          // Ephemeral settlement callback, never stored in Q or save data.
+          // Only realized transfers change memory; clipped/unavailable requests
+          // leave the capacity available for a later tick.
+          onSettled: function (realized) {
+            var change = mobilizing ? realized : -realized;
+            stock.active += change;
+            stock.inactive -= change;
+          },
+        });
+      });
+      return requests;
+    }
+
+    return {
+      buildParlamentParticipationTransfers:
+        buildParlamentParticipationTransfers,
+      resetParlamentParticipation: resetParlamentParticipation,
+    };
+  })();
+
   // --- CONSTANTS & MAPPINGS ---
 
   const FAMILIES = [
@@ -45,6 +369,43 @@
     tarragona: 0.9,
     lleida: 0.8,
   };
+  const PARLAMENT_VOTE_DRIVERS = [
+    "independence_movement",
+    "independence_trust",
+    "social_dissent",
+    "welfare",
+    "cat_spa_relations",
+    "unemployment",
+    "podemos_channeling",
+  ];
+  const PARLAMENT_INDY_MOVEMENT_VOTE_RESPONSE = 0.6;
+
+  const PARLAMENT_SIGNALS = ["independence_movement", "independence_trust"];
+
+  // Persist the last electoral observation, not the opening of the macro tick:
+  // authored events can change these signals between monthly updates.
+  function resetParlamentSignalBaseline(Q) {
+    Q.parlament_signal_baseline = Object.fromEntries(
+      PARLAMENT_SIGNALS.map((signal) => [signal, Q[signal]]),
+    );
+  }
+
+  // Optional calibration diagnostic (disabled during normal gameplay)
+  function recordParlamentVoteTrace(Q, mechanism, target, weightedDelta) {
+    if (
+      Q.parlament_vote_trace_enabled !== true ||
+      !Number.isFinite(weightedDelta) ||
+      Math.abs(weightedDelta) < 1e-15
+    )
+      return;
+    if (!Q.parlament_vote_trace) {
+      Q.parlament_vote_trace = { ticks: 0, mechanisms: {} };
+    }
+    const mechanisms = Q.parlament_vote_trace.mechanisms;
+    if (!mechanisms[mechanism]) mechanisms[mechanism] = {};
+    mechanisms[mechanism][target] =
+      (mechanisms[mechanism][target] || 0) + weightedDelta;
+  }
 
   const parlament_NONLIN_DEMO_SCALE = {
     buss: {
@@ -398,6 +759,203 @@
     }
   }
 
+  function parlamentActiveParties(Q, provinces, demographics) {
+    const active = new Set(["abstain"]);
+    for (const p of Q.parties || []) {
+      if (
+        provinces.some((province) =>
+          demographics.some(
+            (demo) =>
+              Number(Q[`${p}_parlament_${province}_${demo}_support`]) > 0,
+          ),
+        )
+      )
+        active.add(p);
+    }
+    if (Q.fnc_formed && Q.pxc_dissolved) active.add("fnc");
+    if (Q.pxc_dissolved) active.delete("pxc");
+    if (Q.vox_active) active.add("vox");
+    for (const p of [Q.parlament_current_ciu, Q.parlament_current_icv])
+      if (p) active.add(p);
+    return active;
+  }
+
+  function parlamentFamilyCarriers(Q, prov, demo, knownActiveParties) {
+    const parties = [...new Set([...(Q.parties || []), "abstain"])];
+    const active =
+      knownActiveParties ||
+      parlamentActiveParties(
+        Q,
+        Q.parlament_constituencies || [prov],
+        Q.parlament_demographics || [demo],
+      );
+    const live = (p) => parties.includes(p) && active.has(p);
+    const carriers = {};
+    for (const p of parties) {
+      const family = familyOf(p, Q.pdcat_split, Q.unio_split);
+      if (live(p) && !carriers[family]) carriers[family] = p;
+    }
+    // Eligibility is national: a live party may gain in a cell where it has no
+    // voters yet. Prefer the canonical successor over stale predecessor cells.
+    for (const [family, p] of [
+      ["icr", Q.parlament_current_ciu],
+      ["fl", Q.parlament_current_icv],
+    ]) {
+      if (live(p)) carriers[family] = p;
+    }
+    for (const p of COALITION_PARTIES) {
+      if (live(p))
+        for (const f of coalitionFamilies(Q, p) || []) carriers[f] = p;
+    }
+    if (!Q.unio_split) carriers.unio = carriers.icr;
+    if (!Q.pdcat_split) carriers.pdcat = carriers.icr;
+    return carriers;
+  }
+
+  // Settle all monthly requests against opening support. Incoming voters cannot
+  // fund another outgoing request in the same tick, and list-internal moves cancel.
+  function applyParlamentTransfers(
+    Q,
+    prov,
+    demo,
+    matrixDeltas,
+    transfers,
+    traceWeight = 0,
+    knownCarriers,
+  ) {
+    const parties = [...new Set([...(Q.parties || []), "abstain"])];
+    const key = (party) => `${party}_parlament_${prov}_${demo}_support`;
+    const opening = Object.fromEntries(
+      parties.map((p) => [p, Math.max(0, Number(Q[key(p)]) || 0)]),
+    );
+    const carriers = knownCarriers || parlamentFamilyCarriers(Q, prov, demo);
+    const requestedMatrix = {};
+    FAMILIES.forEach((f, i) => {
+      const value =
+        Number(
+          Array.isArray(matrixDeltas) ? matrixDeltas[i] : matrixDeltas?.[f],
+        ) || 0;
+      const p = carriers[f];
+      if (p) requestedMatrix[p] = (requestedMatrix[p] || 0) + value;
+      else
+        recordParlamentVoteTrace(
+          Q,
+          "correction.matrix_unrouted",
+          f,
+          -value * traceWeight,
+        );
+    });
+    const gainTotal = Object.values(requestedMatrix).reduce(
+      (n, v) => n + Math.max(0, v),
+      0,
+    );
+    const lossTotal = Object.values(requestedMatrix).reduce(
+      (n, v) => n + Math.max(0, -v),
+      0,
+    );
+    const matrixVolume = Math.min(gainTotal, lossTotal);
+    const outgoing = {};
+    const matrixLosses = {};
+    for (const [p, delta] of Object.entries(requestedMatrix)) {
+      if (delta < 0) {
+        matrixLosses[p] =
+          -delta * (lossTotal > 0 ? matrixVolume / lossTotal : 0);
+        outgoing[p] = matrixLosses[p];
+      }
+    }
+    const requests = [];
+    for (const request of transfers || []) {
+      let { from, to, amount, mechanism } = request;
+      if (!Number.isFinite(amount) || amount === 0) continue;
+      if (amount < 0) {
+        [from, to] = [to, from];
+        amount = -amount;
+      }
+      const source = carriers[from];
+      const destination = carriers[to];
+      recordParlamentVoteTrace(
+        Q,
+        `requested.${mechanism}`,
+        from,
+        -amount * traceWeight,
+      );
+      recordParlamentVoteTrace(
+        Q,
+        `requested.${mechanism}`,
+        to,
+        amount * traceWeight,
+      );
+      // An inactive family has no electoral destination. Retain its donor's voters.
+      if (!source || !destination || source === destination) continue;
+      requests.push({
+        from,
+        to,
+        source,
+        destination,
+        amount,
+        mechanism,
+        onSettled: request.onSettled,
+      });
+      outgoing[source] = (outgoing[source] || 0) + amount;
+    }
+    const scale = (p) =>
+      outgoing[p] > 0 ? Math.min(1, opening[p] / outgoing[p]) : 1;
+    const changes = {};
+    const add = (p, value) => {
+      changes[p] = (changes[p] || 0) + value;
+    };
+    let realizedMatrixVolume = 0;
+    const realizedMatrix = {};
+    for (const [p, amount] of Object.entries(matrixLosses)) {
+      const realized = amount * scale(p);
+      realizedMatrix[p] = -realized;
+      realizedMatrixVolume += realized;
+    }
+    for (const [p, delta] of Object.entries(requestedMatrix)) {
+      if (delta > 0)
+        realizedMatrix[p] =
+          gainTotal > 0 ? (delta / gainTotal) * realizedMatrixVolume : 0;
+      const realized = realizedMatrix[p] || 0;
+      add(p, realized);
+      recordParlamentVoteTrace(
+        Q,
+        "matrix.realized",
+        `party:${p}`,
+        realized * traceWeight,
+      );
+      recordParlamentVoteTrace(
+        Q,
+        "correction.matrix_settlement",
+        `party:${p}`,
+        (realized - delta) * traceWeight,
+      );
+    }
+    const notifications = [];
+    for (const request of requests) {
+      const amount = request.amount * scale(request.source);
+      add(request.source, -amount);
+      add(request.destination, amount);
+      recordParlamentVoteTrace(
+        Q,
+        request.mechanism,
+        request.from,
+        -amount * traceWeight,
+      );
+      recordParlamentVoteTrace(
+        Q,
+        request.mechanism,
+        request.to,
+        amount * traceWeight,
+      );
+      if (typeof request.onSettled === "function")
+        notifications.push([request.onSettled, amount]);
+    }
+    for (const [p, delta] of Object.entries(changes))
+      Q[key(p)] = Math.max(0, opening[p] + delta);
+    for (const [notify, amount] of notifications) notify(amount);
+    return changes;
+  }
+
   function getGovKey(coalition, map, defaultVal) {
     if (!coalition || coalition.length === 0) return defaultVal;
     return map[coalition[0]] || defaultVal;
@@ -687,6 +1245,18 @@
     const prev_cat_spa = Q.cat_spa_relations;
     const prev_indy_mov = Q.independence_movement;
     const prev_indy_trust = Q.independence_trust;
+    // Old saves have no prior observation. Start from their current signals,
+    // then preserve subsequent event changes through normal save/restore.
+    const observedMovement = Number.isFinite(
+      Q.parlament_signal_baseline?.independence_movement,
+    )
+      ? Q.parlament_signal_baseline.independence_movement
+      : prev_indy_mov;
+    const observedTrust = Number.isFinite(
+      Q.parlament_signal_baseline?.independence_trust,
+    )
+      ? Q.parlament_signal_baseline.independence_trust
+      : prev_indy_trust;
     const prev_dissent = Q.social_dissent;
     const prev_surplus = Q.generalitat_surplus;
 
@@ -733,11 +1303,7 @@
       (gdp_m < 0 ? -gdp_m * 0.3 : -gdp_m * recover) - law_mod_unemp;
     Q.unemployment = clamp(Q.unemployment + u_delta, 10, 36);
     Q.unemployment_change = getArrowBadUp(prev_unemployment, Q.unemployment);
-    updateParlamentDemographicPopulations(
-      Q,
-      prev_unemployment,
-      Q.unemployment,
-    );
+    updateParlamentDemographicPopulations(Q, prev_unemployment, Q.unemployment);
 
     // 3. SURPLUS & DEBT
     const base_drift = Q.SURPLUS_DRIFT_BY_GEN[gen_key] || 0.02;
@@ -918,8 +1484,9 @@
     // --- VOTE ALLOCATION ---
 
     const d_vars = [
-      Q.independence_movement - prev_indy_mov,
-      Q.independence_trust - prev_indy_trust,
+      (Q.independence_movement - observedMovement) *
+        PARLAMENT_INDY_MOVEMENT_VOTE_RESPONSE,
+      Q.independence_trust - observedTrust,
       0, // dissent handled nonlinearly
       0, // welfare handled nonlinearly
       0, // cat_spa handled nonlinearly
@@ -933,10 +1500,46 @@
 
     const matrices = PARLAMENT_MATRICES;
     if (!matrices) return;
+    advanceParlamentDisappointment(Q);
+
+    const traceEnabled = Q.parlament_vote_trace_enabled === true;
+    const responsibility = getParlamentResponsibility(Q);
+    const activeParties = parlamentActiveParties(Q, PROVINCES, DEMOS);
+    let traceTotalPopulation = 0;
+    if (traceEnabled) {
+      if (!Q.parlament_vote_trace) {
+        Q.parlament_vote_trace = { ticks: 0, mechanisms: {} };
+      }
+      Q.parlament_vote_trace.ticks += 1;
+      for (const prov of PROVINCES) {
+        for (const demo of DEMOS) {
+          const population = Number(Q[`parlament_${prov}_${demo}_pop`]);
+          if (Number.isFinite(population) && population > 0) {
+            traceTotalPopulation += population;
+          }
+        }
+      }
+    }
 
     for (const prov of PROVINCES) {
       for (const demo of DEMOS) {
-        let delta_vec = new Array(FAMILIES.length).fill(0);
+        const delta_vec = new Array(FAMILIES.length).fill(0);
+        const namedDeltas = {};
+        const cellPopulation = Number(Q[`parlament_${prov}_${demo}_pop`]);
+        const traceWeight =
+          traceEnabled && traceTotalPopulation > 0 && cellPopulation > 0
+            ? cellPopulation / traceTotalPopulation
+            : 0;
+        const addFamilyDelta = (mechanism, familyOrIndex, amount) => {
+          const index =
+            typeof familyOrIndex === "number"
+              ? familyOrIndex
+              : FAMILIES.indexOf(familyOrIndex);
+          const family = FAMILIES[index];
+          if (!namedDeltas[mechanism]) namedDeltas[mechanism] = {};
+          namedDeltas[mechanism][family] =
+            (namedDeltas[mechanism][family] || 0) + amount;
+        };
 
         // Matrix update
         const T_base = matrices.BASE_T;
@@ -949,7 +1552,14 @@
               T_base[i][j] +
               (T_demo[i] ? T_demo[i][j] : 0) +
               (T_prov[i] ? T_prov[i][j] : 0);
-            delta_vec[i] += val * d_vars[j];
+            const contribution = val * d_vars[j];
+            delta_vec[i] += contribution;
+            recordParlamentVoteTrace(
+              Q,
+              `matrix.${PARLAMENT_VOTE_DRIVERS[j]}`,
+              FAMILIES[i],
+              contribution * traceWeight,
+            );
           }
         }
 
@@ -957,28 +1567,47 @@
         const nl_d = parlament_NONLIN_DEMO_SCALE[demo];
         const nl_p = parlament_NONLIN_PROV_SCALE[prov];
 
-        // Simplified Nonlinear Handlers
-        if (d_dissent > 0) {
-          const total_in = d_dissent * 0.04 * nl_d.dissent * nl_p.dissent;
-          delta_vec[FAMILIES.indexOf("fl")] += total_in * 0.5;
-          delta_vec[FAMILIES.indexOf("abs")] += total_in * 0.5;
-          delta_vec[FAMILIES.indexOf("icr")] -= total_in;
-        }
-
-        if (d_welfare < 0) {
-          const total_out =
-            Math.abs(d_welfare) * 0.05 * nl_d.welfare * nl_p.welfare;
-          delta_vec[FAMILIES.indexOf("cup")] += total_out;
-          delta_vec[FAMILIES.indexOf("icr")] -= total_out;
-        }
-
-        if (d_cat_spa < 0) {
-          // TODO: What the hell is going on here, worth re-thinking
-          const total_in =
-            Math.abs(d_cat_spa) * 0.06 * nl_d.cat_spa * nl_p.cat_spa;
-          delta_vec[FAMILIES.indexOf("cs")] += total_in;
-          delta_vec[FAMILIES.indexOf("icr")] -= total_in;
-        }
+        const carriers = parlamentFamilyCarriers(Q, prov, demo, activeParties);
+        const support = Object.fromEntries(
+          [...(Q.parties || []), "abstain"].map((party) => [
+            party,
+            Number(Q[`${party}_parlament_${prov}_${demo}_support`]) || 0,
+          ]),
+        );
+        const transfers = buildParlamentResponsibilityTransfers(
+          Q,
+          {
+            province: prov,
+            demographic: demo,
+            dWelfare: d_welfare,
+            dUnemployment: Q.unemployment - prev_unemployment,
+            dDissent: d_dissent,
+            scale: nl_d.welfare * nl_p.welfare,
+          },
+          carriers,
+          responsibility,
+        );
+        transfers.push(
+          ...parlamentParticipation.buildParlamentParticipationTransfers(Q, {
+            province: prov,
+            demographic: demo,
+            carriers,
+            support,
+          }),
+        );
+        transfers.push(
+          ...parlamentCompetition.buildParlamentCompetitionTransfers(Q, {
+            dCatSpa: d_cat_spa,
+            scaleCatSpa: nl_d.cat_spa * nl_p.cat_spa,
+            activeFederalLeft: carriers.fl,
+            support: Object.fromEntries(
+              ["ppc", "cs", "psc", "fl"].map((f) => [
+                f,
+                support[carriers[f]] || 0,
+              ]),
+            ),
+          }),
+        );
 
         const FL = FAMILIES.indexOf("fl");
         const PSC = FAMILIES.indexOf("psc");
@@ -986,19 +1615,25 @@
         const IL = FAMILIES.indexOf("il");
         const CUP = FAMILIES.indexOf("cup");
 
-        const activeFederalLeft = [
-          "ecp",
-          "cecp",
-          "csqp",
-          "icv-euia",
-          "icv",
-        ].find(
-          (p) =>
-            (Q[p + "_parlament_" + prov + "_" + demo + "_support"] || 0) > 0,
+        const activeFederalLeft = carriers.fl;
+        transfers.push(...buildParlamentCorruptionTransfers(Q, {
+          carriers, responsibility, support,
+        }));
+        transfers.push(
+          ...buildParlamentDisappointmentTransfers(Q, {
+            province: prov,
+            demographic: demo,
+            carriers,
+            support,
+            scale: nl_d.cup_trust * nl_p.cup_trust,
+          }),
         );
-
         const partyMultiplier =
-          federalLeftChannelMultiplier[activeFederalLeft] ?? 0.0;
+          (federalLeftChannelMultiplier[activeFederalLeft] ?? 0.0) *
+          parlamentCompetition.getFederalLeftLeadershipProfile(
+            Q,
+            activeFederalLeft,
+          ).channeling;
 
         const channelScale = nl_d.channeling * nl_p.channeling;
         const indySqueeze =
@@ -1010,17 +1645,34 @@
         const federalFlow = potentialFlow * indySqueeze;
         const squeezedFlow = potentialFlow * (1 - indySqueeze);
 
-        delta_vec[FL] += federalFlow;
+        addFamilyDelta("nonlinear.federal_left_channeling", FL, federalFlow);
 
-        delta_vec[PSC] -= (federalFlow + squeezedFlow) * 0.3;
-        delta_vec[ABS] -= (federalFlow + squeezedFlow) * 0.7;
+        const assignedFlow = federalFlow + squeezedFlow * 0.8;
+        addFamilyDelta(
+          "nonlinear.federal_left_channeling",
+          PSC,
+          -assignedFlow * 0.3,
+        );
+        addFamilyDelta(
+          "nonlinear.federal_left_channeling",
+          ABS,
+          -assignedFlow * 0.7,
+        );
 
         const lowTrust = clamp((38 - Q.independence_trust) / 20, 0, 1);
         const toCup = 0.15 + 0.35 * lowTrust;
         const toIl = 0.8 - toCup;
 
-        delta_vec[IL] += squeezedFlow * toIl;
-        delta_vec[CUP] += squeezedFlow * toCup;
+        addFamilyDelta(
+          "nonlinear.federal_left_channeling",
+          IL,
+          squeezedFlow * toIl,
+        );
+        addFamilyDelta(
+          "nonlinear.federal_left_channeling",
+          CUP,
+          squeezedFlow * toCup,
+        );
         // The remaining 20% of squeezedFlow stays with PSC/abstention.
 
         // ── TRUST DISENGAGEMENT ──────────────────────────────────────────
@@ -1040,9 +1692,17 @@
             indy_factor *
             nl_d.cup_trust *
             nl_p.cup_trust;
-          delta_vec[FAMILIES.indexOf("abs")] += abs_gain;
-          delta_vec[FAMILIES.indexOf("icr")] -= abs_gain * 0.55;
-          delta_vec[FAMILIES.indexOf("il")] -= abs_gain * 0.45;
+          addFamilyDelta("nonlinear.trust_disengagement", "abs", abs_gain);
+          addFamilyDelta(
+            "nonlinear.trust_disengagement",
+            "icr",
+            -abs_gain * 0.55,
+          );
+          addFamilyDelta(
+            "nonlinear.trust_disengagement",
+            "il",
+            -abs_gain * 0.45,
+          );
         }
 
         // ── ICR SATURATION ───────────────────────────────────────────────
@@ -1057,14 +1717,21 @@
             (Q.independence_movement - ICR_SATURATION_THRESHOLD) /
             (100.0 - ICR_SATURATION_THRESHOLD);
           const offset = ICR_SATURATION_COEFF * d_vars[0] * saturation;
-          delta_vec[FAMILIES.indexOf("icr")] += offset; // gives back what matrix bled
-          delta_vec[FAMILIES.indexOf("abs")] -= offset;
+          addFamilyDelta("nonlinear.icr_saturation", "icr", offset);
+          addFamilyDelta("nonlinear.icr_saturation", "abs", -offset);
         }
 
         // ── CUP TRUST EXTRA
         // Below indytrust=30, falling trust amplifies CUP gains at icr's expense
         const CUP_TRUST_THRESHOLD = 30.0;
-        const CUP_TRUST_EXTRA = 0.025;
+        // Disappointment has more electoral traction in an active movement.
+        // Retain the signed response: rebuilding trust can win voters back.
+        const cupDisappointmentMomentum = clamp(
+          (Q.independence_movement - 45) / 40,
+          0,
+          1,
+        );
+        const CUP_TRUST_EXTRA = 0.025 + 0.035 * cupDisappointmentMomentum;
         if (
           Math.abs(d_vars[1]) > 1e-9 &&
           Q.independence_trust < CUP_TRUST_THRESHOLD
@@ -1077,35 +1744,36 @@
             depth *
             nl_d.cup_trust *
             nl_p.cup_trust;
-          delta_vec[FAMILIES.indexOf("cup")] += extra_cup;
-          delta_vec[FAMILIES.indexOf("icr")] -= extra_cup * 0.7;
-          delta_vec[FAMILIES.indexOf("il")] -= extra_cup * 0.3;
+          addFamilyDelta("nonlinear.cup_trust", "cup", extra_cup);
+          addFamilyDelta("nonlinear.cup_trust", "icr", -extra_cup * 0.7);
+          addFamilyDelta("nonlinear.cup_trust", "il", -extra_cup * 0.3);
         }
 
         // ── ART155 BACKLASH
         // PPC and PSC supported 155 → penalized while gen=ART155
         if (gen_key === "ART155") {
           const punishment = 0.55;
-          delta_vec[FAMILIES.indexOf("ppc")] -= punishment * 0.4;
-          delta_vec[FAMILIES.indexOf("psc")] -= punishment * 0.6;
-          delta_vec[FAMILIES.indexOf("fl")] += punishment * 0.05;
-          delta_vec[FAMILIES.indexOf("il")] += punishment * 0.4;
-          delta_vec[FAMILIES.indexOf("icr")] += punishment * 0.4;
-          delta_vec[FAMILIES.indexOf("cup")] += punishment * 0.15;
+          addFamilyDelta("nonlinear.art155", "ppc", -punishment * 0.4);
+          addFamilyDelta("nonlinear.art155", "psc", -punishment * 0.6);
+          addFamilyDelta("nonlinear.art155", "fl", punishment * 0.05);
+          addFamilyDelta("nonlinear.art155", "il", punishment * 0.4);
+          addFamilyDelta("nonlinear.art155", "icr", punishment * 0.4);
+          addFamilyDelta("nonlinear.art155", "cup", punishment * 0.15);
         }
 
         // ── PSC RECOVERY
         // Post-Navarro PSC slowly recovers from abs+fl
         if (Q.psc_recovery_mult > 0) {
-          delta_vec[FAMILIES.indexOf("psc")] += 0.015 * Q.psc_recovery_mult;
-          delta_vec[FAMILIES.indexOf("abs")] -= 0.015 * Q.psc_recovery_mult;
-          // When relations fall, PSC loses those same voters
-          if (d_cat_spa < 0) {
-            delta_vec[FAMILIES.indexOf("psc")] +=
-              0.45 * d_cat_spa * Q.psc_recovery_mult;
-            delta_vec[FAMILIES.indexOf("fl")] -=
-              0.45 * d_cat_spa * Q.psc_recovery_mult;
-          }
+          addFamilyDelta(
+            "nonlinear.psc_recovery",
+            "psc",
+            0.015 * Q.psc_recovery_mult,
+          );
+          addFamilyDelta(
+            "nonlinear.psc_recovery",
+            "abs",
+            -0.015 * Q.psc_recovery_mult,
+          );
         }
 
         // ── FNC FEEDING
@@ -1123,11 +1791,9 @@
           const dissentFactor = clamp((Q.social_dissent - 40) / 32, 0, 1);
 
           // Only matters substantially once FNC begins to inhabit an independence-process political field.
-          const distrustFactor = clamp((40 - Q.independence_trust) / 20, 0, 1);
-
-          // If there is no worsening dissatisfaction this month, do nothing.
-          // This prevents a permanent automatic drift into FNC.
-          const fncPressure = dissentFactor * 0.35 + 0.65 * distrustFactor;
+          // Process distrust now uses accumulated frustration and a finite
+          // mainstream donor pool. Keep this separate socioeconomic route.
+          const fncPressure = dissentFactor * 0.35;
 
           if (fncPressure > 0) {
             const rawInflow = 0.018 * fncPressure * nl_d.dissent * nl_p.dissent;
@@ -1144,7 +1810,7 @@
             // returns to PP rather than reducing the total FNC inflow.
             const voxLive =
               Q.vox_active === true &&
-              (Q[`voxparlament${prov}${demo}support`] || 0) > 0;
+              (Q[`vox_parlament_${prov}_${demo}_support`] || 0) > 0;
 
             const effectivePpcShare = ppcShare + (voxLive ? 0 : voxShare);
             const effectiveVoxShare = voxLive ? voxShare : 0;
@@ -1154,77 +1820,52 @@
             const fromIcr = rawInflow * icrShare;
             const fromAbs = rawInflow * absShare;
 
-            delta_vec[FNC] += rawInflow;
-            delta_vec[PPC] -= fromPpc;
-            delta_vec[VOX] -= fromVox;
-            delta_vec[ICR] -= fromIcr;
-            delta_vec[ABS] -= fromAbs;
+            addFamilyDelta("nonlinear.fnc_feeding", FNC, rawInflow);
+            addFamilyDelta("nonlinear.fnc_feeding", PPC, -fromPpc);
+            addFamilyDelta("nonlinear.fnc_feeding", VOX, -fromVox);
+            addFamilyDelta("nonlinear.fnc_feeding", ICR, -fromIcr);
+            addFamilyDelta("nonlinear.fnc_feeding", ABS, -fromAbs);
           }
         }
 
-        // Apply to Q support variables
-        const family_deltas = {};
-        FAMILIES.forEach((f, idx) => (family_deltas[f] = delta_vec[idx]));
-
-        // Map families to active parties
-        const party_deltas = {};
-        const parties_and_abs = [...Q.parties, "abstain"];
-        parties_and_abs.forEach((p) => {
-          const f = familyOf(p, Q.pdcat_split, Q.unio_split);
-          if (!party_deltas[f]) party_deltas[f] = [];
-          party_deltas[f].push(p);
-        });
-
-        // Coalition routing for this cell: family -> coalition list party.
-        // Only applies where the coalition is actually fielded (support > 0);
-        // which families it absorbs is governed by the *_in_* flags, so a
-        // non-member party keeps its own delta rather than feeding the list.
-        const coalition_route = {};
-        for (const cp of COALITION_PARTIES) {
-          const cp_key = cp + "_parlament_" + prov + "_" + demo + "_support";
-          if ((Q[cp_key] || 0) <= 0) continue;
-          const fams = coalitionFamilies(Q, cp);
-          if (!fams) continue;
-          for (const cf of fams) coalition_route[cf] = cp;
-        }
-
-        FAMILIES.forEach((f) => {
-          const delta = family_deltas[f];
-          // Folded-in families route to the coalition list; everything else
-          // goes to the normal active party of that family.
-          let recipient = coalition_route[f] || null;
-          if (!recipient) {
-            const parties = party_deltas[f] || [];
-            // Find the active party (one with support > 0)
-            for (const p of parties) {
-              if (Q[p + "_parlament_" + prov + "_" + demo + "_support"] > 0) {
-                recipient = p;
-                break;
-              }
+        // The remaining legacy named handlers define conserved small routes.
+        // Expand their donor/recipient shares before settlement; the broad
+        // matrix stays a distinct net-vector mechanism without invented edges.
+        for (const [mechanism, deltas] of Object.entries(namedDeltas)) {
+          const donors = Object.entries(deltas).filter(
+            ([, value]) => value < 0,
+          );
+          const recipients = Object.entries(deltas).filter(
+            ([, value]) => value > 0,
+          );
+          const loss = donors.reduce((n, [, value]) => n - value, 0);
+          const gain = recipients.reduce((n, [, value]) => n + value, 0);
+          if (Math.abs(loss - gain) > 1e-9)
+            throw new Error(`Unbalanced Parlament route: ${mechanism}`);
+          for (const [from, value] of donors) {
+            for (const [to, share] of recipients) {
+              transfers.push({
+                mechanism,
+                from,
+                to,
+                amount: (-value * share) / gain,
+              });
             }
-            if (!recipient && parties.length > 0) recipient = parties[0];
           }
-
-          if (recipient) {
-            const key =
-              recipient + "_parlament_" + prov + "_" + demo + "_support";
-            Q[key] = Math.max(0, (Q[key] || 0) + delta);
-          }
-        });
-
-        // Renormalize cell
-        let total = 0;
-        parties_and_abs.forEach((p) => {
-          total += Q[p + "_parlament_" + prov + "_" + demo + "_support"] || 0;
-        });
-        if (total > 0) {
-          parties_and_abs.forEach((p) => {
-            const key = p + "_parlament_" + prov + "_" + demo + "_support";
-            Q[key] = (Q[key] / total) * 100.0;
-          });
         }
+        applyParlamentTransfers(
+          Q,
+          prov,
+          demo,
+          delta_vec,
+          transfers,
+          traceWeight,
+          carriers,
+        );
       }
     }
+
+    resetParlamentSignalBaseline(Q);
 
     updateLocalBarcelona(
       Q,
@@ -2085,6 +2726,141 @@
     return (independence / total) * 100;
   }
 
+  function cardNationalIndependenceShare(Q) {
+    let validVotes = 0;
+    let independenceVotes = 0;
+    // Read actual list support, once per list: coalition components must not
+    // resolve back to their carrier and count that carrier a second time.
+    const parties = Array.from(new Set(Q.parties || [])).filter(
+      (party) => party !== ABSTAIN,
+    );
+    for (const constituency of Q.parlament_constituencies || []) {
+      for (const demographic of Q.parlament_demographics || []) {
+        const populationKey = `parlament_${constituency}_${demographic}_pop`;
+        const population = Q[populationKey];
+        if (
+          typeof population !== "number" ||
+          !Number.isFinite(population) ||
+          population < 0
+        )
+          cardTransferError(
+            populationKey + " must hold finite, non-negative population",
+          );
+        if (population === 0) continue;
+        for (const party of parties) {
+          const key = cardSupportKey(
+            "parlament",
+            party,
+            constituency,
+            demographic,
+          );
+          const support = Q[key];
+          if (
+            typeof support !== "number" ||
+            !Number.isFinite(support) ||
+            support < 0
+          )
+            cardTransferError(key + " must hold finite, non-negative support");
+          const votes = (population * support) / 100;
+          validVotes += votes;
+          if (CARD_INDEPENDENCE_PARTIES.has(party)) independenceVotes += votes;
+        }
+      }
+    }
+    if (!(validVotes > 0))
+      cardTransferError("national valid-vote pool has no support");
+    return (independenceVotes / validVotes) * 100;
+  }
+
+  // Collective role weights: adding a partner divides responsibility rather
+  // than increasing the size of the shock. Strongest formal role wins overlaps.
+  function getParlamentResponsibility(Q) {
+    const result = {};
+    for (const [key, weight] of [
+      ["cat_coalition", 1],
+      ["cat_coalition_support", 0.38],
+      ["cat_coalition_abstain", 0.16],
+    ]) {
+      const families = [
+        ...new Set(
+          (Array.isArray(Q[key]) ? Q[key] : []).flatMap(
+            (p) =>
+              coalitionFamilies(Q, p) || [
+                familyOf(p, Q.pdcat_split, Q.unio_split),
+              ],
+          ),
+        ),
+      ].filter(
+        (f) => FAMILIES.includes(f) && f !== "abs" && result[f] === undefined,
+      );
+      for (const family of families) result[family] = weight / families.length;
+    }
+    return result;
+  }
+
+  // Source-specific alternatives are initial gameplay weights, not fitted
+  // historical voter-transition estimates. Unavailable or responsible families
+  // are excluded before normalization; each route remains separately visible.
+  const PARLAMENT_ACCOUNTABILITY_ROUTES = {
+    icr: { abs: 0.42, il: 0.24, cup: 0.14, fl: 0.1, psc: 0.06, cs: 0.04 },
+    il: { abs: 0.35, cup: 0.27, icr: 0.22, fl: 0.14, psc: 0.02 },
+    cup: { abs: 0.4, il: 0.35, fl: 0.2, icr: 0.05 },
+    psc: { abs: 0.32, fl: 0.36, cs: 0.2, il: 0.08, ppc: 0.04 },
+    fl: { abs: 0.35, psc: 0.3, cup: 0.2, il: 0.15 },
+    ppc: { abs: 0.3, cs: 0.52, psc: 0.13, vox: 0.05 },
+    cs: { abs: 0.35, ppc: 0.4, psc: 0.2, vox: 0.05 },
+    vox: { abs: 0.4, ppc: 0.4, cs: 0.2 },
+    unio: { abs: 0.35, icr: 0.3, psc: 0.2, ppc: 0.15 },
+    pdcat: { abs: 0.35, icr: 0.35, il: 0.2, psc: 0.1 },
+    fnc: { abs: 0.45, icr: 0.25, cup: 0.2, ppc: 0.1 },
+  };
+
+  function buildParlamentResponsibilityTransfers(
+    Q,
+    context,
+    knownCarriers,
+    knownResponsibility,
+  ) {
+    const responsibility = knownResponsibility || getParlamentResponsibility(Q);
+    const carriers =
+      knownCarriers ||
+      parlamentFamilyCarriers(Q, context.province, context.demographic);
+    const responsibleCarriers = new Set(
+      Object.keys(responsibility)
+        .map((f) => carriers[f])
+        .filter(Boolean),
+    );
+    const signal =
+      (context.dWelfare || 0) -
+      0.4 * (context.dUnemployment || 0) -
+      0.2 * (context.dDissent || 0);
+    const magnitude = Math.abs(signal) * 0.045 * (context.scale ?? 1);
+    if (!magnitude) return [];
+    const transfers = [];
+    for (const [source, weight] of Object.entries(responsibility)) {
+      if (!carriers[source]) continue;
+      const routes = { ...PARLAMENT_ACCOUNTABILITY_ROUTES[source] };
+      if (
+        source === "il" &&
+        ["Àngel Ros", "Montserrat Tura"].includes(Q.psc_leader)
+      )
+        routes.psc = 0.12;
+      const available = Object.entries(routes).filter(
+        ([to]) => carriers[to] && !responsibleCarriers.has(carriers[to]),
+      );
+      const total = available.reduce((n, [, share]) => n + share, 0);
+      for (const [alternative, share] of available) {
+        transfers.push({
+          mechanism: "nonlinear.government_accountability",
+          from: signal < 0 ? source : alternative,
+          to: signal < 0 ? alternative : source,
+          amount: (magnitude * weight * share) / total,
+        });
+      }
+    }
+    return transfers;
+  }
+
   function cardSupportTransfer(Q, options) {
     if (!Q || typeof Q !== "object") cardTransferError("Q must be an object");
     if (!options || typeof options !== "object")
@@ -2141,6 +2917,7 @@
     // Validate and calculate every cell before mutating any of them. A typo in
     // one selector or a corrupt support value must never leave a partial effect.
     const transfers = [];
+    let nationalIndependenceShare;
     for (const constituency of constituencies) {
       for (const demographic of demographics) {
         const lineup = cardCellParties(Q, contest, constituency);
@@ -2203,13 +2980,23 @@
           CARD_INDEPENDENCE_PARTIES.has(to) &&
           !CARD_INDEPENDENCE_PARTIES.has(from)
         ) {
-          const independenceShare = cardIndependenceShare(
-            Q,
-            contest,
-            constituency,
-            demographic,
-            lineup,
-          );
+          // One pre-transfer national snapshot applies even to a locally
+          // targeted card. Strongholds face no additional local saturation.
+          if (
+            contest === "parlament" &&
+            nationalIndependenceShare === undefined
+          )
+            nationalIndependenceShare = cardNationalIndependenceShare(Q);
+          const independenceShare =
+            contest === "parlament"
+              ? nationalIndependenceShare
+              : cardIndependenceShare(
+                  Q,
+                  contest,
+                  constituency,
+                  demographic,
+                  lineup,
+                );
           const pressure = Math.max(0, independenceShare - 35) / 15;
           effectiveRequest *= 1 / (1 + pressure * pressure);
         }
@@ -2569,12 +3356,137 @@
     }
   }
 
-  // Exported through source/lib/index.js. NOT installed on `window`: content
-  // reaches this through the engine (`G.engineTick(Q)`), so the simulation no
-  // longer depends on a browser, and therefore no longer depends on a UI.
-  // Adding a new G.* helper = add one line to this `api` object; index.js
-  // forwards the whole thing, so it needs no edit.
+  // A finite susceptible fraction of mainstream voters can switch under
+  // prolonged disappointment. These are authored capacities, not vote targets.
+  function advanceParlamentDisappointment(Q) {
+    if (!Q.parlament_disappointment)
+      Q.parlament_disappointment = { version: 1, frustration: 0, cells: {} };
+    const state = Q.parlament_disappointment;
+    const movement = clamp(((Q.independence_movement ?? 45) - 45) / 40, 0, 1);
+    const distrust = clamp((40 - (Q.independence_trust ?? 40)) / 25, 0, 1);
+    const pressure = movement * distrust;
+    const rate = pressure > state.frustration ? 0.08 : 0.12;
+    state.frustration += (pressure - state.frustration) * rate;
+    state.pressure = pressure;
+  }
+
+  function buildParlamentDisappointmentTransfers(Q, context) {
+    const state = Q.parlament_disappointment;
+    if (!state) return [];
+    const key = context.province + "." + context.demographic;
+    const carriers = context.carriers;
+    if (!state.cells[key]) {
+      const cells = {};
+      for (const family of ["icr", "il"]) {
+        const carrier = carriers[family];
+        // A joint list's support is counted once, split between its sources.
+        const owners = ["icr", "il"].filter(
+          (f) => carriers[f] === carrier,
+        ).length;
+        cells[family] = {
+          remaining: carrier
+            ? (Math.max(0, context.support[carrier] || 0) * 0.12) / owners
+            : 0,
+        };
+      }
+      state.cells[key] = cells;
+    }
+    const requests = [];
+    const scale = clamp(context.scale ?? 1, 0, 2);
+    for (const family of ["icr", "il"]) {
+      const stock = state.cells[key][family];
+      const source = carriers[family];
+      if (!source) continue;
+      const request = (to, rate, mechanism) => {
+        if (!carriers[to] || carriers[to] === source || rate <= 0) return;
+        requests.push({
+          from: family,
+          to,
+          mechanism,
+          amount: stock.remaining * rate * scale,
+          onSettled: (realized) => {
+            stock.remaining = Math.max(0, stock.remaining - realized);
+          },
+        });
+      };
+      // CUP also responds to current low trust, but its event response remains
+      // the faster channel. FNC needs both accumulated and current frustration.
+      request(
+        "cup",
+        0.02 * state.pressure,
+        "nonlinear.cup_sustained_disappointment",
+      );
+      if (
+        family === "icr" &&
+        Q.fnc_formed === true &&
+        Q.pxc_dissolved === true
+      ) {
+        request(
+          "fnc",
+          0.08 * state.frustration * state.frustration * state.pressure,
+          "nonlinear.fnc_accumulated_disappointment",
+        );
+      }
+    }
+    return requests;
+  }
+
+  function buildParlamentCorruptionTransfers(Q, context) {
+    const count = Math.max(0, Number(Q.corruption_events_ciu) || 0);
+    if (!count || !Number.isFinite(count)) return [];
+    const identities = { ciu: 1, cdc: .8, dl: .6, pdcat: .4, junts: .2 };
+    const carriers = context.carriers;
+    const responsibility = context.responsibility || getParlamentResponsibility(Q);
+    const requests = [];
+    // Actual ballot membership matters; stale flags on an inactive list do not.
+    const ercSharesList = ["jxsi", "jxcat"].some(list =>
+      carriers.il === list && Q["erc_in_" + list] === true);
+    const addSource = (family, identity) => {
+      const carrier = carriers[family];
+      const support = Math.max(0, Number(context.support[carrier]) || 0);
+      if (!carrier || !support) return;
+      const coalition = carrier === "jxsi" || carrier === "jxcat";
+      const members = coalition ? 1 + Number(!!Q["erc_in_" + carrier]) + Number(!!Q["cup_in_" + carrier]) : 1;
+      // Coalition dilution approximates legacy exposure; merged support does
+      // not retain individual CDC/ ERC affinities. Count is never reset here.
+      const exposure = (identities[identity] ?? identities.cdc) * (coalition ? .65 / members : 1);
+      const destinations = Object.entries({ cup: .4, il: .25, fl: .15, abs: .2 })
+        .filter(([to]) => carriers[to] && carriers[to] !== carrier && !(to === "il" && ercSharesList))
+        .map(([to, weight]) => [to, weight * (responsibility[to] ? .25 : 1)]);
+      const total = destinations.reduce((sum, [, weight]) => sum + weight, 0);
+      // Further scandals saturate smoothly. Shrinking donor support reduces
+      // later losses, without a hard electoral floor or a new gameplay variable.
+      const loss = support * .006 * (count / (1 + count)) * exposure;
+      for (const [to, weight] of destinations) requests.push({
+        mechanism: "nonlinear.identity_corruption", from: family, to,
+        amount: loss * weight / total,
+      });
+    };
+    const carrier = carriers.icr;
+    const identity = Object.prototype.hasOwnProperty.call(identities, carrier) ? carrier : Q.parlament_current_ciu;
+    addSource("icr", identity);
+    if (Q.pdcat_split && carriers.pdcat && carriers.pdcat !== carrier) addSource("pdcat", "pdcat");
+    return requests;
+  }
+
+  // source/lib/index.js forwards these helpers to the engine's G object.
   var api = {
+    buildParlamentCorruptionTransfers,
+    advanceParlamentDisappointment,
+    buildParlamentDisappointmentTransfers,
+    buildParlamentCompetitionTransfers:
+      parlamentCompetition.buildParlamentCompetitionTransfers,
+    getFederalLeftLeadershipProfile:
+      parlamentCompetition.getFederalLeftLeadershipProfile,
+    buildParlamentParticipationTransfers:
+      parlamentParticipation.buildParlamentParticipationTransfers,
+    resetParlamentParticipation:
+      parlamentParticipation.resetParlamentParticipation,
+    resetParlamentSignalBaseline: resetParlamentSignalBaseline,
+    applyParlamentTransfers: applyParlamentTransfers,
+    getParlamentResponsibility: getParlamentResponsibility,
+    buildParlamentResponsibilityTransfers:
+      buildParlamentResponsibilityTransfers,
     engineTick: monthPasses,
     cardSupportTransfer: cardSupportTransfer,
     spaSupportInject: spaSupportInject,

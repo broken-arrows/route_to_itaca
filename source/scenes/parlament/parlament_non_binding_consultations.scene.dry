@@ -5,48 +5,22 @@ on-arrival: {!
     if (Q.coming_from_parlament) {
         Q.party_resources -= 1;
     } else if (Q.player_party == "erc") {
-        // TODO: How do we trigger this to happen without player intervention?
-        Q.erc_parlament_barcelona_middle_support -= 1.5;
-        Q.erc_parlament_girona_middle_support -= 2.5;
-        Q.erc_parlament_lleida_middle_support -= 2.5;
-        Q.erc_parlament_tarragona_middle_support -= 0.5;
-        Q.erc_parlament_barcelona_rural_support -= 2;
-        Q.erc_parlament_girona_rural_support -= 3;
-        Q.erc_parlament_lleida_rural_support -= 3;
-        Q.erc_parlament_tarragona_rural_support -= 4;
-        function from_erc_to_ciu(ciu_name) {
-            Q[ciu_name + '_parlament_barcelona_middle_support'] += 1;
-            Q[ciu_name + '_parlament_girona_middle_support'] += 2;
-            Q[ciu_name + '_parlament_lleida_middle_support'] += 2;
-            Q[ciu_name + '_parlament_tarragona_middle_support'] += 0.5;
-            Q[ciu_name + '_parlament_barcelona_rural_support'] += 0.5;
-            Q[ciu_name + '_parlament_girona_rural_support'] += 1;
-            Q[ciu_name + '_parlament_lleida_rural_support'] += 1;
-            Q[ciu_name + '_parlament_tarragona_rural_support'] += 2;
+        const profiles = {
+            barcelona: { middle: [1.5, 1, 0.25], rural: [2, 0.5, 1] },
+            girona: { middle: [2.5, 2, 0.25], rural: [3, 1, 1] },
+            lleida: { middle: [2.5, 2, 0.25], rural: [3, 1, 1] },
+            tarragona: { middle: [0.5, 0.5, 0.25], rural: [4, 2, 1] }
+        };
+        for (const c of Q.parlament_constituencies) {
+            for (const d of ["middle", "rural"]) {
+                const [budget, ciuWeight, cupWeight] = profiles[c][d];
+                const total = ciuWeight + cupWeight;
+                G.applyParlamentTransfers(Q, c, d, {}, [
+                    { mechanism: "event.consultation_launch", from: "il", to: "icr", amount: budget * ciuWeight / total },
+                    { mechanism: "event.consultation_launch", from: "il", to: "cup", amount: budget * cupWeight / total }
+                ]);
+            }
         }
-
-        if (Q.ciu_parlament_s > 0) {
-            from_erc_to_ciu('ciu');
-        } else if (Q.cdc_parlament_s > 0) {
-            from_erc_to_ciu('cdc');
-        } else if (Q.jxcat_parlament_s > 0) {
-            from_erc_to_ciu('jxcat');
-        } else if (Q.junts_parlament_s > 0) {
-            from_erc_to_ciu('junts');
-        } else if (Q.dl_parlament_s > 0) {
-            from_erc_to_ciu('dl');
-        } else if (Q.pdcat_parlament_s > 0) {
-            from_erc_to_ciu('pdcat');
-        }
-
-        Q.cup_parlament_barcelona_middle_support += 0.25;
-        Q.cup_parlament_barcelona_rural_support += 1;
-        Q.cup_parlament_girona_middle_support += 0.25;
-        Q.cup_parlament_girona_rural_support += 1;
-        Q.cup_parlament_lleida_middle_support += 0.25;
-        Q.cup_parlament_lleida_rural_support += 1;
-        Q.cup_parlament_tarragona_middle_support += 0.25;
-        Q.cup_parlament_tarragona_rural_support += 1;
     }
 !}
 unavailable-subtitle: [? if parlament_non_binding_consultations : Already approved! ?][? if (not parlament_non_binding_consultations) and (roadmap == 3) : Our roadmap to independence is about unilateralism, this is too chill of a path for the party. ?][? if (not parlament_non_binding_consultations) and (not parlament_sovereignty_declaration) : A parlamentary Declaration of Sovereignty is required first. ?][? if not (speaker_party == "ciu" or speaker_party == "cdc" or speaker_party == "junts" or speaker_party == "erc" or speaker_party == "cup" or speaker_party == "dl" or speaker_party == "jxsi" or speaker_party == "pdcat" or speaker_party == "jxcat" or speaker_party == "icv" or speaker_party == "csqp" or speaker_party == "cecp"): Speaker of the House [+ speaker +] ([+ speaker_party +]) will not allow debating this. ?][? if (speaker_party == "ciu" or speaker_party == "cdc" or speaker_party == "icv" or speaker_party == "csqp" or speaker_party == "cecp") and not congreso_decidir_trigger: Speaker of the House [+ speaker +] ([+ speaker_party +]) want to wait for the Congreso to vote on Catalonia's "Right to Decide" before passing our own laws. ?][? if (not parlament_non_binding_consultations) and (party_resources < 1) : Not enough resources. ?]

@@ -996,6 +996,8 @@ on-arrival: {!
     Q.cup_parlament_tarragona_young_support = 5.91;
     Q.cs_parlament_tarragona_young_support = 8.38;
     Q.si_parlament_tarragona_young_support = 1.97;
+    G.resetParlamentSignalBaseline(Q);
+    G.resetParlamentParticipation(Q);
 !}
 go-to: election_algorithm.cat_parlament
 set-jump: post_election_sim
@@ -1481,6 +1483,8 @@ on-arrival: {!
     Q.pxc_parlament_tarragona_young_support = 0.2;
     Q.ppc_parlament_tarragona_young_support = 5.49;
     Q.unio_parlament_tarragona_young_support = 0.89;
+    G.resetParlamentSignalBaseline(Q);
+    G.resetParlamentParticipation(Q);
 !}
 go-to: election_algorithm.cat_parlament
 set-jump: post_election_sim
@@ -2152,6 +2156,8 @@ on-arrival: {!
     Q.cs_parlament_tarragona_young_support = 20.18;
     Q.abstain_parlament_tarragona_young_support = 22.94;
     Q.ppc_parlament_tarragona_young_support = 2.75;
+    G.resetParlamentSignalBaseline(Q);
+    G.resetParlamentParticipation(Q);
 !}
 go-to: election_algorithm.cat_parlament
 set-jump: post_election_sim

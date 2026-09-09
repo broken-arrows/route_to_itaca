@@ -33,9 +33,8 @@ on-arrival: {!
     }
     Q.consultation_question = 1;
 
-    Q.ciu_relations -= 5;
-    Q.cdc_relations -= 2;
-    Q.dl_relations -= 2;
+    const activeCiu = Q.parlament_current_ciu;
+    Q[activeCiu + "_relations"] -= activeCiu === "ciu" ? 5 : 2;
     if (Q.player_party == "erc") {
         Q.cup_relations += 5;
         Q.erc_civic_dissent -= 10;
@@ -99,9 +98,7 @@ on-arrival: {!
         Q.cup_poblelliure_dissent += 10;
         Q.cup_thirdsector_dissent += 5;
         Q.erc_relations -= 7;
-        Q.ciu_relations += 5;
-        Q.cdc_relations += 5;
-        Q.dl_relations += 5;
+        Q[Q.parlament_current_ciu + "_relations"] += 5;
     } else if (Q.player_party == "erc") {
         Q.erc_left_dissent += 3;
         Q.erc_core_dissent += 5;
@@ -109,9 +106,7 @@ on-arrival: {!
         Q.erc_pragmatic_dissent -= 10;
         Q.erc_pragmatic_strength += 10;
         Q.cup_relations -= 10;
-        Q.ciu_relations += 5;
-        Q.cdc_relations += 5;
-        Q.dl_relations += 5;
+        Q[Q.parlament_current_ciu + "_relations"] += 5;
     }
 
     Q.independence_trust -= 10;

@@ -15,6 +15,41 @@ export interface AllegianceEntry {
 }
 
 export interface GameLib {
+  buildParlamentCorruptionTransfers(
+    Q: Record<string, unknown>,
+    context: { carriers: Record<string, string>; support: Record<string, number>; responsibility?: Record<string, number> },
+  ): Array<{ mechanism: string; from: string; to: string; amount: number }>;
+  advanceParlamentDisappointment(Q: Record<string, unknown>): void;
+  buildParlamentDisappointmentTransfers(
+    Q: Record<string, unknown>,
+    context: { province: string; demographic: string; carriers: Record<string, string>; support: Record<string, number>; scale?: number },
+  ): Array<{ mechanism: string; from: string; to: string; amount: number; onSettled: (realized: number) => void }>;
+  buildParlamentCompetitionTransfers(
+    Q: Record<string, unknown>,
+    context: { support?: Record<string, number>; scaleCatSpa?: number; dCatSpa?: number; activeFederalLeft?: string },
+  ): Array<{ mechanism: string; from: string; to: string; amount: number }>;
+  getFederalLeftLeadershipProfile(
+    Q: Record<string, unknown>, activeFederalLeft: string,
+  ): { channeling: number; conflict: number; retention: number };
+  buildParlamentParticipationTransfers(
+    Q: Record<string, unknown>,
+    context: { province: string; demographic: string; carriers: Record<string, string>; support: Record<string, number> },
+  ): Array<{ mechanism: string; from: string; to: string; amount: number; onSettled?: (realized: number) => void }>;
+  /** Clear participation and disappointment memory when replacing the electorate. */
+  resetParlamentParticipation(Q: Record<string, unknown>): void;
+  /** Initialize after replacing the electorate; old saves initialize on first tick. */
+  resetParlamentSignalBaseline(Q: Record<string, unknown>): void;
+  applyParlamentTransfers(
+    Q: Record<string, unknown>, province: string, demographic: string,
+    matrixDeltas: Record<string, number> | number[],
+    transfers: Array<{ mechanism: string; from: string; to: string; amount: number; onSettled?: (realized: number) => void }>,
+    traceWeight?: number,
+  ): Record<string, number>;
+  getParlamentResponsibility(Q: Record<string, unknown>): Record<string, number>;
+  buildParlamentResponsibilityTransfers(
+    Q: Record<string, unknown>,
+    context: { province: string; demographic: string; dWelfare: number; dUnemployment: number; dDissent: number; scale?: number },
+  ): Array<{ mechanism: string; from: string; to: string; amount: number }>;
   governmentTooltip(
     institution: 'generalitat' | 'gobierno' | 'ajuntament',
     parties: string[],

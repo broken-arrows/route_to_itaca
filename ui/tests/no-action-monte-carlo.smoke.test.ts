@@ -17,7 +17,8 @@ describe('no-action Monte Carlo runner', () => {
     expect(result.monthsAdvanced).toBeGreaterThanOrEqual(12);
     expect(result.targetElectionKeys).toEqual([`${result.final.year}-${result.final.month}`]);
     expect(result.historicalStructuralEvents).toContain('plebiscite_election');
-    expect(result.historicalStructuralEvents).toContain('jxsi_formation_offered');
+    // The authored event may form JxSi before the runner's fallback offer.
+    expect(result.structuralState.jxsiFormed || result.historicalStructuralEvents.includes('jxsi_formation_offered')).toBe(true);
     expect(Number.isFinite(result.seatDelta)).toBe(true);
     expect(Number.isFinite(result.final.validVoteShare.cs)).toBe(true);
     expect(result.baseline.families.abstention).toBeGreaterThan(0);

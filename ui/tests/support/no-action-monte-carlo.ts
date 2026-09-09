@@ -24,6 +24,8 @@ export interface ElectionSnapshot {
   familyValidVoteShare: Record<string, number>;
   totalSeats: number;
   totalValidVoteShare: number;
+  /** Raw fixture rounding is retained; conserved evolution preserves each cell. */
+  cellSupportTotals: Record<string, number>;
 }
 
 export interface NoActionRunResult {
@@ -48,6 +50,7 @@ export interface NoActionRunResult {
   };
   structuralValues: Record<string, number>;
   targetElectionKeys: string[];
+  voteTrace: Record<string, Record<string, number>>;
 }
 
 export interface NoActionCohort {
@@ -87,6 +90,7 @@ export interface NoActionAggregate {
   jxsiFlagRuns: number;
   structuralStateCounts: Record<string, number>;
   meanStructuralValues: Record<string, number>;
+  meanVoteTrace: Record<string, Record<string, number>>;
 }
 
 const PARTY_KEYS = [
@@ -189,7 +193,27 @@ function snapshot(q: Record<string, unknown>): ElectionSnapshot {
     familyValidVoteShare,
     totalSeats: Object.values(seats).reduce((sum, value) => sum + value, 0),
     totalValidVoteShare: Object.values(validVoteShare).reduce((sum, value) => sum + value, 0),
+    cellSupportTotals: Object.fromEntries((q.parlament_constituencies as string[]).flatMap((province) =>
+      (q.parlament_demographics as string[]).map((demo) => [`${province}.${demo}`,
+        [...PARTY_KEYS, 'abstain'].reduce((sum, party) => sum + numberQuality(q, `${party}_parlament_${province}_${demo}_support`), 0),
+      ]),
+    )),
   };
+}
+
+function readVoteTrace(q: Record<string, unknown>): Record<string, Record<string, number>> {
+  const trace = q.parlament_vote_trace as {
+    mechanisms?: Record<string, Record<string, unknown>>;
+  } | undefined;
+  const result: Record<string, Record<string, number>> = {};
+  for (const [mechanism, targets] of Object.entries(trace?.mechanisms ?? {})) {
+    result[mechanism] = Object.fromEntries(
+      Object.entries(targets)
+        .map(([target, value]) => [target, Number(value)] as const)
+        .filter(([, value]) => Number.isFinite(value)),
+    );
+  }
+  return result;
 }
 
 function choosable(frame: Frame): Array<{ index: number; id: string }> {
@@ -316,6 +340,8 @@ export function runNoActionSimulation(options: NoActionRunOptions): NoActionRunR
     q.next_election_month = 9;
     q.next_election_week = 1;
     q.next_election_time = 38;
+    q.parlament_vote_trace_enabled = true;
+    q.parlament_vote_trace = { ticks: 0, mechanisms: {} };
     const baseline = snapshot(q);
 
     const targetElectionKeys = new Set<string>();
@@ -417,6 +443,7 @@ export function runNoActionSimulation(options: NoActionRunOptions): NoActionRunR
             dlRelations: numberQuality(finalQ, 'dl_relations'),
           },
           targetElectionKeys: [...targetElectionKeys],
+          voteTrace: readVoteTrace(finalQ),
         };
       }
     }
@@ -478,6 +505,25 @@ export function aggregateNoActionRuns(results: NoActionRunResult[]): NoActionAgg
     (groups[key] ??= []).push(run);
     return groups;
   }, {});
+  const traceTargets = new Map<string, Set<string>>();
+  for (const run of results) {
+    for (const [mechanism, targets] of Object.entries(run.voteTrace)) {
+      if (!traceTargets.has(mechanism)) traceTargets.set(mechanism, new Set());
+      for (const target of Object.keys(targets)) traceTargets.get(mechanism)!.add(target);
+    }
+  }
+  const meanVoteTrace = Object.fromEntries(
+    [...traceTargets.entries()].map(([mechanism, targets]) => [
+      mechanism,
+      Object.fromEntries([...targets].map((target) => [
+        target,
+        results.reduce(
+          (sum, run) => sum + (run.voteTrace[mechanism]?.[target] ?? 0),
+          0,
+        ) / results.length,
+      ])),
+    ]),
+  );
   return {
     runs: results.length,
     retained: results.filter((run) => run.majorityRetained).length,
@@ -540,6 +586,7 @@ export function aggregateNoActionRuns(results: NoActionRunResult[]): NoActionAgg
       (run, key) => run.structuralValues[key] ?? 0,
       Object.keys(results[0].structuralValues),
     ),
+    meanVoteTrace,
   };
 }
 
@@ -609,6 +656,17 @@ export function formatNoActionAggregate(aggregate: NoActionAggregate): string {
         + `mainstream=${s.sovereignty_mainstream.toFixed(2)}s/${v.sovereignty_mainstream.toFixed(2)}%v/${e.sovereignty_mainstream.toFixed(2)}%e `
         + `CUP=${s.cup_outside_joint_lists.toFixed(2)}s/${v.cup_outside_joint_lists.toFixed(2)}%v/${e.cup_outside_joint_lists.toFixed(2)}%e`;
     });
+  const voteTraceLines = Object.entries(aggregate.meanVoteTrace)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([mechanism, targets]) => {
+      const entries = Object.entries(targets)
+        .filter(([, value]) => Math.abs(value) >= 0.0005)
+        .sort(([a], [b]) => a.localeCompare(b));
+      const net = entries.reduce((sum, [, value]) => sum + value, 0);
+      return `  ${mechanism}: ${entries.map(([target, value]) =>
+        `${target}=${value >= 0 ? '+' : ''}${value.toFixed(3)}`,
+      ).join(' ')} net=${net >= 0 ? '+' : ''}${net.toFixed(3)}`;
+    });
   return [
     `No-action Dendry Monte Carlo: ${aggregate.runs} runs`,
     `Majority retained: ${aggregate.retained}/${aggregate.runs} (${(aggregate.retentionRate * 100).toFixed(1)}%)`,
@@ -630,5 +688,7 @@ export function formatNoActionAggregate(aggregate: NoActionAggregate): string {
     `Mean party valid-vote-share deltas (pp): ${voteShareDelta}`,
     `Mean party/electorate support deltas (pp): ${support}`,
     `Mean family support deltas (pp): ${families}`,
+    'Vote-flow trace (cumulative population-weighted electorate pp, mean/run):',
+    ...voteTraceLines,
   ].join('\n');
 }

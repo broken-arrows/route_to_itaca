@@ -24,8 +24,8 @@ on-arrival: {!
         var erc_votes = 0;
         var ciu_votes = 0;
         for (var d of Q.parlament_demographics) {
-            erc_votes = Q["erc_parlament_" + c + "_" + d+ "_support"] * Q["parlament_" + c + "_" + d + "_pop"];
-            ciu_votes = Q[_activeCiu + "_parlament_" + c + "_" + d+ "_support"] * Q["parlament_" + c + "_" + d + "_pop"];
+            erc_votes += Q["erc_parlament_" + c + "_" + d+ "_support"] * Q["parlament_" + c + "_" + d + "_pop"];
+            ciu_votes += Q[_activeCiu + "_parlament_" + c + "_" + d+ "_support"] * Q["parlament_" + c + "_" + d + "_pop"];
         }
         if (erc_votes >= ciu_votes) {
             Q.jxsi_formation_erc_leverage += 1;
@@ -107,36 +107,24 @@ on-arrival: {!
     Q.independence_trust -= 15;
 
     const _activeCiu = Q.cdc_parlament_s > 0 ? "cdc" : Q.dl_parlament_s > 0 ? "dl" : "pdcat";
+    const fringe = Q.fnc_formed && Q.pxc_dissolved ? "fnc" : "abs";
+    const losses = {
+        buss: {budget: 5, routes: [["abs", 1.5], ["cup", 1.5], ["icr", 3]]},
+        ind: {budget: 1, routes: [["cup", 0.5], ["abs", 0.5]]},
+        young: {budget: 7.5, routes: [["abs", 2.5], ["cup", 3], ["icr", 2]]},
+        rural: {budget: 15, routes: [[fringe, 1.5], ["cup", 7], ["icr", 5.5]]},
+        retired: {budget: 10, routes: [[fringe, 1], ["icr", 5], ["abs", 2], ["cup", 2]]},
+        unemployed: {budget: 5, routes: [["abs", 1.5], ["cup", 1.5], ["icr", 2]]}
+    };
     for (const c of Q.parlament_constituencies) {
-        Q["erc_parlament_" + c + "_buss_support"] -= 5;
-        Q["abstain_parlament_" + c + "_buss_support"] += 1.5;
-        Q["cup_parlament_" + c + "_buss_support"] += 1.5;
-        Q[_activeCiu + "_parlament_" + c + "_buss_support"] += 3;
-        Q["erc_parlament_" + c + "_ind_support"] -= 1;
-        Q["cup_parlament_" + c + "_ind_support"] += 0.5;
-        Q["abstain_parlament_" + c + "_ind_support"] += 0.5;
-        Q["erc_parlament_" + c + "_young_support"] -= 7.5;
-        Q["abstain_parlament_" + c + "_young_support"] += 2.5;
-        Q["cup_parlament_" + c + "_young_support"] += 3;
-        Q[_activeCiu + "_parlament_" + c + "_young_support"] += 2;
-        Q["erc_parlament_" + c + "_rural_support"] -= 15;
-        if(Q["fnc_parlament_" + c + "_rural_support"] > 0) {
-            Q["fnc_parlament_" + c + "_rural_support"] += 1.5;
-            Q["fnc_parlament_" + c + "_retired_support"] += 1;
-        } else {
-            Q["abstain_parlament_" + c + "_rural_support"] += 1.5;
-            Q["fnc_parlament_" + c + "_retired_support"] += 1;
+        for (const d of Object.keys(losses)) {
+            const spec = losses[d];
+            const total = spec.routes.reduce((sum, route) => sum + route[1], 0);
+            G.applyParlamentTransfers(Q, c, d, {}, spec.routes.map(route => ({
+                mechanism: "event.jxsi_refusal", from: "il", to: route[0],
+                amount: spec.budget * route[1] / total
+            })));
         }
-        Q["cup_parlament_" + c + "_rural_support"] += 7;
-        Q[_activeCiu + "_parlament_" + c + "_rural_support"] += 5.5;
-        Q["erc_parlament_" + c + "_retired_support"] -= 10;
-        Q[_activeCiu + "_parlament_" + c + "_retired_support"] += 5;
-        Q["abstain_parlament_" + c + "_retired_support"] += 2;
-        Q["cup_parlament_" + c + "_retired_support"] += 2;
-        Q["erc_parlament_" + c + "_unemployed_support"] -= 5;
-        Q["abstain_parlament_" + c + "_unemployed_support"] += 1.5;
-        Q["cup_parlament_" + c + "_unemployed_support"] += 1.5;
-        Q[_activeCiu + "_parlament_" + c + "_unemployed_support"] += 2;
     }
 
     if(Q.icv_parlament_s > 0) {

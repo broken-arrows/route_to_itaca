@@ -69,6 +69,20 @@ on-arrival: {!
     Q.parlament_coalition_erc_critical = false;
     Q.parlament_coalition_cup_critical = false;
 
+    Q.cup_support_coalition_kind = "";
+    Q.cup_support_coalition_phase = 0;
+    Q.erc_cup_coalition_phase = 0;
+    Q.cup_broad_kind = "";
+    Q.cup_broad_coalition_phase = 0;
+    Q.parlament_coalition_cabinet_seats = 0;
+    Q.parlament_coalition_support_seats = 0;
+    Q.parlament_coalition_leader = "";
+    Q.parlament_coalition_follower = "";
+    Q.pdcat_external_support = false;
+    Q.parlament_current_ciu_roadmap = 0;
+    Q.parlament_coalition_pdcat_support_s = 0;
+    Q.parlament_coalition_pdcat_support_resolved = false;
+
     // set changing party names
     if (Q.ciu_parlament_s > 0) {
         Q.parlament_current_ciu = "ciu";

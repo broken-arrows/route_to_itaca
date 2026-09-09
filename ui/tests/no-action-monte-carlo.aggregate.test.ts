@@ -32,6 +32,7 @@ function fixture(): NoActionRunResult {
       dlRelations: 0,
     },
     targetElectionKeys: ['2015-9'],
+    voteTrace: {},
     baseline: {
       year: 2012,
       month: 11,
@@ -50,6 +51,7 @@ function fixture(): NoActionRunResult {
       familyValidVoteShare: {},
       totalSeats: 135,
       totalValidVoteShare: 100,
+      cellSupportTotals: {},
     },
     final: {
       year: 2015,
@@ -69,6 +71,7 @@ function fixture(): NoActionRunResult {
       familyValidVoteShare: {},
       totalSeats: 135,
       totalValidVoteShare: 100,
+      cellSupportTotals: {},
     },
   };
 }

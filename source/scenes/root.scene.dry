@@ -23,7 +23,7 @@ on-arrival: {!
 
   Q.url_valid = local_file || valid_url;
 
-  Q.debug = local_file; // Playing the game locally means debug becomes available. Change?
+  Q.debug = local_file; // Playing the game locally means debug becomes available. TBD: Change?
 
   // setup
   Q.year = 2012;
@@ -46,23 +46,10 @@ on-arrival: {!
   Q.president_party = "ciu";
   Q.president_gender = "m";
   Q.cat_coalition = ["ciu"];
-  Q.cat_coalition_support = [];
+  Q.cat_coalition_support = ["ppc"];
   Q.cat_coalition_abstain = [];
   Q.cat_coalition_dissent = 0;
   Q.parlament_repeat_election = false;
-  Q.cup_support_coalition_kind = "";
-  Q.cup_support_coalition_phase = 0;
-  Q.erc_cup_coalition_phase = 0;
-  Q.cup_broad_kind = "";
-  Q.cup_broad_coalition_phase = 0;
-  Q.parlament_coalition_cabinet_seats = 0;
-  Q.parlament_coalition_support_seats = 0;
-  Q.parlament_coalition_leader = "";
-  Q.parlament_coalition_follower = "";
-  Q.pdcat_external_support = false;
-  Q.parlament_current_ciu_roadmap = 0;
-  Q.parlament_coalition_pdcat_support_s = 0;
-  Q.parlament_coalition_pdcat_support_resolved = false;
 
   Q.speaker = "Núria de Gispert";
   Q.speaker_party = "ciu";
@@ -115,6 +102,8 @@ on-arrival: {!
 
   Q.independence_trust = 28;
   Q.independence_movement = 65;
+  G.resetParlamentSignalBaseline(Q);
+  G.resetParlamentParticipation(Q);
   Q.social_dissent = 72;
   Q.welfare_index = 72;
   Q.cat_spa_relations = 38;
