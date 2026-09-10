@@ -9,6 +9,8 @@ export interface NoActionRunOptions {
   seed: number;
   difficulty: Difficulty;
   quiet?: boolean;
+  localBarcelonaSupportOverrides?: Record<string, number>;
+  localBarcelonaSensitivityOverrides?: Record<string, number[]>;
 }
 
 export interface ElectionSnapshot {
@@ -26,6 +28,23 @@ export interface ElectionSnapshot {
   totalValidVoteShare: number;
   /** Raw fixture rounding is retained; conserved evolution preserves each cell. */
   cellSupportTotals: Record<string, number>;
+}
+
+export interface LocalElectionSnapshot {
+  year: number;
+  month: number;
+  currentCiu: string;
+  currentIcv: string;
+  barcelonaSeats: Record<string, number>;
+  barcelonaValidVoteShare: Record<string, number>;
+  barcelonaSupport: Record<string, number>;
+  totalBarcelonaSeats: number;
+  redBeltScores: Record<string, number>;
+  redBeltHoldings: Record<string, number>;
+  redBeltWinners: Record<string, string>;
+  drivers: Record<string, number>;
+  ballotParties: string[];
+  unregisteredSupport: Record<string, number>;
 }
 
 export interface NoActionRunResult {
@@ -96,6 +115,24 @@ export interface NoActionAggregate {
 const PARTY_KEYS = [
   'ciu', 'erc', 'cup', 'si', 'cdc', 'unio', 'dl', 'jxsi', 'jxcat', 'junts',
   'pdcat', 'psc', 'icv', 'csqp', 'cecp', 'ecp', 'cs', 'ppc', 'vox', 'fnc', 'pxc',
+] as const;
+
+const BCN_PARTY_KEYS = [
+  'bcomu', 'cup', 'psc', 'erc', 'ciu', 'cdc', 'dl', 'pdcat', 'jxcat', 'junts', 'jxsi',
+  'primaries', 'cs', 'pp', 'icv',
+] as const;
+
+const RED_BELT_PARTY_KEYS = [
+  'psc', 'cs', 'erc', 'cup', 'comuns', 'pp', 'ciu', 'cdc', 'dl', 'jxcat',
+  'jxsi', 'pdcat', 'junts',
+] as const;
+
+const RED_BELT_LOCATIONS = [
+  'lhospitalet-de-llobregat', 'sant-boi-de-llobregat', 'el-prat-de-llobregat',
+  'viladecans', 'esplugues-de-llobregat', 'ripollet', 'sant-adria-de-besos',
+  'terrassa', 'sabadell', 'cornella-de-llobregat', 'rubi', 'granollers',
+  'mollet-del-valles', 'mataro', 'badalona', 'santacolomadegramenet', 'balaguer',
+  'sant-vicenc-dels-horts', 'martorell', 'vilafranca-del-penedes',
 ] as const;
 
 const BROAD_SOVEREIGNTY = [
@@ -201,6 +238,41 @@ function snapshot(q: Record<string, unknown>): ElectionSnapshot {
   };
 }
 
+function localSnapshot(q: Record<string, unknown>): LocalElectionSnapshot {
+  const values = (suffix: string, parties: readonly string[]) => Object.fromEntries(
+    parties.map((party) => [party, numberQuality(q, `${party}${suffix}`)]),
+  );
+  const barcelonaSeats = values('_local_barcelona_s', BCN_PARTY_KEYS);
+  const ballotParties = [...(q.parties_bcn as string[])];
+  const potentiallyUnregistered = ['pdcat', 'unio', 'fnc', 'pxc', 'vox'];
+  return {
+    year: numberQuality(q, 'year'),
+    month: numberQuality(q, 'month'),
+    currentCiu: String(q.parlament_current_ciu || 'ciu'),
+    currentIcv: String(q.parlament_current_icv || 'icv'),
+    barcelonaSeats,
+    barcelonaValidVoteShare: values('_local_barcelona_pv', BCN_PARTY_KEYS),
+    barcelonaSupport: values('_local_barcelona_support', BCN_PARTY_KEYS),
+    totalBarcelonaSeats: Object.values(barcelonaSeats).reduce((sum, seats) => sum + seats, 0),
+    redBeltScores: Object.fromEntries(['cs', 'erc', 'comuns', 'cup'].map((party) =>
+      [party, numberQuality(q, `${party}_local_redbelt`)])),
+    redBeltHoldings: values('_local_rb_holdings', RED_BELT_PARTY_KEYS),
+    redBeltWinners: Object.fromEntries(RED_BELT_LOCATIONS.map((location) =>
+      [location, String(q[`local_${location}_wp`] ?? '')])),
+    drivers: Object.fromEntries([
+      'independence_movement', 'independence_trust', 'social_dissent',
+      'welfare_index', 'cat_spa_relations', 'podemos_channeling',
+      'cs_redbelt_mod', 'erc_redbelt_mod', 'comuns_redbelt_mod', 'cup_redbelt_mod',
+      'psc_redbelt_mod',
+    ].map((key) => [key, numberQuality(q, key)])),
+    ballotParties,
+    unregisteredSupport: Object.fromEntries(
+      potentiallyUnregistered.filter((party) => !ballotParties.includes(party)).map((party) =>
+        [party, numberQuality(q, `${party}_local_barcelona_support`)]),
+    ),
+  };
+}
+
 function readVoteTrace(q: Record<string, unknown>): Record<string, Record<string, number>> {
   const trace = q.parlament_vote_trace as {
     mechanisms?: Record<string, Record<string, unknown>>;
@@ -232,6 +304,8 @@ function drainMandatoryFlow(
   frame: Frame,
   random: () => number,
   targetElectionKeys: Set<string>,
+  stopAtParlament = true,
+  enforceNoTimeAdvance = true,
 ): { frame: Frame; forcedChoices: number; reachedTarget: boolean } {
   let current = frame;
   let forcedChoices = 0;
@@ -242,7 +316,7 @@ function drainMandatoryFlow(
     // Its schedule assignment is therefore the reliable completion marker.
     const completedParlamentElection = Number(q.year) > 2012
       && Number(q.next_election_year) === Number(q.year) + 4;
-    if (completedParlamentElection) {
+    if (completedParlamentElection && stopAtParlament) {
       const key = `${q.year}-${q.month}`;
       if (targetElectionKeys.has(key)) {
         throw new Error(`Parlament election entry replayed at ${key}`);
@@ -268,7 +342,7 @@ function drainMandatoryFlow(
     const timeBefore = numberQuality(adapter.qualities, 'time');
     current = adapter.choose(selected.index);
     const timeAfter = numberQuality(adapter.qualities, 'time');
-    if (timeAfter !== timeBefore) {
+    if (enforceNoTimeAdvance && timeAfter !== timeBefore) {
       throw new Error(
         `Mandatory choice ${selected.id} advanced time at ${current.sceneId}; ` +
         `only debug_card.pass_time may advance this control run ` +
@@ -278,6 +352,258 @@ function drainMandatoryFlow(
     }
   }
   throw new Error(`Mandatory flow exceeded its 300-scene guard at ${current.sceneId}`);
+}
+
+export interface LocalNoActionRunResult {
+  seed: number;
+  difficulty: Difficulty;
+  monthsAdvanced: number;
+  forcedEventChoices: number;
+  historicalStructuralEvents: string[];
+  result: LocalElectionSnapshot;
+}
+
+export interface LocalNoActionAggregate {
+  runs: number;
+  meanBarcelonaSeats: Record<string, number>;
+  meanBarcelonaValidVoteShare: Record<string, number>;
+  meanBarcelonaSupport: Record<string, number>;
+  barcelonaSeatHistograms: Record<string, Record<string, number>>;
+  cupNoSeatRuns: number;
+  cupBelowThresholdRuns: number;
+  meanRedBeltScores: Record<string, number>;
+  meanRedBeltHoldings: Record<string, number>;
+  meanRedBeltTownsWon: Record<string, number>;
+  redBeltWinnerCounts: Record<string, Record<string, number>>;
+  csTownWinHistogram: Record<string, number>;
+  meanDrivers: Record<string, number>;
+  cupVoteCorrelations: Record<string, number>;
+  csTownCorrelations: Record<string, number>;
+  unregisteredSupportRuns: Record<string, number>;
+  meanUnregisteredSupport: Record<string, number>;
+}
+
+/** Follow the same seeded no-action policy as the Parlament control, but do not
+ * stop on an early Parlament election: the target is always the May 2015 local
+ * election. This prevents the 2014-election cohort from disappearing. */
+export function runNoActionLocalSimulation(options: NoActionRunOptions): LocalNoActionRunResult {
+  const originalRandom = Math.random;
+  const originalLog = console.log;
+  const originalInfo = console.info;
+  const controlRandom = seededRandom(options.seed ^ 0xa5a5a5a5);
+  Math.random = seededRandom(options.seed);
+  if (options.quiet !== false) {
+    console.log = () => {};
+    console.info = () => {};
+  }
+  const restoreErrors = installSceneErrorTrap();
+
+  try {
+    const adapter = DendryAdapter.fromJSONText(readFileSync(options.gamePath, 'utf8'));
+    adapter.beginGame([
+      options.seed >>> 0,
+      (options.seed ^ 0x9e3779b9) >>> 0,
+      (options.seed ^ 0x243f6a88) >>> 0,
+      (options.seed ^ 0xb7e15162) >>> 0,
+    ]);
+    adapter.goToScene('root.start');
+    adapter.goToScene(START_SCENES[options.difficulty]);
+    adapter.goToScene('root.esquerra');
+    let frame = adapter.goToScene('root.esquerra_2');
+    for (let guard = 0; frame.effectiveRole !== 'desk' && guard < 20; guard++) {
+      const choices = choosable(frame);
+      if (choices.length === 0) throw new Error(`Introduction dead-ended at ${frame.sceneId}`);
+      frame = adapter.choose(choices[0].index);
+    }
+    if (frame.effectiveRole !== 'desk') throw new Error('Introduction did not reach the desk');
+
+    frame = adapter.goToScene('election_simulation.2012_11');
+    const q = adapter.qualities;
+    q.year = 2012;
+    q.month = 11;
+    q.week = 1;
+    q.time = 4;
+    q.month_actions = 0;
+    q.month_actions_last = 0;
+    q.next_election_year = 2015;
+    q.next_election_month = 9;
+    q.next_election_week = 1;
+    q.next_election_time = 38;
+    for (const [party, support] of Object.entries(options.localBarcelonaSupportOverrides ?? {})) {
+      q[`${party}_local_barcelona_support`] = support;
+    }
+    const localMatrices = q.LOCAL_BCN_MATRICES as {
+      BCN_SENSITIVITY?: Record<string, number[]>;
+    } | undefined;
+    for (const [party, sensitivity] of Object.entries(
+      options.localBarcelonaSensitivityOverrides ?? {},
+    )) {
+      if (!localMatrices?.BCN_SENSITIVITY?.[party]) {
+        throw new Error(`Missing Barcelona sensitivity vector for ${party}`);
+      }
+      localMatrices.BCN_SENSITIVITY[party] = [...sensitivity];
+    }
+
+    const historicalStructuralEvents: string[] = [];
+    const ignoredParlamentKeys = new Set<string>();
+    let forcedEventChoices = 0;
+    for (let monthsAdvanced = 0; monthsAdvanced < 40; monthsAdvanced++) {
+      const currentQ = adapter.qualities;
+      if (Number(currentQ.year) === 2015 && Number(currentQ.month) === 1
+          && !historicalStructuralEvents.includes('plebiscite_election')) {
+        const currentCiu = String(currentQ.parlament_current_ciu || 'ciu');
+        const roadmapKey = `${currentCiu}_roadmap`;
+        if (!Number.isFinite(Number(currentQ[roadmapKey])) || Number(currentQ[roadmapKey]) === 0) {
+          currentQ[roadmapKey] = 1;
+        }
+        frame = adapter.goToScene('plebiscite_election');
+        historicalStructuralEvents.push('plebiscite_election');
+        const structural = drainMandatoryFlow(
+          adapter, frame, controlRandom, ignoredParlamentKeys, false, false,
+        );
+        forcedEventChoices += structural.forcedChoices;
+        frame = structural.frame;
+      }
+
+      frame = adapter.goToScene('debug_card.pass_time');
+      const drained = drainMandatoryFlow(
+        adapter, frame, controlRandom, ignoredParlamentKeys, false, false,
+      );
+      forcedEventChoices += drained.forcedChoices;
+      frame = drained.frame;
+      const afterDrainQ = adapter.qualities;
+      if (Number(afterDrainQ.year) === 2015
+          && Number(afterDrainQ.next_local_election_year) === 2019) {
+        return {
+          seed: options.seed,
+          difficulty: options.difficulty,
+          monthsAdvanced: monthsAdvanced + 1,
+          forcedEventChoices,
+          historicalStructuralEvents,
+          result: localSnapshot(afterDrainQ),
+        };
+      }
+    }
+    throw new Error(`May 2015 local election was not reached; ended at ${frame.sceneId}`);
+  } finally {
+    restoreErrors();
+    Math.random = originalRandom;
+    console.log = originalLog;
+    console.info = originalInfo;
+  }
+}
+
+function correlation(xs: number[], ys: number[]): number {
+  const meanX = xs.reduce((sum, value) => sum + value, 0) / xs.length;
+  const meanY = ys.reduce((sum, value) => sum + value, 0) / ys.length;
+  let covariance = 0;
+  let varianceX = 0;
+  let varianceY = 0;
+  for (let index = 0; index < xs.length; index++) {
+    const dx = xs[index] - meanX;
+    const dy = ys[index] - meanY;
+    covariance += dx * dy;
+    varianceX += dx * dx;
+    varianceY += dy * dy;
+  }
+  return varianceX > 0 && varianceY > 0
+    ? covariance / Math.sqrt(varianceX * varianceY)
+    : 0;
+}
+
+export function aggregateNoActionLocalRuns(results: LocalNoActionRunResult[]): LocalNoActionAggregate {
+  if (results.length === 0) throw new Error('Cannot aggregate zero local-election runs');
+  const mean = (selector: (run: LocalNoActionRunResult, key: string) => number, keys: readonly string[]) =>
+    Object.fromEntries(keys.map((key) => [key,
+      results.reduce((sum, run) => sum + selector(run, key), 0) / results.length,
+    ]));
+  const histogram = (values: number[]) => values.reduce<Record<string, number>>((counts, value) => {
+    const key = String(value);
+    counts[key] = (counts[key] ?? 0) + 1;
+    return counts;
+  }, {});
+  const redBeltWinnerCounts = Object.fromEntries(RED_BELT_LOCATIONS.map((location) => {
+    const counts: Record<string, number> = {};
+    for (const run of results) {
+      const winner = run.result.redBeltWinners[location];
+      counts[winner] = (counts[winner] ?? 0) + 1;
+    }
+    return [location, counts];
+  }));
+  const townsWon = (run: LocalNoActionRunResult, party: string) =>
+    Object.values(run.result.redBeltWinners).filter((winner) => winner === party).length;
+  const correlationInputs = [
+    ...Object.keys(results[0].result.drivers),
+    ...BCN_PARTY_KEYS.map((party) => `support.${party}`),
+    ...['cs', 'erc', 'comuns', 'cup'].map((party) => `score.${party}`),
+  ];
+  const inputValue = (run: LocalNoActionRunResult, key: string) => {
+    const [kind, name] = key.split('.');
+    if (kind === 'support') return run.result.barcelonaSupport[name] ?? 0;
+    if (kind === 'score') return run.result.redBeltScores[name] ?? 0;
+    return run.result.drivers[key] ?? 0;
+  };
+  const cupVotes = results.map((run) => run.result.barcelonaValidVoteShare.cup ?? 0);
+  const csTowns = results.map((run) => townsWon(run, 'cs'));
+  return {
+    runs: results.length,
+    meanBarcelonaSeats: mean((run, key) => run.result.barcelonaSeats[key] ?? 0, BCN_PARTY_KEYS),
+    meanBarcelonaValidVoteShare: mean((run, key) => run.result.barcelonaValidVoteShare[key] ?? 0, BCN_PARTY_KEYS),
+    meanBarcelonaSupport: mean((run, key) => run.result.barcelonaSupport[key] ?? 0, BCN_PARTY_KEYS),
+    barcelonaSeatHistograms: Object.fromEntries(BCN_PARTY_KEYS.map((party) => [party,
+      histogram(results.map((run) => run.result.barcelonaSeats[party] ?? 0)),
+    ])),
+    cupNoSeatRuns: results.filter((run) => (run.result.barcelonaSeats.cup ?? 0) === 0).length,
+    cupBelowThresholdRuns: results.filter((run) => (run.result.barcelonaValidVoteShare.cup ?? 0) < 5).length,
+    meanRedBeltScores: mean((run, key) => run.result.redBeltScores[key] ?? 0, ['cs', 'erc', 'comuns', 'cup']),
+    meanRedBeltHoldings: mean((run, key) => run.result.redBeltHoldings[key] ?? 0, RED_BELT_PARTY_KEYS),
+    meanRedBeltTownsWon: mean(townsWon, RED_BELT_PARTY_KEYS),
+    redBeltWinnerCounts,
+    csTownWinHistogram: histogram(csTowns),
+    meanDrivers: mean((run, key) => run.result.drivers[key] ?? 0, Object.keys(results[0].result.drivers)),
+    cupVoteCorrelations: Object.fromEntries(correlationInputs.map((key) => [key,
+      correlation(results.map((run) => inputValue(run, key)), cupVotes),
+    ])),
+    csTownCorrelations: Object.fromEntries(correlationInputs.map((key) => [key,
+      correlation(results.map((run) => inputValue(run, key)), csTowns),
+    ])),
+    unregisteredSupportRuns: Object.fromEntries(
+      Object.keys(results[0].result.unregisteredSupport).map((party) => [party,
+        results.filter((run) => (run.result.unregisteredSupport[party] ?? 0) > 0).length,
+      ]),
+    ),
+    meanUnregisteredSupport: mean(
+      (run, key) => run.result.unregisteredSupport[key] ?? 0,
+      Object.keys(results[0].result.unregisteredSupport),
+    ),
+  };
+}
+
+export function formatNoActionLocalAggregate(aggregate: LocalNoActionAggregate): string {
+  const parties = BCN_PARTY_KEYS.filter((party) =>
+    Math.abs(aggregate.meanBarcelonaValidVoteShare[party] ?? 0) >= 0.005);
+  const strongest = (values: Record<string, number>) => Object.entries(values)
+    .sort(([, a], [, b]) => Math.abs(b) - Math.abs(a))
+    .slice(0, 8)
+    .map(([key, value]) => `${key}=${value.toFixed(3)}`)
+    .join(' ');
+  return [
+    `No-action 2015 local-election Monte Carlo: ${aggregate.runs} runs`,
+    `Barcelona mean seats: ${parties.map((party) => `${party}=${aggregate.meanBarcelonaSeats[party].toFixed(2)}`).join(' ')}`,
+    `Barcelona mean vote shares (%): ${parties.map((party) => `${party}=${aggregate.meanBarcelonaValidVoteShare[party].toFixed(2)}`).join(' ')}`,
+    `Barcelona mean pre-allocation support: ${parties.map((party) => `${party}=${aggregate.meanBarcelonaSupport[party].toFixed(2)}`).join(' ')}`,
+    `CUP zero-seat / below-5%: ${aggregate.cupNoSeatRuns}/${aggregate.runs} / ${aggregate.cupBelowThresholdRuns}/${aggregate.runs}`,
+    `CUP seat histogram: ${Object.entries(aggregate.barcelonaSeatHistograms.cup).sort(([a], [b]) => Number(a) - Number(b)).map(([seats, count]) => `${seats}:${count}`).join(' ')}`,
+    `Red-belt mean scores: ${Object.entries(aggregate.meanRedBeltScores).map(([party, value]) => `${party}=${value.toFixed(2)}`).join(' ')}`,
+    `Red-belt mean towns won (of ${RED_BELT_LOCATIONS.length}): ${Object.entries(aggregate.meanRedBeltTownsWon).filter(([, value]) => value >= 0.005).map(([party, value]) => `${party}=${value.toFixed(2)}`).join(' ')}`,
+    `Red-belt mean weighted holdings: ${Object.entries(aggregate.meanRedBeltHoldings).filter(([, value]) => value >= 0.005).map(([party, value]) => `${party}=${value.toFixed(2)}`).join(' ')}`,
+    `Cs town-win histogram: ${Object.entries(aggregate.csTownWinHistogram).sort(([a], [b]) => Number(a) - Number(b)).map(([towns, count]) => `${towns}:${count}`).join(' ')}`,
+    `Mean local-election drivers: ${Object.entries(aggregate.meanDrivers).map(([key, value]) => `${key}=${value.toFixed(2)}`).join(' ')}`,
+    `Strongest CUP-vote correlations: ${strongest(aggregate.cupVoteCorrelations)}`,
+    `Strongest Cs-town correlations: ${strongest(aggregate.csTownCorrelations)}`,
+    `Positive support outside Barcelona ballot registry: ${Object.entries(aggregate.unregisteredSupportRuns).map(([party, count]) => `${party}=${count}/${aggregate.runs}`).join(' ')}`,
+    `Mean support outside Barcelona ballot registry: ${Object.entries(aggregate.meanUnregisteredSupport).map(([party, value]) => `${party}=${value.toFixed(3)}`).join(' ')}`,
+  ].join('\n');
 }
 
 function installSceneErrorTrap(): () => void {

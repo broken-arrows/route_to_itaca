@@ -14,11 +14,9 @@ This repo is quite heavy compared to other mods or dendry games since I include 
 
 The `source` folder, `vendor` folder, and the `out/html` folder contain game-essential components, even if some of the contents on the latter get re-written on game build. This goes beyond broken images and assets, as many bits of the original `css`, `js`, and `html` files have been adapted to the needs of this mod. **Without those the basic game will NOT work as intended**, these do way more than just visual changes.
 
-### Demographics, data analysis, and game-tuning simulations
+### Demographics and data analyses
 
 For more info on demographic data origins and processing, check out the `demographics_data` folder and the README file there. Everything there is not needed to build the game though, so feel free to ignore it.
-
-For how this historical data is tuned into an actual, usable, game engine, consult `simulations`. Fair amount of AI code there since the python files are just for playing around and not actually in use. Lots of cleaning happend to make that work in-game, so take that with a grain of salt. Read the README there for more info.
 
 ### Included Libraries
 

@@ -352,7 +352,7 @@ on-arrival: {!
   Q.te_ideology = "Transversal single-issue, Teruel Regionalism";
 
   // Initial values for bcn parties as well
-  Q.parties_bcn = ['bcomu', 'cup', 'psc', 'erc', 'ciu', 'cdc', 'dl', 'jxcat', 'junts', 'jxsi', 'primaries', 'cs', 'pp', "icv"];
+  Q.parties_bcn = ['bcomu', 'cup', 'psc', 'erc', 'ciu', 'cdc', 'dl', 'pdcat', 'jxcat', 'junts', 'jxsi', 'primaries', 'cs', 'pp', "icv"];
 
   // TODO dynamic barcelona leader names!
   Q.bcomu_leader = "Ada Colau";
@@ -385,17 +385,158 @@ on-arrival: {!
   Q.cda_pna_leader = "Carles Barrera Sánchez";
   Q.cda_pna_ideology = "Liberal-Conservatism, Aranese Regionalism";
 
-  // 2011 local elections results (for delta calcs)
+  // 2011 local elections results
+  for (var p of Q.parties_bcn) {
+    Q[p + "_local_barcelona_s"] = 0;
+    Q[p + "_local_barcelona_pv"] = 0;
+    Q[p + "_local_barcelona_spc"] = 0;
+    Q[p + "_local_barcelona_showviz"] = 0;
+  }
   Q.ciu_local_barcelona_s = 14;
   Q.ciu_local_barcelona_pv = 28.73;
+  Q.ciu_local_barcelona_spc = 34.1;
+  Q.ciu_local_barcelona_showviz = 1;
   Q.psc_local_barcelona_s = 11;
   Q.psc_local_barcelona_pv = 22.14;
+  Q.psc_local_barcelona_spc = 26.8;
+  Q.psc_local_barcelona_showviz = 1;
   Q.pp_local_barcelona_s = 9;
   Q.pp_local_barcelona_pv = 17.24;
+  Q.pp_local_barcelona_spc = 22.0;
+  Q.pp_local_barcelona_showviz = 1;
   Q.icv_local_barcelona_s = 5;
   Q.icv_local_barcelona_pv = 10.39;
+  Q.icv_local_barcelona_spc = 12.2;
+  Q.icv_local_barcelona_showviz = 1;
   Q.erc_local_barcelona_s = 2;
   Q.erc_local_barcelona_pv = 5.59;
+  Q.erc_local_barcelona_spc = 4.9;
+  Q.erc_local_barcelona_showviz = 1;
+  Q.cup_local_barcelona_pv = 1.95;
+  Q.cs_local_barcelona_pv = 1.94;
+  Q.local_barcelona_wp = "ciu";
+
+  var local_2011_winners = {
+    // Red-belt municipalities
+    "lhospitalet-de-llobregat": "psc",
+    "sant-boi-de-llobregat": "psc",
+    "el-prat-de-llobregat": "icv",
+    "viladecans": "psc",
+    "esplugues-de-llobregat": "psc",
+    "ripollet": "psc",
+    "sant-adria-de-besos": "psc",
+    "terrassa": "psc",
+    "sabadell": "psc",
+    "cornella-de-llobregat": "psc",
+    "rubi": "psc",
+    "granollers": "psc",
+    "mollet-del-valles": "psc",
+    "mataro": "ciu",
+    "badalona": "pp",
+    "santacolomadegramenet": "psc",
+    "balaguer": "ciu",
+    "sant-vicenc-dels-horts": "psc",
+    "martorell": "ciu",
+    "vilafranca-del-penedes": "ciu",
+
+    // Interior municipalities and capitals
+    "manresa": "ciu",
+    "figueres": "ciu",
+    "vic": "ciu",
+    "igualada": "ciu",
+    "olot": "ciu",
+    "la-seu-durgell": "ciu",
+    "tarrega": "ciu",
+    "berga": "ciu",
+    "solsona": "erc",
+    "ripoll": "ciu",
+    "tortosa": "ciu",
+    "amposta": "ciu",
+    "mora-debre": "ciu",
+    "sant-cugat-del-valles": "ciu",
+    "lleida": "psc",
+    "tarragona": "psc",
+    "reus": "ciu",
+    "girona": "ciu",
+    "banyoles": "ciu",
+    "vilanova-i-la-geltru": "ciu",
+    "tremp": "psc",
+    "vielha-e-mijaran": "cda-pna",
+
+    // Comarca-wide municipal-vote pluralities
+    "barcelones": "psc",
+    "baix-llobregat": "psc",
+    "valles-occidental": "psc",
+    "valles-oriental": "psc",
+    "garraf": "psc",
+    "alt-penedes": "ciu",
+    "bages": "ciu",
+    "anoia": "ciu",
+    "osona": "ciu",
+    "bergueda": "ciu",
+    "solsones": "erc",
+    "ripolles": "ciu",
+    "garrotxa": "ciu",
+    "cerdanya": "ciu",
+    "alt-urgell": "ciu",
+    "pallars-sobira": "ciu",
+    "pallars-jussa": "ciu",
+    "alta-ribagorca": "ciu",
+    "noguera": "ciu",
+    "urgell": "ciu",
+    "segarra": "ciu",
+    "conca-de-barbera": "ciu",
+    "priorat": "ciu",
+    "ribera-debre": "ciu",
+    "terra-alta": "ciu",
+    "montsia": "ciu",
+    "baix-ebre": "ciu",
+    "pla-de-lestany": "ciu",
+    "baix-emporda": "ciu",
+    "alt-emporda": "ciu",
+    "girones": "ciu",
+    "selva": "ciu",
+    "pla-durgell": "ciu",
+    "garrigues": "ciu",
+    "segria": "psc",
+    "alt-camp": "ciu",
+    "baix-penedes": "ciu",
+    "maresme": "ciu",
+    "tarragones": "psc",
+    "baix-camp": "ciu",
+    "val-daran": "ciu",
+  };
+  for (var local_2011_id in local_2011_winners) {
+    Q["local_" + local_2011_id + "_wp"] = local_2011_winners[local_2011_id];
+  }
+
+  // Aggregate bars use stable cross-era families and the resolver's current
+  // location weights. El Prat is `icv` on the map but belongs to `comuns` here.
+  for (var p of ["erc", "cs", "ciu", "cdc", "dl", "jxcat", "jxsi", "pdcat", "junts", "psc", "cup", "comuns", "pp"]) {
+    Q[p + "_local_rb_holdings"] = 0;
+    Q[p + "_local_rb_pct"] = 0;
+  }
+  Q.psc_local_rb_holdings = 24;
+  Q.ciu_local_rb_holdings = 3;
+  Q.comuns_local_rb_holdings = 1;
+  Q.pp_local_rb_holdings = 1;
+  Q.psc_local_rb_pct = 82.8;
+  Q.ciu_local_rb_pct = 10.3;
+  Q.comuns_local_rb_pct = 3.4;
+  Q.pp_local_rb_pct = 3.4;
+  Q.others_local_rb_pct = 0;
+
+  for (var p of ["erc", "ciu", "cdc", "dl", "jxcat", "jxsi", "pdcat", "junts", "psc", "cup", "fnc"]) {
+    Q[p + "_local_interior_holdings"] = 0;
+    Q[p + "_local_interior_pct"] = 0;
+  }
+  Q.ciu_local_interior_holdings = 58;
+  Q.psc_local_interior_holdings = 10;
+  Q.erc_local_interior_holdings = 3;
+  Q.ciu_local_interior_pct = 81.7;
+  Q.psc_local_interior_pct = 14.1;
+  Q.erc_local_interior_pct = 4.2;
+  Q.others_local_interior_pct = 0;
 
   Q.cs_redbelt_mod = 0;
   Q.erc_redbelt_mod = -10;
@@ -460,7 +601,7 @@ on-arrival: {!
       "erc":      [ 0.15,  0.15,  0.05, -0.05,  0.05,  0.05,  0.04],
       "psc":      [ 0.00, -0.15, -0.05,  0.18, -0.30, -0.05, -0.05],
       "cs":       [ 0.08, -0.05, -0.05,  0.05, -0.10, -0.05, -0.02],
-      "cup":      [ 0.08, -0.10,  0.12, -0.10, -0.05,  0.10,  0.05],
+      "cup":      [ 0.08, -0.10,  0.12, -0.10, -0.05,  0.10,  0.08],
       "pp":       [-0.12, -0.05, -0.05,  0.05,  0.20, -0.05, -0.04],
       "primaries":[ 0.00,  0.00,  0.00,  0.00,  0.00,  0.00,  0.00],
     },

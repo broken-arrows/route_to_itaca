@@ -563,13 +563,7 @@ for (let p of ["ciu","cdc","dl","jxcat","junts","jxsi","pdcat"]) {
         break;
     }
 }
-let _activeComuns = "icv";
-for (let p of ["icv","csqp","cecp","ecp"]) {
-    if (Q[p + "_parlament_s"] > 0) {
-        _activeComuns = p;
-        break;
-    }
-}
+let _activeComuns = Q.parlament_current_icv || "icv";
 const DEMOS = Q.parlament_demographics;
 
 // Map party to family for province-level capital resolution.
@@ -644,8 +638,12 @@ var BCN_THRESHOLD = 5.0;
 var bcn = {};
 for (var p of BCN_PARTIES) bcn[p] = Q[p + "_local_barcelona_support"] || 0.0;
 
-// Trias candidacy bonus: strong CiU incumbent in 2015, not in 2019
-if (Q[_activeIcr + "bcn_leader"] == "Xavier Trias") bcn["ciu"] = (bcn["ciu"] || 0) + 17.0;
+// Trias candidacy bonus: strong CiU incumbent in 2015, not in 2019. Follow
+// the Parliament family's current carrier instead of reviving a ghost CiU list.
+var _currentIcr = Q.parlament_current_ciu || _activeIcr;
+if (Q[_currentIcr + "bcn_leader"] == "Xavier Trias") {
+    bcn[_currentIcr] = (bcn[_currentIcr] || 0) + 17.0;
+}
 
 var bcnTotal = Object.values(bcn).reduce(function(a,b){return a+b;}, 0);
 if (bcnTotal > 0) for (var p of BCN_PARTIES) bcn[p] = bcn[p] / bcnTotal * 100;
@@ -841,6 +839,18 @@ for (var loc of LOCS_RB) {
         var pp_score = 60.0 + _cl(im - 40, 0, 20) * 0.5;
         if (pp_score > Math.max(cs_rb, erc_rb, comuns_rb)) { 
             actual_winner = "pp";
+        } else {
+            dominant = cs_rb;
+            winner = "cs";
+            if (erc_rb > sec_thresh && erc_rb > dominant) {
+                dominant = erc_rb;
+                winner = "erc";
+            }
+            if (comuns_rb > dominant) {
+                dominant = comuns_rb;
+                winner = _activeComuns;
+            }
+            actual_winner = dominant < resistance ? "psc" : winner;
         }
     } else {
         if (primary === "erc") {
