@@ -16,7 +16,7 @@ Fact is, the party needs resources to work. [? if party_income < 2: Right now, t
 - @lower_allocation
 - @raise_rates
 - @lower_rates
-- @return: We do not need to change our funding sources.
+- @root: We do not need to change our funding sources.
 - @easy_discard
 - @cancel_advisor_action
 

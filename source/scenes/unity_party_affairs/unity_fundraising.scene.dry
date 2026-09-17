@@ -15,10 +15,10 @@ Fact is, even as a part of a coalition as big as jxsi, we still needs resources 
 # TODO: jxcat equivalent where the union is more formalized and allows for actual increase in rates
 
 - @raise_rates_erc
-- @lower_rates
+- @lower_rates_erc
 - @donations_campaign
 - @donations_lowkey
-- @return: We do not need to discuss funding at this moment
+- @root: We do not need to discuss funding at this moment
 - @easy_discard
 - @cancel_advisor_action
 
@@ -27,15 +27,94 @@ title: Raise party dues
 choose-if: party_income < 2
 unavailable-subtitle: Party dues are already as high as they can reasonably be.
 view-if: player_party = "erc"
-go-to: erc-fundraising.raise_rates
+go-to: erc_fundraising.raise_rates
 
-@lower_rates
+@lower_rates_erc
 title: Lower party dues
 view-if: player_party = "erc"
 subtitle: [? if party_income = 2: \[-1 resources\]?]
 choose-if: party_income >= 1 and (party_resources > 0 or party_income < 2)
 unavailable-subtitle: [? if party_income < 1: Dues are already as low as they can be. ?][? if party_resources < 1 and party_income == 2: Not enough resources. ?]
-go-to: erc-fundraising.raise_rates
+go-to: erc_fundraising.raise_rates
 
 @donations_campaign
+title: Let's carry out a donations campaign!
+subtitle: \[ +3 resources\]
+on-arrival: {!
+    Q.party_resources += 3;
+    Q.independence_movement -= 12;
+    Q.independence_trust -= 5;
+
+    var targetCongreso = Q.player_party;
+    var targetLocal = Q.player_party;
+    if (Q.erc_in_jxsi) {
+        if (Q.jxsi_in_congreso) {
+            targetCongreso = "jxsi";
+        }
+        if (Q.jxsi_in_local) {
+            targetLocal = "jxsi";
+        }
+    }
+
+    for (var c of Q.parlament_constituencies) {
+        var delta_jxsi_young_support = Q["jxsi_parlament_" + c + "_young_support"] * 0.1;
+        var delta_jxsi_ind_support = Q["jxsi_parlament_" + c + "_ind_support"] * 0.1;
+        var delta_jxsi_middle_support = Q["jxsi_parlament_" + c + "_middle_support"] * 0.05;
+        var delta_jxsi_unemployed_support = Q["jxsi_parlament_" + c + "_unemployed_support"] * 0.1;
+
+        if (Q.psc_recovery_factor <= 1){
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "jxsi", amount: 0.5 * delta_jxsi_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "jxsi", amount: 0.4 * delta_jxsi_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "jxsi", amount: 0.1 * delta_jxsi_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "jxsi", amount: 0.2 * delta_jxsi_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "jxsi", amount: 0.1 * delta_jxsi_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "jxsi", amount: 0.5 * delta_jxsi_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "jxsi", amount: 0.2 * delta_jxsi_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "jxsi", amount: 0.2 * delta_jxsi_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "jxsi", amount: 0.4 * delta_jxsi_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "jxsi", amount: 0.2 * delta_jxsi_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "jxsi", amount: 0.2 * delta_jxsi_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "jxsi", amount: 0.3 * delta_jxsi_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "jxsi", amount: 0.3 * delta_jxsi_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "jxsi", amount: 0.1 * delta_jxsi_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "jxsi", amount: 0.3 * delta_jxsi_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+        } else {
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "jxsi", amount: 0.5 * delta_jxsi_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "jxsi", amount: 0.3 * delta_jxsi_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "jxsi", amount: 0.2 * delta_jxsi_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "jxsi", amount: 0.2 * delta_jxsi_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "jxsi", amount: 0.1 * delta_jxsi_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "jxsi", amount: 0.2 * delta_jxsi_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "jxsi", amount: 0.5 * delta_jxsi_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "jxsi", amount: 0.2 * delta_jxsi_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "jxsi", amount: 0.3 * delta_jxsi_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "jxsi", amount: 0.4 * delta_jxsi_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "jxsi", amount: 0.1 * delta_jxsi_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "jxsi", amount: 0.3 * delta_jxsi_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "jxsi", amount: 0.2 * delta_jxsi_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "jxsi", amount: 0.4 * delta_jxsi_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "jxsi", amount: 0.1 * delta_jxsi_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+        }        
+    }
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "abstain", from:  targetCongreso, amount: 0.3, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "federal_left", from:  targetCongreso, amount: 0.15, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "congreso", to: "psoe", from:  targetCongreso, amount: 0.15, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "bcomu", from:  targetLocal, amount: 0.2, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "psc", from:  targetLocal, amount: 0.1, maxDonorFraction: 0.5 });
+    G.cardSupportTransfer(Q, { contest: "barcelona", to: "cup", from:  targetLocal, amount: 0.1, maxDonorFraction: 0.5 });
+!}
+
+While the donations campaign has been a huge success, some are not very happy about the feeling it has left lingering on some potential voters. We may have alienated some here...
+
 @donations_lowkey
+title: Let's request donations, but let's keep it low-key, and do so via civil organizations close to the parties in jxsi
+subtitle: \[ +1 resources\]
+on-arrival: party_resources += 1; independence_movement -= 5; erc_civic_dissent += 8; erc_left_dissent += 3;
+
+A focused, scope-limited donations campaign, mostly through the ANC and Òmnium Cultural, has brought some liquidity. The organizations are not super thrilled about playing this role, but for now we can congratulate ourselves on a successful campaign.

@@ -30,7 +30,18 @@ on-arrival: {!
     var iuSupport = (!Q.iu_in_up && S("iu") > 0 && leftCarrier !== "iu") ? S("iu") : 0;
     Q.congreso_left_iu_s = iuSupport;
 
-    Q.congreso_coalition_sorpasso = S(leftCarrier) > S("psoe");
+    // PSOE/left leadership: seats first, national popular vote on tie
+    var psoeSeats = S("psoe");
+    var leftSeats = S(leftCarrier);
+    var popularVote = function (p) {
+        var value = Number(Q[p + "_congreso_pv"]);
+        return Number.isFinite(value) ? value : 0;
+    };
+    var leftLeadsPsoe = leftSeats > psoeSeats
+        || (leftSeats > 0 && leftSeats === psoeSeats && popularVote(leftCarrier) > popularVote("psoe"));
+    var psoeLeadsLeft = psoeSeats > 0 && !leftLeadsPsoe;
+
+    Q.congreso_coalition_sorpasso = leftLeadsPsoe;
 
     // Catalan right-sovereigntist carrier — the first live one that
     // isn't the player's own vehicle. Its roadmap drives the whole bucket's stance.
@@ -39,15 +50,15 @@ on-arrival: {!
     // ── Government cores ─────────────────────────────────────────────────────
     // PSOE core already absorbs PSC (folded → 0 seats) unless a split casts PSC
     // out; a split PSC then stands as its own courted kingmaker, NOT part of core.
-    var psoeCore = S("psoe");
-    var leftCore = S(leftCarrier) + iuSupport;
-    var progCore = psoeCore + S(leftCarrier) + iuSupport;               // coalition cabinet
+    var psoeCore = psoeSeats;
+    var leftCore = leftSeats + iuSupport;
+    var progCore = psoeCore + leftSeats + iuSupport;
     var ppVoxCore = S("pp") + S("vox");
     var ppCsCore  = S("pp") + S("cs");
-    // Sorpasso: the radical left out-seats PSOE ⇒ a Podemos-led progressive bloc.
+    // Sorpasso: the left leads PSOE under the shared rule, producing a Podemos-led progressive bloc.
     // Only THEN can the anti-regime left (CUP/FR) ever be talked aboard; they will
     // never lend themselves to a PSOE-led government.
-    var leftPodemosLed = S(leftCarrier) > psoeCore;
+    var leftPodemosLed = leftLeadsPsoe;
 
     // Single-party absolute majority (only conceivable for a national party).
     Q.congreso_coalition_majority_party = null;
@@ -60,9 +71,9 @@ on-arrival: {!
     }
 
     // ── Bloc seat totals = "is this government core on the table?" ────────────
-    Q.congreso_coalition_progressive_s = (S("psoe") > 0 && (S(leftCarrier) >= 10 || iuSupport > 0)) && S("psoe") > S(leftCarrier) ? progCore : 0;
-    Q.congreso_coalition_left_s = (S(leftCarrier) > S("psoe") && leftCore >= Q.congreso_s_majority * 0.7) ? leftCore : 0;
-    Q.congreso_coalition_change_s = (S("psoe") > 0 && S(leftCarrier) > S("psoe")) ? progCore : 0;
+    Q.congreso_coalition_progressive_s = (psoeLeadsLeft && (leftSeats >= 10 || iuSupport > 0)) ? progCore : 0;
+    Q.congreso_coalition_left_s = (leftLeadsPsoe && leftCore >= Q.congreso_s_majority * 0.7) ? leftCore : 0;
+    Q.congreso_coalition_change_s = (psoeSeats > 0 && leftLeadsPsoe) ? progCore : 0;
     // A party that clears 176 on its own is a MAJORITY government, not a minority one —
     // it already has its own bar, and the same seats must not render twice under two
     // contradictory labels (nor offer two clickable options for one identical cabinet).

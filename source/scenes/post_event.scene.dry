@@ -66,8 +66,8 @@ if (Q.rubicon) {
         Q.time += 1;
         Q.month += 1;
         if (Q.burdens_time > 0) {
-        Q.burdens_time -= 1;
-    }
+            Q.burdens_time -= 1;
+        }
     }
 } 
 

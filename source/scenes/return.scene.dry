@@ -1,3 +1,0 @@
-title: Back to main
-go-to: root
-on-arrival: month_actions -= 1 if difficulty < 0

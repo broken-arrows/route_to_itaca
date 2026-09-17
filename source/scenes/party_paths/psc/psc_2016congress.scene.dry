@@ -33,7 +33,7 @@ Despite the challenge, Miquel Iceta seems to have manage to subdue internal crit
 view-if: psc_leader = "Montserrat Tura"
 choose-if: psc_parlament_s >= 24 or (party_resources >= 1 and psc_relations >= 55)
 unavailable-subtitle: [? if party_resources < 1 and psc_parlament_s < 24: Not enough party resources. ?][? if psc_relations < 55 and psc_parlament_s < 24: We don't have good enough relations with the PSC. ?]
-subtitle: [? if psc_parlament_s >= 24: Without any intervention, that's bound to happen. ?][? if party_resources >= 1 and psc_parlament_s < 24: \[-1 resources\] ?]
+subtitle: [? if psc_parlament_s >= 24: Without any intervention, that's bound to happen. ?][? if party_resources >= 1 and psc_parlament_s < 24: Given her results, without our intervention he might lose his spot. \[-1 resources\] ?]
 on-arrival: party_resources -= 1; psc_relations += 5;
 
 Despite the challenge, Montserrat Tura seems to have manage to subdue internal criticism and lean on her allies to win the internal primaries. Questioning her leadership again may be hard from now on, and it seems like the PSC-PSOE split will be here to stay.
@@ -44,7 +44,7 @@ Despite the challenge, Montserrat Tura seems to have manage to subdue internal c
 view-if: psc_leader = "Àngel Ros"
 choose-if: psc_parlament_s >= 24 or (party_resources >= 1 and psc_relations >= 40)
 unavailable-subtitle: [? if party_resources < 1 and psc_parlament_s < 24: Not enough party resources. ?][? if psc_relations < 40 and psc_parlament_s < 24: We don't have good enough relations with the PSC. ?]
-subtitle: [? if psc_parlament_s >= 24: Without any intervention, that's bound to happen. ?][? if party_resources >= 1 and psc_parlament_s < 24: \[-1 resources\] ?]
+subtitle: [? if psc_parlament_s >= 24: Without any intervention, that's bound to happen. ?][? if party_resources >= 1 and psc_parlament_s < 24: Given his results, without our intervention he might lose his spot. \[-1 resources\] ?]
 on-arrival: party_resources -= 1; psc_relations += 5;
 
 
