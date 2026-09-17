@@ -38,7 +38,7 @@ It looks like Pere Navarro will hold on to the leadership after all. The interna
 @angelros_leadership
 choose-if: party_resources >= 1 and psc_relations >= 40
 unavailable-subtitle: [? if party_resources < 1: Not enough resources. ?][? if psc_relations < 40: We don't have good enough relations with the PSC. ?]
-subtitle: \[-1 resources\]
+subtitle: We'll need to mobilize some party resources to make this happen. \[-1 resources\]
 on-arrival: {!
     if (!Q.countdowns.includes("ernest_maragall_erc")) Q.countdowns.push("ernest_maragall_erc");
     Q.ernest_maragall_erc_countdown = 3;
@@ -55,7 +55,7 @@ With a bit of a push from our side, Àngel Ros has been able to articulate an in
 @montserrattura_leadership
 choose-if: party_resources >= 2 and psc_relations >= 55
 unavailable-subtitle: [? if party_resources < 2: Not enough resources. ?][? if psc_relations < 55: We don't have good enough relations with the PSC. ?]
-subtitle: \[-2 resources\]
+subtitle: This will require unprecedented efforts behind the scenes to stand a chance. \[-2 resources\]
 on-arrival: {!
     Q.psc_leader = "Montserrat Tura";
     Q.psc_leader_gender = "f";

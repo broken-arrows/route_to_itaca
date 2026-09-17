@@ -213,7 +213,7 @@ Local elections are WIP! Nothing happens here for now :/
 
 @local_cat_results
 title: Catalonia is not only Barcelona, though
-new-page: true
+# new-page: true
 
 = Local Election Results
 

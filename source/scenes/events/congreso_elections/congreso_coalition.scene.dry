@@ -214,11 +214,14 @@ on-arrival: {!
         if (key === playerVehicle || key === Q.parlament_current_ciu) continue; // already placed as a descriptor
         var ks = S(key);
         if (ks <= 0) continue;
+        // PNV may bargain with a post-Rajoy PP, but Rajoy himself is a hard veto:
+        // no abstention and no negotiated climb to support for any PP cabinet.
+        var rajoyPnvVeto = key === "pnv" && Q.pp_leader === "Mariano Rajoy";
         candidates.push({
             party: key, seats: ks,
             left:     LEFT_POSTURE[key]  || "oppose",
             trueLeft: TRUELEFT_POSTURE[key] || "oppose",
-            right:    RIGHT_POSTURE[key] || "oppose",
+            right:    rajoyPnvVeto ? "oppose" : (RIGHT_POSTURE[key] || "oppose"),
             rightvox: isPragmatist(key) ? "oppose" : (RIGHT_POSTURE[key] || "oppose"),
             psoecs:   PSOECS_POSTURE[key] || "oppose",
             // CUP/FR (anti-regime) only ever flip for a Podemos-led left; the
@@ -227,7 +230,7 @@ on-arrival: {!
             // a true-left front also hard-excludes CC/PNV (HARD_TRUELEFT); CUP/FR
             // stay convincible only under a Podemos-led left.
             negTrueLeft: HARD_TRUELEFT[key] ? false : ((key === "cup" || key === "fr") ? leftPodemosLed : true),
-            negRight: !HARD_RIGHT[key],
+            negRight: !rajoyPnvVeto && !HARD_RIGHT[key],
             // only the whitelisted regionalists can be talked toward a PSOE–Cs govt.
             negPsoeCs: !!PSOECS_POSTURE[key]
         });
@@ -431,9 +434,11 @@ on-arrival: {!
     // Preference knobs (the "only as wide as realistic" rules):
     //  • a PSOE–PP grand coalition is only on the table when PSOE *won't* be led by
     //    Pedro Sánchez ("no es no"); any other PSOE leader could deal with the PP.
-    //  • PP→Cs always beats PP→Vox whenever the Cs maths is there (read directly in
-    //    the National-Right choose-if as "pp_vox_reach and not pp_cs_reach").
+    //  • PP→Cs always beats both a grand arrangement with PSOE and PP→Vox whenever
+    //    the liberal-conservative maths is there. Grand Coalition/Toleration is a
+    //    fallback, not an alternative PP can choose while PP–Cs can govern.
     Q.congreso_coalition_grand_ok = (Q.psoe_leader !== "Pedro Sánchez");
+    Q.congreso_coalition_liberal_right_preferred = Q.congreso_coalition_pp_cs_reach;
 
     // ── Barons revolt: only out of a genuine deadlock ────────────────────────
     var rightGovernsAlone =
@@ -479,7 +484,7 @@ on-arrival: {!
         || ((Q.congreso_coalition_grand_s_pp >= maj || Q.congreso_coalition_grand_s_psoe >= maj) && Q.congreso_coalition_grand_ok)
         || Q.congreso_coalition_grand_s_ppcs >= maj;
     
-    Q.congreso_coalition_grand_preferred = Q.congreso_coalition_grand_ok && (Q.congreso_coalition_grand_s_pp >= maj || Q.congreso_coalition_grand_s_psoe >= maj || Q.congreso_coalition_grand_s_ppcs >= maj) ? 1 : 0;
+    Q.congreso_coalition_grand_preferred = Q.congreso_coalition_grand_ok && !Q.congreso_coalition_liberal_right_preferred && (Q.congreso_coalition_grand_s_pp >= maj || Q.congreso_coalition_grand_s_psoe >= maj || Q.congreso_coalition_grand_s_ppcs >= maj) ? 1 : 0;
     
     // Pivotal ⇔ a cabinet wants the player's votes, yet none can govern without them.
     Q.congreso_coalition_force_elections = (Q.congreso_player_s > 0) && someGovWithPlayer && !govFormsWithoutPlayer;

@@ -390,7 +390,7 @@ if (!Q.hidden_cc_surge && ((Q.year == 2019 && Q.month == 2) || (Q.social_dissent
     Q.hidden_cc_surge = true;
     G.spaSupportInject(Q, 'cc', 'rest', 0.28, 'abstain');
 }
-if (!Q.hidden_prc_surge && (Q.year == 2019 && Q.month == 2) || (Q.year > 2015 && (!Q.upn_in_pp || Q.spa_foro_active) )) {
+if (!Q.hidden_prc_surge && ((Q.year == 2019 && Q.month == 2) || (Q.year > 2015 && (!Q.upn_in_pp || Q.spa_foro_active)))) {
     Q.hidden_prc_surge = true;
     G.spaSupportInject(Q, 'prc', 'rest', 0.22, 'abstain');
 }

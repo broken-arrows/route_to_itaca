@@ -199,9 +199,10 @@ var VIRTUAL_REST_STRUCTURE = {
 };
 
 var PROTECTED_MINORS = {
-    'cc': 0.26,   // Coalicion Canaria
-    'prc': 0.25,  // Partido Regionalista de Cantabria
-    'te': 0.20,   // Teruel Existe
+    'cc':  { threshold: 0.26, max_seats: 15 }, // Las Palmas (8) + Santa Cruz de Tenerife (7)
+    'fac': { threshold: 0.40, max_seats: 8 },  // Asturias
+    'prc': { threshold: 0.25, max_seats: 5 },  // Cantabria
+    'te':  { threshold: 0.20, max_seats: 3 },  // Teruel
 };
 
 // 00. Store old results and get a list of all possible parties involved
@@ -230,7 +231,7 @@ for (var constituency of Q.congreso_constituencies) {
                     }
                     break;
                 case 'mes':
-                case 'comrpomis':
+                case 'compromis':
                 case 'bng':
                     // If they are folded within podemos/up we don't show them even if they had seats
                     if (Q["spa_" + p + "_active"]) {
@@ -384,11 +385,12 @@ for (var constituency of Q.congreso_constituencies) {
         // Protected Minors Check, against CENSUS not valid votes
         for (var minor in PROTECTED_MINORS) {
             if (working_votes[minor] !== undefined) {
-                var threshold = PROTECTED_MINORS[minor];
+                var threshold = PROTECTED_MINORS[minor].threshold;
+                var max_seats = PROTECTED_MINORS[minor].max_seats;
                 var share = (working_votes[minor] / region_census) * 100;
                 
-                console.log(`Protected minor check for ${minor}: share ${share.toFixed(2)}% threshold ${threshold*100}%`);
-                while (share >= threshold) {
+                console.log(`Protected minor check for ${minor}: share ${share.toFixed(2)}% threshold ${threshold}% cap ${max_seats}`);
+                while (share >= threshold && (rest_seats[minor] || 0) < max_seats) {
                     total_party_seats[minor] += 1;
                     rest_seats[minor] = (rest_seats[minor] || 0) + 1;
                     protected_seats_awarded++;
