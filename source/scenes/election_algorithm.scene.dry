@@ -216,7 +216,45 @@ for (var constituency of Q.congreso_constituencies) {
         // I.e. we show the party in the results table also if they HAD seats in the previous election
 
         if (Q[p+'_congreso_s'] > 0) {
-            Q[p+'_congreso_showviz'] = 1;
+            switch (p) {
+                default:
+                    Q[p+'_congreso_showviz'] = 1;
+                    break;
+                case 'podemos':
+                case 'iu':
+                    // If they just formed UP, does not make sense to show them individually too
+                    if (Q.iu_in_up) {
+                        Q[p+'_congreso_showviz'] = 0;
+                    } else {
+                        Q[p+'_congreso_showviz'] = 1;
+                    }
+                    break;
+                case 'mes':
+                case 'comrpomis':
+                case 'bng':
+                    // If they are folded within podemos/up we don't show them even if they had seats
+                    if (Q["spa_" + p + "_active"]) {
+                        Q[p+'_congreso_showviz'] = 1;
+                    } else {
+                        Q[p+'_congreso_showviz'] = 0;
+                    }
+                    break;
+                case 'fac':
+                    // If they are folded within podemos/up/pp we don't show them even if they had seats
+                    if (Q["spa_foro_active"]) {
+                        Q[p+'_congreso_showviz'] = 1;
+                    } else {
+                        Q[p+'_congreso_showviz'] = 0;
+                    }
+                    break;
+                case 'upn':
+                    // messed up the variables and upn follows a different system
+                    if (Q.upn_in_pp) {
+                        Q[p+'_congreso_showviz'] = 0;
+                    } else {
+                        Q[p+'_congreso_showviz'] = 1;
+                    }
+            } 
         } else {
             Q[p+'_congreso_showviz'] = 0;
         }

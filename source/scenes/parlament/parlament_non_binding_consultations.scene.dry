@@ -28,7 +28,7 @@ subtitle: [? if coming_from_parlament : \[-1 resources\] ?]
 
 = Law on Non-Binding Consultations and other forms of Political Particiption
 
-Despite the Statute of Autonomy already having some minor provisions on the posibility of holding open consultations, this has never been formalized into proper law. The proposed *"Law on non-binding popular consultations and other forms of citizen participation"* aims to address this, allowing the President to call for any sort of non-binding consultation. It is bound to be a controversial law nonetheless. [? if spanish_pm_party == "pp": In October 2012, the Spanish government already warned against this, with Vicepresidenta Soraya Sáenz de Santamaría clearly stating that following the Spanish Constitution, referendums may only be called by the King himself following the Presidente's recommendations and approval by the Congreso. ?][? if spanish_pm_party == "podemos" or spanish_pm_party == "up": At least the current Spanish government under [+ spanish_pm +] should be more supportive of these sorts of innitiatives. ?]
+Despite the Statute of Autonomy already having some minor provisions on the possibility of holding open consultations, this has never been formalized into proper law. The proposed *"Law on non-binding popular consultations and other forms of citizen participation"* aims to address this, allowing the President to call for any sort of non-binding consultation. It is bound to be a controversial law nonetheless. [? if spanish_pm_party == "pp": In October 2012, the Spanish government already warned against this, with Vicepresidenta Soraya Sáenz de Santamaría clearly stating that following the Spanish Constitution, referendums may only be called by the King himself following the Presidente's recommendations and approval by the Congreso. ?][? if spanish_pm_party == "podemos" or spanish_pm_party == "up": At least the current Spanish government under [+ spanish_pm +] should be more supportive of these sorts of innitiatives. ?]
 
 - @calc: Let's get this done!
 
@@ -51,6 +51,7 @@ on-arrival: {!
             Q.parlament_consultations_no_psc = true;
             break;
         case "Núria Parlón":
+        case "Àngel Ros":
             Q.parlament_consultations_abst += Q.psc_parlament_s;
             Q.parlament_consultations_abst_psc = true;
             break;

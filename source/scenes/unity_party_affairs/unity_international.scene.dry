@@ -1,19 +1,21 @@
 title: International Relations
 new-page: true
 is-card: true
-tags: erc_party
-view-if: erc_international_timer <= 0
-on-arrival: month_actions += 1; erc_international_timer += 6;
-card-image: img/erc/international.jpg
-face-image: img/erc/international.jpg
+tags: jxsi_party jxcat_party
+view-if: unity_international_timer <= 0
+on-arrival: month_actions += 1; unity_international_timer += 6;
+card-image: img/jxsi/relations.jpg
+face-image: img/jxsi/relations.jpg
 max-visits: 25
 role: card-party
 
 = International Relations
 
-Through our representation in the European Parliament, and through our international contacts, we can build our contacts and try to steer opinion in our favour. 
+
+Through our representation in the European Parliament, and through our international contacts, we can build our contacts and try to steer opinion in our favour. Coordinating together as jxsi makes these efforts more effective.
 
 # TODO: brexit modifiers for EU relations, extra resources from contacting Russia? That second bit is a bit iffy and may make more sense at the institutional level + actually do something with _reach variables lol
+# TODO: add party factions consequences for CUP + advisors modifiers for the CUP
 
 - @minor_countries_partyreach: We have are already part of the European Free Alliance, let's continue build up that coalition of underrepresented nations.
 - @european_community_partyreach: Catalonia is widely pro-European. Let's build on that with in the European Community.
@@ -31,7 +33,7 @@ choose-if: party_resources > 0
 unavailable-subtitle:[? if party_resources <= 0: We do not have enough resources. ?]
 on-arrival: {!
     Q.party_resources -= 1; 
-    Q.cat_spa_relations += 5 - Q.erc_roadmap ; 
+    Q.cat_spa_relations += 3 - Q.jxsi_roadmap ; 
     Q.erc_pragmatic_strength += 5; 
     Q.erc_pragmatic_dissent -= 5; 
     Q.erc_civic_strength -= 3;
@@ -39,15 +41,16 @@ on-arrival: {!
     Q[Q.parlament_current_icv + "_relations"] += 3;
     Q.psc_relations += 3;
     Q.cup_relations -= 5;
+    Q.independence_trust -= 15;
 !}
 
-Despite our stated goal of eventually building an independent Catalonia, we have chosen to try to get closer to the current Spanish government and other Spanish parties. [? if erc_roadmap > 1: Our current Roadmap towards independence does make these efforts a bit more difficult though. ?]
+Despite our stated goal of eventually building an independent Catalonia, we have chosen to try to get closer to the current Spanish government and other Spanish parties. This is not seen very positively by anyone and, if anything, sounds disingenuous. Are you sure this is the way to go?
 
 @minor_countries_partyreach
 subtitle: \[-1 resources\]
 choose-if: minor_party_reach < 5 and party_resources > 0
 unavailable-subtitle: [? if minor_party_reach >= 5: We have already built our contacts enough with minor countries. ?][? if party_resources <= 0: We do not have enough resources. ?]
-on-arrival: party_resources -=1; minor_contries_reach += 1 + 0.5*raul_romeva_advisor; erc_civic_strength += 5;
+on-arrival: party_resources -=1; minor_contries_reach += 2 + raul_romeva_advisor; erc_civic_strength += 5;
 
 National liberation parties from Scotland, Québec, Galicia, the Basque Country, Ireland, and many more have always been our comrades adf frontline fighters for self-determination and the freedom of all peoples. Building up that relation can only make us stronger, but is also an action that can only give us so much in terms of actual international standing.
 
@@ -55,7 +58,7 @@ National liberation parties from Scotland, Québec, Galicia, the Basque Country,
 subtitle: \[-1 resources\]
 choose-if: european_community_reach < 5 and party_resources > 0
 unavailable-subtitle: [? if european_community_reach >= 5: We have already built our contacts enough within the European Community. ?][? if party_resources <= 0: We do not have enough resources. ?]
-on-arrival: party_resources -=1; european_community_reach += 1 + 0.5*raul_romeva_advisor; erc_civic_strength += 3; erc_core_strength += 2;
+on-arrival: party_resources -=1; european_community_reach += 2 + raul_romeva_advisor; erc_civic_strength += 3; erc_core_strength += 2;
 
 The European Union is torn on the topic of self-determination. It's a Pandora's box that no one really wants to open. If and went we force that opening, we at least are paving the way for the debate to be a bit more in our favour.
 
@@ -63,7 +66,7 @@ The European Union is torn on the topic of self-determination. It's a Pandora's 
 subtitle: \[-1 resources\]
 choose-if: russia_reach < 5 and party_resources > 0
 unavailable-subtitle: [? if russia_reach >= 5: We have already built our contacts enough with Russia. ?][? if party_resources <= 0: We do not have enough resources. ?]
-on-arrival: party_resources -=1; russia_reach += 1 + 0.5*raul_romeva_advisor; erc_left_dissent += 3; erc_pragmatic_strength += 2; erc_core_dissent += 1;
+on-arrival: party_resources -=1; russia_reach += 2 + raul_romeva_advisor; erc_left_dissent += 3; erc_pragmatic_strength += 2; erc_core_dissent += 1;
 
 Russia is always willing to support movements that they see as destabilizing for the West. Portraying ourselves as such does have potential benefits, but if this connection is every unveiled it can fastly bomb our credibility. We better thread carefully.
 
@@ -71,7 +74,7 @@ Russia is always willing to support movements that they see as destabilizing for
 subtitle: \[-1 resources\]
 choose-if: usa_reach < 5 and party_resources > 0
 unavailable-subtitle: [? if usa_reach >= 5: We have already built our contacts enough with the USA. ?][? if party_resources <= 0: We do not have enough resources. ?]
-on-arrival: party_resources -=1; usa_reach += 1 + 0.5*raul_romeva_advisor - 0.75*pere_aragones_advisor; erc_civic_strength += 3; erc_core_strength += 2; erc_pragmatic_strength += 1; erc_left_dissent += 1;
+on-arrival: party_resources -=1; usa_reach += 2 + 1*raul_romeva_advisor - 0.75*pere_aragones_advisor; erc_civic_strength += 3; erc_core_strength += 2; erc_pragmatic_strength += 1; erc_left_dissent += 1;
 
 The USA will hardly support a movement explicitly against a NATO ally like Spain, but the battle is not lost yet. Our movement does naturally generate some sympathy, and we may be able to sway some if we play our cards right. [? if pere_aragones_advisor: Pere Aragonès' may not be the most helpful advisor here though. His statements on potential Catalan opposition to becoming a NATO member, while true, are not the best diplomatic play to make. ?]
 
@@ -79,7 +82,7 @@ The USA will hardly support a movement explicitly against a NATO ally like Spain
 subtitle: \[-1 resources\]
 choose-if: china_reach < 5 and party_resources > 0
 unavailable-subtitle: [? if china_reach >= 5: We have already built our contacts enough with China. ?][? if party_resources <= 0: We do not have enough resources. ?]
-on-arrival: party_resources -=1; china_reach += 1 + 0.5*raul_romeva_advisor; erc_pragmatic_strength += 1; erc_core_strength += 1;
+on-arrival: party_resources -=1; china_reach += 2 + 1*raul_romeva_advisor; erc_pragmatic_strength += 1; erc_core_strength += 1;
 
 China is always a wildcard diplomatically. We should not be expecting any sort of direct support, and they have their own issues with self-determination. But nonetheless they may be interested in building friends in the European theatre.
 

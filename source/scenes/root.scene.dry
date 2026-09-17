@@ -1299,8 +1299,12 @@ on-arrival: {!
   Q.spa_ehbildu_active = true;       // if false, amaiur will run again (only if ehbildu is ever banned) + amaiur should also includ gbai if reformed! (TODO!)
   Q.psc_split = false;
   Q.jxsi_in_congreso = false;  // TODO: make this a possibility + block it if CUP is in JxSí
+  Q.jxcat_in_congreso = false; // TODO: make this a possibility // this only marks if erc runs with cdc
 
   // BCN & Local supports
+  Q.jxsi_in_local = false; // TODO: make this a possibility // this only marks if erc runs with cdc
+  Q.jxcat_in_local = false; // TODO: make this a possibility // this only marks if erc runs with cdc
+
   Q.icv_local_barcelona_support = 29.0;
   Q.ciu_local_barcelona_support = 12.5;
   Q.cdc_local_barcelona_support = 0;
@@ -1363,13 +1367,19 @@ on-arrival: {!
     'erc_enemies',
     'erc_reachout',
     'erc_base',
-    'erc_ideology'
+    'erc_ideology',
+    // unity-party
+    'unity_rally_timer',
+    'unity_fundraising',
+    'unity_international'
   ];
   Q.rubicon_timers = [
     "advisor_action",
     'parlament',
     //erc_party
     'erc_campaigning',
+    //unity_party
+    'unity_campaigning'
   ];
   Q.advisor_action_timer = 0;
 
@@ -1566,12 +1576,12 @@ on-arrival: {!
   Q.position_disp = "<span style='font-style: italic;'>Opposition</span>"; 
 
   Q.ciu_relations = 55;
-  Q.cup_relations = 60;
+  Q.cup_relations = 55;
   Q.cs_relations = 3;
-  Q.psc_relations = 30;
+  Q.psc_relations = 38;
   Q.ppc_relations = 2;
   Q.si_relations = 65;
-  Q.icv_relations = 55;
+  Q.icv_relations = 50;
   Q.vox_relations = 0;
   Q.pxc_relations = 1;
 

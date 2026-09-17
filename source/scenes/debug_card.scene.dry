@@ -412,7 +412,7 @@ on-arrival: {!
     var target = Q.player_party;
     if (Q.player_in_jxsi && Q.jxsi_in_congreso) {
         target = "jxsi";
-    } else if (Q.player_in_jxcat) {
+    } else if (Q.player_in_jxcat && Q.jxcat_in_congreso) {
         target = "jxcat";
     }
     G.spaSupportInjecT(Q, target, "catalunya", 5)

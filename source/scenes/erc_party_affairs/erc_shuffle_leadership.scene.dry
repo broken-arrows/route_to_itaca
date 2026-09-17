@@ -5,7 +5,7 @@ on-arrival: erc_shuffle_leadership_timer += 4; month_actions += 1 if difficulty 
 frequency: 100
 is-card: true
 card-image: img/erc/congres.jepg
-tags: erc_party
+tags: erc_party jxsi_party jxcat_party
 role: card-party
 
 = Shuffle Leadership

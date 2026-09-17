@@ -1,8 +1,8 @@
 title: Unitary Campaigning
 new-page: true
 is-card: true
-view-if: not rubicon or unity_campaign_timer <= 0
-on-arrival: month_actions += 1; unity_campaign_timer = 2 if rubicon
+view-if: not rubicon or unity_campaigning <= 0
+on-arrival: month_actions += 1; unity_campaigning = 2 if rubicon
 card-image: img/jxsi/campaign.jpeg
 face-image: img/jxsi/campaign.jpeg
 tags: jxsi_party jxcat_party
@@ -182,7 +182,7 @@ go-to: erc_campaigning.local_election
 # TODO: text + cases for jxsi/jxcat going together in local elections, etc
 
 @congreso_election
-view-if: next_spanish_election_time - time <= 12 and jxsi_in_congreso
+view-if: next_spanish_election_time - time <= 12 and (jxsi_in_congreso or jxcat_in_congreso)
 subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.

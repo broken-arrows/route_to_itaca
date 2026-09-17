@@ -17,7 +17,7 @@ on-arrival: {!
 
     var playerVehicle = Q.player_party;
     if ((Q.player_party === "erc" && Q.erc_in_jxsi) || (Q.player_party === "cup" && Q.cup_in_jxsi)) playerVehicle = "jxsi";
-    else if ((Q.player_party === "erc" && Q.erc_in_jxcat) || (Q.player_party === "cup" && Q.cup_in_jxcat)) playerVehicle = "jxcat";
+    else if (Q.jxcat_in_congreso && ((Q.player_party === "erc" && Q.erc_in_jxcat) || (Q.player_party === "cup" && Q.cup_in_jxcat))) playerVehicle = "jxcat";
     Q.congreso_player_vehicle = playerVehicle;
     Q.congreso_player_s = S(playerVehicle);
 
@@ -617,7 +617,7 @@ go-to: coalition_list if congreso_coalition_barons_flag != 1; barons_intervene i
 title: Force new elections!
 subtitle: We are the kingmakers with this arithmetics after all
 choose-if: congreso_coalition_force_elections
-unavailable-subtitle: This is out of our control
+unavailable-subtitle: This is out of our control.
 on-arrival: {!    
     Q.next_spanish_election_time = Q.time + 6;
     Q.next_spanish_election_month = Q.month + 6;

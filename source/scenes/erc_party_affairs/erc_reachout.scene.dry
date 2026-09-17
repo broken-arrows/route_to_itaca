@@ -55,19 +55,25 @@ We have collaborated and talked before with the BNG, as we share many points in 
 @campaign_bng
 title: Campaign together with the BNG
 on-arrival: {!
+    var targetCongreso = "erc";
+    if (Q.erc_in_jxsi && Q.jxsi_in_congreso) {
+        targetCongreso = "jxsi";
+    } else if (Q.erc_in_jxcat && Q.jxcat_in_congreso) {
+        targetCongreso = "jxcat";
+    }
     if (Q.podemos_surged) {
         G.spaSupportInject(Q, "bng", "galicia", 3, "podemos");
-        G.spaSupportInject(Q, "erc", "catalunya", 2, "podemos");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 2, "podemos");
     } else {
         G.spaSupportInject(Q, "bng", "galicia", 3, "iu");
-        G.spaSupportInject(Q, "erc", "catalunya", 3, "iu");
+        G.spaSupportInject(Q, targetCongreso , "catalunya", 3, "iu");
     }
     G.spaSupportInject(Q, "bng", "galicia", 3, "psoe");
     G.spaSupportInject(Q, "bng", "galicia", 1, "pp");
     if (Q.psc_split) {
-        G.spaSupportInject(Q, "erc", "catalunya", 1, "psc");
+        G.spaSupportInject(Q, targetCongreso , "catalunya", 1, "psc");
     } else {
-        G.spaSupportInject(Q, "erc", "catalunya", 1, "psoe");
+        G.spaSupportInject(Q, targetCongreso , "catalunya", 1, "psoe");
     }  
 !}
 
@@ -89,10 +95,17 @@ on-arrival: {!
 
     Q.independence_trust -= 3;
 
+    var targetCongreso = "erc";
+    if (Q.erc_in_jxsi && Q.jxsi_in_congreso) {
+        targetCongreso = "jxsi";
+    } else if (Q.erc_in_jxcat && Q.jxcat_in_congreso) {
+        targetCongreso = "jxcat";
+    }
+
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "cup", "catalunya", 1, "erc");
+        G.spaSupportInject(Q, "cup", "catalunya", 1, targetCongreso);
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "fr", "catalunya", 1, "erc");
+        G.spaSupportInject(Q, "fr", "catalunya", 1, targetCongreso);
     }
 !}
 
@@ -107,6 +120,13 @@ view-if: podemos_surged
 choose-if: party_reaching_out_bng < 2
 unavailable-subtitle: We've already done everything in our hand to prop up their independence.
 on-arrival: {!
+    var targetCongreso = "erc";
+    if (Q.erc_in_jxsi && Q.jxsi_in_congreso) {
+        targetCongreso = "jxsi";
+    } else if (Q.erc_in_jxcat && Q.jxcat_in_congreso) {
+        targetCongreso = "jxcat";
+    }
+    
     Q[Q.parlament_current_icv + "_relations"] -= 5;
     Q["cup_relations"] +=3;
     Q.cat_spa_relations -= 1;
@@ -114,9 +134,9 @@ on-arrival: {!
     
     Q.independence_trust += 1;
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "cup");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 0.5, "cup");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "fr");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 0.5, "fr");
     }
 !}
 
@@ -131,6 +151,13 @@ subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
+    var targetCongreso = "erc";
+    if (Q.erc_in_jxsi && Q.jxsi_in_congreso) {
+        targetCongreso = "jxsi";
+    } else if (Q.erc_in_jxcat && Q.jxcat_in_congreso) {
+        targetCongreso = "jxcat";
+    }
+
     Q.party_resources -= 1
     if (Q.podemos_surged) {
         G.spaSupportInject(Q, "pnv", "euskadi", 2, "podemos");
@@ -165,25 +192,32 @@ choose-if: party_resources >= 1
 view-if: spa_ehbildu_active
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
+    var targetCongreso = "erc";
+    if (Q.erc_in_jxsi && Q.jxsi_in_congreso) {
+        targetCongreso = "jxsi";
+    } else if (Q.erc_in_jxcat && Q.jxcat_in_congreso) {
+        targetCongreso = "jxcat";
+    }
+
     // TODO: path for them joining UP? or too implausible?
     Q.party_resources -= 1;
     if (Q.podemos_surged) {
         G.spaSupportInject(Q, "ehbildu", "euskadi", 3, "podemos");
-        G.spaSupportInject(Q, "erc", "catalunya", 2, "podemos");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 2, "podemos");
         G.spaSupportInject(Q, "ehbildu", "navarra", 1, "podemos");
     } else {
         G.spaSupportInject(Q, "ehbildu", "euskadi", "3", "iu");
         G.spaSupportInject(Q, "ehbildu", "navarra", "1", "iu");
-        G.spaSupportInject(Q, "erc", "catalunya", "3", "iu");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", "3", "iu");
     }
     G.spaSupportInject(Q, "ehbildu", "euskadi", 2, "psoe");
     G.spaSupportInject(Q, "ehbildu", "euskadi", 1, "pnv");
     G.spaSupportInject(Q, "ehbildu", "navarra", 1, "gbai");
     G.spaSupportInject(Q, "ehbildu", "navarra", 1, "psoe");
     if (Q.psc_split) {
-        G.spaSupportInject(Q, "erc", "catalunya", 1, "psc");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 1, "psc");
     } else {
-        G.spaSupportInject(Q, "erc", "catalunya", 1, "psoe");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 1, "psoe");
     }
 !}
 
@@ -198,6 +232,13 @@ subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
+    var targetCongreso = "erc";
+    if (Q.erc_in_jxsi && Q.jxsi_in_congreso) {
+        targetCongreso = "jxsi";
+    } else if (Q.erc_in_jxcat && Q.jxcat_in_congreso) {
+        targetCongreso = "jxcat";
+    }
+
     // TODO: path for them joining UP? or too implausible?
     Q.party_resources -= 1
     if (Q.podemos_surged) {
@@ -208,11 +249,11 @@ on-arrival: {!
         G.spaSupportInject(Q, "gbai", "navarra", 4, "iu");
     }
     if (Q.psc_split) {
-        G.spaSupportInject(Q, "erc", "catalunya", 1, "psc");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 1, "psc");
     } else {
-        G.spaSupportInject(Q, "erc", "catalunya", 1, "psoe");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 1, "psoe");
     }
-    G.spaSupportInject(Q, "erc", "catalunya", 1, "ciu");
+    G.spaSupportInject(Q, targetCongreso, "catalunya", 1, "ciu");
     G.spaSupportInject(Q, "pnv", "euskadi", 0.5, "psoe");
     G.spaSupportInject(Q, "pnv", "euskadi", 2, "ehbildu");
     G.spaSupportInject(Q, "gbai", "navarra", 3, "ehbildu");
@@ -231,24 +272,32 @@ choose-if: party_resources >= 1
 view-if: not spa_ehbildu_active
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
+    var targetCongreso = "erc";
+    if (Q.erc_in_jxsi && Q.jxsi_in_congreso) {
+        targetCongreso = "jxsi";
+    } else if (Q.erc_in_jxcat && Q.jxcat_in_congreso) {
+        targetCongreso = "jxcat";
+    }
+
+    
     Q.party_resources -= 1;
     if (Q.podemos_surged) {
         G.spaSupportInject(Q, "amaiur", "euskadi", 4, "podemos");
-        G.spaSupportInject(Q, "erc", "catalunya", 4, "podemos");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 4, "podemos");
         G.spaSupportInject(Q, "amaiur", "navarra", 3, "podemos");
     } else {
         G.spaSupportInject(Q, "amaiur", "euskadi", 5, "iu");
         G.spaSupportInject(Q, "amaiur", "navarra", 5, "iu");
-        G.spaSupportInject(Q, "erc", "catalunya", 5, "iu");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 5, "iu");
     }
     G.spaSupportInject(Q, "amaiur", "euskadi", 3, "psoe");
     G.spaSupportInject(Q, "amaiur", "euskadi", 1, "pnv");
     G.spaSupportInject(Q, "amaiur", "navarra", 1, "gbai");
     G.spaSupportInject(Q, "amaiur", "navarra", 3, "psoe");
     if (Q.psc_split) {
-        G.spaSupportInject(Q, "erc", "catalunya", 2, "psc");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 2, "psc");
     } else {
-        G.spaSupportInject(Q, "erc", "catalunya", 4, "psoe");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 4, "psoe");
     }
 !}
 
@@ -273,19 +322,26 @@ compromis is a relatively new coalition of broadly regionalist, federalist, repu
 @campaign_compromis
 title: Campaign together with compromis
 on-arrival: {!
+    var targetCongreso = "erc";
+    if (Q.erc_in_jxsi && Q.jxsi_in_congreso) {
+        targetCongreso = "jxsi";
+    } else if (Q.erc_in_jxcat && Q.jxcat_in_congreso) {
+        targetCongreso = "jxcat";
+    }
+
     if (Q.podemos_surged) {
         G.spaSupportInject(Q, "compromis", "valencia", 4, "podemos");
-        G.spaSupportInject(Q, "erc", "catalunya", 2, "podemos");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 2, "podemos");
     } else {
         G.spaSupportInject(Q, "compromis", "valencia", 3, "iu");
-        G.spaSupportInject(Q, "erc", "catalunya", 3, "iu");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 3, "iu");
     }
     G.spaSupportInject(Q, "compromis", "valencia", 2.5, "psoe");
     G.spaSupportInject(Q, "compromis", "valencia", 1, "pp");  
     if (Q.psc_split) {
-        G.spaSupportInject(Q, "erc", "catalunya", 1, "psc");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 1, "psc");
     } else {
-        G.spaSupportInject(Q, "erc", "catalunya", 1.5, "psoe");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 1.5, "psoe");
     }
 !}
 
@@ -300,6 +356,13 @@ view-if: podemos_surged
 choose-if: party_reaching_out_compromis > -2
 unavailable-subtitle: We've already done everything in our hand to bring them as close as possible.
 on-arrival: {!
+    var targetCongreso = "erc";
+    if (Q.erc_in_jxsi && Q.jxsi_in_congreso) {
+        targetCongreso = "jxsi";
+    } else if (Q.erc_in_jxcat && Q.jxcat_in_congreso) {
+        targetCongreso = "jxcat";
+    }
+    
     Q[Q.parlament_current_icv + "_relations"] += 5;
     Q["cup_relations"] -= 3;
     Q.cat_spa_relations += 1;
@@ -308,9 +371,9 @@ on-arrival: {!
     Q.independence_trust -= 3;
 
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "cup", "catalunya", 1, "erc");
+        G.spaSupportInject(Q, "cup", "catalunya", 1, targetCongreso);
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "fr", "catalunya", 1, "erc");
+        G.spaSupportInject(Q, "fr", "catalunya", 1, targetCongreso);
     }
 !}
 
@@ -325,6 +388,13 @@ view-if: podemos_surged
 choose-if: party_reaching_out_compromis < 2
 unavailable-subtitle: We've already done everything in our hand to prop up their independence.
 on-arrival: {!
+    var targetCongreso = "erc";
+    if (Q.erc_in_jxsi && Q.jxsi_in_congreso) {
+        targetCongreso = "jxsi";
+    } else if (Q.erc_in_jxcat && Q.jxcat_in_congreso) {
+        targetCongreso = "jxcat";
+    }
+
     Q[Q.parlament_current_icv + "_relations"] -= 5;
     Q["cup_relations"] +=3;
     Q.cat_spa_relations -= 1;
@@ -332,9 +402,9 @@ on-arrival: {!
     
     Q.independence_trust += 1;
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "cup");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 0.5, "cup");
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "fr");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 0.5, "fr");
     }
 !}
 
@@ -359,19 +429,26 @@ MES is a small group, but we do have many shared fights with them, like those on
 @campaign_mes
 title: Campaign together with MES
 on-arrival: {!
+    var targetCongreso = "erc";
+    if (Q.erc_in_jxsi && Q.jxsi_in_congreso) {
+        targetCongreso = "jxsi";
+    } else if (Q.erc_in_jxcat && Q.jxcat_in_congreso) {
+        targetCongreso = "jxcat";
+    }
+
     if (Q.podemos_surged) {
         G.spaSupportInject(Q, "mes", "balears", 3, "podemos");
-        G.spaSupportInject(Q, "erc", "catalunya", 1, "podemos");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 1, "podemos");
     } else {
         G.spaSupportInject(Q, "mes", "balears", 3, "iu");
-        G.spaSupportInject(Q, "erc", "catalunya", 2, "iu");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 2, "iu");
     }
     G.spaSupportInject(Q, "mes", "balears", 2, "psoe");
     G.spaSupportInject(Q, "mes", "balears", 0.5, "pp");  
     if (Q.psc_split) {
-        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "psc");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 0.5, "psc");
     } else {
-        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "psoe");
+        G.spaSupportInject(Q, targetCongreso, "catalunya", 0.5, "psoe");
     }
 !}
 
@@ -386,6 +463,14 @@ view-if: podemos_surged
 choose-if: party_reaching_out_mes > -2
 unavailable-subtitle: We've already done everything in our hand to bring them as close as possible.
 on-arrival: {!
+    var targetCongreso = "erc";
+    if (Q.erc_in_jxsi && Q.jxsi_in_congreso) {
+        targetCongreso = "jxsi";
+    } else if (Q.erc_in_jxcat && Q.jxcat_in_congreso) {
+        targetCongreso = "jxcat";
+    }
+
+
     Q[Q.parlament_current_icv + "_relations"] += 5;
     Q["cup_relations"] -=3;
     Q.cat_spa_relations += 1;
@@ -394,9 +479,9 @@ on-arrival: {!
     Q.independence_trust -= 3;
 
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "cup", "catalunya", 1, "erc");
+        G.spaSupportInject(Q, "cup", "catalunya", 1, targetCongreso);
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "fr", "catalunya", 1, "erc");
+        G.spaSupportInject(Q, "fr", "catalunya", 1, targetCongreso);
     }
 !}
 
@@ -410,6 +495,13 @@ view-if: podemos_surged
 choose-if: party_reaching_out_mes < 2
 unavailable-subtitle: We've already done everything in our hand to prop up their independence.
 on-arrival: {!
+    var targetCongreso = "erc";
+    if (Q.erc_in_jxsi && Q.jxsi_in_congreso) {
+        targetCongreso = "jxsi";
+    } else if (Q.erc_in_jxcat && Q.jxcat_in_congreso) {
+        targetCongreso = "jxcat";
+    }
+
     Q[Q.parlament_current_icv + "_relations"] -= 5;
     Q["cup_relations"] +=3;
     Q.cat_spa_relations -= 1;
@@ -417,9 +509,9 @@ on-arrival: {!
     
     Q.independence_trust += 1;
     if (Q.spa_cup_active) {
-        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "cup");
+        G.spaSupportInject(Q, "erc", "catalunya", 0.5, targetCongreso);
     } else if (Q.spa_fr_active) {
-        G.spaSupportInject(Q, "erc", "catalunya", 0.5, "fr");
+        G.spaSupportInject(Q, "erc", "catalunya", 0.5, targetCongreso);
     }
 !}
 

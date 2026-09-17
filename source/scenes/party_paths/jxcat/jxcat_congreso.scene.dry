@@ -1,0 +1,38 @@
+title: Together for the Congreso?
+subtitle: ERC and JxCat must decide whether to extend their coalition to the Spanish election
+view-if: player_party == "erc" and jxcat_formed and erc_in_jxcat and not jxcat_in_congreso and next_spanish_election_time - time <= 6 and next_spanish_election_time - time >= 3
+tags: event
+new-page: true
+max-visits: 1
+
+= Together for the Congreso?
+
+Our alliance with JxCat was formed for the Parlament, but the upcoming Spanish election presents a separate choice. Running together would offer voters a single pro-independence candidacy in Catalonia and a united delegation in Madrid; running separately would preserve ERC's own voice.
+
+- @together: Extend the JxCat coalition to the Congreso
+- @separate: Run as ERC in the Congreso
+
+@together
+on-arrival: {!
+    var carriers = ["ciu", "cdc", "dl", "pdcat", "junts"];
+    var support = Q.jxcat_congreso_catalunya_support || 0;
+    for (var carrier of carriers) {
+        var key = carrier + "_congreso_catalunya_support";
+        support += Q[key] || 0;
+        Q[key] = 0;
+    }
+    support += Q.erc_congreso_catalunya_support || 0;
+    Q.erc_congreso_catalunya_support = 0;
+    Q.jxcat_congreso_catalunya_support = support;
+    Q.jxcat_in_congreso = true;
+!}
+
+ERC and JxCat will contest the Congreso election together, combining their support behind the JxCat ballot.
+
+- @post_event: We will present a united delegation
+
+@separate
+
+ERC and JxCat will contest the Congreso election separately.
+
+- @post_event: Each party will defend its own programme

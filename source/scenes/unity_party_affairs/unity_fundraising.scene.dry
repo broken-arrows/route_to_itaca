@@ -1,0 +1,41 @@
+title: Unitary Fundraising
+new-page: true
+view-if: unity_fundraising_timer <= 0
+on-arrival: unity_fundraising_timer = 12; month_actions += 1
+is-card: true
+card-image: img/jxsi/centmil.jpg
+face-image: img/jxsi/centmil.jpg
+tags: jxsi_party
+role: card-party
+
+= Fundraising
+
+Fact is, even as a part of a coalition as big as jxsi, we still needs resources to work. [? if party_income < 2: Right now, the vast majority of our funding comes from public subsidies, which are dependant on our electoral results. ?][? if party_income > 2: Despite a part of our funding still coming from public subsidies, our recent party affiliation rates hike means we are less dependant on those than what we used to be. ?] While we can tweak internal [+ player_party +] membership dues, changing public party subsidies is out of the table for as long as we're a part of the jxsi coalition.
+
+# TODO: jxcat equivalent where the union is more formalized and allows for actual increase in rates
+
+- @raise_rates_erc
+- @lower_rates
+- @donations_campaign
+- @donations_lowkey
+- @return: We do not need to discuss funding at this moment
+- @easy_discard
+- @cancel_advisor_action
+
+@raise_rates_erc
+title: Raise party dues
+choose-if: party_income < 2
+unavailable-subtitle: Party dues are already as high as they can reasonably be.
+view-if: player_party = "erc"
+go-to: erc-fundraising.raise_rates
+
+@lower_rates
+title: Lower party dues
+view-if: player_party = "erc"
+subtitle: [? if party_income = 2: \[-1 resources\]?]
+choose-if: party_income >= 1 and (party_resources > 0 or party_income < 2)
+unavailable-subtitle: [? if party_income < 1: Dues are already as low as they can be. ?][? if party_resources < 1 and party_income == 2: Not enough resources. ?]
+go-to: erc-fundraising.raise_rates
+
+@donations_campaign
+@donations_lowkey

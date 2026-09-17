@@ -19,24 +19,26 @@ While the proposal is exciting for many, it is also a big ask. The collaboration
 @erc_0
 on-arrival: {!
     Q.jxsi_formation_erc_leverage = 0;
-    const _activeCiu = Q.cdc_parlament_s > 0 ? "cdc" : Q.dl_parlament_s > 0 ? "dl" : "pdcat";
+
     for (var c of Q.parlament_constituencies) {
         var erc_votes = 0;
         var ciu_votes = 0;
         for (var d of Q.parlament_demographics) {
             erc_votes += Q["erc_parlament_" + c + "_" + d+ "_support"] * Q["parlament_" + c + "_" + d + "_pop"];
-            ciu_votes += Q[_activeCiu + "_parlament_" + c + "_" + d+ "_support"] * Q["parlament_" + c + "_" + d + "_pop"];
+            ciu_votes += Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d+ "_support"] * Q["parlament_" + c + "_" + d + "_pop"];
         }
         if (erc_votes >= ciu_votes) {
             Q.jxsi_formation_erc_leverage += 1;
         }
     }
-    if (Q[_activeCiu + "_relations"] > 65) {
+    if (Q[Q.parlament_current_ciu + "_relations"] > 65) {
         Q.jxsi_formation_erc_leverage += 1;
     }
     if (Q.erc_parlament_s >= Q.ciu_parlament_s * 0.85) {
         Q.jxsi_formation_erc_leverage += 1;
     }
+
+    console.log("erc_leverage", Q.jxsi_formation_erc_leverage);
     // TODO: Other forms of leverage win for erc??
 !}
 
@@ -52,10 +54,10 @@ title: [? if cdc_parlament_s > 0: CDC's candidate, [+ cdc_leader +]?][? if dl_pa
 subtitle: The formal split will be 40 - 60 between ERC and [? if cdc_parlament_s > 0: CDC?][? if dl_parlament_s > 0: DL?][? if pdcat_parlament_s > 0: PDeCAT?]
 face-image: img/events/jxsi_mas.jpg
 on-arrival: {!
-    Q.jxsi_formation_num = 45;
-    const _activeCiu = Q.cdc_parlament_s > 0 ? "cdc" : Q.dl_parlament_s > 0 ? "dl" : "pdcat";
-    Q.jxsi_leader = Q[_activeCiu + "_leader"];
-    Q.jxsi_leader_gender = Q[_activeCiu + "_leader_gender"];
+    Q.jxsi_formation_num = 40;
+
+    Q.jxsi_leader = Q[Q.parlament_current_ciu + "_leader"];
+    Q.jxsi_leader_gender = Q[Q.parlament_current_ciu + "_leader_gender"];
 !}
 go-to: erc_jxsi_formation
 
@@ -106,7 +108,6 @@ on-arrival: {!
     Q.elisenda_paluzie_advisor_available = 0;
     Q.independence_trust -= 15;
 
-    const _activeCiu = Q.cdc_parlament_s > 0 ? "cdc" : Q.dl_parlament_s > 0 ? "dl" : "pdcat";
     const fringe = Q.fnc_formed && Q.pxc_dissolved ? "fnc" : "abs";
     const losses = {
         buss: {budget: 5, routes: [["abs", 1.5], ["cup", 1.5], ["icr", 3]]},
@@ -137,7 +138,7 @@ on-arrival: {!
         Q.ecp_relations += 10;
     }
 
-    Q[_activeCiu + "_relations"] -= 15;
+    Q[Q.parlament_current_ciu + "_relations"] -= 15;
 !}
 
 This decision is highly disappointing not only for the leadership at [? if cdc_parlament_s > 0: CDC?][? if dl_parlament_s > 0: DL?][? if pdcat_parlament_s > 0: the PDeCAT?], but also within the party. Internal tensions are rising as some see it as throwing away the once-in-a-generation chance to actually push for a unified front for independence. 
@@ -148,21 +149,23 @@ This decision is highly disappointing not only for the leadership at [? if cdc_p
 on-arrival: {!
     this.achieve("jxsi");
 
+    Q.historical_event = "A national unity list, jxsi will work on rallying support and votes to a single, independence-focused candidacy around " + Q.jxsi_leader + ".";
+
     Q.jxsi_formed = true;
     Q.jxsi_roadmap = 2;
     Q.roadmap_year = Q.year + 2;
     Q.erc_in_jxsi = true;
     Q.player_in_jxsi = true;
-    const _activeCiu = Q.cdc_parlament_s > 0 ? "cdc" : Q.dl_parlament_s > 0 ? "dl" : "pdcat";
-    Q[_activeCiu + "_in_jxsi"] = true;
+    
+    Q[Q.parlament_current_ciu + "_in_jxsi"] = true;
 
-    Q.jxsi_parlament_s = Q[_activeCiu + "_parlament_s"] + Q.erc_parlament_s;
+    Q.jxsi_parlament_s = Q[Q.parlament_current_ciu + "_parlament_s"] + Q.erc_parlament_s;
     Q.erc_parlament_s = 0;
-    Q[_activeCiu + "_parlament_s"] = 0;
+    Q[Q.parlament_current_ciu + "_parlament_s"] = 0;
 
     // block parlament card from appearing
     Q.cat_caretaker_gov = true;
-    if (Q.cat_coalition.includes(_activeCiu) || Q.cat_coalition.includes("erc")) {
+    if (Q.cat_coalition.includes(Q.parlament_current_ciu) || Q.cat_coalition.includes("erc")) {
         Q.position_disp = "<span style='font-style: italic'>Government Support</span>";
     } 
 
@@ -174,13 +177,13 @@ on-arrival: {!
         Q["abstain_parlament_" + c + "_young_support"] -= 2;
         Q["abstain_parlament_" + c + "_retired_support"] -= 2;
         Q["abstain_parlament_" + c + "_rural_support"] -= 2.5;
-        Q["jxsi_parlament_" + c + "_buss_support"] =  Q[_activeCiu + "_parlament_" + c + "_buss_support"] + Q["erc_parlament_" + c + "_buss_support"] + 0.5;
-        Q["jxsi_parlament_" + c + "_ind_support"] += Q[_activeCiu + "_parlament_" + c + "_ind_support"] + Q["erc_parlament_" + c + "_ind_support"] - 1;
-        Q["jxsi_parlament_" + c + "_middle_support"] += Q[_activeCiu + "_parlament_" + c + "_middle_support"] + Q["erc_parlament_" + c + "_middle_support"] - 1;
-        Q["jxsi_parlament_" + c + "_unemployed_support"] += Q[_activeCiu + "_parlament_" + c + "_unemployed_support"] + Q["erc_parlament_" + c + "_unemployed_support"] - 3;
-        Q["jxsi_parlament_" + c + "_young_support"] += Q[_activeCiu + "_parlament_" + c + "_young_support"] + Q["erc_parlament_" + c + "_young_support"] - 2;
-        Q["jxsi_parlament_" + c + "_retired_support"] += Q[_activeCiu + "_parlament_" + c + "_retired_support"] + Q["erc_parlament_" + c + "_retired_support"] + 1.5;
-        Q["jxsi_parlament_" + c + "_rural_support"] += Q[_activeCiu + "_parlament_" + c + "_rural_support"] + Q["erc_parlament_" + c + "_rural_support"] + 0.75;
+        Q["jxsi_parlament_" + c + "_buss_support"] =  Q[Q.parlament_current_ciu + "_parlament_" + c + "_buss_support"] + Q["erc_parlament_" + c + "_buss_support"] + 0.5;
+        Q["jxsi_parlament_" + c + "_ind_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_ind_support"] + Q["erc_parlament_" + c + "_ind_support"] - 1;
+        Q["jxsi_parlament_" + c + "_middle_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_middle_support"] + Q["erc_parlament_" + c + "_middle_support"] - 1;
+        Q["jxsi_parlament_" + c + "_unemployed_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_unemployed_support"] + Q["erc_parlament_" + c + "_unemployed_support"] - 3;
+        Q["jxsi_parlament_" + c + "_young_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_young_support"] + Q["erc_parlament_" + c + "_young_support"] - 2;
+        Q["jxsi_parlament_" + c + "_retired_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_retired_support"] + Q["erc_parlament_" + c + "_retired_support"] + 1.5;
+        Q["jxsi_parlament_" + c + "_rural_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_rural_support"] + Q["erc_parlament_" + c + "_rural_support"] + 0.75;
         if (Q.jxsi_formation_num == 40) {
             // Anti-ciu, indy vote goes to CUP
             Q["cup_parlament_" + c + "_buss_support"] += 0.5;
@@ -206,13 +209,13 @@ on-arrival: {!
         Q["erc_parlament_" + c + "_young_support"] = 0;
         Q["erc_parlament_" + c + "_retired_support"] = 0;
         Q["erc_parlament_" + c + "_rural_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_buss_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_ind_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_middle_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_unemployed_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_young_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_retired_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_rural_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_buss_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_ind_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_middle_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_unemployed_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_young_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_retired_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_rural_support"] = 0;
     }
 
     Q.independence_movement += 5;
@@ -257,6 +260,7 @@ on-arrival: {!
 
 @jxsi_cup_no
 title: The CUP stays out of the coalition
+on-arrival: cup_relations -= 10
 subtitle: [? if jxsi_formation_num != 50: Something about betraying the original idea of a civic list and instead doing yet another party-centric coalition ?]
 
 Seems like National Unity will have to do without the CUP for now. Even without them, this is a huge step forward for the upcoming elections! The vote of our lives!
@@ -267,10 +271,12 @@ Seems like National Unity will have to do without the CUP for now. Even without 
 on-arrival: {!
     this.achieve("jxsi");
 
+    Q.historical_event = "A national unity list, jxsi will work on rallying support and votes to a single, independence-focused candidacy around " + Q.jxsi_leader + ".";
+
     Q.jxsi_formed = true;
     Q.erc_in_jxsi = true;
-    const _activeCiu = Q.cdc_parlament_s > 0 ? "cdc" : Q.dl_parlament_s > 0 ? "dl" : "pdcat";
-    Q[_activeCiu + "_in_jxsi"] = true;
+    
+    Q[Q.parlament_current_ciu + "_in_jxsi"] = true;
     Q.cat_caretaker_gov = true;
 !}
 
@@ -310,19 +316,20 @@ on-arrival: {!
     Q.cup_thirdsector_strength += 5;
     Q.cup_thirdsector_dissent -= 2;
 
-    const _activeCiu = Q.cdc_parlament_s > 0 ? "cdc" : Q.dl_parlament_s > 0 ? "dl" : "pdcat"
+    Q.erc_relations -= 10;
+    Q[Q.parlament_current_ciu + "_relations"] -= 10;
 
     if (Q.jxsi_formation_num == 40) {
-        Q.jxsi_leader = Q[_activeCiu + "_leader"];
-        Q.jxsi_leader_gender = Q[_activeCiu + "_leader_gender"];
+        Q.jxsi_leader = Q[Q.parlament_current_ciu + "_leader"];
+        Q.jxsi_leader_gender = Q[Q.parlament_current_ciu + "_leader_gender"];
     } else {
         Q.jxsi_leader = "Raül Romeva"
         Q.jxsi_leader_gender = "m";
     }
 
-    Q.jxsi_parlament_s = Q[_activeCiu + "_parlament_s"] + Q.erc_parlament_s;
+    Q.jxsi_parlament_s = Q[Q.parlament_current_ciu + "_parlament_s"] + Q.erc_parlament_s;
     Q.erc_parlament_s = 0;
-    Q[_activeCiu + "_parlament_s"] = 0;
+    Q[Q.parlament_current_ciu + "_parlament_s"] = 0;
 
     for (const c of Q.parlament_constituencies) {
         Q["abstain_parlament_" + c + "_buss_support"] -= 1;
@@ -332,13 +339,13 @@ on-arrival: {!
         Q["abstain_parlament_" + c + "_young_support"] -= 2;
         Q["abstain_parlament_" + c + "_retired_support"] -= 2;
         Q["abstain_parlament_" + c + "_rural_support"] -= 2.5;
-        Q["jxsi_parlament_" + c + "_buss_support"] =  Q[_activeCiu + "_parlament_" + c + "_buss_support"] + Q["erc_parlament_" + c + "_buss_support"] + 0.5;
-        Q["jxsi_parlament_" + c + "_ind_support"] += Q[_activeCiu + "_parlament_" + c + "_ind_support"] + Q["erc_parlament_" + c + "_ind_support"] - 1;
-        Q["jxsi_parlament_" + c + "_middle_support"] += Q[_activeCiu + "_parlament_" + c + "_middle_support"] + Q["erc_parlament_" + c + "_middle_support"] - 1;
-        Q["jxsi_parlament_" + c + "_unemployed_support"] += Q[_activeCiu + "_parlament_" + c + "_unemployed_support"] + Q["erc_parlament_" + c + "_unemployed_support"] - 3;
-        Q["jxsi_parlament_" + c + "_young_support"] += Q[_activeCiu + "_parlament_" + c + "_young_support"] + Q["erc_parlament_" + c + "_young_support"] - 2;
-        Q["jxsi_parlament_" + c + "_retired_support"] += Q[_activeCiu + "_parlament_" + c + "_retired_support"] + Q["erc_parlament_" + c + "_retired_support"] + 1.5;
-        Q["jxsi_parlament_" + c + "_rural_support"] += Q[_activeCiu + "_parlament_" + c + "_rural_support"] + Q["erc_parlament_" + c + "_rural_support"] + 0.75;
+        Q["jxsi_parlament_" + c + "_buss_support"] =  Q[Q.parlament_current_ciu + "_parlament_" + c + "_buss_support"] + Q["erc_parlament_" + c + "_buss_support"] + 0.5;
+        Q["jxsi_parlament_" + c + "_ind_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_ind_support"] + Q["erc_parlament_" + c + "_ind_support"] - 1;
+        Q["jxsi_parlament_" + c + "_middle_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_middle_support"] + Q["erc_parlament_" + c + "_middle_support"] - 1;
+        Q["jxsi_parlament_" + c + "_unemployed_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_unemployed_support"] + Q["erc_parlament_" + c + "_unemployed_support"] - 3;
+        Q["jxsi_parlament_" + c + "_young_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_young_support"] + Q["erc_parlament_" + c + "_young_support"] - 2;
+        Q["jxsi_parlament_" + c + "_retired_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_retired_support"] + Q["erc_parlament_" + c + "_retired_support"] + 1.5;
+        Q["jxsi_parlament_" + c + "_rural_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_rural_support"] + Q["erc_parlament_" + c + "_rural_support"] + 0.75;
         if (Q.jxsi_formation_num == 40) {
             // Anti-ciu, indy vote goes to CUP
             Q["cup_parlament_" + c + "_buss_support"] += 0.5;
@@ -364,13 +371,13 @@ on-arrival: {!
         Q["erc_parlament_" + c + "_young_support"] = 0;
         Q["erc_parlament_" + c + "_retired_support"] = 0;
         Q["erc_parlament_" + c + "_rural_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_buss_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_ind_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_middle_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_unemployed_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_young_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_retired_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_rural_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_buss_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_ind_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_middle_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_unemployed_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_young_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_retired_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_rural_support"] = 0;
     }
     
     Q.independence_movement += 5;
@@ -391,15 +398,14 @@ on-arrival: {!
 
     Q.cup_in_jxsi = true;
     Q.player_in_jxsi = true;
-    const _activeCiu = Q.cdc_parlament_s > 0 ? "cdc" : Q.dl_parlament_s > 0 ? "dl" : "pdcat";
     const _activeComuns = Q.icv_parlament_s > 0 ? "icv" : Q.csqp_parlament_s > 0 ? "csqp" : Q.cecp_parlament_s > 0 ? "cecp" : "ecp";
 
-    Q.jxsi_leader = Q[_activeCiu + "_leader"];
-    Q.jxsi_leader_gender = Q[_activeCiu + "_leader_gender"];
+    Q.jxsi_leader = Q[Q.parlament_current_ciu + "_leader"];
+    Q.jxsi_leader_gender = Q[Q.parlament_current_ciu + "_leader_gender"];
 
-    Q.jxsi_parlament_s = Q[_activeCiu + "_parlament_s"] + Q.erc_parlament_s + Q.cup_parlament_s;
+    Q.jxsi_parlament_s = Q[Q.parlament_current_ciu + "_parlament_s"] + Q.erc_parlament_s + Q.cup_parlament_s;
     Q.erc_parlament_s = 0;
-    Q[_activeCiu + "_parlament_s"] = 0;
+    Q[Q.parlament_current_ciu + "_parlament_s"] = 0;
     Q.cup_parlament_s = 0;
 
     for (const c of Q.parlament_constituencies) {
@@ -410,13 +416,13 @@ on-arrival: {!
         Q["abstain_parlament_" + c + "_young_support"] -= 2;
         Q["abstain_parlament_" + c + "_retired_support"] -= 2;
         Q["abstain_parlament_" + c + "_rural_support"] -= 2;
-        Q["jxsi_parlament_" + c + "_buss_support"] =  Q[_activeCiu + "_parlament_" + c + "_buss_support"] + Q["erc_parlament_" + c + "_buss_support"] + Q["cup_parlament_" + c + "_buss_support"];
-        Q["jxsi_parlament_" + c + "_ind_support"] += Q[_activeCiu + "_parlament_" + c + "_ind_support"] + Q["erc_parlament_" + c + "_ind_support"] + Q["cup_parlament_" + c + "_ind_support"] - 1;
-        Q["jxsi_parlament_" + c + "_middle_support"] += Q[_activeCiu + "_parlament_" + c + "_middle_support"] + Q["erc_parlament_" + c + "_middle_support"] + Q["cup_parlament_" + c + "_middle_support"];
-        Q["jxsi_parlament_" + c + "_unemployed_support"] += Q[_activeCiu + "_parlament_" + c + "_unemployed_support"] + Q["erc_parlament_" + c + "_unemployed_support"] + Q["cup_parlament_" + c + "_unemployed_support"] - 2;
-        Q["jxsi_parlament_" + c + "_young_support"] += Q[_activeCiu + "_parlament_" + c + "_young_support"] + Q["erc_parlament_" + c + "_young_support"] + Q["cup_parlament_" + c + "_young_support"] - 1;
-        Q["jxsi_parlament_" + c + "_retired_support"] += Q[_activeCiu + "_parlament_" + c + "_retired_support"] + Q["erc_parlament_" + c + "_retired_support"] + Q["cup_parlament_" + c + "_retired_support"];
-        Q["jxsi_parlament_" + c + "_rural_support"] += Q[_activeCiu + "_parlament_" + c + "_rural_support"] + Q["erc_parlament_" + c + "_rural_support"] + Q["cup_parlament_" + c + "_rural_support"] + 1;
+        Q["jxsi_parlament_" + c + "_buss_support"] =  Q[Q.parlament_current_ciu + "_parlament_" + c + "_buss_support"] + Q["erc_parlament_" + c + "_buss_support"] + Q["cup_parlament_" + c + "_buss_support"];
+        Q["jxsi_parlament_" + c + "_ind_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_ind_support"] + Q["erc_parlament_" + c + "_ind_support"] + Q["cup_parlament_" + c + "_ind_support"] - 1;
+        Q["jxsi_parlament_" + c + "_middle_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_middle_support"] + Q["erc_parlament_" + c + "_middle_support"] + Q["cup_parlament_" + c + "_middle_support"];
+        Q["jxsi_parlament_" + c + "_unemployed_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_unemployed_support"] + Q["erc_parlament_" + c + "_unemployed_support"] + Q["cup_parlament_" + c + "_unemployed_support"] - 2;
+        Q["jxsi_parlament_" + c + "_young_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_young_support"] + Q["erc_parlament_" + c + "_young_support"] + Q["cup_parlament_" + c + "_young_support"] - 1;
+        Q["jxsi_parlament_" + c + "_retired_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_retired_support"] + Q["erc_parlament_" + c + "_retired_support"] + Q["cup_parlament_" + c + "_retired_support"];
+        Q["jxsi_parlament_" + c + "_rural_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_rural_support"] + Q["erc_parlament_" + c + "_rural_support"] + Q["cup_parlament_" + c + "_rural_support"] + 1;
 
         // Anti-ciu vote goes to Comuns
         Q[_activeComuns + "_parlament_" + c + "_buss_support"] += 0.5;
@@ -441,13 +447,13 @@ on-arrival: {!
         Q["cup_parlament_" + c + "_young_support"] = 0;
         Q["cup_parlament_" + c + "_retired_support"] = 0;
         Q["cup_parlament_" + c + "_rural_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_buss_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_ind_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_middle_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_unemployed_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_young_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_retired_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_rural_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_buss_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_ind_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_middle_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_unemployed_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_young_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_retired_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_rural_support"] = 0;
     }
     
     Q.independence_movement += 8;
@@ -479,14 +485,13 @@ on-arrival: {!
     
     Q.cup_in_jxsi = true;
     Q.player_in_jxsi = true;
-    const _activeCiu = Q.cdc_parlament_s > 0 ? "cdc" : Q.dl_parlament_s > 0 ? "dl" : "pdcat";
 
     Q.jxsi_leader = "Raül Romeva";
     Q.jxsi_leader_gender = "m";
 
-    Q.jxsi_parlament_s = Q[_activeCiu + "_parlament_s"] + Q.erc_parlament_s + Q.cup_parlament_s;
+    Q.jxsi_parlament_s = Q[Q.parlament_current_ciu + "_parlament_s"] + Q.erc_parlament_s + Q.cup_parlament_s;
     Q.erc_parlament_s = 0;
-    Q[_activeCiu + "_parlament_s"] = 0;
+    Q[Q.parlament_current_ciu + "_parlament_s"] = 0;
     Q.cup_parlament_s = 0;
 
 
@@ -498,13 +503,13 @@ on-arrival: {!
         Q["abstain_parlament_" + c + "_young_support"] -= 2;
         Q["abstain_parlament_" + c + "_retired_support"] -= 2;
         Q["abstain_parlament_" + c + "_rural_support"] -= 2;
-        Q["jxsi_parlament_" + c + "_buss_support"] =  Q[_activeCiu + "_parlament_" + c + "_buss_support"] + Q["erc_parlament_" + c + "_buss_support"] + Q["cup_parlament_" + c + "_buss_support"];
-        Q["jxsi_parlament_" + c + "_ind_support"] += Q[_activeCiu + "_parlament_" + c + "_ind_support"] + Q["erc_parlament_" + c + "_ind_support"] + Q["cup_parlament_" + c + "_ind_support"];
-        Q["jxsi_parlament_" + c + "_middle_support"] += Q[_activeCiu + "_parlament_" + c + "_middle_support"] + Q["erc_parlament_" + c + "_middle_support"] + Q["cup_parlament_" + c + "_middle_support"];
-        Q["jxsi_parlament_" + c + "_unemployed_support"] += Q[_activeCiu + "_parlament_" + c + "_unemployed_support"] + Q["erc_parlament_" + c + "_unemployed_support"] + Q["cup_parlament_" + c + "_unemployed_support"];
-        Q["jxsi_parlament_" + c + "_young_support"] += Q[_activeCiu + "_parlament_" + c + "_young_support"] + Q["erc_parlament_" + c + "_young_support"] + Q["cup_parlament_" + c + "_young_support"];
-        Q["jxsi_parlament_" + c + "_retired_support"] += Q[_activeCiu + "_parlament_" + c + "_retired_support"] + Q["erc_parlament_" + c + "_retired_support"] + Q["cup_parlament_" + c + "_retired_support"];
-        Q["jxsi_parlament_" + c + "_rural_support"] += Q[_activeCiu + "_parlament_" + c + "_rural_support"] + Q["erc_parlament_" + c + "_rural_support"] + Q["cup_parlament_" + c + "_rural_support"];
+        Q["jxsi_parlament_" + c + "_buss_support"] =  Q[Q.parlament_current_ciu + "_parlament_" + c + "_buss_support"] + Q["erc_parlament_" + c + "_buss_support"] + Q["cup_parlament_" + c + "_buss_support"];
+        Q["jxsi_parlament_" + c + "_ind_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_ind_support"] + Q["erc_parlament_" + c + "_ind_support"] + Q["cup_parlament_" + c + "_ind_support"];
+        Q["jxsi_parlament_" + c + "_middle_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_middle_support"] + Q["erc_parlament_" + c + "_middle_support"] + Q["cup_parlament_" + c + "_middle_support"];
+        Q["jxsi_parlament_" + c + "_unemployed_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_unemployed_support"] + Q["erc_parlament_" + c + "_unemployed_support"] + Q["cup_parlament_" + c + "_unemployed_support"];
+        Q["jxsi_parlament_" + c + "_young_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_young_support"] + Q["erc_parlament_" + c + "_young_support"] + Q["cup_parlament_" + c + "_young_support"];
+        Q["jxsi_parlament_" + c + "_retired_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_retired_support"] + Q["erc_parlament_" + c + "_retired_support"] + Q["cup_parlament_" + c + "_retired_support"];
+        Q["jxsi_parlament_" + c + "_rural_support"] += Q[Q.parlament_current_ciu + "_parlament_" + c + "_rural_support"] + Q["erc_parlament_" + c + "_rural_support"] + Q["cup_parlament_" + c + "_rural_support"];
 
         Q["jxsi_parlament_" + c + "_buss_support"] += 0.5;
         Q["jxsi_parlament_" + c + "_ind_support"] += 0.5;
@@ -528,13 +533,13 @@ on-arrival: {!
         Q["cup_parlament_" + c + "_young_support"] = 0;
         Q["cup_parlament_" + c + "_retired_support"] = 0;
         Q["cup_parlament_" + c + "_rural_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_buss_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_ind_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_middle_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_unemployed_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_young_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_retired_support"] = 0;
-        Q[_activeCiu + "_parlament_" + c + "_rural_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_buss_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_ind_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_middle_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_unemployed_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_young_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_retired_support"] = 0;
+        Q[Q.parlament_current_ciu + "_parlament_" + c + "_rural_support"] = 0;
     }
     
     Q.independence_movement += 8;
