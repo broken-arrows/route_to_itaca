@@ -221,6 +221,7 @@ on-display: {!
             return { party: p.id, seats: p.seats, colour: p.id };
         }),
         majority: Q.parlament_s_majority,
+        highlightedParty: Q.player_in_jxsi ? "jxsi" : (Q.player_in_jxcat ? "jxcat" : Q.player_party),
     };
     if (typeof window !== "undefined" && typeof d3 !== "undefined") {
         var width = 500;
@@ -243,7 +244,6 @@ go-to: coalitions if not game_over_trigger; game_lost_on_election if game_over_t
 = Election Results
 
 {!<div id="parlament" data-widget="hemicycle" data-props='{"configFrom":"parlament_election_hemicycle","animate":true}'></div>!}
-{!<div style='margin-top: -2em; width: 100%; font-style: italic; text-align: center'>!} Majority: [+ parlament_s_majority +]{!</div>!}
 
 {!<table style='margin-left: 0.5em; display:table; width: 95%;'>!}
 {!<tr><td style='min-width: 6em; font-weight: bold;'>Party</td><td style='width: 7em; text-align: center; font-weight: bold;'>Popular Vote</td><td style='width: 7em; font-weight: bold;'>Change</td><td style='width: 3em; text-align: center; font-weight: bold;'>Seats</td><td style='width: 3em; font-weight: bold;'>Change</td></tr>!}

@@ -2700,13 +2700,13 @@ Q.election_simulation_parlament_hemicycle = {
         return { party: party.id, seats: party.seats, colour: party.id };
     }),
     majority: Q.parlament_s_majority,
+    highlightedParty: Q.player_in_jxsi ? "jxsi" : (Q.player_in_jxcat ? "jxcat" : Q.player_party),
 };
 !}
 
 = Election Results
 
 {!<div id="parlament" data-widget="hemicycle" data-props='{"configFrom":"election_simulation_parlament_hemicycle","animate":true}'></div>!}
-{!<div style='margin-top: -2em; width: 100%; font-style: italic; text-align: center'>!} Majority: [+ parlament_s_majority +]{!</div>!}
 
 {!<table style='margin-left: 0.5em; display:table; width: 95%;'>!}
 {!<tr><td style='min-width: 6em; font-weight: bold;'>Party</td><td style='width: 7em; text-align: center; font-weight: bold;'>Popular Vote</td><td style='width: 7em; font-weight: bold;'>Change</td><td style='width: 3em; text-align: center; font-weight: bold;'>Seats</td><td style='width: 3em; font-weight: bold;'>Change</td></tr>!}
@@ -3063,6 +3063,8 @@ Q.election_simulation_congreso_hemicycle = {
         return { party: party.id, seats: party.seats, colour: party.id };
     }),
     majority: Q.congreso_s_majority,
+    highlightedParty: (Q.player_in_jxsi && Q.jxsi_in_congreso) ? "jxsi"
+        : ((Q.player_in_jxcat && Q.jxcat_in_congreso) ? "jxcat" : Q.player_party),
 };
 
 !}
@@ -3070,7 +3072,6 @@ Q.election_simulation_congreso_hemicycle = {
 = Election results
 
 {!<div id="congreso" data-widget="hemicycle" data-props='{"configFrom":"election_simulation_congreso_hemicycle","animate":true}'></div>!}
-{!<div style='margin-top: -2em; width: 100%; font-style: italic; text-align: center'>!} Majority: [+ congreso_s_majority +]{!</div>!}
 
 {!<table style='margin-left: 0.5em; display:table; width: 95%;'>!}
 {!<tr><td style='min-width: 5em; font-weight: bold;'>Party</td><td style='width: 9em; text-align:center; font-weight: bold;'>Popular Vote (Cat.)</td><td style='width: 5em; font-weight: bold;'>Change</td><td style='width: 3em; text-align: right; font-weight: bold;'>Seats</td><td style='width: 3em; font-weight: bold;'>Change</td></tr>!}
@@ -3314,13 +3315,14 @@ on-display: {!
             return { party: party.id, seats: party.seats, colour: party.id };
         }),
         majority: Q.barcelona_s_majority,
+        highlightedParty: (Q.player_in_jxsi && Q.jxsi_in_local) ? "jxsi"
+            : ((Q.player_in_jxcat && Q.jxcat_in_local) ? "jxcat" : Q.player_party),
     };
 !}
 
 = Barcelona Local Election Results
 
 {!<div id="barcelonalocal" data-widget="hemicycle" data-props='{"configFrom":"election_simulation_local_hemicycle","animate":true}'></div>!}
-{!<div style='margin-top: -2em; width: 100%; font-style: italic; text-align: center'>!} Majority: [+ barcelona_s_majority +]{!</div>!}
 
 
 {!<table style='margin-left: 0.5em; display:table; width: 95%;'>!}

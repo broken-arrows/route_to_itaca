@@ -18,12 +18,14 @@ const props = withDefaults(
   defineProps<{
     seats?: HemicycleSeat[];
     majority?: number;
+    highlightedParty?: string | null;
     animate?: boolean;
     q?: Record<string, unknown>;
   }>(),
   {
     seats: () => [],
     majority: 0,
+    highlightedParty: null,
     animate: false,
     // Declared (like AchievementGallery) so WidgetHost's `:q` is consumed as a
     // prop, not leaked onto the root <svg> as a q="[object Object]" attribute.
@@ -230,6 +232,7 @@ function isFirstPartySeat(index: number): boolean {
               {
                 'party-hovered': activeParty === seat.party.party,
                 'party-nothovered': activeParty && activeParty !== seat.party.party,
+                'party-highlighted': highlightedParty === seat.party.party,
               },
             ]"
             :d="seatPath(seat.seatRadius)"
@@ -252,6 +255,9 @@ function isFirstPartySeat(index: number): boolean {
         </g>
       </g>
     </svg>
+    <div v-if="majority > 0" class="hemicycle-majority">
+      Majority: {{ majority }} seats
+    </div>
     <Teleport to="body">
       <div
         v-if="activeSeatGroup"
@@ -279,6 +285,13 @@ function isFirstPartySeat(index: number): boolean {
   width: 100%;
   height: auto;
 }
+.hemicycle-majority {
+  margin-top: -22px;
+  color: var(--ink-3);
+  font-size: 13px;
+  font-style: italic;
+  text-align: center;
+}
 .is-animated .seat-position {
   animation: seat-enter var(--seat-duration) cubic-bezier(.4, 0, .2, 1) both;
 }
@@ -294,6 +307,10 @@ function isFirstPartySeat(index: number): boolean {
 }
 .seat.party-nothovered {
   opacity: .2;
+}
+.seat.party-highlighted:not(.party-nothovered) {
+  stroke: var(--ink-0);
+  stroke-width: 1.5px;
 }
 .seat-hit {
   fill: transparent;

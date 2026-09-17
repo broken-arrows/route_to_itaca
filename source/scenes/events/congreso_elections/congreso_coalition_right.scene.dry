@@ -6,8 +6,8 @@ You should not be here? Report a bug if you see this text.
 title: <span class="gobierno-coalition" data-parties="pp cs" data-summary="[? if pp_congreso_s + cs_congreso_s >= congreso_s_majority: Majority government?][? if pp_congreso_s + cs_congreso_s < congreso_s_majority: Minority government?] - [+ pp_congreso_s + cs_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Right</span> Coalition</span> (PP - csspa)
 subtitle: A PP + csspa cabinet, backed by the centralist-right and other smaller parties. [? if congreso_coalition_pp_cs_talks: It leans on tolerations they'll have to negotiate. ?]
 view-if: congreso_coalition_pp_cs_s > 0
-choose-if: congreso_coalition_pp_cs_reach and congreso_coalition_majority_party != "pp"
-unavailable-subtitle: [? if not congreso_coalition_pp_cs_reach:  PP and Cs fall short of investiture, even with the smaller parties they could win over. ?][? if congreso_coalition_majority_party == "pp": The PP would rather govern alone.?]
+choose-if: congreso_coalition_pp_cs_reach and not congreso_coalition_psoe_cs_wtf and congreso_coalition_majority_party != "pp"
+unavailable-subtitle: [? if not congreso_coalition_pp_cs_reach: PP and Cs fall short of investiture, even with the smaller parties they could win over. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +]. ?][? if congreso_coalition_majority_party == "pp": The PP would rather govern alone.?]
 on-arrival: {!
     Q.spanish_pm = Q.pp_leader;
     Q.spanish_pm_gender = Q.pp_leader_gender;
@@ -27,8 +27,8 @@ The recently appointed [+ spanish_coalition_disp +] Gobierno will be lead by [? 
 title: <span class="gobierno-coalition" data-parties="cs pp" data-summary="[? if cs_congreso_s + pp_congreso_s >= congreso_s_majority: Majority government?][? if cs_congreso_s + pp_congreso_s < congreso_s_majority: Minority government?] - [+ cs_congreso_s + pp_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Coalition</span></span> (csspa - PP)
 subtitle: A csspa-led cabinet with the PP as the junior partner, backed by the centralist-right and other smaller parties. [? if congreso_coalition_pp_cs_talks: It leans on tolerations they'll have to negotiate. ?]
 view-if: congreso_coalition_cs_pp_s > 0
-choose-if: congreso_coalition_pp_cs_reach
-unavailable-subtitle: Cs and PP fall short of investiture, even with the smaller parties they could win over.
+choose-if: congreso_coalition_pp_cs_reach and not congreso_coalition_psoe_cs_wtf
+unavailable-subtitle: [? if not congreso_coalition_pp_cs_reach: Cs and PP fall short of investiture, even with the smaller parties they could win over. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +]. ?]
 on-arrival: {!
     Q.spanish_pm = Q.csspa_leader;
     Q.spanish_pm_gender = Q.csspa_leader_gender;

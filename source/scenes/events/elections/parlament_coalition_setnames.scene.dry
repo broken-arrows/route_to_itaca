@@ -6,7 +6,19 @@ on-arrival: {!
     
 
     if (Q.parlament_coalition_proposal_vp == Q.parlament_coalition_proposal_president) {
-        switch (Q.parlament_coalition_proposal_vp) {  
+        switch (Q.parlament_coalition_proposal_vp) {
+            case "jxsi":
+                if (Q.jxsi_formation_num < 50 ) {
+                    Q.parlament_coalition_proposal_vp_name = Q.erc_leader;
+                    Q.parlament_coalition_proposal_vp_gender = Q.erc_leader_gender;
+                } else if (Q.cup_in_jxsi && Q.jxsi_formation_num == 50){
+                    Q.parlament_coalition_proposal_vp_name = Q.erc_leader;
+                    Q.parlament_coalition_proposal_vp_gender = Q.erc_leader_gender;
+                } else {
+                    Q.parlament_coalition_proposal_vp_name = Q[Q.parlament_current_ciu + "_leader"];
+                    Q.parlament_coalition_proposal_vp_gender = Q[Q.parlament_current_ciu + "_gender"];
+                }
+                break;  
             case "ciu":
                 Q.parlament_coalition_proposal_vp_name = "Joana Ortega";
                 Q.parlament_coalition_proposal_vp_gender = "f";
@@ -123,9 +135,13 @@ on-arrival: {!
                 Q.parlament_coalition_proposal_economy_gender = "m";
             }
             break;
+        case "jxsi":
         case "jxcat":
-            if (Q.erc_in_jxcat) {
+            if (Q.erc_in_jxcat || (Q.erc_in_jxsi && Q.jxsi_formation_num > 50)) {
                 Q.parlament_coalition_proposal_economy_name = "Pere Aragonès";
+                Q.parlament_coalition_proposal_economy_gender = "m";
+            } else if (Q.year < 2018) {
+                Q.parlament_coalition_proposal_economy_name = "Andreu Mas-Colell";
                 Q.parlament_coalition_proposal_economy_gender = "m";
             } else {
                 Q.parlament_coalition_proposal_economy_name = "Jaume Giró";
@@ -207,6 +223,7 @@ on-arrival: {!
                 Q.parlament_coalition_proposal_interior_gender = "m";
             }
             break;
+        case "jxsi":
         case "jxcat":
             Q.parlament_coalition_proposal_interior_name = "Joaquim Forn";
             Q.parlament_coalition_proposal_interior_gender = "m";
@@ -285,6 +302,7 @@ on-arrival: {!
                 Q.parlament_coalition_proposal_health_gender = "m";
             }
             break;
+        case "jxsi":
         case "jxcat":
             Q.parlament_coalition_proposal_health_name = "Toni Comín";
             Q.parlament_coalition_proposal_health_gender = "m";
@@ -346,6 +364,10 @@ on-arrival: {!
                 Q.parlament_coalition_proposal_education_gender = "f";
             }
             break;
+        case "jxsi":
+            Q.parlament_coalition_proposal_education_name = "Clara Ponsatí";
+            Q.parlament_coalition_proposal_education_gender = "f";
+            break
         case "jxcat":
         case "junts":
             Q.parlament_coalition_proposal_education_name = "Meritxell Ruiz";
@@ -414,6 +436,7 @@ on-arrival: {!
             Q.parlament_coalition_proposal_bnl_name = "Jordi Baiget";
             Q.parlament_coalition_proposal_bnl_gender = "m";
             break;
+        case "jxsi":
         case "erc":
             if (Q.speaker != "Roger Torrent" && Q.year > 2016) {
                 Q.parlament_coalition_proposal_bnl_name = "Roger Torrent";
@@ -463,6 +486,15 @@ on-arrival: {!
         case null:
             Q.parlament_coalition_proposal_foreign_name = "<span style='font-style: italics'>To be filled by coalition partners</span>";
             Q.parlament_coalition_proposal_foreign_gender = "f";
+            break;
+        case "jxsi":
+            if (Q.jxsi_formation_num != 50) {
+                Q.parlament_coalition_proposal_foreign_name = "Raül Romeva";
+                Q.parlament_coalition_proposal_foreign_gender = "m";
+            } else {
+                Q.parlament_coalition_proposal_foreign_name = "Meritxell Borràs";
+                Q.parlament_coalition_proposal_foreign_gender = "f";
+            }
             break;
         case "ciu":
         case "cdc":
@@ -539,6 +571,7 @@ on-arrival: {!
             Q.parlament_coalition_proposal_territory_name = "Santi Vila";
             Q.parlament_coalition_proposal_territory_gender = "m";
             break;
+        case "jxsi":
         case "jxcat":
             Q.parlament_coalition_proposal_territory_name = "Josep Rull";
             Q.parlament_coalition_proposal_territory_gender = "m";

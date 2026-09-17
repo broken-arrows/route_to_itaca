@@ -147,8 +147,25 @@
         .fromCenter(Boolean(props.animate))
         .smallToBig(Boolean(props.animate));
       parliament.exit.toCenter(false).bigToSmall(false);
-      parliament.highlightedParty(Q.player_party);
+      parliament.highlightedParty(
+        typeof config.highlightedParty === "string"
+          ? config.highlightedParty
+          : Q.player_party,
+      );
       d3.select(svg).datum(data).call(parliament);
+
+      var majority = Number(config.majority) || 0;
+      var majorityLabel = el.querySelector(".hemicycle-majority");
+      if (majority > 0) {
+        if (!majorityLabel) {
+          majorityLabel = document.createElement("div");
+          majorityLabel.className = "hemicycle-majority";
+          el.appendChild(majorityLabel);
+        }
+        majorityLabel.textContent = "Majority: " + majority + " seats";
+      } else if (majorityLabel) {
+        majorityLabel.remove();
+      }
     },
     "chamber-vote": function (el, Q) {
       var props = resolveProps(el, Q);

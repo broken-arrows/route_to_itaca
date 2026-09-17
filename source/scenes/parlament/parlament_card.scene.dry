@@ -207,6 +207,7 @@ on-arrival: {!
             return { party: p.id, seats: p.seats, colour: p.id };
         }),
         majority: Q.parlament_s_majority,
+        highlightedParty: Q.player_in_jxsi ? "jxsi" : (Q.player_in_jxcat ? "jxcat" : Q.player_party),
     };
 !}
 # face-image: img/parlament_de_catalunya.jpg
@@ -214,8 +215,7 @@ on-arrival: {!
 = Parlament de Catalunya
 
 {!<div id="parlament" data-widget="hemicycle" data-props='{"configFrom":"parlament_hemicycle"}'></div>!}
-{!<div style='margin-top: -2em; width: 100%; font-style: italic; text-align: center'>!} Majority: [+ parlament_s_majority +]{!</div>!}
-[? if not cat_caretaker_gov: {!<div style='margin-top: -1em; width: 100%; text-align: center'>!} Speaker of the House:<br/>[+ speaker +] ([+ speaker_party +]){!</div>!} ?]
+[? if not cat_caretaker_gov: {!<div style='margin-top: -0.5em; width: 100%; text-align: center'>!} Speaker of the House:<br/>[+ speaker +] ([+ speaker_party +]){!</div>!} ?]
 
 [? if cat_caretaker_gov : The Parlament is currently dissolved, so no parliamentary actions are possible at this point. ?][? if not cat_caretaker_gov: As a party with representation in the Parlament, we have the opportunity to use our seats to make our voice heard and push for new initiatives and legislation. ?]
 

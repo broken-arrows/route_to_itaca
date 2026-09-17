@@ -5,19 +5,22 @@ You should not be here? Report a bug if you see this text.
 # TODO: add extra grand coalition psoe+pp+cs if they never add up
 
 @psoe_led
-title: PSOE-led <span class="gobierno-coalition" data-parties="psoe" data-summary="Minority government - [+ psoe_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--psoe); font-style: italic;">Grand</span> <span style="color: var(--pp); font-style: italic;">Coalition</span></span> (PSOE - PP)
+title: PSOE-led <span class="gobierno-coalition" data-parties="psoe pp" data-summary="[? if psoe_congreso_s + pp_congreso_s >= congreso_s_majority: Majority government?][? if psoe_congreso_s + pp_congreso_s < congreso_s_majority: Minority government?] - [+ psoe_congreso_s + pp_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--psoe); font-style: italic;">Grand</span> <span style="color: var(--pp); font-style: italic;">Coalition</span></span> (PSOE - PP)
 subtitle: Is this the new normal?
 view-if: congreso_coalition_grand_s_psoe > 0 and psoe_leader != "???"
 choose-if: congreso_coalition_grand_s_psoe >= congreso_s_majority and congreso_coalition_grand_ok and not congreso_coalition_psoe_cs_wtf and (congreso_coalition_grand_toleration_happened or congreso_coalition_grand_s_ppcs < congreso_s_majority)
-unavailable-subtitle: [? if congreso_coalition_grand_s_psoe < congreso_s_majority: PSOE and PP don't have enough seats, even together, ?][? if not congreso_coalition_grand_ok: [+ psoe_leader +] has ruled out any pact with the PP. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +] ?][? if congreso_coalition_psoe_cs_wtf_happened and not congreso_coalition_grand_toleration_happened: This may still be a bit too much to ask from the PP. ?][? if psoe_leader == "???": The PSOE has no clear leadership at the moment. ?]
+unavailable-subtitle: [? if congreso_coalition_grand_s_psoe < congreso_s_majority: PSOE and PP don't have enough seats, even together, ?][? if not congreso_coalition_grand_ok: [+ psoe_leader +] has ruled out any pact with the PP. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +]. ?][? if congreso_coalition_psoe_cs_wtf_happened and not congreso_coalition_grand_toleration_happened: This may still be a bit too much to ask from the PP. ?][? if psoe_leader == "???": The PSOE has no clear leadership at the moment. ?]
 on-arrival: {!
     Q.congreso_coalition_grand_toleration_happened = true;
     Q.social_dissent += 5;
     Q.spanish_pm = Q.psoe_leader;
     Q.spanish_pm_gender = Q.psoe_leader_gender;
     Q.spanish_pm_party = "psoe";
-    Q.spanish_coalition = ["psoe"];
-    Q.spanish_coalition_disp = "PSOE " + G.governmentTooltip("gobierno", Q.spanish_coalition, "Minority government - " + Q.psoe_congreso_s + "/" + Q.congreso_s_majority, "<span style='font-style: italic; color: var(--psoe);'>minority government</span>");
+    Q.spanish_coalition = ["psoe", "pp"];
+    var government_seats = Q.psoe_congreso_s + Q.pp_congreso_s;
+    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition,
+        (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority,
+        "<span style='color: var(--psoe); font-style: italic;'>Grand</span> <span style='color: var(--pp); font-style: italic;'>Coalition</span>") + " (PSOE - PP)";
 
     // supporters shed votes
     G.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');
@@ -27,24 +30,27 @@ on-arrival: {!
     G.spaSupportInject(Q, 'vox', 'all', 0.5, 'pp');
 !}
 
-In [? if congreso_coalition_grand_toleration_happened: yet another ?][? if not congreso_coalition_grand_toleration_happened: a ?] set of events hard to even imagine a decade ago, the bipartidist rivalry seems to have stepped aside to bring a joining of parties thought to be ideologically opposed. [? if spanish_pm_gender == "m": Presidente ?][? if spanish_pm_gender == "f": Presidenta ?][+ spanish_pm +] will be sworn in thanks to the support of the PP.
+In [? if congreso_coalition_grand_toleration_happened: yet another ?][? if not congreso_coalition_grand_toleration_happened: a ?] set of events hard to even imagine a decade ago, the bipartidist rivalry seems to have stepped aside to bring a joining of parties thought to be ideologically opposed. [? if spanish_pm_gender == "m": Presidente ?][? if spanish_pm_gender == "f": Presidenta ?][+ spanish_pm +] will be sworn in.
 
 -@post_event: Let's hope that at least [? if spanish_pm_gender = "m": his ?][? if spanish_pm_gender = "f": her ?]tenure is not long...
 
 @pp_led
-title: PP-led <span class="gobierno-coalition" data-parties="pp" data-summary="Minority government - [+ pp_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--pp); font-style: italic;">Grand</span> <span style="color: var(--psoe); font-style: italic;">Coalition</span></span> (PP - PSOE)
+title: PP-led <span class="gobierno-coalition" data-parties="pp psoe" data-summary="[? if pp_congreso_s + psoe_congreso_s >= congreso_s_majority: Majority government?][? if pp_congreso_s + psoe_congreso_s < congreso_s_majority: Minority government?] - [+ pp_congreso_s + psoe_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--pp); font-style: italic;">Grand</span> <span style="color: var(--psoe); font-style: italic;">Coalition</span></span> (PP - PSOE)
 subtitle: Is this the new normal?
 view-if: congreso_coalition_grand_s_pp > 0
 choose-if: congreso_coalition_grand_s_pp >= congreso_s_majority and congreso_coalition_grand_ok and not congreso_coalition_psoe_cs_wtf and (congreso_coalition_grand_toleration_happened or congreso_coalition_grand_s_ppcs < congreso_s_majority)
-unavailable-subtitle: [? if congreso_coalition_grand_s_pp < congreso_s_majority: PP and PSOE don't have enough seats, even together, ?][? if not congreso_coalition_grand_ok: [+ psoe_leader +] has ruled out any pact with the PP. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +] ?][? if congreso_coalition_psoe_cs_wtf_happened and not congreso_coalition_grand_toleration_happened: This may still be a bit too much to ask from the PSOE. ?]
+unavailable-subtitle: [? if congreso_coalition_grand_s_pp < congreso_s_majority: PP and PSOE don't have enough seats, even together, ?][? if not congreso_coalition_grand_ok: [+ psoe_leader +] has ruled out any pact with the PP. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +]. ?][? if congreso_coalition_psoe_cs_wtf_happened and not congreso_coalition_grand_toleration_happened: This may still be a bit too much to ask from the PSOE. ?]
 on-arrival: {!
     Q.congreso_coalition_grand_toleration_happened = true;
     Q.social_dissent += 5;
     Q.spanish_pm = Q.pp_leader;
     Q.spanish_pm_gender = Q.pp_leader_gender;
     Q.spanish_pm_party = "pp";
-    Q.spanish_coalition = ["pp"];
-    Q.spanish_coalition_disp = "PP " + G.governmentTooltip("gobierno", Q.spanish_coalition, "Minority government - " + Q.pp_congreso_s + "/" + Q.congreso_s_majority, "<span style='font-style: italic; color: var(--pp);'>minority government</span>");
+    Q.spanish_coalition = ["pp", "psoe"];
+    var government_seats = Q.pp_congreso_s + Q.psoe_congreso_s;
+    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition,
+        (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority,
+        "<span style='color: var(--pp); font-style: italic;'>Grand</span> <span style='color: var(--psoe); font-style: italic;'>Coalition</span>") + " (PP - PSOE)";
 
     // supporters shed votes
     G.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');
@@ -53,7 +59,7 @@ on-arrival: {!
     G.spaSupportInject(Q, 'vox', 'all', 0.5, 'pp');
 !}
 
-In [? if congreso_coalition_grand_toleration_happened: yet another ?][? if not congreso_coalition_grand_toleration_happened: a ?] set of events hard to even imagine a decade ago, the bipartidist rivalry seems to have stepped aside to bring a joining of parties thought to be ideologically opposed. [? if spanish_pm_gender == "m": Presidente ?][? if spanish_pm_gender == "f": Presidenta ?][+ spanish_pm +] will be sworn in thanks to the support of the PSOE.
+In [? if congreso_coalition_grand_toleration_happened: yet another ?][? if not congreso_coalition_grand_toleration_happened: a ?] set of events hard to even imagine a decade ago, the bipartidist rivalry seems to have stepped aside to bring a joining of parties thought to be ideologically opposed. [? if spanish_pm_gender == "m": Presidente ?][? if spanish_pm_gender == "f": Presidenta ?][+ spanish_pm +] will be sworn in.
 
 -@post_event: Let's hope that at least [? if spanish_pm_gender = "m": his ?][? if spanish_pm_gender = "f": her ?]tenure is not long...
 
@@ -62,7 +68,7 @@ title: <span class="gobierno-coalition" data-parties="pp" data-summary="Minority
 subtitle: Truly, what even is going on?
 view-if: congreso_coalition_grand_s_ppcs > 0 and not congreso_coalition_grand_toleration_happened
 choose-if: congreso_coalition_grand_s_ppcs >= congreso_s_majority and congreso_coalition_grand_ok and not congreso_coalition_psoe_cs_wtf and not congreso_coalition_grand_toleration_happened
-unavailable-subtitle: [? if congreso_coalition_grand_s_ppcs < congreso_s_majority: PP, Cs, and PSOE don't have enough seats, even together. ?][? if not congreso_coalition_grand_ok: [+ psoe_leader +] has ruled out any pact with the PP. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +] ?]
+unavailable-subtitle: [? if congreso_coalition_grand_s_ppcs < congreso_s_majority: PP, Cs, and PSOE don't have enough seats, even together. ?][? if not congreso_coalition_grand_ok: [+ psoe_leader +] has ruled out any pact with the PP. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +]. ?]
 on-arrival: {!
     Q.congreso_coalition_grand_toleration_happened = true;
     Q.social_dissent += 5;

@@ -7,7 +7,7 @@ title: <span class="gobierno-coalition" data-parties="[+ congreso_left_carrier +
 subtitle: A difficult arithmetic made possible by kingmaker smaller parties. [? if congreso_coalition_change_talks: Given the numbers, we have a chance to negotiate the conditions to make this possible. ?]
 view-if: congreso_coalition_change_s > 0
 choose-if: congreso_coalition_change_reach and not congreso_coalition_psoe_cs_wtf and not congreso_coalition_grand_preferred
-unavailable-subtitle: [? if not congreso_coalition_change_reach : The numbers don't add up, not even with every abstention that can be realistically negotiated. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +] ?][? if congreso_coalition_grand_preferred: The PSOE would rather work on a Grand Coalition. ?]
+unavailable-subtitle: [? if not congreso_coalition_change_reach : The numbers don't add up, not even with every abstention that can be realistically negotiated. ?][? if congreso_coalition_psoe_cs_wtf: This does not seem to be the plan of [+ psoe_leader +] and [+ csspa_leader +]. ?][? if congreso_coalition_grand_preferred: The PSOE would rather work on an agreement with the PP. ?]
 on-arrival: congreso_coalition_lead_party = congreso_left_carrier
 set-jump: change_resolve
 go-to: change_resolve if not congreso_coalition_change_talks; congreso_coalition_negotiation if congreso_coalition_change_talks

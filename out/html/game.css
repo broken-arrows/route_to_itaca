@@ -1096,6 +1096,15 @@ table {
   transition: opacity 0.3s;
 }
 
+.hemicycle-majority {
+  margin-top: -2em;
+  margin-right: 1.1em;
+  color: var(--text-color);
+  font-size: 0.9em;
+  font-style: italic;
+  text-align: center;
+}
+
 .parliament-tooltip {
   position: absolute;
   padding: 8px 12px;

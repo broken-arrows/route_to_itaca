@@ -548,7 +548,7 @@ on-arrival: {!
                 seatsVar: "congreso_coalition_grand_s_psoe",
                 members: [
                     { party: "psoe", type: "government" },
-                    { party: "pp",   type: "support" }
+                    { party: "pp",   type: "government" }
                 ]
             },
             {
@@ -556,7 +556,7 @@ on-arrival: {!
                 seatsVar: "congreso_coalition_grand_s_pp",
                 members: [
                     { party: "pp",   type: "government" },
-                    { party: "psoe", type: "support" }
+                    { party: "psoe", type: "government" }
                 ]
             },
             {
