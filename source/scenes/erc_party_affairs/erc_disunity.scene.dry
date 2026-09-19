@@ -13,7 +13,7 @@ role: card-party
 
 The party is being torn apart by internal dissent. Upset at the leadership and general direction, factions have started sabotaging their rivals, hampering our efforts to win votes and carry out our policies.
 
-[? if erc_civic_dissent > 30 : Our ties with civil society organizations are upset at our direction.  ?]
+[? if erc_civic_dissent > 30 : Our ties with civil society organizations are strained due to recent party decisions.  ?]
 [? if erc_pragmatics_dissent > 30 : The pragmatic wing is displeased with the direction of our party. ?]
 [? if erc_core_dissent > 30 : The republican core of our party feels says we're betraying our principles. ?]
 [? if erc_left_dissent > 30: The left wing is quite unhappy with our course of action. ?]
@@ -86,7 +86,7 @@ title: Give concessions to the civil organizations.
 view-if: erc_civic_dissent > 30
 on-arrival: erc_civic_dissent -= 15; erc_pragmatic_dissent += 10
 
-We have promised to follow through with our promises to many civil society organization. The pragmatic wing of our party is bickering about not being very realistic.
+We have promised to follow through with our promises to many civil society organizations. The pragmatic wing of our party is bickering about it not being very realistic.
 
 @concessions_core
 title: Give concessions to our republican core.
@@ -107,7 +107,7 @@ title: Give concessions to the pragmatics.
 view-if: erc_pragmatic_dissent > 30
 on-arrival: erc_pragmatic_dissent -= 15; erc_left_dissent += 5; erc_civic_dissent += 10;
 
-We have promised to follow the path of pragmatism and realpolitik a bit closer from now on. This upsets the civic organizations and the left wing of our party, for they believe that values should always come first.
+We have promised to follow the path of pragmatism and Realpolitik a bit closer from now on. This upsets the civic organizations and the left wing of our party, for they believe that values should always come first.
 
 
 @do_nothing

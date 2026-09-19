@@ -1,0 +1,113 @@
+title: Coalition Disunity
+new-page: true
+is-card: true
+view-if: (player_in_jxsi and jxsi_dissent >= 30) || (player_in_jxcat && jxcat_dissent >= 30)
+card-image: img/jxsi/unity.jpg
+face-image: img/jxsi/unity.jpg
+frequency: 200
+tags: jxsi_party jxcat_party
+on-arrival: {!
+    Q.month_actions += 1;
+    Q.unity_disunity_timer = 4;
+    Q.parlament_current_ciu_relations = Q[Q.parlament_current_ciu + "_relations"];
+!}
+role: card-party
+
+= Coalition Disunity
+
+The National Unity list with [+ parlament_current_ciu +] [? if cup_in_jxsi or cup_in_jxcat and not player_party = "cup": and the CUP ?][? if player_party != "erc": and ERC ?]is, understandably, plagued with disagreements. While these are expected to an extent, our different party positions and relations seem to be reaching worrying thresholds. 
+
+[? if parlament_current_ciu_relations < 55: [+ parlament_current_ciu +] is discontent with recent [? if jxsi_formed && !jxcat_formed: jxsi?][? if jxcat_formed: jxcat?] course of action. ?]
+[? if erc_relations < 55 and not player_party = "erc": ERC is quite unhappy with the direction the coalition has taken.  ?]
+[? if cup_relations < 55 and (cup_in_jxsi or cup_in_jxcat) and not player_party = "cup": The CUP is complaining about us betraying the original ideas of the coalition. ?]
+
+Something must be done for this coalition to survive.
+
+- @concessions_ciu
+- @concessions_erc
+- @concessions_cup
+- @do_nothing
+- @breakup_jxsi
+- @breakup_jxcat
+- @easy_discard
+
+@concessions_ciu
+title: Give concessions to the [+ parlament_current_ciu +]
+view-if: player_party != parlament_current_ciu and parlament_current_ciu_relations < 55
+on-arrival: {!
+    Q.erc_relations -= 2;
+    Q[Q.parlament_current_ciu + "_relations"] += 8;
+    if (Q.cup_in_jxsi || Q.cup_in_jxcat) {
+        Q.cup_relations -= 5;
+    } else {
+        Q.cup_relations -= 2;
+    }
+!}
+
+We have promised to pursue a more moderate agenda.
+
+@concessions_erc
+title: Give concessions to the ERC
+view-if: player_party != "erc" and cup_relations < 55
+on-arrival: {!
+    Q.erc_relations += 8;
+    Q[Q.parlament_current_ciu + "_relations"] -= 3;
+    if (Q.cup_in_jxsi || Q.cup_in_jxcat) {
+        Q.cup_relations -= 3;
+    }
+!}
+
+We have promised to pursue a more leftist agenda, and to listen closely to popular demands.
+
+@concessions_cup
+title: Give concessions to the CUP
+view-if: player_party != "cup" and cup_relations < 55
+on-arrival: {!
+    Q.cup_relations += 8;
+    Q[Q.parlament_current_ciu + "_relations"] -= 5;
+    Q.erc_relations -= 2;
+!}
+
+We have promised to pursue a more leftist agenda, and to listen closely to popular demands.
+
+@do_nothing
+title: There is nothing we can do, so is the nature of such a coalition
+on-arrival: {!
+    Q[Q.parlament_current_ciu + "_relations"] -= 1;
+    Q.erc_relations -= 1;
+    if (Q.cup_in_jxsi || Q.cup_in_jxcat) {
+        Q.cup_relations -= 1;
+    }
+!}
+
+Maybe more arguing builds character?
+
+@breakup_jxsi
+title: Enough with National Unity!
+subtitle: We will put an end to the jxsi coalition
+view-if: player_in_jxsi
+on-arrival: {!
+    Q[Q.parlament_current_ciu + "_relations"] -= 10;
+    Q.erc_relations -= 10;
+    if (Q.cup_in_jxcat) {
+        Q.cup_relations -= 10;
+    }
+    Q.jxsi_dissolution_trigger = true;
+!}
+
+Our party has taken the decision to leave the jxsi coalition. There's no going back now.
+
+@breakup_jxcat
+title: Enough with National Unity!
+subtitle: We will put an end to the jxcat coalition
+view-if: player_in_jxcat
+on-arrival: {!
+    Q[Q.parlament_current_ciu + "_relations"] -= 10;
+    Q.erc_relations -= 10;
+    if (Q.cup_in_jxcat) {
+        Q.cup_relations -= 10;
+    }
+!}
+
+Our party has taken the decision to leave the jxcat coalition. There's no going back now.
+

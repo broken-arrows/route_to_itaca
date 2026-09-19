@@ -125,9 +125,9 @@ on-arrival: {!
         if (!Q.countdowns.includes("burdens_start")) Q.countdowns.push("burdens_start");
         Q.government_budget = 1 - Q.difficulty;
     }
-    if (Q.jxsi_formed) {
-        Q.jxsi_dissolution_countdown = 3;
-        if (!Q.countdowns.includes("jxsi_dissolution")) Q.countdowns.push("jxsi_dissolution");
+    if (Q.jxsi_parlament_s > 0 && !Q.countdowns.includes("jxcat_formation")) {
+        Q.jxcat_formation_countdown = 6;
+        Q.countdowns.push("jxcat_formation");
     }
 !}
 go-to: post_event

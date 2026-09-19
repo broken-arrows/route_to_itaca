@@ -1,14 +1,11 @@
 title: A new proposal for National Unity
-subtitle: Can a jxsi-like formula be repeated?
-view-if: jxsi_formed and not jxsi_dissolved and jxcat_formation_trigger and cat_caretaker_gov and not jxcat_formed
+subtitle: Can a jxsi-like formula [? if jxsi_formed: be repeated? ?][? if not jxsi_formed: work this time? ?]
+view-if: not jxsi_dissolved and cat_caretaker_gov and not jxcat_formed and jxcat_formation_trigger
 tags: event
 new-page: true
 max-visits: 1
 
 = A new proposal for National Unity
-
-
-Careful: jxcat_formation trigger and countdown are never initialized. Maybe trigger event via jxsi dissolution?
 
 TODO!
 

@@ -1,8 +1,10 @@
 title: The end of jxsi
-view-if: jxsi_formed and not jxsi_dissolved and jxsi_dissolution_trigger and cat_caretaker_gov and not (jxcat_formed and (erc_in_jxcat or cup_in_jxcat))
+view-if: jxsi_formed and not jxsi_dissolved and jxsi_dissolution_trigger and not (jxcat_formed and (erc_in_jxcat or cup_in_jxcat))
 tags: event
 new-page: true
+face-image: img/jxsi/unity.jpg
 max-visits: 1
+role: event
 
 = The end of ​JxSí
 
