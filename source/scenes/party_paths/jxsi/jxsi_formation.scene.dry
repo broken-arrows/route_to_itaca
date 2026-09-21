@@ -6,6 +6,23 @@ new-page: true
 max-visits: 1
 go-to: erc_0 if player_party == "erc"; cup_0 if player_party == "cup"
 role: event
+on-arrival: {!
+    {
+        // Negotiate CUP's places before the constituent support is pooled.
+        // This is an agreement term, not a saved voter-ownership snapshot.
+        let cup = 0, total = 0;
+        for (const c of Q.parlament_constituencies) {
+            for (const d of Q.parlament_demographics) {
+                const suffix = `_parlament_${c}_${d}_support`;
+                const pop = Number(Q[`parlament_${c}_${d}_pop`]) || 0;
+                cup += (Number(Q["cup" + suffix]) || 0) * pop;
+                for (const p of ["cup", "erc", Q.parlament_current_ciu])
+                    total += (Number(Q[p + suffix]) || 0) * pop;
+            }
+        }
+        Q.jxsi_cup_formation_num = Math.max(10, Math.round(total > 0 ? 100 * cup / total : 0));
+    }
+!}
 
 # TODO: united_bcn_local and united_congreso options a few months past the event? or via card???
 # TODO: actual jxsi cards
@@ -139,6 +156,9 @@ on-arrival: {!
     }
 
     Q[Q.parlament_current_ciu + "_relations"] -= 15;
+
+    Q.jxcat_formation_countdown = 12;
+    if (!Q.countdowns.includes("jxcat_formation")) Q.countdowns.push("jxcat_formation");
 !}
 
 This decision is highly disappointing not only for the leadership at [? if cdc_parlament_s > 0: CDC?][? if dl_parlament_s > 0: DL?][? if pdcat_parlament_s > 0: the PDeCAT?], but also within the party. Internal tensions are rising as some see it as throwing away the once-in-a-generation chance to actually push for a unified front for independence. 
@@ -147,6 +167,7 @@ This decision is highly disappointing not only for the leadership at [? if cdc_p
 
 @erc_jxsi_formation
 on-arrival: {!
+    Q.unity_disunity_timer = 6;
     this.achieve("jxsi");
 
     Q.historical_event = "A national unity list, jxsi will work on rallying support and votes to a single, independence-focused candidacy around " + Q.jxsi_leader + ".";
@@ -239,6 +260,7 @@ subtitle: Despite some heavy criticisms of the role of [? if cdc_in_jxsi > 0: CD
 choose-if: cup_relations >= 65 and jxsi_formation_num == 50 and party_resouces >= 1 and cup_faction != "Endavant"
 unavailable-subtitle: [? if cup_faction = "Endavant" and jxsi_formation == 50: With Endavant currently being the leading faction within the CUP, there's no way they will accept joining into jxsi. ?][? if cup_relations >= 65: We don't have good enough relations with the CUP. ?][? if jxsi_formation_num != 40: There's no way they can accept a [? if cdc_in_jxsi > 0: CDC?][? if dl_in_jxsi > 0: DL?][? if pdcat_in_jxsi > 0: PDeCAT?] leadership. ?][? if party_resources < 1: Not enough resources.?]
 on-arrival: {!
+    Q.unity_disunity_timer = 6;
     this.achieve("jxsi_de_debo");
 
     const _activeComuns = Q.icv_parlament_s > 0 ? "icv" : Q.csqp_parlament_s > 0 ? "csqp" : Q.cecp_parlament_s > 0 ? "cecp" : "ecp";
@@ -394,6 +416,7 @@ subtitle: This will not please everyone in the party
 choose-if: cup_poblelliure_strength > cup_endavant_strength + 5 and cup_poblelliure_dissent <= 15 and cup_thirdsector_dissent <= 15 and erc_relations >= 55 and ((cdc_relations >= 55 and cdc_parlament_s > 0) or (dl_relations >= 55 and dl_parlament_s > 0) or (pdcat_relations >= 55 and pdcat_parlament_s > 0))
 unavailable-subtitle: [? if cup_poblelliure_strength <= cup_endavant_strength + 5: Poble Lliure is not strong enough as a party faction to push for this. ?][? if erc_relations < 55: We don't have good enough relations with ERC. ?][? if ((cdc_relations < 55 and cdc_parlament_s > 0) or (dl_relations < 55 and dl_parlament_s > 0) or (pdcat_relations < 55 and pdcat_parlament_s > 0)): We don't have good enough relations with [? if cdc_parlament_s > 0: CDC?][? if dl_parlament_s > 0: DL?][? if pdcat_parlament_s > 0: the PDeCAT?]. ?]
 on-arrival: {!
+    Q.unity_disunity_timer = 6;
     this.achieve("jxsi_de_debo");
 
     Q.cup_in_jxsi = true;
@@ -478,9 +501,12 @@ This is highly unexpected and has angered many on the left of the party, special
 
 @cup_join_romeva
 title: Let's join in Romeva's jxsi!
+subtitle: CUP receives [+ jxsi_cup_formation_num +]% of the places; ERC and CDC divide the remainder equally.
 choose-if: cup_poblelliure_strength > cup_endavant_strength + 5 and cup_poblelliure_dissent <= 15 and cup_thirdsector_dissent <= 15
 unavailable-subtitle: [? if cup_poblelliure_strength <= cup_endavant_strength + 5: Poble Lliure is not strong enough as a party faction to push for this. ?][? if cup_poblelliure_dissent > 15 or cup_thirdsector_dissent > 15: The factions in our party are too divided to agree to join jxsi. ?]
 on-arrival: {!
+    Q.unity_disunity_timer = 6;
+
     this.achieve("jxsi_de_debo");
     
     Q.cup_in_jxsi = true;
@@ -561,5 +587,4 @@ While an easier sell, joining in with centrist and center-right movements in a s
 - @post_event: Let's hope this is for the best
 
 # TODO: trigger for congreso and local -level coalitions
-
 

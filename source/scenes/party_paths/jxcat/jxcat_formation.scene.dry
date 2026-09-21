@@ -1,11 +1,823 @@
 title: A new proposal for National Unity
-subtitle: Can a jxsi-like formula [? if jxsi_formed: be repeated? ?][? if not jxsi_formed: work this time? ?]
-view-if: not jxsi_dissolved and cat_caretaker_gov and not jxcat_formed and jxcat_formation_trigger
+subtitle: Can a unity list [? if jxsi_formed: be renewed? ?][? if not jxsi_formed: work this time? ?]
+view-if: president_party != "cup" and cat_caretaker_gov and not jxcat_formed and jxcat_formation_trigger and (player_party == "cup" or player_party == "erc")
 tags: event
 new-page: true
 max-visits: 1
+role: event
+on-arrival: {!
+    {
+        const CDC = ["ciu", "cdc", "dl", "pdcat", "junts"];
+        const num = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
+        const cdc = Q.parlament_current_ciu;
+        Q.jxcat_cdc_leader = Q[cdc + "_leader"];
+        Q.jxcat_cdc_relations = num(Q[cdc + "_relations"]);
+        // Separate Parlament support is the current balance. A common list has
+        // no individual polling: use its allocation only as a fallback, then
+        // prefer existing results in contests the parties fought separately.
+        let erc = 0, right = 0, cup = 0;
+        const pooled = Q.erc_in_jxsi && !Q.jxsi_dissolved;
+        const ercAllocation = num(Q.jxsi_formation_num || 50) / 100;
+        for (const c of Q.parlament_constituencies || []) {
+            for (const d of Q.parlament_demographics || []) {
+                const suffix = `_parlament_${c}_${d}_support`;
+                const pop = num(Q[`parlament_${c}_${d}_pop`]);
+                if (pooled) {
+                    const common = num(Q["jxsi" + suffix]) * pop;
+                    const cupAllocation = Q.cup_in_jxsi
+                        ? Math.min(100, Math.max(10, num(Q.jxsi_cup_formation_num))) / 100 : 0;
+                    erc += common * (1 - cupAllocation) * ercAllocation;
+                    right += common * (1 - cupAllocation) * (1 - ercAllocation);
+                    cup += Q.cup_in_jxsi ? common * cupAllocation : num(Q["cup" + suffix]) * pop;
+                }
+                else {
+                    erc += num(Q["erc" + suffix]) * pop;
+                    right += num(Q[cdc + suffix]) * pop;
+                    cup += num(Q["cup" + suffix]) * pop;
+                }
+            }
+        }
+        // CUP outside JxSi negotiates from current support against the common
+        // ballot. CUP already inside retains its negotiated places, since
+        // pooled support cannot tell us its separate current polling.
+        Q.jxcat_cup_formation_num = Math.max(10,
+            Math.round(erc + right + cup > 0 ? 100 * cup / (erc + right + cup) : 0));
+        Q.jxcat_erc_balance = erc + right > 0 ? erc / (erc + right) : 0;
+        Q.jxcat_left_balance = erc + right + cup > 0 ? (erc + cup) / (erc + right + cup) : 0;
+        if (pooled) {
+            let ercWeighted = 0, ercWeight = 0, leftWeighted = 0, leftWeight = 0;
+            for (const [contest, suffix, importance] of [
+                ["congreso", "_congreso_pv_cat", 0.4],
+                ["local", "_local_barcelona_pv", 0.2],
+                ["local", "_local_rb_pct", 0.2],
+                ["local", "_local_interior_pct", 0.2],
+            ]) {
+                const ercUnited = ["jxsi", "jxcat"].some(list => Q[`erc_in_${list}`] && (Q[`${list}_in_${contest}`] ||
+                    (contest === "local" && Q[`${list}_united_local`])));
+                if (ercUnited)
+                    continue;
+                const e = num(Q["erc" + suffix]);
+                // Old territorial holdings can survive a rename: never sum brands.
+                const r = Math.max(...CDC.map(p => num(Q[p + suffix])));
+                if (e + r <= 0)
+                    continue;
+                ercWeighted += importance * e / (e + r);
+                ercWeight += importance;
+                const cupUnited = ["jxsi", "jxcat"].some(list => Q[`cup_in_${list}`] && (Q[`${list}_in_${contest}`] ||
+                    (contest === "local" && Q[`${list}_united_local`])));
+                if (cupUnited)
+                    continue;
+                const u = num(Q["cup" + suffix]);
+                leftWeighted += importance * (e + u) / (e + r + u);
+                leftWeight += importance;
+            }
+            if (ercWeight)
+                Q.jxcat_erc_balance = ercWeighted / ercWeight;
+            if (leftWeight)
+                Q.jxcat_left_balance = leftWeighted / leftWeight;
+        }
+        // Incumbency offers a free candidacy; it never excludes alternatives.
+        // Affiliation establishes eligibility even if the party changed leaders.
+        Q.jxcat_president_kind = "";
+        if (Q.rubicon && Q.president && [cdc, "erc", "jxsi"].includes(Q.president_party)) {
+            if (Q.president_party === "jxsi") {
+                const party = [cdc, "erc"].find(p => Q[p + "_leader"] === Q.president);
+                Q.jxcat_president_kind = party === cdc ? "cdc" : party ||
+                    (Q.jxsi_formation_num < 50 ? "cdc" : Q.jxsi_formation_num > 50 ? "erc" : "neutral");
+            } else {
+                Q.jxcat_president_kind = Q.president_party === cdc ? "cdc" : Q.president_party;
+            }
+        }
+        Q.jxcat_president_civic_veto = Q.player_party === "erc" && !!Q.jxcat_president_kind &&
+            num(Q.erc_civic_strength) >= 30;
+        Q.jxcat_president_available = !!Q.jxcat_president_kind && !Q.jxcat_president_civic_veto;
+        Q.jxcat_select_president = false;
+        Q.jxcat_civic_veto = Q.player_party === "erc" && num(Q.erc_civic_strength) >= 30;
+        Q.jxcat_erc_repeat_veto = Q.player_party === "cup" &&
+            !!Q.jxsi_formed && Q.jxsi_formation_num < 50 &&
+            !(Q.jxcat_president_available && Q.president === Q[cdc + "_leader"]);
+        Q.jxcat_failed_renewal = false;
+        Q.jxcat_selected_leader = "";
+        // The ANC puts forward one civic candidate. CUP can back Cuixart
+        // without entering the list; its membership is a separate decision.
+        const cupBacksCompromise = Q.player_party === "cup" ||
+            (Q.cup_faction !== "Endavant" && num(Q.cup_relations) >= 55);
+        Q.jxcat_neutral_candidate = num(Q.independence_movement) >= 85 &&
+            Q.jxcat_left_balance >= 0.65 - 1e-9 && cupBacksCompromise
+            ? "Jordi Cuixart" : "Jordi Sànchez";
+        Q.jxcat_cdc_available = !Q.jxcat_erc_repeat_veto;
+        Q.jxcat_neutral_available = num(Q.party_resources) >= 1 &&
+            (Q.player_party === "erc"
+                ? Q.jxcat_cdc_relations >= 55 && num(Q.erc_civic_strength) >= 15
+                : Q.jxcat_cdc_relations >= 65 && num(Q.erc_relations) >= 65);
+        Q.jxcat_erc_available = !Q.jxcat_civic_veto &&
+            Q.jxcat_erc_balance >= 0.65 - 1e-9 && Q.jxcat_cdc_relations >= 65 &&
+            num(Q.party_resources) >= 1;
+        // Do not let the normal party option bypass a veto on the same person.
+        if (Q.jxcat_president_civic_veto) {
+            if (Q.president === Q[cdc + "_leader"]) Q.jxcat_cdc_available = false;
+            if (Q.president === Q.erc_leader) Q.jxcat_erc_available = false;
+            if (Q.president === Q.jxcat_neutral_candidate) Q.jxcat_neutral_available = false;
+        }
+        Q.jxcat_leader = "???";
+        Q.jxcat_persuade_erc_available = Q.jxcat_erc_repeat_veto &&
+            !(Q.jxcat_president_kind && Q.president === Q[cdc + "_leader"]) &&
+            Q.jxcat_cdc_relations >= 55 && num(Q.erc_relations) >= 55 &&
+            num(Q.party_resources) >= 1;
+        Q.jxcat_failure_available = Q.player_party === "erc" || Q.jxcat_erc_repeat_veto ||
+            !["cdc", "neutral", "erc", "president"].some(p => Q["jxcat_" + p + "_available"]);
+    }
+!}
+go-to: choices_cup if player_party == "cup"; choices_erc if player_party == "erc"
+
+# TODO: face-image
 
 = A new proposal for National Unity
 
-TODO!
+[? if jxsi_formed: In an attempt at continued National Unity,?][? if not jxsi_formed: In a new attempt at National Unity,?] the ANC is proposing a new unitary list: jxcat. Once again aiming at combining efforts for the sake of pursuing independence, it would hopefully bring together all pro-independence parties, including [+ parlament_current_ciu +], ERC, and even the CUP.
 
+[? if jxsi_formed and not jxsi_dissolved: Basically, the question is if the current jxsi coalition is worth renewing. ?][? if jxsi_dissolved: While the breakup of jxsi still weighs on relations, there may be space for a new understanding. ?][? if not jxsi_formed: Where jxsi failed to prosper, its proponents seem bent on trying once again. ?][? if jxcat_president_available: Continuing under President [+ president +] would require no leadership negotiation resources, but other candidates remain possible. ?][? if jxcat_president_civic_veto: Civic organizations oppose continuing under President [+ president +] and demand a different candidate. ?][? if jxcat_erc_repeat_veto: ERC, however, is against yet another coalition led once more by [+ parlament_current_ciu +]. We may have a chance to persuade them, though... ?]
+
+@choices_erc
+
+- @erc_cdc
+- @erc_neutral
+- @erc_erc
+- @erc_president
+- @erc_refuse
+
+@choices_cup
+
+ERC and [+ parlament_current_ciu +] are negotiating who should lead the common list. We can let their agreement stand, or use our influence to bring them around to a different candidate. For now, we are deciding which agreement to support; whether the CUP itself joins will be a separate decision.
+
+- @cup_cdc
+- @cup_neutral
+- @cup_erc
+- @cup_president
+- @persuade_erc
+- @cup_refuse
+
+@erc_cdc
+title: Accept [+ jxcat_cdc_leader +] as leader
+subtitle: The split will be 40-60 between ERC and [+ parlament_current_ciu +]
+view-if: player_party == "erc" and (not jxcat_president_kind or president != jxcat_cdc_leader)
+on-arrival: {!
+    Q.jxcat_select_president = false;
+    Q.jxcat_selected_leader = 'cdc';
+!}
+go-to: participation
+
+@erc_neutral
+title: Build consensus around a [+ jxcat_neutral_candidate +]-led candidacy
+subtitle: Formally an even split between ERC and [+ parlament_current_ciu +] \[-1 resources\]
+view-if: player_party == "erc" and (not jxcat_president_kind or president != jxcat_neutral_candidate)
+choose-if: jxcat_neutral_available
+unavailable-subtitle: [? if jxcat_cdc_relations < 55: We don't have good enough relations with [+ parlament_current_ciu +]. ?][? if erc_civic_strength < 15: Our party's ties with civil society are not strong enough for this to work out. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: {!
+    Q.jxcat_select_president = false;
+    Q.jxcat_selected_leader = 'neutral';
+!}
+go-to: participation
+
+@erc_erc
+title: [+ erc_leader +] shall lead the list
+subtitle: The formal split will be 60-40 between ERC and [+ parlament_current_ciu +] \[-1 resources\]
+view-if: player_party == "erc" and (not jxcat_president_kind or president != erc_leader)
+choose-if: jxcat_erc_available
+unavailable-subtitle: [? if jxcat_civic_veto: Our civic-society allies have too much strength within the party to allow for this, as they insist on a party-neutral candidate instead. ?][? if jxcat_erc_balance < 0.65: The balance of power at the moment is too much towards [+ parlament_current_ciu +]. ?][? if jxcat_cdc_relations < 65: We don't have good enough relations with [+ parlament_current_ciu +]. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: {!
+    Q.jxcat_select_president = false;
+    Q.jxcat_selected_leader = 'erc';
+!}
+go-to: participation
+
+@erc_president
+title: The leadership should go of course to [? if president_gender = "f": Presidenta ?][? if president_gender = "m": President ?] [+ president +]
+subtitle: After all, why shouldn't we...
+view-if: player_party == "erc" and jxcat_president_kind
+choose-if: jxcat_president_available
+unavailable-subtitle: [? if jxcat_president_civic_veto: Our civic-society allies have too much strength within the party to allow for this, as they insist on a party-neutral candidate instead. ?]
+on-arrival: {!
+    Q.jxcat_select_president = true;
+    Q.jxcat_selected_leader = Q.jxcat_president_kind;
+!}
+go-to: participation
+
+@cup_cdc
+title: ERC will follow [+ parlament_current_ciu +] under [+ jxcat_cdc_leader +]
+subtitle: Their formal split between them will be 40-60
+view-if: player_party == "cup" and not jxcat_erc_repeat_veto and (not jxcat_president_kind or president != jxcat_cdc_leader)
+choose-if: jxcat_cdc_available
+on-arrival: {!
+    Q.jxcat_select_president = false;
+    Q.jxcat_selected_leader = 'cdc';
+!}
+go-to: participation
+
+@cup_neutral
+title: Can we bring ERC and [+ parlament_current_ciu +] around to a coalition supporting [+ jxcat_neutral_candidate +]?
+subtitle: They would divide their share of the list equally under a civic candidate. \[-1 resources\]
+view-if: player_party == "cup" and (not jxcat_president_kind or president != jxcat_neutral_candidate)
+choose-if: jxcat_neutral_available
+unavailable-subtitle: [? if jxcat_cdc_relations < 65: We don't have good enough relations with [+ parlament_current_ciu +]. ?][? if erc_relations < 65: We don't have good enough relations with ERC ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: {!
+    Q.jxcat_select_president = false;
+    Q.jxcat_selected_leader = 'neutral';
+!}
+go-to: participation
+
+@cup_erc
+title: Persuade [+ parlament_current_ciu +] to accept [+ erc_leader +]'s leadership
+subtitle: The formal split would be 60-40. \[-1 resources\]
+view-if: player_party == "cup" and (not jxcat_president_kind or president != erc_leader)
+choose-if: jxcat_erc_available
+unavailable-subtitle: [? if jxcat_erc_balance < 0.65: The balance of power at the moment is too much towards [+ parlament_current_ciu +] for them to concede the leadership to ERC. ?][? if jxcat_cdc_relations < 65: We don't have good enough relations with [+ parlament_current_ciu +]. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: {!
+    Q.jxcat_select_president = false;
+    Q.jxcat_selected_leader = 'erc';
+!}
+go-to: participation
+
+@cup_president
+title: Can both parties agree to follow [? if president_gender == "f": Presidenta?][? if president_gender == "m": President?] [+ president +]?
+subtitle: Given the situation, there is an argument to be made in this direction.
+view-if: player_party == "cup" and jxcat_president_kind
+choose-if: jxcat_president_available
+on-arrival: {!
+    Q.jxcat_select_president = true;
+    Q.jxcat_selected_leader = Q.jxcat_president_kind;
+!}
+go-to: participation
+
+@persuade_erc
+title: Persuade ERC to accept [+ jxcat_cdc_leader +]'s leadership
+subtitle: Some significant bridge-building effort would be required on our end for them to mend their differences with [+ parlament_current_ciu +]. \[-1 resources\]
+view-if: player_party == "cup" and jxcat_erc_repeat_veto and (not jxcat_president_kind or president != jxcat_cdc_leader)
+choose-if: jxcat_persuade_erc_available
+unavailable-subtitle: [? if erc_relations < 55: We don't have good enough relations with ERC. ?][? if jxcat_cdc_relations < 55: We don't have good enough relations with [+ parlament_current_ciu +]. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: {!
+    if (!Q.jxcat_persuade_erc_available)
+        throw new Error("ERC cannot be persuaded");
+    Q.party_resources -= 1;
+    Q.jxcat_persuade_erc_available = false;
+    Q.jxcat_cdc_available = true;
+    Q.jxcat_select_president = false;
+    Q.jxcat_selected_leader = 'cdc';
+!}
+go-to: participation
+
+@participation
+title: Who will join the new list?
+on-arrival: {!
+    const leader = Q.jxcat_selected_leader;
+    if (!(Q.jxcat_select_president ? Q.jxcat_president_available : Q["jxcat_" + leader + "_available"]))
+        throw new Error("Unavailable JxCat leadership");
+    Q.jxcat_failure_available = Q.player_party === "erc";
+    Q.jxcat_leadership_cost = !Q.jxcat_select_president && leader !== "cdc" ? 1 : 0;
+    Q.jxcat_formation_num = leader === "cdc" ? 40 : leader === "erc" ? 60 : 50;
+    Q.jxcat_proposed_leader = Q.jxcat_select_president ? Q.president : leader === "neutral" ? Q.jxcat_neutral_candidate
+        : Q[(leader === "cdc" ? Q.parlament_current_ciu : leader) + "_leader"];
+    Q.jxcat_proposed_leader_gender = Q.jxcat_select_president ? Q.president_gender : leader === "neutral" ? "m"
+        : Q[(leader === "cdc" ? Q.parlament_current_ciu : leader) + "_leader_gender"];
+    Q.jxcat_cup_join_available = Q.player_party === "cup"
+        ? Q.cup_poblelliure_strength > Q.cup_endavant_strength &&
+            Q.rubicon &&
+            Q.cup_poblelliure_dissent <= 20 && Q.cup_thirdsector_dissent <= 20 &&
+            (leader !== "cdc" || (Q.erc_relations >= 55 && Q.jxcat_cdc_relations >= 55))
+        : leader !== "cdc" && Q.cup_faction !== "Endavant" &&
+            Q.cup_relations >= (Q.jxcat_selected_leader = 'neutral' ? 55 : 65) &&
+            Q.rubicon &&
+            Q.party_resources >= Q.jxcat_leadership_cost + 1;
+    
+!}
+go-to: participation_cup if player_party == "cup"; participation_erc if player_party == "erc"
+
+@participation_cup
+title: Will the CUP join the agreement?
+view-if: player_party == "cup"
+
+ERC and [+ parlament_current_ciu +] seem to have come together accepted [+ jxcat_proposed_leader +]'s leadership. Now the decision comes back to us: will the CUP join in? 
+
+- @cup_join_cup
+- @cup_without_cup
+
+@cup_join_cup
+title: The CUP will join the list!
+subtitle: [? if cup_in_jxsi: The jxsi formula will be repeated once more. ?][? if not cup_in_jxsi: This may be the time for true and wide National Unity after all. ?]
+view-if: player_party == "cup"
+choose-if: jxcat_cup_join_available
+unavailable-subtitle: [? if cup_poblelliure_strength <= cup_endavant_strength: Poble Lliure is not strong enough within the party to overcome Endavant's opposition to joining. ?][? if cup_poblelliure_dissent > 20: Even within Poble Lliure, dissent with the party line is just too strong. ?][? if cup_thirdsector_dissent > 20: The Third Sector is too dissatisfied to support joining the common list. ?][? if jxcat_selected_leader == "cdc" and erc_relations < 55: We don't have enough mutual trust with ERC to enter a list led by [+ parlament_current_ciu +] alongside them. ?][? if jxcat_selected_leader == "cdc" and jxcat_cdc_relations < 55: Our relations with [+ parlament_current_ciu +] are just too strained. ?][? if not rubicon: The party does not feel the situation is extreme enough to justify such an extraordinary agreement. ?]
+on-arrival: {!
+    Q.jxcat_include_cup = true;
+!}
+go-to: formed
+
+@cup_without_cup
+title: JxCat is no place for us!
+subtitle: The place for the CUP is in the streets and running as a critical alternative party.
+view-if: player_party == "cup"
+on-arrival: {!
+    Q.jxcat_include_cup = false;
+!}
+go-to: formed
+
+@cup_refuse
+title: [? if jxcat_erc_repeat_veto: ERC refuses to be in the shadows of [+ parlament_current_ciu +] for a second time. ?][? if not jxcat_erc_repeat_veto: No agreement is reached! ?]
+subtitle: [+ parlament_current_ciu +] will go ahead with jxcat alone. [? if jxsi_formed and not jxsi_dissolved: This will, of course, also mean the dissolution of jxsi.?]
+view-if: player_party == "cup" and jxcat_failure_available
+choose-if: jxcat_failure_available
+go-to: refuse
+
+@participation_erc
+title: Who will join the new list?
+view-if: player_party == "erc"
+
+With a solid agreement between [+ parlament_current_ciu +] and ERC, the question becomes[? if jxsi_formed: , once again,?] if the CUP will join in this time or not. As usual, the internal dynamics of the CUP makes this a very complex process, and who's to know what the outcome of their assemblies will be.
+
+- @erc_join_cup
+- @erc_without_cup
+- @erc_refuse
+
+@erc_join_cup
+title: Persuade CUP to join the list
+subtitle: This will require quite the effort on our end. \[-1 resources\]
+view-if: player_party == "erc"
+choose-if: jxcat_cup_join_available
+unavailable-subtitle: [? if jxcat_selected_leader == "cdc": CUP will not accept CDC leadership. ?][? if cup_faction == "Endavant": With an Endavant leadership, there is no way the CUP can join in such a list. ?][? if (jxcat_selected_leader != 'neutral' and cup_relations < 65) or (jxcat_selected_leader = 'neutral' and cup_relations < 55): Relations with CUP are not good enough. ?][? if not rubicon: The CUP does not feel the situation is extreme enough to justify such an extraordinary agreement. ?][? if party_resources < jxcat_leadership_cost + 1: Not enough resources. ?]
+on-arrival: {!
+    Q.jxcat_include_cup = true;
+!}
+go-to: formed
+
+@erc_without_cup
+title: The CUP[? if not cup_in_jxsi: , once again, ?] stays out of the united list
+subtitle: Not a very surprising story at this point.
+view-if: player_party == "erc"
+on-arrival: {!
+    Q.jxcat_include_cup = false;
+!}
+go-to: formed
+
+@erc_refuse
+title: Refuse [? if jxsi_formed: another ?][? if not jxsi_formed: another attempt at a ?] common list
+subtitle: It's unlikely that this stops [+ parlament_current_ciu +] from trying nonetheless. [? if jxsi_formed and not jxsi_dissolved: Needless to say, this would also mean the dissolution of jxsi. ?]
+view-if: player_party == "erc" and jxcat_failure_available
+choose-if: jxcat_failure_available
+go-to: refuse
+
+@formed
+title: A new unity list
+on-arrival: {!
+    {
+        Q.unity_disunity_timer = 6;
+        const CDC = ["ciu", "cdc", "dl", "pdcat", "junts"];
+        const OFFICES = [
+            "president",
+            "vicepresident",
+            "speaker",
+            "economy_minister",
+            "interior_minister",
+            "health_minister",
+            "education_minister",
+            "territory_minister",
+            "foreign_minister",
+            "bnl_minister",
+        ];
+        const num = (value) => (Number.isFinite(Number(value)) ? Number(value) : 0);
+        const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
+        const CONGRESO = [
+            "_congreso_catalunya_support",
+            "_congreso_pv_cat",
+            "_congreso_pv",
+            "_congreso_s",
+            "_congreso_s_catalunya",
+        ];
+        const LOCAL = [
+            "_local_barcelona_support",
+            "_local_barcelona_pv",
+            "_local_barcelona_s",
+            "_local_rb_holdings",
+            "_local_rb_pct",
+            "_local_interior_holdings",
+            "_local_interior_pct",
+            "_local_redbelt",
+            "_local_interior",
+        ];
+        function listShares(Q, list, province, demographic, arena) {
+            const core = list === "jxcat" ? "jxcat" : Q.parlament_current_ciu;
+            const cup = Q["cup_in_" + list]
+                ? clamp(num(Q[list + "_cup_formation_num"]), 10, 100) / 100 : 0;
+            const erc = clamp(num(Q[list + "_formation_num"] || 50) / 100, 0, 1) * (1 - cup);
+            const base = { [core]: 1 - cup - erc, erc, ...(cup ? { cup } : {}) };
+            // Congreso and the allocation of already elected representatives use
+            // the agreement directly. Only live support receives current tilts.
+            if (!arena || arena === "congreso")
+                return base;
+            // Level-based breakup weights, not the monthly delta coefficients.
+            // At movement/trust 50, welfare 60 and dissent 40, retain the baseline.
+            const level = (key, neutral, scale) => clamp(((Number.isFinite(Number(Q[key])) ? Number(Q[key]) : neutral) - neutral) / scale, -1, 1);
+            const movement = level("independence_movement", 50, 50);
+            const trust = level("independence_trust", 50, 50);
+            const welfare = level("welfare_index", 60, 40);
+            const dissent = level("social_dissent", 40, 40);
+            const frustration = clamp(movement - trust, 0, 1);
+            // Sensitivities: movement, welfare, social dissent, frustrated expectations.
+            const demographics = {
+                buss: [0.65, 0.6, 0.4, 0.5], ind: [0.8, 0.8, 1.6, 0.8],
+                middle: [1, 1, 1, 1], young: [1.1, 1.4, 1.8, 1.6],
+                retired: [0.6, 1.8, 0.4, 0.4], rural: [1.5, 0.7, 0.8, 0.6],
+                unemployed: [1, 1.4, 2, 0.9],
+            };
+            const provinces = {
+                barcelona: [1, 1, 1, 1], girona: [1.4, 0.9, 1.1, 1.2],
+                lleida: [1.1, 0.9, 0.8, 0.8], tarragona: [0.8, 1.1, 1, 0.9],
+            };
+            const local = {
+                barcelona: [1, 1.2, 1.3, 1.2], redbelt: [0.85, 1.4, 1.6, 1.1],
+                interior: [1.35, 0.75, 0.8, 1],
+            };
+            const demo = demographics[demographic] || [1, 1, 1, 1];
+            const prov = provinces[province] || [1, 1, 1, 1];
+            const scale = arena === "parlament" ? demo.map((v, i) => v * prov[i]) : local[arena];
+            const m = movement * scale[0], w = welfare * scale[1];
+            const d = dissent * scale[2], f = frustration * scale[3];
+            // These only divide the existing common-list electorate; they do not
+            // award a second movement/economic gain to the bloc as a whole.
+            const tilts = {
+                [core]: -0.12 * m + 0.18 * trust + 0.22 * w - 0.16 * d - 0.12 * f,
+                erc: 0.20 * m + 0.18 * trust - 0.08 * w + 0.05 * d - 0.04 * f,
+                cup: 0.15 * m - 0.18 * trust - 0.28 * w + 0.25 * d + 0.35 * f,
+            };
+            const weights = Object.fromEntries(Object.entries(base).map(([party, share]) => [party, share * Math.exp(clamp(tilts[party], -0.7, 0.7))]));
+            const total = Object.values(weights).reduce((sum, value) => sum + value, 0);
+            return Object.fromEntries(Object.entries(weights).map(([party, weight]) => [party, weight / total]));
+        }
+        function distribute(Q, source, suffix, shares, integer) {
+            const total = num(Q[source + suffix]);
+            const parties = Object.keys(shares);
+            const values = parties.map((p) => total * shares[p]);
+            if (integer) {
+                const order = parties
+                    .map((p, i) => i)
+                    .sort((a, b) => values[b] -
+                    Math.floor(values[b]) -
+                    (values[a] - Math.floor(values[a])));
+                const rounded = values.map(Math.floor);
+                const remainder = Math.round(total) - rounded.reduce((a, b) => a + b, 0);
+                for (let i = 0; i < remainder; i++)
+                    rounded[order[i % order.length]]++;
+                values.splice(0, values.length, ...rounded);
+            }
+            Q[source + suffix] = 0;
+            parties.forEach((p, i) => {
+                Q[p + suffix] = num(Q[p + suffix]) + values[i];
+            });
+        }
+        function move(Q, from, to, suffix) {
+            if (from === to)
+                return;
+            Q[to + suffix] = num(Q[to + suffix]) + num(Q[from + suffix]);
+            Q[from + suffix] = 0;
+        }
+        function mapGovernment(Q, replacements, defaultParty) {
+            const expand = (p) => replacements[p] || [p];
+            for (const role of [
+                "cat_coalition",
+                "cat_coalition_support",
+                "cat_coalition_abstain",
+            ]) {
+                Q[role] = [...new Set((Q[role] || []).flatMap(expand))];
+            }
+            Q.cat_coalition_support = Q.cat_coalition_support.filter((p) => !Q.cat_coalition.includes(p));
+            Q.cat_coalition_abstain = Q.cat_coalition_abstain.filter((p) => !Q.cat_coalition.includes(p) && !Q.cat_coalition_support.includes(p));
+            for (const office of OFFICES) {
+                const members = replacements[Q[office + "_party"]];
+                if (!members)
+                    continue;
+                Q[office + "_party"] =
+                    members.find((p) => Q[p + "_leader"] === Q[office]) ||
+                        (members.includes(defaultParty) ? defaultParty : members[0]);
+            }
+            for (const p of [...CDC, "erc", "cup", "jxsi", "jxcat"]) {
+                const list = Q[p + "_in_jxcat"]
+                    ? "jxcat"
+                    : Q[p + "_in_jxsi"]
+                        ? "jxsi"
+                        : p;
+                Q[p + "_in_gob"] =
+                    Q.cat_coalition.includes(p) || Q.cat_coalition.includes(list);
+                Q[p + "_supporting"] =
+                    Q[p + "_in_gob"] ||
+                        Q.cat_coalition_support.includes(p) ||
+                        Q.cat_coalition_support.includes(list);
+            }
+            Q.position_disp = Q[Q.player_party + "_in_gob"]
+                ? "Generalitat"
+                : Q[Q.player_party + "_supporting"]
+                    ? "<span style='font-style: italic'>Government Support</span>"
+                    : "<span style='font-style: italic'>Opposition</span>";
+            if (Q.cat_coalition.length) {
+                const seats = Q.cat_coalition.reduce((sum, p) => sum + num(Q[p + "_parlament_s"]), 0);
+                const majority = num(Q.parlament_s_majority) || 68;
+                const names = {
+                    jxsi: "JxSí",
+                    jxcat: "JxCat",
+                    pdcat: "PDeCAT",
+                    junts: "Junts",
+                };
+                const label = Q.cat_coalition
+                    .map((p) => names[p] || p.toUpperCase())
+                    .join(" + ");
+                Q.cat_coalition_disp =
+                    '<span class="generalitat-coalition" data-parties="' +
+                        Q.cat_coalition.join(" ") +
+                        '" data-summary="' +
+                        (seats >= majority ? "Majority" : "Minority") +
+                        " government - " +
+                        seats +
+                        "/" +
+                        majority +
+                        '">' +
+                        label +
+                        "</span>";
+            }
+        }
+        if (!Q.jxcat_formed) {
+            const includeCup = Q.jxcat_include_cup;
+            const leader = Q.jxcat_selected_leader;
+            if (!(Q.jxcat_select_president ? Q.jxcat_president_available : Q["jxcat_" + leader + "_available"]))
+                throw new Error("Unavailable JxCat leadership");
+            const cost = num(Q.jxcat_leadership_cost) + (includeCup && Q.player_party === "erc" ? 1 : 0);
+            if (num(Q.party_resources) < cost)
+                throw new Error("Insufficient negotiation resources");
+            if (includeCup && !Q.jxcat_cup_join_available)
+                throw new Error("CUP cannot join JxCat");
+            Q.party_resources -= cost;
+            const cdc = Q.parlament_current_ciu;
+            const local = !!Q.jxsi_in_local;
+            const congreso = !!Q.jxsi_in_congreso;
+            if (Q.jxsi_formed && !Q.jxsi_dissolved) {
+                const baseline = listShares(Q, "jxsi");
+                const members = Object.keys(baseline);
+                // Preserve historical vote results and representatives. Their party
+                // affiliations change, but current polling does not elect a new chamber.
+                distribute(Q, "jxsi", "_parlament_s", baseline, true);
+                distribute(Q, "jxsi", "_parlament_pv", baseline, false);
+                for (const province of Q.parlament_constituencies || []) {
+                    for (const demographic of Q.parlament_demographics || []) {
+                        const suffix = "_parlament_" + province + "_" + demographic + "_support";
+                        const current = listShares(Q, "jxsi", province, demographic, "parlament");
+                        distribute(Q, "jxsi", suffix, current, false);
+                    }
+                }
+                if (Q.jxsi_in_congreso) {
+                    for (const suffix of CONGRESO)
+                        distribute(Q, "jxsi", suffix, baseline, suffix.includes("_s") && !suffix.endsWith("_support"));
+                }
+                if (Q.jxsi_in_local) {
+                    for (const suffix of LOCAL) {
+                        const arena = suffix === "_local_barcelona_support" ? "barcelona"
+                            : suffix === "_local_redbelt" ? "redbelt"
+                                : suffix === "_local_interior" ? "interior" : "";
+                        const current = arena ? listShares(Q, "jxsi", null, null, arena) : baseline;
+                        distribute(Q, "jxsi", suffix, current, suffix === "_local_barcelona_s");
+                    }
+                }
+                for (const p of [...CDC, "erc", "cup"])
+                    Q[p + "_in_jxsi"] = false;
+                Q.player_in_jxsi = false;
+                Q.jxsi_in_congreso = false;
+                Q.jxsi_in_local = false;
+                Q.jxsi_dissolved = true;
+                Q.jxsi_dissolution_trigger = false;
+                const core = Q.parlament_current_ciu;
+                const oldLeader = Q.jxsi_formation_num > 50 ? "erc" : core;
+                mapGovernment(Q, { jxsi: members }, oldLeader);
+            }
+            const suffixes = ["_parlament_s", "_parlament_pv"];
+            for (const c of Q.parlament_constituencies || []) {
+                for (const d of Q.parlament_demographics || [])
+                    suffixes.push(`_parlament_${c}_${d}_support`);
+            }
+            const members = [cdc, "erc", ...(includeCup ? ["cup"] : [])];
+            for (const p of members) {
+                for (const suffix of suffixes)
+                    move(Q, p, "jxcat", suffix);
+            }
+            // Existing joint agreements continue; previously separate contests stay separate.
+            const localMembers = local ? members : [cdc];
+            const congresoMembers = congreso ? members : [cdc];
+            for (const p of localMembers)
+                for (const suffix of LOCAL)
+                    move(Q, p, "jxcat", suffix);
+            for (const p of congresoMembers)
+                for (const suffix of CONGRESO)
+                    move(Q, p, "jxcat", suffix);
+            for (const field of [
+                "leader",
+                "leader_gender",
+                "relations",
+                "dissent",
+                "roadmap",
+                "ideology",
+            ]) {
+                Q["jxcat_" + field] = Q[cdc + "_" + field];
+            }
+            Q.jxcat_leader = Q.jxcat_proposed_leader;
+            Q.jxcat_leader_gender = Q.jxcat_proposed_leader_gender;
+            Q.jxcat_leader_party = leader === "cdc" ? cdc : leader;
+            Q.jxcat_roadmap =
+                leader === "neutral"
+                    ? num(Q.jxsi_roadmap || Q.erc_roadmap)
+                    : Q[(leader === "cdc" ? cdc : leader) + "_roadmap"];
+            Q.jxcat_ideology = "National coalition, Independence";
+            Q.jxcat_formed = true;
+            Q.jxcat_dissolved = false;
+            Q.jxcat_formation_trigger = false;
+            Q.erc_in_jxcat = true;
+            Q.cup_in_jxcat = !!includeCup;
+            Q[cdc + "_in_jxcat"] = true;
+            Q.player_in_jxcat = Q.player_party === "erc" || includeCup;
+            Q.jxcat_in_local = local;
+            Q.jxcat_in_congreso = congreso;
+            mapGovernment(Q, Object.fromEntries(members.map((p) => [p, ["jxcat"]])), "jxcat");
+            Q.historical_event =
+                "JxCat unites " +
+                    (includeCup ? "CDC, ERC and CUP" : "CDC and ERC") +
+                    " behind " +
+                    Q.jxcat_leader +
+                    ".";
+        }
+    }
+    this.state.currentHands['main'] = [];
+    this.state.currentHands['main.main_easy'] = [];
+    this.state.currentHands['main.main_hard'] = [];
+!}
+
+jxcat will contest the next Parlament election under [+ jxcat_leader +], bringing together [+ parlament_current_ciu +] and ERC[? if cup_in_jxcat: , with CUP also inside the list?].
+
+- @post_event: Surely for the better!
+
+@refuse
+title: [? if player_party == "erc": Refuse the common list?][? if player_party == "cup": No unity agreement can be reached... ?]
+subtitle: [+ parlament_current_ciu +] will push their coalition ideas alone[? if jxsi_formed and not jxsi_dissolved: , while jxsi will be dissolved?].
+view-if: jxcat_failure_available
+choose-if: jxcat_failure_available
+on-arrival: {!
+    Q.jxcat_failed_renewal = true;
+    if (Q.jxsi_formed && !Q.jxsi_dissolved)
+        Q.jxsi_dissolution_trigger = true;
+!}
+go-to: jxsi_dissolution.dissolve if jxsi_formed and not jxsi_dissolved; alone if not jxsi_formed or jxsi_dissolved
+
+@alone
+title: JxCat without a unity agreement
+on-arrival: {!
+    {
+        const CDC = ["ciu", "cdc", "dl", "pdcat", "junts"];
+        const OFFICES = [
+            "president",
+            "vicepresident",
+            "speaker",
+            "economy_minister",
+            "interior_minister",
+            "health_minister",
+            "education_minister",
+            "territory_minister",
+            "foreign_minister",
+            "bnl_minister",
+        ];
+        const num = (value) => (Number.isFinite(Number(value)) ? Number(value) : 0);
+        const CONGRESO = [
+            "_congreso_catalunya_support",
+            "_congreso_pv_cat",
+            "_congreso_pv",
+            "_congreso_s",
+            "_congreso_s_catalunya",
+        ];
+        const LOCAL = [
+            "_local_barcelona_support",
+            "_local_barcelona_pv",
+            "_local_barcelona_s",
+            "_local_rb_holdings",
+            "_local_rb_pct",
+            "_local_interior_holdings",
+            "_local_interior_pct",
+            "_local_redbelt",
+            "_local_interior",
+        ];
+        if (!Q.jxcat_formed) {
+            if (Q.jxsi_formed && !Q.jxsi_dissolved)
+                throw new Error("Dissolve JxSi before forming standalone JxCat");
+            const cdc = Q.parlament_current_ciu;
+            const suffixes = ["_parlament_s", "_parlament_pv"];
+            for (const c of Q.parlament_constituencies || []) {
+                for (const d of Q.parlament_demographics || [])
+                    suffixes.push(`_parlament_${c}_${d}_support`);
+            }
+            for (const suffix of [...suffixes, ...CONGRESO, ...LOCAL]) {
+                Q["jxcat" + suffix] = num(Q["jxcat" + suffix]) + num(Q[cdc + suffix]);
+                Q[cdc + suffix] = 0;
+            }
+            for (const field of [
+                "leader",
+                "leader_gender",
+                "relations",
+                "dissent",
+                "roadmap",
+                "ideology",
+            ]) {
+                Q["jxcat_" + field] = Q[cdc + "_" + field];
+            }
+            Q.jxcat_leader_party = cdc;
+            Q.jxcat_formed = true;
+            Q.jxcat_dissolved = false;
+            Q.jxcat_formation_trigger = false;
+            Q.erc_in_jxcat = false;
+            Q.cup_in_jxcat = false;
+            Q.player_in_jxcat = false;
+            Q[cdc + "_in_jxcat"] = true;
+            Q.jxcat_in_congreso = false;
+            Q.jxcat_in_local = false;
+            Q.parlament_current_ciu = "jxcat";
+            const replacements = { [cdc]: ["jxcat"] };
+            const defaultParty = "jxcat";
+            const expand = (p) => replacements[p] || [p];
+            for (const role of [
+                "cat_coalition",
+                "cat_coalition_support",
+                "cat_coalition_abstain",
+            ]) {
+                Q[role] = [...new Set((Q[role] || []).flatMap(expand))];
+            }
+            Q.cat_coalition_support = Q.cat_coalition_support.filter((p) => !Q.cat_coalition.includes(p));
+            Q.cat_coalition_abstain = Q.cat_coalition_abstain.filter((p) => !Q.cat_coalition.includes(p) && !Q.cat_coalition_support.includes(p));
+            for (const office of OFFICES) {
+                const members = replacements[Q[office + "_party"]];
+                if (!members)
+                    continue;
+                Q[office + "_party"] =
+                    members.find((p) => Q[p + "_leader"] === Q[office]) ||
+                        (members.includes(defaultParty) ? defaultParty : members[0]);
+            }
+            for (const p of [...CDC, "erc", "cup", "jxsi", "jxcat"]) {
+                const list = Q[p + "_in_jxcat"]
+                    ? "jxcat"
+                    : Q[p + "_in_jxsi"]
+                        ? "jxsi"
+                        : p;
+                Q[p + "_in_gob"] =
+                    Q.cat_coalition.includes(p) || Q.cat_coalition.includes(list);
+                Q[p + "_supporting"] =
+                    Q[p + "_in_gob"] ||
+                        Q.cat_coalition_support.includes(p) ||
+                        Q.cat_coalition_support.includes(list);
+            }
+            Q.position_disp = Q[Q.player_party + "_in_gob"]
+                ? "Generalitat"
+                : Q[Q.player_party + "_supporting"]
+                    ? "<span style='font-style: italic'>Government Support</span>"
+                    : "<span style='font-style: italic'>Opposition</span>";
+            if (Q.cat_coalition.length) {
+                const seats = Q.cat_coalition.reduce((sum, p) => sum + num(Q[p + "_parlament_s"]), 0);
+                const majority = num(Q.parlament_s_majority) || 68;
+                const names = {
+                    jxsi: "JxSí",
+                    jxcat: "JxCat",
+                    pdcat: "PDeCAT",
+                    junts: "Junts",
+                };
+                const label = Q.cat_coalition
+                    .map((p) => names[p] || p.toUpperCase())
+                    .join(" + ");
+                Q.cat_coalition_disp =
+                    '<span class="generalitat-coalition" data-parties="' +
+                        Q.cat_coalition.join(" ") +
+                        '" data-summary="' +
+                        (seats >= majority ? "Majority" : "Minority") +
+                        " government - " +
+                        seats +
+                        "/" +
+                        majority +
+                        '">' +
+                        label +
+                        "</span>";
+            }
+            Q.historical_event =
+                "The unity proposal has failed. " +
+                    Q.jxcat_leader +
+                    " will lead JxCat without ERC or the CUP.";
+        }
+    }
+    this.state.currentHands['main'] = [];
+    this.state.currentHands['main.main_easy'] = [];
+    this.state.currentHands['main.main_hard'] = [];
+
+    if (Q.president_party == "jxcat" && (Q.cat_coalition.includes("erc") || Q.cat_coalition.includes("cup") || Q.erc_supporting)) {
+        Q.parlament_snap_election_countdown = 1;
+    }
+!}
+
+The common-list proposal has failed. [+ jxcat_leader +] will lead jxcat as the successor to [+ parlament_current_ciu +], while ERC and CUP run separately. [? if parlament_snap_election_countdown = 1: It's unclear how long can the current government can last, given the very visible disagreements between the parties... ?]
+
+- @post_event: Each party will take its own road

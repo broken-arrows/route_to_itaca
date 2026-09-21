@@ -18,16 +18,23 @@
  * this works at all. If you need the DOM, you are writing a UI, not a game lib.
  * ========================================================================== */
 (function () {
-  'use strict';
+  "use strict";
 
   // Each lib module is dual-consumable: a bundler `require`s it; the old shell
   // (no bundler) loads it as a <script> that publishes a window global. Same
   // branch for all of them.
-  var hasModule = typeof require !== 'undefined' && typeof module !== 'undefined';
-  var catEngine = hasModule ? require('./cat_engine.js') : window.RTI_CAT_ENGINE;
-  var allegiances = hasModule ? require('./allegiances.js') : window.RTI_ALLEGIANCES;
-  var brief = hasModule ? require('./brief.js') : window.RTI_BRIEF;
-  var government = hasModule ? require('./government.js') : window.RTI_GOVERNMENT;
+  var hasModule =
+    typeof require !== "undefined" && typeof module !== "undefined";
+  var catEngine = hasModule
+    ? require("./cat_engine.js")
+    : window.RTI_CAT_ENGINE;
+  var allegiances = hasModule
+    ? require("./allegiances.js")
+    : window.RTI_ALLEGIANCES;
+  var brief = hasModule ? require("./brief.js") : window.RTI_BRIEF;
+  var government = hasModule
+    ? require("./government.js")
+    : window.RTI_GOVERNMENT;
 
   // AGGREGATION point. Object.assign forwards EVERYTHING each module exports —
   // a new sim helper only needs a line in cat_engine.js's `api`; a new lib FILE
@@ -36,7 +43,7 @@
   // fallback degrades to a smaller lib rather than throwing on load.)
   var lib = Object.assign({}, catEngine, allegiances, brief, government);
 
-  if (typeof module !== 'undefined' && module.exports) {
+  if (typeof module !== "undefined" && module.exports) {
     module.exports = lib;
   } else {
     window.RTI_GAME_LIB = lib;

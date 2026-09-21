@@ -218,6 +218,30 @@
       }
     },
     {
+      "id": "jordi_sanchez",
+      "match": ["Jordi Sánchez", "Jordi Sànchez i Picanyol", "jordi sanchez"],
+      "colour": "jxcat",
+      "tooltip": {
+        "title": "Jordi Sànchez i Picanyol",
+        "img": "img/jxsi/jordi_sanchez.jpg",
+        "q": {
+          "ideology": "Centrist Social Democracy, Unilateralism"
+        }
+      }
+    },
+    {
+      "id": "jordi_cuixart",
+      "match": ["Jordi Cuixart", "Jordi Cuixart i Navarro", "jordi cuixart"],
+      "colour": "#e97202",
+      "tooltip": {
+        "title": "Jordi Cuixart i Navarro",
+        "img": "img/jxsi/jordi_cuixart.jpg",
+        "q": {
+          "ideology": "Left Social Democracy, Unilateralism"
+        }
+      }
+    },
+    {
       "id": "cc_pnc",
       "match": ["CC-PNC", "cc-pnc", "cc"],
       "display": "CC-PNC",

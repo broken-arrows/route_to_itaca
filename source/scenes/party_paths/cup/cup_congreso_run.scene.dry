@@ -1,6 +1,6 @@
 title: Will the CUP run for the Spanish General Election?
 subtitle: The anti-capitalist formation decides now
-view-if: next_spanish_election_time - time <= 5 and cup_parlament_s > 0 and cup_congreso_decides_timer = 0 and not cup_in_jxsi and not cup_in_jxcat
+view-if: next_spanish_election_time - time <= 5 and cup_parlament_s > 0 and cup_congreso_decides_timer = 0 and not (cup_in_jxsi and jxsi_in_congreso) and not (cup_in_jxcat and jxcat_in_congreso) and not cup_leadership_timer = 0
 tags: event
 new-page: true
 face-image: img/events/cup_congreso.webp 

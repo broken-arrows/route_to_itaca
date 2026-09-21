@@ -1,18 +1,13 @@
-title: The end of JxSí
-view-if: jxsi_formed and not jxsi_dissolved and jxsi_dissolution_trigger and not jxcat_formed
+title: The end of the JxCat unity list
+view-if: jxcat_formed and not jxcat_dissolved and erc_in_jxcat and jxcat_dissolution_trigger
 tags: event
 new-page: true
+face-image: img/jxsi/unity.jpg
 max-visits: 1
 role: event
-go-to: dissolve
-
-= The end of JxSí
-
-@dissolve
-face-image: img/jxsi/unity.jpg
 on-arrival: {!
-    if (Q.jxsi_formed && !Q.jxsi_dissolved)
-        Q.jxsi_dissolution_had_cup = !!Q.cup_in_jxsi;
+    if (Q.jxcat_formed && !Q.jxcat_dissolved)
+        Q.jxcat_dissolution_had_cup = !!Q.cup_in_jxcat;
     {
         const CDC = ["ciu", "cdc", "dl", "pdcat", "junts"];
         const OFFICES = [
@@ -117,47 +112,54 @@ on-arrival: {!
                 Q[p + suffix] = num(Q[p + suffix]) + values[i];
             });
         }
-        if (Q.jxsi_formed && !Q.jxsi_dissolved) {
-            const baseline = listShares(Q, "jxsi");
+        if (Q.jxcat_formed && !Q.jxcat_dissolved) {
+            const baseline = listShares(Q, "jxcat");
             const members = Object.keys(baseline);
             // Preserve historical vote results and representatives. Their party
             // affiliations change, but current polling does not elect a new chamber.
-            distribute(Q, "jxsi", "_parlament_s", baseline, true);
-            distribute(Q, "jxsi", "_parlament_pv", baseline, false);
+            distribute(Q, "jxcat", "_parlament_s", baseline, true);
+            distribute(Q, "jxcat", "_parlament_pv", baseline, false);
             for (const province of Q.parlament_constituencies || []) {
                 for (const demographic of Q.parlament_demographics || []) {
                     const suffix = "_parlament_" + province + "_" + demographic + "_support";
-                    const current = listShares(Q, "jxsi", province, demographic, "parlament");
-                    const loss = num(Q["jxsi" + suffix]) * 0.05;
-                    Q["jxsi" + suffix] = num(Q["jxsi" + suffix]) - loss;
+                    const current = listShares(Q, "jxcat", province, demographic, "parlament");
+                    const loss = num(Q["jxcat" + suffix]) * 0.05;
+                    Q["jxcat" + suffix] = num(Q["jxcat" + suffix]) - loss;
                     Q["abstain" + suffix] = num(Q["abstain" + suffix]) + loss;
-                    distribute(Q, "jxsi", suffix, current, false);
+                    distribute(Q, "jxcat", suffix, current, false);
                 }
             }
-            if (Q.jxsi_in_congreso) {
+            if (Q.jxcat_in_congreso) {
                 for (const suffix of CONGRESO)
-                    distribute(Q, "jxsi", suffix, baseline, suffix.includes("_s") && !suffix.endsWith("_support"));
+                    distribute(Q, "jxcat", suffix, baseline, suffix.includes("_s") && !suffix.endsWith("_support"));
             }
-            if (Q.jxsi_in_local) {
+            if (Q.jxcat_in_local) {
                 for (const suffix of LOCAL) {
                     const arena = suffix === "_local_barcelona_support" ? "barcelona"
                         : suffix === "_local_redbelt" ? "redbelt"
                             : suffix === "_local_interior" ? "interior" : "";
-                    const current = arena ? listShares(Q, "jxsi", null, null, arena) : baseline;
-                    distribute(Q, "jxsi", suffix, current, suffix === "_local_barcelona_s");
+                    const current = arena ? listShares(Q, "jxcat", null, null, arena) : baseline;
+                    distribute(Q, "jxcat", suffix, current, suffix === "_local_barcelona_s");
                 }
             }
             for (const p of [...CDC, "erc", "cup"])
-                Q[p + "_in_jxsi"] = false;
-            Q.player_in_jxsi = false;
-            Q.jxsi_in_congreso = false;
-            Q.jxsi_in_local = false;
-            Q.jxsi_dissolved = true;
-            Q.jxsi_dissolution_trigger = false;
+                Q[p + "_in_jxcat"] = false;
+            Q.player_in_jxcat = false;
+            Q.jxcat_in_congreso = false;
+            Q.jxcat_in_local = false;
+            Q.jxcat_dissolved = true;
+            Q.jxcat_dissolution_trigger = false;
             Q.independence_trust = num(Q.independence_trust) - 1.5;
-            const core = Q.parlament_current_ciu;
-            const oldLeader = Q.jxsi_formation_num > 50 ? "erc" : core;
-            const replacements = { jxsi: members };
+            const core = "jxcat";
+            // The common ballot becomes the standalone CDC successor. Restore
+            // its own leader before resolving the officeholders' affiliations.
+            const cdc = Q.parlament_current_ciu;
+            for (const field of ["leader", "leader_gender", "relations", "dissent", "roadmap", "ideology"])
+                Q["jxcat_" + field] = Q[cdc + "_" + field];
+            Q.jxcat_leader_party = cdc;
+            Q.parlament_current_ciu = "jxcat";
+            const oldLeader = Q.jxcat_formation_num > 50 ? "erc" : core;
+            const replacements = { jxcat: members };
             const defaultParty = oldLeader;
             const expand = (p) => replacements[p] || [p];
             for (const role of [
@@ -227,19 +229,10 @@ on-arrival: {!
     this.state.currentHands['main.main_hard'] = [];
 !}
 
-[? if jxcat_failed_renewal: The attempt to renew National Unity has failed. ?][? if not jxcat_failed_renewal: The disagreements within jxsi have finally brought the common list to an end. ?]ERC and [+ parlament_current_ciu +][? if jxsi_dissolution_had_cup: , together with CUP,?] will split up and go back to their separate electoral organizations.
+= The end of the jxcat
 
-Needless to say, this is to the disillusionment of many pro-independence voters. We'll have to see if their trust can be recovered.
+The disagreements within jxcat have ended the common list. ERC[? if jxcat_dissolution_had_cup: and CUP?] will run independently, while [+ jxcat_leader +] has insisted on keeping the coalition alive, even if it means only [+ parlament_current_ciu +] will be there, followed only by minor parties and organization.
 
-- @cdc_alone
-- @separate
+# TODO: face-image
 
-@cdc_alone
-title: [+ parlament_current_ciu +] will, nonetheless, move forward with their solo-creation of jxcat
-view-if: jxcat_failed_renewal
-go-to: jxcat_formation.alone
-
-@separate
-title: Continue...
-view-if: not jxcat_failed_renewal
-go-to: post_event
+- @post_event: It's time for everybody to follow their own path

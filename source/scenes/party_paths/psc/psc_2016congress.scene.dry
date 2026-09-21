@@ -57,7 +57,9 @@ choose-if: (psc_leader != "Miquel Iceta" and psc_parlament_s < 24) or (psc_leade
 unavailable-subtitle: [? if party_resources < 1: Not enough party resources. ?][? if psc_relations < 40: We don't have good enough relations with the PSC. ?]
 subtitle: [? if (psc_leader != "Miquel Iceta" and psc_parlament_s < 24): With current electoral performance less satisfactory than expected, she is likely to take over the leadership without any intervention. ?] [? if (psc_leader = "Miquel Iceta" and psc_parlament_s < 10): With the current poor electoral results, she is likely to take over the leadership without any intervention. ?][? if party_resources >= 1 and ((psc_leader != "Miquel Iceta" and psc_parlament_s < 24) or (psc_leader = "Miquel Iceta" and psc_parlament_s < 10)): \[-1 resources\] ?]
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!(Q.psc_leader != "Miquel Iceta" && Q.psc_parlament_s < 24) || !(Q.psce_leader == "Miquel Iceta" && Q.psc_parlament_s < 10)) {
+        Q.party_resources -= 1;
+    }
     Q.psc_leader = "Núria Parlon";
     Q.psc_leader_gender = "f";
     Q.psc_ideology = "Centrist Social Democracy, Federalism";
@@ -65,6 +67,5 @@ on-arrival: {!
 !}
 
 In a quite surprising turn of events, the coalition of local leaders led by nuria parlon has managed to claim the PSC's leadership. [? if psc_split: While the PSC-PSOE split may, at least for now, remain, nuria parlon has quite a more moderate position on sovereignty, so it is hard to bet if the forces behind the split will remain relevant from now onwards. We'll have to see how it goes for her from now onwards. ?][? if not psc_split: With her at the helm, it's hard to see the PSC getting closer to its federal allies in the PSOE than it is now. Combative and with a more nuanced view on sovereignty, we can only wait and see what she manages to achieve. ?]
-
 
 - @post_event

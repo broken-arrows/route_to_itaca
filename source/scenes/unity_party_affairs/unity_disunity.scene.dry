@@ -1,7 +1,7 @@
 title: Coalition Disunity
 new-page: true
 is-card: true
-view-if: (player_in_jxsi and jxsi_dissent >= 30) || (player_in_jxcat && jxcat_dissent >= 30)
+view-if: (player_in_jxsi and jxsi_dissent >= 30) or (player_in_jxcat and jxcat_dissent >= 30) and unity_disunity_timer = 0
 card-image: img/jxsi/unity.jpg
 face-image: img/jxsi/unity.jpg
 frequency: 200
@@ -17,7 +17,7 @@ role: card-party
 
 The National Unity list with [+ parlament_current_ciu +] [? if cup_in_jxsi or cup_in_jxcat and not player_party = "cup": and the CUP ?][? if player_party != "erc": and ERC ?]is, understandably, plagued with disagreements. While these are expected to an extent, our different party positions and relations seem to be reaching worrying thresholds. 
 
-[? if parlament_current_ciu_relations < 55: [+ parlament_current_ciu +] is discontent with recent [? if jxsi_formed && !jxcat_formed: jxsi?][? if jxcat_formed: jxcat?] course of action. ?]
+[? if parlament_current_ciu_relations < 55: [+ parlament_current_ciu +] is discontent with recent [? if jxsi_formed and not jxcat_formed: jxsi?][? if jxcat_formed: jxcat?] course of action. ?]
 [? if erc_relations < 55 and not player_party = "erc": ERC is quite unhappy with the direction the coalition has taken.  ?]
 [? if cup_relations < 55 and (cup_in_jxsi or cup_in_jxcat) and not player_party = "cup": The CUP is complaining about us betraying the original ideas of the coalition. ?]
 
@@ -87,12 +87,14 @@ title: Enough with National Unity!
 subtitle: We will put an end to the jxsi coalition
 view-if: player_in_jxsi
 on-arrival: {!
-    Q[Q.parlament_current_ciu + "_relations"] -= 10;
-    Q.erc_relations -= 10;
-    if (Q.cup_in_jxcat) {
-        Q.cup_relations -= 10;
+    Q[Q.parlament_current_ciu + "_relations"] -= 20;
+    Q.erc_relations -= 20;
+    if (Q.cup_in_jxsi) {
+        Q.cup_relations -= 20;
     }
     Q.jxsi_dissolution_trigger = true;
+
+    // TODO: more heavy penalities for CONCRETELY the PARTY that presses this button!
 !}
 
 Our party has taken the decision to leave the jxsi coalition. There's no going back now.
@@ -102,12 +104,12 @@ title: Enough with National Unity!
 subtitle: We will put an end to the jxcat coalition
 view-if: player_in_jxcat
 on-arrival: {!
-    Q[Q.parlament_current_ciu + "_relations"] -= 10;
-    Q.erc_relations -= 10;
+    Q.jxcat_dissolution_trigger = true;
+    Q[Q.parlament_current_ciu + "_relations"] -= 20;
+    Q.erc_relations -= 20;
     if (Q.cup_in_jxcat) {
-        Q.cup_relations -= 10;
+        Q.cup_relations -= 20;
     }
 !}
 
 Our party has taken the decision to leave the jxcat coalition. There's no going back now.
-

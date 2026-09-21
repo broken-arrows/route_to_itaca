@@ -23,6 +23,16 @@ on-arrival: {!
 - #endings
 - @end_game: End game.
 
+@jxcat_formed
+title: Formed jxcat
+view-if: jxcat_formed and not end_jxcat_seen
+on-arrival: end_jxcat_seen = 1
+tags: endings
+go-to: eg_menu
+role: ending
+
+The jxcat electoral coalition was formed as a continuation of a national-unity list! Congrats! (this path is still wip and will make more sense once rubicon is available)
+
 @end_temp
 title: WIP ending cards
 view-if: not end_temp_seen

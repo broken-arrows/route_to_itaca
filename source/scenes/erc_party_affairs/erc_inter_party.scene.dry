@@ -17,7 +17,7 @@ ERC is one of many parties in a very fragmented political landscape. If we are t
 - @jxsi_relations: We need to work on national unity within JxSi!
 - @jxcat_relations: We need to work on national unity within JxCat!
 - @ciu_relations: We need to work on national unity with CiU ([+ciu_ideology+])
-- @pdcat_nosplit_relations: We need to work on national unity with PdCat ([+pdcat_ideology+])
+- @pdcat_nosplit_relations: We need to work on national unity with the pdcat ([+pdcat_ideology+])
 - @cdc_relations: We need to work on national unity with CDC ([+cdc_ideology+])
 - @dl_relations: We need to work on national unity with DL ([+dl_ideology+])
 - @jxcat_noerc_relations: We need to work on national unity with JxCat ([+jxcat_ideology+])
@@ -200,7 +200,7 @@ on-arrival: {!
 @dl_relations
 subtitle: \[-1 resources\]
 choose-if: party_resources >= 1 
-view-if: dl_formed and not dl_in_jxcat and not dl_in_jxsi
+view-if: dl_formed and not pdcat_formed and not dl_in_jxcat and not dl_in_jxsi
 unavailable-subtitle: Not enough resources
 on-arrival: {!
     Q.party_resources -= 1;

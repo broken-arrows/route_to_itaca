@@ -53,10 +53,11 @@ describe('Parlament coalition resolution', () => {
   it('registers the countdown id whose countdown value it initializes', () => {
     const q = resolveCoalition({
       jxsi_formed: true,
+      jxsi_parlament_s: 62,
       countdowns: [],
     });
 
-    expect(q.countdowns).toContain('jxsi_dissolution');
-    expect(q.jxsi_dissolution_countdown).toBeGreaterThan(0);
+    expect(q.countdowns).toContain('jxcat_formation');
+    expect(q.jxcat_formation_countdown).toBeGreaterThan(0);
   });
 });

@@ -125,18 +125,43 @@
       var ppc = Math.max(0, finite(support.ppc, 0));
       var cs = Math.max(0, finite(support.cs, 0));
       // Movement supplies territorial salience; relations amplify it.
-      var movementPressure = clamp((finite(Q.independence_movement, 25) - 40) / 45, 0, 1);
-      var conflictPressure = clamp((50 - finite(Q.cat_spa_relations, 50)) / 40, 0, 1);
-      var campaignMonths = finite(Q.next_election_time, Infinity) - finite(Q.time, 0);
-      var campaign = Number.isFinite(campaignMonths) ? clamp(1 - Math.max(0, campaignMonths) / 6, 0, 1) : 0;
+      var movementPressure = clamp(
+        (finite(Q.independence_movement, 25) - 40) / 45,
+        0,
+        1,
+      );
+      var conflictPressure = clamp(
+        (50 - finite(Q.cat_spa_relations, 50)) / 40,
+        0,
+        1,
+      );
+      var campaignMonths =
+        finite(Q.next_election_time, Infinity) - finite(Q.time, 0);
+      var campaign = Number.isFinite(campaignMonths)
+        ? clamp(1 - Math.max(0, campaignMonths) / 6, 0, 1)
+        : 0;
       if (cs > 0 || finite(Q.cs_parlament_s, 0) > 0) {
-        var retention = (1 + .35 * recovery) / exposure;
-        var outward = psc * .025 * movementPressure * movementPressure *
-          (.75 + .25 * conflictPressure) / retention / (1 + cs / Math.max(psc, .01));
-        var inward = cs * .008 * (1 - movementPressure) * (1 - movementPressure) * retention;
-        var switching = (outward - inward) * (.5 + .5 * campaign) * Math.min(scale, 2);
-        if (switching > 0) request("nonlinear.psc_cs_movement", "psc", "cs", switching);
-        else request("nonlinear.cs_psc_reconciliation", "cs", "psc", -switching);
+        var retention = (1 + 0.35 * recovery) / exposure;
+        var outward =
+          (psc *
+            0.025 *
+            movementPressure *
+            movementPressure *
+            (0.75 + 0.25 * conflictPressure)) /
+          retention /
+          (1 + cs / Math.max(psc, 0.01));
+        var inward =
+          cs *
+          0.008 *
+          (1 - movementPressure) *
+          (1 - movementPressure) *
+          retention;
+        var switching =
+          (outward - inward) * (0.5 + 0.5 * campaign) * Math.min(scale, 2);
+        if (switching > 0)
+          request("nonlinear.psc_cs_movement", "psc", "cs", switching);
+        else
+          request("nonlinear.cs_psc_reconciliation", "cs", "psc", -switching);
       }
       var pool = ppc + cs;
       // A live Catalan organization or existing local voters makes Cs viable;
@@ -270,16 +295,25 @@
           // Cs responds to current support; depletion and falling relative
           // appeal produce diminishing returns.
           var cs = Math.max(0, finite(context.support[context.carriers.cs], 0));
-          var abstention = Math.max(0, finite(context.support[context.carriers.abs], 0));
-          var csPressure = movement * (.82 + .18 * conflict);
-          var csFlow = abstention * .012 * csPressure * speed /
-            (1 + cs / Math.max(abstention, .01)) -
-            cs * .01 * (1 - csPressure) * (1 - .5 * proximity);
-          if (Math.abs(csFlow) > 1e-12) requests.push({
-            mechanism: csFlow > 0 ? "nonlinear.cs_mobilization" : "nonlinear.cs_demobilization",
-            from: csFlow > 0 ? "abs" : "cs", to: csFlow > 0 ? "cs" : "abs",
-            amount: Math.abs(csFlow),
-          });
+          var abstention = Math.max(
+            0,
+            finite(context.support[context.carriers.abs], 0),
+          );
+          var csPressure = movement * (0.82 + 0.18 * conflict);
+          var csFlow =
+            (abstention * 0.012 * csPressure * speed) /
+              (1 + cs / Math.max(abstention, 0.01)) -
+            cs * 0.01 * (1 - csPressure) * (1 - 0.5 * proximity);
+          if (Math.abs(csFlow) > 1e-12)
+            requests.push({
+              mechanism:
+                csFlow > 0
+                  ? "nonlinear.cs_mobilization"
+                  : "nonlinear.cs_demobilization",
+              from: csFlow > 0 ? "abs" : "cs",
+              to: csFlow > 0 ? "cs" : "abs",
+              amount: Math.abs(csFlow),
+            });
           return;
         }
         var kind = group(family);
@@ -1616,9 +1650,13 @@
         const CUP = FAMILIES.indexOf("cup");
 
         const activeFederalLeft = carriers.fl;
-        transfers.push(...buildParlamentCorruptionTransfers(Q, {
-          carriers, responsibility, support,
-        }));
+        transfers.push(
+          ...buildParlamentCorruptionTransfers(Q, {
+            carriers,
+            responsibility,
+            support,
+          }),
+        );
         transfers.push(
           ...buildParlamentDisappointmentTransfers(Q, {
             province: prov,
@@ -1884,7 +1922,7 @@
   // --- LOCAL BARCELONA TICK ---
   // ICR family for local BCN: ciu/cdc/dl/jxcat/junts/pdcat are one bloc.
   // jxsi is included as the united-list carrier (it borrows ciu's matrix profile
-  // and only ever carries support when fielded via jxsi_united_local).
+  // and only ever carries support when fielded via jxsi_in_local).
   // Only the currently active ICR party (the one with support > 0) receives
   // the delta. "ciu" is the canonical key for matrix lookups throughout.
   const BCN_ICR_PARTIES = new Set([
@@ -1907,13 +1945,13 @@
   // same parlament membership flags used everywhere else. Returns
   // { carrier, absorbs:[…] } for the active list, or null.
   function bcnUnitedCoalition(Q) {
-    if (Q.jxsi_united_local && (Q.jxsi_local_barcelona_support || 0) > 0) {
+    if (Q.jxsi_in_local && (Q.jxsi_local_barcelona_support || 0) > 0) {
       const absorbs = [];
       if (Q.erc_in_jxsi) absorbs.push("erc");
       if (Q.cup_in_jxsi) absorbs.push("cup");
       return { carrier: "jxsi", absorbs };
     }
-    if (Q.jxcat_united_local && (Q.jxcat_local_barcelona_support || 0) > 0) {
+    if (Q.jxcat_in_local && (Q.jxcat_local_barcelona_support || 0) > 0) {
       const absorbs = [];
       if (Q.erc_in_jxcat) absorbs.push("erc");
       if (Q.cup_in_jxcat) absorbs.push("cup");
@@ -3434,38 +3472,62 @@
   function buildParlamentCorruptionTransfers(Q, context) {
     const count = Math.max(0, Number(Q.corruption_events_ciu) || 0);
     if (!count || !Number.isFinite(count)) return [];
-    const identities = { ciu: 1, cdc: .8, dl: .6, pdcat: .4, junts: .2 };
+    const identities = { ciu: 1, cdc: 0.8, dl: 0.6, pdcat: 0.4, junts: 0.2 };
     const carriers = context.carriers;
-    const responsibility = context.responsibility || getParlamentResponsibility(Q);
+    const responsibility =
+      context.responsibility || getParlamentResponsibility(Q);
     const requests = [];
     // Actual ballot membership matters; stale flags on an inactive list do not.
-    const ercSharesList = ["jxsi", "jxcat"].some(list =>
-      carriers.il === list && Q["erc_in_" + list] === true);
+    const ercSharesList = ["jxsi", "jxcat"].some(
+      (list) => carriers.il === list && Q["erc_in_" + list] === true,
+    );
     const addSource = (family, identity) => {
       const carrier = carriers[family];
       const support = Math.max(0, Number(context.support[carrier]) || 0);
       if (!carrier || !support) return;
       const coalition = carrier === "jxsi" || carrier === "jxcat";
-      const members = coalition ? 1 + Number(!!Q["erc_in_" + carrier]) + Number(!!Q["cup_in_" + carrier]) : 1;
+      const members = coalition
+        ? 1 +
+          Number(!!Q["erc_in_" + carrier]) +
+          Number(!!Q["cup_in_" + carrier])
+        : 1;
       // Coalition dilution approximates legacy exposure; merged support does
       // not retain individual CDC/ ERC affinities. Count is never reset here.
-      const exposure = (identities[identity] ?? identities.cdc) * (coalition ? .65 / members : 1);
-      const destinations = Object.entries({ cup: .4, il: .25, fl: .15, abs: .2 })
-        .filter(([to]) => carriers[to] && carriers[to] !== carrier && !(to === "il" && ercSharesList))
-        .map(([to, weight]) => [to, weight * (responsibility[to] ? .25 : 1)]);
+      const exposure =
+        (identities[identity] ?? identities.cdc) *
+        (coalition ? 0.65 / members : 1);
+      const destinations = Object.entries({
+        cup: 0.4,
+        il: 0.25,
+        fl: 0.15,
+        abs: 0.2,
+      })
+        .filter(
+          ([to]) =>
+            carriers[to] &&
+            carriers[to] !== carrier &&
+            !(to === "il" && ercSharesList),
+        )
+        .map(([to, weight]) => [to, weight * (responsibility[to] ? 0.25 : 1)]);
       const total = destinations.reduce((sum, [, weight]) => sum + weight, 0);
       // Further scandals saturate smoothly. Shrinking donor support reduces
       // later losses, without a hard electoral floor or a new gameplay variable.
-      const loss = support * .006 * (count / (1 + count)) * exposure;
-      for (const [to, weight] of destinations) requests.push({
-        mechanism: "nonlinear.identity_corruption", from: family, to,
-        amount: loss * weight / total,
-      });
+      const loss = support * 0.006 * (count / (1 + count)) * exposure;
+      for (const [to, weight] of destinations)
+        requests.push({
+          mechanism: "nonlinear.identity_corruption",
+          from: family,
+          to,
+          amount: (loss * weight) / total,
+        });
     };
     const carrier = carriers.icr;
-    const identity = Object.prototype.hasOwnProperty.call(identities, carrier) ? carrier : Q.parlament_current_ciu;
+    const identity = Object.prototype.hasOwnProperty.call(identities, carrier)
+      ? carrier
+      : Q.parlament_current_ciu;
     addSource("icr", identity);
-    if (Q.pdcat_split && carriers.pdcat && carriers.pdcat !== carrier) addSource("pdcat", "pdcat");
+    if (Q.pdcat_split && carriers.pdcat && carriers.pdcat !== carrier)
+      addSource("pdcat", "pdcat");
     return requests;
   }
 

@@ -91,6 +91,31 @@
         { colour: "ciu", label: "CiU" },
       ];
     },
+    jordi_sanchez: function (Q) {
+      var list = [
+        { colour: "icv", label: "ICV-EUiA", note: "former" },
+        { colour: "#010202", label: "ANC" },
+      ];
+      if (Q.jxcat_formed && !Q.jxcat_dissolved) {
+        list.push({ colour: "jxcat", label: "JxCat" });
+      } else if (Q.jxcat_formed) {
+        list.push({ colour: "jxcat", label: "JxCat", label: "former" });
+      }
+      return list;
+    },
+    jordi_cuixart: function (Q) {
+      var list = [{ colour: "#e97202", label: "Òmnium Cultural" }];
+      if (
+        Q.jxcat_formed &&
+        Q.jxcat_leader == "Jordi Cuixart" &&
+        !Q.jxcat_dissolved
+      ) {
+        list.push({ colour: "jxcat", label: "JxCat" });
+      } else if (Q.jxcat_formed && Q.jxcat_leader == "Jordi Cuixart") {
+        list.push({ colour: "jxcat", label: "JxCat", label: "former" });
+      }
+      return list;
+    },
     oriol_junqueras: function (Q) {
       var list = [{ colour: "erc", label: "ERC" }];
       if (Q.jxsi_formed) list.push({ colour: "jxsi", label: "JxSí" });

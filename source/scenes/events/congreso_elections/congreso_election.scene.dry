@@ -392,5 +392,14 @@ on-display: {!
 
 {!<svg id="party_support_history" style="width: 500px; height: 400px;"> </svg>!}
 
+- @after_election_congreso_cleanup
 
-- @congreso_coalition: [? if player_party == "erc" or (player_party == "cup" and cup_in_congreso): Let's see what options this gives us... ?][? if player_party == "cup" and not cup_in_congreso: Let's see what is to come from this... ?]
+@after_election_congreso_cleanup
+title: [? if player_party == "erc" or (player_party == "cup" and cup_in_congreso): Let's see what options this gives us... ?][? if player_party == "cup" and not cup_in_congreso: Let's see what is to come from this... ?]
+go-to: congreso_coalition
+on-arrival: {!
+    if (Q.unio_congreso_showviz && Q.unio_congreso_s < 1) {
+        Q.unio_congreso_catalunya_support = 0;
+    }
+!}
+
