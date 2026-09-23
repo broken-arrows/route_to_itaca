@@ -172,6 +172,9 @@
       var outcomes = Array.isArray(props.outcomes) ? props.outcomes : [];
       outcomes = outcomes.filter(function (outcome) {
         return outcome && Number(outcome.votes) > 0;
+      }).sort(function (a, b) {
+        var order = { yes: 0, abstain: 1, "not-present": 2, no: 3 };
+        return order[a.kind] - order[b.kind];
       });
 
       el.innerHTML = "";
@@ -182,29 +185,20 @@
       var totalVotes = outcomes.reduce(function (total, outcome) {
         return total + Math.max(0, Number(outcome.votes) || 0);
       }, 0);
-      var abstainIndex = outcomes.findIndex(function (outcome) {
-        return outcome.kind === "abstain";
+      var votesBefore = 0;
+      outcomes.forEach(function (outcome, index) {
+        var votes = Math.max(0, Number(outcome.votes) || 0);
+        if (outcome.kind === "abstain" || outcome.kind === "not-present") {
+          var segmentCenter = (votesBefore + votes / 2) / totalVotes;
+          var columnCenter = (index + 0.5) / outcomes.length;
+          var shift = (segmentCenter - columnCenter) * outcomes.length * 100;
+          wrap.style.setProperty(
+            "--chamber-vote-" + outcome.kind + "-shift",
+            String(shift) + "%",
+          );
+        }
+        votesBefore += votes;
       });
-      if (totalVotes > 0 && abstainIndex >= 0) {
-        var votesBeforeAbstain = outcomes
-          .slice(0, abstainIndex)
-          .reduce(function (total, outcome) {
-            return total + Math.max(0, Number(outcome.votes) || 0);
-          }, 0);
-        var abstainVotes = Math.max(
-          0,
-          Number(outcomes[abstainIndex].votes) || 0,
-        );
-        var abstainCenter =
-          (votesBeforeAbstain + abstainVotes / 2) / totalVotes;
-        var equalColumnCenter = (abstainIndex + 0.5) / outcomes.length;
-        var abstainShift =
-          (abstainCenter - equalColumnCenter) * outcomes.length * 100;
-        wrap.style.setProperty(
-          "--chamber-vote-abstain-shift",
-          String(abstainShift) + "%",
-        );
-      }
       var labels = document.createElement("div");
       labels.className = "chamber-vote__labels";
       var bar = document.createElement("div");
@@ -226,6 +220,7 @@
         var kind =
           outcome.kind === "yes" ||
           outcome.kind === "abstain" ||
+          outcome.kind === "not-present" ||
           outcome.kind === "no"
             ? outcome.kind
             : "abstain";

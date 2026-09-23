@@ -53,6 +53,6 @@ In parallel to that, the failure to build achieve a new autonomy-based status qu
 
 @what_now
 title: What now?
-subtitle: [? if not intros_seen == 3: (Skip intoruction)?]
+subtitle: [? if not intros_seen == 3: (Skip introduction)?]
 set-bg: img/salodaurat.jpg
 go-to: post_event

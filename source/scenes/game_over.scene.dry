@@ -23,6 +23,16 @@ on-arrival: {!
 - #endings
 - @end_game: End game.
 
+@rubicon
+title: The Rubicon was crossed
+view-if: rubicon and not end_rubicon_seen
+on-arrival: end_rubicon_seen = 1
+tags: endings
+go-to: eg_menu
+role: ending
+
+Your actions truly marked a before and after in Catalan politics. Time slows down...
+
 @jxcat_formed
 title: Formed jxcat
 view-if: jxcat_formed and not end_jxcat_seen
@@ -32,6 +42,17 @@ go-to: eg_menu
 role: ending
 
 The jxcat electoral coalition was formed as a continuation of a national-unity list! Congrats! (this path is still wip and will make more sense once rubicon is available)
+
+@not_possible_parlament_stuck
+title: Separated twins
+subtitle: You managed something I did not think even possible
+view-if: not_possible_parlament_stuck and not end_not_possible_parlament_stuck
+on-arrival: end_not_possible_parlament_stuck = 1
+tags: endings
+go-to: eg_menu
+role: ending
+
+Truly, how did you manage to approve the Law on the Referendum but NOT the one on transition? Please drop a message on reddit, discord, or raise a GitHub issue. You deserve a medal nonetheless!
 
 @end_temp
 title: WIP ending cards

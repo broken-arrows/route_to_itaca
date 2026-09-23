@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import ChamberVote from '../src/components/viz/ChamberVote.vue';
@@ -95,5 +97,41 @@ describe('ChamberVote', () => {
       )?.[1] ?? '',
     );
     expect(shift).toBeCloseTo(33);
+  });
+
+  it('places absent parties between abstention and no in a transparent segment', async () => {
+    const w = mountVote();
+    await w.setProps({
+      outcomes: [
+        { kind: 'no', label: 'No', votes: 30 },
+        { kind: 'not-present', label: 'Not present', votes: 15, parties: [{ label: 'PSC' }] },
+        { kind: 'yes', label: 'Yes', votes: 80 },
+        { kind: 'abstain', label: 'Abstention', votes: 10 },
+      ],
+    });
+
+    expect(w.findAll('.chamber-vote-outcome').map((part) => part.attributes('aria-label'))).toEqual([
+      'Yes: 80 votes', 'Abstention: 10 votes', 'Not present: 15 votes', 'No: 30 votes',
+    ]);
+    expect(w.get('.chamber-vote-outcome--not-present').attributes('style')).toContain('flex-grow: 15');
+    expect(w.get('.chamber-vote-breakdown--not-present [data-term="psc"]').text()).toBe('PSC');
+    const shift = parseFloat(
+      (w.get('.chamber-vote').attributes('style') ?? '').match(
+        /--chamber-vote-not-present-shift:\s*([^%;]+)%/,
+      )?.[1] ?? '',
+    );
+    expect(shift).toBeCloseTo(38.888889);
+    const source = readFileSync(path.join(__dirname, '..', 'src', 'components', 'viz', 'ChamberVote.vue'), 'utf8');
+    expect(source).toMatch(/\.chamber-vote-outcome--not-present\s*{[^}]*background:\s*transparent;/s);
+
+    await w.setProps({
+      outcomes: [
+        { kind: 'yes', label: 'Yes', votes: 84 },
+        { kind: 'not-present', label: 'Not present', votes: 0, parties: [] },
+        { kind: 'no', label: 'No', votes: 51 },
+      ],
+    });
+    expect(w.text()).not.toContain('Not present');
+    expect(w.find('.chamber-vote-outcome--not-present').exists()).toBe(false);
   });
 });

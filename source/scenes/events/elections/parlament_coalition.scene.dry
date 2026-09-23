@@ -833,19 +833,21 @@ on-arrival: {!
     Q.parlament_repeat_election = true;
     // This should consolidate votes towards larger parties
     Q.independence_trust -= 5;
-    if (Q.erc_parlament_s <= Q.parlament_current_ciu_s) {
-        for (var c of Q.parlament_constituencies) {
-            for (var d of Q.parlament_demographics){
-                Q["erc_parlament_" + c + "_" + d + "_support"] -= 1;
-                Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"] += 1.;
+    if (!(Q.erc_in_jxsi && !Q.jxsi_dissolved) && !(Q.erc_in_jxcat && !Q.jxcat_dissolved)) { 
+        if (Q.erc_parlament_s <= Q.parlament_current_ciu_s) {
+            for (var c of Q.parlament_constituencies) {
+                for (var d of Q.parlament_demographics){
+                    Q["erc_parlament_" + c + "_" + d + "_support"] -= 1;
+                    Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"] += 1.;
+                }
             }
-        }
-    } else {
-        for (var c of Q.parlament_constituencies) {
-            for (var d of Q.parlament_demographics){
-                Q["erc_parlament_" + c + "_" + d + "_support"] += 1.25;
-                Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"] -= 1;
-                Q["cup_parlament_" + c + "_" + d + "_support"] -= 0.25;
+        } else {
+            for (var c of Q.parlament_constituencies) {
+                for (var d of Q.parlament_demographics){
+                    Q["erc_parlament_" + c + "_" + d + "_support"] += 1.25;
+                    Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"] -= 1;
+                    Q["cup_parlament_" + c + "_" + d + "_support"] -= 0.25;
+                }
             }
         }
     }

@@ -72,7 +72,7 @@ The *"Principle of Sovereignty"* is the key feature, which is widely agreed upon
 
 
 @both
-choose-if: roadmap != 3
+choose-if: (erc_roadmap != 3 and player_party = "erc") or (cup_roadmap != 3 and player_party = "cup")
 unavailable-subtitle: Our roadmap to independence is about unilateralism, which is explicitly for the breaking with the Spanish legal frameworks.
 on-arrival: parlament_sovereignty_declaration_legality = true
 
@@ -134,7 +134,7 @@ go-to: results
 @decisions_cup
 view-if: player_party == "cup"
 
-With all this, we are left with a [? if roadmap == 3: difficult ?]choice. With the supports it has, the motion is very likely to pass, yet many in the party are critical of the watering down of the text and are demanding a critical positioning to it. Doing so will probably hurt our relations with the parties supporting the motion, but there's a chance it also serves to cement our position a the true pro-independence party unwilling to bow to the Regime of '78.
+With all this, we are left with a [? if cup_roadmap == 3: difficult ?]choice. With the supports it has, the motion is very likely to pass, yet many in the party are critical of the watering down of the text and are demanding a critical positioning to it. Doing so will probably hurt our relations with the parties supporting the motion, but there's a chance it also serves to cement our position a the true pro-independence party unwilling to bow to the Regime of '78.
 
 - @abstain_cup: Abstain from voting
 - @critical_yes_cup: Vote with a "Critical Yes"
@@ -189,6 +189,7 @@ on-arrival: {!
         G.registerLaw(Q, {id:"sovereignty_declaration",title:"Sovereignty Declaration ",icon:"img/government_icon.svg",targets:{independence_trust: 0.1}});
     } else {
         Q.parlament_sovereignty_declaration = false;
+        Q.independence_trust -= 10;
     }
 !}
 go-to: results

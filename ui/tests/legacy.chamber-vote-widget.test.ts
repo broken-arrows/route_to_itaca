@@ -85,6 +85,49 @@ describe('the old shell chamber-vote handler', () => {
     expect(shift).toBeCloseTo(33);
   });
 
+  it('shows absent parties between abstention and no without filling their segment', () => {
+    document.body.innerHTML =
+      '<main><div data-widget="chamber-vote" ' +
+      'data-props=\'{"outcomes":[' +
+      '{"kind":"no","label":"No","votes":30},' +
+      '{"kind":"not-present","label":"Not present","votes":15,"parties":[{"label":"PSC"}]},' +
+      '{"kind":"yes","label":"Yes","votes":80},' +
+      '{"kind":"abstain","label":"Abstention","votes":10}]}\'></div></main>';
+
+    (window as any).mountWidgets(document.querySelector('main'), {});
+
+    expect(Array.from(document.querySelectorAll('.chamber-vote__outcome')).map((part) => part.className)).toEqual([
+      'chamber-vote__outcome chamber-vote__outcome--yes',
+      'chamber-vote__outcome chamber-vote__outcome--abstain',
+      'chamber-vote__outcome chamber-vote__outcome--not-present',
+      'chamber-vote__outcome chamber-vote__outcome--no',
+    ]);
+    expect(document.querySelector('.chamber-vote__breakdown--not-present [data-wholesome="PSC"]')).not.toBeNull();
+    const shift = parseFloat(
+      (document.querySelector('.chamber-vote') as HTMLElement).style.getPropertyValue(
+        '--chamber-vote-not-present-shift',
+      ),
+    );
+    expect(shift).toBeCloseTo(38.888889);
+    expect(GAME_CSS).toMatch(/\.chamber-vote__outcome--not-present\s*{[^}]*background:\s*transparent;/s);
+    const bar = document.querySelector('.chamber-vote__bar') as HTMLElement;
+    expect(bar.dataset.majority).toBe('68');
+  });
+
+  it('omits the Not present title when no party is absent', () => {
+    document.body.innerHTML =
+      '<main><div data-widget="chamber-vote" ' +
+      'data-props=\'{"outcomes":[' +
+      '{"kind":"yes","label":"Yes","votes":84},' +
+      '{"kind":"not-present","label":"Not present","votes":0,"parties":[]},' +
+      '{"kind":"no","label":"No","votes":51}]}\'></div></main>';
+
+    (window as any).mountWidgets(document.querySelector('main'), {});
+
+    expect(document.querySelector('.chamber-vote__label--not-present')).toBeNull();
+    expect(document.querySelector('.chamber-vote__outcome--not-present')).toBeNull();
+  });
+
   it('marks the absolute majority of all votes, including abstentions', () => {
     document.body.innerHTML =
       '<main><div data-widget="chamber-vote" ' +

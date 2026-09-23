@@ -36,6 +36,13 @@
       "image": "img/achievements/2020.jpg"
     },
     {
+      "id": "sisset",
+      "name": "L'afer dels dies 6 i 7 de Setembre",
+      "description": "Pass the twin disconnection laws: on the Referendum, and of Juridical transition and Foundation of the Republic.",
+      "stars": 1,
+      "image": "img/achievements/sixseven.jpg"
+    },
+    {
       "id": "perrosanxe",
       "name": "Más sabe por Perro que por Sanxe",
       "description": "After being ousted from the PSOE and winning back its leadership, have Pedro Sánchez become Presidente.",

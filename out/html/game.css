@@ -69,9 +69,17 @@ body.dark-mode {
 .chamber-vote__breakdown--abstain .chamber-vote__parties {
   text-align: center;
 }
+.chamber-vote__label--not-present,
+.chamber-vote__breakdown--not-present .chamber-vote__parties {
+  text-align: center;
+}
 .chamber-vote__label--abstain,
 .chamber-vote__breakdown--abstain {
   transform: translateX(var(--chamber-vote-abstain-shift, 0));
+}
+.chamber-vote__label--not-present,
+.chamber-vote__breakdown--not-present {
+  transform: translateX(var(--chamber-vote-not-present-shift, 0));
 }
 .chamber-vote__label--no,
 .chamber-vote__breakdown--no .chamber-vote__parties {
@@ -125,6 +133,10 @@ body.dark-mode {
 .chamber-vote__outcome--abstain {
   background: #b1b0ae;
   color: #111;
+}
+.chamber-vote__outcome--not-present {
+  background: transparent;
+  color: var(--text-color);
 }
 .chamber-vote__outcome--no {
   background: #c30000;

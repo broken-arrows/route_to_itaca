@@ -210,6 +210,7 @@ on-arrival: {!
         highlightedParty: Q.player_in_jxsi ? "jxsi" : (Q.player_in_jxcat ? "jxcat" : Q.player_party),
     };
 !}
+go-to: parlament_menu if not cat_caretaker_gov; parlament_not_active if cat_caretaker_gov
 # face-image: img/parlament_de_catalunya.jpg
 
 = Parlament de Catalunya
@@ -217,7 +218,9 @@ on-arrival: {!
 {!<div id="parlament" data-widget="hemicycle" data-props='{"configFrom":"parlament_hemicycle"}'></div>!}
 [? if not cat_caretaker_gov: {!<div style='margin-top: -0.5em; width: 100%; text-align: center'>!} Speaker of the House:<br/>[+ speaker +] ([+ speaker_party +]){!</div>!} ?]
 
-[? if cat_caretaker_gov : The Parlament is currently dissolved, so no parliamentary actions are possible at this point. ?][? if not cat_caretaker_gov: As a party with representation in the Parlament, we have the opportunity to use our seats to make our voice heard and push for new initiatives and legislation. ?]
+@parlament_menu
+
+As a party with representation in the Parlament, we have the opportunity to use our seats to make our voice heard and push for new initiatives and legislation.
 
 - @politica_social
 - @rights
@@ -225,6 +228,12 @@ on-arrival: {!
 - @sovereignty
 - @budget
 - @no_action: We don't need to do anything in the Parlament right now
+
+@parlament_not_active
+
+The Parlament is currently dissolved, so no parliamentary actions are possible at this point.
+
+- @no_action: We can't do anything in the Parlament at the moment
 
 @no_action
 on-arrival: {!

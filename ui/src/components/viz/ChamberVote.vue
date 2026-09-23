@@ -12,7 +12,7 @@ interface VoteParty {
 }
 
 interface VoteOutcome {
-  kind: 'yes' | 'abstain' | 'no';
+  kind: 'yes' | 'abstain' | 'not-present' | 'no';
   label: string;
   votes: number;
   parties?: VoteParty[];
@@ -24,6 +24,12 @@ const props = withDefaults(
 );
 
 const game = useGameStore();
+const outcomeOrder: Record<VoteOutcome['kind'], number> = {
+  yes: 0,
+  abstain: 1,
+  'not-present': 2,
+  no: 3,
+};
 
 const outcomes = computed(() =>
   props.outcomes
@@ -37,26 +43,27 @@ const outcomes = computed(() =>
         html: markGlossary(String(party.label ?? ''), game.glossary),
       })),
     }))
-    .filter((outcome) => outcome.votes > 0),
+    .filter((outcome) => outcome.votes > 0)
+    .sort((a, b) => outcomeOrder[a.kind] - outcomeOrder[b.kind]),
 );
 
 const layoutStyle = computed(() => {
   const visible = outcomes.value;
   const total = visible.reduce((sum, outcome) => sum + outcome.votes, 0);
-  const abstainIndex = visible.findIndex((outcome) => outcome.kind === 'abstain');
+  if (total <= 0) return {};
 
-  if (total <= 0 || abstainIndex < 0) return {};
-
-  const votesBefore = visible
-    .slice(0, abstainIndex)
-    .reduce((sum, outcome) => sum + outcome.votes, 0);
-  const abstainCenter =
-    (votesBefore + visible[abstainIndex].votes / 2) / total;
-  const equalColumnCenter = (abstainIndex + 0.5) / visible.length;
-  const shift =
-    (abstainCenter - equalColumnCenter) * visible.length * 100;
-
-  return { '--chamber-vote-abstain-shift': `${shift}%` };
+  const shifts: Record<string, string> = {};
+  let votesBefore = 0;
+  visible.forEach((outcome, index) => {
+    if (outcome.kind === 'abstain' || outcome.kind === 'not-present') {
+      const segmentCenter = (votesBefore + outcome.votes / 2) / total;
+      const columnCenter = (index + 0.5) / visible.length;
+      shifts[`--chamber-vote-${outcome.kind}-shift`] =
+        `${(segmentCenter - columnCenter) * visible.length * 100}%`;
+    }
+    votesBefore += outcome.votes;
+  });
+  return shifts;
 });
 </script>
 
@@ -133,6 +140,10 @@ const layoutStyle = computed(() => {
   text-align: center;
   transform: translateX(var(--chamber-vote-abstain-shift, 0));
 }
+.chamber-vote-label--not-present {
+  text-align: center;
+  transform: translateX(var(--chamber-vote-not-present-shift, 0));
+}
 .chamber-vote-label--no {
   text-align: right;
 }
@@ -162,6 +173,10 @@ const layoutStyle = computed(() => {
   background: #b8b2a6;
   color: #2e2a22;
 }
+.chamber-vote-outcome--not-present {
+  background: transparent;
+  color: var(--ink-1);
+}
 .chamber-vote-outcome--no {
   background: #b03030;
 }
@@ -185,6 +200,12 @@ const layoutStyle = computed(() => {
 }
 .chamber-vote-breakdown--abstain {
   transform: translateX(var(--chamber-vote-abstain-shift, 0));
+}
+.chamber-vote-breakdown--not-present {
+  transform: translateX(var(--chamber-vote-not-present-shift, 0));
+}
+.chamber-vote-breakdown--not-present .chamber-vote-parties {
+  text-align: center;
 }
 .chamber-vote-breakdown--no .chamber-vote-parties {
   text-align: right;

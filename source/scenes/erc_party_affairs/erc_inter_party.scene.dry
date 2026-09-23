@@ -51,7 +51,7 @@ SI are already quite aligned with us, and already eager to work together. Let's 
 @jxsi_relations
 subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
-view-if: jxsi_formed 
+view-if: jxsi_formed and not jxsi_dissolved
 unavailable-subtitle: Not enough resources
 on-arrival: {!
     Q.party_resources -= 1;
@@ -77,7 +77,7 @@ The JxSí coalition is a naturally unstable one, but in the name of National Uni
 @jxcat_relations
 subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
-view-if: jxcat_formed
+view-if: jxcat_formed and not jxcat_dissolved
 unavailable-subtitle: Not enough resources
 on-arrival: {!
     Q.party_resources -= 1;
