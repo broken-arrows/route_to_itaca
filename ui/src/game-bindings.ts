@@ -20,7 +20,7 @@
  * The guard that keeps it dead: `ui/tests/integration.desk-loop.test.ts` asserts
  * an engine-EXCLUSIVE Q value actually moves (`gdp_growth` / `unemployment` /
  * `welfare_index` — the three nothing else in `source/` writes). Do not weaken
- * it. `tools/audit-globals.mjs` covers the content side.
+ * it. `dendrynexus-ten audit` covers the content side.
  * ========================================================================== */
 import type { GameLib } from '../../source/lib/index.js';
 

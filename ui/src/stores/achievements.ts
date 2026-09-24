@@ -3,7 +3,7 @@
  *
  * The ENGINE already owns achievements: `achieve(x)` sets Q.achievement_x AND
  * Q.game_achievement_x and persists the cross-playthrough set to the manifest-
- * scoped `<storageId>:achievements` key (`rti:achievements` for this game).
+ * scoped `dnt:<ifid>:achievements` key.
  * Boot and save load restore Q.achievement_* from it. So:
  *
  *   Q.achievement_x       = ever unlocked, ACROSS SAVES (pre-seeded at boot)

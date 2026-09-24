@@ -14,7 +14,7 @@ describe('settings store', () => {
     i18n.global.locale.value = 'en';
   });
 
-  it('uses safe defaults before the manifest storage id is configured', () => {
+  it('uses safe defaults before the manifest IFID is configured', () => {
     const store = useSettingsStore();
     expect(store.language).toBe('en');
     expect(store.animations).toBe(true);
@@ -23,11 +23,11 @@ describe('settings store', () => {
 
   it('loads and applies the manifest-scoped settings blob on configuration', () => {
     localStorage.setItem(
-      'rti:settings',
+      'dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:settings',
       JSON.stringify({ language: 'ca', animations: false, eventImages: true }),
     );
     const store = useSettingsStore();
-    store.configure('rti');
+    store.configure('a513a6fa-16c8-4cdf-a385-0e359a976a66');
 
     expect(store.language).toBe('ca');
     expect(store.animations).toBe(false);
@@ -37,33 +37,33 @@ describe('settings store', () => {
 
   it('round-trips one settings blob across a fresh pinia instance', () => {
     const store = useSettingsStore();
-    store.configure('rti');
+    store.configure('a513a6fa-16c8-4cdf-a385-0e359a976a66');
     store.setLanguage('ca');
     store.setAnimations(false);
     store.setEventImages(false);
 
     setActivePinia(createPinia());
     const restored = useSettingsStore();
-    restored.configure('rti');
+    restored.configure('a513a6fa-16c8-4cdf-a385-0e359a976a66');
     expect(restored.language).toBe('ca');
     expect(restored.animations).toBe(false);
     expect(restored.eventImages).toBe(false);
   });
 
-  it('persists every setter as the complete rti:settings blob', () => {
+  it('persists every setter as the complete IFID-scoped settings blob', () => {
     const store = useSettingsStore();
-    store.configure('rti');
+    store.configure('a513a6fa-16c8-4cdf-a385-0e359a976a66');
     store.setLanguage('ca');
     store.setAnimations(false);
 
-    expect(JSON.parse(localStorage.getItem('rti:settings')!)).toEqual({
+    expect(JSON.parse(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:settings')!)).toEqual({
       language: 'ca',
       animations: false,
       eventImages: true,
     });
 
     store.setEventImages(false);
-    expect(JSON.parse(localStorage.getItem('rti:settings')!)).toEqual({
+    expect(JSON.parse(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:settings')!)).toEqual({
       language: 'ca',
       animations: false,
       eventImages: false,
@@ -81,7 +81,7 @@ describe('settings store', () => {
     const store = useSettingsStore();
     store.setLanguage('ca');
     store.setAnimations(false);
-    store.configure('rti');
+    store.configure('a513a6fa-16c8-4cdf-a385-0e359a976a66');
 
     expect(store.language).toBe('ca');
     expect(store.animations).toBe(false);
@@ -89,6 +89,7 @@ describe('settings store', () => {
   });
 
   it('ignores every provisional and legacy settings or locale key', () => {
+    localStorage.setItem('rti:settings', JSON.stringify({ language: 'ca' }));
     localStorage.setItem(
       'dnt:settings',
       JSON.stringify({ language: 'ca', animations: false, eventImages: false }),
@@ -96,7 +97,7 @@ describe('settings store', () => {
     localStorage.setItem('dnt:locale', 'ca');
     localStorage.setItem('rti:desk:locale', 'ca');
     const store = useSettingsStore();
-    store.configure('rti');
+    store.configure('a513a6fa-16c8-4cdf-a385-0e359a976a66');
 
     expect(store.language).toBe('en');
     expect(store.animations).toBe(true);
@@ -109,7 +110,7 @@ describe('settings store', () => {
       JSON.stringify({ language: 'ca', animations: false, eventImages: false }),
     );
     const store = useSettingsStore();
-    store.configure('rti');
+    store.configure('a513a6fa-16c8-4cdf-a385-0e359a976a66');
     expect(store.language).toBe('en');
   });
 });

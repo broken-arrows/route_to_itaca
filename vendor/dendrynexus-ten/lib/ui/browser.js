@@ -91,12 +91,12 @@
 
   BrowserUserInterface.prototype._configurePersistence = function () {
     var info = this.game.info || this.game;
-    this.storage_id = info.storageId || this.game.storageId;
+    this.ifid = info.ifid || this.game.ifid;
     this.game_version = info.version || this.game.version;
-    this.settings_key = this.storage_id + ":settings-old";
+    this.settings_key = persistence.storageNamespace(this.ifid) + ":settings-old";
     this.saveStore = persistence.createSaveStore({
       storage: localStorage,
-      storageId: this.storage_id,
+      ifid: this.ifid,
       gameVersion: this.game_version,
     });
   };

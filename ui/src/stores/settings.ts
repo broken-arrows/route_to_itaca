@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { setLocale, type AppLocale } from '../i18n';
+import { storageNamespace } from 'dendrynexus-ten/lib/persistence.js';
 
 interface SettingsBlob {
   language: AppLocale;
@@ -36,8 +37,8 @@ export const useSettingsStore = defineStore('settings', () => {
   // manifest loads. Configuration is explicit and idempotent; it also applies
   // the persisted language through the one i18n seam. There is deliberately no
   // second loose locale key.
-  function configure(storageId: string): void {
-    const nextKey = `${storageId}:settings`;
+  function configure(ifid: string): void {
+    const nextKey = `${storageNamespace(ifid)}:settings`;
     if (storageKey === nextKey) return;
     storageKey = nextKey;
     const stored = readBlob(nextKey);

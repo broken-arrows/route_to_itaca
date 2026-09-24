@@ -10,7 +10,7 @@ describe('DendryAdapter boot', () => {
     expect(frame.html).toContain('Welcome to the mini game.');
     expect(frame.isHand).toBe(false);
     expect(frame.choices).toEqual([
-      expect.objectContaining({ id: 'desk', title: 'The Desk', canChoose: true }),
+      expect.objectContaining({ id: 'desk', title: 'Continue', canChoose: true }),
     ]);
     expect(frame.gameOver).toBe(false);
   });

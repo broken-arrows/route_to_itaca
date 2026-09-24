@@ -36,4 +36,4 @@ The Game Engine itself is a first-class part of this repo, and lives in `vendor/
 
 1. Run `npm install` in the root folder.
 
-2. Run `npm run dendrynexus-ten make-html -- --pretty` in this folder. _Note: the `--pretty` flag gets a result as close to the real one deployed to `github.io` as possible._
+2. Run `npm run build:classic` in this folder to build the classic UI. For a readable, unminified `core.js` while debugging, run `npm run dendrynexus-ten -- make-html --unminified --publish-game-lib` followed by `npm run audit:game`.

@@ -30,7 +30,6 @@ declare module 'dendrynexus-ten/lib/engine.js' {
         title?: string;
         author?: string;
         ifid?: string;
-        storageId?: string;
         version?: string;
         languages?: string[];
       };

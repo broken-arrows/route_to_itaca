@@ -1,5 +1,6 @@
 declare module 'dendrynexus-ten/lib/persistence.js' {
   export const SAVE_FORMAT_VERSION: number;
+  export function storageNamespace(ifid: string): string;
 
   export type SaveCompatibility = 'compatible' | 'incompatible' | 'unknown';
   export interface PersistenceError {
@@ -51,7 +52,7 @@ declare module 'dendrynexus-ten/lib/persistence.js' {
   }
   export function createSaveStore(options: {
     storage: Storage;
-    storageId: string;
+    ifid: string;
     gameVersion?: string;
     now?: () => Date | string | number;
   }): SaveStore;

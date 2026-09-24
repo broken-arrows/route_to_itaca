@@ -19,7 +19,7 @@ describe('audit-globals deriveFrom check', () => {
       ];
       writeFileSync(GAME, JSON.stringify(game));
       expect(() =>
-        execFileSync('node', ['tools/audit-globals.mjs'], { cwd: ROOT }),
+        execFileSync('node', ['vendor/dendrynexus-ten/lib/cli/main.js', 'audit'], { cwd: ROOT }),
       ).toThrow();
     } finally {
       copyFileSync(backup, GAME);

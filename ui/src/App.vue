@@ -19,9 +19,8 @@ onMounted(async () => {
 
 // Language changes go through the SETTINGS STORE, never i18n's setLocale
 // directly: the store is the single source of truth (it persists the settings
-// blob and drives i18n from it). Calling setLocale here would write only the
-// legacy `rti:desk:locale` key, which the blob outranks the moment anything
-// writes one — so header language changes would silently stop persisting.
+// blob and drives i18n from it). Calling setLocale here would update only
+// the rendered language, so header language changes would not persist.
 // `locale` is still read from vue-i18n for the disabled state: it is the value
 // actually being rendered.
 

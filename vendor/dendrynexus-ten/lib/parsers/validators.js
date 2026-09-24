@@ -189,21 +189,6 @@
     }
   };
 
-  // A short, stable browser-storage namespace. This is intentionally more
-  // restrictive than a general id: storage keys are durable public data, so
-  // case-only variants and punctuation-heavy names are rejected.
-  var validateStorageId = function(object, propertyName, callback) {
-    assert(callback !== undefined, 'Callback required (wrong number of args?)');
-    var val = propval(object, propertyName).trim();
-    if (/^[a-z][a-z0-9-]*$/.test(val)) {
-      return callback(null, val);
-    }
-    return callback(properr(
-      object, propertyName,
-      '"' + val + '" is not a valid storage id; expected lowercase [a-z][a-z0-9-]*.'
-    ));
-  };
-
   // Game releases use either major.minor or major.minor.patch. A non-empty
   // prerelease/build-style tag may follow the first hyphen; compatibility is
   // interpreted by persistence code, not by the manifest parser.
@@ -839,7 +824,6 @@
   module.exports = {
     validateId: validateId,
     validateQualityName: validateQualityName,
-    validateStorageId: validateStorageId,
     validateGameVersion: validateGameVersion,
     validateBoolean: validateBoolean,
     validateRelativeId: validateRelativeId,

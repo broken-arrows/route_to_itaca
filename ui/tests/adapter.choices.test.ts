@@ -14,7 +14,7 @@ describe('DendryAdapter choices', () => {
     expect(frame.sceneId).toBe('desk');
     expect(frame.isHand).toBe(true);
     expect(frame.maxCards).toBe(2);
-    expect(frame.html).toContain('Your desk awaits.');
+    expect(frame.html).toContain('Choose your next action.');
     // hand scenes route through decks/pinned, not plain choices
     expect(frame.choices).toEqual([]);
     expect(frame.decks).toEqual([

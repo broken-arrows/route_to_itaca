@@ -1,5 +1,5 @@
 export const miniGame = {
-  info: { storageId: 'test-game', version: '0.1.0', languages: ['en'] },
+  info: { ifid: 'test-game', version: '0.1.0', languages: ['en'] },
   scenes: {
     root: {
       id: 'root',
@@ -13,13 +13,13 @@ export const miniGame = {
     desk: {
       id: 'desk',
       type: 'scene',
-      title: 'The Desk',
+      title: 'Continue',
       // newPage: true so transitions into `desk` clear prior content (dendry's
       // displaySceneContent clears prose only when the target scene declares it).
       newPage: true,
       isHand: true,
       maxCards: 2,
-      content: [{ type: 'paragraph', content: ['Your desk awaits.'] }],
+      content: [{ type: 'paragraph', content: ['Choose your next action.'] }],
       options: [{ id: '@gov_deck' }, { id: '@advisor_note' }],
     },
     gov_deck: {

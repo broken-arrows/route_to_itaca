@@ -19,7 +19,7 @@ distributed under this repo as the fork `dendrynexus-ten`.
 
 `npm install` symlinks this folder into `node_modules/dendrynexus-ten`, so edits here are
 **live** — no reinstall needed. The CLI `bin` (`dendrynexus-ten`) stays linked, so
-`npm run dendrynexus-ten make-html -- --pretty` builds the game as before. The engine is
+`npm run build:classic` builds the classic UI. The engine is
 browserified into `out/html/core.js` (generated/gitignored) at build time.
 
 ## Diffing against / rebasing on upstream
@@ -51,24 +51,28 @@ Kept deliberately minimal — touch only the lines that must change, never a
 whole-file reformat, so this list stays the complete upstream diff.
 
 - **`lib/parsers/info.js`, `lib/parsers/validators.js`,
-  `lib/parsers/compiler.js`, and `lib/engine.js`** (2026-08-11) — game
-  manifests may declare a validated, lowercase `storage-id` and a two- or
-  three-component `version` with an optional hyphenated tag. The nested
-  runtime `game.info` manifest now carries those fields plus `ifid`.
-  Achievement persistence uses `<storageId>:achievements` when the field is
-  present, with a title-based fallback only for third-party games that omit
-  it. New unlocks store their real-world first-unlock time as an ISO
+  `lib/parsers/compiler.js`, `lib/persistence.js`, and `lib/engine.js`**
+  (revised 2026-09-24) — game manifests carry an IFID and a two- or
+  three-component `version` with an optional hyphenated tag. The library
+  derives `dnt:<lowercase-ifid>` for all browser persistence, URL-encoding
+  punctuation as needed. The stock browser
+  shell requires an IFID; other engine hosts can run without persistent state.
+  New unlocks store their real-world first-unlock time as an ISO
   `{unlockedAt}` record; repeated unlocks preserve that time, while legacy
-  numeric entries remain unlocked with an unknown date. There is deliberately
-  no read fallback or migration from the old title key when a storage id
-  exists.
+  numeric entries remain unlocked with an unknown date.
 
 - **`lib/persistence.js`, `lib/ui/browser.js`, and stock HTML templates**
   (2026-08-11) — both shells share manifest-scoped, versioned save envelopes,
   positional two-save autos, and one-based manual slot names. The old shell
   exposes manual 1…8, has no quicksave, and stores its settings separately at
-  `<storageId>:settings-old`. Canonical-envelope imports only; corrupt and
+  `dnt:<ifid>:settings-old`. Canonical-envelope imports only; corrupt and
   unsupported records remain manageable without being loadable.
+
+- **`lib/cli/cmd/make-html.js`, `lib/cli/cmd/audit.js`, and `lib/audit.js`**
+  (2026-09-24) — `make-html --publish-game-lib` optionally copies a project's
+  `source/lib/` into its HTML output, requiring `index.js`. `audit` checks
+  compiled scene code for browser globals and validates widget and derivation
+  markers against project-supplied registries in `dendrynexus.audit.mjs`.
 
 - **`lib/ui/browser.js` + `lib/ui/save-label.js`** (2026-07-26) — the old
   shell sanitizes the scene-id line when populating save slots: it removes

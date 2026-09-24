@@ -7,6 +7,8 @@
 (function () {
   "use strict";
 
+  var storageNamespace = require('./persistence').storageNamespace;
+
   // To avoid the need to include any utility libraries when this is
   // used in a browser, define some helper functions we'd normally
   // rely on libraries for.
@@ -903,7 +905,7 @@
   DendryEngine.prototype._loadAchievements = function () {
     if (typeof localStorage !== "undefined") {
       var key = this._achievementStorageKey();
-      if (localStorage[key]) {
+      if (key && localStorage[key]) {
         this.state.achievements = JSON.parse(localStorage[key]);
         // add a special quality named 'achievement_'
         for (var achievement in this.state.achievements) {
@@ -914,14 +916,8 @@
   };
 
   DendryEngine.prototype._achievementStorageKey = function () {
-    var storageId = this.game.info && this.game.info.storageId;
-    // `storageId` also remains at the compiled game's top level for legacy
-    // engine consumers because Game merges info.dry there. Prefer the nested
-    // manifest, but tolerate compiled games produced during that transition.
-    storageId = storageId || this.game.storageId;
-    return storageId
-      ? storageId + ":achievements"
-      : this.game.title + "_achievements";
+    var ifid = (this.game.info && this.game.info.ifid) || this.game.ifid;
+    return ifid ? storageNamespace(ifid) + ':achievements' : null;
   };
 
   DendryEngine.prototype.gameOver = function () {
@@ -1490,8 +1486,9 @@
     // add a new quality indicating that the achievement has been done for the current game
     this.state.qualities["game_achievement_" + achievementName] = 1;
     // set localStorage for achievement
-    if (typeof localStorage !== "undefined") {
-      localStorage[this._achievementStorageKey()] = JSON.stringify(
+    var achievementKey = this._achievementStorageKey();
+    if (typeof localStorage !== "undefined" && achievementKey) {
+      localStorage[achievementKey] = JSON.stringify(
         this.state.achievements,
       );
     }

@@ -28,7 +28,7 @@
     "wordwrap": "1.0.x"
   },
   "engines": {
-    "node": ">= 0.10"
+    "node": ">=16.7"
   },
   "bin": {
     "dendrynexus-ten": "lib/cli/main.js"

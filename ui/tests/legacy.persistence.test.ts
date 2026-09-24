@@ -22,7 +22,7 @@ function makeUi(gameVersion = '0.1.0') {
   ui.DateOptions = {};
   ui.saveStore = createSaveStore({
     storage: localStorage,
-    storageId: 'rti',
+    ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
     gameVersion,
     now: () => new Date('2026-08-11T12:00:00.000Z'),
   });
@@ -44,6 +44,16 @@ describe('old-shell persistence adapter', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
   });
 
+  it('derives its save and settings keys from the compiled IFID', () => {
+    const ui = Object.create(BrowserUserInterface.prototype);
+    ui.game = { info: { ifid: 'GAME-A', version: '1.0.0' } };
+    ui._configurePersistence();
+
+    expect(ui.settings_key).toBe('dnt:game-a:settings-old');
+    ui.saveStore.write('manual-1', { sceneId: 'root' });
+    expect(localStorage.getItem('dnt:game-a:save:manual-1')).not.toBeNull();
+  });
+
   it('keeps zero-based DOM ids behind one-based canonical slots', () => {
     expect(BrowserUserInterface.canonicalSlot('a0')).toBe('auto-1');
     expect(BrowserUserInterface.canonicalSlot('a1')).toBe('auto-2');
@@ -55,7 +65,7 @@ describe('old-shell persistence adapter', () => {
     const ui = makeUi();
     ui.saveSlot(0);
 
-    const envelope = JSON.parse(localStorage.getItem('rti:save:manual-1')!);
+    const envelope = JSON.parse(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1')!);
     expect(envelope).toMatchObject({
       saveFormatVersion: 1,
       gameVersion: '0.1.0',
@@ -76,18 +86,18 @@ describe('old-shell persistence adapter', () => {
       .mockReturnValueOnce({ sceneId: 'second' });
     ui.dendryEngine.state.sceneId = 'first';
     ui.autosave();
-    const firstEnvelope = localStorage.getItem('rti:save:auto-1');
+    const firstEnvelope = localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:auto-1');
 
     ui.dendryEngine.state.sceneId = 'second';
     ui.autosave();
 
-    expect(localStorage.getItem('rti:save:auto-2')).toBe(firstEnvelope);
-    expect(JSON.parse(localStorage.getItem('rti:save:auto-1')!).state.sceneId).toBe('second');
+    expect(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:auto-2')).toBe(firstEnvelope);
+    expect(JSON.parse(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:auto-1')!).state.sceneId).toBe('second');
   });
 
   it('requires confirmation for an incompatible game version', () => {
     const ui = makeUi('0.2.0');
-    localStorage.setItem('rti:save:manual-1', JSON.stringify({
+    localStorage.setItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1', JSON.stringify({
       saveFormatVersion: 1,
       gameVersion: '0.3.0',
       meta: { savedAt: '2026-08-11T12:00:00.000Z', sceneId: 'older' },
@@ -106,7 +116,7 @@ describe('old-shell persistence adapter', () => {
   it('renders corrupt saves as occupied, deletable, and exportable', () => {
     const ui = makeUi();
     ui.populateSaveSlots = BrowserUserInterface.prototype.populateSaveSlots;
-    localStorage.setItem('rti:save:auto-1', '{bad json');
+    localStorage.setItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:auto-1', '{bad json');
     document.body.innerHTML = `
       <span id="save_info_a0"></span>
       <button id="save_button_a0"></button>
@@ -125,7 +135,7 @@ describe('old-shell persistence adapter', () => {
   it('stores all old-shell settings in the canonical settings-old record', () => {
     const ui = makeUi();
     Object.assign(ui, {
-      settings_key: 'rti:settings-old',
+      settings_key: 'dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:settings-old',
       animate: true,
       disable_bg: false,
       animate_bg: true,
@@ -135,7 +145,7 @@ describe('old-shell persistence adapter', () => {
     });
 
     ui.saveSettings();
-    expect(JSON.parse(localStorage.getItem('rti:settings-old')!)).toEqual({
+    expect(JSON.parse(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:settings-old')!)).toEqual({
       animate: true,
       disableBg: false,
       animateBg: true,

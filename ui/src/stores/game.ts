@@ -90,18 +90,18 @@ export const useGameStore = defineStore('game', () => {
   function initFromText(text: string): void {
     adapter.value = markRaw(DendryAdapter.fromJSONText(text));
     const manifest = adapter.value.info;
-    if (manifest.storageId) {
+    if (manifest.ifid) {
       saves = createSaveStore({
         storage: localStorage,
-        storageId: manifest.storageId,
+        ifid: manifest.ifid,
         gameVersion: manifest.version,
       });
-      useSettingsStore().configure(manifest.storageId);
+      useSettingsStore().configure(manifest.ifid);
     } else {
       // Backward-compatible engine games can still run, but durable browser
-      // state is deliberately unavailable until they declare a namespace.
+      // state is deliberately unavailable until they declare an IFID.
       saves = null;
-      console.warn('game manifest has no storage-id; saves and settings are disabled');
+      console.warn('game manifest has no IFID; saves and settings are disabled');
     }
     loadError.value = false;
   }

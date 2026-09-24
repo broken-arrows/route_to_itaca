@@ -1,7 +1,7 @@
 /**
  * The widget names content may declare via `data-widget="…"`.
  *
- * Plain .mjs with NO Vue imports on purpose: `tools/audit-globals.mjs` imports
+ * Plain .mjs with NO Vue imports on purpose: `dendrynexus.audit.mjs` imports
  * this from Node to check that every `data-widget` in the compiled game.json is
  * a name some UI actually knows — so a typo fails the BUILD instead of rendering
  * an empty div forever.
@@ -46,7 +46,7 @@ export const WIDGET_NAMES = [
 /**
  * The derivations content may name via `data-props='{"deriveFrom":"…"}'`.
  * Must match the keys of `G.brief` in source/lib/brief.js. Checked by
- * tools/audit-globals.mjs, so a typo fails the BUILD rather than rendering an
+ * `dendrynexus-ten audit`, so a typo fails the BUILD rather than rendering an
  * empty widget forever — same contract as WIDGET_NAMES above.
  */
 export const DERIVE_NAMES = [

@@ -35,10 +35,6 @@
       required: false,
       validate: null
     },
-    storageId: {
-      required: false,
-      validate: validators.validateStorageId
-    },
     version: {
       required: false,
       validate: validators.validateGameVersion

@@ -40,11 +40,11 @@
     });
   };
 
-  var uglifyBundle = function(data, callback) {
+  var prepareBundle = function(data, callback) {
     var gameFile = data.gameFile.toString();
     var wrappedGameFile = JSON.stringify({compiled:gameFile});
     var content = ['window.game=' + wrappedGameFile + ';', data.browserify];
-    if (data.pretty) {
+    if (data.unminified) {
       data.code = content.join('');
     } else {
       data.code = terser.minify_sync(content, {compress:{}}).code;
@@ -101,6 +101,27 @@
     });
   };
 
+  // A browser game can opt into publishing the code it passes to
+  // engine.setGameLib(). This is a project convention, not a game-specific
+  // path: source/lib is copied relative to the selected project directory.
+  var publishGameLib = function(data, callback) {
+    if (!data.publishGameLib) return callback(null, data);
+    var source = path.join(data.projectDir, 'source', 'lib');
+    var entry = path.join(source, 'index.js');
+    var target = path.join(data.destDir, 'lib');
+    if (!fs.existsSync(entry) || !fs.statSync(entry).isFile()) {
+      return callback(new Error('Cannot publish game library: missing ' + entry));
+    }
+    try {
+      fs.rmSync(target, {recursive: true, force: true});
+      fs.cpSync(source, target, {recursive: true});
+      console.log(('Published game library: ' + source + ' -> ' + target).grey);
+    } catch (err) {
+      return callback(err);
+    }
+    callback(null, data);
+  };
+
   // ----------------------------------------------------------------------
   // Make-HTML: Creates a playable HTML version of the game.
   // ----------------------------------------------------------------------
@@ -125,10 +146,17 @@
       help: 'A theme template to use (default: the "default" theme). ' +
         'Can be the name of a built-in theme, or the path to a theme.'
     });
-    parser.addArgument(['--pretty'], {
+    parser.addArgument(['--unminified', '--pretty'], {
+      dest: 'unminified',
       action: 'storeTrue',
       defaultValue: false,
-      help: 'Doesn\'t run the output through uglify for compression.'
+      help: 'Skip Terser minification of the HTML JavaScript bundle.'
+    });
+    parser.addArgument(['--publish-game-lib'], {
+      dest: 'publishGameLib',
+      action: 'storeTrue',
+      defaultValue: false,
+      help: 'Publish source/lib to the HTML output for engine.setGameLib().'
     });
     parser.addArgument(['--overwrite'], {
       action: 'storeTrue',
@@ -147,9 +175,9 @@
     };
 
     async.waterfall([getData, loadGameAndSource,
-                     browserifyUI, uglifyBundle,
+                     browserifyUI, prepareBundle,
                      getTemplateDir, getDestDir,
-                     notifyUser, createHTML], callback);
+                     notifyUser, createHTML, publishGameLib], callback);
   };
 
   module.exports = {

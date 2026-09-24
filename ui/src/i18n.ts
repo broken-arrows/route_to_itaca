@@ -7,7 +7,7 @@ export const i18n = createI18n({
   legacy: false,
   // Persistence belongs to the settings store's manifest-scoped blob. i18n
   // starts from the language-independent default, then settings.configure()
-  // applies the saved locale once game.info.storageId is available.
+  // applies the saved locale once game.info.ifid is available.
   locale: 'en',
   fallbackLocale: 'en',
   messages: { en, ca },

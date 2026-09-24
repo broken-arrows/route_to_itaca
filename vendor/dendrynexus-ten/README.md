@@ -17,8 +17,9 @@ on the next build with no reinstall.
   presentation-only (tags still drive deck draw-pools). `default`/inheritance is resolved
   by the UI adapter at runtime; the compiler only validates the enum.
 - **`info` manifest → `game.json`**: the compiler emits a whitelisted `info` block
-  (`title`, `author`, `languages`) so the runtime can read game-level metadata.
-  `languages: en ca` in `info.dry` declares the locale set. (Also fixes a Windows-only bug
+  (`title`, `author`, `ifid`, `version`, `languages`) so the runtime can read game-level metadata.
+  `languages: en ca` in `info.dry` declares the locale set. Browser persistence uses
+  `dnt:<ifid>` without a separate `storage-id`. (Also fixes a Windows-only bug
   where `info.dry` was silently skipped by a forward-slash-only path check.)
 - **Runtime i18n overlay**: `engine.setLocale(locale, catalog)` installs a translation
   catalog keyed by the English source string; the content renderer substitutes whole
@@ -27,6 +28,20 @@ on the next build with no reinstall.
   placeholder/conditional transform is deferred.
 - **`on-display`-on-load fix**: `onDisplay` now re-fires when a saved state is loaded,
   before choices are recompiled, matching normal scene entry.
+
+## Build commands
+
+- `dendrynexus-ten compile`: compile the authored game into `out/game.json`.
+- `dendrynexus-ten make-html`: build the engine's classic browser shell. Add
+  `--publish-game-lib` when that shell loads `source/lib/`; this requires
+  `source/lib/index.js` and copies the directory to `out/html/lib/`.
+- `dendrynexus-ten audit`: check compiled scene code for browser globals and,
+  when supplied by `dendrynexus.audit.mjs`, validate widget and derivation names.
+- `make-html --unminified` leaves `core.js` readable. `--pretty` is an older alias;
+  the default build minifies it with Terser.
+
+This CLI does not build a project's separate Vue/Vite UI. In Route to Ítaca,
+`npm run build:classic` combines the classic build, library publication, and audit.
 
 ## Core features (from DendryNexus)
 

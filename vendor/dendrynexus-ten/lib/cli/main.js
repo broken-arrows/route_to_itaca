@@ -18,6 +18,7 @@
   require('./cmd/run');
   require('./cmd/random-test');
   require('./cmd/make-html');
+  require('./cmd/audit');
   require('./cmd/make-book');
 
   // Infrastructure Commands.

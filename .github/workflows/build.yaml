@@ -36,16 +36,15 @@ jobs:
           node-version: 16
       - name: Install
         run: npm install
-      # build:old-ui = make-html + the source/lib -> out/html/lib copy. The copy
+      # build:classic = make-html + the source/lib -> out/html/lib publication
+      # and the compiled-game audit. Publishing the game library
       # is NOT optional: out/html/index.html loads lib/{cat_engine,allegiances,
       # index}.js and /out/html/lib/ is gitignored, so running bare make-html
       # here deploys an old shell whose G.* calls all throw into runActions'
-      # swallowed catch — a dead simulation that looks alive (the exact failure
-      # class tools/audit-globals.mjs exists to kill, on the one surface that
-      # guard cannot see). The make-html pipeline itself retires with the old
-      # shell at phase 6 (see desk_ui_plan.md).
+      # swallowed catch — a dead simulation that looks alive. The old shell
+      # remains supported after the root swap.
       - name: Build game (old shell + game.json)
-        run: npm run build:old-ui
+        run: npm run build:classic
       - name: Copy game.json to output
         run: cp out/game.json out/html/
       # TODO: Uncomment when the new UI is ready
@@ -56,8 +55,6 @@ jobs:
       # - name: Install ui deps
       #   run: npm ci
       #   working-directory: ui
-      # - name: Audit content/UI coupling
-      #   run: node tools/audit-globals.mjs
       # - name: Test ui
       #   run: npm test
       #   working-directory: ui

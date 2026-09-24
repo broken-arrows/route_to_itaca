@@ -34,7 +34,7 @@ describe('app shell', () => {
           ? Promise.resolve({
               ok: true,
               json: () =>
-                Promise.resolve({ app: { title: 'Route to Ítaca — The Desk (beta)' } }),
+                Promise.resolve({ app: { title: 'Route to Ítaca (beta)' } }),
             })
           : Promise.reject(new Error('no network in test')),
       ),
@@ -58,8 +58,7 @@ describe('app shell', () => {
 
   // REGRESSION (I2): the header switcher called i18n's setLocale() DIRECTLY,
   // bypassing the settings store entirely. settings.language went stale, and
-  // setLocale only writes the loose `dnt:locale` key — which the settings
-  // blob outranks the moment anything writes one, so header language changes
+  // setLocale does not persist the settings blob, so header language changes
   // would silently stop persisting. One source of truth: the store.
   it('the header language switcher goes through the settings store', async () => {
     const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -70,7 +69,7 @@ describe('app shell', () => {
     await flushPromises();
     setActivePinia(pinia);
     const settings = useSettingsStore();
-    settings.configure('rti');
+    settings.configure('a513a6fa-16c8-4cdf-a385-0e359a976a66');
     expect(settings.language).toBe('en');
 
     const ca = wrapper.findAll('button').find((b) => b.text() === 'CA');
@@ -80,7 +79,7 @@ describe('app shell', () => {
     expect(settings.language).toBe('ca'); // the store is the source of truth
     expect(i18n.global.locale.value).toBe('ca'); // ...and it drove i18n
     // ...and it persisted as the settings BLOB, not just the loose key.
-    expect(JSON.parse(localStorage.getItem('rti:settings')!).language).toBe('ca');
+    expect(JSON.parse(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:settings')!).language).toBe('ca');
 
     errSpy.mockRestore();
     vi.unstubAllGlobals();

@@ -27,7 +27,7 @@ describe('DebugPage', () => {
     expect(wrapper.html()).toContain('Welcome to the mini game.');
     const buttons = wrapper.findAll('[data-test="choice"]');
     expect(buttons).toHaveLength(1);
-    expect(buttons[0].text()).toContain('The Desk');
+    expect(buttons[0].text()).toContain('Continue');
   });
 
   it('clicking a choice advances the game and shows hand surfaces', async () => {

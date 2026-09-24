@@ -8,7 +8,6 @@ export interface GameInfo {
   title?: string;
   author?: string;
   ifid?: string;
-  storageId?: string;
   version?: string;
   languages: string[];
 }

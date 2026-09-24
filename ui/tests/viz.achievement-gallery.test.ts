@@ -13,7 +13,7 @@ import { i18n, setLocale } from '../src/i18n';
 // `q`, passed as a prop by WidgetHost) — see the component's own header
 // comment for why those are two different sources.
 const GAME = {
-  info: { title: 'Test', storageId: 'test-game', languages: ['en', 'ca'] },
+  info: { title: 'Test', ifid: 'test-game', languages: ['en', 'ca'] },
   scenes: {
     root: {
       id: 'root',
@@ -110,7 +110,7 @@ describe('AchievementGallery', () => {
   it('renders relative labels below 24 hours from the engine-owned ledger', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-08-15T12:00:00.000Z'));
-    localStorage.setItem('test-game:achievements', JSON.stringify({
+    localStorage.setItem('dnt:test-game:achievements', JSON.stringify({
       a: { unlockedAt: '2026-08-15T11:58:00.000Z' },
       b: { unlockedAt: '2026-08-15T04:00:00.000Z' },
     }));
@@ -126,7 +126,7 @@ describe('AchievementGallery', () => {
   it('renders locale-formatted absolute dates after 24 hours', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-08-15T12:00:00.000Z'));
-    localStorage.setItem('test-game:achievements', JSON.stringify({
+    localStorage.setItem('dnt:test-game:achievements', JSON.stringify({
       a: { unlockedAt: '2025-10-15T12:00:00.000Z' },
     }));
     const w = mountGallery({ q: { achievement_a: 1 } });
@@ -137,7 +137,7 @@ describe('AchievementGallery', () => {
   });
 
   it('labels legacy numeric and malformed records with an unknown date', () => {
-    localStorage.setItem('test-game:achievements', JSON.stringify({ a: 1, b: { unlockedAt: 'nope' } }));
+    localStorage.setItem('dnt:test-game:achievements', JSON.stringify({ a: 1, b: { unlockedAt: 'nope' } }));
     const w = mountGallery({ q: { achievement_a: 1, achievement_b: 1 } });
     expect(w.get('[data-test="achievement-date-a"]').text()).toBe('Unlock date unknown');
     expect(w.get('[data-test="achievement-date-b"]').text()).toBe('Unlock date unknown');

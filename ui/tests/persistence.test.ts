@@ -7,7 +7,7 @@ const { createSaveStore } = require(
 ) as {
   createSaveStore(options: {
     storage: Storage;
-    storageId: string;
+    ifid: string;
     gameVersion: string;
     now: () => Date;
   }): {
@@ -26,7 +26,7 @@ describe('shared save persistence', () => {
   it('writes and reads the canonical versioned envelope', () => {
     const store = createSaveStore({
       storage: localStorage,
-      storageId: 'rti',
+      ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: '0.1.0',
       now: () => new Date('2026-08-11T10:15:00.000Z'),
     });
@@ -34,7 +34,7 @@ describe('shared save persistence', () => {
     expect(store.write('manual-1', { sceneId: 'root' }, { sceneId: 'root' })).toMatchObject({
       ok: true,
     });
-    expect(JSON.parse(localStorage.getItem('rti:save:manual-1')!)).toEqual({
+    expect(JSON.parse(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1')!)).toEqual({
       saveFormatVersion: 1,
       gameVersion: '0.1.0',
       meta: { sceneId: 'root', savedAt: '2026-08-11T10:15:00.000Z' },
@@ -47,24 +47,53 @@ describe('shared save persistence', () => {
     });
   });
 
-  it('rejects ambiguous storage namespaces and empty slots', () => {
-    for (const storageId of ['RTI', 'two words', '2rti', 'rti:other', '']) {
+  it('rejects invalid IFIDs and empty slots', () => {
+    for (const ifid of ['', '   ', undefined, null]) {
       expect(() =>
         createSaveStore({
           storage: localStorage,
-          storageId,
+          ifid: ifid as string,
           gameVersion: '0.1.0',
           now: () => new Date(),
         }),
-      ).toThrow(/storageId/);
+      ).toThrow(/ifid/);
     }
     const store = createSaveStore({
       storage: localStorage,
-      storageId: 'route-to-itaca',
+      ifid: 'route-to-itaca',
       gameVersion: '0.1.0',
       now: () => new Date(),
     });
     expect(() => store.read('')).toThrow(/slot/);
+  });
+
+  it('uses one library prefix while keeping games with different IFIDs separate', () => {
+    const first = createSaveStore({
+      storage: localStorage,
+      ifid: 'GAME-A',
+      gameVersion: '0.1.0',
+      now: () => new Date(),
+    });
+    const second = createSaveStore({
+      storage: localStorage,
+      ifid: 'game-b',
+      gameVersion: '0.1.0',
+      now: () => new Date(),
+    });
+    first.write('manual-1', { sceneId: 'first' });
+    expect(localStorage.getItem('dnt:game-a:save:manual-1')).not.toBeNull();
+    expect(second.read('manual-1').status).toBe('missing');
+  });
+
+  it('escapes IFID punctuation inside the shared namespace', () => {
+    const store = createSaveStore({
+      storage: localStorage,
+      ifid: 'UUID://GAME/A',
+      gameVersion: '0.1.0',
+      now: () => new Date(),
+    });
+    store.write('manual-1', {});
+    expect(localStorage.getItem('dnt:uuid%3A%2F%2Fgame%2Fa:save:manual-1')).not.toBeNull();
   });
 
   it.each([
@@ -76,7 +105,7 @@ describe('shared save persistence', () => {
     ['', 'unknown'],
   ])('classifies saved game version %j as %s', (savedVersion, expected) => {
     localStorage.setItem(
-      'rti:save:manual-1',
+      'dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1',
       JSON.stringify({
         saveFormatVersion: 1,
         gameVersion: savedVersion,
@@ -86,7 +115,7 @@ describe('shared save persistence', () => {
     );
     const store = createSaveStore({
       storage: localStorage,
-      storageId: 'rti',
+      ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: '0.2.1-beta',
       now: () => new Date(),
     });
@@ -95,12 +124,12 @@ describe('shared save persistence', () => {
 
   it('treats missing current or saved game versions as unknown', () => {
     localStorage.setItem(
-      'rti:save:manual-1',
+      'dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1',
       JSON.stringify({ saveFormatVersion: 1, meta: {}, state: {} }),
     );
     const store = createSaveStore({
       storage: localStorage,
-      storageId: 'rti',
+      ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: undefined as unknown as string,
       now: () => new Date(),
     });
@@ -114,12 +143,12 @@ describe('shared save persistence', () => {
     ['0.2.1', '0.3.0', 'incompatible'],
   ])('compares every numeric component except the last: %s vs %s', (current, saved, expected) => {
     localStorage.setItem(
-      'rti:save:manual-1',
+      'dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1',
       JSON.stringify({ saveFormatVersion: 1, gameVersion: saved, meta: {}, state: {} }),
     );
     const store = createSaveStore({
       storage: localStorage,
-      storageId: 'rti',
+      ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: current,
       now: () => new Date(),
     });
@@ -127,20 +156,20 @@ describe('shared save persistence', () => {
   });
 
   it('lists corrupt, invalid-envelope, unsupported, and healthy saves instead of hiding them', () => {
-    localStorage.setItem('rti:save:broken-json', '{');
-    localStorage.setItem('rti:save:raw-state', JSON.stringify({ sceneId: 'root' }));
+    localStorage.setItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:broken-json', '{');
+    localStorage.setItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:raw-state', JSON.stringify({ sceneId: 'root' }));
     localStorage.setItem(
-      'rti:save:future',
+      'dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:future',
       JSON.stringify({ saveFormatVersion: 2, gameVersion: '0.1.0', meta: {}, state: {} }),
     );
     localStorage.setItem(
-      'rti:save:manual-1',
+      'dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1',
       JSON.stringify({ saveFormatVersion: 1, gameVersion: '0.1.0', meta: {}, state: {} }),
     );
     localStorage.setItem('someone-else:save:manual-1', '{}');
     const store = createSaveStore({
       storage: localStorage,
-      storageId: 'rti',
+      ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: '0.1.0',
       now: () => new Date(),
     });
@@ -156,7 +185,7 @@ describe('shared save persistence', () => {
   it('reports a discovered record as unreadable when storage denies reading it', () => {
     const storage = {
       length: 1,
-      key: () => 'rti:save:manual-1',
+      key: () => 'dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1',
       getItem: () => {
         throw new Error('denied');
       },
@@ -166,7 +195,7 @@ describe('shared save persistence', () => {
     } as Storage;
     const store = createSaveStore({
       storage,
-      storageId: 'rti',
+      ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: '0.1.0',
       now: () => new Date(),
     });
@@ -176,12 +205,12 @@ describe('shared save persistence', () => {
   });
 
   it('keeps the prior record and returns a structured error when a write cannot serialize', () => {
-    localStorage.setItem('rti:save:manual-1', 'prior');
+    localStorage.setItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1', 'prior');
     const circular: Record<string, unknown> = {};
     circular.self = circular;
     const store = createSaveStore({
       storage: localStorage,
-      storageId: 'rti',
+      ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: '0.1.0',
       now: () => new Date(),
     });
@@ -189,13 +218,13 @@ describe('shared save persistence', () => {
       ok: false,
       error: { code: 'serialize-failed' },
     });
-    expect(localStorage.getItem('rti:save:manual-1')).toBe('prior');
+    expect(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1')).toBe('prior');
   });
 
   it('does not write a state value that JSON would silently omit', () => {
     const store = createSaveStore({
       storage: localStorage,
-      storageId: 'rti',
+      ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: '0.1.0',
       now: () => new Date(),
     });
@@ -203,11 +232,11 @@ describe('shared save persistence', () => {
       ok: false,
       error: { code: 'serialize-failed' },
     });
-    expect(localStorage.getItem('rti:save:manual-1')).toBeNull();
+    expect(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1')).toBeNull();
   });
 
   it('keeps the prior record and returns a structured error when storage rejects a write', () => {
-    const values = new Map([['rti:save:manual-1', 'prior']]);
+    const values = new Map([['dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1', 'prior']]);
     const storage = {
       get length() {
         return values.size;
@@ -222,7 +251,7 @@ describe('shared save persistence', () => {
     } as Storage;
     const store = createSaveStore({
       storage,
-      storageId: 'rti',
+      ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: '0.1.0',
       now: () => new Date(),
     });
@@ -230,13 +259,13 @@ describe('shared save persistence', () => {
       ok: false,
       error: { code: 'storage-write-failed' },
     });
-    expect(values.get('rti:save:manual-1')).toBe('prior');
+    expect(values.get('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1')).toBe('prior');
   });
 
   it('imports only save envelopes, strips unrelated fields, and exports only that save', () => {
     const store = createSaveStore({
       storage: localStorage,
-      storageId: 'rti',
+      ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: '0.1.0',
       now: () => new Date(),
     });
@@ -269,10 +298,10 @@ describe('shared save persistence', () => {
   });
 
   it('does not replace an existing save when an import is not a canonical envelope', () => {
-    localStorage.setItem('rti:save:manual-1', 'prior');
+    localStorage.setItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1', 'prior');
     const store = createSaveStore({
       storage: localStorage,
-      storageId: 'rti',
+      ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: '0.1.0',
       now: () => new Date(),
     });
@@ -280,13 +309,13 @@ describe('shared save persistence', () => {
       ok: false,
       error: { code: 'invalid-json' },
     });
-    expect(localStorage.getItem('rti:save:manual-1')).toBe('prior');
+    expect(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1')).toBe('prior');
   });
 
   it('preserves and exports an unsupported envelope but refuses to report it loadable', () => {
     const store = createSaveStore({
       storage: localStorage,
-      storageId: 'rti',
+      ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: '0.1.0',
       now: () => new Date(),
     });
@@ -308,10 +337,10 @@ describe('shared save persistence', () => {
   });
 
   it('exports corrupt raw data for recovery and removes slots idempotently', () => {
-    localStorage.setItem('rti:save:broken', '{');
+    localStorage.setItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:broken', '{');
     const store = createSaveStore({
       storage: localStorage,
-      storageId: 'rti',
+      ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: '0.1.0',
       now: () => new Date(),
     });

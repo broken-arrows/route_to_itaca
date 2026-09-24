@@ -36,10 +36,10 @@ function compileText(files: { name: string; contents: string }[]): Promise<strin
 describe('OptionsPane', () => {
   it('installs a persisted content locale before beginGame without inventing engine state', async () => {
     const text = await compileText([
-      { name: 'info.dry', contents: 'title: Test\nauthor: Test\nstorage-id: rti\nlanguages: en ca\n' },
+      { name: 'info.dry', contents: 'title: Test\nauthor: Test\nifid: a513a6fa-16c8-4cdf-a385-0e359a976a66\nlanguages: en ca\n' },
       { name: join('scenes', 'root.scene.dry'), contents: 'title: Root\n\nHello\n' },
     ]);
-    localStorage.setItem('rti:settings', JSON.stringify({ language: 'ca', animations: true, eventImages: true }));
+    localStorage.setItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:settings', JSON.stringify({ language: 'ca', animations: true, eventImages: true }));
     vi.stubGlobal('fetch', vi.fn(async (url: string) => url.endsWith('game.en.json')
       ? { ok: true, text: async () => text }
       : { ok: true, json: async () => ({ Hello: 'Hola' }) }));
@@ -57,7 +57,7 @@ describe('OptionsPane', () => {
 
   it('offers only EN and CA, persists the working toggles, and leaves Music disabled as WIP', async () => {
     const settings = useSettingsStore();
-    settings.configure('rti');
+    settings.configure('a513a6fa-16c8-4cdf-a385-0e359a976a66');
     const wrapper = mountPane();
 
     expect(wrapper.findAll('input[name="language"]')).toHaveLength(2);
@@ -69,7 +69,7 @@ describe('OptionsPane', () => {
     await wrapper.get('[data-test="setting-event-images"]').setValue(false);
     expect(settings.animations).toBe(false);
     expect(settings.eventImages).toBe(false);
-    expect(JSON.parse(localStorage.getItem('rti:settings')!)).toMatchObject({
+    expect(JSON.parse(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:settings')!)).toMatchObject({
       animations: false,
       eventImages: false,
     });
@@ -82,7 +82,7 @@ describe('OptionsPane', () => {
     }));
     const game = useGameStore();
     const text = await compileText([
-      { name: 'info.dry', contents: 'title: Test\nauthor: Test\nstorage-id: rti\nlanguages: en ca\n' },
+      { name: 'info.dry', contents: 'title: Test\nauthor: Test\nifid: a513a6fa-16c8-4cdf-a385-0e359a976a66\nlanguages: en ca\n' },
       { name: join('scenes', 'root.scene.dry'), contents: 'title: Root\non-arrival: {!\n  Q.arrivals = (Q.arrivals || 0) + 1;\n!}\n\nHello\n\n- @next: Continue\n' },
       { name: join('scenes', 'next.scene.dry'), contents: 'title: Continue\n\nDone.\n' },
     ]);
@@ -99,7 +99,7 @@ describe('OptionsPane', () => {
     expect(game.q.arrivals).toBe(1);
     expect(game.frame!.html).toContain('Hola');
     expect(game.frame!.choices[0].title).toBe('Continua ara');
-    expect(JSON.parse(localStorage.getItem('rti:settings')!).language).toBe('ca');
+    expect(JSON.parse(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:settings')!).language).toBe('ca');
   });
 
   it('preserves an accumulated page while translating it without lifecycle replay', async () => {
@@ -109,7 +109,7 @@ describe('OptionsPane', () => {
     }));
     const game = useGameStore();
     const text = await compileText([
-      { name: 'info.dry', contents: 'title: Test\nauthor: Test\nstorage-id: rti\nlanguages: en ca\n' },
+      { name: 'info.dry', contents: 'title: Test\nauthor: Test\nifid: a513a6fa-16c8-4cdf-a385-0e359a976a66\nlanguages: en ca\n' },
       { name: join('scenes', 'root.scene.dry'), contents: 'title: Root\non-arrival: {! Q.rootArrivals = (Q.rootArrivals || 0) + 1; !}\n\nHello\n\n- @next: Continue\n' },
       { name: join('scenes', 'next.scene.dry'), contents: 'title: Next\non-arrival: {! Q.nextArrivals = (Q.nextArrivals || 0) + 1; !}\n\nSecond\n' },
     ]);

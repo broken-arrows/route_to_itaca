@@ -9,7 +9,7 @@ import { useShellStore } from '../src/stores/shell';
 import { setAnimationsForTest } from '../src/stores/desk';
 
 const shellGame = {
-  info: { title: 'Route to Itaca - An Alternate History', storageId: 'phase5a-test', version: '1.0.0' },
+  info: { title: 'Route to Itaca - An Alternate History', ifid: 'phase5a-test', version: '1.0.0' },
   scenes: {
     root: {
       id: 'root', type: 'scene', newPage: true,

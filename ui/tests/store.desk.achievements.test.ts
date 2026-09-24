@@ -35,7 +35,7 @@ const ACHIEVEMENTS_JSON = {
 };
 
 const FILES = [
-  { name: 'info.dry', contents: 'title: T\nauthor: A\nstorage-id: test-game\nlanguages: en ca\n' },
+  { name: 'info.dry', contents: 'title: T\nauthor: A\nifid: test-game\nlanguages: en ca\n' },
   { name: 'root.scene.dry', contents: 'title: Root\n\nIntro.\n\n- @hub\n' },
   {
     name: 'hub.scene.dry',
@@ -87,18 +87,20 @@ describe('desk store — achievement unlock toast (phase 2.5 Task 8)', () => {
     expect(desk.achievementToast).toBeNull();
   });
 
-  it('loads and writes the manifest-scoped achievement ledger without reading the old title key', async () => {
+  it('loads the IFID-scoped achievement ledger without reading old keys', async () => {
     localStorage.setItem('T_achievements', JSON.stringify({ old: 1 }));
-    localStorage.setItem('test-game:achievements', JSON.stringify({ foo: 1 }));
+    localStorage.setItem('rti:achievements', JSON.stringify({ old_rti: 1 }));
+    localStorage.setItem('dnt:test-game:achievements', JSON.stringify({ foo: 1 }));
 
     const { game } = await boot(FILES);
     expect(game.q.achievement_foo).toBe(1);
+    expect(game.q.achievement_old_rti).toBeUndefined();
     expect(game.q.achievement_old).toBeUndefined();
 
     game.choose(0);
     game.draw('gov_deck');
     game.play(game.frame!.hand[0].id);
-    expect(JSON.parse(localStorage.getItem('test-game:achievements')!)).toEqual({ foo: 1 });
+    expect(JSON.parse(localStorage.getItem('dnt:test-game:achievements')!)).toEqual({ foo: 1 });
     expect(JSON.parse(localStorage.getItem('T_achievements')!)).toEqual({ old: 1 });
   });
 
@@ -111,7 +113,7 @@ describe('desk store — achievement unlock toast (phase 2.5 Task 8)', () => {
       game.draw('gov_deck');
       game.play(game.frame!.hand[0].id);
 
-      expect(JSON.parse(localStorage.getItem('test-game:achievements')!)).toEqual({
+      expect(JSON.parse(localStorage.getItem('dnt:test-game:achievements')!)).toEqual({
         foo: { unlockedAt: '2026-08-14T18:42:00.000Z' },
       });
       expect(game.q.achievement_foo).toBe(1);
@@ -135,7 +137,7 @@ describe('desk store — achievement unlock toast (phase 2.5 Task 8)', () => {
       game.draw('gov_deck');
       game.play(game.frame!.hand[0].id);
 
-      expect(JSON.parse(localStorage.getItem('test-game:achievements')!)).toEqual({
+      expect(JSON.parse(localStorage.getItem('dnt:test-game:achievements')!)).toEqual({
         foo: { unlockedAt: '2026-08-14T18:42:00.000Z' },
       });
     } finally {
@@ -144,13 +146,13 @@ describe('desk store — achievement unlock toast (phase 2.5 Task 8)', () => {
   });
 
   it('keeps a legacy numeric unlock date unknown when the achievement is earned again', async () => {
-    localStorage.setItem('test-game:achievements', JSON.stringify({ foo: 1 }));
+    localStorage.setItem('dnt:test-game:achievements', JSON.stringify({ foo: 1 }));
     const { game } = await boot(FILES);
     game.choose(0);
     game.draw('gov_deck');
     game.play(game.frame!.hand[0].id);
 
-    expect(JSON.parse(localStorage.getItem('test-game:achievements')!)).toEqual({ foo: 1 });
+    expect(JSON.parse(localStorage.getItem('dnt:test-game:achievements')!)).toEqual({ foo: 1 });
     expect(game.q.achievement_foo).toBe(1);
     expect(game.q.game_achievement_foo).toBe(1);
   });
@@ -167,7 +169,7 @@ describe('desk store — achievement unlock toast (phase 2.5 Task 8)', () => {
 
       game.restoreState(beforeUnlock);
 
-      expect(JSON.parse(localStorage.getItem('test-game:achievements')!)).toEqual({
+      expect(JSON.parse(localStorage.getItem('dnt:test-game:achievements')!)).toEqual({
         foo: { unlockedAt: '2026-08-14T18:42:00.000Z' },
       });
       expect(game.q.achievement_foo).toBe(1);
@@ -177,7 +179,7 @@ describe('desk store — achievement unlock toast (phase 2.5 Task 8)', () => {
     }
   });
 
-  it('retains the title-based achievement key for games without a storage id', async () => {
+  it('ignores old title-based achievements for games without an IFID', async () => {
     localStorage.setItem('T_achievements', JSON.stringify({ foo: 1 }));
     const files = [
       { name: 'info.dry', contents: 'title: T\nauthor: A\nlanguages: en ca\n' },
@@ -185,7 +187,7 @@ describe('desk store — achievement unlock toast (phase 2.5 Task 8)', () => {
     ];
 
     const { game } = await boot(files);
-    expect(game.q.achievement_foo).toBe(1);
+    expect(game.q.achievement_foo).toBeUndefined();
   });
 
   it('toasts the registry name/image/stars when this.achieve() fires for the first time', async () => {

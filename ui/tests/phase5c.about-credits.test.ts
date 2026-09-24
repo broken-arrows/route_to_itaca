@@ -7,7 +7,7 @@ import { useGameStore } from '../src/stores/game';
 import { setAnimationsForTest } from '../src/stores/desk';
 
 const gameData = {
-  info: { title: 'Route to Itaca', storageId: 'phase5c-about', version: '1.0.0' },
+  info: { title: 'Route to Itaca', ifid: 'phase5c-about', version: '1.0.0' },
   scenes: {
     root: { id: 'root', type: 'scene', newPage: true, goTo: [{ id: 'menu' }] },
     menu: {

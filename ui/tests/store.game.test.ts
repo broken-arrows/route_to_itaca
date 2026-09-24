@@ -68,17 +68,19 @@ describe('game store', () => {
 
   it('hard-cuts provisional save shelves without migrating or deleting them', () => {
     localStorage.setItem('rti:desk:save:old', JSON.stringify({ meta: {}, state: {} }));
+    localStorage.setItem('rti:save:manual-1', JSON.stringify({ saveFormatVersion: 1, meta: {}, state: {} }));
     localStorage.setItem('dnt:save:old', JSON.stringify({ meta: {}, state: {} }));
     const store = bootedStore();
 
     expect(store.listSlots()).toEqual([]);
     expect(localStorage.getItem('rti:desk:save:old')).not.toBeNull();
+    expect(localStorage.getItem('rti:save:manual-1')).not.toBeNull();
     expect(localStorage.getItem('dnt:save:old')).not.toBeNull();
   });
 
   it('retains corrupt saves in the list and refuses to load them', () => {
     const store = bootedStore();
-    localStorage.setItem('test-game:save:manual-1', '{');
+    localStorage.setItem('dnt:test-game:save:manual-1', '{');
     expect(store.listSlots()).toMatchObject([
       { slot: 'manual-1', status: 'corrupt', error: { code: 'invalid-json' } },
     ]);
@@ -89,9 +91,9 @@ describe('game store', () => {
     const store = bootedStore();
     store.choose(0);
     store.saveSlot('manual-1');
-    const saved = JSON.parse(localStorage.getItem('test-game:save:manual-1')!);
+    const saved = JSON.parse(localStorage.getItem('dnt:test-game:save:manual-1')!);
     saved.gameVersion = '0.2.0';
-    localStorage.setItem('test-game:save:manual-1', JSON.stringify(saved));
+    localStorage.setItem('dnt:test-game:save:manual-1', JSON.stringify(saved));
 
     expect(store.loadSlot('manual-1')).toEqual({
       status: 'confirmation-required',
@@ -175,8 +177,8 @@ describe('game store', () => {
 
   it('keeps unsupported and corrupt records exportable and removable', () => {
     const store = bootedStore();
-    localStorage.setItem('test-game:save:broken', '{');
-    localStorage.setItem('test-game:save:future', JSON.stringify({
+    localStorage.setItem('dnt:test-game:save:broken', '{');
+    localStorage.setItem('dnt:test-game:save:future', JSON.stringify({
       saveFormatVersion: 99,
       gameVersion: '0.1.0',
       meta: { savedAt: '2030-01-01T00:00:00.000Z' },
@@ -205,8 +207,8 @@ describe('game store', () => {
     expect(store.saveAutosave()).toMatchObject({ ok: true });
     const first = store.exportSlot('auto-1');
     store.choose(0);
-    const stale = localStorage.getItem('test-game:save:auto-1');
-    localStorage.setItem('test-game:save:auto-2', stale!); // prior non-ironman rollback
+    const stale = localStorage.getItem('dnt:test-game:save:auto-1');
+    localStorage.setItem('dnt:test-game:save:auto-2', stale!); // prior non-ironman rollback
     expect(store.saveAutosave()).toMatchObject({ ok: true });
     expect(store.listSlots().map(({ slot }) => slot)).toEqual(['auto-1']);
     expect(store.exportSlot('auto-1')).not.toEqual(first);

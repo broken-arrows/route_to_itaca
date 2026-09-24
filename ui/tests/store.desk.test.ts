@@ -21,7 +21,7 @@ async function jsonFor(files: { name: string; contents: string }[]): Promise<str
 const FILES = [
   {
     name: 'info.dry',
-    contents: 'title: T\nauthor: A\nstorage-id: test-game\nversion: 0.1.0\nlanguages: en ca\n',
+    contents: 'title: T\nauthor: A\nifid: test-game\nversion: 0.1.0\nlanguages: en ca\n',
   },
   { name: 'root.scene.dry', contents: 'title: Root\n\nIntro.\n\n- @hub\n' },
   {

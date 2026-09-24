@@ -1,7 +1,12 @@
 'use strict';
 
 var SAVE_FORMAT_VERSION = 1;
-var STORAGE_ID_PATTERN = /^[a-z][a-z0-9-]*$/;
+function storageNamespace(ifid) {
+  if (typeof ifid !== 'string' || !ifid.trim()) {
+    throw new TypeError('ifid must be a non-empty string');
+  }
+  return 'dnt:' + encodeURIComponent(ifid.trim().toLowerCase());
+}
 
 function errorResult(code, error, details) {
   return Object.assign({
@@ -62,15 +67,11 @@ function createSaveStore(options) {
   if (!options || !options.storage) {
     throw new TypeError('storage is required');
   }
-  if (!STORAGE_ID_PATTERN.test(options.storageId || '')) {
-    throw new TypeError('storageId must match [a-z][a-z0-9-]*');
-  }
-
   var storage = options.storage;
-  var storageId = options.storageId;
+  var namespace = storageNamespace(options.ifid);
   var gameVersion = options.gameVersion;
   var now = options.now || function() { return new Date(); };
-  var prefix = storageId + ':save:';
+  var prefix = namespace + ':save:';
 
   function keyFor(slot) {
     if (typeof slot !== 'string' || slot.length === 0) {
@@ -241,5 +242,6 @@ function createSaveStore(options) {
 
 module.exports = {
   SAVE_FORMAT_VERSION: SAVE_FORMAT_VERSION,
+  storageNamespace: storageNamespace,
   createSaveStore: createSaveStore,
 };

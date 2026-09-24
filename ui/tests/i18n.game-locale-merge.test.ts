@@ -25,7 +25,7 @@ describe('game-locale merge (source/locales/<loc>/ui.json wins over ui/ defaults
     );
     const { i18n, initGameLocale } = await import('../src/i18n');
 
-    expect(i18n.global.t('app.title')).toBe('The Desk (beta)'); // ui/'s own default, pre-merge
+    expect(i18n.global.t('app.title')).toBe('Game'); // ui/'s own default, pre-merge
     await initGameLocale();
     expect(i18n.global.t('app.title')).toBe('GAME WINS'); // the game's override wins
   });
@@ -50,7 +50,7 @@ describe('game-locale merge (source/locales/<loc>/ui.json wins over ui/ defaults
     const { i18n, initGameLocale } = await import('../src/i18n');
 
     await expect(initGameLocale()).resolves.toBeUndefined(); // does not throw/reject
-    expect(i18n.global.t('app.title')).toBe('The Desk (beta)');
+    expect(i18n.global.t('app.title')).toBe('Game');
   });
 
   it('a network error fetching the catalog is NOT an error — ui/ defaults stand', async () => {
@@ -58,7 +58,7 @@ describe('game-locale merge (source/locales/<loc>/ui.json wins over ui/ defaults
     const { i18n, initGameLocale } = await import('../src/i18n');
 
     await expect(initGameLocale()).resolves.toBeUndefined(); // does not throw/reject
-    expect(i18n.global.t('app.title')).toBe('The Desk (beta)');
+    expect(i18n.global.t('app.title')).toBe('Game');
   });
 
   it('deep-merges a nested override without discarding untouched sibling keys', async () => {
