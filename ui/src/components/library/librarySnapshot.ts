@@ -9,6 +9,12 @@ export function captureLibraryUnderlay(surface: HTMLElement | null): string {
   if (!surface) return '';
 
   const snapshot = surface.cloneNode(true) as HTMLElement;
-  snapshot.querySelectorAll('.clipboard-frame').forEach((brief) => brief.remove());
+  snapshot.querySelectorAll('.clipboard-frame').forEach((brief) => {
+    // Keep the grid cell: removing the Brief moves the Desk into its column,
+    // where the live Library sheet covers it completely.
+    const placeholder = document.createElement('div');
+    placeholder.className = 'library-brief-placeholder';
+    brief.replaceWith(placeholder);
+  });
   return snapshot.innerHTML;
 }

@@ -47,6 +47,13 @@ const outcomes = computed(() =>
     .sort((a, b) => outcomeOrder[a.kind] - outcomeOrder[b.kind]),
 );
 
+const majority = computed(() => {
+  const total = outcomes.value.reduce((sum, outcome) => sum + outcome.votes, 0);
+  if (total <= 0) return null;
+  const votes = Math.floor(total / 2) + 1;
+  return { votes, left: `${(votes / total) * 100}%` };
+});
+
 const layoutStyle = computed(() => {
   const visible = outcomes.value;
   const total = visible.reduce((sum, outcome) => sum + outcome.votes, 0);
@@ -79,7 +86,12 @@ const layoutStyle = computed(() => {
         {{ outcome.label }}
       </div>
     </div>
-    <div class="chamber-vote-bar">
+    <div
+      class="chamber-vote-bar"
+      :data-majority="majority?.votes"
+      :title="majority ? `Majority: ${majority.votes} yes votes` : undefined"
+      :style="majority ? { '--chamber-vote-majority-left': majority.left } : undefined"
+    >
       <div
         v-for="outcome in outcomes"
         :key="outcome.kind"
@@ -149,7 +161,32 @@ const layoutStyle = computed(() => {
 }
 .chamber-vote-bar {
   display: flex;
+  position: relative;
   width: 100%;
+}
+.chamber-vote-bar[data-majority]::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: -0.2em;
+  bottom: -0.2em;
+  left: var(--chamber-vote-majority-left);
+  width: 2px;
+  background: var(--ink-1);
+  pointer-events: none;
+}
+.chamber-vote-bar[data-majority]::before {
+  content: attr(data-majority);
+  position: absolute;
+  z-index: 3;
+  bottom: 100%;
+  left: var(--chamber-vote-majority-left);
+  padding-bottom: 0.5em;
+  color: var(--ink-1);
+  font-size: 0.75em;
+  line-height: 1;
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 .chamber-vote-outcome {
   overflow: hidden;
@@ -194,6 +231,14 @@ const layoutStyle = computed(() => {
   font-family: inherit;
   font-size: 1em;
   line-height: 1.35;
+}
+/* Translated breakdown columns can overlap. Only the named party should
+   intercept a hover, so glossary tooltips remain reachable underneath. */
+.chamber-vote-breakdown {
+  pointer-events: none;
+}
+.chamber-vote-breakdown :deep([data-term].term-hoverable) {
+  pointer-events: auto;
 }
 .chamber-vote-breakdown--abstain .chamber-vote-parties {
   text-align: center;

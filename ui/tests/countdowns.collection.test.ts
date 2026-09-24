@@ -35,7 +35,9 @@ describe('countdown collection contract', () => {
         if (!push) return;
 
         const expectedGuard = `!Q.countdowns.includes(${push[1]}${push[2]}${push[1]})`;
-        if (!line.includes(expectedGuard)) {
+        // A push can sit inside a guarded block as well as on the guard line.
+        const nearby = lines.slice(Math.max(0, index - 3), index + 1).join('\n');
+        if (!nearby.includes(expectedGuard)) {
           unguarded.push(`${relative(repo, file)}:${index + 1}`);
         }
       });

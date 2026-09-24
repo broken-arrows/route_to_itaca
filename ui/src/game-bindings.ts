@@ -60,6 +60,8 @@ import type { GameLib } from '../../source/lib/index.js';
 import '../../source/lib/cat_engine.js';
 import '../../source/lib/allegiances.js';
 import '../../source/lib/brief.js';
+import '../../source/lib/government.js';
+import '../../source/lib/election_widgets.js';
 import * as gameLibModule from '../../source/lib/index.js';
 
 const gameLib: GameLib =

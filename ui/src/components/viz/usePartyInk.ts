@@ -1,4 +1,5 @@
 import { useGameStore } from '../../stores/game';
+import type { GlossaryTerm } from '../../glossary/mark';
 
 const NEUTRAL = '#8a8273';
 
@@ -11,14 +12,18 @@ function cssColour(token?: string): string {
  * Resolve party ids through the field that actually drives glossary matching.
  * Entry ids are not equivalent (`jxsi` lives under glossary id `jxs_`).
  */
-export function usePartyInk(): (party?: string | null) => string {
+export function usePartyTerm(): (party?: string | null) => GlossaryTerm | undefined {
   const game = useGameStore();
   return (party?: string | null) => {
-    if (!party) return NEUTRAL;
+    if (!party) return undefined;
     const key = party.toLowerCase();
-    const term = game.glossary.find((entry) =>
+    return game.glossary.find((entry) =>
       entry.match.some((match) => match.toLowerCase() === key),
     );
-    return cssColour(term?.colour);
   };
+}
+
+export function usePartyInk(): (party?: string | null) => string {
+  const termFor = usePartyTerm();
+  return (party?: string | null) => cssColour(termFor(party)?.colour);
 }

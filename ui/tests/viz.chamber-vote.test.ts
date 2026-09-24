@@ -22,7 +22,7 @@ const GAME = {
   data: {
     glossary: {
       terms: [
-        { id: 'ciu', match: ['CiU'], display: 'CiU', colour: 'ciu' },
+        { id: 'ciu', match: ['CiU'], display: 'CiU', colour: 'ciu', tooltip: { title: 'Convergència i Unió' } },
         { id: 'psc', match: ['PSC'], display: 'PSC', colour: 'psc' },
       ],
     },
@@ -62,6 +62,39 @@ describe('ChamberVote', () => {
     expect(w.text()).not.toContain('Abstention');
   });
 
+  it('marks the absolute majority over all seats, including absent legislators', async () => {
+    const w = mountVote();
+    const bar = w.get('.chamber-vote-bar');
+    expect(bar.attributes('data-majority')).toBe('68');
+    expect(bar.attributes('title')).toBe('Majority: 68 yes votes');
+    expect(bar.attributes('style')).toContain('--chamber-vote-majority-left: 50.37037037037037%');
+
+    await w.setProps({
+      outcomes: [
+        { kind: 'yes', label: 'Yes', votes: 60 },
+        { kind: 'abstain', label: 'Abstention', votes: 10 },
+        { kind: 'not-present', label: 'Not present', votes: 15 },
+        { kind: 'no', label: 'No', votes: 50 },
+      ],
+    });
+    expect(bar.attributes('data-majority')).toBe('68');
+
+    await w.setProps({
+      outcomes: [
+        { kind: 'yes', label: 'Yes', votes: 60 },
+        { kind: 'abstain', label: 'Abstention', votes: 10 },
+        { kind: 'no', label: 'No', votes: 50 },
+      ],
+    });
+    expect(bar.attributes('data-majority')).toBe('61');
+    expect(bar.attributes('style')).toContain('--chamber-vote-majority-left: 50.83333333333333%');
+
+    await w.setProps({ outcomes: [] });
+    expect(bar.attributes('data-majority')).toBeUndefined();
+    expect(bar.attributes('title')).toBeUndefined();
+    expect(bar.attributes('style')).toBeUndefined();
+  });
+
   it('accepts optional party breakdowns and optional split-caucus counts', () => {
     const w = mountVote();
     expect(w.findAll('.chamber-vote-parties li')).toHaveLength(2);
@@ -69,11 +102,15 @@ describe('ChamberVote', () => {
     expect(w.find('.chamber-vote-breakdown--no .chamber-vote-parties').exists()).toBe(false);
   });
 
-  it('marks generated party names through the Desk glossary pipeline', () => {
+  it('marks generated party names and opens their glossary tooltip', async () => {
     const w = mountVote();
     const ciu = w.get('[data-term="ciu"]');
     expect(ciu.text()).toBe('CiU');
     expect(ciu.attributes('style')).toContain('var(--ciu)');
+    expect(ciu.classes()).toContain('term-hoverable');
+    await ciu.trigger('mouseover');
+    expect(document.querySelector('[data-test="glossary-popover"]')?.textContent).toContain('Convergència i Unió');
+    w.unmount();
   });
 
   it('aligns the readable abstention column with its proportional bar segment', async () => {

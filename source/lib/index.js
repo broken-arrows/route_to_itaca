@@ -35,13 +35,16 @@
   var government = hasModule
     ? require("./government.js")
     : window.RTI_GOVERNMENT;
+  var electionWidgets = hasModule
+    ? require("./election_widgets.js")
+    : window.RTI_ELECTION_WIDGETS;
 
   // AGGREGATION point. Object.assign forwards EVERYTHING each module exports —
   // a new sim helper only needs a line in cat_engine.js's `api`; a new lib FILE
   // needs one line here (its require + a slot in this merge) and nothing in
   // either UI. (Object.assign ignores a null/undefined source, so a failed
   // fallback degrades to a smaller lib rather than throwing on load.)
-  var lib = Object.assign({}, catEngine, allegiances, brief, government);
+  var lib = Object.assign({}, catEngine, allegiances, brief, government, electionWidgets);
 
   if (typeof module !== "undefined" && module.exports) {
     module.exports = lib;

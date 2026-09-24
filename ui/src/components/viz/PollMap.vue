@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { gameLib } from '../../game-bindings';
-import { usePartyInk } from './usePartyInk';
+import { usePartyInk, usePartyTerm } from './usePartyInk';
 
 defineOptions({ name: 'PollMap' });
 
@@ -34,14 +34,17 @@ interface ProjectionRow {
 const props = withDefaults(
   defineProps<{
     variant?: 'compact' | 'blank';
+    layout?: 'stacked' | 'wide';
     q?: Record<string, unknown>;
   }>(),
   { variant: undefined, q: () => ({}) },
 );
 const selected = ref('barcelona');
+const root = ref<HTMLElement | null>(null);
 const mapSvg = ref('');
 const mapFailed = ref(false);
 const partyInk = usePartyInk();
+const partyTerm = usePartyTerm();
 const builders = gameLib.brief as Record<string, (q: Record<string, unknown>) => unknown[]>;
 const derive = <T>(name: string): T[] => {
   try {
@@ -77,6 +80,20 @@ const mapStyle = computed<Record<string, string>>(() => {
     style[`--province-${row.id}`] = painted.value ? partyInk(row.party) : '#a6a6a6';
   }
   return style;
+});
+
+watch([mapSvg, provinces], async () => {
+  await nextTick();
+  const svg = root.value?.querySelector('svg');
+  if (!svg) return;
+  for (const province of provinces.value) {
+    const node = svg.querySelector<SVGElement>(`#${province.id}`);
+    if (!node) continue;
+    const term = partyTerm(province.party);
+    if (term) node.setAttribute('data-term', term.id);
+    else node.removeAttribute('data-term');
+    node.classList.toggle('term-hoverable', !!term?.tooltip);
+  }
 });
 
 function choose(province: string): void {
@@ -115,8 +132,10 @@ onMounted(async () => {
 
 <template>
   <div
+    ref="root"
     class="poll-map"
     :class="{ 'poll-map-full': full, 'poll-map-blank': !painted }"
+    :data-layout="layout || 'stacked'"
     :style="mapStyle"
     data-test="poll-map"
     :data-variant="variant || 'full'"
@@ -157,7 +176,7 @@ onMounted(async () => {
                   scope="col"
                   :class="{ yours: party.id === q.player_party }"
                   :style="{ color: partyInk(party.id) }"
-                >{{ party.label }}</th>
+                ><span :data-term="partyTerm(party.id)?.id" :class="{ 'term-hoverable': !!partyTerm(party.id)?.tooltip }">{{ party.label }}</span></th>
               </tr>
             </thead>
             <tbody>
@@ -183,7 +202,7 @@ onMounted(async () => {
               class="projection-column"
               :style="{ height: `${Math.max(3, row.share * 72)}px`, background: partyInk(row.party) }"
             />
-            <small>{{ row.label }}</small>
+            <small><span :data-term="partyTerm(row.party)?.id" :class="{ 'term-hoverable': !!partyTerm(row.party)?.tooltip }">{{ row.label }}</span></small>
           </div>
         </div>
       </section>
@@ -193,6 +212,12 @@ onMounted(async () => {
 
 <style scoped>
 .poll-map { color: #2e2a22; }
+.poll-map[data-layout='wide'] { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 14px; align-items: start; }
+.poll-map[data-layout='wide'] .map-shell { grid-column: 1; grid-row: 1 / 5; height: auto; min-height: 200px; aspect-ratio: 1.25; }
+.poll-map[data-layout='wide'] .province-tabs,
+.poll-map[data-layout='wide'] .province-caption,
+.poll-map[data-layout='wide'] .poll-section { grid-column: 2; }
+@media (max-width: 540px) { .poll-map[data-layout='wide'] { display: block; } }
 .map-shell {
   width: 100%;
   height: 155px;

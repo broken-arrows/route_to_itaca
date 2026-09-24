@@ -8,7 +8,7 @@ const props = defineProps<{
   institution: 'generalitat' | 'gobierno' | 'ajuntament';
   parties: string[];
   summary: string;
-  anchor: HTMLElement | null;
+  anchor: Element | null;
   accent?: string;
 }>();
 
@@ -18,7 +18,7 @@ const TITLES = {
   ajuntament: 'Ajuntament de Barcelona',
 } as const;
 
-const reference = ref<HTMLElement | null>(null);
+const reference = ref<Element | null>(null);
 const floating = ref<HTMLElement | null>(null);
 watch(() => props.anchor, (el) => { reference.value = el; }, { immediate: true });
 

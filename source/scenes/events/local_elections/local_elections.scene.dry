@@ -217,7 +217,7 @@ title: Catalonia is not only Barcelona, though
 
 = Local Election Results
 
-{! <div id="catalonia-local-map"> </div> !}
+{! <div id="catalonia-local-map" data-widget="local-results-map"> </div> !}
 
 **Red belt holdings**
 

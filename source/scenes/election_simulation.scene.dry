@@ -2750,7 +2750,7 @@ Q.election_simulation_parlament_hemicycle = {
 
 **Results by Constituency**
 
-{!<div id="cat-polls-widget-wide" style="margin-top: -2em"></div>!}
+{!<div id="cat-polls-widget-wide" data-widget="parlament-results-map" style="margin-top: -2em"></div>!}
 
 **Government Formation**
 
@@ -3115,7 +3115,7 @@ Q.election_simulation_congreso_hemicycle = {
 
 **Results by constituency**
 
-{!<div id="congreso-map-widget" style="width: 95%; margin: 0 auto;"></div>!}
+{!<div id="congreso-map-widget" data-widget="congreso-results-map" style="width: 95%; margin: 0 auto;"></div>!}
 
 Author's note: Congreso election simulations are more imperfect than Parlament ones, but the main goal of the in-game dynamic is to capture the general trends and the possible government formations, pacts, and deadlocks, which is mostly achieved.
 
@@ -3360,7 +3360,7 @@ on-arrival: {!
 
 = Local Election Results
 
-{! <div id="catalonia-local-map"> </div> !}
+{! <div id="catalonia-local-map" data-widget="local-results-map"> </div> !}
 
 **Red belt holdings**
 

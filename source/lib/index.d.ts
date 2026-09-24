@@ -15,6 +15,18 @@ export interface AllegianceEntry {
 }
 
 export interface GameLib {
+  congresoResultsMap(q: Record<string, unknown>): {
+    regions: Array<{ id: string; constituency: string; winner: string | null }>;
+    panels: Record<string, { name: string; seats: number; rows: Array<{ party: string; seats: number; support: number }> }>;
+  };
+  localResultsMap(q: Record<string, unknown>): {
+    winners: Record<string, string>;
+    cities: Array<{ name: string; id: string; winner: string | null }>;
+  };
+  congresoPartyTour(q: Record<string, unknown>): Array<{
+    id: string; viewed: boolean; highlighted: boolean; revealedByRest: boolean;
+    parties: string[]; aragon: boolean;
+  }>;
   buildParlamentCorruptionTransfers(
     Q: Record<string, unknown>,
     context: { carriers: Record<string, string>; support: Record<string, number>; responsibility?: Record<string, number> },

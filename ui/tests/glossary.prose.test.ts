@@ -79,6 +79,13 @@ describe('Prose', () => {
     document.body.innerHTML = ''; // teleported popovers land on the real body
   });
 
+  it('opens the shared glossary tooltip from an SVG map marker', async () => {
+    const wrapper = mountProse('<svg><circle data-term="erc" cx="10" cy="10" r="5" /></svg>');
+    await wrapper.get('circle').trigger('mouseover');
+    expect(document.querySelector('[data-test="glossary-popover"]')?.textContent).toContain('Republican Left');
+    wrapper.unmount();
+  });
+
   // Prose.vue has TWO root nodes (the prose div + the conditional popover),
   // so Vue does not auto-forward a caller's class the way a single-root SFC
   // would — every current call site passes its own layout class

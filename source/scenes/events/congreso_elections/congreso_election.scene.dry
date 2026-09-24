@@ -386,7 +386,7 @@ on-display: {!
 
 **Results by constituency**
 
-{!<div id="congreso-map-widget" style="width: 95%; margin: 0 auto;"></div>!}
+{!<div id="congreso-map-widget" data-widget="congreso-results-map" style="width: 95%; margin: 0 auto;"></div>!}
 
 **Party support trend**
 

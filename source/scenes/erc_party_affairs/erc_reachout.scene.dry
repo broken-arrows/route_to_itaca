@@ -26,7 +26,7 @@ role: card-party
 
 Across the Spanish state, many share in our struggle. Be others also fighting for independence or, more broadly, for decentralization and republicanism, we're hardly alone. It's always a good idea to reach out and help each other.
 
-{!<div id="congreso-party-tour-widget" style="width: 95%; margin: 0 auto;"></div>!}
+{!<div id="congreso-party-tour-widget" data-widget="congreso-party-tour" style="width: 95%; margin: 0 auto;"></div>!}
 
 - @bng_reach
 - @pnv_reach

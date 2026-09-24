@@ -51,7 +51,7 @@ go-to: jumpScene
 
 = Who's running for the Congreso?
 
-{!<div id="congreso-party-tour-widget" style="width: 95%; margin: 0 auto;"></div>!}
+{!<div id="congreso-party-tour-widget" data-widget="congreso-party-tour" style="width: 95%; margin: 0 auto;"></div>!}
 
 @choices
 

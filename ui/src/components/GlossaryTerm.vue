@@ -23,14 +23,14 @@ import '../styles/tooltips.css';
 
 const props = defineProps<{
   termId: string;
-  anchor: HTMLElement | null;
+  anchor: Element | null;
 }>();
 
 const { t } = useI18n();
 const game = useGameStore();
 const { termFor, colourValue, allegiancesFor } = useGlossary();
 
-const reference = ref<HTMLElement | null>(null);
+const reference = ref<Element | null>(null);
 const floating = ref<HTMLElement | null>(null);
 watch(() => props.anchor, (el) => { reference.value = el; }, { immediate: true });
 

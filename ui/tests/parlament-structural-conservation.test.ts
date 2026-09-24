@@ -17,7 +17,7 @@ describe('structural-event electorate accounting', () => {
     const q: Record<string, any> = {
       parties, parlament_constituencies: ['girona'], parlament_demographics: demographics,
       parlament_current_ciu: 'cdc', cdc_parlament_s: 50, icv_parlament_s: 10,
-      fnc_formed: true, pxc_dissolved: true,
+      fnc_formed: true, pxc_dissolved: true, countdowns: [],
     };
     for (const d of demographics) {
       for (const p of [...parties, 'abstain']) q[key(p, d)] = 0;

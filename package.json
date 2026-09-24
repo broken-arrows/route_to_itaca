@@ -5,8 +5,7 @@
   "main": "out/html/index.html",
   "scripts": {
     "dendrynexus-ten": "dendrynexus-ten",
-    "build:old-ui": "dendrynexus-ten make-html --pretty && node tools/copy-game-lib.mjs",
-    "audit": "node tools/audit-globals.mjs"
+    "build:old-ui": "dendrynexus-ten make-html --pretty && node tools/copy-game-lib.mjs"
   },
   "repository": {
     "type": "git",

@@ -37,6 +37,10 @@ export const WIDGET_NAMES = [
   "chamber-vote",
   "law-grid",
   "roadmaps",
+  "parlament-results-map",
+  "congreso-results-map",
+  "local-results-map",
+  "congreso-party-tour",
 ];
 
 /**

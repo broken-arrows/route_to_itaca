@@ -122,14 +122,11 @@ on-arrival: {!
         Q.parlament_referendum_abst += ciu_abst;
         Q.parlament_referendum_no += ciu_no;
         add_if_seated(abstain_parties, "CiU", Q.ciu_parlament_s, ciu_abst);
-        add_if_seated(abstain_parties, "CiU", Q.ciu_parlament_s, ciu_no);
-    } 
-
-    if (Q[Q.parlament_current_ciu + "_roadmap"] > 1 && !(Q.jxsi_formed && !Q.jxsi_dissolved) && !(Q.jxcat_formed && !Q.jxcat_dissolved)) {
+        add_if_seated(no_parties, "CiU", Q.ciu_parlament_s, ciu_no);
+    } else if (Q[Q.parlament_current_ciu + "_roadmap"] > 1 && !(Q.jxsi_formed && !Q.jxsi_dissolved) && !(Q.jxcat_formed && !Q.jxcat_dissolved)) {
         Q.parlament_referendum_yes += Q[Q.parlament_current_ciu + "_parlament_s"];
         add_if_seated(yes_parties, Q.parlament_current_ciu, Q[Q.parlament_current_ciu + "_parlament_s"]);
-    }
-    if (Q[Q.parlament_current_ciu + "_roadmap"] <= 1 && !(Q.jxsi_formed && !Q.jxsi_dissolved) && !(Q.jxcat_formed && !Q.jxcat_dissolved)) {
+    } else if (Q[Q.parlament_current_ciu + "_roadmap"] <= 1 && !(Q.jxsi_formed && !Q.jxsi_dissolved) && !(Q.jxcat_formed && !Q.jxcat_dissolved)) {
         add_if_seated(abstain_parties, Q.parlament_current_ciu, Q[Q.parlament_current_ciu + "_parlament_s"]);
         Q.parlament_referendum_abst += Q[Q.parlament_current_ciu + "_parlament_s"];
     }
@@ -179,14 +176,14 @@ on-arrival: {!
 
     if (Q.ciu_parlament_s > 0 || (Q.erc_roadmap <= 1 && Q.erc_parlament_s > 0)) {
         Q.parlament_referendum_no += Q.ppc_parlament_s + Q.cs_parlament_s + Q.vox_parlament_s;
-        add_if_seated(no_parties, "Cs", Q.ppc_parlament_s);
+        add_if_seated(no_parties, "Cs", Q.cs_parlament_s);
         add_if_seated(no_parties, "PPC", Q.ppc_parlament_s);
-        add_if_seated(no_parties, "Vox", Q.ppc_parlament_s);
+        add_if_seated(no_parties, "Vox", Q.vox_parlament_s);
     } else {
         Q.parlament_referendum_notpresent += Q.ppc_parlament_s + Q.cs_parlament_s + Q.vox_parlament_s;
-        add_if_seated(not_present_parties, "Cs", Q.ppc_parlament_s);
+        add_if_seated(not_present_parties, "Cs", Q.cs_parlament_s);
         add_if_seated(not_present_parties, "PPC", Q.ppc_parlament_s);
-        add_if_seated(not_present_parties, "Vox", Q.ppc_parlament_s);
+        add_if_seated(not_present_parties, "Vox", Q.vox_parlament_s);
     }
     add_if_seated(no_parties, "PxC", Q.pxc_parlament_s);
 
@@ -222,8 +219,9 @@ on-arrival: {!
     if (Q.parlament_referendum_yes > Q.parlament_referendum_no) {
         Q.parlament_referendum_law = true;
         G.registerLaw(Q, {id:"referendum_law",title:"Law on the Referendum ",icon:"img/government_icon.svg", targets:{independence_movement: 0.2, independence_trust: 0.1}});
+        Q.burdens_done += 1;
     } else {
-        Q.parlament_referendum_law = true;
+        Q.parlament_referendum_law = false;
         Q.independence_trust -= 10;
     }
     Q.coming_from_parlament = false;
@@ -233,7 +231,7 @@ on-arrival: {!
 
 [? if parlament_referendum_law: After a marathon-legth session of the Parlament[? if parlament_referendum_notpresent > 0: , and with opposition parties leaving half-way, refusing to even partake in the final vote,?] the Law on the Referendum has been passed! ?][? if not parlament_referendum_law: It seems like, despite all our efforts, the Law on the Referendum will not come to be, at least this time around. ?][? if ciu_parlament_s > 0: Even if unusal, there has been a rather predicatble split in the CiU vote, where CDC has abstained while UDC has voted against it. ?]
 
-The session has been intense to say the least, with oposition parties fuming at even such a debate even being allowed. Speaker of the House [+ speaker +] has been the one to receive most of that hate after allowing an alteration to the agenda to include the vote[? if speaker_gender = "f" : , including very nasty mysoginistic comments against her?]. [? if parlament_referendum_law and ((csqp_parlament_s > 0 and csqp_leader != "Arcadi Oliveres") or (cecp_parlament_s > 0 and cecp_leader != "Arcadi Oliveres") or ecp_parlament_s > 0): [+ parlament_current_icv +] has also had their stellar moment when Joan Coscubiela has equated the vote to outright vote fraud.?] All in all, not the brightest day for the Parlament.
+The session has been intense to say the least, with oposition parties fuming at even such a debate even being allowed. Speaker of the House [+ speaker +] has been the one to receive most of that hate after allowing an alteration to the agenda to include the vote[? if speaker_gender = "f" : , including very nasty mysoginistic comments against her?]. [? if parlament_referendum_law and ((csqp_parlament_s > 0 and csqp_leader != "Arcadi Oliveres") or (cecp_parlament_s > 0 and cecp_leader != "Arcadi Oliveres") or ecp_parlament_s > 0 or icv_parlament_s > 0): [+ parlament_current_icv +] has also had their stellar moment when Joan Coscubiela has equated the vote to outright vote fraud.?] All in all, not the brightest day for the Parlament.
 
 - @next_law
 - @try_again
@@ -300,14 +298,11 @@ on-arrival: {!
         Q.parlament_disconnection_abst += ciu_abst;
         Q.parlament_disconnection_no += ciu_no;
         add_if_seated(abstain_parties, "CiU", Q.ciu_parlament_s, ciu_abst);
-        add_if_seated(abstain_parties, "CiU", Q.ciu_parlament_s, ciu_no);
-    } 
-
-    if (Q[Q.parlament_current_ciu + "_roadmap"] > 1 && !(Q.jxsi_formed && !Q.jxsi_dissolved) && !(Q.jxcat_formed && !Q.jxcat_dissolved)) {
+        add_if_seated(no_parties, "CiU", Q.ciu_parlament_s, ciu_no);
+    } else if (Q[Q.parlament_current_ciu + "_roadmap"] > 1 && !(Q.jxsi_formed && !Q.jxsi_dissolved) && !(Q.jxcat_formed && !Q.jxcat_dissolved)) {
         Q.parlament_disconnection_yes += Q[Q.parlament_current_ciu + "_parlament_s"];
         add_if_seated(yes_parties, Q.parlament_current_ciu, Q[Q.parlament_current_ciu + "_parlament_s"]);
-    }
-    if (Q[Q.parlament_current_ciu + "_roadmap"] <= 1 && !(Q.jxsi_formed && !Q.jxsi_dissolved) && !(Q.jxcat_formed && !Q.jxcat_dissolved)) {
+    } else if (Q[Q.parlament_current_ciu + "_roadmap"] <= 1 && !(Q.jxsi_formed && !Q.jxsi_dissolved) && !(Q.jxcat_formed && !Q.jxcat_dissolved)) {
         add_if_seated(abstain_parties, Q.parlament_current_ciu, Q[Q.parlament_current_ciu + "_parlament_s"]);
         Q.parlament_disconnection_abst += Q[Q.parlament_current_ciu + "_parlament_s"];
     }
@@ -359,9 +354,9 @@ on-arrival: {!
 
 
     Q.parlament_disconnection_notpresent += Q.ppc_parlament_s + Q.cs_parlament_s + Q.vox_parlament_s;
-    add_if_seated(not_present_parties, "Cs", Q.ppc_parlament_s);
+    add_if_seated(not_present_parties, "Cs", Q.cs_parlament_s);
     add_if_seated(not_present_parties, "PPC", Q.ppc_parlament_s);
-    add_if_seated(not_present_parties, "Vox", Q.ppc_parlament_s);
+    add_if_seated(not_present_parties, "Vox", Q.vox_parlament_s);
 
     add_if_seated(no_parties, "PxC", Q.pxc_parlament_s);
 
@@ -396,6 +391,7 @@ on-arrival: {!
 
     if (Q.parlament_disconnection_yes > Q.parlament_disconnection_no) {
         Q.parlament_disconnection_law = true;
+        Q.burdens_done += 1;
         G.registerLaw(Q, {id:"transition_law",title:"Law of Juridical Transition",icon:"img/scales_icon.svg", targets:{independence_movement: 0.2, independence_trust: 0.1, cat_spa_relations: -0.1}});
     } else {
         Q.parlament_disconnection_law = false;

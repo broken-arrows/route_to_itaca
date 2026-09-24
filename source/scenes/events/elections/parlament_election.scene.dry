@@ -288,7 +288,7 @@ go-to: coalitions if not game_over_trigger; game_lost_on_election if game_over_t
 
 **Results by Constituency**
 
-{!<div id="cat-polls-widget-wide" style="margin-top: -2em"></div>!}
+{!<div id="cat-polls-widget-wide" data-widget="parlament-results-map" style="margin-top: -2em"></div>!}
 
 **Party support trends**
 

@@ -15,14 +15,9 @@
  * all of them on every page was always a bunch of silent no-ops; that part
  * of the shape is preserved here, just centralised.
  *
- * A few widget divs predate the protocol and are not yet dual-marked with
- * `data-widget`: the wide poll map
- * (#cat-polls-widget-wide), the local results map (#catalonia-local-map),
- * the Congreso map (#congreso-map-widget) and the Congreso party tour
- * (#congreso-party-tour-widget). They are still mounted here, by their
- * legacy id, so this file remains the ONE place old-shell pages wire up a
- * visualisation — consolidating what used to be scattered across game.js —
- * without silently dropping functionality this task didn't ask it to change.
+ * Older compiled content can still contain unmarked map or party-tour divs.
+ * The legacy-id fallback below mounts those only when they have no marker,
+ * so marked content is rendered once through the named handler.
  */
 (function () {
   "use strict";
@@ -418,6 +413,18 @@
     "poll-map": function (el, Q) {
       initCataloniaPolls(el.id, Q, el.id === "cat-polls-widget-wide");
     },
+    "parlament-results-map": function (el, Q) {
+      initCataloniaPolls(el.id, Q, true);
+    },
+    "local-results-map": function (el, Q) {
+      initCatLocalMap(el.id, Q);
+    },
+    "congreso-results-map": function (el, Q) {
+      initCongresoMap(el.id, Q);
+    },
+    "congreso-party-tour": function (el, Q) {
+      initCongresoPartyTour(el.id, Q);
+    },
     "achievement-gallery": function (el, Q) {
       var props = readDataProps(el);
       var scope = props.scope === "playthrough" ? "playthrough" : "ever";
@@ -487,20 +494,12 @@
     },
   };
 
-  // Legacy (not-yet-declared) widget ids — see header comment.
+  // Preserve rendering of older compiled content with unmarked placeholders.
   var LEGACY_IDS = [
-    function (Q) {
-      initCataloniaPolls("cat-polls-widget-wide", Q, true);
-    },
-    function (Q) {
-      initCatLocalMap("catalonia-local-map", Q);
-    },
-    function (Q) {
-      initCongresoMap("congreso-map-widget", Q);
-    },
-    function (Q) {
-      initCongresoPartyTour("congreso-party-tour-widget", Q);
-    },
+    { id: "cat-polls-widget-wide", handler: "parlament-results-map" },
+    { id: "catalonia-local-map", handler: "local-results-map" },
+    { id: "congreso-map-widget", handler: "congreso-results-map" },
+    { id: "congreso-party-tour-widget", handler: "congreso-party-tour" },
   ];
 
   // Shared explicit handlers resolve their data here. Desk-only Brief widgets
@@ -538,7 +537,11 @@
       handler(el, Q);
     }
     for (var j = 0; j < LEGACY_IDS.length; j++) {
-      LEGACY_IDS[j](Q);
+      var legacy = LEGACY_IDS[j];
+      var unmarked = document.getElementById(legacy.id);
+      if (unmarked && !unmarked.hasAttribute("data-widget")) {
+        HANDLERS[legacy.handler](unmarked, Q);
+      }
     }
   };
 })();

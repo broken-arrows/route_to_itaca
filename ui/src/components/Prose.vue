@@ -45,7 +45,7 @@ const activeTermId = ref<string | null>(null);
 type Institution = 'generalitat' | 'gobierno' | 'ajuntament';
 interface CoalitionTip { institution: Institution; parties: string[]; summary: string; accent?: string }
 const activeCoalition = ref<CoalitionTip | null>(null);
-const activeAnchor = ref<HTMLElement | null>(null);
+const activeAnchor = ref<Element | null>(null);
 
 function closeTip(): void {
   activeTermId.value = null;
@@ -120,9 +120,9 @@ function mountWidgets(): void {
   }
 }
 
-function findTermEl(target: EventTarget | null): HTMLElement | null {
-  if (!(target instanceof HTMLElement)) return null;
-  const el = target.closest<HTMLElement>('[data-term]');
+function findTermEl(target: EventTarget | null): Element | null {
+  if (!(target instanceof Element)) return null;
+  const el = target.closest('[data-term]');
   return el && root.value?.contains(el) ? el : null;
 }
 
@@ -159,7 +159,7 @@ function coalitionFor(el: HTMLElement): CoalitionTip | null {
 function onOver(e: MouseEvent): void {
   const el = findTermEl(e.target);
   if (el) {
-    const term = termFor(el.dataset.term);
+    const term = termFor(el.getAttribute('data-term'));
     if (!term?.tooltip || activeAnchor.value === el) return;
     activeCoalition.value = null;
     activeTermId.value = term.id;

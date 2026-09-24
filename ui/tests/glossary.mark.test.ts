@@ -22,6 +22,13 @@ describe('markGlossary', () => {
     expect(markGlossary('<img alt="ERC">', TERMS)).toBe('<img alt="ERC">');
   });
 
+  it('keeps an opening tag fragment opaque across an interpolated attribute', () => {
+    const fragment = 'CiU forms a <span class="generalitat-coalition" data-parties="ciu" data-summary="Minority - ';
+    expect(markGlossary(fragment, TERMS)).toBe(
+      '<span class="term" data-term="ciu">CiU</span> forms a <span class="generalitat-coalition" data-parties="ciu" data-summary="Minority - ',
+    );
+  });
+
   it('marks visible text inside ordinary spans and strongs', () => {
     expect(markGlossary('<span style="color:red">ERC</span>', TERMS)).toBe(
       '<span style="color:red"><span class="term" data-term="erc">ERC</span></span>',

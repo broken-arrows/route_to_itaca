@@ -11,6 +11,10 @@ import Trail from './Trail.vue';
 import PollMap from './PollMap.vue';
 import ChamberVote from './ChamberVote.vue';
 import Coalitions from './Coalitions.vue';
+import ParlamentResultsMap from './ParlamentResultsMap.vue';
+import CongresoResultsMap from './CongresoResultsMap.vue';
+import LocalResultsMap from './LocalResultsMap.vue';
+import CongresoPartyTour from './CongresoPartyTour.vue';
 
 export type WidgetName = (typeof WIDGET_NAMES)[number];
 
@@ -31,4 +35,8 @@ export const WIDGETS: Partial<Record<WidgetName, Component>> = {
   'poll-map': PollMap,
   'chamber-vote': ChamberVote,
   coalitions: Coalitions,
+  'parlament-results-map': ParlamentResultsMap,
+  'congreso-results-map': CongresoResultsMap,
+  'local-results-map': LocalResultsMap,
+  'congreso-party-tour': CongresoPartyTour,
 };

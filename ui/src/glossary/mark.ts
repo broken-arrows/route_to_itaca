@@ -36,8 +36,11 @@ const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // Ordinary authored elements are transparent: their visible text still belongs
 // to the glossary, while their attributes never do. Only a marker we emitted
 // ourselves is opaque, which keeps repeated marking idempotent without making
-// presentational <span>/<strong> wrappers disable glossary coverage.
-const SEGMENTS = /(<span\b(?=[^>]*\bdata-term\s*=)[^>]*>.*?<\/span>|<[^>]+>|[^<]+)/gis;
+// presentational <span>/<strong> wrappers disable glossary coverage. Dendry
+// can call displayText on a fragment that ends halfway through an opening tag
+// (for example before an interpolated data-summary value); that tail is still
+// markup, so it must stay opaque even though it has no closing `>` yet.
+const SEGMENTS = /(<span\b(?=[^>]*\bdata-term\s*=)[^>]*>.*?<\/span>|<[^>]+>|<[A-Za-z/][^>]*$|[^<]+)/gis;
 
 // Unicode-aware word boundary. `\b` is ASCII-only in JS: a match word that
 // starts or ends with an accented letter ("Àngel Ros", "JxSí", "BComú") or

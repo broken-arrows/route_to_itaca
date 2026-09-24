@@ -11,9 +11,19 @@ role: card-gov
 
 = Ministry of Territory
 
-Something something (TODO)
+The Minsitry of the Territory handles all Generalitat-operated infrastructure, from railways to highways and ports, as well as having dedicated Departments 
 
-TODO: how do these work in jxsi / jxcat cases?
+- @urban_development
+- @agriculture
+- @infrastructure
+- @post_event: We don't want to do anything in this ministry at the moment
+- @easy_discard
 
--@post_event: Ah yes!
--@easy_discard
+@urban_development
+title: a
+
+@agriculture
+title: b
+
+@infrastructure
+title: c

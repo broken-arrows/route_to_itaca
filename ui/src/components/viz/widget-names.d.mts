@@ -11,4 +11,8 @@ export declare const WIDGET_NAMES: readonly [
   'trail',
   'chamber-vote',
   'law-grid',
+  'parlament-results-map',
+  'congreso-results-map',
+  'local-results-map',
+  'congreso-party-tour',
 ];
