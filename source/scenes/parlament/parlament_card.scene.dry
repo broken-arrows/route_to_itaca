@@ -318,6 +318,7 @@ subtitle: Ensuring government stability may be more important at this moment
 
 **Generalitat's Budget**
 
-[Text - TODO]
+Without an approved budget for the year, the Generalitat can only operate on "extended" budgets, based on the latest approved one, which currently dates of [+ budget_year +]. This greatly limits what the current [+ cat_coalition_disp +] can do.
 
+- @parlament_budget: Get the budget negotiations started!
 - @parlament_options: Let us consider other options

@@ -371,6 +371,9 @@ if (Q.spanish_pm == "Pedro Sánchez") {
 if (Q.congreso_coalition_sorpasso && (Q.spanish_pm_party == "podemos" || Q.spanish_pm_party == "up")) {
     this.achieve('asalto_cielos');
 }
+if (Q.year + 1 > Q.budget_year) {
+    Q.not_financially_responsible = true;
+}
 
 // 5. Hidden triggers
 if (Q.broken_roadmap_expires_trigger) {

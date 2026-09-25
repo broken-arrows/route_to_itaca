@@ -97,12 +97,12 @@ on-arrival: {!
             Q[competenceDonor + "_parlament_" + c + "_buss_support"] -= passageBusiness;
         }
         if (complete) {
-            G.registerLaw(Q, {id:"civil_code_book_six_core",title:"Civil Code: Book Six",group:"government",icon:"img/scales_icon.svg",targets:{gdp_growth:0.03,generalitat_surplus:-0.001},ramp_ticks:9});
+            G.registerLaw(Q, {id:"civil_code_book_six_core",colour:"green",description:"Catalan Civil Law has now one of the most modern approaches in Europe.",title:"Civil Code: Book Six",group:"government",icon:"img/scales_icon.svg",targets:{gdp_growth:0.03,generalitat_surplus:-0.001},ramp_ticks:9});
             G.registerLaw(Q, {id:"civil_code_book_six_contested_rule",title:"Book Six Contested Provision",targets:{gdp_growth:0.01},ramp_ticks:9}); 
             Q.constitutional_civil_law_countdown = 24;
             if (!Q.countdowns.includes("constitutional_civil_law")) Q.countdowns.push("constitutional_civil_law");
         } else {
-            G.registerLaw(Q, {id:"civil_code_consolidation",title:"Civil Code: Traditional Book Six",group:"government",icon:"img/scales_icon.svg",targets:{gdp_growth:0.02},ramp_ticks:6});
+            G.registerLaw(Q, {id:"civil_code_consolidation",colour:"green",description:"Catalan Civil Law has taken the traditional approach when it comes to contracts and obligations.",title:"Civil Code: Traditional Book Six",group:"government",icon:"img/scales_icon.svg",targets:{gdp_growth:0.02},ramp_ticks:6});
         }
         Q.burdens_done += 1;
     }

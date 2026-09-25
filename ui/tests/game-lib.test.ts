@@ -31,29 +31,77 @@ describe('source/lib', () => {
       .toContain('data-summary="18/21 &amp; &quot;stable&quot;"');
   });
 
-  it('derives display-ready law rows and hides expired laws', () => {
+  it('derives display-ready law rows and hides flagged laws', () => {
     const rows = gameLib.getLawsForUI({
       active_mods: {
         digital_agency_core: {
-          def: { id: 'digital_agency_core' },
-          status: 'active',
+          def: {
+            id: 'digital_agency_core', colour: 'green',
+            description: 'Coordinates cybersecurity.',
+          },
+          active: true,
+          hidden: false,
           ticks_active: 2,
           live_effect: { gdp_growth: 0.01 },
         },
         vacant_homes_tax: {
-          def: { id: 'vacant_homes_tax' },
-          status: 'repealed',
+          def: {
+            id: 'vacant_homes_tax', colour: 'green',
+            description: 'Taxes vacant homes.',
+          },
+          active: false,
+          hidden: false,
+          colour: 'red',
           ticks_active: 10,
           live_effect: {},
         },
         old_measure: {
           def: { id: 'old_measure' },
-          status: 'expired',
+          active: false,
+          hidden: true,
           ticks_active: 12,
           live_effect: {},
         },
       },
     });
+    expect(rows.map((row) => row.id)).toEqual(['digital_agency_core', 'vacant_homes_tax']);
+    expect(rows.map((row) => [row.colour, row.description])).toEqual([
+      ['green', 'Coordinates cybersecurity.'],
+      ['red', 'Taxes vacant homes.'],
+    ]);
+  });
+
+  it('keeps authored display data separate from law lifecycle and targets', () => {
+    const laws = gameLib as any;
+    const q: Record<string, any> = { year: 2015, month: 4 };
+    const targets = { gdp_growth: 0.03 };
+    laws.registerLaw(q, {
+      id: 'civil_code', title: 'Civil Code', icon: 'img/scales_icon.svg',
+      colour: 'green', description: 'Updates civil law.', targets,
+    });
+    expect(laws.getLawsForUI(q)[0]).toMatchObject({
+      colour: 'green', description: 'Updates civil law.',
+    });
+    expect(q.active_mods.civil_code.active).toBe(true);
+
+    laws.deactivateLaw(q, 'civil_code', 'The courts and Parlament disagree on its status.', false, 'orange');
+    expect(laws.getLawsForUI(q)[0]).toMatchObject({
+      colour: 'orange',
+      description: 'The courts and Parlament disagree on its status.',
+    });
+    expect(q.active_mods.civil_code.active).toBe(false);
+    expect(q.active_mods.civil_code.hidden).toBe(false);
+    expect(q.active_mods.civil_code.def.colour).toBe('green');
+    expect(q.active_mods.civil_code.def.targets).toBe(targets);
+    expect(q.mod_log.map((entry: { action: string }) => entry.action)).toEqual(['enacted', 'deactivated']);
+
+    laws.registerLaw(q, {
+      id: 'temporary', title: 'Temporary law', icon: 'img/scales_icon.svg',
+      colour: 'green', description: 'A temporary measure.', targets: { gdp_growth: 0.01 },
+    });
+    laws.deactivateLaw(q, 'temporary', undefined, true);
+    expect(q.active_mods.temporary).toMatchObject({ active: false, hidden: true });
+    expect(laws.getLawsForUI(q).map((row: { id: string }) => row.id)).toEqual(['civil_code']);
   });
 
   it('is DOM-free — that is the only reason it can be shared', () => {

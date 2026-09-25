@@ -115,8 +115,9 @@ export interface GameLib {
   getLawsForUI(q: Record<string, unknown>): Array<{
     id: string;
     title: string;
-    icon: string;
-    status: 'active' | 'repealed' | 'disputed' | 'imposed' | 'struck_down';
+    icon?: string;
+    colour?: 'gray' | 'orange' | 'red' | 'green';
+    description?: string;
     ticks_active: number;
     effects: Record<string, number>;
   }>;

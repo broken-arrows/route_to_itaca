@@ -4,26 +4,144 @@ view-if: generalitat_territory_timer <= 0 and (territory_minister_party == playe
 on-arrival: month_actions += 1; generalitat_territory_timer += 3;
 is-card: true
 card-image: img/territory_icon.svg
-face-image: img/territory_icon.svg
 frequency: 100
 tags: generalitat
+go-to: territory_choices
 role: card-gov
+
+@territory_choices
+new-page: true
+face-image: img/territory_icon.svg
 
 = Ministry of Territory
 
-The Minsitry of the Territory handles all Generalitat-operated infrastructure, from railways to highways and ports, as well as having dedicated Departments 
+The Minsitry of the Territory handles all Generalitat-operated infrastructure, from railways to highways and ports, as well as having dedicated Departments for the primary sector, urban planning, housing, etc.
 
+- @state
 - @urban_development
 - @agriculture
 - @infrastructure
 - @post_event: We don't want to do anything in this ministry at the moment
 - @easy_discard
 
+@state
+title: Establish state structure
+view-if: 1=0
+
+WIP! TODO?
+
 @urban_development
-title: a
+title: Urban Planning and Housing
+
+- @territory_choices: Let's have a look at another department instead
 
 @agriculture
-title: b
+title: Agriculture, Livestock, and Fishing
+
+- @territory_choices: Let's have a look at another department instead
 
 @infrastructure
-title: c
+title: Infrastructure and Mobility
+
+- @roads1
+- @roads2
+- @roads3
+- @metro1
+- @metro2
+- @metro3
+- @rail1
+- @rail2
+- @rail3
+- @territory_choices: Let's have a look at another department instead
+
+@roads1
+title: Work on removing tool roads
+subtitle: Tolls in Catalonia have been remarkably more extensive and expensive than in Spain for a while now. \[-1 budget \]
+choose-if: government_budget > 0
+view-if: not territory_roads or territory_roads < 1
+unavailable-subtitle: Not enough government budget.
+on-arrival: {!
+    Q.territory_roads = 1;
+    Q.government_budget -= 1;
+    Q.burdens_done += 1;
+    G.registerLaw(Q, {id:"toll_free_roads",colour:"green",description:"All Generalitat-administered roads and highways are toll-free.",title:"Toll-free roads",icon:"img/car_icon.svg",targets:{gdp_growth:0.01,generalitat_surplus:-0.02,welfare_index_growth:-0.01}});
+
+    // Vote transfers
+    var target = Q.player_party;
+    var targetLocal = Q.player_party;
+    if (Q.player_in_jxsi) {
+        target = "jxsi";
+        if (Q.jxsi_in_local) {
+            targetLocal = "jxsi";
+        }
+    } else if (Q.player_in_jxcat) {
+        if (Q.jxcat_in_local) {
+            targetLocal = "jxcat";
+        }
+    }
+    
+    Q[targetLocal + "_interior_mod"] += 5;
+!}
+
+While some private concessions, and some state-administered roads are beyond our capabilities to change, we have invested heavily on removing tolls where we have been able to. This has ended up including the long-time demanded removal of the tolls in the AP-7 highway, one of the main arteries of our country. 
+
+@roads2
+title: Expand and duplicate county roads
+subtitle: Including links considered critical like the C-17 Vic-Ripoll and the A-27 Valls-Montblanc. \[-1 budget\]
+view-if: territory_roads >= 1 and territory_roads_budgeted = 0
+choose-if: government_budget > 0 and territory_roads_approved > 0
+unavailable-subtitle: [? if government_budget < 1 and territory_roads_budgeted = 0: Not enough budget. ?]
+on-arrival: {!
+    Q.territory_roads += 2;
+    G.registerLaw(Q, {id:"toll_free_roads",colour:"gray",description:"Pending budget approval: expansion of critical road links like the C-17 and the A-27.",title:"County roads expansion",icon:"img/car_icon.svg",targets:{generalitat_surplus:-0.005}});
+    
+    
+    // Vote transfers
+    var target = Q.player_party;
+    var targetLocal = Q.player_party;
+    if (Q.player_in_jxsi) {
+        target = "jxsi";
+        if (Q.jxsi_in_local) {
+            targetLocal = "jxsi";
+        }
+    } else if (Q.player_in_jxcat) {
+        if (Q.jxcat_in_local) {
+            targetLocal = "jxcat";
+        }
+    }
+    Q[targetLocal + "_interior_mod"] += 8;
+!}
+
+While construction will not be able to start until the Generalitat's budget is approved, we have already set in motion all the necessary studies to make the road expansion happen.
+
+@roads3
+title: Build the B-40 "Fourth Belt" highway
+subtitle: The final Barcelona-bypass highway may have been shelved away for too long. \[-2 budget\]
+view-if: territory_roads = 2
+choose-if: government_budget > 1 and player_party != "cup"
+unavailable-subtitle: Not enough budget.
+on-arrival: {!
+    Q.climate_transition_points -= 1;
+    this.achieve("one_more_lane");
+!}
+
+
+
+@metro1
+title: Metro
+
+@metro2
+title: Metro
+
+@metro3
+title: Metro
+
+@rail1
+title: Rail
+
+@rail2
+title: Rail
+
+@rail3
+title: Rail
+

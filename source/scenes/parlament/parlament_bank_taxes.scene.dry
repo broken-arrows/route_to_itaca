@@ -54,12 +54,12 @@ on-arrival: {!
     var author = proposingParty;
     var socialDonor = author == Q.parlament_current_icv ? "psc" : Q.parlament_current_icv;
     var backlash = Q.cs_parlament_s > 0 ? "cs" : "ppc";
-    var proposalUnemployed = demand ? 0.045 : 0.135;
-    var proposalYoung = demand ? 0.03 : 0.09;
-    var proposalMiddleGain = demand ? 0.015 : 0.045;
-    var proposalBusinessLoss = demand ? 0 : 0.12;
-    var proposalMiddleLoss = demand ? 0 : 0.054;
-    var proposalRetiredLoss = demand ? 0 : 0.03;
+    var proposalUnemployed = assets ? 0.045 : 0.135;
+    var proposalYoung = assets ? 0.03 : 0.09;
+    var proposalMiddleGain = assets ? 0.015 : 0.045;
+    var proposalBusinessLoss = assets ? 0 : 0.12;
+    var proposalMiddleLoss = assets ? 0 : 0.054;
+    var proposalRetiredLoss = assets ? 0 : 0.03;
     for (const c of Q.parlament_constituencies) {
         Q[author + "_parlament_" + c + "_unemployed_support"] += proposalUnemployed;
         Q[socialDonor + "_parlament_" + c + "_unemployed_support"] -= proposalUnemployed;
@@ -78,7 +78,7 @@ on-arrival: {!
     var yesNames = assets
         ? ["jxsi","jxcat","erc","cup","icv","csqp","cecp","ecp","si"]
         : ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","icv","csqp","cecp","ecp","unio","si"];
-    var noNames = demand
+    var noNames = assets
         ? ["ppc","vox","pxc","fnc"]
         : ["ppc","cs","vox","pxc","fnc"];
     if (playerProposal && !yesNames.includes(proposingParty)) yesNames.push(proposingParty);
@@ -132,9 +132,9 @@ on-arrival: {!
         }
 
         if (assets) {
-            G.registerLaw(Q, {id:"nonproductive_corporate_assets_tax",title:"Non-Productive Assets Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.04,gdp_growth:-0.02,welfare_index_growth:0.02,social_dissent_eq:-0.5},ramp_ticks:6});
+            G.registerLaw(Q, {id:"nonproductive_corporate_assets_tax",colour:"green",description:"Commercial entities get taxed also based on their \"non-productive\" assets.",title:"Non-Productive Assets Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.04,gdp_growth:-0.02,welfare_index_growth:0.02,social_dissent_eq:-0.5},ramp_ticks:6});
         } else {
-            G.registerLaw(Q, {id:"bank_deposit_tax", title: "Bank Deposits Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.08,gdp_growth:-0.04},ramp_ticks: 2});
+            G.registerLaw(Q, {id:"bank_deposit_tax",colour:"green",description:"Credit institutions pay an extra tax based on deposits held in Catalonia. ", title: "Bank Deposits Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.08,gdp_growth:-0.04},ramp_ticks: 2});
             Q.constitutional_bank_taxes_countdown = 24;
             if (!Q.countdowns.includes("constitutional_bank_taxes")) Q.countdowns.push("constitutional_bank_taxes");
         }

@@ -219,13 +219,15 @@ on-arrival: {!
             Q.climate_capacity = (Q.climate_capacity || 0) + 18;
             Q.climate_transition_mature = false;
             Q.climate_transition_contested_struck = false;
-            G.registerLaw(Q, {id:"climate_transition_core_initial",title:"Climate Transition Program",icon:"img/leaf_icon.svg",targets:{gdp_growth:-0.04,generalitat_surplus:-0.02,unemployment_recovery:0.015}});
-            G.registerLaw(Q, {id:"climate_binding_targets_initial",title:"Binding Climate Targets",icon:"img/leaf_icon.svg",targets:{gdp_growth:-0.06,generalitat_surplus:-0.01,unemployment_recovery:0.005}});
+            G.registerLaw(Q, {id:"climate_transition_core_initial",colour:"green",description:"A program to shift Catalonia toward a lower-emissions economy.",title:"Climate Transition Program",icon:"img/leaf_icon.svg",targets:{gdp_growth:-0.04,generalitat_surplus:-0.02,unemployment_recovery:0.015}});
+            G.registerLaw(Q, {id:"climate_binding_targets_initial",colour:"green",description:"Binding targets on GHG emissions have been set for operations happening in Catalonia.",title:"Binding Climate Targets",icon:"img/leaf_icon.svg",targets:{gdp_growth:-0.06,generalitat_surplus:-0.01,unemployment_recovery:0.005}});
             Q.climate_transition_matures_countdown = 12;
             if (!Q.countdowns.includes("climate_transition_matures")) Q.countdowns.push("climate_transition_matures");
+            Q.climate_transition_points += 2;
         } else {
             Q.climate_capacity = (Q.climate_capacity || 0) + 8;
-            G.registerLaw(Q, {id:"climate_carbon_budgets",title:"Catalan Carbon Budgets",icon:"img/leaf_icon.svg",targets:{gdp_growth:-0.02,generalitat_surplus:-0.015,welfare_index_growth:0.03},ramp_ticks:12});
+            G.registerLaw(Q, {id:"climate_carbon_budgets",colour:"green",description:"Carbon budgets have been set as a guide to future emissions reductions.",title:"Catalan Carbon Budgets",icon:"img/leaf_icon.svg",targets:{gdp_growth:-0.02,generalitat_surplus:-0.015,welfare_index_growth:0.03},ramp_ticks:12});
+            Q.climate_transition_points += 1;
         }
         Q.constitutional_climate_change_countdown = 24;
         if (!Q.countdowns.includes("constitutional_climate_change")) Q.countdowns.push("constitutional_climate_change");

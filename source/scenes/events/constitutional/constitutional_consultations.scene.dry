@@ -8,7 +8,7 @@ on-arrival: {!
     Q.cat_spa_relations -= 5;
     Q.independence_movement += 5;
 
-    G.deactivateLaw(Q, "consultations", "disputed");
+    G.deactivateLaw(Q, "consultations", "Disputed: the Constitutional Court and the Parlament have varying interpretations of this law's status.", false, "orange");
 
      // TODO: Change if constitutional reform happened
 !}

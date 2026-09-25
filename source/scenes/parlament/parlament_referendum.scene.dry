@@ -218,7 +218,7 @@ on-arrival: {!
 
     if (Q.parlament_referendum_yes > Q.parlament_referendum_no) {
         Q.parlament_referendum_law = true;
-        G.registerLaw(Q, {id:"referendum_law",title:"Law on the Referendum ",icon:"img/government_icon.svg", targets:{independence_movement: 0.2, independence_trust: 0.1}});
+        G.registerLaw(Q, {id:"referendum_law",colour:"green",description:"The legal framework for a binding Catalan independence referendum has been set.",title:"Law on the Referendum ",icon:"img/government_icon.svg", targets:{independence_movement: 0.2, independence_trust: 0.1}});
         Q.burdens_done += 1;
     } else {
         Q.parlament_referendum_law = false;
@@ -392,7 +392,7 @@ on-arrival: {!
     if (Q.parlament_disconnection_yes > Q.parlament_disconnection_no) {
         Q.parlament_disconnection_law = true;
         Q.burdens_done += 1;
-        G.registerLaw(Q, {id:"transition_law",title:"Law of Juridical Transition",icon:"img/scales_icon.svg", targets:{independence_movement: 0.2, independence_trust: 0.1, cat_spa_relations: -0.1}});
+        G.registerLaw(Q, {id:"transition_law",colour:"green",description:"A foundational law for guaranteeing a legal transition towards an independent Catalan state.",title:"Law of Juridical Transition",icon:"img/scales_icon.svg", targets:{independence_movement: 0.2, independence_trust: 0.1, cat_spa_relations: -0.1}});
     } else {
         Q.parlament_disconnection_law = false;
         Q.independence_trust -= 10;

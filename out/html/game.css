@@ -278,21 +278,22 @@ body.dark-mode {
   height: 2.5em;
   place-items: center;
   box-sizing: border-box;
-  border: 3px solid var(--law-status-color); 
+  border: 3px solid var(--law-colour);
   border-radius: 32px;
   background: var(--content-bg-color);                         
   cursor: help;
 }
-.law-grid__law--active {
-  --law-status-color: #008000;
+.law-grid__law--green {
+  --law-colour: #008000;
 }
-.law-grid__law--disputed,
-.law-grid__law--repealed {
-  --law-status-color: #c38f00;
+.law-grid__law--orange {
+  --law-colour: #c38f00;
 }
-.law-grid__law--imposed, 
-.law-grid__law--struck_down {
-  --law-status-color: #c30000;
+.law-grid__law--red {
+  --law-colour: #c30000;
+}
+.law-grid__law--gray {
+  --law-colour: #777;
 }
 .law-grid__law img {
   width: 1.5em;
@@ -316,7 +317,7 @@ body.dark-mode {
   max-width: min(260px, calc(100vw - 16px));
   box-sizing: border-box;
   padding: 10px 14px 9px;
-  border-bottom: 3px solid var(--law-status-color);
+  border-bottom: 3px solid var(--law-colour);
   border-radius: 7px;
   background: var(--content-bg-color);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
@@ -344,18 +345,18 @@ body.dark-mode {
   top: 100%;
   left: 50%;
   border: 7px solid transparent;
-  border-top-color: var(--law-status-color);
+  border-top-color: var(--law-colour);
   transform: translateX(-50%);
 }
 .law-grid__tooltip-title,
-.law-grid__tooltip-status {
+.law-grid__tooltip-description {
   display: block;
 }
 .law-grid__tooltip-title {
-  color: var(--law-status-color);
+  color: var(--law-colour);
   font-weight: 700;
 }
-.law-grid__tooltip-status {
+.law-grid__tooltip-description {
   margin-top: 0.1em;
 }
 .law-grid__law:hover .law-grid__tooltip,

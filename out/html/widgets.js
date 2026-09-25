@@ -279,7 +279,7 @@
       el.innerHTML = "";
       var visibleLaws = Array.isArray(laws)
         ? laws.filter(function (law) {
-            return law && law.status !== "expired" && law.icon;
+            return law && law.icon;
           })
         : [];
       if (!visibleLaws.length) {
@@ -290,28 +290,19 @@
         return;
       }
 
-      var statusLabels = {
-        active: "Active",
-        repealed:
-          "Repealed: this law has been scaled down by the Constitutional Court.",
-        disputed:
-          "Disputed: the Constitutional Court and the Parlament have varying interpretations of this law's status.",
-        struck_down:
-          "Struck down: the Constitutional Court has ruled against this law.",
-        imposed:
-          "Imposed: this is a top-down law that has not been voted by the Parlament.",
-      };
+      var validColours = { gray: true, orange: true, red: true, green: true };
       var grid = document.createElement("div");
       grid.className = "law-grid";
 
       visibleLaws.forEach(function (law, index) {
-        var status = statusLabels[law.status] ? law.status : "repealed";
-        var label =
-          String(law.title || law.id || "Law") +
-          " — " +
-          (statusLabels[law.status] || String(law.status || "Unknown"));
+        var colour = Object.prototype.hasOwnProperty.call(validColours, law.colour)
+          ? law.colour
+          : "gray";
+        var description = String(law.description || "");
+        var label = String(law.title || law.id || "Law");
+        if (description) label += " — " + description;
         var icon = document.createElement("div");
-        icon.className = "law-grid__law law-grid__law--" + status;
+        icon.className = "law-grid__law law-grid__law--" + colour;
         icon.setAttribute("role", "img");
         icon.setAttribute("tabindex", "0");
         icon.setAttribute("aria-label", label);
@@ -328,12 +319,11 @@
         var tooltipTitle = document.createElement("span");
         tooltipTitle.className = "law-grid__tooltip-title";
         tooltipTitle.textContent = String(law.title || law.id || "Law");
-        var tooltipStatus = document.createElement("span");
-        tooltipStatus.className = "law-grid__tooltip-status";
-        tooltipStatus.textContent =
-          statusLabels[law.status] || String(law.status || "Unknown");
+        var tooltipDescription = document.createElement("span");
+        tooltipDescription.className = "law-grid__tooltip-description";
+        tooltipDescription.textContent = description;
         tooltip.appendChild(tooltipTitle);
-        tooltip.appendChild(tooltipStatus);
+        tooltip.appendChild(tooltipDescription);
         icon.setAttribute("aria-describedby", tooltip.id);
         icon.appendChild(tooltip);
         grid.appendChild(icon);

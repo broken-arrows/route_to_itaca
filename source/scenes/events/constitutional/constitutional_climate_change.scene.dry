@@ -7,9 +7,9 @@ max-visits: 1
 role: event
 on-arrival: {!
     if (Q.climate_transition_mature) {
-        G.deactivateLaw(Q, "climate_binding_targets_mature", "struck_down");
+        G.deactivateLaw(Q, "climate_binding_targets_mature", "Struck down: the Constitutional Court has ruled against this law.", false, "red");
     } else {
-        G.deactivateLaw(Q, "climate_binding_targets_initial", "struck_down");
+        G.deactivateLaw(Q, "climate_binding_targets_initial", "Struck down: the Constitutional Court has ruled against this law.", false, "red");
     }
     Q.climate_transition_contested_struck = true;
     Q.cat_spa_relations -= 4;

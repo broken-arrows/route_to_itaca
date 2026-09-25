@@ -6,7 +6,7 @@ view-if: constitutional_housing_trigger and parlament_housing_variant = "compuls
 max-visits: 1
 role: event
 on-arrival: {!
-    G.deactivateLaw(Q, "housing_debt_relief_procedure", "struck_down");
+    G.deactivateLaw(Q, "housing_debt_relief_procedure", "Struck down: the Constitutional Court has ruled against this law.", false, "red");
     Q.cat_spa_relations -= 5;
     Q.social_dissent += 3;
 !}

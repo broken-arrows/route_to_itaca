@@ -79,7 +79,7 @@ describe('non-sovereignty law pilots', () => {
     expect(law).not.toContain('digital_capacity');
     expect(law).not.toContain('social_dissent');
     expect(ruling).toContain(
-      'G.deactivateLaw(Q, "digital_agency_national_scope", "struck_down")',
+      'G.deactivateLaw(Q, "digital_agency_national_scope", "Struck down:',
     );
     expect(ruling).not.toContain(
       'G.deactivateLaw(Q, "digital_agency_core"',

@@ -6,7 +6,7 @@ view-if: constitutional_civil_law_trigger
 max-visits: 1
 role: event
 on-arrival: {!
-    G.deactivateLaw(Q, "civil_code_book_six_contested_rule", "struck_down");
+    G.deactivateLaw(Q, "civil_code_book_six_contested_rule", "Struck down: the Constitutional Court has ruled against this law.", false, "red");
     Q.cat_spa_relations -= 2;
 !}
 

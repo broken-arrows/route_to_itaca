@@ -12,6 +12,9 @@ on-arrival: {!
       // TODO: Actual way for this to fail
       this.achieve("ni_un_paper");
     }
+    if (!Q.not_financially_responsible){
+      this.achieve("financially_responsible");
+    }
 
     // TODO: actual ending cards
 !}

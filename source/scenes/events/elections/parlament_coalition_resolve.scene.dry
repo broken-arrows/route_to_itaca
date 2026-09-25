@@ -112,6 +112,8 @@ on-arrival: {!
             id: "generalitat_concession_social",
             title: "Social Policy Concessions",
             icon: "img/people_icon.svg",
+            colour: "green",
+            description: "The new government has vowed to expand Social Policies as a part of its investiture deal.",
             targets: {
                 welfare_index_growth: 0.1,
                 generalitat_surplus: -0.01
@@ -123,7 +125,7 @@ on-arrival: {!
     if (Q[Q.player_party + "_in_gob"]) {
         Q.burdens_start_countdown = 1;
         if (!Q.countdowns.includes("burdens_start")) Q.countdowns.push("burdens_start");
-        Q.government_budget = 1 - Q.difficulty;
+        if (!Q.government_budget || Q.government_budget == 0) Q.government_budget = 1 - Q.difficulty;
     }
     if (Q.jxsi_parlament_s > 0 && !Q.countdowns.includes("jxcat_formation")) {
         Q.jxcat_formation_countdown = 6;

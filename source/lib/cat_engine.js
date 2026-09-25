@@ -1016,6 +1016,10 @@
   //
   //   {
   //     id: "rent_control_2015",
+  //     title: "Rent Control",
+  //     icon: "img/community_icon.svg", // omit to keep a modifier out of the law grid
+  //     colour: "green",               // gray | orange | red | green
+  //     description: "Limits rent increases for protected tenants.",
   //     targets: {
   //       welfare_index_growth: 0.15,    // added into welfare_delta each tick
   //       gdp_growth:          -0.10,    // added into gdp_target each tick
@@ -1026,8 +1030,8 @@
   //   }
   //
   // Registering:   G.registerLaw(Q, RENT_CONTROL_LAW)
-  // Repealing:     G.deactivateLaw(Q, "rent_control_2015", "repealed")
-  // Court strike:  G.deactivateLaw(Q, "rent_control_2015", "struck_down)
+  // Repealing:     G.deactivateLaw(Q, "rent_control_2015", "Repealed: ...", false, "red")
+  // Sunset:       G.deactivateLaw(Q, "rent_control_2015", undefined, true)
   //
   // RECOMMENDED BALANCE:
   // | Modifier              | Feeds into                                      | Existing per-tick scale                                          | Minor action | Moderate law | Landmark law |
@@ -1059,7 +1063,8 @@
     Q.mod_log = Q.mod_log || [];
     Q.active_mods[lawDef.id] = {
       def: lawDef,
-      status: "active", // "active" | "repealed" | "struck_down" | "expired"
+      active: true,
+      hidden: false,
       ticks_active: 0,
       // live_effect is recomputed every tick by resolveMods(); UI reads this
       // to show "current contribution" per target without recalculating.
@@ -1078,16 +1083,21 @@
       .replace(/\b\w/g, (letter) => letter.toUpperCase());
   }
 
-  function deactivateLaw(Q, lawId, reason = "repealed") {
+  // A deactivated law remains visible unless the event explicitly hides it.
+  // Display changes do not change the law's simulation targets.
+  function deactivateLaw(Q, lawId, description, hide = false, colour) {
     if (!Q.active_mods || !Q.active_mods[lawId]) return;
     const entry = Q.active_mods[lawId];
-    if (entry.status !== "active") return;
-    entry.status = reason;
+    if (!entry.active) return;
+    entry.active = false;
+    if (description !== undefined) entry.description = description;
+    if (hide) entry.hidden = true;
+    if (colour !== undefined) entry.colour = colour;
     Q.mod_log = Q.mod_log || [];
     Q.mod_log.push({
       tick: `${Q.year}-${Q.month}`,
       id: lawId,
-      action: reason,
+      action: "deactivated",
     });
   }
 
@@ -1098,7 +1108,7 @@
     let total = 0;
     for (const id in Q.active_mods) {
       const entry = Q.active_mods[id];
-      if (entry.status !== "active") continue;
+      if (!entry.active) continue;
       const def = entry.def;
       const rawVal = def.targets ? def.targets[targetKey] : undefined;
       if (rawVal === undefined) continue;
@@ -1120,7 +1130,7 @@
     if (!Q.active_mods) return;
     for (const id in Q.active_mods) {
       const entry = Q.active_mods[id];
-      if (entry.status !== "active") continue;
+      if (!entry.active) continue;
       entry.ticks_active += 1;
       const exp = entry.def.expires;
       if (exp && exp.year != null && exp.month != null) {
@@ -1128,33 +1138,33 @@
           Q.year > exp.year ||
           (Q.year === exp.year && Q.month >= exp.month)
         ) {
-          deactivateLaw(Q, id, "expired");
+          deactivateLaw(Q, id, undefined, true);
         }
       } else if (exp && exp.year != null && Q.year >= exp.year) {
-        deactivateLaw(Q, id, "expired");
+        deactivateLaw(Q, id, undefined, true);
       }
     }
   }
 
-  // UI helper: presentation-neutral law rows. Expired laws are historical
-  // bookkeeping and deliberately disappear from the current-government view.
-  // No status exists to also deliberately hide a law from appearing.
+  // UI helper: hidden laws leave the current-government view. Iconless entries
+  // are filtered by the UI; they still apply their simulation targets.
   function getLawsForUI(Q) {
     if (!Q.active_mods) return [];
     return Object.keys(Q.active_mods)
+      .filter((id) => !Q.active_mods[id].hidden)
       .map((id) => {
         const entry = Q.active_mods[id];
-        const def = entry.def || {};
+        const def = entry.def;
         return {
           id,
-          status: entry.status,
           title: def.title || humanizeLawId(id),
           icon: def.icon,
+          colour: entry.colour !== undefined ? entry.colour : def.colour,
+          description: entry.description !== undefined ? entry.description : def.description,
           ticks_active: entry.ticks_active,
           effects: { ...entry.live_effect },
         };
-      })
-      .filter((e) => e.status !== "expired");
+      });
   }
 
   // --- ENGINE ---

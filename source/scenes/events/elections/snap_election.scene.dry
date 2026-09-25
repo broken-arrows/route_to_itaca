@@ -28,7 +28,7 @@ on-arrival: {!
         Q.position_disp = "<span style='font-style: italic'>Government Support</span>";
     }
 
-    G.deactivateLaw(Q, "generalitat_concession_social", "expired");
+    G.deactivateLaw(Q, "generalitat_concession_social", undefined, true);
 
     // ── deadlock / refusal vote shift ──────────────────────────────────────
     // A collapsed coalition negotiation (or a flat refusal) reshapes the re-run

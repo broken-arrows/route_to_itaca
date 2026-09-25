@@ -182,6 +182,9 @@ on-arrival: {!
 
 [? if ((player_party == "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) and burdens_goal > 0 :<div style="display:flex; align-items:center;"><div> **Government Burdens** <br/><span style="font-size:1em">[+ burdens_time +] [? if months_left != 1 : months?][? if months_left = 1: month?] left</span></div><div style="width: 3em; align-items: center; justify-content: center;"><div style="font-size:1.75em; font-family: UbuntuCustom;display:flex;align-items:center;justify-content:center;padding-left:0.75em;">[? if burdens_broken: X ?][? if not burdens_broken: <div style="margin-bottom: 0.5em;">[+ burdens_done +]</div><span style="font-size:0.75em">/</span> <div style="margin-top: 0.5em;">[+ burdens_goal +]</div> ?]</div></div></div>?]
 
+[? if ((player_party == "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)): Government Budget: [+ government_budget +] ?]
+
+
 [? if coalition_dissent_dataviz : Coalition dissent: [+ cat_coalition_dissent : dissent +] ?]
 
 <div style="display:flex; align-content:center;"><div style="width:20%; align-content:center"><img src="img/cat_seal.svg"></div><div style="width:80%; padding-left: 1em;"> **M.H.** [? if president_gender = "m": **President** ?][? if president_gender = "f": **Presidenta** ?]<br/>**[+ president +]** ([+ president_party +])<br/> <span style="font-size:0.8em;">**VP.** [+ vicepresident +] ([+ vicepresident_party +])</span></div></div></div>

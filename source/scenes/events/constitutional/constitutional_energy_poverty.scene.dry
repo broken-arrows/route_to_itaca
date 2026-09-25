@@ -7,7 +7,7 @@ max-visits: 1
 role: event
 on-arrival: {!
     if (Q.parlament_energy_poverty_variant == "disconnection_ban") {
-        G.deactivateLaw(Q, "energy_poverty_disconnection_ban", "struck_down");
+        G.deactivateLaw(Q, "energy_poverty_disconnection_ban", "Struck down: the Constitutional Court has ruled against this law.", false, "red");
         Q.cat_spa_relations -= 4;
         Q.social_dissent += 1;
     } else {

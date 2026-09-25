@@ -1,18 +1,17 @@
 title: Climate Transition on track!
 new-page: true
 tags: event
-view-if: climate_transition_matures_trigger
+view-if: climate_transition_matures_trigger and climate_transition_points > 5
 max-visits: 1
 role: event
 on-arrival: {!
-    G.deactivateLaw(Q, "climate_transition_core_initial", "expired");
-    G.deactivateLaw(Q, "climate_binding_targets_initial", "expired");
-    // TODO: Check that these become invisible indeed
-    G.registerLaw(Q, {id:"climate_transition_core_mature",title:"Mature Climate Transition",icon:"img/leaf_icon.svg",targets:{gdp_growth:0.01,generalitat_surplus:-0.01,unemployment_recovery:0.015,welfare_index_growth:0.04}});
+    G.deactivateLaw(Q, "climate_transition_core_initial", undefined, true);
+    G.deactivateLaw(Q, "climate_binding_targets_initial", undefined, true);
+    G.registerLaw(Q, {id:"climate_transition_core_mature",colour:"green",description:"Beyond an initial investment, and targets for emissions reductions, strides have been made to reduce GHG emissions and transform the economy",title:"Mature Climate Transition",icon:"img/leaf_icon.svg",targets:{gdp_growth:0.01,generalitat_surplus:-0.01,unemployment_recovery:0.02,welfare_index_growth:0.05}});
     if (!Q.climate_transition_contested_struck) {
-        G.registerLaw(Q, {id:"climate_binding_targets_mature",title:"Binding Climate Targets",icon:"img/leaf_icon.svg",targets:{gdp_growth:0.02,generalitat_surplus:-0.01,unemployment_recovery:0.005,welfare_index_growth:0.02}});
+        G.registerLaw(Q, {id:"climate_binding_targets_mature",colour:"green",description:"Binding targets on GHG emissions have been set for operations happening in Catalonia.",title:"Binding Climate Targets",icon:"img/leaf_icon.svg",targets:{gdp_growth:0.02,generalitat_surplus:-0.01,unemployment_recovery:0.005,welfare_index_growth:0.02}});
     }
-    // TODO: Other conditions for this to trigger? not only passing the law right?
+    // TODO: check number of climate_transition_points required
 !}
 
 = Climate Transition on track!

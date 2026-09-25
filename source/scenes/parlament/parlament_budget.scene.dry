@@ -1,0 +1,14 @@
+title: Parlament budget negotiations
+subtitle: \[-1 resources\]
+choose-if: budget_year < year and party_resources > 0
+unavailable-subtitle: [? if budget_year >= year: The budget for this year, [+ year +], has already been approved! ?][? if budget_year < year: Not enough resources?]
+new-page: true
+on-arrival: {!
+    
+!}
+
+= Budget Negotiations
+
+# TBD: transition gray to green!
+
+

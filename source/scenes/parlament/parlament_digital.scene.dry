@@ -245,9 +245,9 @@ on-arrival: {!
         }
 
         Q.cybersecurity_agency_scope = nationalScope ? "catalonia" : "generalitat";
-        G.registerLaw(Q, {id:"digital_agency_core",title:"Catalan Cybersecurity Agency",icon:"img/comms_icon.svg",targets:{gdp_growth:0.015,generalitat_surplus:-0.010},ramp_ticks:12});
+        G.registerLaw(Q, {id:"digital_agency_core",colour:"green",description:"Creates a Catalan agency to coordinate cybersecurity.",title:"Catalan Cybersecurity Agency",icon:"img/comms_icon.svg",targets:{gdp_growth:0.015,generalitat_surplus:-0.010},ramp_ticks:12});
         if (nationalScope) {
-            G.registerLaw(Q, {id:"digital_agency_national_scope",title:"National Cybersecurity Framework",icon:"img/comms_icon.svg",targets:{gdp_growth:0.020,generalitat_surplus:-0.015},ramp_ticks:8});
+            G.registerLaw(Q, {id:"digital_agency_national_scope",colour:"green",description:"Catalonia now has a unified cybersecurity framework for all public institutions and companies, with opt-ins for relevant private sector groups.",title:"National Cybersecurity Framework",icon:"img/comms_icon.svg",targets:{gdp_growth:0.020,generalitat_surplus:-0.015},ramp_ticks:8});
             Q.independence_trust += 1;
             Q.burdens_done += 1;
         }

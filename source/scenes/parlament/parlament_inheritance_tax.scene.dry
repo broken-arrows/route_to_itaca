@@ -224,9 +224,9 @@ on-arrival: {!
             Q[backlash + "_parlament_" + c + "_middle_support"] += passageMiddleLoss;
         }
         if (strong) {
-            G.registerLaw(Q, {id:"inheritance_tax_strong",title:"Progressive Inheritance Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.075,gdp_growth:-0.035,welfare_index_growth:0.04,social_dissent_eq:-1},ramp_ticks:3});
+            G.registerLaw(Q, {id:"inheritance_tax_strong",colour:"green",description:"Inheritance taxes have been restored with very progressive rates.",title:"Progressive Inheritance Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.075,gdp_growth:-0.035,welfare_index_growth:0.04,social_dissent_eq:-1},ramp_ticks:3});
         } else {
-            G.registerLaw(Q, {id:"inheritance_tax_partial",title:"Restored Inheritance Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.035,gdp_growth:-0.01},ramp_ticks:2});
+            G.registerLaw(Q, {id:"inheritance_tax_partial",colour:"green",description:"Inheritance taxes have only been partially restored, keeping them minimal across the board.",title:"Restored Inheritance Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.035,gdp_growth:-0.01},ramp_ticks:2});
         }
         Q.burdens_done += 1;
     }

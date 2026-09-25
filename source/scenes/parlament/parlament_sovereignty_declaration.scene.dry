@@ -124,7 +124,7 @@ on-arrival: {!
 
     if (Q.parlament_sovereignty_declaration_yes > Q.parlament_sovereignty_declaration_no) {
         Q.parlament_sovereignty_declaration = true;
-        G.registerLaw(Q, {id:"sovereignty_declaration",title:"Sovereignty Declaration ",icon:"img/government_icon.svg",targets:{independence_trust: 0.1}});
+        G.registerLaw(Q, {id:"sovereignty_declaration",colour:"green",description:"The will of the people of Catalonia has been asserted and established as a basis for further political action.",title:"Sovereignty Declaration ",icon:"img/government_icon.svg",targets:{independence_trust: 0.1}});
     } else {
         Q.parlament_sovereignty_declaration = false;
     }
@@ -186,7 +186,7 @@ on-arrival: {!
 
     if (Q.parlament_sovereignty_declaration_yes > Q.parlament_sovereignty_declaration_no) {
         Q.parlament_sovereignty_declaration = true;
-        G.registerLaw(Q, {id:"sovereignty_declaration",title:"Sovereignty Declaration ",icon:"img/government_icon.svg",targets:{independence_trust: 0.1}});
+        G.registerLaw(Q, {id:"sovereignty_declaration",colour:"green",description:"The will of the people of Catalonia has been asserted and established as a basis for further political action.",title:"Sovereignty Declaration ",icon:"img/government_icon.svg",targets:{independence_trust: 0.1}});
     } else {
         Q.parlament_sovereignty_declaration = false;
         Q.independence_trust -= 10;

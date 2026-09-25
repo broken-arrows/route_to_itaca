@@ -128,6 +128,11 @@ on-arrival: {!
   Q.tax_control = 1;
   Q.art155_ever = false;
 
+  // Government stuff:
+  Q.budget_year = 2011;
+  Q.climate_transition_points = 0;
+  Q.territory_roads_approved = 0;  
+
   // start Parlament composition
   Q.parlament_seats = {
       "barcelona": 85,

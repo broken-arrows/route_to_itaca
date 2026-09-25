@@ -17,7 +17,7 @@ on-arrival: {!
         Q.position_disp = "<span style='font-style: italic'>Government Support</span>";
     }
 
-    G.deactivateLaw(Q, "generalitat_concession_social", "expired");
+    G.deactivateLaw(Q, "generalitat_concession_social", undefined, true);
 
     console.info("Set new election date for ", Q.next_election_month, Q.next_election_year, ", week", Q.next_election_week)
 
