@@ -1,0 +1,240 @@
+title: Coalition Affairs
+view-if: ((player_party = "erc" and erc_in_gob) or (erc_in_jxsi and jxsi_in_gob) or (erc_in_jxcat and jxcat_in_gob)) or ((player_party = "cup" and cup_in_gob) or (cup_in_jxsi and cup_in_gob) or (cup_in_jxcat and cup_in_gob)) and coalition_dissent > 30
+is-card: true
+face-image: img/generalitat/abracada.jpg
+card-image: img/generalitat/abracada.jpg
+frequency: 100
+tags: generalitat
+on-arrival: {!
+    Q.month_actions += 1;
+    Q.generalitat_coalition_timer = 5;
+    var playerVehicle = Q[Q.player_party + "_in_jxsi"] ? "jxsi" : Q[Q.player_party + "_in_jxcat"] ? "jxcat" : Q.player_party;
+    Q.player_parlament_s = Q[playerVehicle + "_parlament_s"];
+
+    Q.parlament_current_ciu_relations = Q[Q.parlament_current_ciu + "_relations"];
+    Q.coalition_affairs_includes_ciu = Q.cat_coalition.includes(Q.parlament_current_ciu);
+    Q.coalition_affairs_includes_erc = Q.cat_coalition.includes("erc");
+    Q.coalition_affairs_includes_cup = Q.cat_coalition.includes("cup");
+    Q.coalition_affairs_includes_psc = Q.cat_coalition.includes("psc");
+    Q.parlament_current_icv_relations = Q[Q.parlament_current_icv + "_relations"];
+    Q.coalition_affairs_includes_icv = Q.cat_coalition.includes(Q.parlament_current_icv);
+    Q.coalition_affairs_includes_jxsi = Q.cat_coalition.includes("jxsi") && !Q.player_in_jxsi;
+    Q.coalition_affairs_includes_jxcat = Q.cat_coalition.includes("jxcat") && !Q.player_in_jxcat;
+!}
+role: card-gov
+
+= Coalition Disunity
+
+The current [+ cat_coalition_disp +] is struggling with internal dissent, and there's a real chance it may all come crashing down, with partners leaving the government in protest.
+
+- @concessions_jxcat
+- @concessions_jxsi
+- @concessions_ciu
+- @concessions_erc
+- @concessions_psc
+- @concessions_icv
+- @concessions_cup
+- @go_chill_demands
+- @resources
+- @new_elections
+- @kick_them_out
+- @no_change
+- @easy_discard
+
+@concessions_jxcat
+title: Give concessions to JxCat
+subtitle: something
+view-if: coalition_affairs_includes_jxcat and not player_in_jxcat and jxcat_relations < 55
+on-arrival: {!
+
+!}
+
+@concessions_jxsi
+title: Give concessions to jxsi
+subtitle: something
+view-if: coalition_affairs_includes_jxsi and not player_in_jxsi and jxsi_relations < 55
+on-arrival: {!
+
+!}
+
+@concessions_ciu
+title: Give concessions to [+ parlament_current_ciu +]
+view-if: player_party != parlament_current_ciu and coalition_affairs_includes_ciu and parlament_current_ciu_relations < 55
+on-arrival: {!
+
+!}
+
+@concessions_erc
+title: Give concessions to ERC
+view-if: player_party != "erc" and coalition_affairs_includes_erc and erc_relations < 55
+on-arrival: {!
+
+!}
+
+@concessions_psc
+title: Give concessions to the PSC
+view-if: coalition_affairs_includes_psc and psc_relations < 55
+on-arrival: {!
+
+!}
+
+@concessions_icv
+title: Give concessions to [+ parlament_current_icv +]
+view-if: coalition_affairs_includes_icv and parlament_current_icv_relations < 55
+on-arrival: {!
+
+!}
+
+@concessions_cup
+title: Give concessions to the CUP
+view-if: player_party != "cup" and coalition_affairs_includes_cup and cup_relations < 55
+on-arrival: {!
+
+!}
+
+@go_chill_demands
+title: TODO: if government in Moncloa shares parties with coalition, relax demands to appease
+view-if: 1==0
+
+@resources
+title: Mobilize our party, focusing on calming them down
+subtitle: \[-2 resources\]
+view-if: difficulty < 1
+choose-if: party_resources > 1
+on-arrival: {!
+    Q.party_resources -= 2;
+    var playerVehicle = Q[Q.player_party + "_in_jxsi"] ? "jxsi" : Q[Q.player_party + "_in_jxcat"] ? "jxcat" : Q.player_party;
+    for (var p of Q.cat_coalition) {
+        if (p != playerVehicle) {
+            if (Q[p + "_relations"] < 55) {
+                Q[p + "_relations"] += Q.difficulty < 0 ? 5 : 3;
+            }
+        }
+    }
+!}
+
+In a mix of party resource transfers, heartfelt one-on-ones, and an overall party membership mobilization to repair the bonds between our coalition partners, it seems like we've managed to improve the situation, at least somewhat.
+
+
+@new_elections
+title: Call for new elections!
+subtitle: While this will be disliked, we may come back stronger with a new Parlament behind us.
+choose-if: president_party = player_party or (player_in_jxsi and president_party = "jxsi") or (player_in_jxcat and president_party = "jxcat")
+unavailable-subtitle: We do not control the presidency.
+on-arrival: {!
+    var playerVehicle = Q[Q.player_party + "_in_jxsi"] ? "jxsi" : Q[Q.player_party + "_in_jxcat"] ? "jxcat" : Q.player_party;
+    for (var p of Q.cat_coalition) {
+        if (p != playerVehicle) {
+            Q[p + "_relations"] -= 7;
+        }
+    }
+!}
+go-to: snap_election
+
+@kick_them_out
+title: Instead, preemptively kick them out of the government
+subtitle: <span class="generalitat-coalition" data-parties="[? if player_in_jxsi: jxsi?][? if player_in_jxcat: jxcat?][? if not (player_in_jxcat or player_in_jxsi): [+ player_party +]?]" data-summary="Minority government - [+ player_parlament_s +]/[+ parlament_s_majority +]"><span style='color: [+ player_party +]; font-weight: bold; font-style: italic'>minority government</span></span>
+choose-if: president_party = player_party or (player_in_jxsi and president_party = "jxsi") or (player_in_jxcat and president_party = "jxcat")
+unavailable-subtitle: We do not control the presidency.
+on-arrival: {!
+    var playerVehicle = Q[Q.player_party + "_in_jxsi"] ? "jxsi" : Q[Q.player_party + "_in_jxcat"] ? "jxcat" : Q.player_party;
+    for (var p of Q.cat_coalition) {
+        if (p != playerVehicle) {
+            Q[p + "_relations"] -= 15;
+        }
+    }
+    Q.parlament_coalition_proposal_vp = playerVehicle;
+    Q.parlament_coalition_proposal_economy = playerVehicle;
+    Q.parlament_coalition_proposal_interior = playerVehicle;
+    Q.parlament_coalition_proposal_health = playerVehicle;
+    Q.parlament_coalition_proposal_education = playerVehicle;
+    Q.parlament_coalition_proposal_bnl = playerVehicle;
+    Q.parlament_coalition_proposal_territory = playerVehicle;
+    Q.parlament_coalition_proposal_foreign = playerVehicle;
+!}
+set-jump: post_kick
+go-to: parlament_coalition_setnames
+
+We've chosen the nuclear option, and the [+ cat_coalition_disp +] will be no more. Naturally, this greatly displeases all of the coalition members, to put it lightly. Our new government looks as follows:
+
+@post_kick
+on-arrival: {!
+    var playerVehicle = Q[Q.player_party + "_in_jxsi"] ? "jxsi" : Q[Q.player_party + "_in_jxcat"] ? "jxcat" : Q.player_party;
+    Q.historical_event = "After heavy coalition disagreements, " +  Q.cat_coalition_disp + " will be no more. " + (Q.president_gender = "m" ? "President " : "Presidenta ") + Q.president + " has reconfigured the government, leaving only " + playerVehicle + " governing at the Generalitat.";
+    Q.cat_coalition = [playerVehicle];
+    Q.cat_coalition_support = [];
+    Q.cat_coalition_abstain = [];
+    Q.cat_coalition_disp = '<span class="generalitat-coalition" data-parties="' + playerVehicle + '" data-summary="Minority government - ' + Q.player_parlament_s + '/' + Q.parlament_s_majority + '"><span style="color: ' + playerVehicle + '; font-weight: bold; font-style: italic">minority government</span></span>"'
+
+    Q.president_party = Q.parlament_coalition_proposal_president;
+    Q.president_gender = Q.parlament_coalition_proposal_president_gender;
+    Q.president = Q.parlament_coalition_proposal_president_name;
+    
+    Q.vicepresident_party = Q.parlament_coalition_proposal_vp;
+    Q.vicepresident = Q.parlament_coalition_proposal_vp_name;
+    Q.vicepresident_gender = Q.parlament_coalition_proposal_vp_gender;
+    
+    Q.economy_minister_party = Q.parlament_coalition_proposal_economy;
+    Q.economy_minister = Q.parlament_coalition_proposal_economy_name;
+    Q.economy_minister_gender = Q.parlament_coalition_proposal_economy_gender;
+
+    Q.interior_minister_party = Q.parlament_coalition_proposal_interior;
+    Q.interior_minister = Q.parlament_coalition_proposal_interior_name;
+    Q.interior_minister_gender = Q.parlament_coalition_proposal_interior_gender;
+
+    Q.health_minister_party = Q.parlament_coalition_proposal_health;
+    Q.health_minister = Q.parlament_coalition_proposal_health_name;
+    Q.health_minister_gender = Q.parlament_coalition_proposal_health_gender;
+
+    Q.education_minister_party = Q.parlament_coalition_proposal_education;
+    Q.education_minister = Q.parlament_coalition_proposal_education_name;
+    Q.education_minister_gender = Q.parlament_coalition_proposal_education_gender;
+
+    Q.territory_minister_party = Q.parlament_coalition_proposal_territory;
+    Q.territory_minister = Q.parlament_coalition_proposal_territory_name;
+    Q.territory_minister_gender = Q.parlament_coalition_proposal_territory_gender;
+
+    Q.foreign_minister_party = Q.parlament_coalition_proposal_foreign;
+    Q.foreign_minister = Q.parlament_coalition_proposal_foreign_name;
+    Q.foreign_minister_gender = Q.parlament_coalition_proposal_foreign_gender;
+
+    Q.bnl_minister_party = Q.parlament_coalition_proposal_bnl;
+    Q.bnl_minister = Q.parlament_coalition_proposal_bnl_name;
+    Q.bnl_minister_gender = Q.parlament_coalition_proposal_bnl_gender;
+
+    
+    if (Q.player_in_jxcat) {
+        if (Q.cup_in_jxcat) {
+            Q.cup_supporting = true;
+            Q.cup_in_gob = true;
+        }
+        if (Q.erc_in_jxcat) {
+            Q.erc_supporting = true;
+            Q.erc_in_gob = true;
+        }
+        Q.jxcat_in_gob = true;
+    } else if (Q.player_in_jxsi) {
+        if (Q.cup_in_jxsi) {
+            Q.cup_supporting = true;
+            Q.cup_in_gob = true;
+        }
+        if (Q.erc_in_jxsi) {
+            Q.erc_supporting = true;
+            Q.erc_in_gob = true;
+        }
+        Q.jxsi_in_gob = true;
+    } else {
+        Q.erc_supporting = Q.player_party == "erc";
+        Q.cup_supporting = Q.player_party == "cup";
+        Q.erc_in_gob = Q.player_party == "erc";
+        Q.cup_in_gob = Q.player_party == "cup";
+    }
+!}
+
+Let's hope this was the right move. There's no going back now.
+
+@no_change
+title: Take none of these actions
+
+It does not look like the issues plaguing our coalition will go away magically, but maybe we can find thinking out of the box instead?
+

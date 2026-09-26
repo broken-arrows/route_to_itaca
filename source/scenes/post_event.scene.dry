@@ -98,6 +98,15 @@ if (has_time_passed) {
         Q.broken_roadmap = 1;
         Q.broken_roadmap_trigger = true;
     }
+    if (Q.burdens_time <= 0) {
+        if (Q.burdens_done < Q.burdens_goal) {
+            Q.burdens_broken = 1;
+            // TODO: For how long?
+        } else {
+            Q.burdens_done = 0;
+            Q.burdens_time = 12;
+        }
+    }
 
     if (Q.month == 1 && Q.week == 1) {
         // It's a new year

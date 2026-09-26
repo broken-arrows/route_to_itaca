@@ -7,7 +7,7 @@ on-arrival: {!
     Q.parlament_action_open = Q.parlament_timer <= 0 && !Q.cat_caretaker_gov;
     Q.coming_from_parlament = Q.parlament_action_open;
     if (Q.parlament_action_open) {
-        Q.parlament_timer += 7;
+        Q.parlament_timer += 5;
         Q.month_actions += 1;
     }
 !}
@@ -312,8 +312,8 @@ Despite the Parlament being legally limited in its powers, it is still symbolica
 
 @budget
 title: Pass the Generalitat's budget
-choose-if: parlament_action_open
-unavailable-subtitle: Our lawmakers are still unready. Next action possible in [+ parlament_timer +] [? if parlament_timer > 1:  months.?][? if parlament_timer = 1: month.?]
+choose-if: parlament_action_open and budget_year < year
+unavailable-subtitle: [? if not parlament_action_open: Our lawmakers are still unready. Next action possible in [+ parlament_timer +] [? if parlament_timer > 1:  months.?][? if parlament_timer = 1: month.?] ?][? if budget_year = year: This year's budget has already been approved.?]
 subtitle: Ensuring government stability may be more important at this moment
 
 **Generalitat's Budget**

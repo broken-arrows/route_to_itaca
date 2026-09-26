@@ -44,7 +44,7 @@ on-arrival: {!
     }
 !}
 
-We have promised to pursue a more moderate agenda.
+We have promised to pursue a more moderate agenda from now onwards, which has calmed down [+ parlament_current_ciu +] somewhat.
 
 @concessions_erc
 title: Give concessions to the ERC
@@ -57,7 +57,7 @@ on-arrival: {!
     }
 !}
 
-We have promised to pursue a more leftist agenda, and to listen closely to popular demands.
+We have promised to pursue a more leftist agenda, and to listen closely to popular demands, which has calmed down ERC somewhat.
 
 @concessions_cup
 title: Give concessions to the CUP
@@ -68,7 +68,7 @@ on-arrival: {!
     Q.erc_relations -= 2;
 !}
 
-We have promised to pursue a more leftist agenda, and to listen closely to popular demands.
+We have promised to pursue a more leftist agenda, and to listen closely to popular demands, which has calmed down the CUP somewhat.
 
 @do_nothing
 title: There is nothing we can do, so is the nature of such a coalition

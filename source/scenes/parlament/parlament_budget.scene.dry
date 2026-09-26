@@ -421,7 +421,7 @@ on-arrival: {!
 
 <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_budget_vote_result"}'></div>
 
-[? if parlament_budget_npc_deal_count > 0: We've tried our best to manouver support from [+ parlament_budget_deal_names +].[? if parlament_budget_npc_deal_cost > 0: Extra funding has also been allocated for their policy demands.?] **Note that revising the draft will void these agreements!** ?]
+[? if parlament_budget_npc_deal_count > 0: We've tried our best to manouver support from [+ parlament_budget_deal_names +]. [? if parlament_budget_npc_deal_cost > 0: Extra funding has also been allocated for their policy demands. ?]**Note that revising the draft will void these agreements!** ?]
 
 [? if parlament_budget_player_vote = "yes" and parlament_budget_player_default = "no": Our party's support for this compromise may cause internal dissent if it passes. ?]
 
