@@ -365,15 +365,19 @@ if (Q.player_in_jxsi) {
             Q.jxcat_dissent += 80 - Q[p + "_relations"];
         }
     }
-    if (jxcat_count > 1) {
-        Q.jxcat_dissent = Q.jxcat_dissent / jxcat_count;
-    } else {
-        Q.jxcat_dissent = 0;
-    }
+    Q.jxcat_dissent = Q.jxcat_dissent / jxcat_count;
 }
 
-if (Q[Q.player_party + "_in_gob"]) {
-    // Q.cat_coalition_dissent calcs?? TODO
+if (Q[Q.player_party + "_in_gob"] || (Q[Q.player_party + "_in_jxsi"] && Q.cat_coalition.includes("jxsi")) || (Q[Q.player_party + "_in_jxcat"] && Q.cat_coalition.includes("jxcat"))) {
+    Q.cat_coalition_dissent = 0;
+    var coalition_count = 0;
+    for (var p of Q.cat_coalition) {
+        coalition_count += 1;
+        Q.cat_coalition_dissent += 80 - Q[p + "_relations"];
+    }
+    if (coalition_count > 1) {
+        Q.cat_coalition_dissent = Q.cat_coalition_dissent / coalition_count;
+    }
 }
 
 // 4. Achievement check
@@ -391,6 +395,23 @@ if (Q.year + 1 > Q.budget_year) {
 }
 
 // 5. Hidden triggers
+
+// Trigger governing party budget negotiations
+if (Q.year > Q.budget_year && Q.budget_year_attempted != Q.year && Q.month > 8 && !((Q[Q.player_party + "_in_jxsi"] && Q.president_party == "jxsi") || (Q[Q.player_party + "_in_jxcat"] && Q.president_party == "jxcat") || Q.president_party == Q.player_party)) {
+    var rnd = Math.random();
+    if (rnd < 0.3) {
+        Q.budget_parlament_trigger  = true;
+    }
+}
+
+// Trigger snap election on failures when trying to pass a budget
+if ((Q.budget_failed_times > 0 || (Q.next_election_year - 4 > Q.budget_year && Q.next_election_year - Q.year <= 2)) && Q.year > Q.budget_year && !((Q[Q.player_party + "_in_jxsi"] && Q.president_party == "jxsi") || (Q[Q.player_party + "_in_jxcat"] && Q.president_party == "jxcat") || Q.president_party == Q.player_party)) {
+    var rnd = Math.random();
+    if (rnd < (0.1 + Q.year - Q.budget_year)) {
+        Q.parlament_snap_election = 1;
+    }
+}
+
 if (Q.broken_roadmap_expires_trigger) {
     Q.broken_roadmap_expires_trigger = false;
     Q.broken_roadmap = 0;
@@ -421,7 +442,7 @@ if (Q.territory_metro1_trigger) {
             colour:"green", icon:"img/subway_icon.svg",
             description:"Barcelona's L9/L10 Metro line has been completed.",
             targets:{gdp_growth:0.035, unemployment_recovery:0.005,
-                welfare_index_growth:0.025, generalitat_surplus:-0.012}});
+                welfare_index_growth:0.04, generalitat_surplus:-0.005}});
 }
 
 if (Q.territory_metro2_trigger) {
@@ -431,7 +452,7 @@ if (Q.territory_metro2_trigger) {
             colour:"green", icon:"img/subway_icon.svg",
             description:"Barcelona's L1 and L3 Metro lines have been expanded.",
             targets:{gdp_growth:0.02, unemployment_recovery:0.005,
-                welfare_index_growth:0.04, generalitat_surplus:-0.008}});
+                welfare_index_growth:0.03, generalitat_surplus:-0.005}});
 }
 
 

@@ -4,6 +4,7 @@ choose-if: budget_year < year and party_resources > 0
 unavailable-subtitle: [? if budget_year >= year: This year's budget has already been approved.?][? if budget_year < year and party_resources < 1: Not enough resources.?]
 new-page: true
 on-arrival: {!
+    Q.budget_year_attempted = Q.year;
     Q.parlament_budget_changes_made = false;
     Q.parlament_budget_player_vote = "auto";
     Q.parlament_budget_deals = [];
@@ -117,9 +118,17 @@ on-arrival: {!
         }
     }
     Q.parlament_budget_government_roadmap = roadmap;
+    // PSC can support a moderate roadmap, but an ERC/CUP or unity-list cabinet
+    // needs a genuinely progressive budget to win its unnegotiated vote.
+    var pscFacesIndyCabinet = !cabinet.includes("psc") && roadmap >= 1 &&
+        cabinet.some(function (party) {
+            return ["erc", "cup", "jxsi", "jxcat"].includes(party);
+        });
 
     function hardVetoReasons(party) {
         var reasons = [];
+        if (party == Q.parlament_current_ciu && tax == "top_income")
+            reasons.push(party + " does not approve a top-income tax increase.");
         if (party == "ciu" && Q.parlament_budget_shortfall > 0)
             reasons.push("CiU will not approve a budget with a funding gap.");
         if (["cdc", "dl", "pdcat", "junts", "unio"].includes(party) &&
@@ -127,7 +136,7 @@ on-arrival: {!
             reasons.push(party + " will not accept this big of a funding gap in the budget.");
         if (["erc", "cup", "psc", "icv", "csqp", "cecp", "ecp"].includes(party) &&
             social == 0)
-            reasons.push("Too much austerity!");
+            reasons.push("This budget introduces a new austerity round, which they will never accept.");
         if (["erc", "cup"].includes(party) && promise && social < 2)
             reasons.push("The budget must honour the promised expansion to social spending.");
         if (["cup", "icv", "csqp", "cecp", "ecp"].includes(party) && b40)
@@ -175,9 +184,13 @@ on-arrival: {!
         if (["icv", "csqp", "cecp", "ecp"].includes(party))
             return social == 2 && (tax == "broad_income" || tax == "top_income" ||
                 tax == "property" && metro2) ? "yes" : "no";
-        if (party == "psc")
+        if (party == "psc") {
+            if (pscFacesIndyCabinet)
+                return social == 2 && (tax == "broad_income" ||
+                    tax == "top_income" && (metro1 || metro2)) ? "yes" : "no";
             return social >= 1 && tax != "none" &&
                 (tax != "top_income" || metro1 || metro2) ? "yes" : "no";
+        }
         if (party == "ppc" || party == "cs")
             return social == 0 && tax == "none" &&
                 Q.parlament_budget_shortfall == 0 ? "yes" : "no";
@@ -496,7 +509,7 @@ go-to: review
 
 @tax_top_income
 title: Raise top rates in autonomic taxes
-subtitle: Inclduding wealth taxes, making taxes more progressive.
+subtitle: Including wealth taxes, making taxes more progressive.
 view-if: parlament_budget_tax != "top_income"
 on-arrival: {!
     Q.parlament_budget_tax = "top_income";
@@ -789,15 +802,11 @@ on-arrival: {!
 
     // An extended budget keeps its terms. Only a new approval retires them.
     for (var oldId of ["generalitat_annual_budget", "budget_social_expansion",
-        "budget_social_cuts", "budget_tax_moderate", "budget_tax_progressive",
+        "budget_social_cuts", "budget_social_no_cuts", "budget_tax_moderate", "budget_tax_progressive",
         "budget_tax_property", "budget_tax_broad_income", "budget_tax_top_income", "no_taxes",
         "budget_financing_shortfall", "budget_negotiated_concessions"]) {
         G.deactivateLaw(Q, oldId, undefined, true);
     }
-    G.registerLaw(Q, {id:"generalitat_annual_budget", title: Q.year + " Budget",
-        colour:"green", icon:"img/economy_icon.svg",
-        description:"The Parlament approved the Generalitat's budget for " + Q.year + ".",
-        targets:{}});
     if (social == 2) {
         G.registerLaw(Q, {id:"budget_social_expansion", title:"Social Services Expansion",
             colour:"green", icon:"img/people_icon.svg",
@@ -810,13 +819,18 @@ on-arrival: {!
             description: "The " + Q.year + " budget introduces further cuts to public services.",
             targets:{welfare_index_growth:-0.08, generalitat_surplus:0.03,
                 social_dissent_eq:2}});
+    } else {
+        G.registerLaw(Q, {id:"budget_social_no_cuts", title:"Social Spending Cuts Stopped",
+            colour:"orange", icon:"img/scissors_icon.svg",
+            description: "The " + Q.year + " budget managed bring austerity to a halt.",
+            targets:{welfare_index_growth:-0.01, social_dissent_eq:-0.5}});
     }
     if (tax != "none") {
         var taxLaws = {
             property:{id:"budget_tax_property", title:"Surgical Tax Increases",
                 description:"The " + Q.year + " budget introduces higher property-transfer and other duties, retaining historically reduced rates rules."},
             broad_income:{id:"budget_tax_broad_income", title:"Broad Income Tax Rise",
-                description:"The " + Q.year + " budget rises autonomic taxes broadly, including middle incomes.."},
+                description:"The " + Q.year + " budget rises autonomic taxes broadly, including middle incomes."},
             top_income:{id:"budget_tax_top_income", title: "Top Income and Wealth Taxes",
                 description:"The " + Q.year + " budget introduces higher top rates in autonomic taxes, and a new wealth tax."}
         };
@@ -876,7 +890,7 @@ on-arrival: {!
         Q.territory_metro_approved = 1;
         G.deactivateLaw(Q, "territory_metro1", undefined, true);
         G.registerLaw(Q, {id:"territory_metro1", colour:"orange",
-            description:"Under construction: completing Barcelona's L9/L10 Metro lines.",
+            description:"Under construction: completing Barcelona's L9/L10 Metro line.",
             title:"Metro L9/L10", icon:"img/subway_icon.svg",
             targets:{generalitat_surplus:-0.01, unemployment_recovery:0.01}});
         if (!Q.countdowns.includes("territory_metro1")) Q.countdowns.push("territory_metro1");
@@ -959,6 +973,7 @@ on-arrival: {!
         Q.parlament_budget_failed_year = Q.year;
     }
     Q.coming_from_parlament = false;
+    Q.budget_failed_times += 1;
 !}
 new-page: true
 

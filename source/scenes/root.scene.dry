@@ -130,6 +130,7 @@ on-arrival: {!
 
   // Government stuff:
   Q.budget_year = 2012;
+  Q.budget_year_attempted = 2012;
   G.registerLaw(Q, {id:"budget_social_cuts", title:"Social Spending Cuts",
       colour:"red", icon:"img/scissors_icon.svg",
       description:"The 2012 budget continues austerity in public services and social spending.",

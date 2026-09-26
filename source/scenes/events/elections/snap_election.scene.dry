@@ -94,7 +94,8 @@ role: event
 
 = New Parlament elections called!
 
-President [+ president +] seems to have run out of options, and the current [+ cat_coalition_disp_old +] will be no more. The Parlament has now been disolved, and the next elections will be held in two months time, on [+ next_election_month : month +], [+ next_election_year +].
+President [+ president +] seems to have run out of options, and the current [+ cat_coalition_disp_old +] will be no more. [? if budget_failed_times > 0: Repeated failures to pass the Generalitat's budget seem to have been the main reason motivating this decision. ?]
+The Parlament has now been disolved, and the next elections will be held in two months time, on [+ next_election_month : month +], [+ next_election_year +].
 
 Until then, the functions of the Generalitat will be limited, and handled by a [+ cat_coalition_disp +].
 

@@ -139,5 +139,6 @@ on-arrival: {!
         });
         Q.burdens_done += 1
     }
+    Q.budget_failed_times = 0;
 !}
 go-to: post_event

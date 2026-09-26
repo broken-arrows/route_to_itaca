@@ -1,0 +1,7 @@
+title: [+ cat_coalition_disp +] kickstart Parlament budget negotiations
+subtitle: [? if president_gender = "m": President?][? if president_gender = "f": Presidenta?] [+ president +] is looking to pass a budget for this year [+ year +].
+new-page: true
+on-arrival: coming_from_parlament = false
+view-if: budget_parlament_trigger
+role: event
+go-to: parlament_budget
