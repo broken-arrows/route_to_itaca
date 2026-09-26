@@ -35,9 +35,15 @@ on-arrival: {!
     Q.erc_supporting = Q.erc_in_gob || support.indexOf("erc") >= 0;
     Q.cup_in_gob = cabinet.indexOf("cup") >= 0;
     Q.cup_supporting = Q.cup_in_gob || support.indexOf("cup") >= 0;
+    Q.jxsi_in_gob = cabinet.indexOf("jxsi") >= 0;
+    Q.jxcat_in_gob = cabinet.indexOf("jxcat") >= 0;
 
-    var playerInCabinet = cabinet.indexOf(Q.player_party) >= 0;
-    var playerSupports = support.indexOf(Q.player_party) >= 0;
+    var playerList = Q.player_in_jxsi ? "jxsi" :
+        Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    var playerInCabinet = cabinet.indexOf(Q.player_party) >= 0 ||
+        cabinet.indexOf(playerList) >= 0;
+    var playerSupports = support.indexOf(Q.player_party) >= 0 ||
+        support.indexOf(playerList) >= 0;
     if (playerInCabinet) {
         Q.position_disp = "Generalitat";
     } else if (playerSupports) {
@@ -107,6 +113,17 @@ on-arrival: {!
 
     Q.historical_event = "We have a new government in the Generalitat! President " + Q.president + " will lead a " + Q.cat_coalition_disp + " for this legislature.";
 
+    if (playerInCabinet) {
+        Q.burdens_done = 0;
+        Q.burdens_start_countdown = 1;
+        if (!Q.countdowns.includes("burdens_start")) Q.countdowns.push("burdens_start");
+        if (!Q.government_budget || Q.government_budget < 1) Q.government_budget = 1;
+    }
+    if (Q.jxsi_parlament_s > 0 && !Q.countdowns.includes("jxcat_formation")) {
+        Q.jxcat_formation_countdown = 6;
+        Q.countdowns.push("jxcat_formation");
+    }
+
     if (Q.parlament_coalition_concessions_social) {
         G.registerLaw(Q, {
             id: "generalitat_concession_social",
@@ -120,16 +137,7 @@ on-arrival: {!
             },
             ramp_ticks: 6,
         });
-    }
-
-    if (Q[Q.player_party + "_in_gob"]) {
-        Q.burdens_start_countdown = 1;
-        if (!Q.countdowns.includes("burdens_start")) Q.countdowns.push("burdens_start");
-        if (!Q.government_budget || Q.government_budget == 0) Q.government_budget = 1 - Q.difficulty;
-    }
-    if (Q.jxsi_parlament_s > 0 && !Q.countdowns.includes("jxcat_formation")) {
-        Q.jxcat_formation_countdown = 6;
-        Q.countdowns.push("jxcat_formation");
+        Q.burdens_done += 1
     }
 !}
 go-to: post_event

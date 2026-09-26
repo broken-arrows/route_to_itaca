@@ -21,7 +21,7 @@ if (Q.unemployment) {
 
 [? if player_party != 0 and position_disp != 0: [+ player_party +] [? if player_in_jxsi: (jxsi)?][?if player_in_jxcat: (JxCat)?] position: [+ position_disp +] ?]
 
-[? if ((player_party == "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)): Government Budget: [+ government_budget +] ?]
+[? if ((player_party == "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)): Executive Budget: [+ government_budget +] ?]
 
 [? if player_party: Party resources: [+ party_resources +]?]
 [? if not player_party: Game not started ?]
@@ -182,7 +182,7 @@ on-arrival: {!
 
 [? if ((player_party == "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) and burdens_goal > 0 :<div style="display:flex; align-items:center;"><div> **Government Burdens** <br/><span style="font-size:1em">[+ burdens_time +] [? if months_left != 1 : months?][? if months_left = 1: month?] left</span></div><div style="width: 3em; align-items: center; justify-content: center;"><div style="font-size:1.75em; font-family: UbuntuCustom;display:flex;align-items:center;justify-content:center;padding-left:0.75em;">[? if burdens_broken: X ?][? if not burdens_broken: <div style="margin-bottom: 0.5em;">[+ burdens_done +]</div><span style="font-size:0.75em">/</span> <div style="margin-top: 0.5em;">[+ burdens_goal +]</div> ?]</div></div></div>?]
 
-[? if ((player_party == "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)): Government Budget: [+ government_budget +] ?]
+[? if ((player_party == "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)): Executive Budget: [+ government_budget +] ?]
 
 
 [? if coalition_dissent_dataviz : Coalition dissent: [+ cat_coalition_dissent : dissent +] ?]

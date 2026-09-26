@@ -114,8 +114,23 @@ if (has_time_passed) {
 
         Q.party_resources += party_resources_size * Q.party_resources_mult + Q.party_income;
 
-        // TODO: more stuff that happens on a new year (govt budget, etc)
-        // TODO: give more/less based on difficulty?
+        var playerList = Q.player_in_jxsi ? "jxsi" :
+            Q.player_in_jxcat ? "jxcat" : Q.player_party;
+        var cabinet = Q.cat_coalition || [];
+        if (Q.player_party && !Q.cat_caretaker_gov &&
+            (cabinet.includes(Q.player_party) || cabinet.includes(playerList))) {
+            var yearlyAllowance = Math.max(0, 1 - (Number(Q.difficulty) || 0));
+            Q.government_budget = (Number(Q.government_budget) || 0) + yearlyAllowance;
+            if (Q.generalitat_surplus < 0) {
+                Q.public_debt += 0.5;
+            }
+            if (Q.generalitat_surplus < -2) {
+                Q.public_debt += 0.5;
+            }
+            if (Q.generalitat_surplus < -1 && Q.difficulty > 0) {
+                Q.public_debt += 0.5;
+            }
+        }
 
         // PxC sanity check in the rare case that they have seats
         if (Q.year >= 2015 && (!Q.fnc_formed || !Q.pxc_dissolved)) {
@@ -380,6 +395,46 @@ if (Q.broken_roadmap_expires_trigger) {
     Q.broken_roadmap_expires_trigger = false;
     Q.broken_roadmap = 0;
 }
+
+if (Q.territory_county_roads_trigger) {
+    Q.territory_county_roads_trigger = false;
+    G.deactivateLaw(Q, "territory_county_roads", undefined, true);
+    G.registerLaw(Q, {id:"territory_county_roads", title:"County roads expansion",
+            colour:"green", icon:"img/car_icon.svg",
+            description:"Critical road links like the C-17 and the A-27 have been constructed.",
+            targets:{gdp_growth:0.08, unemployment_recovery:0.015, generalitat_surplus:-0.005}});
+}
+
+if (Q.territory_b40_trigger) {
+    Q.territory_b40_trigger = false;
+    G.deactivateLaw(Q, "territory_b40", undefined, true);
+    G.registerLaw(Q, {id:"territory_b40", title:"Barcelona's Fourth Belt",
+            colour:"green", icon:"img/car_icon.svg",
+            description:"The B-40, Barcelona's final bypass highway, has been completed!",
+            targets:{gdp_growth:0.02, generalitat_surplus:-0.005}});
+    this.achieve("one_more_lane");
+}
+if (Q.territory_metro1_trigger) {
+    Q.territory_metro1_trigger = false;
+    G.deactivateLaw(Q, "territory_metro1", undefined, true);
+    G.registerLaw(Q, {id:"territory_metro1", title:"Metro L9/L10",
+            colour:"green", icon:"img/subway_icon.svg",
+            description:"Barcelona's L9/L10 Metro line has been completed.",
+            targets:{gdp_growth:0.035, unemployment_recovery:0.005,
+                welfare_index_growth:0.025, generalitat_surplus:-0.012}});
+}
+
+if (Q.territory_metro2_trigger) {
+    Q.territory_metro2_trigger = false;
+    G.deactivateLaw(Q, "territory_metro2", undefined, true);
+    G.registerLaw(Q, {id:"territory_metro2", title:"Metro L1&L3",
+            colour:"green", icon:"img/subway_icon.svg",
+            description:"Barcelona's L1 and L3 Metro lines have been expanded.",
+            targets:{gdp_growth:0.02, unemployment_recovery:0.005,
+                welfare_index_growth:0.04, generalitat_surplus:-0.008}});
+}
+
+
 if (!Q.hidden_right_consolidation && (Q.year == 2019 && Q.month == 10)) {
     Q.hidden_right_consolidation = true;
     // TODO: un-hardcode this? how? via condition of cs giving too much to the pp??

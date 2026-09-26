@@ -1,14 +1,967 @@
-title: Parlament budget negotiations
+title: Negotiate the Generalitat's budget
 subtitle: \[-1 resources\]
 choose-if: budget_year < year and party_resources > 0
-unavailable-subtitle: [? if budget_year >= year: The budget for this year, [+ year +], has already been approved! ?][? if budget_year < year: Not enough resources?]
+unavailable-subtitle: [? if budget_year >= year: This year's budget has already been approved.?][? if budget_year < year and party_resources < 1: Not enough resources.?]
 new-page: true
 on-arrival: {!
-    
+    Q.parlament_budget_changes_made = false;
+    Q.parlament_budget_player_vote = "auto";
+    Q.parlament_budget_deals = [];
+    if (Q.coming_from_parlament) Q.party_resources -= 1;
+
+    // A unity list's leader, rather than its electoral label, sets the
+    // President's opening economic preference.
+    var president = Q.president_party;
+    if (president == "jxsi") {
+        president = Q.jxsi_formation_num > 50 ? "erc" :
+            Q.jxsi_formation_num < 50 ? "cdc" : "neutral";
+    } else if (president == "jxcat") {
+        president = Q.jxcat_leader_party == "erc" ? "erc" :
+            Q.jxcat_leader_party == "neutral" ? "neutral" : "cdc";
+    }
+
+    Q.parlament_budget_social = 1; // 0: cuts, 1: maintain, 2: expand
+    Q.parlament_budget_tax = "none"; // none, property, broad_income, top_income
+    if (["ciu", "cdc", "dl", "pdcat", "junts", "ppc", "cs", "vox"].includes(president)) {
+        Q.parlament_budget_social = 0;
+        if (["ciu", "cdc", "dl", "pdcat", "junts"].includes(president))
+            Q.parlament_budget_tax = "property";
+    } else if (["erc", "cup", "psc", "icv", "csqp", "cecp", "ecp"].includes(president)) {
+        Q.parlament_budget_social = 2;
+        Q.parlament_budget_tax = president == "cup" ? "top_income" : "broad_income";
+    } else if (president == "neutral") {
+        Q.parlament_budget_tax = "broad_income";
+    }
+
+    var laws = Q.active_mods || {};
+    Q.parlament_budget_county_available = !!laws.territory_county_roads &&
+        laws.territory_county_roads.def.colour == "gray" && !Q.territory_roads_approved;
+    Q.parlament_budget_b40_available = !!laws.territory_b40 &&
+        laws.territory_b40.def.colour == "gray" && Q.territory_roads_approved < 2;
+    Q.parlament_budget_metro1_available = !!laws.territory_metro1 &&
+        laws.territory_metro1.def.colour == "gray" && Q.territory_metro_approved < 1;
+    Q.parlament_budget_metro2_available = !!laws.territory_metro2 &&
+        laws.territory_metro2.def.colour == "gray" && Q.territory_metro_approved < 2;
+    Q.parlament_budget_county = Q.parlament_budget_county_available &&
+        ["ciu", "cdc", "dl", "pdcat", "junts", "erc", "psc"].includes(president);
+    Q.parlament_budget_b40 = Q.parlament_budget_b40_available &&
+        ["ciu", "cdc", "dl", "pdcat", "junts", "ppc", "cs"].includes(president);
+    Q.parlament_budget_metro1 = Q.parlament_budget_metro1_available &&
+        ["ciu", "cdc", "dl", "pdcat", "junts", "erc", "psc", "icv", "csqp", "cecp", "ecp"].includes(president);
+    Q.parlament_budget_metro2 = Q.parlament_budget_metro2_available &&
+        ["erc", "cup", "psc", "icv", "csqp", "cecp", "ecp"].includes(president);
+!}
+go-to: review
+
+@review
+new-page: true
+on-arrival: {!
+    var social = Q.parlament_budget_social;
+    var tax = Q.parlament_budget_tax;
+    // Revenue and voter burden are independent: a broad tax rise is not a
+    // stronger version of a tax aimed at top incomes and wealth.
+    var taxProfiles = {
+        none:{revenue:0, progressive:0, broad:0, property:0},
+        property:{revenue:1, progressive:0, broad:0, property:1},
+        broad_income:{revenue:2, progressive:0, broad:1, property:0},
+        top_income:{revenue:2, progressive:2, broad:0, property:0}
+    };
+    var taxProfile = taxProfiles[tax] || taxProfiles.none;
+    Q.parlament_budget_tax_revenue = taxProfile.revenue;
+    var county = Q.parlament_budget_county;
+    var b40 = Q.parlament_budget_b40;
+    var metro1 = Q.parlament_budget_metro1;
+    var metro2 = Q.parlament_budget_metro2;
+    var promise = !!(Q.active_mods && Q.active_mods.generalitat_concession_social &&
+        Q.active_mods.generalitat_concession_social.active);
+
+    // Political bargaining spends relations and party resources immediately.
+    // Only distant positions add a funded commitment to the budget.
+    var deals = Q.parlament_budget_deals || [];
+    Q.parlament_budget_npc_deal_cost = deals.reduce(function (sum, deal) {
+        return sum + deal.cost;
+    }, 0);
+    Q.parlament_budget_npc_deal_count = deals.length;
+    Q.parlament_budget_deal_cost = Q.parlament_budget_npc_deal_cost;
+    Q.parlament_budget_social_concessions = deals.filter(function (deal) {
+        return deal.kind == "social" && deal.cost > 0;
+    }).length;
+    Q.parlament_budget_business_concessions = deals.filter(function (deal) {
+        return deal.kind == "business" && deal.cost > 0;
+    }).length;
+    Q.parlament_budget_base_margin = 1 + taxProfile.revenue + (social == 0 ? 2 : 0) -
+        (social == 2 ? 2 : 0) - (county ? 1 : 0) - (b40 ? 2 : 0) -
+        (metro1 ? 2 : 0) - (metro2 ? 1 : 0);
+    Q.parlament_budget_margin = Q.parlament_budget_base_margin - Q.parlament_budget_deal_cost;
+    Q.parlament_budget_shortfall = Math.max(0, -Q.parlament_budget_margin);
+
+    var cabinet = (Q.cat_coalition || []).slice();
+    if (cabinet.indexOf(Q.president_party) < 0) cabinet.push(Q.president_party);
+    var playerList = Q.player_in_jxsi ? "jxsi" :
+        Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    Q.parlament_budget_player_governs = !!Q.player_party && !Q.cat_caretaker_gov &&
+        (cabinet.includes(Q.player_party) || cabinet.includes(playerList));
+    var executiveGrant = Q.parlament_budget_margin >= 2 ? 2 :
+        Q.parlament_budget_margin >= -1 ? 1 : 0;
+    Q.parlament_budget_executive_grant = Q.parlament_budget_player_governs ?
+        executiveGrant : 0;
+    var roadmap = 0;
+    for (var party of cabinet) {
+        roadmap = Math.max(roadmap, Number(Q[party + "_roadmap"]) || 0);
+        if (party == "jxsi" || party == "jxcat") {
+            for (var member of ["ciu", "cdc", "dl", "pdcat", "junts", "erc", "cup"]) {
+                if (Q[member + "_in_" + party]) {
+                    roadmap = Math.max(roadmap, Number(Q[member + "_roadmap"]) || 0);
+                }
+            }
+        }
+    }
+    Q.parlament_budget_government_roadmap = roadmap;
+
+    function hardVetoReasons(party) {
+        var reasons = [];
+        if (party == "ciu" && Q.parlament_budget_shortfall > 0)
+            reasons.push("CiU will not approve a budget with a funding gap.");
+        if (["cdc", "dl", "pdcat", "junts", "unio"].includes(party) &&
+            Q.parlament_budget_shortfall > 1)
+            reasons.push(party + " will not accept this big of a funding gap in the budget.");
+        if (["erc", "cup", "psc", "icv", "csqp", "cecp", "ecp"].includes(party) &&
+            social == 0)
+            reasons.push("Too much austerity!");
+        if (["erc", "cup"].includes(party) && promise && social < 2)
+            reasons.push("The budget must honour the promised expansion to social spending.");
+        if (["cup", "icv", "csqp", "cecp", "ecp"].includes(party) && b40)
+            reasons.push("They heavily disapprove of the building of the \"Fourth Belt\".");
+        if (["icv", "csqp", "cecp", "ecp"].includes(party) &&
+            Q.year >= 2013 && roadmap > 1) {
+            var exceptional = party == "csqp" && Q.csqp_leader == "Arcadi Oliveres" ||
+                party == "cecp" && ["Arcadi Oliveres", "Jaume Asens"].includes(Q.cecp_leader);
+            if (!exceptional)
+                reasons.push("With the current focus on independence of the current " + Q.cat_coalition_disp + ", " + party + " will not approve of any budget.");
+            else if (social != 2 || (tax != "broad_income" && tax != "top_income"))
+                reasons.push(party + " expects more focus on expanding social services rather than independence.");
+        }
+        if (party == "psc" && Q.year >= 2013 && roadmap > 1) {
+            if (Q.psc_leader != "Montserrat Tura")
+                reasons.push("With the current focus on independence of the current " + Q.cat_coalition_disp + ", " + party + " will not approve of any budget.");
+            else if (social != 2 ||
+                (tax != "broad_income" && tax != "top_income") || b40)
+                reasons.push("Montserrat Tura's PSC expects more funding for social services.");
+        }
+        if ((party == "ppc" || party == "cs") && Q.year >= 2013 && roadmap > 0)
+            reasons.push("There's no way they can approve of a budget for such a pro-independence government.");
+        return reasons;
+    }
+    function hardVeto(party) {
+        return hardVetoReasons(party).length > 0;
+    }
+
+    function basePosition(party) {
+        if (party == "ciu") {
+            if (Q.parlament_budget_shortfall > 0) return "no";
+            return social == 0 && tax != "top_income" ? "yes" : "no";
+        }
+        if (["cdc", "dl", "pdcat", "junts", "unio"].includes(party)) {
+            if (Q.parlament_budget_shortfall > 0) return "no";
+            if (social == 0 && tax != "top_income") return "yes";
+            return social == 1 && tax != "top_income" ? "yes" : "no";
+        }
+        if (party == "erc")
+            return social >= 1 && (tax == "broad_income" || tax == "top_income" ||
+                social == 2 && tax == "property" && (metro1 || metro2)) ? "yes" : "no";
+        if (party == "cup")
+            return social == 2 && (tax == "top_income" ||
+                tax == "broad_income" && metro2) ? "yes" : "no";
+        if (["icv", "csqp", "cecp", "ecp"].includes(party))
+            return social == 2 && (tax == "broad_income" || tax == "top_income" ||
+                tax == "property" && metro2) ? "yes" : "no";
+        if (party == "psc")
+            return social >= 1 && tax != "none" &&
+                (tax != "top_income" || metro1 || metro2) ? "yes" : "no";
+        if (party == "ppc" || party == "cs")
+            return social == 0 && tax == "none" &&
+                Q.parlament_budget_shortfall == 0 ? "yes" : "no";
+        // SI has no fixed fiscal programme in this negotiation. Other listed
+        // parties vote against budgets they do not actively support.
+        return party == "si" ? "abstain" : "no";
+    }
+
+    function position(party) {
+        if (party == "jxsi" || party == "jxcat") {
+            // One parliamentary list holds the pooled seats; its members must
+            // all agree before the list can vote yes.
+            var members = ["cdc"];
+            if (Q["erc_in_" + party]) members.push("erc");
+            if (Q["cup_in_" + party]) members.push("cup");
+            var positions = members.map(position);
+            return positions.every(function (vote) { return vote == "yes"; }) ? "yes" :
+                positions.some(function (vote) { return vote == "no"; }) ? "no" : "abstain";
+        }
+        if (hardVeto(party)) return "no";
+        if (party == Q.player_party && Q.parlament_budget_player_vote != "auto")
+            return Q.parlament_budget_player_vote == "yes" &&
+                !Q.parlament_budget_player_can_yes ? "no" : Q.parlament_budget_player_vote;
+        if (deals.some(function (deal) { return deal.party == party; })) return "yes";
+        return basePosition(party);
+    }
+
+    function hasSeats(party) {
+        if ((Number(Q[party + "_parlament_s"]) || 0) > 0) return true;
+        if (party == "erc" || party == "cup")
+            return ["jxsi", "jxcat"].some(function (list) {
+                return Q[party + "_in_" + list] && (Number(Q[list + "_parlament_s"]) || 0) > 0;
+            });
+        return ["ciu", "cdc", "dl", "pdcat", "junts"].includes(party) &&
+            ((Number(Q.jxsi_parlament_s) || 0) > 0 || (Number(Q.jxcat_parlament_s) || 0) > 0);
+    }
+
+    Q.parlament_budget_player_has_seats = hasSeats(Q.player_party);
+    Q.parlament_budget_player_policy_can_yes = !hardVeto(Q.player_party);
+    // A moderate departure costs faction dissent; a larger one also uses one
+    // party resource. No player-party override adds spending to the budget.
+    Q.parlament_budget_player_resource_required = 0;
+    if (Q.parlament_budget_player_policy_can_yes && basePosition(Q.player_party) == "no") {
+        if (Q.player_party == "erc" && tax == "none" ||
+            Q.player_party == "cup" &&
+            (social < 2 && tax != "top_income" || tax == "none" || tax == "property"))
+            Q.parlament_budget_player_resource_required = 1;
+    }
+    Q.parlament_budget_player_can_yes = Q.parlament_budget_player_policy_can_yes &&
+        Q.party_resources >= Q.parlament_budget_player_resource_required;
+    Q.parlament_budget_player_default = Q.parlament_budget_player_policy_can_yes ?
+        basePosition(Q.player_party) : "no";
+    Q.parlament_budget_player_resource_cost = Q.parlament_budget_player_vote == "yes" &&
+        Q.parlament_budget_player_default == "no" ?
+        Q.parlament_budget_player_resource_required : 0;
+    Q.parlament_budget_player_position = position(Q.player_party);
+
+    var parties = ["ciu", "cdc", "dl", "pdcat", "junts", "jxsi", "jxcat",
+        "erc", "cup", "psc", "icv", "csqp", "cecp", "ecp", "ppc", "cs",
+        "unio", "si", "vox", "pxc", "fnc"];
+    var labels = {ciu:"CiU", cdc:"CDC", dl:"DL", pdcat:"PDeCAT", junts:"Junts",
+        jxsi:"JxSí", jxcat:"JxCat", erc:"ERC", cup:"CUP", psc:"PSC",
+        icv:"ICV-EUiA", csqp:"CSQP", cecp:"CECP", ecp:"ECP",
+        ppc:"PPC", cs:"Cs", unio:"UDC", si:"SI", vox:"Vox", pxc:"PxC", fnc:"FNC"};
+    Q.parlament_budget_deal_names = deals.map(function (deal) {
+        return labels[deal.party] || deal.party;
+    }).join(", ");
+    var groups = {yes:[], abstain:[], no:[]};
+    var counts = {yes:0, abstain:0, no:0};
+    var positions = {};
+    for (var p of parties) {
+        var seats = Number(Q[p + "_parlament_s"]) || 0;
+        if (seats <= 0) continue;
+        var vote = position(p);
+        positions[p] = vote;
+        groups[vote].push({label:labels[p]});
+        counts[vote] += seats;
+    }
+    Q.parlament_budget_positions = positions;
+
+    var ciuTarget = Q.parlament_current_ciu;
+    if (ciuTarget == "jxcat" || ((Number(Q[ciuTarget + "_parlament_s"]) || 0) <= 0 &&
+        ((Number(Q.jxsi_parlament_s) || 0) > 0 || (Number(Q.jxcat_parlament_s) || 0) > 0)))
+        ciuTarget = "cdc";
+    Q.parlament_budget_ciu_target = ciuTarget;
+    Q.parlament_budget_icv_target = Q.parlament_current_icv;
+    Q.parlament_budget_ciu_label = ciuTarget == "cdc" &&
+        (Q.jxsi_parlament_s > 0 || Q.jxcat_parlament_s > 0) ?
+        "the CDC wing of the unity list" : ciuTarget;
+
+    function canApproach(party, eligible) {
+        return eligible && party && party != Q.player_party && hasSeats(party) &&
+            position(party) != "yes" &&
+            !deals.some(function (deal) { return deal.party == party; });
+    }
+    function fiscalDealCost(party) {
+        if (party == "cup")
+            return social == 2 && tax == "broad_income" &&
+                Q.cup_faction == "Poble Lliure" ? 0 : 2;
+        if (["ciu", "cdc", "dl", "pdcat", "junts"].includes(party))
+            return social == 0 && tax != "top_income" ||
+                metro1 && social == 1 && tax == "property" ? 0 : 1;
+        if (party == "erc") return social == 2 && tax == "property" ? 0 : 1;
+        if (["icv", "csqp", "cecp", "ecp"].includes(party))
+            return social == 2 && tax == "property" ? 0 : 1;
+        if (party == "psc") return social == 2 && tax == "top_income" ? 0 : 1;
+        return 1;
+    }
+    function dealBlockReason(party) {
+        if (!party) return "There is no parliamentary party to approach.";
+        var reasons = hardVetoReasons(party);
+        var threshold = party == "cup" ?
+            Q.cup_faction == "Poble Lliure" ? 55 :
+            Q.cup_faction == "Endavant" || Q.cup_faction == "Third Sector" ? 65 : 55 : 55;
+        if (Q.party_resources <= Q.parlament_budget_player_resource_cost)
+            reasons.push("Not enough resources.");
+        if ((Number(Q[party + "_relations"]) || 0) <= threshold)
+            reasons.push("Our relations with " + (labels[party] || party) + " are not good enough.");
+        // CiU requires balance; later CDC variants tolerate at most one point.
+        if (["ciu", "cdc", "dl", "pdcat", "junts"].includes(party) &&
+            !hardVeto(party) &&
+            Math.max(0, -(Q.parlament_budget_margin - fiscalDealCost(party))) >
+                (party == "ciu" ? 0 : 1))
+            reasons.push("Conceding to their demands would create a deficit too high for them to accept the budget.");
+        return reasons.join(" ");
+    }
+    Q.parlament_budget_can_approach_cup = canApproach("cup", Q.player_party == "erc");
+    Q.parlament_budget_can_approach_psc = canApproach("psc", Q.player_party == "erc");
+    Q.parlament_budget_can_approach_erc = canApproach("erc", Q.player_party == "cup");
+    Q.parlament_budget_can_approach_icv = canApproach(Q.parlament_budget_icv_target, true);
+    Q.parlament_budget_can_approach_ciu = canApproach(ciuTarget, true);
+    Q.parlament_budget_cup_block_reason = dealBlockReason("cup");
+    Q.parlament_budget_psc_block_reason = dealBlockReason("psc");
+    Q.parlament_budget_erc_block_reason = dealBlockReason("erc");
+    Q.parlament_budget_icv_block_reason = dealBlockReason(Q.parlament_budget_icv_target);
+    Q.parlament_budget_ciu_block_reason = dealBlockReason(ciuTarget);
+    Q.parlament_budget_cup_deal_possible = !Q.parlament_budget_cup_block_reason;
+    Q.parlament_budget_psc_deal_possible = !Q.parlament_budget_psc_block_reason;
+    Q.parlament_budget_erc_deal_possible = !Q.parlament_budget_erc_block_reason;
+    Q.parlament_budget_icv_deal_possible = !Q.parlament_budget_icv_block_reason;
+    Q.parlament_budget_ciu_deal_possible = !Q.parlament_budget_ciu_block_reason;
+    Q.parlament_budget_cup_fiscal_cost = fiscalDealCost("cup");
+    Q.parlament_budget_psc_fiscal_cost = fiscalDealCost("psc");
+    Q.parlament_budget_erc_fiscal_cost = fiscalDealCost("erc");
+    Q.parlament_budget_icv_fiscal_cost = fiscalDealCost(Q.parlament_budget_icv_target);
+    Q.parlament_budget_ciu_fiscal_cost = fiscalDealCost(ciuTarget);
+
+    // The same political party can stand on three different ballots.
+    var target = Q.president_party;
+    var targetLocal = target;
+    var targetCongreso = target;
+    if (["ciu", "cdc", "dl", "pdcat", "junts"].includes(target)) {
+        target = targetLocal = targetCongreso = "ciu";
+    } else if (["icv", "csqp", "cecp", "ecp"].includes(target)) {
+        target = targetLocal = targetCongreso = "federal_left";
+    } else if (target == "ppc") {
+        targetLocal = targetCongreso = "pp";
+    } else if (target == "psc") {
+        targetCongreso = "psoe";
+    } else if (target == "jxsi" || target == "jxcat") {
+        var leader = target == "jxsi" ? (Q.jxsi_formation_num > 50 ? "erc" : "ciu") :
+            Q.jxcat_leader_party == "erc" ? "erc" : "ciu";
+        targetLocal = Q[target + "_in_local"] ? target : leader;
+        targetCongreso = Q[target + "_in_congreso"] ? target : leader;
+    } else if (target == "erc" || target == "cup") {
+        for (var list of ["jxsi", "jxcat"]) {
+            if (!Q[target + "_in_" + list]) continue;
+            if ((Q[list + "_parlament_s"] || 0) > 0) target = list;
+            if (Q[list + "_in_local"]) targetLocal = list;
+            if (Q[list + "_in_congreso"]) targetCongreso = list;
+            break;
+        }
+    }
+    Q.parlament_budget_target = target;
+    Q.parlament_budget_target_local = targetLocal;
+    Q.parlament_budget_target_congreso = targetCongreso;
+    // Demographics carry most of the geographic response; these are small
+    // constituency adjustments to the same fiscal message.
+    Q.parlament_budget_constituency_weights = {
+        barcelona:1.05, girona:0.95, lleida:0.90, tarragona:1.10
+    };
+    var localCarriers = targetLocal == "ciu" ? ["jxsi", "jxcat", "junts", "pdcat", "dl", "cdc", "ciu"] :
+        targetLocal == "federal_left" ? ["bcomu", "icv"] : [targetLocal];
+    var congresoCarriers = targetCongreso == "ciu" ? ["jxsi", "jxcat", "junts", "pdcat", "dl", "cdc", "ciu"] :
+        targetCongreso == "federal_left" ? ["sumar", "mpais", "up", "podemos", "iu"] :
+        targetCongreso == "psoe" ? ["psc", "psoe"] : [targetCongreso];
+    Q.parlament_budget_target_local_live = localCarriers.some(function (party) {
+        return (Q.parties_bcn || []).includes(party) &&
+            (Number(Q[party + "_local_barcelona_support"]) || 0) > 0;
+    });
+    Q.parlament_budget_target_congreso_live = congresoCarriers.some(function (party) {
+        return (Q.congreso_parties_catalunya || []).includes(party) &&
+            (Number(Q[party + "_congreso_catalunya_support"]) || 0) > 0;
+    });
+    Q.parlament_budget_yes = counts.yes;
+    Q.parlament_budget_no = counts.no;
+    Q.parlament_budget_abstain = counts.abstain;
+    Q.parlament_budget_chamber_majority = counts.yes > counts.no;
+    Q.parlament_budget_cabinet_yes = cabinet.every(function (party) {
+        return position(party) == "yes";
+    });
+    Q.parlament_budget_can_pass = Q.parlament_budget_chamber_majority &&
+        Q.parlament_budget_cabinet_yes;
+    Q.parlament_budget_vote_result = {outcomes:[
+        {kind:"yes", label:"Yes", votes:counts.yes, parties:groups.yes},
+        {kind:"abstain", label:"Abstention", votes:counts.abstain, parties:groups.abstain},
+        {kind:"no", label:"No", votes:counts.no, parties:groups.no}
+    ]};
 !}
 
 = Budget Negotiations
 
-# TBD: transition gray to green!
+[? if president_gender = "m": President?][? if president_gender = "f": Presidenta?] [+ president +]'s government has proposed a budget for this [+ year +]. [? if parlament_budget_changes_made: After our ammendmends, it includes: ?] [? if not parlament_budget_changes_made: The proposal includes, as of now: ?]
 
+· [? if parlament_budget_social = 0: Cuts to social services. ?][? if parlament_budget_social = 1: A maintenance of current social services' spending. ?][? if parlament_budget_social = 2: An expansion of social services' spending. ?]
 
+· [? if parlament_budget_tax = "none": Reduction of taxes across the board, and the repealing of discretionary revenue measures. ?][? if parlament_budget_tax = "property": Higher property-transfer and other duties, retaining historically reduced rates rules. ?][? if parlament_budget_tax = "broad_income": A broader rise in autonomic taxes, including middle incomes. ?][? if parlament_budget_tax = "top_income": Higher top rates in autonomic taxes, and a new wealth tax. ?]
+
+[? if parlament_budget_county: · Funding the proposed county roads expansion.?]
+
+[? if parlament_budget_b40: · Funding the proposed "Fourth Belt" B-40 highway extension. ?]
+
+[? if parlament_budget_metro1: · Funding the finishing of Barcelona's L9 Metro line. ?]
+
+[? if parlament_budget_metro2: · Funding the expansion of Barcelona's L1 and L3 Metro lines. ?]
+
+[? if parlament_budget_shortfall > 0: This proposed budget includes a **funding gap**, which the Generalitat will have to finance with debt.?][? if parlament_budget_shortfall = 0: This proposed budget is, in principle, within projected fiscal room. ?]
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_budget_vote_result"}'></div>
+
+[? if parlament_budget_npc_deal_count > 0: We've tried our best to manouver support from [+ parlament_budget_deal_names +].[? if parlament_budget_npc_deal_cost > 0: Extra funding has also been allocated for their policy demands.?] **Note that revising the draft will void these agreements!** ?]
+
+[? if parlament_budget_player_vote = "yes" and parlament_budget_player_default = "no": Our party's support for this compromise may cause internal dissent if it passes. ?]
+
+- @pass
+- @walk_away
+- @social_cuts
+- @social_hold
+- @social_expand
+- @tax_none
+- @tax_property
+- @tax_broad_income
+- @tax_top_income
+- @territory_roads
+- @metro1
+- @metro2
+- @vote_yes
+- @vote_no
+- @approach_cup
+- @approach_psc
+- @approach_erc
+- @approach_icv
+- @approach_ciu
+
+@social_cuts
+title: Cut social spending
+view-if: parlament_budget_social != 0
+on-arrival: {!
+    Q.parlament_budget_social = 0;
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@social_hold
+title: Maintain current social spending
+view-if: parlament_budget_social != 1
+on-arrival: {!
+    Q.parlament_budget_social = 1;
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@social_expand
+title: Expand social services
+view-if: parlament_budget_social != 2
+on-arrival: {!
+    Q.parlament_budget_social = 2;
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@tax_none
+title: Reduce of taxes across the board, and the repealing of discretionary revenue measures.
+view-if: parlament_budget_tax != "none"
+on-arrival: {!
+    Q.parlament_budget_tax = "none";
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@tax_property
+title: Rise property-transfer and other duties
+subtitle: Efforts will be made to retain historically reduced rates rules
+view-if: parlament_budget_tax != "property"
+on-arrival: {!
+    Q.parlament_budget_tax = "property";
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@tax_broad_income
+title: Raise autonomic taxes broadly
+subtitle: While progressive, it will also include middle-income bands.
+view-if: parlament_budget_tax != "broad_income"
+on-arrival: {!
+    Q.parlament_budget_tax = "broad_income";
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@tax_top_income
+title: Raise top rates in autonomic taxes
+subtitle: Inclduding wealth taxes, making taxes more progressive.
+view-if: parlament_budget_tax != "top_income"
+on-arrival: {!
+    Q.parlament_budget_tax = "top_income";
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@territory_roads
+title: [? if parlament_budget_county and parlament_budget_county_available: Remove the county-roads expansion from the budget?][? if not parlament_budget_county and parlament_budget_county_available: Fund the prepared county-roads expansion?] [? if parlament_budget_b40: Remove the B-40 from the budget?][? if not parlament_budget_b40: Fund the prepared B-40?]
+view-if: parlament_budget_county_available or parlament_budget_b40_available
+on-arrival: {!
+    if (Q.parlament_budget_county_available) Q.parlament_budget_county = !Q.parlament_budget_county;
+    if (Q.parlament_budget_b40_available) Q.parlament_budget_b40 = !Q.parlament_budget_b40
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@metro1
+title: [? if parlament_budget_metro1: Remove the L9/L10 Metro project from the budget?][? if not parlament_budget_metro1: Fund the prepared L9/L10 Metro project?]
+view-if: parlament_budget_metro1_available
+on-arrival: {!
+    Q.parlament_budget_metro1 = !Q.parlament_budget_metro1;
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@metro2
+title: [? if parlament_budget_metro2: Remove the L1 & L3 Metro expansion from the budget?][? if not parlament_budget_metro2: Fund the prepared L1 & L3 Metro expansion?]
+view-if: parlament_budget_metro2_available
+on-arrival: {!
+    Q.parlament_budget_metro2 = !Q.parlament_budget_metro2;
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@vote_yes
+title: Change our party's vote to YES
+view-if: parlament_budget_player_has_seats and parlament_budget_player_position != "yes"
+choose-if: parlament_budget_player_can_yes
+unavailable-subtitle: [? if not parlament_budget_player_policy_can_yes: This budget is too far from our party's position to be approved. ?][? if parlament_budget_player_policy_can_yes: Not enough resources.?]
+on-arrival: parlament_budget_player_vote = "yes"
+go-to: review
+
+@vote_no
+title: Change our party's vote to NO
+view-if: parlament_budget_player_has_seats and parlament_budget_player_position != "no"
+on-arrival: parlament_budget_player_vote = "no"
+go-to: review
+
+@approach_cup
+title: Approach the CUP for support
+subtitle: \[-1 resources\]
+view-if: parlament_budget_can_approach_cup
+choose-if: parlament_budget_cup_deal_possible
+unavailable-subtitle: [+ parlament_budget_cup_block_reason +]
+on-arrival: parlament_budget_deal_party = "cup"
+go-to: make_deal
+
+@approach_psc
+title: Approach the PSC for support
+subtitle: \[-1 resources\]
+view-if: parlament_budget_can_approach_psc
+choose-if: parlament_budget_psc_deal_possible
+unavailable-subtitle: [+ parlament_budget_psc_block_reason +]
+on-arrival: parlament_budget_deal_party = "psc"
+go-to: make_deal
+
+@approach_erc
+title: Approach ERC for support
+subtitle: \[-1 resources\]
+view-if: parlament_budget_can_approach_erc
+choose-if: parlament_budget_erc_deal_possible
+unavailable-subtitle: [+ parlament_budget_erc_block_reason +]
+on-arrival: parlament_budget_deal_party = "erc"
+go-to: make_deal
+
+@approach_icv
+title: Approach [+ parlament_current_icv +] for support
+subtitle: \[-1 resources\]
+view-if: parlament_budget_can_approach_icv
+choose-if: parlament_budget_icv_deal_possible
+unavailable-subtitle: [+ parlament_budget_icv_block_reason +]
+on-arrival: parlament_budget_deal_party = parlament_budget_icv_target
+go-to: make_deal
+
+@approach_ciu
+title: Approach [+ parlament_budget_ciu_label +] for support
+subtitle: \[-1 resources\]
+view-if: parlament_budget_can_approach_ciu
+choose-if: parlament_budget_ciu_deal_possible
+unavailable-subtitle: [+ parlament_budget_ciu_block_reason +]
+on-arrival: parlament_budget_deal_party = parlament_budget_ciu_target
+go-to: make_deal
+
+@make_deal
+on-arrival: {!
+    var party = Q.parlament_budget_deal_party;
+    var business = ["ciu", "cdc", "dl", "pdcat", "junts"].includes(party);
+    var cost = party == "cup" ? Q.parlament_budget_cup_fiscal_cost :
+        party == "psc" ? Q.parlament_budget_psc_fiscal_cost :
+        party == "erc" ? Q.parlament_budget_erc_fiscal_cost :
+        party == Q.parlament_budget_icv_target ? Q.parlament_budget_icv_fiscal_cost :
+        Q.parlament_budget_ciu_fiscal_cost;
+    if (Q.party_resources <= Q.parlament_budget_player_resource_cost)
+        throw new Error("Not enough party resources to secure budget support");
+    Q.parlament_budget_deals.push({party:party, cost:cost,
+        kind:business ? "business" : "social"});
+    Q.party_resources -= 1;
+    Q[party + "_relations"] -= 5;
+!}
+go-to: review
+
+@pass
+title: The budget can be approved!
+subtitle: [? if parlament_budget_player_governs: \[+[+ parlament_budget_executive_grant +] budget \] ?]
+choose-if: parlament_budget_can_pass
+unavailable-subtitle: [? if not parlament_budget_chamber_majority: Not enough parliamentary support. ?][? if parlament_budget_chamber_majority and not parlament_budget_cabinet_yes: Not all parties part of the [+ cat_coalition_disp +] approve of this budget. ?]
+on-arrival: {!
+    if (!Q.parlament_budget_can_pass || Q.budget_year >= Q.year ||
+        Q.party_resources < Q.parlament_budget_player_resource_cost)
+        throw new Error("Budget approval conditions changed");
+    Q.party_resources -= Q.parlament_budget_player_resource_cost;
+    if (Q.parlament_budget_player_governs)
+        Q.government_budget = (Number(Q.government_budget) || 0) +
+            Q.parlament_budget_executive_grant;
+    function creditBudgetBurden() {
+        if (!Q.parlament_budget_player_governs) return;
+        if (Q.burdens_goal > 0 && Q.burdens_time > 0)
+            Q.burdens_done += 1;
+    }
+    var social = Q.parlament_budget_social;
+    var tax = Q.parlament_budget_tax;
+    var taxRevenue = Q.parlament_budget_tax_revenue;
+    var shortfall = Q.parlament_budget_shortfall;
+
+    // Compare enacted policy with the budget still in force. Renewing the same
+    // terms is not a fresh electoral event; executive projects have their own.
+    var old = Q.active_mods || {};
+    var previousSocial = old.budget_social_expansion && old.budget_social_expansion.active ? 2 :
+        old.budget_social_cuts && old.budget_social_cuts.active ? 0 : 1;
+    var previousTax = old.budget_tax_top_income && old.budget_tax_top_income.active ? "top_income" :
+        old.budget_tax_broad_income && old.budget_tax_broad_income.active ? "broad_income" :
+        old.budget_tax_property && old.budget_tax_property.active ? "property" :
+        old.budget_tax_progressive && old.budget_tax_progressive.active ? "top_income" :
+        old.budget_tax_moderate && old.budget_tax_moderate.active ? "legacy" : "none";
+    if (social == 2 && previousSocial < 2) creditBudgetBurden();
+    if (tax == "top_income" && previousTax != "top_income") creditBudgetBurden();
+    // The opening 2012 revenue measures mixed fees and taxes. They are a
+    // one-off inherited baseline, distinct from the selectable tax packages.
+    var taxProfiles = {
+        none:{progressive:0, broad:0, property:0},
+        legacy:{progressive:0, broad:0.5, property:0.5},
+        property:{progressive:0, broad:0, property:1},
+        broad_income:{progressive:0, broad:1, property:0},
+        top_income:{progressive:2, broad:0, property:0}
+    };
+    var socialChange = social - previousSocial;
+    var progressiveChange = taxProfiles[tax].progressive - taxProfiles[previousTax].progressive;
+    var broadChange = taxProfiles[tax].broad - taxProfiles[previousTax].broad;
+    var propertyChange = taxProfiles[tax].property - taxProfiles[previousTax].property;
+    // Roads may create a real funding gap, but their direct electoral effects
+    // belong to the executive project, not to this budget vote.
+    var policyShortfall = Math.max(0, -(1 + taxRevenue + (social == 0 ? 2 : 0) -
+        (social == 2 ? 2 : 0) - Q.parlament_budget_deal_cost));
+    var gapChange = policyShortfall - (Q.parlament_budget_policy_shortfall_current || 0);
+    var brokenSocialPromise = social < 2 && old.generalitat_concession_social &&
+        old.generalitat_concession_social.active;
+
+    var target = Q.parlament_budget_target;
+    var targetLocal = Q.parlament_budget_target_local;
+    var targetCongreso = Q.parlament_budget_target_congreso;
+
+    // The President owns the proposal. Other yes voters share a smaller part
+    // of its electoral consequences; government membership alone earns none.
+    var votes = Q.parlament_budget_positions || {};
+    var yesParties = Object.keys(votes).filter(function (party) { return votes[party] == "yes"; });
+    var presidentYes = yesParties.includes(Q.president_party);
+    var allies = yesParties.filter(function (party) { return party != Q.president_party; });
+    var allySeats = allies.reduce(function (sum, party) {
+        return sum + (Number(Q[party + "_parlament_s"]) || 0);
+    }, 0);
+    var actors = [];
+    if (presidentYes) actors.push({party:target, weight:allies.length ? 0.7 : 1});
+    for (var ally of allies) actors.push({party:ally,
+        weight:(presidentYes ? 0.3 : 1) * (Number(Q[ally + "_parlament_s"]) || 0) / allySeats});
+
+    var leftOpposition = ["cup", Q.parlament_current_icv, "erc", "psc"].find(function (party) {
+        return votes[party] == "no";
+    }) || "abstain";
+    var rightOpposition = ["ppc", "cs", Q.parlament_current_ciu, "unio"].find(function (party) {
+        return votes[party] == "no";
+    }) || "abstain";
+
+    function shiftParlament(weights, steps, benefit, alternative) {
+        if (!steps) return;
+        for (var actor of actors) {
+            for (var demographic of Object.keys(weights)) {
+                for (var constituency of Q.parlament_constituencies) {
+                    var amount = weights[demographic] * steps * actor.weight *
+                        (Q.parlament_budget_constituency_weights[constituency] || 1);
+                    if (benefit) {
+                        G.cardSupportTransfer(Q, {contest:"parlament", to:actor.party,
+                            from:"abstain", amount:amount, maxDonorFraction:0.5,
+                            constituencies:[constituency], demographics:[demographic]});
+                    } else if (alternative == "abstain") {
+                        G.cardSupportTransfer(Q, {contest:"parlament", to:"abstain",
+                            from:actor.party, amount:amount, maxDonorFraction:0.5,
+                            constituencies:[constituency], demographics:[demographic]});
+                    } else {
+                        G.cardSupportTransfer(Q, {contest:"parlament", to:alternative,
+                            from:actor.party, amount:amount * 0.7, maxDonorFraction:0.5,
+                            constituencies:[constituency], demographics:[demographic]});
+                        G.cardSupportTransfer(Q, {contest:"parlament", to:"abstain",
+                            from:actor.party, amount:amount * 0.3, maxDonorFraction:0.5,
+                            constituencies:[constituency], demographics:[demographic]});
+                    }
+                }
+            }
+        }
+    }
+
+    var socialVoters = {unemployed:1.2, young:0.9, ind:0.75,
+        middle:0.5, rural:0.35, retired:0.25};
+    var businessVoters = {buss:0.35, rural:0.15, retired:0.1};
+    shiftParlament(socialVoters, Math.abs(socialChange), socialChange > 0, leftOpposition);
+    shiftParlament(businessVoters, Math.abs(socialChange), socialChange < 0, rightOpposition);
+    shiftParlament({unemployed:0.3, young:0.25, ind:0.2, middle:0.12},
+        Math.abs(progressiveChange), progressiveChange > 0, leftOpposition);
+    shiftParlament({buss:0.4, retired:0.12, middle:0.1},
+        Math.abs(progressiveChange), progressiveChange < 0, rightOpposition);
+    shiftParlament({middle:0.35, retired:0.25, ind:0.18},
+        Math.abs(broadChange), broadChange < 0, leftOpposition);
+    shiftParlament({young:0.3, middle:0.28, buss:0.18},
+        Math.abs(propertyChange), propertyChange < 0, rightOpposition);
+    shiftParlament({buss:0.16, middle:0.12, retired:0.08},
+        Math.abs(gapChange), gapChange < 0, rightOpposition);
+    if (brokenSocialPromise) shiftParlament({young:0.4, unemployed:0.5},
+        1, false, leftOpposition);
+
+    var localLeft = targetLocal == "cup" ? "federal_left" : "cup";
+    var localRight = targetLocal == "pp" ? "ciu" : "pp";
+    var localSocialDonor = targetLocal == "psc" ? "ciu" : "psc";
+    function shiftLocal(from, to, amount) {
+        if (Q.parlament_budget_target_local_live && amount > 0 && from != to)
+            G.cardSupportTransfer(Q, {contest:"barcelona", from:from,
+            to:to, amount:amount, maxDonorFraction:0.5});
+    }
+    if (socialChange > 0) shiftLocal(localSocialDonor, targetLocal, 0.27 * socialChange);
+    if (socialChange < 0) shiftLocal(targetLocal, localLeft, -0.27 * socialChange);
+    if (socialChange < 0) shiftLocal("federal_left", targetLocal, -0.07 * socialChange);
+    if (progressiveChange > 0) shiftLocal("ciu", targetLocal, 0.08 * progressiveChange);
+    if (progressiveChange > 0) shiftLocal(targetLocal, localRight, 0.06 * progressiveChange);
+    if (progressiveChange < 0) shiftLocal(targetLocal, "federal_left", -0.06 * progressiveChange);
+    if (progressiveChange < 0) shiftLocal(localRight, targetLocal, -0.08 * progressiveChange);
+    if (broadChange > 0) shiftLocal(targetLocal, localLeft, 0.06 * broadChange);
+    if (broadChange < 0) shiftLocal(localLeft, targetLocal, -0.06 * broadChange);
+    if (propertyChange > 0) shiftLocal(targetLocal, localRight, 0.06 * propertyChange);
+    if (propertyChange < 0) shiftLocal(localRight, targetLocal, -0.06 * propertyChange);
+    if (gapChange > 0) shiftLocal(targetLocal, localRight, 0.04 * gapChange);
+    if (brokenSocialPromise) shiftLocal(targetLocal, localLeft, 0.14);
+
+    // Congreso receives only a trace of the Catalan budget signal.
+    var nationalSignal = 0.03 * socialChange + 0.01 * progressiveChange -
+        0.01 * broadChange - 0.005 * propertyChange -
+        0.01 * Math.max(0, gapChange) - (brokenSocialPromise ? 0.02 : 0);
+    if (Q.parlament_budget_target_congreso_live && nationalSignal != 0)
+        G.cardSupportTransfer(Q, {contest:"congreso",
+        from:nationalSignal > 0 ? "abstain" : targetCongreso,
+        to:nationalSignal > 0 ? targetCongreso : "abstain",
+        amount:Math.abs(nationalSignal), maxDonorFraction:0.5,
+        constituencies:["catalunya"]});
+
+    // A player can overrule a soft party preference, but members of that
+    // party remember the compromise. Hard policy vetoes cannot be overruled.
+    if (Q.parlament_budget_player_vote == "yes" &&
+        Q.parlament_budget_player_default == "no") {
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent += 6;
+            Q.erc_civic_dissent += 3;
+        } else if (Q.player_party == "cup") {
+            Q.cup_endavant_dissent += 8;
+            Q.cup_thirdsector_dissent += 5;
+            Q.cup_poblelliure_dissent += 2;
+        }
+    }
+
+    // An extended budget keeps its terms. Only a new approval retires them.
+    for (var oldId of ["generalitat_annual_budget", "budget_social_expansion",
+        "budget_social_cuts", "budget_tax_moderate", "budget_tax_progressive",
+        "budget_tax_property", "budget_tax_broad_income", "budget_tax_top_income", "no_taxes",
+        "budget_financing_shortfall", "budget_negotiated_concessions"]) {
+        G.deactivateLaw(Q, oldId, undefined, true);
+    }
+    G.registerLaw(Q, {id:"generalitat_annual_budget", title: Q.year + " Budget",
+        colour:"green", icon:"img/economy_icon.svg",
+        description:"The Parlament approved the Generalitat's budget for " + Q.year + ".",
+        targets:{}});
+    if (social == 2) {
+        G.registerLaw(Q, {id:"budget_social_expansion", title:"Social Services Expansion",
+            colour:"green", icon:"img/people_icon.svg",
+            description:"The " + Q.year + " budget greatly expands funding for public social services.",
+            targets:{welfare_index_growth:0.08, generalitat_surplus:-0.02,
+                social_dissent_eq:-2}});
+    } else if (social == 0) {
+        G.registerLaw(Q, {id:"budget_social_cuts", title:"Social Spending Cuts",
+            colour:"green", icon:"img/scissors_icon.svg",
+            description: "The " + Q.year + " budget introduces further cuts to public services.",
+            targets:{welfare_index_growth:-0.08, generalitat_surplus:0.03,
+                social_dissent_eq:2}});
+    }
+    if (tax != "none") {
+        var taxLaws = {
+            property:{id:"budget_tax_property", title:"Surgical Tax Increases",
+                description:"The " + Q.year + " budget introduces higher property-transfer and other duties, retaining historically reduced rates rules."},
+            broad_income:{id:"budget_tax_broad_income", title:"Broad Income Tax Rise",
+                description:"The " + Q.year + " budget rises autonomic taxes broadly, including middle incomes.."},
+            top_income:{id:"budget_tax_top_income", title: "Top Income and Wealth Taxes",
+                description:"The " + Q.year + " budget introduces higher top rates in autonomic taxes, and a new wealth tax."}
+        };
+        var taxLaw = taxLaws[tax];
+        G.registerLaw(Q, {id:taxLaw.id,
+            title:taxLaw.title,
+            colour: (taxLaw.id == "budget_tax_top_income" ? "green" : "orange"), icon:"img/economy_icon.svg",
+            description:taxLaw.description,
+            targets:{generalitat_surplus:0.02 * taxRevenue}});
+    } else {
+        G.registerLaw(Q, {id:taxLaw.id,
+            title: "no_taxes",
+            colour: (Q.generalit_surplus > 1.5 ? "green" : "orange"), icon:"img/economy_icon.svg",
+            description: "The " + Q.year + " budget saw a tax cut across the board.",
+            targets:{generalitat_surplus: -0.08}});
+    }
+    if (Q.parlament_budget_deal_cost > 0) {
+        // TBD: For now this is hidden, maybe make it visible?
+        G.registerLaw(Q, {id:"budget_negotiated_concessions",
+            title:"Budget: Negotiated Commitments",
+            targets:{generalitat_surplus:-0.01 * Q.parlament_budget_deal_cost,
+                welfare_index_growth:0.01 * Q.parlament_budget_social_concessions,
+                gdp_growth:0.01 * Q.parlament_budget_business_concessions}});
+    }
+    if (shortfall > 0) {
+        // TBD: For now this is hidden, maybe make it visible?
+        G.registerLaw(Q, {id:"budget_financing_shortfall", title:"Budget: Debt Financing", targets:{generalitat_surplus:-0.04 * shortfall}});
+    }
+    if (social < 2 && Q.active_mods.generalitat_concession_social &&
+        Q.active_mods.generalitat_concession_social.active) {
+        G.deactivateLaw(Q, "generalitat_concession_social",
+            "The government's budget withdrew its promised social-spending expansion.", false, "orange");
+        Q.burdens_broken = 1;
+    }
+    if (Q.parlament_budget_county) {
+        Q.territory_roads_approved = 1;
+        G.deactivateLaw(Q, "territory_county_roads", undefined, true);
+        G.registerLaw(Q, {id:"territory_county_roads", title:"County roads expansion",
+            colour:"orange", icon:"img/car_icon.svg",
+            description:"Under construction: expansion of critical road links like the C-17 and the A-27.",
+            targets:{generalitat_surplus:-0.005}});
+        if (!Q.countdowns.includes("territory_county_roads")) Q.countdowns.push("territory_county_roads");
+        Q.territory_county_roads_countdown = 12;
+    }
+    if (Q.parlament_budget_b40) {
+        Q.territory_roads_approved = 2;
+        G.deactivateLaw(Q, "territory_b40", undefined, true);
+        G.registerLaw(Q, {id:"territory_b40", title:"Barcelona's Fourth Belt",
+            colour:"orange", icon:"img/car_icon.svg",
+            description:"Under construction: B-40, Barcelona's final bypass highway.",
+            targets:{generalitat_surplus:-0.005}});
+        if (!Q.countdowns.includes("territory_b40")) Q.countdowns.push("territory_b40");
+        Q.territory_b40_countdown = 24;
+    }
+    if (Q.parlament_budget_metro1) {
+        creditBudgetBurden();
+        Q.territory_metro_approved = 1;
+        G.deactivateLaw(Q, "territory_metro1", undefined, true);
+        G.registerLaw(Q, {id:"territory_metro1", colour:"orange",
+            description:"Under construction: completing Barcelona's L9/L10 Metro lines.",
+            title:"Metro L9/L10", icon:"img/subway_icon.svg",
+            targets:{generalitat_surplus:-0.01, unemployment_recovery:0.01}});
+        if (!Q.countdowns.includes("territory_metro1")) Q.countdowns.push("territory_metro1");
+        Q.territory_metro1_countdown = 48;
+    }
+    if (Q.parlament_budget_metro2) {
+        creditBudgetBurden();
+        Q.territory_metro_approved = 2;
+        G.deactivateLaw(Q, "territory_metro2", undefined, true);
+        G.registerLaw(Q, {id:"territory_metro2", colour:"orange",
+            description:"Under construction: expanding Barcelona's L1 and L3 Metro lines.",
+            title:"Metro L1/L3", icon:"img/subway_icon.svg",
+            targets:{generalitat_surplus:-0.01, unemployment_recovery:0.01}});
+        if (!Q.countdowns.includes("territory_metro2")) Q.countdowns.push("territory_metro2");
+        Q.territory_metro2_countdown = 36;
+    }
+    Q.budget_year = Q.year;
+    Q.parlament_budget_policy_shortfall_current = policyShortfall;
+    Q.coming_from_parlament = false;
+!}
+
+The Parlament has approved the [+ year +] budget with [+ parlament_budget_yes +] votes in favour. The Generalitat can now fund the projects included in it.
+
+- @post_event
+
+@walk_away
+title: No budget agreement can be reached...
+subtitle: The Generalitat will have to continue to operate based on its [+ budget_year +] budget.
+choose-if: not parlament_budget_can_pass
+unavailable-subtitle: A majority exists in the Parlament to pass this budget.
+on-arrival: {!
+    if (Q.parlament_budget_failed_year != Q.year) {
+        var playerList = Q.player_in_jxsi ? "jxsi" :
+            Q.player_in_jxcat ? "jxcat" : Q.player_party;
+        var playerGoverns = (Q.cat_coalition || []).includes(Q.player_party) ||
+            (Q.cat_coalition || []).includes(playerList) || Q.president_party == playerList;
+        var lostChance = Q.parlament_budget_can_pass && playerGoverns;
+        var penalty = lostChance ? 0.32 : 0.18;
+
+        var target = Q.parlament_budget_target;
+        var targetLocal = Q.parlament_budget_target_local;
+        var targetCongreso = Q.parlament_budget_target_congreso;
+        for (var constituency of Q.parlament_constituencies) {
+            G.cardSupportTransfer(Q, {contest:"parlament", from:target, to:"abstain",
+                amount:penalty * (Q.parlament_budget_constituency_weights[constituency] || 1),
+                maxDonorFraction:0.5, constituencies:[constituency],
+                demographics:["middle", "young", "ind"]});
+        }
+        var old = Q.active_mods || {};
+        var previousSocial = old.budget_social_expansion && old.budget_social_expansion.active ? 2 :
+            old.budget_social_cuts && old.budget_social_cuts.active ? 0 : 1;
+        var missedRelief = Math.max(0, Q.parlament_budget_social - previousSocial);
+        if (missedRelief > 0) {
+            var votes = Q.parlament_budget_positions || {};
+            var leftAlternative = ["cup", Q.parlament_current_icv, "erc", "psc"].find(function (party) {
+                return votes[party] == "no";
+            }) || "abstain";
+            if (leftAlternative == Q.president_party || leftAlternative == target)
+                leftAlternative = "abstain";
+            for (var constituency of Q.parlament_constituencies) {
+                G.cardSupportTransfer(Q, {contest:"parlament", from:target,
+                    to:leftAlternative, amount:0.12 * missedRelief *
+                        (Q.parlament_budget_constituency_weights[constituency] || 1),
+                    maxDonorFraction:0.5, constituencies:[constituency],
+                    demographics:["young", "unemployed", "ind"]});
+            }
+        }
+        var localAlternative = targetLocal == "psc" ? "federal_left" : "psc";
+        if (Q.parlament_budget_target_local_live)
+            G.cardSupportTransfer(Q, {contest:"barcelona", from:targetLocal,
+                to:localAlternative, amount:penalty * 0.3, maxDonorFraction:0.5});
+        if (missedRelief > 0 && Q.parlament_budget_target_local_live)
+            G.cardSupportTransfer(Q, {contest:"barcelona", from:targetLocal,
+                to:targetLocal == "cup" ? "federal_left" : "cup",
+                amount:0.05 * missedRelief, maxDonorFraction:0.5});
+        if (Q.parlament_budget_target_congreso_live)
+            G.cardSupportTransfer(Q, {contest:"congreso", from:targetCongreso,
+                to:"abstain", amount:penalty * 0.04, maxDonorFraction:0.5,
+                constituencies:["catalunya"]});
+        Q.parlament_budget_failed_year = Q.year;
+    }
+    Q.coming_from_parlament = false;
+!}
+new-page: true
+
+No agreement seems to be possible... The Generalitat will have to continue to operate under its last approved budget from [+ budget_year +].
+
+- @post_event

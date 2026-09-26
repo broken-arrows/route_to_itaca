@@ -129,9 +129,19 @@ on-arrival: {!
   Q.art155_ever = false;
 
   // Government stuff:
-  Q.budget_year = 2011;
+  Q.budget_year = 2012;
+  G.registerLaw(Q, {id:"budget_social_cuts", title:"Social Spending Cuts",
+      colour:"red", icon:"img/scissors_icon.svg",
+      description:"The 2012 budget continues austerity in public services and social spending.",
+      targets:{welfare_index_growth:-0.08, generalitat_surplus:0.03, social_dissent_eq:2}});
+  G.registerLaw(Q, {id:"budget_tax_moderate", title:"Budget Revenue Measures",
+      colour:"orange", icon:"img/economy_icon.svg",
+      description:"Tax and fees increases across the board are part of the 2012 budget's fiscal measures.",
+      targets:{generalitat_surplus:0.02}});
+
   Q.climate_transition_points = 0;
   Q.territory_roads_approved = 0;  
+  Q.territory_metro_approved = 0;
 
   // start Parlament composition
   Q.parlament_seats = {

@@ -60,4 +60,17 @@ describe('Parlament coalition resolution', () => {
     expect(q.countdowns).toContain('jxcat_formation');
     expect(q.jxcat_formation_countdown).toBeGreaterThan(0);
   });
+
+  it('starts executive and burden capacity for a player governing through JxSí', () => {
+    const q = resolveCoalition({
+      player_in_jxsi: true, erc_in_jxsi: true,
+      cat_coalition: ['jxsi'], cat_coalition_abstain: [],
+      parlament_coalition_proposal_president: 'jxsi',
+      jxsi_parlament_s: 70, government_budget: 0,
+    });
+    expect(q.jxsi_in_gob).toBe(true);
+    expect(q.position_disp).toBe('Generalitat');
+    expect(q.government_budget).toBe(1);
+    expect(q.burdens_start_countdown).toBe(1);
+  });
 });
