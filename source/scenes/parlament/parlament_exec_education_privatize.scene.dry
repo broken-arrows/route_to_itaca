@@ -1,0 +1,225 @@
+title: Parlament votes on Education Privatization
+subtitle: The Catalan chamber, to make or break [? if education_minister_gender = "m": Conseller ?][? if education_minister_gender = "f": Consellera ?]of Education [+ education_minister +]'s proposal
+view-if: education_privatization_introduced
+tags: event
+new-page: true
+on-arrival: {!
+    Q.education_privatization_introduced = false
+
+    const data = [];
+
+    if (Q.si_parlament_s) {
+        data.push({
+            "id": "si",
+            "legend": "SI",
+            "name": "SI",
+            "seats": Q.si_parlament_s,
+        });
+    }
+
+    if (Q.cup_parlament_s) {
+        data.push({
+            "id": "cup",
+            "legend": "CUP",
+            "name": "CUP",
+            "seats": Q.cup_parlament_s,
+        });
+    }
+
+    if (Q.jxsi_parlament_s) {
+        data.push({
+            "id": "jxsi",
+            "legend": "JxSí",
+            "name": "JxSí",
+            "seats": Q.jxsi_parlament_s,
+        });
+    }
+
+    if (Q.icv_parlament_s) {
+        data.push({
+            "id": "icv",
+            "legend": "ICV-EUiA",
+            "name": "ICV-EUiA",
+            "seats": Q.icv_parlament_s,
+        });
+    }
+
+    if (Q.cecp_parlament_s) {
+        data.push({
+            "id": "cecp",
+            "legend": "CECP",
+            "name": "CECP",
+            "seats": Q.cecp_parlament_s,
+        });
+    }
+
+    if(Q.ecp_parlament_s) {
+        data.push({
+            "id": "ecp",
+            "legend": "ECP-PEC",
+            "name": "ECP-PEC",
+            "seats": Q.ecp_parlament_s,
+        });
+    }
+
+    if (Q.erc_parlament_s) {
+        data.push({
+            "id": "erc",
+            "legend": "ERC",
+            "name": "ERC",
+            "seats": Q.erc_parlament_s,
+        });
+    }
+
+    if (Q.csqp_parlament_s) {
+        data.push({
+            "id": "csqp",
+            "legend": "CSQP",
+            "name": "CSQP",
+            "seats": Q.csqp_parlament_s,
+        });
+    }
+
+    if (Q.psc_parlament_s) {
+        data.push({
+            "id": "psc",
+            "legend": "PSC",
+            "name": "PSC",
+            "seats": Q.psc_parlament_s,
+        });
+    }
+
+    if (Q.jxcat_parlament_s) {
+        data.push({
+            "id": "jxcat",
+            "legend": "JxCat",
+            "name": "JxCat",
+            "seats": Q.jxcat_parlament_s,
+        });
+    }
+
+    if (Q.junts_parlament_s) {
+        data.push({
+            "id": "junts",
+            "legend": "Junts",
+            "name": "Junts",
+            "seats": Q.junts_parlament_s,
+        });
+    }
+
+    if (Q.cdc_parlament_s) {
+        data.push({
+            "id": "cdc",
+            "legend": "CDC",
+            "name": "CDC",
+            "seats": Q.cdc_parlament_s,
+        });
+    }
+
+    if (Q.pdcat_parlament_s) {
+        data.push({
+            "id": "pdcat",
+            "legend": "PDeCAT",
+            "name": "PDeCAT",
+            "seats": Q.pdcat_parlament_s,
+        });
+    }
+
+    if (Q.cs_parlament_s) {
+        data.push({
+            "id": "cs",
+            "legend": "Cs",
+            "name": "Cs",
+            "seats": Q.cs_parlament_s,
+        });
+    }
+
+    if (Q.ciu_parlament_s) {
+        data.push({
+            "id": "ciu",
+            "legend": "CiU",
+            "name": "CiU",
+            "seats": Q.ciu_parlament_s,
+        });
+    }
+
+    if (Q.unio_parlament_s) {
+        data.push({
+            "id": "unio",
+            "legend": "UDC",
+            "name": "UDC",
+            "seats": Q.unio_parlament_s,
+        });
+    }
+
+    if (Q.ppc_parlament_s) {
+        data.push({
+            "id": "ppc",
+            "legend": "PPC",
+            "name": "PPC",
+            "seats": Q.ppc_parlament_s,
+        });
+    }
+
+    if (Q.pxc_parlament_s) {
+        data.push({
+            "id": "pxc",
+            "legend": "PxC",
+            "name": "PxC",
+            "seats": Q.pxc_parlament_s,
+        });
+    }
+
+    if (Q.fnc_parlament_s) {
+        data.push({
+            "id": "fnc",
+            "legend": "FNC",
+            "name": "FNC",
+            "seats": Q.fnc_parlament_s,
+        });
+    }
+
+    if (Q.vox_parlament_s) {
+        data.push({
+            "id": "vox",
+            "legend": "Vox",
+            "name": "Vox",
+            "seats": Q.vox_parlament_s,
+        });
+    }
+
+    Q.parlament_hemicycle = {
+        seats: data.map(function (p) {
+            return { party: p.id, seats: p.seats, colour: p.id };
+        }),
+        majority: Q.parlament_s_majority,
+        highlightedParty: Q.player_in_jxsi ? "jxsi" : (Q.player_in_jxcat ? "jxcat" : Q.player_party),
+    };
+!}
+role: event
+
+= Parlament votes on Education Privatization
+
+{!<div id="parlament" data-widget="hemicycle" data-props='{"configFrom":"parlament_hemicycle"}'></div>!}
+
+[? if education_minister_gender = "m": Conseller ?][? if education_minister_gender = "f": Consellera ?]of Education [+ education_minister +], working under the current [+ cat_coalition_disp +], is bringing forward quite a controversial proposal. The effective burial of the public education system is about to be voted.
+
+- @vote: Let's see where the chamber stands...
+
+@vote
+
+
+
+
+@on_yes
+on-arrival: {!
+    G.deactivateLaw(Q, "education_privatized", undefined, false, "red");
+    Q.government_budget += 1;
+    Q.education_spending = -3;
+!}
+call: generalitat_setpolicy
+
+@on_no
+on-arrival: {!
+    G.deactivateLaw(Q, "education_privatized", undefined, false, "red");
+!}

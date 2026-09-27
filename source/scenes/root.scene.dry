@@ -1364,6 +1364,7 @@ on-arrival: {!
     "cup_leadership",
     "roadmap_card",
     //generalitat
+    "generalitat_coalition",
     "generalitat_bnl",
     "generalitat_economy",
     "generalitat_education",
@@ -1373,6 +1374,7 @@ on-arrival: {!
     "generalitat_presidency",
     "generalitat_territory",
     "generalitat_vp",
+    "government_does_things_timer", //TODO!
     //erc_party
     'erc_media',
     'erc_shuffle_leadership',

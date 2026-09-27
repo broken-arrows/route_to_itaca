@@ -1,0 +1,163 @@
+title: helper set policies scene
+on-arrival: {!
+    switch (Q.education_spending) {
+        case 3:
+            if (!Q.education_public) {
+                if (Q.education_privatized_ruling) {
+                    G.registerLaw(Q, {id:"education_public", title:"Public-Preferential Education",
+                    colour:"green", icon:"img/education_icon.svg",
+                    description: "In an attempt to achieve most of the original public-only education law intent, public schools and universities cover all education needs for all residents, and efforts have been made to make those top-tier institutions. Nonetheless, some private institutions still exists for those seeking alternatives to the official circuit.",
+                    targets:{welfare_index_growth: 0.45, social_dissent_eq: 0.6, generalitat_surplus: -0.1 }});
+                } else {
+                    G.registerLaw(Q, {id:"education_public", title:"Public-Only Education",
+                    colour:"green", icon:"img/education_icon.svg",
+                    description: "In a landmark law in the Parlament, private education has effectively been banned in Catalonia. Public schools and universities cover all education needs for all residents, and efforts have been made to make those top-tier institutions.",
+                    targets:{welfare_index_growth: 0.5, social_dissent_eq: 0.7, generalitat_surplus: -0.1 }});
+                }
+                Q.education_public = true;
+            }
+        case 2:
+            if (!Q.education_modernization) {
+                Q.education_modernization = true;
+                G.registerLaw(Q, {id:"education_modernization", title:"Modernized Education",
+                colour:"green", icon:"img/education_icon.svg",
+                description: "The public education system has received a modernization revamp, bringing dedicated caretakers for infants with diverse needs, digitalization aids for schools, and targeted training for educators facing the challenges of this century.",
+                targets:{welfare_index_growth: 0.2, social_dissent_eq: 0.5, generalitat_surplus: -0.05 }});
+            }
+        case 1:
+            if (!Q.education_expansion) {
+                Q.education_expansion = true;
+                G.registerLaw(Q, {id:"education_expansion", title:"Education Funding Expanded",
+                colour:"green", icon:"img/education_icon.svg",
+                description: "With extraordinary funding rounds and provisions, teacher-to-infant ratios have been reduced and school buildings have been refurbished.",
+                targets:{welfare_index_growth: 0.15, social_dissent_eq: 0.5, generalitat_surplus: -0.03 }});
+            }
+            if (Q.education_funding < 3 && Q.education_public) {
+                G.deactivateLaw(Q, "education_public", undefined, true);
+                Q.education_public = false;
+            }
+            if (Q.education_funding < 2 && Q.education_modernization) {
+                G.deactivateLaw(Q, "education_modernization", undefined, true);
+                Q.education_modernization = false;
+            }
+            if (Q.education_ppp) {
+                G.deactivateLaw(Q, "education_ppp", undefined, true);
+                Q.education_ppp = false;
+            }
+            if (Q.education_cuts) {
+                G.deactivateLaw(Q, "education_cuts", undefined, true);
+                Q.education_cuts = false;
+            }
+            if(Q.education_privatized) {
+                G.deactivateLaw(Q, "education_privatized", undefined, true);
+                Q.education_privatized = false;
+            }
+            break;
+        case 0:
+            if (Q.education_public) {
+                G.deactivateLaw(Q, "education_public", undefined, true);
+                Q.education_public = false;
+            }
+            if (Q.education_modernization) {
+                G.deactivateLaw(Q, "education_modernization", undefined, true);
+                Q.education_modernization = false;
+            }
+            if (Q.education_expansion) {
+                G.deactivateLaw(Q, "education_expansion", undefined, true);
+                Q.education_expansion = false;
+            }
+            if (Q.education_ppp) {
+                G.deactivateLaw(Q, "education_ppp", undefined, true);
+                Q.education_ppp = false;
+            }
+            if (Q.education_cuts) {
+                G.deactivateLaw(Q, "education_cuts", undefined, true);
+                Q.education_cuts = false;
+            }
+            if(Q.education_privatized) {
+                G.deactivateLaw(Q, "education_privatized", undefined, true);
+                Q.education_privatized = false;
+            }
+            break;
+        case -3:
+            if(!Q.education_privatized) {
+                if (Q.education_privatized_ruling) {
+                    G.registerLaw(Q, {id:"education_privatized", title:"Private & Charter Education System",
+                    colour:"red", icon:"img/education_icon.svg",
+                    description: "The public education system is effectively a thing of the past. While some public schools exist to comply with the existing Spanish legal code, charter agreements remain the cornerstone of the education circuit, with purely-private schools gaining terrain each year.",
+                    targets:{welfare_index_growth:-0.8, social_dissent_eq:-5, generalitat_surplus: 0.4, gdp_growth: 0.1 }});
+                } else {
+                    G.registerLaw(Q, {id:"education_privatized", title:"De-facto Privatized Education System",
+                    colour:"red", icon:"img/education_icon.svg",
+                    description: "The public education system is effectively a thing of the past. While some guarantees for universal education access still exist via charter schools and education grants, the fact is that the most families and individuals have to bear the weight of schooling.",
+                    targets:{welfare_index_growth:-0.9, social_dissent_eq:-5, generalitat_surplus: 0.5, gdp_growth: 0.1 }});
+                }
+                Q.education_privatized = true;
+            }
+            if (Q.education_ppp) {
+                G.deactivateLaw(Q, "education_ppp", undefined, true);
+                Q.education_ppp = false;
+            }
+            if (Q.education_cuts) {
+                G.deactivateLaw(Q, "education_cuts", undefined, true);
+                Q.education_cuts = false;
+            }
+            if (Q.education_public) {
+                G.deactivateLaw(Q, "education_public", undefined, true);
+                Q.education_public = false;
+            }
+            if (Q.education_modernization) {
+                G.deactivateLaw(Q, "education_modernization", undefined, true);
+                Q.education_modernization = false;
+            }
+            if (Q.education_expansion) {
+                G.deactivateLaw(Q, "education_expansion", undefined, true);
+                Q.education_expansion = false;
+            }
+            break;
+        case -2:
+            if(!Q.education_ppp) {
+                G.registerLaw(Q, {id:"education_ppp", title:"Extended Charter Education System",
+                colour:"red", icon:"img/education_icon.svg",
+                description: "Public spending in education has been reduced to record lows. Now, the system relies more than ever on charter schools and private family spending.",
+                targets:{welfare_index_growth:-0.2, social_dissent_eq:-2, generalitat_surplus: 0.05, gdp_growth: 0.05 }});
+                Q.education_ppp = true;
+            }
+            if(Q.education_privatized) {
+                G.deactivateLaw(Q, "education_privatized", undefined, true);
+                Q.education_privatized = false;
+            }
+        case -1:
+            if (!Q.education_cuts) {
+                G.registerLaw(Q, {id:"education_cuts", title:"Education Spending Cut",
+                colour:"red", icon:"img/education_icon.svg",
+                description: "Education spending has been cut, lowering the number of teachers hired and the resources received by schools in the public system.",
+                targets:{welfare_index_growth:-0.1, social_dissent_eq:-1, generalitat_surplus: 0.03 }});
+                Q.education_cuts = true;
+            }
+            if(Q.education_privatized) {
+                G.deactivateLaw(Q, "education_privatized", undefined, true);
+                Q.education_privatized = false;
+            }
+            if (Q.education_funding == -1 && Q.education_ppp) {
+                G.deactivateLaw(Q, "education_ppp", undefined, true);
+                Q.education_ppp = false;
+            }
+            if (Q.education_public) {
+                G.deactivateLaw(Q, "education_public", undefined, true);
+                Q.education_public = false;
+            }
+            if (Q.education_modernization) {
+                G.deactivateLaw(Q, "education_modernization", undefined, true);
+                Q.education_modernization = false;
+            }
+            if (Q.education_expansion) {
+                G.deactivateLaw(Q, "education_expansion", undefined, true);
+                Q.education_expansion = false;
+            }
+            break;
+        
+    }
+!}
+
+You should NOT see this text, if you do, report a bug!! (and ask for a wish)

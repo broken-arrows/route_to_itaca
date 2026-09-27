@@ -32,7 +32,7 @@ Something must be done for this coalition to survive.
 - @easy_discard
 
 @concessions_ciu
-title: Give concessions to the [+ parlament_current_ciu +]
+title: Give concessions to [+ parlament_current_ciu +]
 view-if: player_party != parlament_current_ciu and parlament_current_ciu_relations < 55
 on-arrival: {!
     Q.erc_relations -= 2;
@@ -47,7 +47,7 @@ on-arrival: {!
 We have promised to pursue a more moderate agenda from now onwards, which has calmed down [+ parlament_current_ciu +] somewhat.
 
 @concessions_erc
-title: Give concessions to the ERC
+title: Give concessions to ERC
 view-if: player_party != "erc" and cup_relations < 55
 on-arrival: {!
     Q.erc_relations += 8;

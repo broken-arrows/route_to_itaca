@@ -9,11 +9,92 @@ frequency: 100
 tags: generalitat
 role: card-gov
 
-= Ministry of the Education
+= Ministry of Education
 
-Something something (TODO)
+TODO: More things other than funding
 
-TODO: how do these work in jxsi / jxcat cases?
+TODO: Party factions effects
+TODO: Electoral effects!
 
--@post_event: Ah yes!
--@easy_discard
+
+- @education_public
+- @education_expand
+- @revert_cuts
+- @education_de_public
+- @education_cuts
+- @education_privatize
+- @education_de_privatize
+- @post_event: We don't want to do anything in this ministry at the moment
+- @easy_discard
+
+@education_public
+title: A
+
+@education_de_public
+title: A
+
+@education_expand
+title: Expand Education funding
+subtitle: \[-1 budget\]
+choose-if: education_spending >= 0 and educaton_spending < 2
+unavailable-subtitle: Not enough budget
+
+@education_cuts
+title: Cut Education funding
+subtitle: This goes against the party line, but money does have to come from somewhere \[ +1 budget\]
+choose-if: education_spending < 3 and education_spending > -2
+unavailable-subtitle: There's nothing left to cut...
+on-arrival: {!
+    Q.education_spending -= 1;
+    Q.government_budget += 1;
+!}
+call: generalitat_setpolicy
+
+Going against the historic party line, we've had no other choice but to cut back some spending in Education. This is understandably disliked by many, let's hope this is a necessary sacrifice.
+
+@education_de_privatize
+title: Re-introduce public schooling in-force
+subtitle: \[ -2 budget\]
+view-if: education_spending = -3 and government_budget >= 2
+on-arrival: {!
+    // We should be able to activate the law here in gray mode, but need parliamentary support to pass it, TODO
+    // the final effect should be Q.education_spending -= 1; + call: generalitat_setpolicy
+    Q.government_budget -= 2;
+    Q.education_de_privatization_introduced = true;
+!}
+
+Reverting course after the disastrous policy of education privatization, we are getting the Education Ministry ready for re-opening many public schools across Catalonia. The final kick forward for this will have to come from the Parlament though, as the previous legislative changes introduced to make this possible in the first place need to be voted away.
+
+@education_privatize
+title: Work towards fully privatizing Education
+subtitle: This is considered extremely radical by much of the Catalan population, and will ultimately require approval from the Parlament. \[ +1 budget\]\[-1 resources\]
+view-if: education_spending <= -2
+choose-if: education_spending = -2 and not education_privatization_introduced and player_party != "cup"
+unavailable-subtitle: [? if education_spending = -3: Education has already been privatized! ?][? if education_privatization_introduced and not education_spending = -3: This proposal is waiting on the Parlament's approval. ?][? if player_party = "cup": There's no way our party can embark in this path. ?]
+on-arrival: {!
+    // We should be able to activate the law here in gray mode, but need parliamentary support to pass it, TODO
+    // the final effect should be Q.education_spending -= 1; + call: generalitat_setpolicy
+    Q.education_privatization_introduced = true;
+    Q.government_budget += 1;
+    Q.party_resources -= 1;
+    G.registerLaw(Q, {id:"education_privatized", title:"Fully Privatized Education",
+                colour:"gray", icon:"img/education_icon.svg",
+                description: "Pending parliamentary approval: The public education system is to effectively be a thing of the past. While some guarantees for universal education access will still exist via charter schools and education grants, the fact is that the most families and individuals will have to bear the weight of schooling.",
+                targets:{welfare_index_growth:-0.5, social_dissent_eq:-5, generalitat_surplus: 0.05, }});
+!}
+
+Against the wishes of big parts of the party, who accuse us of going against everything [+ player_party +] has stood for, we have put together a proposal for pushing the Catalan education system as close as possible to full privatization. This will, nonetheless, require approval from the Parlament.
+
+@revert_cuts
+title: Revert Education spending cuts
+view-if: education_spending < 0 and education_spending > -3
+subtitle: \[-1 budget\]
+choose-if: government_budget > 0
+unavailable-subtitle: Not enough budget.
+on-arrival: {!
+    Q.education_spending += 1;
+    Q.government_budget -= 1;
+!}
+call: generalitat_setpolicy
+
+Austerity measures affecting the Catalan public education system have been reversed, but years of spending cuts have left a mark in the system. Significant effort is still left to be done to recover and improve it.

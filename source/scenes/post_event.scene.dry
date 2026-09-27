@@ -406,7 +406,7 @@ if (Q.year + 1 > Q.budget_year) {
 // 5. Hidden triggers
 
 // Trigger governing party budget negotiations
-if (Q.year > Q.budget_year && Q.budget_year_attempted != Q.year && Q.month > 8 && !((Q[Q.player_party + "_in_jxsi"] && Q.president_party == "jxsi") || (Q[Q.player_party + "_in_jxcat"] && Q.president_party == "jxcat") || Q.president_party == Q.player_party)) {
+if (!Q.rubicon && Q.year > Q.budget_year && Q.budget_year_attempted != Q.year && Q.month > 8 && !((Q[Q.player_party + "_in_jxsi"] && Q.president_party == "jxsi") || (Q[Q.player_party + "_in_jxcat"] && Q.president_party == "jxcat") || Q.president_party == Q.player_party)) {
     var rnd = Math.random();
     if (rnd < 0.3) {
         Q.budget_parlament_trigger  = true;
@@ -414,7 +414,7 @@ if (Q.year > Q.budget_year && Q.budget_year_attempted != Q.year && Q.month > 8 &
 }
 
 // Trigger snap election on failures when trying to pass a budget
-if ((Q.budget_failed_times > 0 || (Q.next_election_year - 4 > Q.budget_year && Q.next_election_year - Q.year <= 2)) && Q.year > Q.budget_year && !((Q[Q.player_party + "_in_jxsi"] && Q.president_party == "jxsi") || (Q[Q.player_party + "_in_jxcat"] && Q.president_party == "jxcat") || Q.president_party == Q.player_party)) {
+if (!Q.rubicon && (Q.budget_failed_times > 0 || (Q.next_election_year - 4 > Q.budget_year && Q.next_election_year - Q.year <= 2)) && Q.year > Q.budget_year && !((Q[Q.player_party + "_in_jxsi"] && Q.president_party == "jxsi") || (Q[Q.player_party + "_in_jxcat"] && Q.president_party == "jxcat") || Q.president_party == Q.player_party)) {
     var rnd = Math.random();
     if (rnd < (0.1 + Q.year - Q.budget_year)) {
         Q.parlament_snap_election = 1;

@@ -175,7 +175,7 @@ on-arrival: {!
 
 @metro2
 title: Expand Barcelona's Metro lines L1 and L3
-subtitle: "Periphery" neighbourhoods will benefit from better connections. \[-1 budget\]
+subtitle: "Peripheric" neighbourhoods will benefit from better connections. \[-1 budget\]
 view-if: territory_metro = 1 and territory_metro_approved = 1
 choose-if: government_budget > 0
 unavailable-subtitle: Not enough budget.

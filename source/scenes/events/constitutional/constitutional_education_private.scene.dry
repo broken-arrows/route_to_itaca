@@ -1,0 +1,23 @@
+title: Constitutional Court rules on Education Privatization Law
+face-image: img/events/constitucional.jpg
+new-page: true
+tags: event
+view-if: 1==1
+# view-if: constitutional_education_privatization_trigger
+max-visits: 1
+role: event
+on-arrival: {!
+    // Reset policy
+    Q.education_privatized_ruling = true;
+    Q.education_privatized = false;
+    G.deactivateLaw(Q, "education_privatized", undefined, false, "red");
+    G.registerLaw(Q, {id:"education_privatized_constitutional", title:"De-facto Privatized Education System", icon:"img/education_icon.svg", colour: "red", description: "You should not see this text, if you do, report a bug!", targets: {}});
+    G.deactivateLaw(Q, "education_privatized_constitutional", "Struck down: the Constitutional Court has ruled against this law.", false, "red");
+!}
+call: generalitat_setpolicy
+
+= Constitutional Court rules on Education Privatization Law
+
+In a somewhat progressive ruling by the otherwise deeply conservative court, the recently-approved Catalan Education Privatization Law has been struck down almost entirely. While spending cuts remain and charter schools still the preferred education path, the court has ruled that the Generalitat has the obligation to provide "sufficient" public options for all those seeking them, and has set the bar at no less than 20% public school coverage for any geographic area. 
+
+- @post_event: A welcome ruling???

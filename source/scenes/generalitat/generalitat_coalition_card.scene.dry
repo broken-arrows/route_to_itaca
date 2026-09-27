@@ -1,5 +1,5 @@
 title: Coalition Affairs
-view-if: ((player_party = "erc" and erc_in_gob) or (erc_in_jxsi and jxsi_in_gob) or (erc_in_jxcat and jxcat_in_gob)) or ((player_party = "cup" and cup_in_gob) or (cup_in_jxsi and cup_in_gob) or (cup_in_jxcat and cup_in_gob)) and coalition_dissent > 30
+view-if: (((player_party = "erc" and erc_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) or ((player_party = "cup" and cup_in_gob))) and cat_coalition_dissent > 30 and generalitat_coalition_timer <= 0
 is-card: true
 face-image: img/generalitat/abracada.jpg
 card-image: img/generalitat/abracada.jpg
@@ -12,7 +12,7 @@ on-arrival: {!
     Q.player_parlament_s = Q[playerVehicle + "_parlament_s"];
 
     Q.parlament_current_ciu_relations = Q[Q.parlament_current_ciu + "_relations"];
-    Q.coalition_affairs_includes_ciu = Q.cat_coalition.includes(Q.parlament_current_ciu);
+    Q.coalition_affairs_includes_ciu = Q.cat_coalition.includes(Q.parlament_current_ciu) && Q.parlament_current_ciu != "jxsi" && Q.parlament_current_ciu != "jxcat";
     Q.coalition_affairs_includes_erc = Q.cat_coalition.includes("erc");
     Q.coalition_affairs_includes_cup = Q.cat_coalition.includes("cup");
     Q.coalition_affairs_includes_psc = Q.cat_coalition.includes("psc");
@@ -20,6 +20,7 @@ on-arrival: {!
     Q.coalition_affairs_includes_icv = Q.cat_coalition.includes(Q.parlament_current_icv);
     Q.coalition_affairs_includes_jxsi = Q.cat_coalition.includes("jxsi") && !Q.player_in_jxsi;
     Q.coalition_affairs_includes_jxcat = Q.cat_coalition.includes("jxcat") && !Q.player_in_jxcat;
+    Q.coalition_affairs_concession_target = "";
 !}
 role: card-gov
 
@@ -43,53 +44,100 @@ The current [+ cat_coalition_disp +] is struggling with internal dissent, and th
 
 @concessions_jxcat
 title: Give concessions to JxCat
-subtitle: something
-view-if: coalition_affairs_includes_jxcat and not player_in_jxcat and jxcat_relations < 55
-on-arrival: {!
-
-!}
+view-if: coalition_affairs_includes_jxcat and jxcat_relations < 55 
+on-arrival: coalition_affairs_concession_target = "jxcat"
+go-to: concessions_ciu
 
 @concessions_jxsi
-title: Give concessions to jxsi
-subtitle: something
-view-if: coalition_affairs_includes_jxsi and not player_in_jxsi and jxsi_relations < 55
-on-arrival: {!
-
-!}
+title: Give concessions to JxSí
+view-if: coalition_affairs_includes_jxsi and jxsi_relations < 55
+on-arrival: coalition_affairs_concession_target = "jxsi"
+go-to: concessions_ciu
 
 @concessions_ciu
 title: Give concessions to [+ parlament_current_ciu +]
-view-if: player_party != parlament_current_ciu and coalition_affairs_includes_ciu and parlament_current_ciu_relations < 55
+view-if: player_party != "ciu" and coalition_affairs_includes_ciu and parlament_current_ciu_relations < 55
 on-arrival: {!
-
+    if (Q.generalitat_surplus < 0) {
+        var cut_round = 2
+        while (cut_round > -3) {
+            if (Q.education_spending == cut_round) {
+                Q.education_spending -= 1;
+                cut_round = -10;
+            } else if (Q.healthcare_spending == cut_round) {
+                Q.healthcare_spending -= 1;
+                cut_round = -10
+            } else if (Q.economy_spending == cut_round) {
+                Q.economy_spending -= 1;
+                cut_round = -10
+            }
+            cut_round -= 1;
+        }
+        if (cut_round == -3) {
+            if (!Q.economy_cuts) Q.economy_cuts = 1;
+            else Q.economy_cuts += 1;
+            G.registerLaw(Q, {id:"general_cuts_" + Q.economy_cuts, title:"Extraordinary Austerity Measures of " + Q.month + " " + Q.year,
+                colour:"red", icon:"img/scissors_icon.svg",
+                description: "Spending cuts have been applied across the board in another round of austerity measures.",
+                targets:{welfare_index_growth:-0.2, social_dissent_eq:-1, generalitat_surplus: 0.1, unemployment_recovery: -0.1, gdp_growth: -0.01 }});
+        }
+    } else {
+        // TODO: move to a setpolicy system
+        if (!Q.economy_top_rates_lowered) {
+            Q.economy_top_rates_lowered = 1;
+            G.registerLaw(Q, {id:"economy_tax_cuts" + Q.economy_tax_cuts, title:"Lowered Top Rates",
+                colour:"red", icon:"img/economy_icon.svg",
+                description: "Taxes have been more or less equally across the board, though this makes the system slightly less progressive.",
+                targets:{generalitat_surplus: -0.03, gdp_growth: 0.025 }});
+        } else {
+            if (!Q.economy_tax_cuts) Q.economy_tax_cuts = 1;
+            else Q.economy_tax_cuts += 1;
+            G.registerLaw(Q, {id:"economy_tax_cuts" + Q.economy_tax_cuts, title:"Tax Reduction Package of " + Q.month + " " + Q.year,
+                colour:"orange", icon:"img/economy_icon.svg",
+                description: "Taxes have been more or less equally across the board, though this makes the system slightly less progressive.",
+                targets:{generalitat_surplus: -0.03, gdp_growth: 0.025 }});
+        }
+    }
+    if (Q.coalition_affairs_concession_target == "") {
+        Q[Q.parlament_current_ciu + "_relations"] += 8;
+        Q.burdens_done -= 1;
+    } else if (Q.coalition_affairs_concession_target != 0) {
+        Q[Q.coalition_affairs_concession_target + "_relations"] += 8;
+        Q.burdens_done -= 1;
+    }
 !}
+call: generalitat_setpolicy
+
+[? if coalition_affairs_concession_target = "": [+ parlament_current_ciu +]?][? if coalition_affairs_concession_target != "": [+ coalition_affairs_concession_target +]?] has been somewhat pleased by [? if generalitat_surplus < 0: the introduction of new, "targeted" spending cuts. ?][? if generalitat_surplus >= 0: a reduction of taxes across the board and other facilities for business. ?]Let's hope this is for the better.
 
 @concessions_erc
 title: Give concessions to ERC
 view-if: player_party != "erc" and coalition_affairs_includes_erc and erc_relations < 55
 on-arrival: {!
-
+    // TODO
 !}
 
 @concessions_psc
 title: Give concessions to the PSC
 view-if: coalition_affairs_includes_psc and psc_relations < 55
 on-arrival: {!
-
+    Q.coalition_affairs_concession_target = "psc";
+    Q.random_seed = Math.random();
 !}
+go-to: concessions_ciu if random_seed <= 0.5; concessions_icv
 
 @concessions_icv
 title: Give concessions to [+ parlament_current_icv +]
 view-if: coalition_affairs_includes_icv and parlament_current_icv_relations < 55
 on-arrival: {!
-
+    // TODO
 !}
 
 @concessions_cup
 title: Give concessions to the CUP
 view-if: player_party != "cup" and coalition_affairs_includes_cup and cup_relations < 55
 on-arrival: {!
-
+    // TODO
 !}
 
 @go_chill_demands
@@ -237,4 +285,3 @@ Let's hope this was the right move. There's no going back now.
 title: Take none of these actions
 
 It does not look like the issues plaguing our coalition will go away magically, but maybe we can find thinking out of the box instead?
-

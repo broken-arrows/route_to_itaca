@@ -628,7 +628,7 @@ go-to: review
 
 @pass
 title: The budget can be approved!
-subtitle: [? if parlament_budget_player_governs: \[+[+ parlament_budget_executive_grant +] budget \] ?]
+subtitle: [? if parlament_budget_player_governs: \[+[+ parlament_budget_executive_grant +] budget\] ?]
 choose-if: parlament_budget_can_pass
 unavailable-subtitle: [? if not parlament_budget_chamber_majority: Not enough parliamentary support. ?][? if parlament_budget_chamber_majority and not parlament_budget_cabinet_yes: Not all parties part of the [+ cat_coalition_disp +] approve of this budget. ?]
 on-arrival: {!
@@ -800,7 +800,6 @@ on-arrival: {!
         }
     }
 
-    // An extended budget keeps its terms. Only a new approval retires them.
     for (var oldId of ["generalitat_annual_budget", "budget_social_expansion",
         "budget_social_cuts", "budget_social_no_cuts", "budget_tax_moderate", "budget_tax_progressive",
         "budget_tax_property", "budget_tax_broad_income", "budget_tax_top_income", "no_taxes",
@@ -820,9 +819,9 @@ on-arrival: {!
             targets:{welfare_index_growth:-0.08, generalitat_surplus:0.03,
                 social_dissent_eq:2}});
     } else {
-        G.registerLaw(Q, {id:"budget_social_no_cuts", title:"Social Spending Cuts Stopped",
+        G.registerLaw(Q, {id:"budget_social_no_cuts", title:"New Social Spending Cuts Stopped",
             colour:"orange", icon:"img/scissors_icon.svg",
-            description: "The " + Q.year + " budget managed bring austerity to a halt.",
+            description: "The " + Q.year + " budget managed to avoid the introduction of new austerity measures.",
             targets:{welfare_index_growth:-0.01, social_dissent_eq:-0.5}});
     }
     if (tax != "none") {
@@ -841,8 +840,8 @@ on-arrival: {!
             description:taxLaw.description,
             targets:{generalitat_surplus:0.02 * taxRevenue}});
     } else {
-        G.registerLaw(Q, {id:taxLaw.id,
-            title: "no_taxes",
+        G.registerLaw(Q, {id:"no_taxes",
+            title: "Tax Relief",
             colour: (Q.generalit_surplus > 1.5 ? "green" : "orange"), icon:"img/economy_icon.svg",
             description: "The " + Q.year + " budget saw a tax cut across the board.",
             targets:{generalitat_surplus: -0.08}});

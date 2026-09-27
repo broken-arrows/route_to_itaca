@@ -7,7 +7,7 @@ on-arrival: {!
     Q.parlament_action_open = Q.parlament_timer <= 0 && !Q.cat_caretaker_gov;
     Q.coming_from_parlament = Q.parlament_action_open;
     if (Q.parlament_action_open) {
-        Q.parlament_timer += 5;
+        Q.parlament_timer += 6;
         Q.month_actions += 1;
     }
 !}
