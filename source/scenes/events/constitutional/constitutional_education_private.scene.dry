@@ -2,11 +2,11 @@ title: Constitutional Court rules on Education Privatization Law
 face-image: img/events/constitucional.jpg
 new-page: true
 tags: event
-view-if: 1==1
-# view-if: constitutional_education_privatization_trigger
+view-if: constitutional_education_privatization_trigger
 max-visits: 1
 role: event
 on-arrival: {!
+    Q.constitutional_education_privatization_trigger = false;
     // Reset policy
     Q.education_privatized_ruling = true;
     Q.education_privatized = false;

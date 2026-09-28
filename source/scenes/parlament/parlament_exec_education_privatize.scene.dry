@@ -4,7 +4,8 @@ view-if: education_privatization_introduced
 tags: event
 new-page: true
 on-arrival: {!
-    Q.education_privatization_introduced = false
+    Q.education_privatization_introduced = false;
+    Q.parlament_education_privatization_player_vote = undefined;
 
     const data = [];
 
@@ -204,22 +205,98 @@ role: event
 
 [? if education_minister_gender = "m": Conseller ?][? if education_minister_gender = "f": Consellera ?]of Education [+ education_minister +], working under the current [+ cat_coalition_disp +], is bringing forward quite a controversial proposal. The effective burial of the public education system is about to be voted.
 
-- @vote: Let's see where the chamber stands...
+- @vote_no: We'll, of course, vote No.
+- @vote_yes: Exceptional times call for exceptional measures, we'll vote Yes.
+- @prevent_law
+
+@vote_no
+on-arrival: parlament_education_privatization_player_vote = "no"
+go-to:vote
+
+@vote_yes
+choose-if: player_party != "cup"
+unavailable-subtitle: Our party will never vote for this.
+on-arrival: parlament_education_privatization_player_vote = "yes"
+go-to:vote
+
+@prevent_law
+title: Block the discussion and voting of the law to take place in the first place!
+subtitle: Speaker of the Hose [+ speaker +] can argue that it is against the Statute of Autonomy and thus, does not pass the bar to get to the floor. It will require a bit of legal shielding efforts to make such an argument, though. \[-1 resources\]
+choose-if: party_resources > 0 and (speaker_party = player_party or (speaker_party = "jxsi" and player_in_jxsi) or (speaker_party = "jxcat" and player_in_jxcat))
+unavailable-subtitle: [? if not (speaker_party = player_party or (speaker_party = "jxsi" and player_in_jxsi) or (speaker_party = "jxcat" and player_in_jxcat)): We do not control the Speaker of the House.  ?][? if (speaker_party = player_party or (speaker_party = "jxsi" and player_in_jxsi) or (speaker_party = "jxcat" and player_in_jxcat)): Not enough resources. ?]
+on-arrival: party_resources -= 1
+go-to: on_no
+
+Thanks to some clever maneuvering, Speaker of the House [+ speaker +] has been able to get the Parlament legal services on [? if speaker_gender = "f": her?][? if speaker_gender = "m": his?] side and block the proposal before it even reached the floor.
 
 @vote
+on-arrival: {!
+    var proposer = Q.education_minister_party;
+    var playerCarrier = Q.player_in_jxsi && Q.jxsi_parlament_s > 0 ? "jxsi" :
+        Q.player_in_jxcat && Q.jxcat_parlament_s > 0 ? "jxcat" : Q.player_party;
+    var playerYes = Q.player_party != "cup" && Q.parlament_education_privatization_player_vote == "yes";
+    var parties = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_education_privatization_yes = 0;
+    Q.parlament_education_privatization_no = 0;
+    Q.parlament_education_privatization_abst = 0;
+    for (const party of parties) {
+        var seats = Q[party + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        var position = "no";
+        if (["cs", "vox", "pxc", "fnc"].includes(party)) {
+            position = "yes";
+        } else if (party == "ppc" && proposer == "cs" && Q.cat_coalition.includes("cs")) {
+            position = "yes";
+        } else if (party == "pdcat" || party == "unio") {
+            position = "abstain";
+        }
+        // A unity list carries its constituents' seats once; the player's
+        // choice controls that carrier only while the player belongs to it.
+        if (party == playerCarrier) position = playerYes ? "yes" : "no";
+        if (position == "yes") {
+            Q.parlament_education_privatization_yes += seats;
+            yesParties.push({label:labels[party]});
+        } else if (position == "abstain") {
+            Q.parlament_education_privatization_abst += seats;
+            abstainParties.push({label:labels[party]});
+        } else {
+            Q.parlament_education_privatization_no += seats;
+            noParties.push({label:labels[party]});
+        }
+    }
+    Q.parlament_education_privatization_passed = Q.parlament_education_privatization_yes > Q.parlament_education_privatization_no && Q.education_spending == -2;
+    Q.parlament_education_privatization_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_education_privatization_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_education_privatization_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_education_privatization_no,parties:noParties}
+    ]};
+    G.deactivateLaw(Q, "education_privatization_proposal", undefined, true);
+!}
+go-to: on_yes if parlament_education_privatization_passed; on_no if not parlament_education_privatization_passed
 
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_education_privatization_vote_result"}'></div>
 
-
+[? if not parlament_education_privatization_passed: The Parlament has rejected [+ education_minister +]'s  proposal. ?]
 
 @on_yes
 on-arrival: {!
-    G.deactivateLaw(Q, "education_privatized", undefined, false, "red");
-    Q.government_budget += 1;
+    Q.government_budget += 2;
     Q.education_spending = -3;
+    if (!Q.education_privatized_ruling) {
+        if (!Q.countdowns.includes("constitutional_education_privatization")) Q.countdowns.push("constitutional_education_privatization");
+        Q.constitutional_education_privatization_countdown = 6;
+    }
 !}
 call: generalitat_setpolicy
 
+In a landmark ruling, completely unthinkable not so long ago, the Parlament has approved the effective privatization of education. Whatever is left of public schooling is to be completely replaced by private schools and, in the best case scenario for vulnerable families, charter agreements and grants. [? if education_privatized_ruling: With the existing Constitutional ruling against full privatization, it will have to balance some level of public commitment at the very least. ?]
+
+- @post_event
+
 @on_no
-on-arrival: {!
-    G.deactivateLaw(Q, "education_privatized", undefined, false, "red");
-!}
+
+Public Education in Catalonia, even if on the verge of collapsing, will live to fight another day, at least for now.
+
+- @post_event

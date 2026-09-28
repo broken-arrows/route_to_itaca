@@ -1,0 +1,23 @@
+title: Constitutional Court rules on Public-Only Education Law
+face-image: img/events/constitucional.jpg
+new-page: true
+tags: event
+view-if: constitutional_education_public_trigger
+max-visits: 1
+role: event
+on-arrival: {!
+    Q.constitutional_education_public_trigger = false;
+    Q.education_public_ruling = true;
+    Q.education_public = false;
+    G.deactivateLaw(Q, "education_public", undefined, false, "red");
+    G.registerLaw(Q, {id:"education_public_constitutional", title:"Public-Only Education Law", icon:"img/education_icon.svg", colour:"red",
+        description:"The Constitutional Court has struck down the legal framework for Public-only Education.", targets:{}});
+    G.deactivateLaw(Q, "education_public_constitutional", "Struck down: the Constitutional Court has struck down the legal framework for Public-only Education.", false, "red");
+!}
+call: generalitat_setpolicy
+
+= Constitutional Court rules on Public-Only Education Law
+
+The Constitutional Court has struck down the Catalan landmark piece of legislation introducing a Public-Only Education system. While the Generalitat can and is in its right to expand resources and provisions for the public system, the families' "freedom to choose" their education system for their children should still be respected. This effectively kills any aspirations for a fully structural reform to the Education system as the Parlament was hoping for.
+
+- @post_event: I don't know what we were even expecting...

@@ -1,0 +1,104 @@
+title: Parlament votes on Public-Only Education
+subtitle: The Catalan chamber, to make or break [? if education_minister_gender = "m": Conseller ?][? if education_minister_gender = "f": Consellera ?]of Education [+ education_minister +]'s proposal
+view-if: education_public_introduced
+tags: event
+new-page: true
+role: event
+on-arrival: {!
+    Q.education_public_introduced = false;
+    Q.parlament_education_public_player_vote = undefined;
+    var parties = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    Q.parlament_hemicycle = {
+        seats: parties.filter(function (party) {
+            return Q[party + "_parlament_s"] > 0;
+        }).map(function (party) {
+            return {party:party, seats:Q[party + "_parlament_s"], colour:party};
+        }),
+        majority: Q.parlament_s_majority,
+        highlightedParty: Q.player_in_jxsi ? "jxsi" : (Q.player_in_jxcat ? "jxcat" : Q.player_party)
+    };
+!}
+
+= Parlament votes on Public-Only Education
+
+{!<div id="parlament" data-widget="hemicycle" data-props='{"configFrom":"parlament_hemicycle"}'></div>!}
+
+[? if education_minister_gender = "m": Conseller ?][? if education_minister_gender = "f": Consellera ?]of Education [+ education_minister +], working under the current [+ cat_coalition_disp +] is asking the chamber to replace private and charter education with a public-only system. Under this full rework of the education legal framework, public schools and universities would cover every resident's education needs. [? if education_public_ruling: The existing Constitutional ruling, does nonetheless prevent the full banning of private institutions, so the bill does have to work within these limits. ?]
+
+- @vote_no: This may not be the time for this, we'll have to vote against it.
+- @vote_yes: We'll, of course, vote for fully public education!
+
+@vote_no
+on-arrival: parlament_education_public_player_vote = "no"
+go-to: vote
+
+@vote_yes
+on-arrival: parlament_education_public_player_vote = "yes"
+go-to: vote
+
+@vote
+on-arrival: {!
+    var playerCarrier = Q.player_in_jxsi && Q.jxsi_parlament_s > 0 ? "jxsi" :
+        Q.player_in_jxcat && Q.jxcat_parlament_s > 0 ? "jxcat" : Q.player_party;
+    var parties = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_education_public_yes = 0;
+    Q.parlament_education_public_no = 0;
+    Q.parlament_education_public_abst = 0;
+    for (const party of parties) {
+        var seats = Q[party + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        var position = "no";
+        if (["erc", "cup", "icv", "csqp", "cecp", "ecp"].includes(party)) {
+            position = "yes";
+        } else if (party == "psc" || party == "si") {
+            position = "abstain";
+        }
+        // The player's choice controls the list carrying their seats.
+        if (party == playerCarrier) position = Q.parlament_education_public_player_vote == "yes" ? "yes" : "no";
+        if (position == "yes") {
+            Q.parlament_education_public_yes += seats;
+            yesParties.push({label:labels[party]});
+        } else if (position == "abstain") {
+            Q.parlament_education_public_abst += seats;
+            abstainParties.push({label:labels[party]});
+        } else {
+            Q.parlament_education_public_no += seats;
+            noParties.push({label:labels[party]});
+        }
+    }
+    Q.parlament_education_public_passed = Q.parlament_education_public_yes > Q.parlament_education_public_no &&
+        Q.education_spending == 2 && Q.government_budget >= 2;
+    Q.parlament_education_public_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_education_public_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_education_public_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_education_public_no,parties:noParties}
+    ]};
+    G.deactivateLaw(Q, "education_public_proposal", undefined, true);
+!}
+go-to: on_yes if parlament_education_public_passed; on_no if not parlament_education_public_passed
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_education_public_vote_result"}'></div>
+
+@on_yes
+on-arrival: {!
+    Q.government_budget -= 2;
+    Q.education_spending = 3;
+    if (!Q.education_public_ruling) {
+        if (!Q.countdowns.includes("constitutional_education_public")) Q.countdowns.push("constitutional_education_public");
+        Q.constitutional_education_public_countdown = 6;
+    }
+!}
+call: generalitat_setpolicy
+
+The Parlament has approved [? if not education_public_ruling: a public-only ?][? if education_public_ruling: a public-preferential ?] education system. Expanded public provisions are set to cover all education needs. History is being made today in the Parlament!
+
+- @post_event
+
+@on_no
+
+The proposal by [+ education_minister +] has not passed. The public system will have to continue to coexist with private and charter institutions.
+
+- @post_event
+

@@ -3,7 +3,7 @@ on-arrival: {!
     switch (Q.education_spending) {
         case 3:
             if (!Q.education_public) {
-                if (Q.education_privatized_ruling) {
+                if (Q.education_public_ruling) {
                     G.registerLaw(Q, {id:"education_public", title:"Public-Preferential Education",
                     colour:"green", icon:"img/education_icon.svg",
                     description: "In an attempt to achieve most of the original public-only education law intent, public schools and universities cover all education needs for all residents, and efforts have been made to make those top-tier institutions. Nonetheless, some private institutions still exists for those seeking alternatives to the official circuit.",
@@ -32,11 +32,11 @@ on-arrival: {!
                 description: "With extraordinary funding rounds and provisions, teacher-to-infant ratios have been reduced and school buildings have been refurbished.",
                 targets:{welfare_index_growth: 0.15, social_dissent_eq: 0.5, generalitat_surplus: -0.03 }});
             }
-            if (Q.education_funding < 3 && Q.education_public) {
+            if (Q.education_spending < 3 && Q.education_public) {
                 G.deactivateLaw(Q, "education_public", undefined, true);
                 Q.education_public = false;
             }
-            if (Q.education_funding < 2 && Q.education_modernization) {
+            if (Q.education_spending < 2 && Q.education_modernization) {
                 G.deactivateLaw(Q, "education_modernization", undefined, true);
                 Q.education_modernization = false;
             }
@@ -139,7 +139,7 @@ on-arrival: {!
                 G.deactivateLaw(Q, "education_privatized", undefined, true);
                 Q.education_privatized = false;
             }
-            if (Q.education_funding == -1 && Q.education_ppp) {
+            if (Q.education_spending == -1 && Q.education_ppp) {
                 G.deactivateLaw(Q, "education_ppp", undefined, true);
                 Q.education_ppp = false;
             }

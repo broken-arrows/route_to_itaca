@@ -1,0 +1,101 @@
+title: Parlament votes on Restoring Public Schooling
+subtitle: The Catalan chamber considers [? if education_minister_gender = "m": Conseller ?][? if education_minister_gender = "f": Consellera ?]of Education [+ education_minister +]'s proposal
+view-if: education_de_privatization_introduced
+tags: event
+new-page: true
+role: event
+on-arrival: {!
+    Q.education_de_privatization_introduced = false;
+    Q.parlament_education_de_privatization_player_vote = undefined;
+    var parties = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    Q.parlament_hemicycle = {
+        seats: parties.filter(function (party) {
+            return Q[party + "_parlament_s"] > 0;
+        }).map(function (party) {
+            return {party:party, seats:Q[party + "_parlament_s"], colour:party};
+        }),
+        majority: Q.parlament_s_majority,
+        highlightedParty: Q.player_in_jxsi ? "jxsi" : (Q.player_in_jxcat ? "jxcat" : Q.player_party)
+    };
+!}
+
+= Parlament votes on Restoring Public Schooling
+
+{!<div id="parlament" data-widget="hemicycle" data-props='{"configFrom":"parlament_hemicycle"}'></div>!}
+
+[? if education_minister_gender = "m": Conseller ?][? if education_minister_gender = "f": Consellera ?]of Education [+ education_minister +], working under the current [+ cat_coalition_disp +], is proposing to repeal the privatization framework and reopen public schools. Charter and private education would remain, but families would once again have a meaningful public alternative.
+
+- @vote_no: Exceptional times call for exceptional measures, we'll vote against this.
+- @vote_yes: We'll, of course, vote in favour of restoring public schooling.
+
+@vote_no
+on-arrival: parlament_education_de_privatization_player_vote = "no"
+unavailable-subtitle: Our party will never vote for this.
+choose-if: player_party != "cup"
+go-to: vote
+
+@vote_yes
+on-arrival: parlament_education_de_privatization_player_vote = "yes"
+go-to: vote
+
+@vote
+on-arrival: {!
+    var playerCarrier = Q.player_in_jxsi && Q.jxsi_parlament_s > 0 ? "jxsi" :
+        Q.player_in_jxcat && Q.jxcat_parlament_s > 0 ? "jxcat" : Q.player_party;
+    var parties = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_education_de_privatization_yes = 0;
+    Q.parlament_education_de_privatization_no = 0;
+    Q.parlament_education_de_privatization_abst = 0;
+    for (const party of parties) {
+        var seats = Q[party + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        var position = "no";
+        if (!["cs", "vox", "pxc", "fnc"].includes(party)) {
+            position = "yes";
+        }
+        if (party == "ppc" && Q.cat_coalition.includes("cs")) position = "no";
+        // The player's choice controls the list carrying their seats.
+        if (party == playerCarrier) position = Q.parlament_education_de_privatization_player_vote == "yes" ? "yes" : "no";
+        if (position == "yes") {
+            Q.parlament_education_de_privatization_yes += seats;
+            yesParties.push({label:labels[party]});
+        } else if (position == "abstain") {
+            Q.parlament_education_de_privatization_abst += seats;
+            abstainParties.push({label:labels[party]});
+        } else {
+            Q.parlament_education_de_privatization_no += seats;
+            noParties.push({label:labels[party]});
+        }
+    }
+    Q.parlament_education_de_privatization_passed = Q.parlament_education_de_privatization_yes > Q.parlament_education_de_privatization_no &&
+        Q.education_spending == -3 && Q.government_budget >= 2;
+    Q.parlament_education_de_privatization_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_education_de_privatization_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_education_de_privatization_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_education_de_privatization_no,parties:noParties}
+    ]};
+    G.deactivateLaw(Q, "education_de_privatization_proposal", undefined, true);
+!}
+go-to: on_yes if parlament_education_de_privatization_passed; on_no if not parlament_education_de_privatization_passed
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_education_de_privatization_vote_result"}'></div>
+
+@on_yes
+on-arrival: {!
+    Q.government_budget -= 2;
+    Q.education_spending = -2;
+!}
+call: generalitat_setpolicy
+
+In a joyous moment for Catalan history, the Parlament has finally decided to push ahead and re-establish the Catalan Public Education system as it should be! The system, of course, still carries deep spending cuts and deficiencies, but rebuilding it can at least now begin.
+
+- @post_event
+
+@on_no
+
+The proposal has not passed. The privatization framework remains in force, and public schooling will remain a mere formal structure which, in reality, does next to nothing.
+
+- @post_event
+
