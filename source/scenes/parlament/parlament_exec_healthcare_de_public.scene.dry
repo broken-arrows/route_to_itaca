@@ -1,0 +1,100 @@
+title: Parlament votes on Reopening Private Healthcare
+subtitle: The Catalan chamber considers [? if health_minister_gender = "m": Conseller ?][? if health_minister_gender = "f": Consellera ?]of Health [+ health_minister +]'s proposal
+view-if: healthcare_de_public_introduced
+tags: event
+new-page: true
+role: event
+on-arrival: {!
+    Q.healthcare_de_public_introduced = false;
+    Q.parlament_healthcare_de_public_player_vote = undefined;
+    var parties = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    Q.parlament_hemicycle = {
+        seats: parties.filter(function (party) {
+            return Q[party + "_parlament_s"] > 0;
+        }).map(function (party) {
+            return {party:party, seats:Q[party + "_parlament_s"], colour:party};
+        }),
+        majority: Q.parlament_s_majority,
+        highlightedParty: Q.player_in_jxsi ? "jxsi" : (Q.player_in_jxcat ? "jxcat" : Q.player_party)
+    };
+!}
+
+= Parlament votes on Reopening Private Healthcare
+
+{!<div id="parlament" data-widget="hemicycle" data-props='{"configFrom":"parlament_hemicycle"}'></div>!}
+
+[? if health_minister_gender = "m": Conseller ?][? if health_minister_gender = "f": Consellera ?]of Health [+ health_minister +], working under the current [+ cat_coalition_disp +], is asking the chamber to replace the public-only framework, re-introducing a more mixed healthcare approach. 
+
+- @vote_no: We'll vote against this backsliding!
+- @vote_yes: We'll vote in favour of such a proposal
+
+@vote_no
+on-arrival: parlament_healthcare_de_public_player_vote = "no"
+go-to: vote
+
+@vote_yes
+on-arrival: parlament_healthcare_de_public_player_vote = "yes"
+go-to: vote
+
+@vote
+on-arrival: {!
+    var playerCarrier = Q.player_in_jxsi && Q.jxsi_parlament_s > 0 ? "jxsi" :
+        Q.player_in_jxcat && Q.jxcat_parlament_s > 0 ? "jxcat" : Q.player_party;
+    var parties = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var yesParties = [], noParties = [], abstainParties = [];
+    Q.parlament_healthcare_de_public_yes = 0;
+    Q.parlament_healthcare_de_public_no = 0;
+    Q.parlament_healthcare_de_public_abst = 0;
+    for (const party of parties) {
+        var seats = Q[party + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        var position = "no";
+        if (["ciu", "cdc", "dl", "pdcat", "jxsi", "jxcat", "junts", "psc", "ppc", "cs", "unio", "vox", "pxc", "fnc"].includes(party)) {
+            position = "yes";
+        } else if (party == "si") {
+            position = "abstain";
+        }
+        // The player's choice controls the list carrying their seats.
+        if (party == playerCarrier) position = Q.parlament_healthcare_de_public_player_vote == "yes" ? "yes" : "no";
+        if (position == "yes") {
+            Q.parlament_healthcare_de_public_yes += seats;
+            yesParties.push({label:labels[party]});
+        } else if (position == "abstain") {
+            Q.parlament_healthcare_de_public_abst += seats;
+            abstainParties.push({label:labels[party]});
+        } else {
+            Q.parlament_healthcare_de_public_no += seats;
+            noParties.push({label:labels[party]});
+        }
+    }
+    Q.parlament_healthcare_de_public_passed = Q.parlament_healthcare_de_public_yes > Q.parlament_healthcare_de_public_no &&
+        Q.healthcare_spending == 3;
+    Q.parlament_healthcare_de_public_vote_result = {outcomes:[
+        {kind:"yes",label:"Yes",votes:Q.parlament_healthcare_de_public_yes,parties:yesParties},
+        {kind:"abstain",label:"Abstention",votes:Q.parlament_healthcare_de_public_abst,parties:abstainParties},
+        {kind:"no",label:"No",votes:Q.parlament_healthcare_de_public_no,parties:noParties}
+    ]};
+    G.deactivateLaw(Q, "healthcare_de_public_proposal", undefined, true);
+!}
+go-to: on_yes if parlament_healthcare_de_public_passed; on_no if not parlament_healthcare_de_public_passed
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"parlament_healthcare_de_public_vote_result"}'></div>
+
+@on_yes
+on-arrival: {!
+    Q.government_budget += 1;
+    Q.healthcare_spending = 2;
+!}
+call: generalitat_setpolicy
+
+The Parlament has re-introduced a mixed approach to healthcare. Private hospitals and clinics can expand beyond the public-only framework's restrictions, while the expanded public services remain. Let's hope this does not get as bad as it once was...
+
+- @post_event
+
+@on_no
+
+The proposal has not passed! The Public-Only system will continue to operate as it has so far.
+
+- @post_event
+

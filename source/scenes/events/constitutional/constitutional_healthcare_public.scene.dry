@@ -1,0 +1,23 @@
+title: Constitutional Court rules on Public-Only Healthcare Law
+face-image: img/events/constitucional.jpg
+new-page: true
+tags: event
+view-if: constitutional_healthcare_public_trigger
+max-visits: 1
+role: event
+on-arrival: {!
+    Q.constitutional_healthcare_public_trigger = false;
+    Q.healthcare_public_ruling = true;
+    Q.healthcare_public = false;
+    G.deactivateLaw(Q, "healthcare_public", undefined, false, "red");
+    G.registerLaw(Q, {id:"healthcare_public_constitutional", title:"Public-Only Healthcare Law", icon:"img/health_icon.svg", colour:"red",
+        description:"T", targets:{}});
+    G.deactivateLaw(Q, "healthcare_public_constitutional", "Struck down: the Constitutional Court has ruled against almost the entirety of this law.", false, "red");
+!}
+call: generalitat_setpolicy
+
+= Constitutional Court rules on Public-Only Healthcare Law
+
+The Constitutional Court has struck down the restrictions that effectively mad the public service the only provider of healthcare in Catalonia. The Court has held strong in that the freedom of private healthcare enterprise cannot be overridden, as it is both state-law and constitutionally guaranteed.
+
+- @post_event: I don't know what we were even expecting...

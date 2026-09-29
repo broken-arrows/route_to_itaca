@@ -50,7 +50,7 @@ All executive preparations have been made, and a landmark law is ready to make i
 @education_de_public
 title: Re-introduce some private-circuit Education
 view-if: education_spending = 3
-subtitle: Requires the Parlament's approval \[+1 budget if passed\]\[-1 resources\]
+subtitle: Requires the Parlament's approval \[ +1 budget if passed\]\[-1 resources\]
 choose-if: not education_de_public_introduced and party_resources > 0
 unavailable-subtitle: [? if education_de_public_introduced: This proposal is waiting on the Parlament's approval. ?][? if party_resources <= 0: Not enough resources. ?]
 on-arrival: {!
@@ -93,14 +93,14 @@ Going against the historic party line, we've had no other choice but to cut back
 
 @education_de_privatize
 title: Re-introduce public schooling in-force
-subtitle: Requires the Parlament's approval \[-2 budget if passed\]\[-1 resources\]
+subtitle: This will require the Parlament's approval \[-2 budget if passed\]\[-1 resources\]
 view-if: education_spending = -3
 choose-if: not education_de_privatization_introduced and government_budget >= 2 and party_resources > 0
 unavailable-subtitle: [? if education_de_privatization_introduced: This proposal is waiting on the Parlament's approval. ?][? if government_budget < 2: Not enough budget. ?][? if party_resources <= 0: Not enough resources. ?]
 on-arrival: {!
     Q.education_de_privatization_introduced = true;
     Q.party_resources -= 1;
-    G.registerLaw(Q, {id:"education_de_privatization_proposal", title:"Restore Public Schooling Proposal",
+    G.registerLaw(Q, {id:"education_de_privatization_proposal", title:"Restored Public Education",
                 colour:"gray", icon:"img/education_icon.svg",
                 description:"Pending parliamentary approval: Public schools would reopen alongside the remaining charter and private institutions, reversing full privatization.",
                 targets:{}});
@@ -120,7 +120,7 @@ on-arrival: {!
     G.registerLaw(Q, {id:"education_privatization_proposal", title:"Fully Privatized Education",
                 colour:"gray", icon:"img/education_icon.svg",
                 description: "Pending parliamentary approval: The public education system is to effectively be a thing of the past. While some guarantees for universal education access will still exist via charter schools and education grants, the fact is that the most families and individuals will have to bear the weight of schooling.",
-                targets:{social_dissent_eq: -3, generalitat_surplus: 0.05}});
+                targets:{social_dissent_eq: 3, generalitat_surplus: 0.05}});
 !}
 
 Against the wishes of big parts of the party, who accuse us of going against everything [+ player_party +] has stood for, we have put together a proposal for pushing the Catalan education system as close as possible to full privatization. This will, nonetheless, require approval from the Parlament.

@@ -7,12 +7,12 @@ on-arrival: {!
                     G.registerLaw(Q, {id:"education_public", title:"Public-Preferential Education",
                     colour:"green", icon:"img/education_icon.svg",
                     description: "In an attempt to achieve most of the original public-only education law intent, public schools and universities cover all education needs for all residents, and efforts have been made to make those top-tier institutions. Nonetheless, some private institutions still exists for those seeking alternatives to the official circuit.",
-                    targets:{welfare_index_growth: 0.45, social_dissent_eq: 0.6, generalitat_surplus: -0.1 }});
+                    targets:{welfare_index_growth: 0.45, social_dissent_eq: -0.6, generalitat_surplus: -0.1 }});
                 } else {
                     G.registerLaw(Q, {id:"education_public", title:"Public-Only Education",
                     colour:"green", icon:"img/education_icon.svg",
                     description: "In a landmark law in the Parlament, private education has effectively been banned in Catalonia. Public schools and universities cover all education needs for all residents, and efforts have been made to make those top-tier institutions.",
-                    targets:{welfare_index_growth: 0.5, social_dissent_eq: 0.7, generalitat_surplus: -0.1 }});
+                    targets:{welfare_index_growth: 0.5, social_dissent_eq: -0.7, generalitat_surplus: -0.1 }});
                 }
                 Q.education_public = true;
             }
@@ -22,15 +22,15 @@ on-arrival: {!
                 G.registerLaw(Q, {id:"education_modernization", title:"Modernized Education",
                 colour:"green", icon:"img/education_icon.svg",
                 description: "The public education system has received a modernization revamp, bringing dedicated caretakers for infants with diverse needs, digitalization aids for schools, and targeted training for educators facing the challenges of this century.",
-                targets:{welfare_index_growth: 0.2, social_dissent_eq: 0.5, generalitat_surplus: -0.05 }});
+                targets:{welfare_index_growth: 0.2, social_dissent_eq: -0.5, generalitat_surplus: -0.05 }});
             }
         case 1:
             if (!Q.education_expansion) {
                 Q.education_expansion = true;
-                G.registerLaw(Q, {id:"education_expansion", title:"Education Funding Expanded",
+                G.registerLaw(Q, {id:"education_expansion", title:"Expanded Education Funding",
                 colour:"green", icon:"img/education_icon.svg",
                 description: "With extraordinary funding rounds and provisions, teacher-to-infant ratios have been reduced and school buildings have been refurbished.",
-                targets:{welfare_index_growth: 0.15, social_dissent_eq: 0.5, generalitat_surplus: -0.03 }});
+                targets:{welfare_index_growth: 0.15, social_dissent_eq: -0.5, generalitat_surplus: -0.03 }});
             }
             if (Q.education_spending < 3 && Q.education_public) {
                 G.deactivateLaw(Q, "education_public", undefined, true);
@@ -85,12 +85,12 @@ on-arrival: {!
                     G.registerLaw(Q, {id:"education_privatized", title:"Private & Charter Education System",
                     colour:"red", icon:"img/education_icon.svg",
                     description: "The public education system is effectively a thing of the past. While some public schools exist to comply with the existing Spanish legal code, charter agreements remain the cornerstone of the education circuit, with purely-private schools gaining terrain each year.",
-                    targets:{welfare_index_growth:-0.8, social_dissent_eq:-5, generalitat_surplus: 0.4, gdp_growth: 0.1 }});
+                    targets:{welfare_index_growth:-0.8, social_dissent_eq:5, generalitat_surplus: 0.4, gdp_growth: 0.1 }});
                 } else {
                     G.registerLaw(Q, {id:"education_privatized", title:"De-facto Privatized Education System",
                     colour:"red", icon:"img/education_icon.svg",
                     description: "The public education system is effectively a thing of the past. While some guarantees for universal education access still exist via charter schools and education grants, the fact is that the most families and individuals have to bear the weight of schooling.",
-                    targets:{welfare_index_growth:-0.9, social_dissent_eq:-5, generalitat_surplus: 0.5, gdp_growth: 0.1 }});
+                    targets:{welfare_index_growth:-0.9, social_dissent_eq:5, generalitat_surplus: 0.5, gdp_growth: 0.1 }});
                 }
                 Q.education_privatized = true;
             }
@@ -120,19 +120,15 @@ on-arrival: {!
                 G.registerLaw(Q, {id:"education_ppp", title:"Extended Charter Education System",
                 colour:"red", icon:"img/education_icon.svg",
                 description: "Public spending in education has been reduced to record lows. Now, the system relies more than ever on charter schools and private family spending.",
-                targets:{welfare_index_growth:-0.2, social_dissent_eq:-2, generalitat_surplus: 0.05, gdp_growth: 0.05 }});
+                targets:{welfare_index_growth:-0.2, social_dissent_eq:2, generalitat_surplus: 0.05, gdp_growth: 0.05 }});
                 Q.education_ppp = true;
-            }
-            if(Q.education_privatized) {
-                G.deactivateLaw(Q, "education_privatized", undefined, true);
-                Q.education_privatized = false;
             }
         case -1:
             if (!Q.education_cuts) {
                 G.registerLaw(Q, {id:"education_cuts", title:"Education Spending Cut",
                 colour:"red", icon:"img/education_icon.svg",
                 description: "Education spending has been cut, lowering the number of teachers hired and the resources received by schools in the public system.",
-                targets:{welfare_index_growth:-0.1, social_dissent_eq:-1, generalitat_surplus: 0.03 }});
+                targets:{welfare_index_growth:-0.1, social_dissent_eq:1, generalitat_surplus: 0.03 }});
                 Q.education_cuts = true;
             }
             if(Q.education_privatized) {
@@ -156,7 +152,161 @@ on-arrival: {!
                 Q.education_expansion = false;
             }
             break;
-        
+
+    }
+    switch (Q.healthcare_spending) {
+        case 3:
+            if (!Q.healthcare_public) {
+                if (Q.healthcare_public_ruling) {
+                    G.registerLaw(Q, {id:"healthcare_public", title:"Public-Preferential Healthcare",
+                    colour:"green", icon:"img/health_icon.svg",
+                    description: "In trying to preserve as much as the original law's intent, public hospitals and clinics cover all the range of health needs. Nonetheless, some minor private clinics and hospitals do still exist for those seeking alternatives to the public system.",
+                    targets:{welfare_index_growth: 0.2, social_dissent_eq: -4, generalitat_surplus: -0.06 }});
+                } else {
+                    G.registerLaw(Q, {id:"healthcare_public", title:"Public-Only Healthcare",
+                    colour:"green", icon:"img/health_icon.svg",
+                    description: "While some private clinics still exist for things like plastic surgery, healthcare coverage has been taken almost entirely out of private hands. Public hospitals and clinics cover all the range of health needs.",
+                    targets:{welfare_index_growth: 0.25, social_dissent_eq: -5, generalitat_surplus: -0.07 }});
+                }
+                Q.healthcare_public = true;
+            }
+        case 2:
+            if (!Q.healthcare_dental) {
+                Q.healthcare_dental = true;
+                G.registerLaw(Q, {id:"healthcare_dental", title:"Dental Coverage",
+                colour:"green", icon:"img/health_icon.svg",
+                description: "The Public Healthcare system has been expanded to include dental coverage. To make that happen, some private dentists have been converted into public services, while new clinics have been built specially for this purpose, guaranteeing everyone equal access to dental health.",
+                targets:{welfare_index_growth: 0.15, social_dissent_eq: -2, generalitat_surplus: -0.04 }});
+            }
+        case 1:
+            if (!Q.healthcare_expansion) {
+                Q.healthcare_expansion = true;
+                G.registerLaw(Q, {id:"healthcare_expansion", title:"Expanded Healthcare Funding",
+                colour:"green", icon:"img/health_icon.svg",
+                description: "Extra funding has been allocated to increase salaries, expand the numbers of doctors and nurses, and to provide more and better health services through the public system, now including dedicated and better equipped mental health spaces.",
+                targets:{welfare_index_growth: 0.2, social_dissent_eq: -3, generalitat_surplus: -0.03, unemployment_recovery: 0.02 }});
+            }
+            if (Q.healthcare_spending < 3 && Q.healthcare_public) {
+                G.deactivateLaw(Q, "healthcare_public", undefined, true);
+                Q.healthcare_public = false;
+            }
+            if (Q.healthcare_spending < 2 && Q.healthcare_dental) {
+                G.deactivateLaw(Q, "healthcare_dental", undefined, true);
+                Q.healthcare_dental = false;
+            }
+            if (Q.healthcare_copaid) {
+                G.deactivateLaw(Q, "healthcare_copaid", undefined, true);
+                Q.healthcare_copaid = false;
+            }
+            if (Q.healthcare_cuts) {
+                G.deactivateLaw(Q, "healthcare_cuts", undefined, true);
+                Q.healthcare_cuts = false;
+            }
+            if(Q.healthcare_privatized) {
+                G.deactivateLaw(Q, "healthcare_privatized", undefined, true);
+                Q.healthcare_privatized = false;
+            }
+            break;
+        case 0:
+            if (Q.healthcare_public) {
+                G.deactivateLaw(Q, "healthcare_public", undefined, true);
+                Q.healthcare_public = false;
+            }
+            if (Q.healthcare_dental) {
+                G.deactivateLaw(Q, "healthcare_dental", undefined, true);
+                Q.healthcare_dental = false;
+            }
+            if (Q.healthcare_expansion) {
+                G.deactivateLaw(Q, "healthcare_expansion", undefined, true);
+                Q.healthcare_expansion = false;
+            }
+            if (Q.healthcare_copaid) {
+                G.deactivateLaw(Q, "healthcare_copaid", undefined, true);
+                Q.healthcare_copaid = false;
+            }
+            if (Q.healthcare_cuts) {
+                G.deactivateLaw(Q, "healthcare_cuts", undefined, true);
+                Q.healthcare_cuts = false;
+            }
+            if(Q.healthcare_privatized) {
+                G.deactivateLaw(Q, "healthcare_privatized", undefined, true);
+                Q.healthcare_privatized = false;
+            }
+            break;
+        case -3:
+            if(!Q.healthcare_privatized) {
+                if (Q.healthcare_privatized_ruling) {
+                    G.registerLaw(Q, {id:"healthcare_privatized", title:"PPP Healthcare System",
+                    colour:"red", icon:"img/health_icon.svg",
+                    description: "The Constitutional Court has upheld private provision without requiring any publicly operated hospitals or clinics. The ministry finances guaranteed basic coverage through private providers, while broader services still depend heavily on private insurance or payments by patients.",
+                    targets:{welfare_index_growth:-0.5, social_dissent_eq:10, generalitat_surplus: 0.1, gdp_growth: -0.1 }});
+                } else {
+                    G.registerLaw(Q, {id:"healthcare_privatized", title:"De-facto Private Healthcare",
+                    colour:"red", icon:"img/health_icon.svg",
+                    description: "The Catalan Public Health service has been de-facto dismantled. Some provisions exist for the Generalitat to finance some procedures through private clinics, but not only there are no longer any publicly-operated health centers, in practice the vast majority of procedures are mostly paid by individual patients.",
+                    targets:{welfare_index_growth:-0.7, social_dissent_eq:12, generalitat_surplus: 0.12, gdp_growth: -0.15 }});
+                }
+                Q.healthcare_privatized = true;
+            }
+            if (Q.healthcare_copaid) {
+                G.deactivateLaw(Q, "healthcare_copaid", undefined, true);
+                Q.healthcare_copaid = false;
+            }
+            if (Q.healthcare_cuts) {
+                G.deactivateLaw(Q, "healthcare_cuts", undefined, true);
+                Q.healthcare_cuts = false;
+            }
+            if (Q.healthcare_public) {
+                G.deactivateLaw(Q, "healthcare_public", undefined, true);
+                Q.healthcare_public = false;
+            }
+            if (Q.healthcare_dental) {
+                G.deactivateLaw(Q, "healthcare_dental", undefined, true);
+                Q.healthcare_dental = false;
+            }
+            if (Q.healthcare_expansion) {
+                G.deactivateLaw(Q, "healthcare_expansion", undefined, true);
+                Q.healthcare_expansion = false;
+            }
+            break;
+        case -2:
+            if(!Q.healthcare_copaid) {
+                G.registerLaw(Q, {id:"healthcare_copaid", title:"Co-paid Health Scheme",
+                colour:"red", icon:"img/health_icon.svg",
+                description: "Non-urgent health procedures now need to be partially paid by the patient, allowing public spending to be further reduced.",
+                targets:{welfare_index_growth:-0.15, social_dissent_eq:4, generalitat_surplus: 0.03 }});
+                Q.healthcare_copaid = true;
+            }
+        case -1:
+            if (!Q.healthcare_cuts) {
+                G.registerLaw(Q, {id:"healthcare_cuts", title:"Healthcare Spending Cut",
+                colour:"red", icon:"img/health_icon.svg",
+                description: "Budget for Healthcare spending has been cut across the board, leading to worse working conditions, longer queues and waiting times, and overall degraded service for all those relying in the public health system.",
+                targets:{welfare_index_growth:-0.2, social_dissent_eq:3, generalitat_surplus: 0.03, gdp_growth: -0.05 }});
+                Q.healthcare_cuts = true;
+            }
+            if(Q.healthcare_privatized) {
+                G.deactivateLaw(Q, "healthcare_privatized", undefined, true);
+                Q.healthcare_privatized = false;
+            }
+            if (Q.healthcare_spending == -1 && Q.healthcare_copaid) {
+                G.deactivateLaw(Q, "healthcare_copaid", undefined, true);
+                Q.healthcare_copaid = false;
+            }
+            if (Q.healthcare_public) {
+                G.deactivateLaw(Q, "healthcare_public", undefined, true);
+                Q.healthcare_public = false;
+            }
+            if (Q.healthcare_dental) {
+                G.deactivateLaw(Q, "healthcare_dental", undefined, true);
+                Q.healthcare_dental = false;
+            }
+            if (Q.healthcare_expansion) {
+                G.deactivateLaw(Q, "healthcare_expansion", undefined, true);
+                Q.healthcare_expansion = false;
+            }
+            break;
+
     }
 !}
 

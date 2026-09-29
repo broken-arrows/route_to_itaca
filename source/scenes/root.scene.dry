@@ -143,6 +143,7 @@ on-arrival: {!
   // TODO: should we just start with education_spending at -1?
   Q.climate_transition_points = 0;
   Q.education_spending = 0;
+  Q.healthcare_spending = 0;
   Q.territory_roads_approved = 0;  
   Q.territory_metro_approved = 0;
 

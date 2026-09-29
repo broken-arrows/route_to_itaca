@@ -1,0 +1,23 @@
+title: Constitutional Court rules on Healthcare Privatization Law
+face-image: img/events/constitucional.jpg
+new-page: true
+tags: event
+view-if: constitutional_healthcare_privatization_trigger
+max-visits: 1
+role: event
+on-arrival: {!
+    Q.constitutional_healthcare_privatization_trigger = false;
+    Q.healthcare_privatized_ruling = true;
+    Q.healthcare_privatized = false;
+    G.deactivateLaw(Q, "healthcare_privatized", undefined, false, "red");
+    G.registerLaw(Q, {id:"healthcare_privatized_constitutional", title:"Healthcare Coverage Withdrawal Clauses", icon:"img/health_icon.svg", colour:"red",
+        description:"", targets:{}});
+    G.deactivateLaw(Q, "healthcare_privatized_constitutional", "Partially struck down: while privatization remains in place, the Generalitat must guarantee basic coverage even if it is outsourced.", false, "red");
+!}
+call: generalitat_setpolicy
+
+= Constitutional Court rules on Healthcare Privatization Law
+
+The Constitutional Court has, after all, largely upheld the Healthcare Privatization Law. All privatization efforts have been ruled completely lawful, and the Generalitat only needs to roll back on basic coverage cuts, which need to be publicly covered even if the service is outsourced.
+
+- @post_event: At least basic coverage is protected...

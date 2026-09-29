@@ -1,7 +1,10 @@
 title: Ministry of Health
 new-page: true
 view-if: generalitat_health_timer <= 0 and (health_minister_party == player_party)
-on-arrival: month_actions += 1; generalitat_health_timer += 3;
+on-arrival: {!
+    Q.month_actions += 1;
+    Q.generalitat_health_timer += 3;
+!}
 is-card: true
 card-image: img/health_icon.svg
 face-image: img/health_icon.svg
@@ -11,22 +14,126 @@ role: card-gov
 
 = Ministry of Health
 
-Something something (TODO)
+TODO: More things other than funding
 
+TODO: Party factions effects
+TODO: Electoral effects!
+
+- @healthcare_public
+- @healthcare_expand
 - @revert_cuts
+- @healthcare_de_public
+- @healthcare_cuts
+- @healthcare_privatize
+- @healthcare_de_privatize
 - @post_event: We don't want to do anything in this ministry at the moment
 - @easy_discard
 
+@healthcare_public
+title: Roll out a Public-only Healthcare system
+subtitle: Such a landmark policy would ultimately need the Parlament's approval \[-2 budget if passed\]\[-1 resources\]
+view-if: healthcare_spending >= 2
+choose-if: healthcare_spending = 2 and not healthcare_public_introduced and government_budget >= 2 and party_resources > 0
+unavailable-subtitle: [? if healthcare_spending = 3: Already approved! ?][? if healthcare_public_introduced: This proposal is waiting on the Parlament's approval. ?][? if government_budget < 2: Not enough budget. ?][? if party_resources <= 0: Not enough resources. ?]
+on-arrival: {!
+    Q.healthcare_public_introduced = true;
+    Q.party_resources -= 1;
+    G.registerLaw(Q, {id:"healthcare_public_proposal", title:"Public-Only Healthcare Proposal",
+                colour:"gray", icon:"img/health_icon.svg",
+                description:"Pending parliamentary approval: Wwile some private clinics still will be allowed for things like plastic surgery, healthcare coverage is to be taken almost entirely out of private hands. Public hospitals and clinics are to cover all the range of health needs.",
+                targets:{generalitat_surplus: -0.02}});
+!}
+
+All executive preparations have been made for public hospitals and clinics to cover all health needs, building on expanded staffing, mental health services and dental coverage. Private healthcare is to be severely restricted, with only counted exceptions. The Parlament must, however, approve of this new legal framework. [? if healthcare_public_ruling: The existing Constitutional ruling does mean that private providers must still be allowed to operate alongside the public system. ?]
+
+@healthcare_de_public
+title: Re-introduce some private-circuit Healthcare
+view-if: healthcare_spending = 3
+subtitle: Requires the Parlament's approval \[ +1 budget if passed\]\[-1 resources\]
+choose-if: not healthcare_de_public_introduced and party_resources > 0
+unavailable-subtitle: [? if healthcare_de_public_introduced: This proposal is waiting on the Parlament's approval. ?][? if party_resources <= 0: Not enough resources. ?]
+on-arrival: {!
+    Q.healthcare_de_public_introduced = true;
+    Q.party_resources -= 1;
+    G.registerLaw(Q, {id:"healthcare_de_public_proposal", title:"Mixed Healthcare System Proposal",
+                colour:"gray", icon:"img/health_icon.svg",
+                description:"Pending parliamentary approval: Private hospitals and clinics would re-gain a role alongside the expanded public healthcare system.",
+                targets:{}});
+!}
+
+We are asking the Parlament to replace the public-only healthcare framework with a mixed system. Public hospitals and clinics will retain their expanded funding and dental coverage, while private providers will have a larger role in the healthcare circuit.
+
+@healthcare_expand
+title: Expand Healthcare funding
+subtitle: \[-1 budget\]
+view-if: healthcare_spending >= 0 and healthcare_spending < 2
+choose-if: government_budget >= 1
+unavailable-subtitle: Not enough budget
+on-arrival: {!
+    Q.healthcare_spending += 1;
+    Q.government_budget -= 1;
+!}
+call: generalitat_setpolicy
+
+[? if healthcare_spending = 1: We've invested further in Healthcare, increasing staffing and salaries, reducing waiting times and improving and expanding mental health services. ?][? if healthcare_spending = 2: We've expanded the public system to include dental coverage, giving everyone access to care that many previously had to pay for themselves. ?]
+
+@healthcare_cuts
+title: Cut Healthcare funding
+subtitle: This goes against the party line, but money does have to come from somewhere \[ +1 budget\]
+choose-if: healthcare_spending < 3 and healthcare_spending > -2
+unavailable-subtitle: There's nothing left to cut...
+on-arrival: {!
+    Q.healthcare_spending -= 1;
+    Q.government_budget += 1;
+!}
+call: generalitat_setpolicy
+
+Going against the historic party line, we've had no other choice but to cut back some spending in Healthcare. This is understandably disliked by many, let's hope this is a necessary sacrifice.
+
+@healthcare_de_privatize
+title: Re-introduce Public Healthcare in-force
+subtitle: This will requires the Parlament's approval \[-2 budget if passed\]\[-1 resources\]
+view-if: healthcare_spending = -3
+choose-if: not healthcare_de_privatization_introduced and government_budget >= 2 and party_resources > 0
+unavailable-subtitle: [? if healthcare_de_privatization_introduced: This proposal is waiting on the Parlament's approval. ?][? if government_budget < 2: Not enough budget. ?][? if party_resources <= 0: Not enough resources. ?]
+on-arrival: {!
+    Q.healthcare_de_privatization_introduced = true;
+    Q.party_resources -= 1;
+    G.registerLaw(Q, {id:"healthcare_de_privatization_proposal", title:"Restored Public Healthcare",
+                colour:"gray", icon:"img/health_icon.svg",
+                description:"Pending parliamentary approval: Public hospitals and clinics would reopen alongside private providers, reversing full privatization.",
+                targets:{}});
+!}
+
+Reverting course after the disastrous policy of healthcare privatization, we are getting the Health Ministry ready to reopen public hospitals and clinics across Catalonia. The final push must come from the Parlament, as the legislative framework that dismantled the public service must be voted away.
+
+@healthcare_privatize
+title: Work towards fully privatizing Healthcare
+subtitle: This is considered extremely radical by much of the Catalan population, and will ultimately require approval from the Parlament. \[ +2 budget if passed\]\[-1 resources\]
+view-if: healthcare_spending <= -2
+choose-if: healthcare_spending = -2 and not healthcare_privatization_introduced and player_party != "cup" and party_resources > 0
+unavailable-subtitle: [? if healthcare_spending = -3: Healthcare has already been privatized! ?][? if healthcare_privatization_introduced and not healthcare_spending = -3: This proposal is waiting on the Parlament's approval. ?][? if player_party = "cup": There's no way our party can embark on this path. ?][? if party_resources <= 0: Not enough resources. ?]
+on-arrival: {!
+    Q.healthcare_privatization_introduced = true;
+    Q.party_resources -= 1;
+    G.registerLaw(Q, {id:"healthcare_privatization_proposal", title:"Fully Privatized Healthcare",
+                colour:"gray", icon:"img/health_icon.svg",
+                description:"Pending parliamentary approval: Public hospitals and clinics would be privatized. Limited subsidies would remain, but most patients would have to rely on private insurance or pay for treatment themselves.",
+                targets:{social_dissent_eq: 3, generalitat_surplus: 0.02}});
+!}
+
+Against the wishes of big parts of the party, who accuse us of going against everything [+ player_party +] has stood for, we have put together a proposal for pushing the Catalan healthcare system as close as possible to full privatization. This will, nonetheless, require approval from the Parlament.
+
 @revert_cuts
 title: Revert Healthcare spending cuts
-view-if: health_cuts > 0
+view-if: healthcare_spending < 0 and healthcare_spending > -3
 subtitle: \[-1 budget\]
 choose-if: government_budget > 0
 unavailable-subtitle: Not enough budget.
 on-arrival: {!
-    G.deactivateLaw(Q, "health_cuts", undefined, true);
-    Q.health_cuts -= 1;
-    Q.government_budget -= 1
+    Q.healthcare_spending += 1;
+    Q.government_budget -= 1;
 !}
+call: generalitat_setpolicy
 
 Austerity measures affecting the Catalan public health system have been reversed, but years of spending cuts have left a mark in the system. Significant effort is still left to be done to recover and improve it.
