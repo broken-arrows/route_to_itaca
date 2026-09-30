@@ -226,7 +226,6 @@ As a party with representation in the Parlament, we have the opportunity to use 
 - @rights
 - @finances
 - @sovereignty
-- @budget
 - @no_action: We don't need to do anything in the Parlament right now
 
 @parlament_not_active
@@ -310,15 +309,3 @@ Despite the Parlament being legally limited in its powers, it is still symbolica
 - @parlament_dui
 - @parlament_options: Let us consider other options
 
-@budget
-title: Pass the Generalitat's budget
-choose-if: parlament_action_open and budget_year < year
-unavailable-subtitle: [? if not parlament_action_open: Our lawmakers are still unready. Next action possible in [+ parlament_timer +] [? if parlament_timer > 1:  months.?][? if parlament_timer = 1: month.?] ?][? if budget_year = year: This year's budget has already been approved.?]
-subtitle: Ensuring government stability may be more important at this moment
-
-**Generalitat's Budget**
-
-Without an approved budget for the year, the Generalitat can only operate on "extended" budgets, based on the latest approved one, which currently dates of [+ budget_year +]. This greatly limits what the current [+ cat_coalition_disp +] can do.
-
-- @parlament_budget: Get the budget negotiations started!
-- @parlament_options: Let us consider other options

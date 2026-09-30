@@ -60,15 +60,15 @@ view-if: player_party != "ciu" and coalition_affairs_includes_ciu and parlament_
 on-arrival: {!
     if (Q.generalitat_surplus < 0) {
         var cut_round = 2
-        while (cut_round > -3) {
+        while (cut_round > -2) {
             if (Q.education_spending == cut_round) {
                 Q.education_spending -= 1;
                 cut_round = -10;
             } else if (Q.healthcare_spending == cut_round) {
                 Q.healthcare_spending -= 1;
                 cut_round = -10
-            } else if (Q.economy_spending == cut_round) {
-                Q.economy_spending -= 1;
+            } else if (Q.public_salary_level == cut_round) {
+                Q.public_salary_level -= 1;
                 cut_round = -10
             }
             cut_round -= 1;
@@ -82,13 +82,8 @@ on-arrival: {!
                 targets:{welfare_index_growth:-0.2, social_dissent_eq:1, generalitat_surplus: 0.1, unemployment_recovery: -0.1, gdp_growth: -0.01 }});
         }
     } else {
-        // TODO: move to a setpolicy system
-        if (!Q.economy_top_rates_lowered) {
-            Q.economy_top_rates_lowered = 1;
-            G.registerLaw(Q, {id:"economy_tax_cuts" + Q.economy_tax_cuts, title:"Lowered Top Rates",
-                colour:"red", icon:"img/economy_icon.svg",
-                description: "Taxes have been more or less equally across the board, though this makes the system slightly less progressive.",
-                targets:{generalitat_surplus: -0.03, gdp_growth: 0.025 }});
+        if (Q.tax_policy_level > -3) {
+            Q.tax_policy_level -= 1;
         } else {
             if (!Q.economy_tax_cuts) Q.economy_tax_cuts = 1;
             else Q.economy_tax_cuts += 1;

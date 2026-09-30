@@ -1,0 +1,57 @@
+title: Budget approval sparks coalition controversies
+subtitle: Government formation promises seem to have gone unfulfilled
+role: event
+tags: event
+new-page: true
+view-if: budget_external_breach
+on-arrival: {!
+    var involved = Q.budget_external_breach_parties || [];
+    var broken = Q.budget_external_broken_commitments || [];
+    for (var record of Q.coalition_policy_commitments || []) {
+        if (record.scope != "external_support") continue;
+        if (broken.some(function (r) { return r.kind == record.kind && r.target == record.target; })) record.status = "broken";
+        else record.status = "retired";
+        G.deactivateLaw(Q, "coalition_pending_" + record.kind, undefined, true);
+    }
+    var carriers = [];
+    for (var party of involved) {
+        var carrier = ["ciu", "cdc", "dl", "pdcat", "junts"].includes(party) ? "ciu" :
+            ["icv", "csqp", "cecp", "ecp"].includes(party) ? "federal_left" : party;
+        for (var list of ["jxsi", "jxcat"]) if (Q[party + "_in_" + list] && Q[list + "_parlament_s"] > 0) carrier = list;
+        if (!carriers.includes(carrier)) carriers.push(carrier);
+        if (party != Q.player_party) Q[party + "_relations"] -= 5;
+    }
+    var playerInvolved = involved.includes(Q.player_party) || ["jxsi", "jxcat"].some(function (list) {
+        return involved.includes(list) && Q[Q.player_party + "_in_" + list];
+    });
+    if (playerInvolved) Q.burdens_broken = 1;
+    // One shared loss for the rupture, regardless of the number of breached clauses.
+    for (var carrier of carriers) {
+        for (var constituency of Q.parlament_constituencies)
+            G.cardSupportTransfer(Q, {contest:"parlament", from:carrier, to:"abstain",
+                amount:0.18 / carriers.length * Q.parlament_budget_constituency_weights[constituency], maxDonorFraction:0.5,
+                constituencies:[constituency], demographics:["middle", "young", "ind"]});
+        var local = carrier == "ppc" ? "pp" : carrier;
+        var congreso = carrier == "psc" ? "psoe" : local;
+        G.cardSupportTransfer(Q, {contest:"barcelona", from:local, to:local == "psc" ? "federal_left" : "psc", amount:0.18 * 0.3 / carriers.length, maxDonorFraction:0.5});
+        G.cardSupportTransfer(Q, {contest:"congreso", from:congreso, to:"abstain", amount:0.18 * 0.04 / carriers.length, maxDonorFraction:0.5, constituencies:["catalunya"]});
+    }
+    Q.cat_coalition_support = [];
+    for (var party of ["erc", "cup"]) {
+        var inCabinet = (Q.cat_coalition || []).includes(party) || ["jxsi", "jxcat"].some(function (list) {
+            return (Q.cat_coalition || []).includes(list) && Q[party + "_in_" + list];
+        });
+        Q[party + "_in_gob"] = inCabinet;
+        Q[party + "_supporting"] = inCabinet;
+    }
+    if (!Q.parlament_budget_player_governs) Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
+    Q.budget_external_breach = false;
+    Q.budget_external_broken_commitments = [];
+    Q.budget_external_breach_parties = [];
+!}
+
+= Broken commitments
+
+Against all expectations, the Generalitat's budget has been approved with an alternative majority, against the commitments to the government's original supporters. Needless to say, this does not make any of the involved parties particularly happy, and we'll have to see to what extent collaboration between them is a lost cause from now onwards.
+
+- @post_event

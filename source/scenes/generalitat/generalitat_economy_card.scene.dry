@@ -14,11 +14,224 @@ role: card-gov
 
 = Ministry of the Economy
 
-Something something (TODO)
+TODO: more things to do here!
 
+- @prepare_budget
+- @raise_pay
+- @cut_pay
 - @revert_cuts
 - @post_event: We don't want to do anything in this ministry at the moment
 - @easy_discard
+
+@raise_pay
+title: [? if public_salary_level < 0: Revert public salary cuts ?][? if public_salary_level >= 0: Improve public-salaries ?]
+view-if: public_salary_level < 2 and economy_cuts <= 0
+subtitle: \[-1 budget [? if public_salary_level >= social_spending_cap: on spending cap increase approval ?] \] 
+choose-if: public_salary_level >= -2 and public_salary_level < 2 and government_budget > 0 and public_salary_prepared_level != public_salary_level + 1
+unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if public_salary_prepared_level = public_salary_level + 1: This pay increase is already awaiting budget authorization.?]
+on-arrival: {!
+    Q.government_budget -= 1;
+    Q.economy_pay_delivered = Q.public_salary_level + 1 <= Q.social_spending_cap;
+    if (Q.economy_pay_delivered) {
+        Q.public_salary_level += 1;
+        Q.public_salary_prepared_level = null;
+        G.deactivateLaw(Q, "public_salary_proposal", undefined, true);
+    } else {
+        Q.public_salary_prepared_level = Q.public_salary_level + 1;
+        G.registerLaw(Q, {id:"public_salary_proposal", title:"Public-Sector Pay Proposal",
+            colour:"gray", icon:"img/people_icon.svg",
+            description:"Pending budget approval: " + (Q.public_salary_level < 0 ? "Restoration" : "Increase") + " of Generalitat-controlled public salaries.",
+            targets:{}});
+    }
+!}
+call: generalitat_setpolicy
+
+[? if economy_pay_delivered: We have [? if public_salary_level <= 0 : restored ?][? if public_salary_level > 0: increased ?]the pay components under the Generalitat's control.  ?]
+
+[? if not economy_pay_delivered: The pay increase has been approved and awaits funding.?]
+
+@cut_pay
+title: Reduce public salaries
+view-if: public_salary_level > -2
+subtitle: Reduce Generalitat-controlled supplements and compensation \[ +1 budget\]
+choose-if: public_salary_level > -2 and public_salary_level <= 2
+unavailable-subtitle: Public-sector pay is already at its minimum.
+on-arrival: {!
+    Q.public_salary_level -= 1;
+    Q.government_budget += 1;
+    Q.public_salary_prepared_level = null;
+    G.deactivateLaw(Q, "public_salary_proposal", undefined, true);
+!}
+call: generalitat_setpolicy
+
+Public-sector compensation has been reduced. While this may be a necessary economic measure, fact is many will disapprove of such cuts.
+
+@prepare_budget
+title: Present the Generalitat's annual budget
+unavailable-subtitle: The budget for the year [+ budget_year +] has already been approved!
+choose-if: budget_year < year
+on-arrival: {!
+    Q.economy_budget_proposal = {
+        tax_policy_level: Q.tax_policy_level,
+        social_spending_cap: Q.social_spending_cap,
+        projects: {county:false, b40:false, metro1:false, metro2:false}
+    };
+!}
+go-to: budget_review
+
+@budget_review
+new-page: true
+on-arrival: {!
+    var proposal = Q.economy_budget_proposal;
+    var taxNames = ["Income and Wealth Tax Relief", "Moderate Income Tax Cuts",
+        "Lower-Income and Family Tax Relief", "Budget Revenue Measures",
+        "Broad Income Tax Increase", "Graduated Income Tax Increase",
+        "Graduated Taxes with Lower-Income Relief", "Upper-Income Tax Increase",
+        "High-Income and Wealth Tax Increase", "Stronger High-Income and Wealth Taxes"];
+    var capNames = ["Further austerity", "Maintain reduced services and pay",
+        "Restore ordinary services and pay", "Authorize expanded services and improved pay",
+        "Authorize modernized services and broader pay improvements",
+        "Full spending authorization, effectively a removal of spending caps."];
+    Q.economy_budget_tax_name = taxNames[proposal.tax_policy_level + 3];
+    Q.economy_budget_cap_name = capNames[proposal.social_spending_cap + 2];
+    Q.economy_budget_tax_lower = proposal.tax_policy_level > Math.max(-3, Q.tax_policy_level - 2);
+    Q.economy_budget_tax_higher = proposal.tax_policy_level < Math.min(6, Q.tax_policy_level + 2);
+    Q.economy_budget_cap_lower = proposal.social_spending_cap > -2 &&
+        Q.education_spending != 3 && Q.healthcare_spending != 3;
+    Q.economy_budget_cap_higher = proposal.social_spending_cap < 3;
+    Q.economy_budget_valid = proposal.tax_policy_level >= Math.max(-3, Q.tax_policy_level - 2) &&
+        proposal.tax_policy_level <= Math.min(6, Q.tax_policy_level + 2) &&
+        proposal.social_spending_cap >= -2 && proposal.social_spending_cap <= 3 &&
+        (proposal.social_spending_cap == 3 || Q.education_spending != 3 && Q.healthcare_spending != 3);
+    Q.economy_budget_education_cut = Q.education_spending > proposal.social_spending_cap;
+    Q.economy_budget_health_cut = Q.healthcare_spending > proposal.social_spending_cap;
+    Q.economy_budget_pay_cut = Q.public_salary_level > proposal.social_spending_cap;
+    var laws = Q.active_mods || {};
+    function prepared(id) {
+        return !!laws[id] && laws[id].active && laws[id].def.colour == "gray";
+    }
+    Q.economy_budget_county_available = prepared("territory_county_roads");
+    Q.economy_budget_b40_available = prepared("territory_b40");
+    Q.economy_budget_metro1_available = prepared("territory_metro1");
+    Q.economy_budget_metro2_available = prepared("territory_metro2");
+    Q.economy_budget_county = proposal.projects.county;
+    Q.economy_budget_b40 = proposal.projects.b40;
+    Q.economy_budget_metro1 = proposal.projects.metro1;
+    Q.economy_budget_metro2 = proposal.projects.metro2;
+!}
+
+= Prepare the annual budget
+
+Tax structure: **[+ economy_budget_tax_name +]**.
+
+Social spending authorization: **[+ economy_budget_cap_name +]**. This effectively caps the maximum spending of the different ministries. [? if economy_budget_education_cut: Approving this would reduce Education spending to fit the new ceiling. ?][? if economy_budget_health_cut: Approving this would reduce Healthcare spending to fit the new ceiling. ?][? if economy_budget_pay_cut: Approving this would reduce public-sector pay to fit the new ceiling. ?][? if education_spending = 3 or healthcare_spending = 3: Exceptional public-service frameworks must, however, be first removed for the ceiling to be lowered. ?]
+
+Projects: [? if economy_budget_county: County roads. ?][? if economy_budget_b40: B-40 Fourth Belt. ?][? if economy_budget_metro1: Metro L9/L10. ?][? if economy_budget_metro2: Metro L1/L3. ?]
+
+While this is our proposal, passing it through the Parlament may require some tweaks to gather enough support, but we'll cross that bridge once we get there.
+
+- @budget_tax_lower
+- @budget_tax_higher
+- @budget_cap_lower
+- @budget_cap_higher
+- @budget_county
+- @budget_b40
+- @budget_metro1
+- @budget_metro2
+- @submit_budget
+- @post_event: Leave this proposal unsubmitted
+
+@budget_tax_lower
+title: Move towards a lower tax package
+choose-if: economy_budget_tax_lower
+unavailable-subtitle: Our proposal is already changing the tax package as radically as it can be done in one pass.
+on-arrival: {!
+    Q.economy_budget_proposal.tax_policy_level -= 1;
+!}
+go-to: budget_review
+
+@budget_tax_higher
+title: Move towards a higher yet more progressive tax package
+choose-if: economy_budget_tax_higher
+choose-if Our proposal is already changing the tax package as radically as it can be done in one pass.
+on-arrival: {!
+    Q.economy_budget_proposal.tax_policy_level += 1;
+!}
+go-to: budget_review
+
+@budget_cap_lower
+title: Lower social spending authorization
+choose-if: economy_budget_cap_lower
+unavailable-subtitle: The proposed social spending caps are already as lower as they can be.
+on-arrival: {!
+    Q.economy_budget_proposal.social_spending_cap -= 1;
+!}
+go-to: budget_review
+
+@budget_cap_higher
+title: Raise social spending authorization
+choose-if: economy_budget_cap_higher
+unavailable-subtitle: The proposed social spending caps are already as high as they can be.
+on-arrival: {!
+    Q.economy_budget_proposal.social_spending_cap += 1;
+!}
+go-to: budget_review
+
+@budget_county
+title: [? if economy_budget_county: Remove ?][? if not economy_budget_county: Include ?] county roads expansion
+view-if: economy_budget_county_available
+on-arrival: {!
+    Q.economy_budget_proposal.projects.county = !Q.economy_budget_proposal.projects.county;
+!}
+go-to: budget_review
+
+@budget_b40
+title: [? if economy_budget_b40: Remove ?][? if not economy_budget_b40: Include ?] the B-40 Fourth Belt
+view-if: economy_budget_b40_available
+on-arrival: {!
+    Q.economy_budget_proposal.projects.b40 = !Q.economy_budget_proposal.projects.b40;
+!}
+go-to: budget_review
+
+@budget_metro1
+title: [? if economy_budget_metro1: Remove ?][? if not economy_budget_metro1: Include ?] Metro L9/L10 construction
+view-if: economy_budget_metro1_available
+on-arrival: {!
+    Q.economy_budget_proposal.projects.metro1 = !Q.economy_budget_proposal.projects.metro1;
+!}
+go-to: budget_review
+
+@budget_metro2
+title: [? if economy_budget_metro2: Remove ?][? if not economy_budget_metro2: Include ?] Metro L1/L3 expansion
+view-if: economy_budget_metro2_available
+on-arrival: {!
+    Q.economy_budget_proposal.projects.metro2 = !Q.economy_budget_proposal.projects.metro2;
+!}
+go-to: budget_review
+
+@submit_budget
+title: Submit the proposal to the Parlament
+choose-if: budget_year < year and economy_budget_valid
+unavailable-subtitle: [? if budget_year >= year: This year's budget has already been approved. ?][? if not economy_budget_valid: This proposal exceeds the permitted tax changes or spending ceiling. Exceptional public-service frameworks must first be reversed before a lower spending ceiling can be approved. ?]
+on-arrival: {!
+    var proposal = Q.economy_budget_proposal;
+    Q.budget_draft_origin = {
+        author:"player", year:Q.year,
+        tax_policy_level:proposal.tax_policy_level,
+        social_spending_cap:proposal.social_spending_cap,
+        enacted_tax_policy_level:Q.tax_policy_level,
+        enacted_social_spending_cap:Q.social_spending_cap,
+        surplus_at_draft:Q.generalitat_surplus,
+        projects: Object.assign({}, proposal.projects)
+    };
+    Q.budget_draft = {
+        tax_policy_level:proposal.tax_policy_level,
+        social_spending_cap:proposal.social_spending_cap,
+        projects:Object.assign({}, proposal.projects)
+    };
+    Q.coming_from_parlament = false;
+!}
+go-to: parlament_budget
 
 @revert_cuts
 title: Revert general austerity measures
@@ -33,4 +246,3 @@ on-arrival: {!
 !}
 
 Some spending cuts have been reverted, and austerity halted, at least for now. There's still much work to do before we're back to pre-2008 levels, though.
-

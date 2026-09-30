@@ -1,6 +1,6 @@
 title: Ministry of Health
 new-page: true
-view-if: generalitat_health_timer <= 0 and (health_minister_party == player_party)
+view-if: generalitat_health_timer <= 0 and (health_minister_party == player_party or (player_in_jxsi and health_minister_party = "jxsi") or (player_in_jxcat and health_minister_party = "jxcat"))
 on-arrival: {!
     Q.month_actions += 1;
     Q.generalitat_health_timer += 3;
@@ -33,15 +33,15 @@ TODO: Electoral effects!
 title: Roll out a Public-only Healthcare system
 subtitle: Such a landmark policy would ultimately need the Parlament's approval \[-2 budget if passed\]\[-1 resources\]
 view-if: healthcare_spending >= 2
-choose-if: healthcare_spending = 2 and not healthcare_public_introduced and government_budget >= 2 and party_resources > 0
-unavailable-subtitle: [? if healthcare_spending = 3: Already approved! ?][? if healthcare_public_introduced: This proposal is waiting on the Parlament's approval. ?][? if government_budget < 2: Not enough budget. ?][? if party_resources <= 0: Not enough resources. ?]
+choose-if: healthcare_spending = 2 and social_spending_cap = 3 and not healthcare_public_introduced and government_budget >= 2 and party_resources > 0
+unavailable-subtitle: [? if healthcare_spending = 3: Already approved!. ?][? if social_spending_cap < 3: The current social spending cap does not allow for this level of investment.?][? if healthcare_public_introduced: This proposal is waiting on the Parlament's approval.?][? if government_budget < 2: Not enough budget. ?][? if party_resources <= 0: Not enough resources. ?]
 on-arrival: {!
     Q.healthcare_public_introduced = true;
     Q.party_resources -= 1;
     G.registerLaw(Q, {id:"healthcare_public_proposal", title:"Public-Only Healthcare Proposal",
                 colour:"gray", icon:"img/health_icon.svg",
                 description:"Pending parliamentary approval: Wwile some private clinics still will be allowed for things like plastic surgery, healthcare coverage is to be taken almost entirely out of private hands. Public hospitals and clinics are to cover all the range of health needs.",
-                targets:{generalitat_surplus: -0.02}});
+                targets:{}});
 !}
 
 All executive preparations have been made for public hospitals and clinics to cover all health needs, building on expanded staffing, mental health services and dental coverage. Private healthcare is to be severely restricted, with only counted exceptions. The Parlament must, however, approve of this new legal framework. [? if healthcare_public_ruling: The existing Constitutional ruling does mean that private providers must still be allowed to operate alongside the public system. ?]
@@ -65,17 +65,11 @@ We are asking the Parlament to replace the public-only healthcare framework with
 
 @healthcare_expand
 title: Expand Healthcare funding
-subtitle: \[-1 budget\]
 view-if: healthcare_spending >= 0 and healthcare_spending < 2
-choose-if: government_budget >= 1
-unavailable-subtitle: Not enough budget
-on-arrival: {!
-    Q.healthcare_spending += 1;
-    Q.government_budget -= 1;
-!}
-call: generalitat_setpolicy
-
-[? if healthcare_spending = 1: We've invested further in Healthcare, increasing staffing and salaries, reducing waiting times and improving and expanding mental health services. ?][? if healthcare_spending = 2: We've expanded the public system to include dental coverage, giving everyone access to care that many previously had to pay for themselves. ?]
+subtitle: \[-1 budget [? if healthcare_spending >= social_spending_cap: on spending cap increase approval ?]\]
+choose-if: government_budget > 0 and healthcare_prepared_level != healthcare_spending + 1
+unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if healthcare_prepared_level = healthcare_spending + 1: This increase is already awaiting budget authorization.?]
+go-to: approve_raise
 
 @healthcare_cuts
 title: Cut Healthcare funding
@@ -84,6 +78,8 @@ choose-if: healthcare_spending < 3 and healthcare_spending > -2
 unavailable-subtitle: There's nothing left to cut...
 on-arrival: {!
     Q.healthcare_spending -= 1;
+    Q.healthcare_prepared_level = null;
+    G.deactivateLaw(Q, "healthcare_spending_proposal", undefined, true);
     Q.government_budget += 1;
 !}
 call: generalitat_setpolicy
@@ -119,7 +115,7 @@ on-arrival: {!
     G.registerLaw(Q, {id:"healthcare_privatization_proposal", title:"Fully Privatized Healthcare",
                 colour:"gray", icon:"img/health_icon.svg",
                 description:"Pending parliamentary approval: Public hospitals and clinics would be privatized. Limited subsidies would remain, but most patients would have to rely on private insurance or pay for treatment themselves.",
-                targets:{social_dissent_eq: 3, generalitat_surplus: 0.02}});
+                targets:{}});
 !}
 
 Against the wishes of big parts of the party, who accuse us of going against everything [+ player_party +] has stood for, we have put together a proposal for pushing the Catalan healthcare system as close as possible to full privatization. This will, nonetheless, require approval from the Parlament.
@@ -127,13 +123,26 @@ Against the wishes of big parts of the party, who accuse us of going against eve
 @revert_cuts
 title: Revert Healthcare spending cuts
 view-if: healthcare_spending < 0 and healthcare_spending > -3
-subtitle: \[-1 budget\]
-choose-if: government_budget > 0
-unavailable-subtitle: Not enough budget.
+subtitle: \[-1 budget [? if healthcare_spending >= social_spending_cap: on spending cap increase approval ?]\]
+choose-if: government_budget > 0 and healthcare_prepared_level != healthcare_spending + 1
+unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if healthcare_prepared_level = healthcare_spending + 1: This increase is already awaiting budget authorization.?]
+go-to: approve_raise
+
+@approve_raise
 on-arrival: {!
-    Q.healthcare_spending += 1;
     Q.government_budget -= 1;
+    Q.health_raise_delivered = Q.healthcare_spending + 1 <= Q.social_spending_cap;
+    if (Q.health_raise_delivered) {
+        Q.healthcare_spending += 1;
+        Q.healthcare_prepared_level = null;
+        G.deactivateLaw(Q, "healthcare_spending_proposal", undefined, true);
+    } else {
+        Q.healthcare_prepared_level = Q.healthcare_spending + 1;
+        G.registerLaw(Q, {id:"healthcare_spending_proposal", title:"Healthcare Spending Increase",
+            colour:"gray", icon:"img/health_icon.svg",
+            description:"Pending budget approval: will take effect the moment a higher spending cap authorizes it.", targets:{}});
+    }
 !}
 call: generalitat_setpolicy
 
-Austerity measures affecting the Catalan public health system have been reversed, but years of spending cuts have left a mark in the system. Significant effort is still left to be done to recover and improve it.
+[? if health_raise_delivered and healthcare_spending <= 0: Austerity measures affecting public healthcare have been reversed, but years of spending cuts have left a mark. Significant effort remains to recover and improve the system.?][? if health_raise_delivered and healthcare_spending = 1: We've invested further in Healthcare, increasing staffing, reducing waiting times and improving and expanding mental health services.?][? if health_raise_delivered and healthcare_spending = 2: We've expanded the public system to include dental coverage, giving everyone access to care that many previously had to pay for themselves.?][? if not health_raise_delivered: While the increase has been approved, it will only take effect when a passed budget raises the social spending cap. ?]

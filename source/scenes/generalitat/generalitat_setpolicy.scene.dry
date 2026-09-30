@@ -1,5 +1,52 @@
 title: helper set policies scene
 on-arrival: {!
+    var taxPolicies = {
+        "-3": {id: "tax_relief_income_wealth", title: "Income and Wealth Tax Relief",
+            description: "Broad cuts have been introduced to the autonomous general-income rates, together with relief on wealth taxes.",
+            targets: {generalitat_surplus: -0.04, gdp_growth: 0.01, social_dissent_eq: 3}},
+        "-2": {id: "tax_relief_broad_income", title: "Moderate Income Tax Cuts",
+            description: "Moderate tax reductions have been approved within the autonomous general-income rates. While the scale remains somewhat progressive, this does clearly benefit those with higher incomes.",
+            targets: {generalitat_surplus: -0.02, gdp_growth: 0.03, social_dissent_eq: 1}},
+        "-1": {id: "tax_relief_targeted", title: "Lower-Income and Family Tax Relief",
+            description: "Targeted relief through surgically lower autonomous taxes through schemes like family deductions.",
+            targets: {generalitat_surplus: 0, gdp_growth: 0.06, social_dissent_eq: -2}},
+        "0": {id: "budget_tax_moderate", title: "Budget Revenue Measures",
+            description: "Tax and fees increases across the board are part of the" + Q.year + " budget's fiscal measures",
+            targets: {generalitat_surplus: 0.02}},
+        "1": {id: "tax_increase_broad", title: "Broad Income Tax Increase",
+            description: "Higher rates across much of the Generalitat's autonomous general-income taxes, including middle incomes.",
+            targets: {generalitat_surplus: 0.08, gdp_growth: -0.12, social_dissent_eq: 3}},
+        "2": {id: "tax_increase_graduated", title: "Graduated Income Tax Increase",
+            description: "A graduated rise across most of the autonomous general-income tax scale raises and places a slightly larger burden on higher incomes, though many households still have to contribute more than before.",
+            targets: {generalitat_surplus: 0.08, gdp_growth: -0.06, social_dissent_eq: 2}},
+        "3": {id: "tax_increase_lower_income_relief", title: "Graduated Taxes with Lower-Income Relief",
+            description: "Higher autonomous general-income rates have been combined with relief in lower income brackets, making the tax structure more progressive and shielding lower-income households.",
+            targets: {generalitat_surplus: 0.06, gdp_growth: -0.02, social_dissent_eq: -0.5}},
+        "4": {id: "tax_increase_upper_income", title: "Upper-Income Tax Increase",
+            description: "Autonomous general-income tax increases have been concentrated on upper-middle and high incomes,meaning additional taxes are not affecting most households.",
+            targets: {generalitat_surplus: 0.05, gdp_growth: -0.01, social_dissent_eq: -1}},
+        "5": {id: "tax_increase_income_wealth", title: "High-Income and Wealth Tax Increase",
+            description: "Higher autonomous general-income tax rates for high earners are combined with increases to the existing wealth tax. This is one of the most progressive tax packages ever, but its effect is limited by the small amount of tax collection the Generalitat is actually responsible for.",
+            targets: {generalitat_surplus: 0.06, gdp_growth: -0.01, social_dissent_eq: -2}},
+        "6": {id: "tax_increase_income_wealth_strong", title: "Stronger High-Income and Wealth Taxes",
+            description: "Stronger increases to high-earner autonomous general-income rates and the existing wealth tax have been extended even further. Yet, despite its undeniably progressist nature, its effect is now as limited as it can be by the small amount of tax collection the Generalitat is actually responsible for.",
+            targets: {generalitat_surplus: 0.08, gdp_growth: -0.02, social_dissent_eq: -3}}
+    };
+    var taxPolicy = typeof Q.tax_policy_level == "number" && taxPolicies[Q.tax_policy_level];
+    if (taxPolicy) {
+        ["budget_tax_moderate", "budget_tax_progressive", "budget_tax_property",
+            "budget_tax_broad_income", "budget_tax_top_income", "no_taxes"].concat(
+                Object.keys(taxPolicies).map(function (level) { return taxPolicies[level].id; })
+            ).forEach(function (id) {
+            if (id != taxPolicy.id) G.deactivateLaw(Q, id, undefined, true);
+        });
+        if (!Q.active_mods || !Q.active_mods[taxPolicy.id] || !Q.active_mods[taxPolicy.id].active) {
+            G.registerLaw(Q, {id: taxPolicy.id, title: taxPolicy.title,
+                description: taxPolicy.description, colour: taxPolicy < 0 ? "red" : taxPolicy <= 2 ?  "orange" : "green", icon: "img/economy_icon.svg",
+                targets: taxPolicy.targets});
+        }
+    }
+
     switch (Q.education_spending) {
         case 3:
             if (!Q.education_public) {
@@ -128,7 +175,8 @@ on-arrival: {!
                 G.registerLaw(Q, {id:"education_cuts", title:"Education Spending Cut",
                 colour:"red", icon:"img/education_icon.svg",
                 description: "Education spending has been cut, lowering the number of teachers hired and the resources received by schools in the public system.",
-                targets:{welfare_index_growth:-0.1, social_dissent_eq:1, generalitat_surplus: 0.03 }});
+                // Alongside Health and public pay, preserves inherited opening austerity.
+                targets:{welfare_index_growth:-0.02, social_dissent_eq:0.5, generalitat_surplus: 0.01 }});
                 Q.education_cuts = true;
             }
             if(Q.education_privatized) {
@@ -183,7 +231,7 @@ on-arrival: {!
                 Q.healthcare_expansion = true;
                 G.registerLaw(Q, {id:"healthcare_expansion", title:"Expanded Healthcare Funding",
                 colour:"green", icon:"img/health_icon.svg",
-                description: "Extra funding has been allocated to increase salaries, expand the numbers of doctors and nurses, and to provide more and better health services through the public system, now including dedicated and better equipped mental health spaces.",
+                description: "Extra funding has been allocated to expand the numbers of doctors and nurses, and to provide more and better health services through the public system, now including dedicated and better equipped mental health spaces.",
                 targets:{welfare_index_growth: 0.2, social_dissent_eq: -3, generalitat_surplus: -0.03, unemployment_recovery: 0.02 }});
             }
             if (Q.healthcare_spending < 3 && Q.healthcare_public) {
@@ -282,7 +330,7 @@ on-arrival: {!
                 G.registerLaw(Q, {id:"healthcare_cuts", title:"Healthcare Spending Cut",
                 colour:"red", icon:"img/health_icon.svg",
                 description: "Budget for Healthcare spending has been cut across the board, leading to worse working conditions, longer queues and waiting times, and overall degraded service for all those relying in the public health system.",
-                targets:{welfare_index_growth:-0.2, social_dissent_eq:3, generalitat_surplus: 0.03, gdp_growth: -0.05 }});
+                targets:{welfare_index_growth:-0.04, social_dissent_eq:1, generalitat_surplus: 0.01 }});
                 Q.healthcare_cuts = true;
             }
             if(Q.healthcare_privatized) {
@@ -308,6 +356,46 @@ on-arrival: {!
             break;
 
     }
+
+    Q.public_salary_raise_allowed = Q.public_salary_level >= -2 && Q.public_salary_level < 2;
+    var salaryPolicies = [
+        {id:"public_salary_cuts", applies:Q.public_salary_level < 0,
+            title:"Public-Sector Pay Cuts", colour:"red",
+            description:"Pay restraint and suspended double-payments have resulted in reduced salaries across the Generalitat's public workforce.",
+            targets:{welfare_index_growth:-0.02, social_dissent_eq:0.5, generalitat_surplus:0.01}},
+        {id:"public_salary_deep_cuts", applies:Q.public_salary_level == -2,
+            title:"Severe Public-Sector Pay Reductions", colour:"red",
+            description:"Additional reductions to Generalitat-controlled supplements and compensation place a further burden on public employees.",
+            targets:{welfare_index_growth:-0.04, social_dissent_eq:1, generalitat_surplus:0.02}},
+        {id:"public_salary_improvement", applies:Q.public_salary_level > 0,
+            title:"Improved Public-Sector Pay", colour:"green",
+            description:"Negotiated improvements to public-service workers have been approved.",
+            targets:{welfare_index_growth:0.04, social_dissent_eq:-0.5, generalitat_surplus:-0.02}},
+        {id:"public_salary_expansion", applies:Q.public_salary_level == 2,
+            title:"Broad Public-Sector Pay Improvements", colour:"green",
+            description:"Further improvements to Generalitat-overseen public workers have led to a betterment of conditions across the boards.",
+            targets:{welfare_index_growth:0.05, social_dissent_eq:-1, generalitat_surplus:-0.03}}
+    ];
+    salaryPolicies.forEach(function (policy) {
+        if (!policy.applies) {
+            G.deactivateLaw(Q, policy.id, undefined, true);
+        } else if (!Q.active_mods || !Q.active_mods[policy.id] || !Q.active_mods[policy.id].active) {
+            G.registerLaw(Q, {id:policy.id, title:policy.title,
+                description:policy.description, colour:policy.colour,
+                icon:"img/people_icon.svg", targets:policy.targets});
+        }
+    });
+    var pendingRaises = [
+        {field:"education_prepared_level", actual:"education_spending", law:"education_spending_proposal"},
+        {field:"healthcare_prepared_level", actual:"healthcare_spending", law:"healthcare_spending_proposal"},
+        {field:"public_salary_prepared_level", actual:"public_salary_level", law:"public_salary_proposal"}
+    ];
+    pendingRaises.forEach(function (raise) {
+        if (Q[raise.field] != null && Q[raise.field] != Q[raise.actual] + 1) {
+            Q[raise.field] = null;
+            G.deactivateLaw(Q, raise.law, undefined, true);
+        }
+    });
 !}
 
 You should NOT see this text, if you do, report a bug!! (and ask for a wish)

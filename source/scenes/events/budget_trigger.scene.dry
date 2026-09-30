@@ -1,7 +1,51 @@
 title: [+ cat_coalition_disp +] kickstart Parlament budget negotiations
 subtitle: [? if president_gender = "m": President?][? if president_gender = "f": Presidenta?] [+ president +] is looking to pass a budget for this year [+ year +].
 new-page: true
-on-arrival: coming_from_parlament = false
+on-arrival: {!
+    Q.coming_from_parlament = false;
+    Q.budget_parlament_trigger = false;
+    Q.budget_year_attempted = Q.year;
+    var party = Q.economy_minister_party;
+    if (party == "jxsi") party = Q.jxsi_formation_num > 50 ? "erc" : "cdc";
+    if (party == "jxcat") party = Q.jxcat_leader_party == "erc" ? "erc" : "cdc";
+    var right = ["ciu", "cdc", "dl", "pdcat", "junts", "unio", "ppc", "cs", "vox"].includes(party);
+    var cap = right ? Math.min(Q.social_spending_cap, Math.max(-2,
+        Q.education_spending, Q.healthcare_spending, Q.public_salary_level)) : Math.min(3, Q.social_spending_cap + 1);
+    var tax = right ? Q.tax_policy_level : Math.min(6, Q.tax_policy_level + 2);
+    function prepared(id) {
+        var law = (Q.active_mods || {})[id];
+        return !!law && law.active && law.def.colour == "gray";
+    }
+    var projects = {
+        county:prepared("territory_county_roads") && !["cup", "ppc", "cs"].includes(party),
+        b40:prepared("territory_b40") && right,
+        metro1:prepared("territory_metro1") && !["ppc", "cs", "cup"].includes(party),
+        metro2:prepared("territory_metro2") && !right
+    };
+    for (var record of Q.coalition_policy_commitments || []) {
+        if (record.scope != "cabinet" || !["pending_budget", "applied"].includes(record.status)) continue;
+        if (record.kind == "social_spending_cap") cap = Math.max(cap, record.target);
+        if (record.kind == "tax_progressivity") tax = Math.max(tax, Math.min(Q.tax_policy_level + 2, record.target));
+    }
+    // Prefer a restrained tax package, but seek revenue when inherited finances require it.
+    if (right) {
+        var yields = [-3, -2, -1, 0, 3, 3, 2, 1.5, 2, 3];
+        var costs = (projects.county ? 1 : 0) + (projects.b40 ? 2 : 0) + (projects.metro1 ? 2 : 0) + (projects.metro2 ? 1 : 0);
+        var bestMargin = -Infinity;
+        var minimumTax = tax;
+        for (var candidate = Math.max(-3, Q.tax_policy_level - 2); candidate <= Math.min(6, Q.tax_policy_level + 2); candidate++) {
+            if (candidate < minimumTax || party == "ciu" && candidate >= 4) continue;
+            var margin = 1 + Q.generalitat_surplus / 0.7 + yields[candidate + 3] - yields[Q.tax_policy_level + 3] -
+                2 * (cap - Q.social_spending_cap) - costs;
+            if (margin > bestMargin) { tax = candidate; bestMargin = margin; }
+            if (margin >= 0) break;
+        }
+    }
+    Q.budget_draft_origin = {author:"npc", year:Q.year, tax_policy_level:tax, social_spending_cap:cap,
+        enacted_tax_policy_level:Q.tax_policy_level, enacted_social_spending_cap:Q.social_spending_cap,
+        surplus_at_draft:Q.generalitat_surplus, projects:Object.assign({}, projects)};
+    Q.budget_draft = {tax_policy_level:tax, social_spending_cap:cap, projects:projects};
+!}
 view-if: budget_parlament_trigger
 tags: event
 role: event

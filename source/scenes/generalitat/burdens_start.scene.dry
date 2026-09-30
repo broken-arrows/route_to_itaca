@@ -10,8 +10,19 @@ on-arrival: {!
     Q.burdens_time = 12;
     Q.burdens_broken = 0;
 
-    if (Q.parlament_coalition_concessions_social) {
-        Q.burdens_done += 1;
+    if (Q.parlament_coalition_policy_accepted) {
+        var commitments = [
+            {selected: Q.parlament_coalition_policy_cap, kind: "social_spending_cap", target: Q.parlament_coalition_policy_cap_target, title: "Raise on the social spending cap", icon: "img/economy_icon.svg"},
+            {selected: Q.parlament_coalition_policy_education, kind: "education_spending", spending: true, target: Q.parlament_coalition_policy_education_target, title: "Education spending increase", icon: "img/education_icon.svg"},
+            {selected: Q.parlament_coalition_policy_health, kind: "healthcare_spending", spending: true, target: Q.parlament_coalition_policy_health_target, title: "Health spending increase", icon: "img/health_icon.svg"},
+            {selected: Q.parlament_coalition_policy_pay, kind: "public_salary_level", spending: true, target: Q.parlament_coalition_policy_pay_target, title: "Public salaries increase", icon: "img/economy_icon.svg"},
+            {selected: Q.parlament_coalition_policy_tax, kind: "tax_progressivity", target: Q.parlament_coalition_policy_tax_target, title: "More progressive tax scheme", icon: "img/people_icon.svg"}
+        ];
+        commitments.forEach(function (item) {
+            if (!item.selected) return;
+            if (!item.allowed) return;
+            Q.burdens_done += 1;
+        });
     }
 
     Q.burdens_start_trigger = false;

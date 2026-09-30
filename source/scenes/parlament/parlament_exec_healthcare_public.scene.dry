@@ -69,7 +69,7 @@ on-arrival: {!
         }
     }
     Q.parlament_healthcare_public_passed = Q.parlament_healthcare_public_yes > Q.parlament_healthcare_public_no &&
-        Q.healthcare_spending == 2 && Q.government_budget >= 2;
+        Q.healthcare_spending == 2 && Q.social_spending_cap == 3 && Q.government_budget >= 2;
     Q.parlament_healthcare_public_vote_result = {outcomes:[
         {kind:"yes",label:"Yes",votes:Q.parlament_healthcare_public_yes,parties:yesParties},
         {kind:"abstain",label:"Abstention",votes:Q.parlament_healthcare_public_abst,parties:abstainParties},
@@ -101,4 +101,3 @@ The Parlament has approved [? if not healthcare_public_ruling: a public-only ?][
 The proposal by [+ health_minister +] has not passed. The public system will have to continue to coexist with private providers.
 
 - @post_event
-

@@ -7,6 +7,7 @@ go-to: post_event if started = 1; start_menu if started = 0
 role: title-hub
 new-page: true
 set-bg: img/3rd_October_2017.jpg
+call: generalitat_setpolicy
 on-arrival: {!
   // check origin 
   // TODO: allow via url
@@ -131,19 +132,17 @@ on-arrival: {!
   // Government stuff:
   Q.budget_year = 2012;
   Q.budget_year_attempted = 2012;
-  G.registerLaw(Q, {id:"budget_social_cuts", title:"Social Spending Cuts",
-      colour:"red", icon:"img/scissors_icon.svg",
-      description:"The 2012 budget continues austerity in public services and social spending.",
-      targets:{welfare_index_growth:-0.08, generalitat_surplus:0.03, social_dissent_eq:2}});
-  G.registerLaw(Q, {id:"budget_tax_moderate", title:"Budget Revenue Measures",
-      colour:"orange", icon:"img/economy_icon.svg",
-      description:"Tax and fees increases across the board are part of the 2012 budget's fiscal measures.",
-      targets:{generalitat_surplus:0.02}});
-
-  // TODO: should we just start with education_spending at -1?
+  // Inherited austerity and revenue are enacted by the shared policy setter.
+  // Cap zero permits one restoration step in each service under the 2012 budget.
+  Q.education_spending = -1;
+  Q.healthcare_spending = -1;
+  Q.public_salary_level = -1;
+  Q.public_salary_prepared_level = null;
+  Q.education_prepared_level = null;
+  Q.healthcare_prepared_level = null;
+  Q.tax_policy_level = 0;
+  Q.social_spending_cap = 0;
   Q.climate_transition_points = 0;
-  Q.education_spending = 0;
-  Q.healthcare_spending = 0;
   Q.territory_roads_approved = 0;  
   Q.territory_metro_approved = 0;
 

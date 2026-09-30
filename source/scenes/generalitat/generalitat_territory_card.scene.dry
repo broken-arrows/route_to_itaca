@@ -93,7 +93,7 @@ on-arrival: {!
     Q.territory_roads = 2;
     Q.government_budget -= 1;
 
-    G.registerLaw(Q, {id:"territory_county_roads",colour:"gray",description:"Pending budget approval: expansion of critical road links like the C-17 and the A-27.",title:"County roads expansion",icon:"img/car_icon.svg",targets:{generalitat_surplus:-0.005}});
+    G.registerLaw(Q, {id:"territory_county_roads",colour:"gray",description:"Pending budget approval: expansion of critical road links like the C-17 and the A-27.",title:"County roads expansion",icon:"img/car_icon.svg",targets:{}});
     
     var target = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
     for (var province of ["girona", "tarragona"]) {
@@ -118,7 +118,7 @@ on-arrival: {!
     Q.climate_transition_points -= 1;
     Q.government_budget -= 2;
 
-    G.registerLaw(Q, {id:"territory_b40",colour:"gray",description:"Pending budget approval: build out of the B-40, Barcelona's final bypass highway.",title:"Barcelona's Fourth Belt",icon:"img/car_icon.svg",targets:{generalitat_surplus:-0.005, welfare_index: -0.05}});
+    G.registerLaw(Q, {id:"territory_b40",colour:"gray",description:"Pending budget approval: build out of the B-40, Barcelona's final bypass highway.",title:"Barcelona's Fourth Belt",icon:"img/car_icon.svg",targets:{}});
     Q.social_dissent += 10;
 
     // The bypass appeals to business voters but costs the proposer green votes.
@@ -157,7 +157,8 @@ on-arrival: {!
     Q.climate_transition_points += 1;
     Q.territory_metro = 1;
     Q.government_budget -= 2;
-    G.registerLaw(Q, {id:"territory_metro1",colour:"gray",description:"Pending budget approval: restart construction of Barcelona's longest metro line.",title:"Metro L9/L10",icon:"img/subway_icon.svg",targets:{generalitat_surplus:-0.005, unemployment_recovery: 0.005}});
+    
+    G.registerLaw(Q, {id:"territory_metro1",colour:"gray",description:"Pending budget approval: restart construction of Barcelona's longest metro line.",title:"Metro L9/L10",icon:"img/subway_icon.svg",targets:{}});
 
     // A prepared project earns modest Barcelona credit before it is funded.
     var target = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
@@ -183,7 +184,7 @@ on-arrival: {!
     Q.climate_transition_points += 1;
     Q.territory_metro = 2;
     Q.government_budget -= 1;
-    G.registerLaw(Q, {id:"territory_metro2",colour:"gray",description:"Pending budget approval: expansion of Barcelona's metro lines L1 and L3",title:"Metro L1&L3",icon:"img/subway_icon.svg",targets:{generalitat_surplus:-0.005, unemployment_recovery: 0.005}});
+    G.registerLaw(Q, {id:"territory_metro2",colour:"gray",description:"Pending budget approval: expansion of Barcelona's metro lines L1 and L3",title:"Metro L1&L3",icon:"img/subway_icon.svg",targets:{}});
 
     var target = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
     var targetLocal = (Q.player_in_jxsi && Q.jxsi_in_local) ? "jxsi" :

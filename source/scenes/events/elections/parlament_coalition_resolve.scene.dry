@@ -124,21 +124,46 @@ on-arrival: {!
         Q.countdowns.push("jxcat_formation");
     }
 
-    if (Q.parlament_coalition_concessions_social) {
-        G.registerLaw(Q, {
-            id: "generalitat_concession_social",
-            title: "Social Policy Concessions",
-            icon: "img/people_icon.svg",
-            colour: "green",
-            description: "The new government has vowed to expand Social Policies as a part of its investiture deal.",
-            targets: {
-                welfare_index_growth: 0.1,
-                generalitat_surplus: -0.01
-            },
-            ramp_ticks: 6,
+    // Accepted policy clauses belong to this government/support agreement.
+    for (var previous of Q.coalition_policy_commitments || [])
+        G.deactivateLaw(Q, "coalition_pending_" + previous.kind, undefined, true);
+    Q.coalition_policy_commitments = [];
+    if (Q.parlament_coalition_policy_accepted) {
+        var commitments = [
+            {selected: Q.parlament_coalition_policy_cap, kind: "social_spending_cap", target: Q.parlament_coalition_policy_cap_target, title: "Raise on the social spending cap", icon: "img/economy_icon.svg"},
+            {selected: Q.parlament_coalition_policy_education, kind: "education_spending", spending: true, target: Q.parlament_coalition_policy_education_target, title: "Education spending increase", icon: "img/education_icon.svg"},
+            {selected: Q.parlament_coalition_policy_health, kind: "healthcare_spending", spending: true, target: Q.parlament_coalition_policy_health_target, title: "Health spending increase", icon: "img/health_icon.svg"},
+            {selected: Q.parlament_coalition_policy_pay, kind: "public_salary_level", spending: true, target: Q.parlament_coalition_policy_pay_target, title: "Public salaries increase", icon: "img/economy_icon.svg"},
+            {selected: Q.parlament_coalition_policy_tax, kind: "tax_progressivity", target: Q.parlament_coalition_policy_tax_target, title: "More progressive tax scheme", icon: "img/people_icon.svg"}
+        ];
+        commitments.forEach(function (item) {
+            if (!item.selected) return;
+            if ((item.kind == "education_spending" || item.kind == "healthcare_spending") && !(Q[item.kind] >= -2 && Q[item.kind] < 2 && item.target == Q[item.kind] + 1)) return;
+            var cap = typeof Q.social_spending_cap == "number" ? Q.social_spending_cap : Q.parlament_coalition_policy_effective_cap;
+            var allowed = item.spending && typeof cap == "number" && cap >= item.target && (item.kind != "public_salary_level" || Q.public_salary_raise_allowed);
+            var record = {kind: item.kind, target: item.target, scope: "cabinet", signatories: ["erc", Q.parlament_current_ciu], status: allowed ? "applied" : "pending_budget"};
+            Q.coalition_policy_commitments.push(record);
+            if (allowed) {
+                Q[item.kind] = item.target;
+                Q.parlament_coalition_policy_policy_applied = true;
+            } else {
+                G.registerLaw(Q, {
+                    id: "coalition_pending_" + item.kind,
+                    title: item.title,
+                    icon: item.icon,
+                    colour: "gray",
+                    description: item.kind == "social_spending_cap"
+                        ? "Parties of the current government coalition have taken the commitment to increase the social spending cap in the next budget negotiations."
+                        : item.spending
+                            ? "Pending budget approval: this extra spending package is conditional on an increase in the social spending cap."
+                            : "Parties of the current government coalition have taken the commitment to implement a more progressive tax package in the next budget negotiations.",
+                    targets: {}
+                });
+            }
         });
-        Q.burdens_done += 1
+        Q.parlament_coalition_policy_accepted = false;
     }
     Q.budget_failed_times = 0;
 !}
+call: generalitat_setpolicy
 go-to: post_event
