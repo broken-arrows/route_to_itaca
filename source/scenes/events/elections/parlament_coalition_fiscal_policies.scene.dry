@@ -1,0 +1,161 @@
+title: Propose Policy Commitments
+new-page: true
+on-arrival: {!
+    Q.parlament_coalition_concessions = Q.parlament_coalition_policy_cap || Q.parlament_coalition_policy_education || Q.parlament_coalition_policy_health || Q.parlament_coalition_policy_pay || Q.parlament_coalition_policy_tax || Q.parlament_coalition_policy_indy_demanded;
+!}
+
+You should not see this text. If you do, please report a bug! (and make a wish!)
+
+@spending_cap
+tags: fiscal_concessions
+title: [? if parlament_coalition_policy_cap: Withdraw demand to raise the social spending cap?][? if not parlament_coalition_policy_cap: Demand a higher social spending cap?]
+view-if: parlament_coalition_policy_cap or (social_spending_cap >= -2 and social_spending_cap < 3)
+choose-if: parlament_coalition_policy_cap or (parlament_coalition_policy_cap_target = social_spending_cap + 1 and parlament_coalition_policy_cap_target <= 3 and parlament_coalition_leverage >= parlament_coalition_policy_spending_cost)
+subtitle: A raise of the social spending cap gives us more options to invest in things like Education, Health and other public investments.
+unavailable-subtitle: [? if parlament_coalition_policy_cap_target > 3: There is no longer a cap! ?][? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions. ?]
+on-arrival: {!
+    var taking = !Q.parlament_coalition_policy_cap;
+    var canDemand = Q.social_spending_cap >= -2 && Q.social_spending_cap < 3
+        && Q.parlament_coalition_policy_cap_target === Q.social_spending_cap + 1
+        && Q.parlament_coalition_leverage >= Q.parlament_coalition_policy_spending_cost;
+    if (!taking || canDemand) {
+        Q.parlament_coalition_policy_cap = taking;
+        Q.parlament_coalition_leverage += taking ? -Q.parlament_coalition_policy_spending_cost : Q.parlament_coalition_policy_spending_cost;
+    }
+!}
+go-to: jumpScene
+
+@education_policy
+tags: fiscal_concessions
+title: [? if parlament_coalition_policy_education: Withdraw our demand for more Education spending?][? if not parlament_coalition_policy_education: Demand more Education spending?]
+view-if: parlament_coalition_policy_education or (education_spending >= -2 and education_spending < 2)
+choose-if: parlament_coalition_policy_education or (parlament_coalition_leverage >= parlament_coalition_policy_spending_cost and parlament_coalition_policy_education_target = education_spending + 1 and education_spending >= -2 and education_spending < 2)
+subtitle: [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_education_target: This increase will be conditional on a budget with a higher social spending cap being approved by the Parlament.?]
+unavailable-subtitle: [? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions. ?]
+on-arrival: {!
+    var taking = !Q.parlament_coalition_policy_education;
+    var canDemand = Q.education_spending >= -2 && Q.education_spending < 2
+        && Q.parlament_coalition_policy_education_target === Q.education_spending + 1
+        && Q.parlament_coalition_leverage >= Q.parlament_coalition_policy_spending_cost;
+    if (!taking || canDemand) {
+        Q.parlament_coalition_policy_education = taking;
+        Q.parlament_coalition_leverage += taking ? -Q.parlament_coalition_policy_spending_cost : Q.parlament_coalition_policy_spending_cost;
+    }
+!}
+go-to: jumpScene
+
+@health_policy
+tags: fiscal_concessions
+title: [? if parlament_coalition_policy_health: Withdraw our demand for more Health spending?][? if not parlament_coalition_policy_health: Demand more Health spending?]
+view-if: parlament_coalition_policy_health or (healthcare_spending >= -2 and healthcare_spending < 2)
+choose-if: parlament_coalition_policy_health or (parlament_coalition_leverage >= parlament_coalition_policy_spending_cost and parlament_coalition_policy_health_target = healthcare_spending + 1 and healthcare_spending >= -2 and healthcare_spending < 2)
+subtitle: [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_health_target: This increase will be conditional on a budget with a higher social spending cap being approved by the Parlament. ?]
+unavailable-subtitle: [? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions. ?]
+on-arrival: {!
+    var taking = !Q.parlament_coalition_policy_health;
+    var canDemand = Q.healthcare_spending >= -2 && Q.healthcare_spending < 2
+        && Q.parlament_coalition_policy_health_target === Q.healthcare_spending + 1
+        && Q.parlament_coalition_leverage >= Q.parlament_coalition_policy_spending_cost;
+    if (!taking || canDemand) {
+        Q.parlament_coalition_policy_health = taking;
+        Q.parlament_coalition_leverage += taking ? -Q.parlament_coalition_policy_spending_cost : Q.parlament_coalition_policy_spending_cost;
+    }
+!}
+go-to: jumpScene
+
+@pay_policy
+tags: fiscal_concessions
+title: [? if parlament_coalition_policy_pay: Withdraw our demand for higher public worker salaries?][? if not parlament_coalition_policy_pay: Demand higher public worker salaries?]
+view-if: parlament_coalition_policy_pay or (public_salary_level >= -2 and public_salary_level < 2)
+choose-if: parlament_coalition_policy_pay or (parlament_coalition_leverage >= parlament_coalition_policy_spending_cost and parlament_coalition_policy_pay_target = public_salary_level + 1 and public_salary_level >= -2 and public_salary_level < 2)
+subtitle: [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_pay_target: This increase will be conditional on a budget with a higher social spending cap being approved by the Parlament. ?]
+unavailable-subtitle: [? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions.?]
+on-arrival: {!
+    var taking = !Q.parlament_coalition_policy_pay;
+    var canDemand = Q.public_salary_level >= -2 && Q.public_salary_level < 2
+        && Q.parlament_coalition_policy_pay_target === Q.public_salary_level + 1
+        && Q.parlament_coalition_leverage >= Q.parlament_coalition_policy_spending_cost;
+    if (!taking || canDemand) {
+        Q.parlament_coalition_policy_pay = taking;
+        Q.parlament_coalition_leverage += taking ? -Q.parlament_coalition_policy_spending_cost : Q.parlament_coalition_policy_spending_cost;
+    }
+!}
+go-to: jumpScene
+
+@progressive_tax
+tags: fiscal_concessions
+title: [? if parlament_coalition_policy_tax: Withdraw our demand for more progressive taxes?][? if not parlament_coalition_policy_tax: Demand a more progressive tax package?]
+view-if: parlament_coalition_policy_tax or (tax_policy_level >= -3 and tax_policy_level < 6)
+choose-if: parlament_coalition_policy_tax or (parlament_coalition_leverage >= 5 and parlament_coalition_policy_tax_target = tax_policy_level + 1 and tax_policy_level >= -3 and tax_policy_level < 6)
+subtitle: This will have to be approved as part of the next budget negotiations.
+unavailable-subtitle: We don't have enough leverage to propose more concessions.
+on-arrival: {!
+    var taking = !Q.parlament_coalition_policy_tax;
+    var canDemand = Q.tax_policy_level >= -3 && Q.tax_policy_level < 6
+        && Q.parlament_coalition_policy_tax_target === Q.tax_policy_level + 1
+        && Q.parlament_coalition_leverage >= 5;
+    if (!taking || canDemand) {
+        Q.parlament_coalition_policy_tax = taking;
+        Q.parlament_coalition_leverage += taking ? -5 : 5;
+    }
+!}
+go-to: jumpScene
+
+@initialize
+on-arrival: {!
+    Q.parlament_coalition_policy_accepted = false;
+    Q.parlament_coalition_policy_cap = false;
+    Q.parlament_coalition_policy_education = false;
+    Q.parlament_coalition_policy_health = false;
+    Q.parlament_coalition_policy_pay = false;
+    Q.parlament_coalition_policy_tax = false;
+    Q.parlament_coalition_policy_indy_demanded = false;
+    Q.parlament_coalition_policy_effective_cap = Q.social_spending_cap;
+    Q.parlament_coalition_policy_cap_target = Q.social_spending_cap + 1;
+    Q.parlament_coalition_policy_surplus = Q.generalitat_surplus;
+    Q.parlament_coalition_policy_spending_cost = 5 + Math.max(0, -Q.generalitat_surplus);
+    Q.parlament_coalition_policy_education_target = Q.education_spending + 1;
+    Q.parlament_coalition_policy_health_target = Q.healthcare_spending + 1;
+    Q.parlament_coalition_policy_pay_target = Q.public_salary_level + 1;
+    Q.parlament_coalition_policy_tax_target = Q.tax_policy_level + 1;
+    Q.parlament_coalition_policy_reject_reasons = "";
+    Q.parlament_coalition_concessions = false;
+!}
+
+@evaluate
+on-arrival: {!
+    var reasons = [];
+    var terms = [
+        ["cap", "social_spending_cap", -2, 3, "We're asking for too much of a social spending cap increase."],
+        ["education", "education_spending", -2, 2, "We're asking for too much of a education funding increase."],
+        ["health", "healthcare_spending", -2, 2, "We're asking for too much of a healthcare funding increase."],
+        ["pay", "public_salary_level", -2, 2, "We're asking for too much of a public salaries increase."],
+        ["tax", "tax_policy_level", -3, 6, "We're asking for too much of a radical change in taxes."]
+    ];
+    var selected = false;
+    for (var term of terms) {
+        if (!Q["parlament_coalition_policy_" + term[0]]) continue;
+        selected = true;
+        var current = Q[term[1]];
+        var target = Q["parlament_coalition_policy_" + term[0] + "_target"];
+        if (!Number.isInteger(current) || !Number.isInteger(target) || current < term[2] || current >= term[3] || target !== current + 1) reasons.push(term[4]);
+    }
+    if (selected && !(Q.parlament_coalition_leverage >= 0)) reasons.push("We don't have enough leverage to ask for this much.");
+    if (Q.parlament_coalition_concessions_indy && Q.pdcat_external_support && Q.pdcat_roadmap < Q[Q.parlament_current_ciu + "_roadmap"]) reasons.push("The pdcat is firmly against the proposed independence commitment.");
+    Q.parlament_coalition_policy_reject_reasons = reasons.join(" ");
+    if (reasons.length) Q.parlament_coalition_proposal_accept = false;
+!}
+
+@summary
+on-arrival: {!
+    Q.parlament_coalition_concessions = Q.parlament_coalition_policy_cap || Q.parlament_coalition_policy_education || Q.parlament_coalition_policy_health || Q.parlament_coalition_policy_pay || Q.parlament_coalition_policy_tax || Q.parlament_coalition_policy_indy_demanded;
+!}
+go-to: jumpScene
+
+[? if parlament_coalition_concessions_indy or parlament_coalition_policy_cap or parlament_coalition_policy_education or parlament_coalition_policy_health or parlament_coalition_policy_pay or parlament_coalition_policy_tax: **Policy Concessions**?]
+
+[? if parlament_coalition_policy_cap: - We've added a commitment to raise the shared social spending cap through the next budget.?]
+[? if parlament_coalition_policy_education: - We've added a commitment to increase Education spending. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_education_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
+[? if parlament_coalition_policy_health: - We've added a commitment to increase Healthcare spending. [? if parlament_coalition_policy_effective_cap >= parlament_coalition_policy_health_target: Takes effect when the government is formed.?][? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_health_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
+[? if parlament_coalition_policy_pay: - We've added a commitment to raise all public salaries. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_pay_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
+[? if parlament_coalition_policy_tax: - We've added a commitment to make taxes more progressive when the next budget is discussed.?]

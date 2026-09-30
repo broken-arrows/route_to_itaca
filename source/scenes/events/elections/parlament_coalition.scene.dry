@@ -28,7 +28,6 @@ on-arrival: {!
     Q.parlament_coalition_leverage = 0;
     Q.parlament_coalition_concessions = false;
     Q.parlament_coalition_changes = false;
-    Q.parlament_coalition_concessions_social = 0;
     Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_push = 0;
 

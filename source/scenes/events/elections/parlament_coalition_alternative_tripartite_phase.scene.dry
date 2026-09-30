@@ -4,6 +4,7 @@ tags: event
 new-page: true
 view-if: alternative_tripartite_coalition_phase > 0 and player_party == "erc"
 on-arrival: {!
+    Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_changes = false;
     Q.alternative_tripartite_reject_vp = false;
     Q.alternative_tripartite_reject_psc_economy = false;
@@ -66,14 +67,20 @@ on-arrival: {!
     Q.alternative_tripartite_comuns_bnl_protected = Q.parlament_coalition_proposal_bnl == Q.parlament_current_icv;
     Q.alternative_tripartite_comuns_health_protected = Q.parlament_coalition_proposal_health == Q.parlament_current_icv;
 !}
+call: parlament_coalition_fiscal_policies.initialize
 go-to: parlament_coalition_setnames
 set-jump: choices
 role: event
 
 @choices
+go-to: parlament_coalition_fiscal_policies.summary
+set-jump: choices_menu
+
+@choices_menu
 
 [+ parlament_current_icv +] has submitted its [? if alternative_tripartite_coalition_phase = 1: opening?][? if alternative_tripartite_coalition_phase > 1: revised?] cabinet proposal.
 
+- @policy_concessions
 - @accept: Accept the current proposal
 - @counterproposal
 
@@ -161,7 +168,7 @@ on-arrival: {!
 go-to: counterproposal
 
 @send
-view-if: parlament_coalition_changes
+view-if: parlament_coalition_changes or parlament_coalition_concessions
 on-arrival: {!
     var expectedVP = Q.psc_parlament_s >= Q.erc_parlament_s ? "psc" : "erc";
     Q.alternative_tripartite_reject_vp = Q.alternative_tripartite_coalition_phase < 3 && expectedVP != "erc" && Q.parlament_coalition_proposal_vp != expectedVP;
@@ -171,6 +178,7 @@ on-arrival: {!
     Q.alternative_tripartite_reject_comuns_health = Q.alternative_tripartite_coalition_phase < 3 && Q.alternative_tripartite_comuns_health_protected && Q.parlament_coalition_proposal_health != Q.parlament_current_icv;
     Q.parlament_coalition_proposal_accept = !Q.alternative_tripartite_reject_vp && !Q.alternative_tripartite_reject_psc_economy && !Q.alternative_tripartite_reject_psc_interior && !Q.alternative_tripartite_reject_comuns_bnl && !Q.alternative_tripartite_reject_comuns_health;
 !}
+call: parlament_coalition_fiscal_policies.evaluate
 go-to: accept if parlament_coalition_proposal_accept; next_phase
 
 @next_phase
@@ -187,12 +195,16 @@ on-arrival: {!
 
 The PSC and [+ parlament_current_icv +] have rejected our counter-proposal. [? if alternative_tripartite_reject_vp: The Vice-Presidency seems to remain a red line.?][? if alternative_tripartite_reject_psc_economy or alternative_tripartite_reject_psc_interior: The PSC remains dissatisfied with the balance of high-responsibility ministries.?][? if alternative_tripartite_reject_comuns_bnl or alternative_tripartite_reject_comuns_health: [+ parlament_current_icv +] does not believe the proposal gives it sufficient influence over the government's social programme.?] The negotiating teams will reconvene.
 
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
+
 - @post_event: And so, time passes...
 
 @accept
-choose-if: not parlament_coalition_changes
+choose-if: (not parlament_coalition_changes) and not parlament_coalition_concessions
 unavailable-subtitle: Our counter-proposal will require approval by both coalition partners.
 on-arrival: {!
+    Q.parlament_coalition_policy_accepted = true;
+    Q.parlament_coalition_policy_scope = "cabinet";
     Q.alternative_tripartite_coalition_phase = 0;
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
@@ -222,4 +234,15 @@ call: snap_election
 
 The parties have exhausted the formation rounds without reaching an agreement...
 
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
+
 - @post_event
+@policy_concessions
+title: Propose Policy Commitments
+call: parlament_coalition_fiscal_policies
+set-jump: policy_concessions
+
+[? if parlament_coalition_policy_surplus < 0: The current Generalitat deficit makes spending commitments harder to secure, though.?]
+
+- #fiscal_concessions
+- @choices: Finish proposing policies

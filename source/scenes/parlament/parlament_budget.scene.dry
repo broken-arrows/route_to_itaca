@@ -86,7 +86,7 @@ on-arrival: {!
         for (var record of commitments) {
             if (record.status != "pending_budget" || !spending.includes(record.kind)) continue;
             var current = levels[record.kind];
-            if (current >= -2 && current <= 2 && record.target >= -2 && record.target <= 2 && record.target <= cap)
+            if (Number.isInteger(current) && current >= -2 && current <= 2 && Number.isInteger(record.target) && record.target >= -2 && record.target <= 2 && record.target <= cap)
                 levels[record.kind] = Math.max(current, record.target);
         }
         var preparedLevels = {education_spending:Q.education_prepared_level,
@@ -116,6 +116,18 @@ on-arrival: {!
     Q.parlament_budget_projection = projection;
     Q.parlament_budget_tax_name = projection.taxProfile.name;
     Q.parlament_budget_cap_name = capNames[projection.cap + 2];
+    var commitmentNames = {social_spending_cap:"Higher social spending authorization", education_spending:"Education improvement",
+        healthcare_spending:"Health improvement", public_salary_level:"Public-pay improvement", tax_progressivity:"More progressive taxes"};
+    Q.parlament_budget_commitment_summary = commitments.map(function (record) {
+        var outcome;
+        if (!matches(record, projection)) outcome = "this draft would breach the government-formation agreement";
+        else if (record.status == "pending_budget" && spending.includes(record.kind) && record.target > projection.cap)
+            outcome = "remains conditional on future funding on a social spending cap increase";
+        else outcome = record.status == "pending_budget" ? "would be fulfilled" : "would be maintained";
+        return commitmentNames[record.kind] + " (" + (record.scope == "cabinet" ? "cabinet agreement" : "agreed") + "): " + outcome + ".";
+    }).join(" ");
+    Q.parlament_budget_cabinet_breach_text = projection.brokenCabinet.map(function (record) { return commitmentNames[record.kind]; }).join(", ");
+    Q.parlament_budget_external_breach_text = projection.brokenExternal.map(function (record) { return commitmentNames[record.kind]; }).join(", ");
     Q.parlament_budget_margin = projection.margin;
     Q.parlament_budget_shortfall = projection.shortfall;
     Q.parlament_budget_player_authored = origin.author == "player";
@@ -144,8 +156,7 @@ on-arrival: {!
         cabinet.some(function (p) { return ["erc", "cup", "jxsi", "jxcat"].includes(p); });
     function promised(party, kind, p) {
         return commitments.some(function (r) {
-            return r.kind == kind && r.scope == "cabinet" && belongs(party, cabinet) &&
-                belongs(party, r.signatories || cabinet) && matches(r, p) &&
+            return r.kind == kind && belongs(party, r.signatories || []) && matches(r, p) &&
                 (kind == "tax_progressivity" ? p.tax : p.cap) <= r.target;
         });
     }
@@ -154,7 +165,9 @@ on-arrival: {!
         var expanding = p.cap > origin.enacted_social_spending_cap;
         if (!p.valid) reasons.push("when does this even fire? report a bug if you see this");
         if (p.brokenCabinet.length && belongs(party, cabinet)) reasons.push("The proposed budget contradicts the cabinet's policy agreement.");
-        if (p.brokenExternal.length && belongs(party, Q.cat_coalition_support || [])) reasons.push("The proposed budget goes against coalition-support agreement.");
+        if (belongs(party, (Q.cat_coalition_support || []).concat(Q.cat_coalition_abstain || [])) && p.brokenExternal.some(function (r) {
+            return belongs(party, r.signatories || []);
+        })) reasons.push("The proposed budget goes against coalition-support agreement.");
         if (party == "ciu" && p.tax >= 4 && !promised(party, "tax_progressivity", p))
             reasons.push("CiU will not approve this level of top-income tax increase.");
         if (party == "ciu" && p.shortfall > 0) reasons.push("CiU will not approve a budget with a funding gap.");
@@ -189,12 +202,14 @@ on-arrival: {!
         if (["ciu", "cdc", "dl", "pdcat", "junts", "unio"].includes(party))
             return projection.shortfall == 0 && (capChange <= 0 || promised(party, "social_spending_cap", projection)) &&
                 (tax < 4 || promised(party, "tax_progressivity", projection)) ? "yes" : "no";
-        if (party == "erc") return tax >= 1 && projection.cap >= Math.min(0, origin.enacted_social_spending_cap) ? "yes" : "no";
-        if (party == "cup") return (expanding || projection.cap >= 1) && (tax >= 3 || tax >= 1 && draft.projects.metro2) ? "yes" : "no";
-        if (["icv", "csqp", "cecp", "ecp"].includes(party)) return (expanding || projection.cap >= 1) && tax >= 1 ? "yes" : "no";
+        var agreedTax = promised(party, "tax_progressivity", projection);
+        var agreedCap = promised(party, "social_spending_cap", projection);
+        if (party == "erc") return (tax >= 1 || agreedTax) && (projection.cap >= Math.min(0, origin.enacted_social_spending_cap) || agreedCap) ? "yes" : "no";
+        if (party == "cup") return (expanding || projection.cap >= 1 || agreedCap) && (tax >= 3 || tax >= 1 && draft.projects.metro2 || agreedTax) ? "yes" : "no";
+        if (["icv", "csqp", "cecp", "ecp"].includes(party)) return (expanding || projection.cap >= 1 || agreedCap) && (tax >= 1 || agreedTax) ? "yes" : "no";
         if (party == "psc") return (pscFacesIndyCabinet ? expanding && (tax >= 1 && tax <= 2 || tax >= 3 && metro) :
-            projection.cap >= Math.min(0, origin.enacted_social_spending_cap) && tax >= 0 && (tax < 4 || metro)) ? "yes" : "no";
-        if (["ppc", "cs"].includes(party)) return capChange <= 0 && tax <= 0 && projection.shortfall == 0 ? "yes" : "no";
+            (projection.cap >= Math.min(0, origin.enacted_social_spending_cap) || agreedCap) && (tax >= 0 || agreedTax) && (tax < 4 || metro || agreedTax)) ? "yes" : "no";
+        if (["ppc", "cs"].includes(party)) return (capChange <= 0 || agreedCap) && (tax <= 0 || agreedTax) && projection.shortfall == 0 ? "yes" : "no";
         return party == "si" ? "abstain" : "no";
     }
     var deals = Q.parlament_budget_deals;
@@ -337,6 +352,12 @@ on-arrival: {!
 [? if parlament_budget_b40: · Fund the prepared Fourth Belt B-40 extension.?]
 [? if parlament_budget_metro1: · Fund the prepared L9/L10 Metro project.?]
 [? if parlament_budget_metro2: · Fund the prepared L1/L3 Metro expansion.?]
+
+[? if parlament_budget_commitment_summary: **Agreed policy commitments:** [+ parlament_budget_commitment_summary +]?]
+
+[? if parlament_budget_cabinet_breach_text: **Cabinet agreement breached:** [+ parlament_budget_cabinet_breach_text +].?]
+
+[? if parlament_budget_external_breach_text: **Outside investiture agreement breached:** [+ parlament_budget_external_breach_text +].?]
 
 [? if parlament_budget_shortfall > 0: This proposed budget includes a **funding gap**, which the Generalitat will have to finance with debt. ?][? if parlament_budget_shortfall = 0: This proposed budget is, in principle, within projected fiscal room.?] [? if parlament_budget_inherited_deficit and parlament_budget_shortfall = 0: The Generalitat nevertheless inherits a deficit, so at best this would improve the current situation. ?]
 
@@ -541,12 +562,26 @@ on-arrival: {!
         if (Q.burdens_start_countdown > 0 || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
     }
     var spending = ["education_spending", "healthcare_spending", "public_salary_level"];
+    var enactedBefore = {tax_progressivity:Q.tax_policy_level};
+    for (var kind of spending) enactedBefore[kind] = Q[kind];
+    var deliveredCommitments = (Q.coalition_policy_commitments || []).filter(function (record) {
+        if (record.status != "pending_budget" || record.kind == "social_spending_cap") return false;
+        var actual = record.kind == "tax_progressivity" ? projection.tax : projection.levels[record.kind];
+        return actual >= record.target && actual > enactedBefore[record.kind];
+    });
     var serviceChange = spending.reduce(function (sum, kind) { return sum + projection.levels[kind] - Q[kind]; }, 0) / 3;
     var capChange = (projection.cap - origin.enacted_social_spending_cap) * 0.2;
     var socialChange = serviceChange + capChange;
     var taxChanges = Q.parlament_budget_tax_changes;
-    if (serviceChange > 0) creditBudgetBurden();
-    if (projection.tax >= 4 && origin.enacted_tax_policy_level < 4) creditBudgetBurden();
+    for (var record of deliveredCommitments) creditBudgetBurden();
+    // Coalition deliveries receive their own points, so the same change cannot
+    // also earn the budget's aggregate social or top-income-tax point.
+    var otherServiceChange = spending.reduce(function (sum, kind) {
+        return sum + (deliveredCommitments.some(function (record) { return record.kind == kind; }) ? 0 : projection.levels[kind] - enactedBefore[kind]);
+    }, 0);
+    if (otherServiceChange > 0) creditBudgetBurden();
+    if (projection.tax >= 4 && origin.enacted_tax_policy_level < 4 &&
+        !deliveredCommitments.some(function (record) { return record.kind == "tax_progressivity"; })) creditBudgetBurden();
     var votes = Q.parlament_budget_positions;
     var left = ["cup", Q.parlament_current_icv, "erc", "psc"].find(function (p) { return votes[p] == "no"; }) || "abstain";
     var right = ["ppc", "cs", Q.parlament_current_ciu, "unio"].find(function (p) { return votes[p] == "no"; }) || "abstain";
@@ -611,11 +646,12 @@ on-arrival: {!
     Q.budget_external_breach = projection.brokenExternal.length > 0;
     if (Q.budget_external_breach) {
         Q.budget_external_broken_commitments = projection.brokenExternal;
-        Q.budget_external_breach_parties = (Q.cat_coalition || []).concat(Q.cat_coalition_support || []).filter(function (p, i, all) { return p && all.indexOf(p) == i; });
+        Q.budget_external_breach_parties = projection.brokenExternal.reduce(function (parties, record) {
+            return parties.concat(record.signatories || []);
+        }, []).filter(function (p, i, all) { return p && all.indexOf(p) == i; });
     }
     for (var record of Q.coalition_policy_commitments || []) {
         if (record.status != "pending_budget") continue;
-        if (Q.budget_external_breach && record.scope == "external_support") continue;
         var actual = record.kind == "tax_progressivity" ? Q.tax_policy_level : Q[record.kind];
         if (actual >= record.target) {
             record.status = "applied";

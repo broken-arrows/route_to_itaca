@@ -153,7 +153,7 @@ go-to: budget_review
 @budget_tax_higher
 title: Move towards a higher yet more progressive tax package
 choose-if: economy_budget_tax_higher
-choose-if Our proposal is already changing the tax package as radically as it can be done in one pass.
+unavailable-subtitle: Our proposal is already changing the tax package as radically as it can be done in one pass.
 on-arrival: {!
     Q.economy_budget_proposal.tax_policy_level += 1;
 !}

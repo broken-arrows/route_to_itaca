@@ -40,7 +40,7 @@ describe('Parlament coalition resolution', () => {
           [`parlament_coalition_policy_${sector}`]: false,
           [`parlament_coalition_policy_${sector}_target`]: target,
         });
-        const choice = adapter.engine.game.scenes[`parlament_coalition_ciu_erc_phase.${sector}_policy`];
+        const choice = adapter.engine.game.scenes[`parlament_coalition_fiscal_policies.${sector}_policy`];
         expect(adapter.engine._runPredicate(choice.chooseIf, false)).toBe(false);
         if (current === 2 || current === 3 || current === -3) {
           expect(adapter.engine._runPredicate(choice.viewIf, true)).toBe(false);
@@ -118,7 +118,7 @@ describe('Parlament coalition resolution', () => {
     expect(q.education_spending).toBe(0);
     expect(q.education_cuts).toBe(false);
     expect(q.coalition_policy_commitments).toContainEqual(expect.objectContaining({
-      kind: 'education_spending', target: 0, demander: 'erc', status: 'applied',
+      kind: 'education_spending', target: 0, scope: 'cabinet', signatories: ['psc', 'ecp'], status: 'applied',
     }));
     expect((q.active_mods as Record<string, unknown>).coalition_pending_education_spending).toBeUndefined();
   });
@@ -136,7 +136,7 @@ describe('Parlament coalition resolution', () => {
     expect(q.education_spending).toBe(-1);
     expect(q.education_cuts).toBe(true);
     expect(q.coalition_policy_commitments).toContainEqual(expect.objectContaining({
-      kind: 'education_spending', target: 0, demander: 'erc', status: 'pending_budget',
+      kind: 'education_spending', target: 0, scope: 'cabinet', signatories: ['psc', 'ecp'], status: 'pending_budget',
     }));
     const pending = (q.active_mods as Record<string, any>).coalition_pending_education_spending;
     expect(pending.def.colour).toBe('gray');

@@ -69,7 +69,7 @@ describe('authored coalition tooltip metadata', () => {
 
     expect(adapter.qualities.parlament_coalition_leader).toBe(leader);
     expect(adapter.qualities.parlament_coalition_follower).toBe(follower);
-    expect(phaseFrame.sceneId).toBe(`${phaseId}.choices`);
+    expect(phaseFrame.sceneId).toBe(`${phaseId}.choices_menu`);
   });
 
   it.each([

@@ -4,7 +4,6 @@ tags: event
 new-page: true
 view-if: ciu_min_coalition_phase != 0 and player_party == "erc"
 on-arrival: {!
-    Q.parlament_coalition_concessions_social = 0;
     Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_concessions = false;
 
@@ -54,6 +53,7 @@ on-arrival: {!
         Q.parlament_coalition_leverage -= 5;
     }
 !}
+call: parlament_coalition_fiscal_policies.initialize
 go-to: phase_text
 role: event
 
@@ -66,10 +66,12 @@ set-jump: choices
 The representatives of [+ parlament_current_ciu +] have come forward with a [?if ciu_min_coalition_phase > 1: new?] proposal for the formation of a new government:
 
 @choices
+go-to: parlament_coalition_fiscal_policies.summary
+set-jump: choices_menu
 
-[? if parlament_coalition_concessions_social or parlament_coalition_concessions_indy: **Policy Concessions**?]
+@choices_menu
 
-[? if parlament_coalition_concessions_social: - [+ parlament_coalition_concessions_social_text +] ?]
+
 
 [? if parlament_coalition_concessions_indy: - [+ parlament_coalition_concessions_indy_text +] ?]
 
@@ -80,27 +82,16 @@ The representatives of [+ parlament_current_ciu +] have come forward with a [?if
 - @accept
 
 @policy_concessions
-choose-if: not(parlament_coalition_concessions_indy and parlament_coalition_concessions_social)
-unavailable-subtitle: All possible policy concessions have already been proposed.
 title: Propose Policy Commitments
+call: parlament_coalition_fiscal_policies
+set-jump: policy_concessions
 
-- @social_concessions
+[? if parlament_coalition_policy_surplus < 0: The current Generalitat deficit makes spending commitments harder to secure, though.?]
+
 - @indy_concessions
+- #fiscal_concessions
 - @push_leverage_concessions
 - @phase_text: Finish proposing policies
-
-@social_concessions
-title: Social Policies
-go-to: policy_concessions
-choose-if: parlament_coalition_concessions_social < 1 and parlament_coalition_leverage >= 5
-unavailable-subtitle: [? if parlament_coalition_concessions_social >= 1: We've already proposed social policy concessions.?][? if parlament_coalition_leverage < 5: We don't have enough leverage to propose more concessions.?]
-on-arrival: {!
-    Q.parlament_coalition_concessions = true;
-    Q.parlament_coalition_concessions_social += 1;
-    Q.parlament_coalition_concessions_social_text = "We've added policy requirements pushing for less austerity and more social spending to our proposal.";
-!}
-
-[+ parlament_coalition_concessions_social_text +]
 
 @indy_concessions
 title: Catalan Independence Policies
@@ -108,6 +99,7 @@ go-to: policy_concessions
 choose-if: parlament_coalition_concessions_indy < 1 and parlament_coalition_leverage >= 5
 unavailable-subtitle: [? if parlament_coalition_concessions_indy >= 1: We've already proposed independence-related concessions.?][? if parlament_coalition_leverage < 5: We don't have enough leverage to propose more concessions.?]
 on-arrival: {!
+    Q.parlament_coalition_policy_indy_demanded = true;
     Q.parlament_coalition_concessions = true;
     Q.parlament_coalition_concessions_indy += 1;
 
@@ -167,6 +159,7 @@ on-arrival: {!
         Q[Q.parlament_current_ciu + "_relations"] -= 2;
     }
 !}
+call: parlament_coalition_fiscal_policies.evaluate
 go-to: decision
 
 @decision
@@ -186,6 +179,8 @@ on-arrival: {!
 
 [+ parlament_current_ciu +]'s representatives were initially dubious about our new proposal. We will have to wait until the [+ parlament_current_ciu +] and ERC negotiating teams reconvene to advance negotiations.
 
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
+
 - @post_event: And so, time passes...
 
 
@@ -194,6 +189,8 @@ title: Accept proposal
 choose-if: not parlament_coalition_concessions
 unavailable-subtitle: We have proposed changes, which will require approval by [+ parlament_current_ciu +].
 on-arrival: {!
+    Q.parlament_coalition_policy_accepted = true;
+    Q.parlament_coalition_policy_scope = "external_support";
     Q.ciu_min_coalition_phase = 0;
     Q.cat_coalition = [Q.parlament_current_ciu];
     Q.cat_coalition_support = ["erc"];
@@ -230,5 +227,7 @@ on-arrival: {!
 call: snap_election
 
 After three rounds of negotiations, we've reached the end of the road. With no agreement in sight and no more time for back-and-forth, the only option left is to call for new elections and hope for a better result. Needless to say, neither [+ parlament_current_ciu +] nor the pro-independence groups are happy about this outcome.
+
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
 
 - @post_event: We'll have to see if we fare any better this time...

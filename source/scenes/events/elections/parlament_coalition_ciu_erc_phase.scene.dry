@@ -8,22 +8,6 @@ on-arrival: {!
     Q.parlament_coalition_pdcat_support_resolved = false;
     Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_concessions = false;
-    Q.parlament_coalition_policy_accepted = false;
-    // Detailed commitments; shared-cap budget integration is pending.
-    Q.parlament_coalition_policy_cap = false;
-    Q.parlament_coalition_policy_effective_cap = typeof Q.social_spending_cap == "number" ? Q.social_spending_cap : 0;
-    Q.parlament_coalition_policy_cap_target = Q.parlament_coalition_policy_effective_cap + 1;
-    Q.parlament_coalition_policy_surplus = Q.generalitat_surplus;
-    Q.parlament_coalition_policy_spending_cost = 5 + Math.max(0, -Q.parlament_coalition_policy_surplus);
-    Q.parlament_coalition_policy_education = false;
-    Q.parlament_coalition_policy_health = false;
-    Q.parlament_coalition_policy_pay = false;
-    Q.parlament_coalition_policy_tax = false;
-    Q.parlament_coalition_policy_indy_demanded = false;
-    Q.parlament_coalition_policy_education_target = Q.education_spending + 1;
-    Q.parlament_coalition_policy_health_target = Q.healthcare_spending + 1;
-    Q.parlament_coalition_policy_pay_target = (Q.public_salary_level === undefined ? -1 : Q.public_salary_level) + 1;
-    Q.parlament_coalition_policy_tax_target = Q.tax_policy_level + 1;
 
     Q.parlament_coalition_leverage = Math.max(10, 30 - (Q.parlament_current_ciu_s - Q.erc_parlament_s));
     if (Q.speaker_party == Q.parlament_current_ciu) {
@@ -107,6 +91,7 @@ on-arrival: {!
 
     Q.parlament_coalition_leverage = ciu_proposal_leverage + 3 - Q.ciu_erc_coalition_phase;
 !}
+call: parlament_coalition_fiscal_policies.initialize
 go-to: phase_text
 role: event
 
@@ -118,15 +103,13 @@ set-jump: choices
 [? if not parlament_coalition_changes: The representatives of [+ parlament_current_ciu +] have come forward with a [?if ciu_erc_coalition_phase > 1: new?] proposal for the formation of a new coalition government: ?][? if parlament_coalition_changes: After our ammendments, the proposal for the formation of a new coalition government looks like this: ?]
 
 @choices
+go-to: parlament_coalition_fiscal_policies.summary
+set-jump: choices_menu
+
+@choices_menu
 
 
-[? if parlament_coalition_concessions_indy or parlament_coalition_policy_cap or parlament_coalition_policy_education or parlament_coalition_policy_health or parlament_coalition_policy_pay or parlament_coalition_policy_tax: **Policy Concessions**?]
 
-[? if parlament_coalition_policy_cap: - We've added a commitment to raise the shared social spending cap through the next budget.?]
-[? if parlament_coalition_policy_education: - We've added a commitment to increase Education spending. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_education_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
-[? if parlament_coalition_policy_health: - We've added a commitment to increase Healthcare spending. [? if parlament_coalition_policy_effective_cap >= parlament_coalition_policy_health_target: Takes effect when the government is formed.?][? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_health_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
-[? if parlament_coalition_policy_pay: - We've added a commitment to raise all public salaries. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_pay_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
-[? if parlament_coalition_policy_tax: - We've added a commitment to make taxes more progressive when the next budget is discussed.?]
 
 [? if parlament_coalition_concessions_indy: - [+ parlament_coalition_concessions_indy_text +] ?]
 
@@ -139,87 +122,15 @@ set-jump: choices
 
 @policy_concessions
 title: Propose Policy Commitments
-on-arrival: {!
-    Q.parlament_coalition_concessions = Q.parlament_coalition_policy_cap || Q.parlament_coalition_policy_education || Q.parlament_coalition_policy_health || Q.parlament_coalition_policy_pay || Q.parlament_coalition_policy_tax || Q.parlament_coalition_policy_indy_demanded;
-!}
+call: parlament_coalition_fiscal_policies
+set-jump: policy_concessions
 
 [? if parlament_coalition_policy_surplus < 0: The current Generalitat deficit makes spending commitments harder to secure, though.?]
 
-
-- @spending_cap
-- @education_policy
-- @health_policy
-- @pay_policy
-- @progressive_tax
 - @indy_concessions
+- #fiscal_concessions
 - @push_leverage_concessions
 - @phase_text: Finish proposing policies
-
-@spending_cap
-title: [? if parlament_coalition_policy_cap: Withdraw demand to raise the social spending cap?][? if not parlament_coalition_policy_cap: Demand a higher social spending cap?]
-choose-if: parlament_coalition_policy_cap or (parlament_coalition_policy_cap_target <= 3 and parlament_coalition_leverage >= parlament_coalition_policy_spending_cost)
-subtitle: A raise of the social spending cap gives us more options to invest in things like Education, Health and other public investments.
-unavailable-subtitle: [? if parlament_coalition_policy_cap_target > 3: There is no longer a cap! ?][? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions. ?]
-on-arrival: {!
-    Q.parlament_coalition_policy_cap = !Q.parlament_coalition_policy_cap;
-    Q.parlament_coalition_leverage += Q.parlament_coalition_policy_cap ? -Q.parlament_coalition_policy_spending_cost : Q.parlament_coalition_policy_spending_cost;
-!}
-go-to: policy_concessions
-
-@education_policy
-title: [? if parlament_coalition_policy_education: Withdraw our demand for more Education spending?][? if not parlament_coalition_policy_education: Demand more Education spending?]
-view-if: parlament_coalition_policy_education or (education_spending >= -2 and education_spending < 2)
-choose-if: parlament_coalition_policy_education or (parlament_coalition_leverage >= parlament_coalition_policy_spending_cost and education_spending >= -2 and education_spending < 2 and parlament_coalition_policy_education_target >= -2 and parlament_coalition_policy_education_target <= 2)
-subtitle: [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_education_target: This increase will be conditional on a budget with a higher social spending cap being approved by the Parlament.?]
-unavailable-subtitle: [? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions. ?]
-on-arrival: {!
-    Q.parlament_coalition_policy_education = !Q.parlament_coalition_policy_education;
-    if (Q.parlament_coalition_policy_education && !(Q.education_spending >= -2 && Q.education_spending < 2 && Q.parlament_coalition_policy_education_target == Q.education_spending + 1)) {
-        Q.parlament_coalition_policy_education = false;
-    } 
-    Q.parlament_coalition_leverage += Q.parlament_coalition_policy_education ? -Q.parlament_coalition_policy_spending_cost : Q.parlament_coalition_policy_spending_cost;
-
-!}
-go-to: policy_concessions
-
-@health_policy
-title: [? if parlament_coalition_policy_health: Withdraw demand for more Health spending?][? if not parlament_coalition_policy_health: Demand more Health spending?]
-view-if: parlament_coalition_policy_health or (healthcare_spending >= -2 and healthcare_spending < 2)
-choose-if: parlament_coalition_policy_health or (parlament_coalition_leverage >= parlament_coalition_policy_spending_cost and healthcare_spending >= -2 and healthcare_spending < 2 and parlament_coalition_policy_health_target >= -2 and parlament_coalition_policy_health_target <= 2)
-subtitle: [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_health_target: This increase will be conditional on a budget with a higher social spending cap being approved by the Parlament. ?]
-unavailable-subtitle: [? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions. ?]
-on-arrival: {!
-    Q.parlament_coalition_policy_health = !Q.parlament_coalition_policy_health;
-    if (Q.parlament_coalition_policy_health && !(Q.healthcare_spending >= -2 && Q.healthcare_spending < 2 && Q.parlament_coalition_policy_health_target == Q.healthcare_spending + 1)) {
-        Q.parlament_coalition_policy_health = false;
-    }
-    Q.parlament_coalition_leverage += Q.parlament_coalition_policy_health ? -Q.parlament_coalition_policy_spending_cost : Q.parlament_coalition_policy_spending_cost;
-!}
-go-to: policy_concessions
-
-@pay_policy
-title: [? if parlament_coalition_policy_pay: Withdraw demand for higher public salaries?][? if not parlament_coalition_policy_pay: Demand higher public salaries?]
-view-if: public_salary_raise_allowed
-choose-if: parlament_coalition_policy_pay or (parlament_coalition_leverage >= parlament_coalition_policy_spending_cost and parlament_coalition_policy_pay_target <= 2)
-subtitle: [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_pay_target: This increase will be conditional on a budget with a higher social spending cap being approved by the Parlament. ?]
-unavailable-subtitle: [? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions.?]
-on-arrival: {!
-    Q.parlament_coalition_policy_pay = !Q.parlament_coalition_policy_pay;
-    Q.parlament_coalition_leverage += Q.parlament_coalition_policy_pay ? -Q.parlament_coalition_policy_spending_cost : Q.parlament_coalition_policy_spending_cost;
-!}
-go-to: policy_concessions
-
-@progressive_tax
-title: [? if parlament_coalition_policy_tax: Withdraw our demand for more progressive taxes?][? if not parlament_coalition_policy_tax: Demand a more progressive tax package?]
-view-if: parlament_coalition_policy_tax or (tax_policy_level >= -3 and tax_policy_level < 6)
-choose-if: parlament_coalition_policy_tax or (parlament_coalition_leverage >= 5 and parlament_coalition_policy_tax_target = tax_policy_level + 1 and parlament_coalition_policy_tax_target <= 6)
-subtitle: This will have to be approved as part of the next budget negotiations.
-unavailable-subtitle: We don't have enough leverage to propose more concessions.
-on-arrival: {!
-    Q.parlament_coalition_policy_tax = !Q.parlament_coalition_policy_tax;
-    Q.parlament_coalition_leverage += Q.parlament_coalition_policy_tax ? -5 : 5;
-!}
-go-to: policy_concessions
 
 @indy_concessions
 title: Catalan Independence Policies
@@ -227,6 +138,7 @@ go-to: policy_concessions
 choose-if: parlament_coalition_concessions_indy < 1 and parlament_coalition_leverage >= 5 and (not pdcat_external_support or pdcat_roadmap >= parlament_current_ciu_roadmap)
 unavailable-subtitle: [? if pdcat_external_support and pdcat_roadmap < parlament_current_ciu_roadmap: PDeCAT will not support a national commitment beyond its roadmap.?][? if parlament_coalition_concessions_indy >= 1: We've already proposed independence-related concessions.?][? if parlament_coalition_leverage < 5: We don't have enough leverage to propose more concessions.?]
 on-arrival: {!
+    Q.parlament_coalition_policy_indy_demanded = true;
     Q.parlament_coalition_concessions = true;
     Q.parlament_coalition_concessions_indy += 1;
     Q.parlament_coalition_policy_indy_demanded = true;
@@ -476,6 +388,7 @@ on-arrival: {!
         }
     }
 !}
+call: parlament_coalition_fiscal_policies.evaluate
 go-to: decision
 
 @decision
@@ -495,6 +408,8 @@ on-arrival: {!
 
 [+ parlament_current_ciu +]'s representatives were initially dubious about our new proposal[? if parlament_current_ciu_s > 40 and parlament_coalition_proposal_vp = "erc" or parlament_coalition_proposal_economy = "erc" or parlament_coalition_proposal_interior = "erc": . Given the parliamentary arithmetics, they were reticent about ?][? if parlament_current_ciu_s <= 40 and parlament_coalition_proposal_vp != "erc" or parlament_coalition_proposal_economy = "erc" or parlament_coalition_proposal_interior = "erc": . They seemed reticent about ?][? if parlament_coalition_proposal_vp = "erc" and parlament_current_ciu_s > 40: giving up the Vice-Presidency?][? if parlament_coalition_proposal_vp != "erc" and parlament_current_ciu_s <= 40: us giving up the Vice-Presidency?][? if parlament_coalition_proposal_interior = "erc": [? if parlament_coalition_proposal_vp = "erc" : [? if parlament_coalition_proposal_economy != "erc": and ?][? if parlament_coalition_proposal_economy = "erc": , ?]?]giving up Interior ?][? if parlament_coalition_proposal_economy = "erc": [? if parlament_coalition_proposal_interior = "erc" or parlament_coalition_proposal_vp = "erc": and ?] giving up Economy ?]. We will have to wait until the [+ parlament_current_ciu +] and ERC negotiating teams reconvene to advance negotiations.
 
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
+
 - @post_event: And so, time passes...
 
 
@@ -504,6 +419,7 @@ choose-if: not parlament_coalition_changes and not parlament_coalition_concessio
 unavailable-subtitle: We have proposed changes, which will require approval by [+ parlament_current_ciu +].
 on-arrival: {!
     Q.parlament_coalition_policy_accepted = true;
+    Q.parlament_coalition_policy_scope = "cabinet";
     Q.ciu_erc_coalition_phase = 0;
     Q.cat_coalition = [Q.parlament_current_ciu, "erc"];
     Q.cat_coalition_support = Q.pdcat_external_support ? ["pdcat"] : [];
@@ -547,5 +463,7 @@ on-arrival: {!
 call: snap_election
 
 After three rounds of negotiations, we've reached the end of the road. With no agreement in sight and no more time for back-and-forth, the only option left is to call for new elections and hope for a better result. Needless to say, neither [+ parlament_current_ciu +] nor the pro-independence groups are happy about this outcome.
+
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
 
 - @post_event: We'll have to see if we fare any better this time...

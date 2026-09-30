@@ -7,8 +7,17 @@ view-if: budget_external_breach
 on-arrival: {!
     var involved = Q.budget_external_breach_parties || [];
     var broken = Q.budget_external_broken_commitments || [];
+    function belongs(party, parties) {
+        return parties.includes(party) || ["jxsi", "jxcat"].some(function (list) {
+            return parties.includes(list) && Q[party + "_in_" + list];
+        });
+    }
     for (var record of Q.coalition_policy_commitments || []) {
-        if (record.scope != "external_support") continue;
+        if (record.scope != "external_support" || !broken.some(function (r) {
+            var signatories = record.signatories || [];
+            var brokenSignatories = r.signatories || [];
+            return signatories.length == brokenSignatories.length && signatories.every(function (p) { return brokenSignatories.includes(p); });
+        })) continue;
         if (broken.some(function (r) { return r.kind == record.kind && r.target == record.target; })) record.status = "broken";
         else record.status = "retired";
         G.deactivateLaw(Q, "coalition_pending_" + record.kind, undefined, true);
@@ -36,15 +45,18 @@ on-arrival: {!
         G.cardSupportTransfer(Q, {contest:"barcelona", from:local, to:local == "psc" ? "federal_left" : "psc", amount:0.18 * 0.3 / carriers.length, maxDonorFraction:0.5});
         G.cardSupportTransfer(Q, {contest:"congreso", from:congreso, to:"abstain", amount:0.18 * 0.04 / carriers.length, maxDonorFraction:0.5, constituencies:["catalunya"]});
     }
-    Q.cat_coalition_support = [];
+    Q.cat_coalition_support = (Q.cat_coalition_support || []).filter(function (party) { return !belongs(party, involved); });
+    Q.cat_coalition_abstain = (Q.cat_coalition_abstain || []).filter(function (party) { return !belongs(party, involved); });
     for (var party of ["erc", "cup"]) {
         var inCabinet = (Q.cat_coalition || []).includes(party) || ["jxsi", "jxcat"].some(function (list) {
             return (Q.cat_coalition || []).includes(list) && Q[party + "_in_" + list];
         });
         Q[party + "_in_gob"] = inCabinet;
-        Q[party + "_supporting"] = inCabinet;
+        Q[party + "_supporting"] = inCabinet || belongs(party, Q.cat_coalition_support);
     }
-    if (!Q.parlament_budget_player_governs) Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
+    Q.position_disp = belongs(Q.player_party, Q.cat_coalition || []) ? "Generalitat" :
+        belongs(Q.player_party, Q.cat_coalition_support) ? "<span style='font-style: italic'>Government Support</span>" :
+        "<span style='font-style: italic'>Opposition</span>";
     Q.budget_external_breach = false;
     Q.budget_external_broken_commitments = [];
     Q.budget_external_breach_parties = [];

@@ -4,6 +4,7 @@ tags: event
 new-page: true
 view-if: left_tripartite_coalition_phase != 0 and player_party == "erc"
 on-arrival: {!
+    Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_changes = false;
     Q.left_tripartite_reject_push = false;
     Q.left_tripartite_reject_vp = false;
@@ -40,6 +41,7 @@ on-arrival: {!
     Q.left_tripartite_comuns_bnl_plausible = comuns_offer_budget >= 5;
     Q.left_tripartite_comuns_health_plausible = comuns_offer_budget >= 12;
 !}
+call: parlament_coalition_fiscal_policies.initialize
 go-to: phase_text
 role: event
 
@@ -51,7 +53,12 @@ set-jump: choices
 [? if left_tripartite_coalition_phase = 1: As the leading party, we are expected to bring forward a government proposal to our discussions with the PSC and [+ parlament_current_icv +]. [? if parlament_coalition_changes: The current proposal is: ?] ?][? if left_tripartite_coalition_phase > 1: The PSC and [+ parlament_current_icv +] have answered our previous proposal with a counter-proposal. [? if parlament_coalition_changes: After our amendments, the proposal is: ?] ?]
 
 @choices
+go-to: parlament_coalition_fiscal_policies.summary
+set-jump: choices_menu
 
+@choices_menu
+
+- @policy_concessions
 - @changes
 - @send_back
 - @accept
@@ -390,7 +397,7 @@ go-to: changes
 
 @send_back
 title: Send this [? if left_tripartite_coalition_phase > 1: counter-?]proposal
-view-if: parlament_coalition_changes
+view-if: parlament_coalition_changes or parlament_coalition_concessions
 subtitle: [?if parlament_coalition_push >= left_tripartite_coalition_phase: Back-and-forth negotiations will take some time, but may give us the extra edge needed for a better deal. ?]
 on-arrival: {!
     Q.left_tripartite_reject_push = Q.parlament_coalition_push >= Q.left_tripartite_coalition_phase;
@@ -403,6 +410,7 @@ on-arrival: {!
     Q.left_tripartite_reject_first_round_power = Q.left_tripartite_coalition_phase == 1 && (Q.parlament_coalition_proposal_interior == "erc" || Q.parlament_coalition_proposal_education == "erc");
     Q.parlament_coalition_proposal_accept = !Q.left_tripartite_reject_push && !Q.left_tripartite_reject_vp && !Q.left_tripartite_reject_psc_economy && !Q.left_tripartite_reject_psc_interior && !Q.left_tripartite_reject_comuns_bnl && !Q.left_tripartite_reject_comuns_health && !Q.left_tripartite_reject_first_round_power;
 !}
+call: parlament_coalition_fiscal_policies.evaluate
 go-to: decision
 
 @decision
@@ -476,15 +484,19 @@ on-arrival: {!
 
 The PSC and [+ parlament_current_icv +] have rejected our proposal. [? if left_tripartite_reject_vp: The proposed Vice-Presidency is unacceptable to them.?][? if left_tripartite_reject_psc_economy or left_tripartite_reject_psc_interior: The PSC considers the proposed balance of responsibilities inadequate.?][? if left_tripartite_reject_comuns_bnl or left_tripartite_reject_comuns_health: [+ parlament_current_icv +] does not believe the proposal gives it sufficient influence over the government's social programme.?][? if left_tripartite_reject_first_round_power and not left_tripartite_reject_psc_interior: The prospective partners consider ERC's concentration of powers excessive.?] The negotiating teams will have to reconvene in a month's time.
 
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
+
 - @post_event: And so, time passes...
 
 
 @accept
 title: Accept proposal
 view-if: not parlament_coalition_changes and left_tripartite_coalition_phase > 1
-choose-if: not parlament_coalition_changes
+choose-if: (not parlament_coalition_changes) and not parlament_coalition_concessions
 unavailable-subtitle: We have proposed changes, which will require approval by both the PSC and [+ parlament_current_icv +].
 on-arrival: {!
+    Q.parlament_coalition_policy_accepted = true;
+    Q.parlament_coalition_policy_scope = "cabinet";
     Q.left_tripartite_coalition_phase = 0;
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
@@ -523,4 +535,15 @@ call: snap_election
 
 After three rounds of negotiations, we've reached the end of the road. With no agreement in sight and no more time for back-and-forth, the only option left is to call for new elections and hope for a better result. Needless to say, neither partner are happy about this outcome.
 
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
+
 - @post_event: We'll have to see if we fare any better this time...
+@policy_concessions
+title: Propose Policy Commitments
+call: parlament_coalition_fiscal_policies
+set-jump: policy_concessions
+
+[? if parlament_coalition_policy_surplus < 0: The current Generalitat deficit makes spending commitments harder to secure, though.?]
+
+- #fiscal_concessions
+- @phase_text: Finish proposing policies

@@ -4,6 +4,7 @@ tags: event
 new-page: true
 view-if: erc_ciu_coalition_phase != 0 and player_party == "erc"
 on-arrival: {!
+    Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_changes = false;
     Q.parlament_coalition_pdcat_support_resolved = false;
 
@@ -19,6 +20,7 @@ on-arrival: {!
 
     Q.parlament_coalition_proposal_president = "erc";
 !}
+call: parlament_coalition_fiscal_policies.initialize
 go-to: phase_text
 role: event
 
@@ -30,7 +32,12 @@ set-jump: choices
 [? if erc_ciu_coalition_phase = 1: As the leading force, we're expected to put forward a government composition proposal to [+ parlament_current_ciu +]. [? if parlament_coalition_changes: Right now, the proposal looks as follows: ?] ?][? if erc_ciu_coalition_phase > 1: Answering our previous proposal, [+ parlament_current_ciu +] has pushed back with a few ideas of its own on what shape this government should take. [? if parlament_coalition_changes: After our ammendments, it looks as follows: ?] ?]
 
 @choices
+go-to: parlament_coalition_fiscal_policies.summary
+set-jump: choices_menu
 
+@choices_menu
+
+- @policy_concessions
 - @changes
 - @send_back
 - @accept
@@ -229,7 +236,7 @@ go-to: changes
 
 @send_back
 title: Send this [? if erc_ciu_coalition_phase > 1: counter-?]proposal
-view-if: parlament_coalition_changes
+view-if: parlament_coalition_changes or parlament_coalition_concessions
 subtitle: [?if parlament_coalition_push >= erc_ciu_coalition_phase: Back-and-forth negotiations will take some time, but may give us the extra edge needed for a better deal. ?]
 on-arrival: {!
     Q.parlament_coalition_proposal_accept = true;
@@ -244,6 +251,7 @@ on-arrival: {!
         }
     }
 !}
+call: parlament_coalition_fiscal_policies.evaluate
 go-to: decision
 
 @decision
@@ -303,14 +311,18 @@ on-arrival: {!
 
 [+ parlament_current_ciu +]'s representatives were initially dubious about our proposal[? if parlament_coalition_proposal_vp = "erc": , especially our claim on the Vice-Presidency?]. We will have to wait until the [+ parlament_current_ciu +] and ERC negotiating teams reconvene to advance negotiations.
 
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
+
 - @post_event: And so, time passes...
 
 @accept
 title: Accept proposal
 view-if: not parlament_coalition_changes and erc_ciu_coalition_phase > 1
-choose-if: not parlament_coalition_changes
+choose-if: (not parlament_coalition_changes) and not parlament_coalition_concessions
 unavailable-subtitle: We have proposed changes, which will require approval by [+ parlament_current_ciu +].
 on-arrival: {!
+    Q.parlament_coalition_policy_accepted = true;
+    Q.parlament_coalition_policy_scope = "cabinet";
     Q.erc_ciu_coalition_phase = 0;
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
@@ -354,4 +366,15 @@ call: snap_election
 
 After three rounds of negotiations, we've reached the end of the road. With no agreement in sight and no more time for back-and-forth, the only option left is to call for new elections and hope for a better result. Needless to say, neither ERC nor [+ parlament_current_ciu +] are happy about this outcome.
 
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
+
 - @post_event: We'll have to see if we fare any better this time...
+@policy_concessions
+title: Propose Policy Commitments
+call: parlament_coalition_fiscal_policies
+set-jump: policy_concessions
+
+[? if parlament_coalition_policy_surplus < 0: The current Generalitat deficit makes spending commitments harder to secure, though.?]
+
+- #fiscal_concessions
+- @phase_text: Finish proposing policies

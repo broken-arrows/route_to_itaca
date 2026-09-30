@@ -7,7 +7,6 @@ view-if: cup_broad_coalition_phase > 0
 on-arrival: {!
     Q.parlament_coalition_changes = false;
     Q.parlament_coalition_concessions = false;
-    Q.parlament_coalition_concessions_social = 0;
     Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
     Q.parlament_coalition_proposal_vp = Q.parlament_coalition_leader;
@@ -65,6 +64,7 @@ on-arrival: {!
         Q.parlament_coalition_leverage -= 10;
     }
 !}
+call: parlament_coalition_fiscal_policies.initialize
 go-to: phase_text
 
 @phase_text
@@ -75,12 +75,14 @@ set-jump: choices
 [? if player_party = parlament_coalition_leader and cup_broad_coalition_phase = 1: As the leading party, we must prepare the opening proposal.?][? if player_party = parlament_coalition_leader and cup_broad_coalition_phase > 1: The other parties have answered our previous proposal with a new counter-proposal.?][? if player_party != parlament_coalition_leader and cup_broad_coalition_phase = 1: [+ parlament_coalition_leader +] have presented their opening cabinet proposal.?][? if player_party != parlament_coalition_leader and cup_broad_coalition_phase > 1: [+ parlament_coalition_leader +] has presented a revised cabinet proposal.?]
 
 @choices
+go-to: parlament_coalition_fiscal_policies.summary
+set-jump: choices_menu
 
-[? if parlament_coalition_concessions_social: **Social commitment:** [+ parlament_coalition_concessions_social_text +]?]
+@choices_menu
+
 
 - @ministries
-- @social
-- @indy
+- @policy_concessions
 - @push
 - @send
 - @accept
@@ -182,24 +184,11 @@ on-arrival: {!
 !}
 go-to: ministries
 
-@social
-title: Demand a social-policy commitment
-choose-if: parlament_coalition_concessions_social = 0 and parlament_coalition_leverage >= 5
-unavailable-subtitle: [? if parlament_coalition_concessions_social: The commitment is already included.?][? if parlament_coalition_leverage < 5: We lack enough leverage.?]
-on-arrival: {!
-    Q.parlament_coalition_changes = true;
-    Q.parlament_coalition_concessions = true;
-    Q.parlament_coalition_concessions_social = 1;
-    Q.parlament_coalition_concessions_social_text = "The cabinet commits to reverse austerity and expand social spending.";
-    Q.parlament_coalition_leverage -= 5;
-!}
-go-to: phase_text
-
 @indy
 title: Demand a stronger independence commitment
 choose-if: erc_roadmap < 0
 unavailable-subtitle: [? if cup_broad_kind = "new_popular_front" or cup_broad_kind = "minority_left_tripartite": The PSC will not accept a stronger independence commitment in this cabinet.?][? if cup_broad_kind = "republican" or cup_broad_kind = "popular_unity": The current [+ parlament_current_icv +] leadership will not accept an independence demand beyond the roadmap already agreed.?]
-go-to: phase_text
+go-to: policy_concessions
 
 @push
 title: Press for further concessions
@@ -216,7 +205,7 @@ go-to: phase_text
 
 @send
 title: [? if player_party = parlament_coalition_leader and cup_broad_coalition_phase = 1: Submit the opening proposal?][? if not (player_party = parlament_coalition_leader and cup_broad_coalition_phase = 1): Send the counter-proposal?]
-view-if: parlament_coalition_changes
+view-if: parlament_coalition_changes or parlament_coalition_concessions
 on-arrival: {!
     var playerInCabinet = Q.player_party == "erc" || (Q.player_party == "cup" && Q.cup_broad_kind == "popular_unity");
     var earlyRound = Q.cup_broad_coalition_phase <= 2;
@@ -268,16 +257,19 @@ on-arrival: {!
         !Q.cup_broad_reject_comuns_positions &&
         !Q.cup_broad_reject_cup_share;
 !}
+call: parlament_coalition_fiscal_policies.evaluate
 go-to: accepted if parlament_coalition_proposal_accept; next_phase if not parlament_coalition_proposal_accept
 
 @accept
 title: Accept the current proposal
-choose-if: not parlament_coalition_changes
+choose-if: (not parlament_coalition_changes) and not parlament_coalition_concessions
 unavailable-subtitle: Our changes require the other parties' approval first.
 go-to: accepted
 
 @accepted
 on-arrival: {!
+    Q.parlament_coalition_policy_accepted = true;
+    Q.parlament_coalition_policy_scope = (Q.cup_broad_kind == "popular_unity" ? "cabinet" : "external_support");
     Q.cup_broad_coalition_phase = 0;
     if (Q.cup_broad_kind == "republican") {
         Q.cat_coalition = ["erc", Q.parlament_current_icv];
@@ -336,6 +328,8 @@ on-arrival: {!
 
 [? if player_party = parlament_coalition_leader and cup_broad_coalition_phase = 2: The other parties have rejected our proposal.?][? if not (player_party = parlament_coalition_leader and cup_broad_coalition_phase = 2): The other parties have rejected our counter-proposal.?] [? if cup_broad_reject_erc_positions: ERC considers the proposed balance of government powers inadequate.?][? if cup_broad_reject_psc_positions: The PSC is not satisfied with the distribution of high-responsibility ministries.?][? if cup_broad_reject_psc_cup_power: The PSC considers the ministries assigned to the CUP unacceptable.?][? if cup_broad_reject_comuns_positions: [+ parlament_current_icv +] does not believe the proposal gives it sufficient influence over the government's social programme.?][? if cup_broad_reject_cup_share: The CUP does not believe the proposed cabinet gives it sufficient weight in government.?] The negotiating teams will have to reconvene in a month's time.
 
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
+
 - @post_event: And so, time passes...
 
 @new_elections
@@ -354,4 +348,16 @@ call: snap_election
 
 Three rounds have ended without agreement... [? if cup_broad_reject_erc_positions: ERC would not accept the proposed government-power balance.?][? if cup_broad_reject_psc_positions: The PSC remained dissatisfied with the distribution of high-responsibility ministries.?][? if cup_broad_reject_psc_cup_power: The PSC maintained its objection to the powers assigned to the CUP.?][? if cup_broad_reject_comuns_positions: [+ parlament_current_icv +] did not believe the proposal gave it sufficient influence over the government's social programme.?][? if cup_broad_reject_cup_share: The CUP did not believe the proposed cabinet gave it sufficient weight in government.?] The investiture deadline has expired, forcing a repeat election.
 
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
+
 - @post_event
+@policy_concessions
+title: Propose Policy Commitments
+call: parlament_coalition_fiscal_policies
+set-jump: policy_concessions
+
+[? if parlament_coalition_policy_surplus < 0: The current Generalitat deficit makes spending commitments harder to secure, though.?]
+
+- @indy
+- #fiscal_concessions
+- @phase_text: Finish proposing policies

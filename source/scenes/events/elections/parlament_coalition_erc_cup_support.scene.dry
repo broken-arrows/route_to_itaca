@@ -8,6 +8,8 @@ view-if: parlament_coalition_option_erc_min_cup_visible
 choose-if: parlament_erc_cup_support_available
 unavailable-subtitle: ERC must lead a viable minority cabinet and the CUP must be willing to support it from outside government.
 on-arrival: {!
+    Q.parlament_coalition_concessions_indy = 0;
+    Q.parlament_coalition_leverage = Math.max(20, Q.cup_parlament_s * 55 / Math.max(1, Q.parlament_coalition_erc_cup_s));
     Q.cup_support_coalition_kind = "erc_minority";
     Q.cup_support_coalition_phase = 1;
     Q.parlament_coalition_leader = "erc";
@@ -28,18 +30,22 @@ on-arrival: {!
     Q.speaker_gender = "m";
     Q.month_actions += 1;
 !}
+call: parlament_coalition_fiscal_policies.initialize
 
-ERC has offered CUP the Speakership in return for supporting an ERC minority cabinet. [? if player_party = "cup": We can accept the office or leave it to ERC and preserve more leverage for the investiture agreement.?][? if player_party = "erc": We can confirm CUP's nominee or retain the office at the cost of a harder investiture negotiation.?]
+ERC has offered CUP the Speaker of the House in return for supporting an ERC minority cabinet. [? if player_party = "cup": We can accept the office or leave it to ERC and preserve more leverage for the investiture agreement.?][? if player_party = "erc": We can confirm CUP's nominee or retain the office at the cost of a harder investiture negotiation.?]
 
 - @cup_speaker
 - @erc_speaker
 
 @cup_speaker
-title: Elect [+ speaker +] as Speaker
+title: Elect [+ speaker +] as Speaker of the House
+on-arrival: {!
+    Q.parlament_coalition_leverage -= 10;
+!}
 go-to: demands
 
 @erc_speaker
-title: Retain the Speakership for ERC
+title: Retain the Speaker of the House for ERC
 on-arrival: {!
     Q.speaker_party = "erc";
     Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
@@ -49,39 +55,45 @@ go-to: demands
 
 @demands
 new-page: true
+go-to: parlament_coalition_fiscal_policies.summary
+set-jump: demands_menu
+
+@demands_menu
 
 The CUP will remain outside the cabinet. The remaining question is what ERC must promise in exchange for the CUP's affirmative investiture vote.
 
-[? if parlament_coalition_concessions_social: **Social programme:** Reverse austerity and expand social spending.?]
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
+
 [? if parlament_coalition_concessions_indy: **National programme:** Follow CUP's stronger independence roadmap.?]
 
-- @social
-- @indy
+- @policy_concessions
 - @form
-
-@social
-title: Include a binding social programme
-choose-if: not parlament_coalition_concessions_social
-unavailable-subtitle: This commitment is already part of the agreement.
-on-arrival: {!
-    Q.parlament_coalition_concessions_social = 1;
-!}
-go-to: demands
 
 @indy
 title: Include CUP's independence roadmap
-choose-if: not parlament_coalition_concessions_indy and cup_roadmap > erc_roadmap
-unavailable-subtitle: [? if parlament_coalition_concessions_indy: This commitment is already part of the agreement.?][? if cup_roadmap <= erc_roadmap: ERC's roadmap is already at least as ambitious.?]
+choose-if: not parlament_coalition_concessions_indy and cup_roadmap > erc_roadmap and parlament_coalition_leverage >= 5
+unavailable-subtitle: [? if parlament_coalition_concessions_indy: This commitment is already part of the agreement.?][? if cup_roadmap <= erc_roadmap: ERC's roadmap is already at least as ambitious.?][? if parlament_coalition_leverage < 5: We don't have enough leverage to demand this. ?]
 on-arrival: {!
+    Q.parlament_coalition_policy_indy_demanded = true;
+    Q.parlament_coalition_leverage -= 5;
     Q.parlament_coalition_concessions_indy = 1;
 !}
-go-to: demands
+go-to: policy_concessions
 
 @form
 title: Conclude the investiture agreement
-choose-if: (speaker_party = "cup" and (parlament_coalition_concessions_social or parlament_coalition_concessions_indy)) or (speaker_party = "erc" and parlament_coalition_concessions_social and (parlament_coalition_concessions_indy or cup_roadmap <= erc_roadmap))
-unavailable-subtitle: The CUP expects stronger guarantees before it will support the investiture.
+choose-if: parlament_coalition_leverage >= 0 and ((speaker_party = "cup" and ((parlament_coalition_policy_education or parlament_coalition_policy_health or parlament_coalition_policy_pay or parlament_coalition_policy_tax) or parlament_coalition_concessions_indy)) or (speaker_party = "erc" and (parlament_coalition_policy_education or parlament_coalition_policy_health or parlament_coalition_policy_pay or parlament_coalition_policy_tax) and (parlament_coalition_concessions_indy or cup_roadmap <= erc_roadmap)))
+unavailable-subtitle: [? if speaker_party = "cup": With the Speaker of the House, the CUP expects further commitments and a stronger presence in government.?][? if speaker_party = "erc": Without the Speaker of the House, the CUP expects further commitments and a stronger presence in government.?]
 on-arrival: {!
+    Q.parlament_coalition_proposal_accept = true;
+!}
+call: parlament_coalition_fiscal_policies.evaluate
+go-to: formed if parlament_coalition_proposal_accept; demands if not parlament_coalition_proposal_accept
+
+@formed
+on-arrival: {!
+    Q.parlament_coalition_policy_accepted = true;
+    Q.parlament_coalition_policy_scope = "external_support";
     Q.cup_support_coalition_phase = 0;
     Q.cat_coalition = ["erc"];
     Q.cat_coalition_support = ["cup"];
@@ -99,3 +111,13 @@ on-arrival: {!
 ERC will form a [+ cat_coalition_disp +]. The CUP has secured written commitments but will hold no ministries.
 
 - @parlament_coalition_resolve: A new government is formed!
+@policy_concessions
+title: Propose Policy Commitments
+call: parlament_coalition_fiscal_policies
+set-jump: policy_concessions
+
+[? if parlament_coalition_policy_surplus < 0: The current Generalitat deficit makes spending commitments harder to secure, though.?]
+
+- @indy
+- #fiscal_concessions
+- @demands: Finish proposing policies

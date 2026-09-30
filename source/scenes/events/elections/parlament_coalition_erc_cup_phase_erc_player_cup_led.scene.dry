@@ -6,7 +6,6 @@ new-page: true
 view-if: erc_cup_coalition_phase > 0 and player_party = "erc" and parlament_coalition_leader = "cup"
 on-arrival: {!
     Q.parlament_coalition_changes = false;
-    Q.parlament_coalition_concessions_social = 0;
     Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_proposal_president = "cup";
     Q.parlament_coalition_proposal_vp = "erc";
@@ -17,6 +16,7 @@ on-arrival: {!
     for (var preference of preferences) if (leverage >= preference[1]) { Q["parlament_coalition_proposal_" + preference[0]] = "erc"; leverage -= preference[1]; }
     Q.parlament_coalition_leverage = Q.erc_parlament_s * 55 / Math.max(1, Q.parlament_coalition_erc_cup_s) + (Q.erc_cup_coalition_phase - 1) * 4 - (Q.speaker_party == "erc" ? 10 : 0);
 !}
+call: parlament_coalition_fiscal_policies.initialize
 go-to: phase_text
 @phase_text
 new-page: true
@@ -26,13 +26,15 @@ set-jump: choices
 [? if erc_cup_coalition_phase = 1: The CUP has presented its opening cabinet proposal to us as the junior coalition partner.?][? if erc_cup_coalition_phase > 1: The CUP has presented a revised cabinet proposal.?]
 
 @choices
+go-to: parlament_coalition_fiscal_policies.summary
+set-jump: choices_menu
 
-[? if parlament_coalition_concessions_social: **Social commitment:** Reverse austerity measures and expand social spending.?]
+@choices_menu
+
 [? if parlament_coalition_concessions_indy: **Independence commitment:** Follow the more ambitious of the two parties' current roadmaps during this legislature.?]
 
 - @changes
-- @social
-- @indy
+- @policy_concessions
 - @push
 - @send
 - @accept
@@ -146,27 +148,17 @@ on-arrival: {!
 !}
 go-to: changes
 
-@social
-title: Include a social-policy commitment
-choose-if: parlament_coalition_concessions_social = 0 and parlament_coalition_leverage >= 5
-unavailable-subtitle: [? if parlament_coalition_concessions_social: The commitment is already included.?][? if parlament_coalition_leverage < 5: We lack enough leverage.?]
-on-arrival: {!
-    Q.parlament_coalition_changes = true;
-    Q.parlament_coalition_concessions_social = 1;
-    Q.parlament_coalition_leverage -= 5;
-!}
-go-to: phase_text
-
 @indy
 title: Include the stronger independence roadmap
 choose-if: parlament_coalition_concessions_indy = 0 and parlament_coalition_leverage >= 5 and erc_roadmap != cup_roadmap
 unavailable-subtitle: [? if erc_roadmap = cup_roadmap: Both parties already share the same roadmap.?][? if parlament_coalition_concessions_indy: The commitment is already included.?][? if parlament_coalition_leverage < 5: We lack enough leverage.?]
 on-arrival: {!
+    Q.parlament_coalition_policy_indy_demanded = true;
     Q.parlament_coalition_changes = true;
     Q.parlament_coalition_concessions_indy = 1;
     Q.parlament_coalition_leverage -= 5;
 !}
-go-to: phase_text
+go-to: policy_concessions
 
 @push
 title: Push for more leverage
@@ -183,7 +175,7 @@ go-to: phase_text
 
 @send
 title: [? if player_party = parlament_coalition_leader and erc_cup_coalition_phase = 1: Submit the opening proposal?][? if not (player_party = parlament_coalition_leader and erc_cup_coalition_phase = 1): Send the counter-proposal?]
-view-if: parlament_coalition_changes or (player_party = parlament_coalition_leader and erc_cup_coalition_phase = 1)
+view-if: parlament_coalition_changes or parlament_coalition_concessions or (player_party = parlament_coalition_leader and erc_cup_coalition_phase = 1)
 on-arrival: {!
     var ministries = ["interior", "economy", "foreign", "health", "education", "territory", "bnl"];
     var cupMinistries = 0;
@@ -195,17 +187,20 @@ on-arrival: {!
     Q.erc_cup_reject_cup_ministries = Q.player_party == "erc" && cupMinistries < 2;
     Q.parlament_coalition_proposal_accept = !(Q.erc_cup_reject_pressure || Q.erc_cup_reject_vp || Q.erc_cup_reject_economy || Q.erc_cup_reject_interior || Q.erc_cup_reject_cup_ministries);
 !}
+call: parlament_coalition_fiscal_policies.evaluate
 go-to: accepted if parlament_coalition_proposal_accept; next_phase if not parlament_coalition_proposal_accept
 
 @accept
 title: Accept the current proposal
 view-if: player_party != parlament_coalition_leader or erc_cup_coalition_phase > 1
-choose-if: not parlament_coalition_changes
+choose-if: (not parlament_coalition_changes) and not parlament_coalition_concessions
 unavailable-subtitle: Our changes require the other party's approval.
 go-to: accepted
 
 @accepted
 on-arrival: {!
+    Q.parlament_coalition_policy_accepted = true;
+    Q.parlament_coalition_policy_scope = "cabinet";
     Q.erc_cup_coalition_phase = 0;
     Q.cat_coalition = [Q.parlament_coalition_leader, Q.parlament_coalition_follower];
     Q.cat_coalition_support = [];
@@ -236,6 +231,8 @@ on-arrival: {!
 
 The CUP has rejected our counter-proposal. [? if erc_cup_reject_cup_ministries: They seem to expect broader presence across the cabinet ministries. ?] The negotiating teams will have to reconvene in a month's time.
 
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
+
 - @post_event: And so, time passes...
 
 @new_elections
@@ -253,4 +250,16 @@ call: snap_election
 
 Negotiation rounds have ended without agreement. With all deadlines expired, the matter will have to once more go back to the polls.
 
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +] ?]
+
 - @post_event: We'll have to see if the result changes...
+@policy_concessions
+title: Propose Policy Commitments
+call: parlament_coalition_fiscal_policies
+set-jump: policy_concessions
+
+[? if parlament_coalition_policy_surplus < 0: The current Generalitat deficit makes spending commitments harder to secure, though.?]
+
+- @indy
+- #fiscal_concessions
+- @phase_text: Finish proposing policies

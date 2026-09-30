@@ -28,7 +28,15 @@ on-arrival: {!
         Q.position_disp = "<span style='font-style: italic'>Government Support</span>";
     }
 
-    G.deactivateLaw(Q, "generalitat_concession_social", undefined, true);
+    for (var record of Q.coalition_policy_commitments || []) {
+        if (record.status == "pending_budget" || record.status == "applied") record.status = "retired";
+        G.deactivateLaw(Q, "coalition_pending_" + record.kind, undefined, true);
+    }
+    Q.burdens_goal = 0;
+    Q.burdens_time = 0;
+    Q.burdens_start_countdown = 0;
+    Q.burdens_start_trigger = false;
+    Q.countdowns = Q.countdowns.filter(function (id) { return id != "burdens_start"; });
 
     // ── deadlock / refusal vote shift ──────────────────────────────────────
     // A collapsed coalition negotiation (or a flat refusal) reshapes the re-run

@@ -124,9 +124,41 @@ go-to: concessions_ciu if random_seed <= 0.5; concessions_icv
 @concessions_icv
 title: Give concessions to [+ parlament_current_icv +]
 view-if: coalition_affairs_includes_icv and parlament_current_icv_relations < 55
+choose-if: (generalitat_surplus < 0 and tax_policy_level >= -3 and tax_policy_level < 6) or (generalitat_surplus >= 0 and ((education_spending >= -2 and education_spending < 2 and education_spending < social_spending_cap) or (healthcare_spending >= -2 and healthcare_spending < 2 and healthcare_spending < social_spending_cap) or (public_salary_level >= -2 and public_salary_level < 2 and public_salary_level < social_spending_cap) or economy_cuts > 0))
+unavailable-subtitle: [? if generalitat_surplus < 0: Taxes are already as high as they can be under the Statute of Autonomy.?][? if generalitat_surplus >= 0: Further social spending requires a higher social spending cap.?]
 on-arrival: {!
-    // TODO
+    Q.coalition_affairs_icv_concession = "";
+    if (Q.generalitat_surplus < 0) {
+        if (Q.tax_policy_level >= -3 && Q.tax_policy_level < 6) {
+            Q.tax_policy_level += 1;
+            Q.coalition_affairs_icv_concession = "taxes";
+        }
+    } else {
+        var raiseField = "";
+        for (var field of ["education_spending", "healthcare_spending", "public_salary_level"]) {
+            if (Q[field] >= -2 && Q[field] < 2 && Q[field] + 1 <= Q.social_spending_cap
+                && (!raiseField || Q[field] < Q[raiseField])) {
+                raiseField = field;
+            }
+        }
+        if (raiseField) {
+            Q[raiseField] += 1;
+            Q.coalition_affairs_icv_concession = "spending";
+        } else if (Q.economy_cuts > 0) {
+            G.deactivateLaw(Q, "general_cuts_" + Q.economy_cuts, undefined, true);
+            Q.economy_cuts -= 1;
+            Q.coalition_affairs_icv_concession = "austerity";
+        }
+    }
+    if (Q.coalition_affairs_icv_concession) {
+        var target = Q.coalition_affairs_concession_target || Q.parlament_current_icv;
+        Q[target + "_relations"] += 8;
+        Q.burdens_done += 1;
+    }
 !}
+call: generalitat_setpolicy
+
+[? if coalition_affairs_icv_concession: [? if coalition_affairs_concession_target = "": [+ parlament_current_icv +]?][? if coalition_affairs_concession_target != "": [+ coalition_affairs_concession_target +]?] has been somewhat pleased by [? if coalition_affairs_icv_concession = "taxes": a progressive increase in taxes to fund public services. ?][? if coalition_affairs_icv_concession = "spending": an increase in funding for public services and workers. ?][? if coalition_affairs_icv_concession = "austerity": the reversal of extraordinary austerity measures. ?]Let's hope this is for the better.?]
 
 @concessions_cup
 title: Give concessions to the CUP
@@ -202,6 +234,10 @@ We've chosen the nuclear option, and the [+ cat_coalition_disp +] will be no mor
 
 @post_kick
 on-arrival: {!
+    for (var record of Q.coalition_policy_commitments || []) {
+        if (record.status == "pending_budget" || record.status == "applied") record.status = "retired";
+        G.deactivateLaw(Q, "coalition_pending_" + record.kind, undefined, true);
+    }
     var playerVehicle = Q[Q.player_party + "_in_jxsi"] ? "jxsi" : Q[Q.player_party + "_in_jxcat"] ? "jxcat" : Q.player_party;
     Q.historical_event = "After heavy coalition disagreements, " +  Q.cat_coalition_disp + " will be no more. " + (Q.president_gender = "m" ? "President " : "Presidenta ") + Q.president + " has reconfigured the government, leaving only " + playerVehicle + " governing at the Generalitat.";
     Q.cat_coalition = [playerVehicle];

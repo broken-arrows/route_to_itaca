@@ -31,10 +31,15 @@ on-arrival: {!
     Q.cat_coalition_support = support;
     Q.cat_coalition_abstain = abstain;
 
-    Q.erc_in_gob = cabinet.indexOf("erc") >= 0;
-    Q.erc_supporting = Q.erc_in_gob || support.indexOf("erc") >= 0;
-    Q.cup_in_gob = cabinet.indexOf("cup") >= 0;
-    Q.cup_supporting = Q.cup_in_gob || support.indexOf("cup") >= 0;
+    var belongs = function (party, parties) {
+        return parties.indexOf(party) >= 0 || ["jxsi", "jxcat"].some(function (list) {
+            return parties.indexOf(list) >= 0 && Q[party + "_in_" + list];
+        });
+    };
+    Q.erc_in_gob = belongs("erc", cabinet);
+    Q.erc_supporting = Q.erc_in_gob || belongs("erc", support);
+    Q.cup_in_gob = belongs("cup", cabinet);
+    Q.cup_supporting = Q.cup_in_gob || belongs("cup", support);
     Q.jxsi_in_gob = cabinet.indexOf("jxsi") >= 0;
     Q.jxcat_in_gob = cabinet.indexOf("jxcat") >= 0;
 
@@ -45,6 +50,7 @@ on-arrival: {!
     var playerSupports = support.indexOf(Q.player_party) >= 0 ||
         support.indexOf(playerList) >= 0;
     if (playerInCabinet) {
+        Q.burdens_broken = 0;
         Q.position_disp = "Generalitat";
     } else if (playerSupports) {
         Q.position_disp = "<span style='font-style: italic'>Government Support</span>";
@@ -113,8 +119,13 @@ on-arrival: {!
 
     Q.historical_event = "We have a new government in the Generalitat! President " + Q.president + " will lead a " + Q.cat_coalition_disp + " for this legislature.";
 
+    Q.burdens_done = 0;
+    Q.burdens_goal = 0;
+    Q.burdens_time = 0;
+    Q.burdens_start_trigger = false;
+    Q.burdens_start_countdown = 0;
+    Q.countdowns = Q.countdowns.filter(function (id) { return id != "burdens_start"; });
     if (playerInCabinet) {
-        Q.burdens_done = 0;
         Q.burdens_start_countdown = 1;
         if (!Q.countdowns.includes("burdens_start")) Q.countdowns.push("burdens_start");
         if (!Q.government_budget || Q.government_budget < 1) Q.government_budget = 1;
@@ -125,10 +136,15 @@ on-arrival: {!
     }
 
     // Accepted policy clauses belong to this government/support agreement.
-    for (var previous of Q.coalition_policy_commitments || [])
+    for (var previous of Q.coalition_policy_commitments || []) {
+        if (previous.status == "pending_budget" || previous.status == "applied") previous.status = "retired";
         G.deactivateLaw(Q, "coalition_pending_" + previous.kind, undefined, true);
+    }
     Q.coalition_policy_commitments = [];
     if (Q.parlament_coalition_policy_accepted) {
+        // Outside investiture support is a separate agreement, not a cabinet veto.
+        var scope = Q.parlament_coalition_policy_scope == "external_support" ? "external_support" : "cabinet";
+        var signatories = scope == "external_support" ? uniqueParties(cabinet.concat(support, abstain)) : cabinet.slice();
         var commitments = [
             {selected: Q.parlament_coalition_policy_cap, kind: "social_spending_cap", target: Q.parlament_coalition_policy_cap_target, title: "Raise on the social spending cap", icon: "img/economy_icon.svg"},
             {selected: Q.parlament_coalition_policy_education, kind: "education_spending", spending: true, target: Q.parlament_coalition_policy_education_target, title: "Education spending increase", icon: "img/education_icon.svg"},
@@ -138,14 +154,20 @@ on-arrival: {!
         ];
         commitments.forEach(function (item) {
             if (!item.selected) return;
-            if ((item.kind == "education_spending" || item.kind == "healthcare_spending") && !(Q[item.kind] >= -2 && Q[item.kind] < 2 && item.target == Q[item.kind] + 1)) return;
-            var cap = typeof Q.social_spending_cap == "number" ? Q.social_spending_cap : Q.parlament_coalition_policy_effective_cap;
-            var allowed = item.spending && typeof cap == "number" && cap >= item.target && (item.kind != "public_salary_level" || Q.public_salary_raise_allowed);
-            var record = {kind: item.kind, target: item.target, scope: "cabinet", signatories: ["erc", Q.parlament_current_ciu], status: allowed ? "applied" : "pending_budget"};
+            var current = item.kind == "tax_progressivity" ? Q.tax_policy_level : Q[item.kind];
+            var maximum = item.kind == "tax_progressivity" ? 6 : item.kind == "social_spending_cap" ? 3 : 2;
+            var minimum = item.kind == "tax_progressivity" ? -3 : -2;
+            if (!Number.isInteger(current) || current < minimum || current >= maximum || !Number.isInteger(item.target) || item.target != current + 1) {
+                resolutionError("invalid ordinary target for " + item.kind);
+                return;
+            }
+            var allowed = item.spending && Q.social_spending_cap >= item.target;
+            var record = {kind: item.kind, target: item.target, scope: scope, signatories: signatories.slice(), status: allowed ? "applied" : "pending_budget"};
             Q.coalition_policy_commitments.push(record);
             if (allowed) {
                 Q[item.kind] = item.target;
-                Q.parlament_coalition_policy_policy_applied = true;
+                // The delayed burden-start event preserves achievements already earned.
+                if (playerInCabinet) Q.burdens_done += 1;
             } else {
                 G.registerLaw(Q, {
                     id: "coalition_pending_" + item.kind,
@@ -153,16 +175,17 @@ on-arrival: {!
                     icon: item.icon,
                     colour: "gray",
                     description: item.kind == "social_spending_cap"
-                        ? "Parties of the current government coalition have taken the commitment to increase the social spending cap in the next budget negotiations."
+                        ? "The government agreement commits its signatories to raising the social spending cap in the next budget negotiations."
                         : item.spending
                             ? "Pending budget approval: this extra spending package is conditional on an increase in the social spending cap."
-                            : "Parties of the current government coalition have taken the commitment to implement a more progressive tax package in the next budget negotiations.",
+                            : "The government agreement commits its signatories to implementing a more progressive tax package in the next budget negotiations.",
                     targets: {}
                 });
             }
         });
         Q.parlament_coalition_policy_accepted = false;
     }
+    Q.parlament_coalition_resolution_valid = Q.parlament_coalition_resolution_errors.length == 0;
     Q.budget_failed_times = 0;
 !}
 call: generalitat_setpolicy

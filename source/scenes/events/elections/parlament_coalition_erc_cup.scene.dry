@@ -30,7 +30,7 @@ title: Nominate [+ speaker +] for Speaker
 go-to: parlament_coalition_erc_cup_phase_erc_player_erc_led
 
 @erc_leader_retain_speaker
-title: Retain the Speakership for ERC
+title: Retain the Speaker of the House for ERC
 on-arrival: {!
     Q.speaker_party = "erc";
     Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
