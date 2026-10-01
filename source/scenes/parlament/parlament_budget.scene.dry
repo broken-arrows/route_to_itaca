@@ -701,7 +701,164 @@ on-arrival: {!
         if (national) G.cardSupportTransfer(Q, {contest:"congreso", from:national > 0 ? "abstain" : congreso,
             to:national > 0 ? congreso : "abstain", amount:Math.abs(national) * actor.weight, maxDonorFraction:0.5, constituencies:["catalunya"]});
     }
-    if (Q.parlament_budget_player_vote == "yes" && Q.parlament_budget_player_default == "no") {
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    // Cabinet partners include the constituents of their unity lists.
+    var coalitionPartners = (Q.cat_coalition || []).slice();
+    for (var list of ["jxsi", "jxcat"]) {
+        if (coalitionPartners.includes(list)) {
+            for (var party of Q.parties || []) {
+                if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+            }
+        }
+    }
+    // Only the player-authored Economy package carries these executive reactions.
+    if (origin.author == "player") {
+        if (projection.tax != Q.tax_policy_level) {
+            var ercTaxAffinity = [-2, -1, 1, 0, 0, 1, 2, 2, 3, 3];
+            if (!controlledParties.includes("erc") && Number.isFinite(Q.erc_relations))
+                Q.erc_relations += Math.max(-4, Math.min(4, ercTaxAffinity[projection.tax + 3] - ercTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes("erc") ? 2 : 1);
+            var ciuTaxAffinity = [2, 1, 0, 0, -1, -1, -1, -2, -3, -3];
+            if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
+                Q[Q.parlament_current_ciu + "_relations"] += Math.max(-4, Math.min(4, ciuTaxAffinity[projection.tax + 3] - ciuTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+            var pscTaxAffinity = [-1, 0, 1, 0, 1, 1, 1, 0, 0, -1];
+            if (!controlledParties.includes("psc") && Number.isFinite(Q.psc_relations))
+                Q.psc_relations += Math.max(-4, Math.min(4, pscTaxAffinity[projection.tax + 3] - pscTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes("psc") ? 2 : 1);
+            var icvTaxAffinity = [-3, -1, 1, 0, 0, 1, 2, 2, 3, 3];
+            if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+                Q[Q.parlament_current_icv + "_relations"] += Math.max(-4, Math.min(4, icvTaxAffinity[projection.tax + 3] - icvTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+            var cupTaxAffinity = [-3, -1, 1, 0, -1, 0, 2, 2, 3, 3];
+            if (!controlledParties.includes("cup") && Number.isFinite(Q.cup_relations))
+                Q.cup_relations += Math.max(-4, Math.min(4, cupTaxAffinity[projection.tax + 3] - cupTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes("cup") ? 2 : 1);
+            var ppcTaxAffinity = [3, 2, 1, 0, -2, -2, -2, -2, -3, -3];
+            if (!controlledParties.includes("ppc") && Number.isFinite(Q.ppc_relations))
+                Q.ppc_relations += Math.max(-4, Math.min(4, ppcTaxAffinity[projection.tax + 3] - ppcTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes("ppc") ? 2 : 1);
+            var csTaxAffinity = [3, 2, 1, 0, -2, -2, -2, -2, -3, -3];
+            if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
+                Q.cs_relations += Math.max(-4, Math.min(4, csTaxAffinity[projection.tax + 3] - csTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes("cs") ? 2 : 1);
+            for (var list of ["jxsi", "jxcat"]) {
+                if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                    list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                    Q[list + "_relations"] += Math.max(-4, Math.min(4, ciuTaxAffinity[projection.tax + 3] - ciuTaxAffinity[Q.tax_policy_level + 3])) * 2;
+            }
+            if (Q.player_party == "erc") {
+                var erc_leftTaxDissent = [3, 1, -1, 0, 2, 1, -2, -2, -3, -3];
+                Q.erc_left_dissent += Math.max(-6, Math.min(6, erc_leftTaxDissent[projection.tax + 3] - erc_leftTaxDissent[Q.tax_policy_level + 3]));
+                var erc_coreTaxDissent = [1, 0, 0, 0, 0, 0, -1, -1, -1, -1];
+                Q.erc_core_dissent += Math.max(-6, Math.min(6, erc_coreTaxDissent[projection.tax + 3] - erc_coreTaxDissent[Q.tax_policy_level + 3]));
+                var erc_pragmaticTaxDissent = [-1, -1, 0, 0, 0, 0, 0, 1, 1, 2];
+                Q.erc_pragmatic_dissent += Math.max(-6, Math.min(6, erc_pragmaticTaxDissent[projection.tax + 3] - erc_pragmaticTaxDissent[Q.tax_policy_level + 3]));
+            }
+            if (Q.player_party == "cup") {
+                var cup_endavantTaxDissent = [4, 2, -1, 0, 3, 1, -3, -3, -4, -4];
+                Q.cup_endavant_dissent += Math.max(-6, Math.min(6, cup_endavantTaxDissent[projection.tax + 3] - cup_endavantTaxDissent[Q.tax_policy_level + 3]));
+                var cup_poblelliureTaxDissent = [2, 1, 0, 0, 1, 0, -1, -1, -1, -1];
+                Q.cup_poblelliure_dissent += Math.max(-6, Math.min(6, cup_poblelliureTaxDissent[projection.tax + 3] - cup_poblelliureTaxDissent[Q.tax_policy_level + 3]));
+                var cup_thirdsectorTaxDissent = [3, 1, -1, 0, 2, 1, -2, -2, -3, -3];
+                Q.cup_thirdsector_dissent += Math.max(-6, Math.min(6, cup_thirdsectorTaxDissent[projection.tax + 3] - cup_thirdsectorTaxDissent[Q.tax_policy_level + 3]));
+            }
+        }
+        var forcedCuts = spending.some(function (kind) { return projection.levels[kind] < enactedBefore[kind]; });
+        if (forcedCuts) {
+            // Charge each crossed cut, without adding an authorization penalty.
+            for (var kind of spending) {
+                for (var previousLevel = enactedBefore[kind]; previousLevel > projection.levels[kind]; previousLevel--) {
+                    if (kind == "public_salary_level") {
+                        if (!controlledParties.includes("erc") && Number.isFinite(Q.erc_relations))
+                            Q.erc_relations -= 1 * (coalitionPartners.includes("erc") ? 2 : 1);
+                        if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
+                            Q[Q.parlament_current_ciu + "_relations"] += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+                        if (!controlledParties.includes("psc") && Number.isFinite(Q.psc_relations))
+                            Q.psc_relations -= 1 * (coalitionPartners.includes("psc") ? 2 : 1);
+                        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+                            Q[Q.parlament_current_icv + "_relations"] -= 2 * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+                        if (!controlledParties.includes("cup") && Number.isFinite(Q.cup_relations))
+                            Q.cup_relations -= 1 * (coalitionPartners.includes("cup") ? 2 : 1);
+                        if (!controlledParties.includes("ppc") && Number.isFinite(Q.ppc_relations))
+                            Q.ppc_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("ppc") ? 2 : 1);
+                        if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
+                            Q.cs_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("cs") ? 2 : 1);
+                        // An outside cabinet list follows its CiU-family leadership.
+                        for (var list of ["jxsi", "jxcat"]) {
+                            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                                Q[list + "_relations"] += (previousLevel > 0 ? 1 : 0) * 2;
+                        }
+                        if (Q.player_party == "erc") {
+                            Q.erc_left_dissent += 2;
+                            Q.erc_core_dissent += 1;
+                            Q.erc_pragmatic_dissent += previousLevel <= 0 ? 1 : 0;
+                        }
+                        if (Q.player_party == "cup") {
+                            Q.cup_endavant_dissent += 2;
+                            Q.cup_poblelliure_dissent += 1;
+                            Q.cup_thirdsector_dissent += 2;
+                        }
+                    } else {
+                        if (!controlledParties.includes("erc") && Number.isFinite(Q.erc_relations))
+                            Q.erc_relations += (previousLevel > 0 ? -2 : -1) * (coalitionPartners.includes("erc") ? 2 : 1);
+                        if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
+                            Q[Q.parlament_current_ciu + "_relations"] += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+                        if (!controlledParties.includes("psc") && Number.isFinite(Q.psc_relations))
+                            Q.psc_relations += (previousLevel > 0 ? -2 : -1) * (coalitionPartners.includes("psc") ? 2 : 1);
+                        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+                            Q[Q.parlament_current_icv + "_relations"] += (previousLevel > 0 ? -3 : -2) * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+                        if (!controlledParties.includes("cup") && Number.isFinite(Q.cup_relations))
+                            Q.cup_relations -= 2 * (coalitionPartners.includes("cup") ? 2 : 1);
+                        if (!controlledParties.includes("ppc") && Number.isFinite(Q.ppc_relations))
+                            Q.ppc_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("ppc") ? 2 : 1);
+                        if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
+                            Q.cs_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("cs") ? 2 : 1);
+                        // An outside cabinet list follows its CiU-family leadership.
+                        for (var list of ["jxsi", "jxcat"]) {
+                            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                                Q[list + "_relations"] += (previousLevel > 0 ? 1 : 0) * 2;
+                        }
+                        if (Q.player_party == "erc") {
+                            Q.erc_left_dissent += previousLevel <= 0 ? 2 : kind == "healthcare_spending" && previousLevel == 2 ? 4 : 3;
+                            Q.erc_core_dissent += 1;
+                            Q.erc_pragmatic_dissent += previousLevel <= 0 ? 1 : 0;
+                        }
+                        if (Q.player_party == "cup") {
+                            Q.cup_endavant_dissent += kind == "healthcare_spending" && previousLevel == 2 ? 4 : 3;
+                            Q.cup_poblelliure_dissent += 1;
+                            Q.cup_thirdsector_dissent += kind == "healthcare_spending" && previousLevel == 2 ? 4 : 3;
+                        }
+                    }
+                }
+            }
+        } else if (projection.cap != Q.social_spending_cap) {
+            var authorizationChange = projection.cap - Q.social_spending_cap;
+            if (!controlledParties.includes("erc") && Number.isFinite(Q.erc_relations))
+                Q.erc_relations += (authorizationChange) * (coalitionPartners.includes("erc") ? 2 : 1);
+            if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
+                Q[Q.parlament_current_ciu + "_relations"] += (-authorizationChange) * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+            if (!controlledParties.includes("psc") && Number.isFinite(Q.psc_relations))
+                Q.psc_relations += (authorizationChange) * (coalitionPartners.includes("psc") ? 2 : 1);
+            if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+                Q[Q.parlament_current_icv + "_relations"] += (authorizationChange) * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+            if (!controlledParties.includes("cup") && Number.isFinite(Q.cup_relations))
+                Q.cup_relations += (authorizationChange) * (coalitionPartners.includes("cup") ? 2 : 1);
+            if (!controlledParties.includes("ppc") && Number.isFinite(Q.ppc_relations))
+                Q.ppc_relations += (-authorizationChange) * (coalitionPartners.includes("ppc") ? 2 : 1);
+            if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
+                Q.cs_relations += (-authorizationChange) * (coalitionPartners.includes("cs") ? 2 : 1);
+            // An outside cabinet list follows its CiU-family leadership.
+            for (var list of ["jxsi", "jxcat"]) {
+                if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                    list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                    Q[list + "_relations"] += (-authorizationChange) * 2;
+            }
+            if (Q.player_party == "erc") {
+                Q.erc_left_dissent += -authorizationChange;
+            }
+            if (Q.player_party == "cup") {
+                Q.cup_endavant_dissent += -authorizationChange;
+                Q.cup_thirdsector_dissent += -authorizationChange;
+            }
+        }
+    }
+    if (origin.author != "player" && Q.parlament_budget_player_vote == "yes" && Q.parlament_budget_player_default == "no") {
         if (Q.player_party == "erc") { Q.erc_left_dissent += 6; Q.erc_civic_dissent += 3; }
         if (Q.player_party == "cup") { Q.cup_endavant_dissent += 8; Q.cup_thirdsector_dissent += 5; Q.cup_poblelliure_dissent += 2; }
     }

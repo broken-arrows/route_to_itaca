@@ -211,7 +211,7 @@ const layoutStyle = computed(() => {
   color: #2e2a22;
 }
 .chamber-vote-outcome--not-present {
-  background: transparent;
+  background: repeating-linear-gradient(-45deg, transparent 0, transparent 3px, rgba(128, 128, 128, 0.3) 3px, rgba(128, 128, 128, 0.3) 6px);
   color: var(--ink-1);
 }
 .chamber-vote-outcome--no {

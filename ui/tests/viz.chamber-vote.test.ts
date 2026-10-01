@@ -136,7 +136,7 @@ describe('ChamberVote', () => {
     expect(shift).toBeCloseTo(33);
   });
 
-  it('places absent parties between abstention and no in a transparent segment', async () => {
+  it('places absent parties between abstention and no in a gray striped segment', async () => {
     const w = mountVote();
     await w.setProps({
       outcomes: [
@@ -159,7 +159,7 @@ describe('ChamberVote', () => {
     );
     expect(shift).toBeCloseTo(38.888889);
     const source = readFileSync(path.join(__dirname, '..', 'src', 'components', 'viz', 'ChamberVote.vue'), 'utf8');
-    expect(source).toMatch(/\.chamber-vote-outcome--not-present\s*{[^}]*background:\s*transparent;/s);
+    expect(source).toMatch(/\.chamber-vote-outcome--not-present\s*{[^}]*background:\s*repeating-linear-gradient\(-45deg, transparent 0, transparent 3px, rgba\(128, 128, 128, 0\.3\) 3px, rgba\(128, 128, 128, 0\.3\) 6px\);/s);
 
     await w.setProps({
       outcomes: [

@@ -158,14 +158,14 @@ on-arrival: {!
 
     if (Q.csqp_leader == "Arcadi Oliveres" && Q.csqp_parlament_s > 0) {
         Q.parlament_referendum_yes += Q.csqp_parlament_s;
-        add_if_seated(yes_parties, "CSQP", Q.cecp_parlament_s);
+        add_if_seated(yes_parties, "CSQP", Q.csqp_parlament_s);
     } else if ((Q.cecp_leader == "Arcadi Oliveres" || Q.cecp_leader == "Jaume Asens") && Q.cecp_parlament_s > 0) {
         Q.parlament_referendum_yes += Q.cecp_parlament_s;
         add_if_seated(yes_parties, "CECP", Q.cecp_parlament_s);
     } else {
         Q.parlament_referendum_abst += Q.cecp_parlament_s + Q.csqp_parlament_s;
         add_if_seated(abstain_parties, "CECP", Q.cecp_parlament_s);
-        add_if_seated(abstain_parties, "CSQP", Q.cecp_parlament_s);
+        add_if_seated(abstain_parties, "CSQP", Q.csqp_parlament_s);
     }
 
     add_if_seated(abstain_parties, "ICV-EUiA", Q.icv_parlament_s);
@@ -244,7 +244,7 @@ view-if: not parlament_referendum_law
 go-to: post_event
 
 @next_law
-title: and we're not done yet
+title: and we're not done yet...
 view-if: parlament_referendum_law
 new-page: true
 
@@ -333,7 +333,7 @@ on-arrival: {!
 
     if (Q.csqp_leader == "Arcadi Oliveres" && Q.csqp_parlament_s > 0) {
         Q.parlament_disconnection_yes += Q.csqp_parlament_s;
-        add_if_seated(yes_parties, "CSQP", Q.cecp_parlament_s);
+        add_if_seated(yes_parties, "CSQP", Q.csqp_parlament_s);
     } else if ((Q.cecp_leader == "Arcadi Oliveres") && Q.cecp_parlament_s > 0) {
         Q.parlament_disconnection_yes += Q.cecp_parlament_s;
         add_if_seated(yes_parties, "CECP", Q.cecp_parlament_s);
@@ -343,7 +343,7 @@ on-arrival: {!
     } else {
         Q.parlament_disconnection_no += Q.cecp_parlament_s + Q.csqp_parlament_s;
         add_if_seated(no_parties, "CECP", Q.cecp_parlament_s);
-        add_if_seated(no_parties, "CSQP", Q.cecp_parlament_s);
+        add_if_seated(no_parties, "CSQP", Q.csqp_parlament_s);
     }
 
     add_if_seated(no_parties, "ICV-EUiA", Q.icv_parlament_s);
@@ -402,7 +402,7 @@ on-arrival: {!
 
 <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_disconnection_vote_result"}'></div>
 
-[? if parlament_disconnection_law: Both *"disconnection"* laws have been approved! ?]It's been a very long session, running almost into the early morning of the following day, but it is one for history! Despite everything, we made it. Now everything is ready for the Catalan people to truly express their will.
+The second *"disconnection"* law [? if parlament_disconnection_law: has been approved! ?][? if not parlament_disconnection_law: has failed to pass???! ?]It's been a very long session, running almost into the early morning of the following day, but it is one for history! Despite everything, we made it. Now everything is ready for the Catalan people to truly express their will.
 
 - @rubicon_trigger
 - @wth_parlament_stuck

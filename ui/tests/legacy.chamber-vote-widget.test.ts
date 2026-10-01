@@ -85,7 +85,7 @@ describe('the old shell chamber-vote handler', () => {
     expect(shift).toBeCloseTo(33);
   });
 
-  it('shows absent parties between abstention and no without filling their segment', () => {
+  it('shows absent parties between abstention and no in a gray striped segment', () => {
     document.body.innerHTML =
       '<main><div data-widget="chamber-vote" ' +
       'data-props=\'{"outcomes":[' +
@@ -109,7 +109,7 @@ describe('the old shell chamber-vote handler', () => {
       ),
     );
     expect(shift).toBeCloseTo(38.888889);
-    expect(GAME_CSS).toMatch(/\.chamber-vote__outcome--not-present\s*{[^}]*background:\s*transparent;/s);
+    expect(GAME_CSS).toMatch(/\.chamber-vote__outcome--not-present\s*{[^}]*background:\s*repeating-linear-gradient\(-45deg, transparent 0, transparent 3px, rgba\(128, 128, 128, 0\.3\) 3px, rgba\(128, 128, 128, 0\.3\) 6px\);/s);
     const bar = document.querySelector('.chamber-vote__bar') as HTMLElement;
     expect(bar.dataset.majority).toBe('68');
   });

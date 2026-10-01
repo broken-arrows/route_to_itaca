@@ -17,8 +17,6 @@ role: card-gov
 
 TODO: More things other than funding
 
-TODO: Party factions effects
-
 - @education_public
 - @education_expand
 - @revert_cuts
@@ -36,12 +34,54 @@ view-if: education_spending >= 2
 choose-if: education_spending = 2 and social_spending_cap = 3 and not education_public_introduced and government_budget >= 2 and party_resources > 0
 unavailable-subtitle: [? if education_spending = 3: Public education already covers the whole system.?][? if social_spending_cap < 3: The current social spending cap does not allow for this level of investment. ?][? if education_public_introduced: This proposal is waiting on the Parlament's approval. ?][? if government_budget < 2: Not enough budget. ?][? if party_resources <= 0: Not enough resources. ?]
 on-arrival: {!
-    Q.education_public_introduced = true;
-    Q.party_resources -= 1;
-    G.registerLaw(Q, {id:"education_public_proposal", title:"Public-Only Education Proposal",
-                colour:"gray", icon:"img/education_icon.svg",
-                description:"Pending parliamentary approval: Public schools and universities would cover all education needs, while private circuits would be severely restricted, if not de-facto outlawed.",
-                targets:{}});
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.education_minister_party) && !Q.cat_caretaker_gov && Q.education_spending == 2 && Q.social_spending_cap == 3 && !Q.education_public_introduced && Q.government_budget >= 2 && Q.party_resources > 0) {
+        Q.education_public_introduced = true;
+        Q.party_resources -= 1;
+        G.registerLaw(Q, {id:"education_public_proposal", title:"Public-Only Education Proposal",
+                    colour:"gray", icon:"img/education_icon.svg",
+                    description:"Pending parliamentary approval: Public schools and universities would cover all education needs, while private circuits would be severely restricted, if not de-facto outlawed.",
+                    targets:{}});
+        // Cabinet partners include the constituents of their unity lists.
+        var coalitionPartners = (Q.cat_coalition || []).slice();
+        for (var list of ["jxsi", "jxcat"]) {
+            if (coalitionPartners.includes(list)) {
+                for (var party of Q.parties || []) {
+                    if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+                }
+            }
+        }
+        if (!controlledParties.includes("erc") && Number.isFinite(Q.erc_relations))
+            Q.erc_relations += 2 * (coalitionPartners.includes("erc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
+            Q[Q.parlament_current_ciu + "_relations"] -= 4 * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+        if (!controlledParties.includes("psc") && Number.isFinite(Q.psc_relations))
+            Q.psc_relations -= 1 * (coalitionPartners.includes("psc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+            Q[Q.parlament_current_icv + "_relations"] += 3 * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+        if (!controlledParties.includes("cup") && Number.isFinite(Q.cup_relations))
+            Q.cup_relations += 4 * (coalitionPartners.includes("cup") ? 2 : 1);
+        if (!controlledParties.includes("ppc") && Number.isFinite(Q.ppc_relations))
+            Q.ppc_relations -= 3 * (coalitionPartners.includes("ppc") ? 2 : 1);
+        if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
+            Q.cs_relations -= 3 * (coalitionPartners.includes("cs") ? 2 : 1);
+        // An outside cabinet list follows its CiU-family leadership.
+        for (var list of ["jxsi", "jxcat"]) {
+            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                Q[list + "_relations"] -= 4 * 2;
+        }
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent -= 5;
+            Q.erc_core_dissent -= 1;
+            Q.erc_pragmatic_dissent += 1;
+        }
+        if (Q.player_party == "cup") {
+            Q.cup_endavant_dissent -= 6;
+            Q.cup_poblelliure_dissent -= 2;
+            Q.cup_thirdsector_dissent -= 4;
+        }
+    }
 !}
 
 All executive preparations have been made, and a landmark law is ready to make it so that public schools and universities would cover all education needs. Private and charter circuits are to be be severely restricted, which in practical terms means they will exist only as a ridiculously small niche in a grey legal area. The Parlament must, nonetheless, approve of such a policy first. [? if education_public_ruling: The existing Constitutional ruling, however, does mean that private institutions will still have to be allowed to operate alongside the public system. ?]
@@ -53,12 +93,54 @@ subtitle: Requires the Parlament's approval \[ +1 budget if passed\]\[-1 resourc
 choose-if: not education_de_public_introduced and party_resources > 0
 unavailable-subtitle: [? if education_de_public_introduced: This proposal is waiting on the Parlament's approval. ?][? if party_resources <= 0: Not enough resources. ?]
 on-arrival: {!
-    Q.education_de_public_introduced = true;
-    Q.party_resources -= 1;
-    G.registerLaw(Q, {id:"education_de_public_proposal", title:"Mixed Education System Proposal",
-                colour:"gray", icon:"img/education_icon.svg",
-                description:"Pending parliamentary approval: Private and charter schools would operate alongside the modernized public education system.",
-                targets:{}});
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.education_minister_party) && !Q.cat_caretaker_gov && Q.education_spending == 3 && !Q.education_de_public_introduced && Q.party_resources > 0) {
+        Q.education_de_public_introduced = true;
+        Q.party_resources -= 1;
+        G.registerLaw(Q, {id:"education_de_public_proposal", title:"Mixed Education System Proposal",
+                    colour:"gray", icon:"img/education_icon.svg",
+                    description:"Pending parliamentary approval: Private and charter schools would operate alongside the modernized public education system.",
+                    targets:{}});
+        // Cabinet partners include the constituents of their unity lists.
+        var coalitionPartners = (Q.cat_coalition || []).slice();
+        for (var list of ["jxsi", "jxcat"]) {
+            if (coalitionPartners.includes(list)) {
+                for (var party of Q.parties || []) {
+                    if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+                }
+            }
+        }
+        if (!controlledParties.includes("erc") && Number.isFinite(Q.erc_relations))
+            Q.erc_relations -= 2 * (coalitionPartners.includes("erc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
+            Q[Q.parlament_current_ciu + "_relations"] += 4 * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+        if (!controlledParties.includes("psc") && Number.isFinite(Q.psc_relations))
+            Q.psc_relations += 1 * (coalitionPartners.includes("psc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+            Q[Q.parlament_current_icv + "_relations"] -= 3 * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+        if (!controlledParties.includes("cup") && Number.isFinite(Q.cup_relations))
+            Q.cup_relations -= 4 * (coalitionPartners.includes("cup") ? 2 : 1);
+        if (!controlledParties.includes("ppc") && Number.isFinite(Q.ppc_relations))
+            Q.ppc_relations += 3 * (coalitionPartners.includes("ppc") ? 2 : 1);
+        if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
+            Q.cs_relations += 3 * (coalitionPartners.includes("cs") ? 2 : 1);
+        // An outside cabinet list follows its CiU-family leadership.
+        for (var list of ["jxsi", "jxcat"]) {
+            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                Q[list + "_relations"] += 4 * 2;
+        }
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent += 5;
+            Q.erc_core_dissent += 1;
+            Q.erc_pragmatic_dissent -= 1;
+        }
+        if (Q.player_party == "cup") {
+            Q.cup_endavant_dissent += 6;
+            Q.cup_poblelliure_dissent += 2;
+            Q.cup_thirdsector_dissent += 4;
+        }
+    }
 !}
 
 We are asking the Parlament to replace the public-only education framework with a mixed system. Public schools will retain their expanded funding and modernization, while private and charter institutions will again have a place in the education circuit.
@@ -77,10 +159,53 @@ subtitle: This goes against the party line, but money does have to come from som
 choose-if: education_spending < 3 and education_spending > -2
 unavailable-subtitle: There's nothing left to cut...
 on-arrival: {!
-    Q.education_spending -= 1;
-    Q.education_prepared_level = null;
-    G.deactivateLaw(Q, "education_spending_proposal", undefined, true);
-    Q.government_budget += 1;
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.education_minister_party) && !Q.cat_caretaker_gov && Q.education_spending > -2 && Q.education_spending < 3) {
+        var previousLevel = Q.education_spending;
+        Q.education_spending -= 1;
+        Q.education_prepared_level = null;
+        G.deactivateLaw(Q, "education_spending_proposal", undefined, true);
+        Q.government_budget += 1;
+        // Cabinet partners include the constituents of their unity lists.
+        var coalitionPartners = (Q.cat_coalition || []).slice();
+        for (var list of ["jxsi", "jxcat"]) {
+            if (coalitionPartners.includes(list)) {
+                for (var party of Q.parties || []) {
+                    if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+                }
+            }
+        }
+        if (!controlledParties.includes("erc") && Number.isFinite(Q.erc_relations))
+            Q.erc_relations += (previousLevel > 0 ? -2 : -1) * (coalitionPartners.includes("erc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
+            Q[Q.parlament_current_ciu + "_relations"] += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+        if (!controlledParties.includes("psc") && Number.isFinite(Q.psc_relations))
+            Q.psc_relations += (previousLevel > 0 ? -2 : -1) * (coalitionPartners.includes("psc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+            Q[Q.parlament_current_icv + "_relations"] += (previousLevel > 0 ? -3 : -2) * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+        if (!controlledParties.includes("cup") && Number.isFinite(Q.cup_relations))
+            Q.cup_relations -= 2 * (coalitionPartners.includes("cup") ? 2 : 1);
+        if (!controlledParties.includes("ppc") && Number.isFinite(Q.ppc_relations))
+            Q.ppc_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("ppc") ? 2 : 1);
+        if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
+            Q.cs_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("cs") ? 2 : 1);
+        // An outside cabinet list follows its CiU-family leadership.
+        for (var list of ["jxsi", "jxcat"]) {
+            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                Q[list + "_relations"] += (previousLevel > 0 ? 1 : 0) * 2;
+        }
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent += previousLevel <= 0 ? 2 : 3;
+            Q.erc_core_dissent += 1;
+            Q.erc_pragmatic_dissent += previousLevel <= 0 ? 1 : 0;
+        }
+        if (Q.player_party == "cup") {
+            Q.cup_endavant_dissent += 3;
+            Q.cup_poblelliure_dissent += 1;
+            Q.cup_thirdsector_dissent += 3;
+        }
+    }
 !}
 call: generalitat_setpolicy
 
@@ -93,12 +218,58 @@ view-if: education_spending = -3
 choose-if: not education_de_privatization_introduced and government_budget >= 2 and party_resources > 0
 unavailable-subtitle: [? if education_de_privatization_introduced: This proposal is waiting on the Parlament's approval. ?][? if government_budget < 2: Not enough budget. ?][? if party_resources <= 0: Not enough resources. ?]
 on-arrival: {!
-    Q.education_de_privatization_introduced = true;
-    Q.party_resources -= 1;
-    G.registerLaw(Q, {id:"education_de_privatization_proposal", title:"Restored Public Education",
-                colour:"gray", icon:"img/education_icon.svg",
-                description:"Pending parliamentary approval: Public schools would reopen alongside the remaining charter and private institutions, reversing full privatization.",
-                targets:{}});
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.education_minister_party) && !Q.cat_caretaker_gov && Q.education_spending == -3 && !Q.education_de_privatization_introduced && Q.government_budget >= 2 && Q.party_resources > 0) {
+        Q.education_de_privatization_introduced = true;
+        Q.party_resources -= 1;
+        G.registerLaw(Q, {id:"education_de_privatization_proposal", title:"Restored Public Education",
+                    colour:"gray", icon:"img/education_icon.svg",
+                    description:"Pending parliamentary approval: Public schools would reopen alongside the remaining charter and private institutions, reversing full privatization.",
+                    targets:{}});
+        // Cabinet partners include the constituents of their unity lists.
+        var coalitionPartners = (Q.cat_coalition || []).slice();
+        for (var list of ["jxsi", "jxcat"]) {
+            if (coalitionPartners.includes(list)) {
+                for (var party of Q.parties || []) {
+                    if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+                }
+            }
+        }
+        if (!controlledParties.includes("erc") && Number.isFinite(Q.erc_relations))
+            Q.erc_relations += 3 * (coalitionPartners.includes("erc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
+            Q[Q.parlament_current_ciu + "_relations"] += 1 * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+        if (!controlledParties.includes("psc") && Number.isFinite(Q.psc_relations))
+            Q.psc_relations += 2 * (coalitionPartners.includes("psc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+            Q[Q.parlament_current_icv + "_relations"] += 3 * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+        if (!controlledParties.includes("cup") && Number.isFinite(Q.cup_relations))
+            Q.cup_relations += 3 * (coalitionPartners.includes("cup") ? 2 : 1);
+        if (!controlledParties.includes("ppc") && Number.isFinite(Q.ppc_relations))
+            Q.ppc_relations += ((Q.cat_coalition || []).includes("cs") ? -1 : 1) * (coalitionPartners.includes("ppc") ? 2 : 1);
+        if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
+            Q.cs_relations -= 2 * (coalitionPartners.includes("cs") ? 2 : 1);
+        // An outside cabinet list follows its CiU-family leadership.
+        for (var list of ["jxsi", "jxcat"]) {
+            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                Q[list + "_relations"] += 1 * 2;
+        }
+        if (Q.pdcat_split && Q.parlament_current_ciu != "pdcat" && !controlledParties.includes("pdcat") && Number.isFinite(Q.pdcat_relations))
+            Q.pdcat_relations += 1 * (coalitionPartners.includes("pdcat") ? 2 : 1);
+        if (Q.unio_split && !controlledParties.includes("unio") && Number.isFinite(Q.unio_relations))
+            Q.unio_relations += 1 * (coalitionPartners.includes("unio") ? 2 : 1);
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent -= 8;
+            Q.erc_core_dissent -= 3;
+            Q.erc_pragmatic_dissent -= 2;
+        }
+        if (Q.player_party == "cup") {
+            Q.cup_endavant_dissent -= 5;
+            Q.cup_poblelliure_dissent -= 2;
+            Q.cup_thirdsector_dissent -= 5;
+        }
+    }
 !}
 
 Reverting course after the disastrous policy of education privatization, we are getting the Education Ministry ready for re-opening many public schools across Catalonia. The final kick forward for this will have to come from the Parlament though, as the previous legislative changes introduced to make this possible in the first place need to be voted away.
@@ -110,12 +281,50 @@ view-if: education_spending <= -2
 choose-if: education_spending = -2 and not education_privatization_introduced and player_party != "cup" and party_resources > 0
 unavailable-subtitle: [? if education_spending = -3: Education has already been privatized! ?][? if education_privatization_introduced and not education_spending = -3: This proposal is waiting on the Parlament's approval. ?][? if player_party = "cup": There's no way our party can embark on this path. ?][? if party_resources <= 0: Not enough resources. ?]
 on-arrival: {!
-    Q.education_privatization_introduced = true;
-    Q.party_resources -= 1;
-    G.registerLaw(Q, {id:"education_privatization_proposal", title:"Fully Privatized Education",
-                colour:"gray", icon:"img/education_icon.svg",
-                description: "Pending parliamentary approval: The public education system is to effectively be a thing of the past. While some guarantees for universal education access will still exist via charter schools and education grants, the fact is that the most families and individuals will have to bear the weight of schooling.",
-                targets:{}});
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.education_minister_party) && !Q.cat_caretaker_gov && Q.education_spending == -2 && !Q.education_privatization_introduced && Q.player_party != "cup" && Q.party_resources > 0) {
+        Q.education_privatization_introduced = true;
+        Q.party_resources -= 1;
+        G.registerLaw(Q, {id:"education_privatization_proposal", title:"Fully Privatized Education",
+                    colour:"gray", icon:"img/education_icon.svg",
+                    description: "Pending parliamentary approval: The public education system is to effectively be a thing of the past. While some guarantees for universal education access will still exist via charter schools and education grants, the fact is that the most families and individuals will have to bear the weight of schooling.",
+                    targets:{}});
+        // Cabinet partners include the constituents of their unity lists.
+        var coalitionPartners = (Q.cat_coalition || []).slice();
+        for (var list of ["jxsi", "jxcat"]) {
+            if (coalitionPartners.includes(list)) {
+                for (var party of Q.parties || []) {
+                    if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+                }
+            }
+        }
+        if (!controlledParties.includes("erc") && Number.isFinite(Q.erc_relations))
+            Q.erc_relations -= 4 * (coalitionPartners.includes("erc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]) && Q.parlament_current_ciu != "pdcat")
+            Q[Q.parlament_current_ciu + "_relations"] -= 1 * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+        if (!controlledParties.includes("psc") && Number.isFinite(Q.psc_relations))
+            Q.psc_relations -= 4 * (coalitionPartners.includes("psc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+            Q[Q.parlament_current_icv + "_relations"] -= 5 * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+        if (!controlledParties.includes("cup") && Number.isFinite(Q.cup_relations))
+            Q.cup_relations -= 6 * (coalitionPartners.includes("cup") ? 2 : 1);
+        if (!controlledParties.includes("ppc") && Number.isFinite(Q.ppc_relations))
+            Q.ppc_relations += ((Q.cat_coalition || []).includes("cs") ? 1 : -1) * (coalitionPartners.includes("ppc") ? 2 : 1);
+        if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
+            Q.cs_relations += 3 * (coalitionPartners.includes("cs") ? 2 : 1);
+        // An outside cabinet list follows its CiU-family leadership.
+        for (var list of ["jxsi", "jxcat"]) {
+            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                Q[list + "_relations"] -= 1 * 2;
+        }
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent += 12;
+            Q.erc_core_dissent += 6;
+            Q.erc_pragmatic_dissent += 4;
+            Q.erc_civic_dissent += 2;
+        }
+    }
 !}
 
 Against the wishes of big parts of the party, who accuse us of going against everything [+ player_party +] has stood for, we have put together a proposal for pushing the Catalan education system as close as possible to full privatization. This will, nonetheless, require approval from the Parlament.
@@ -130,17 +339,60 @@ go-to: approve_raise
 
 @approve_raise
 on-arrival: {!
-    Q.government_budget -= 1;
-    Q.education_raise_delivered = Q.education_spending + 1 <= Q.social_spending_cap;
-    if (Q.education_raise_delivered) {
-        Q.education_spending += 1;
-        Q.education_prepared_level = null;
-        G.deactivateLaw(Q, "education_spending_proposal", undefined, true);
-    } else {
-        Q.education_prepared_level = Q.education_spending + 1;
-        G.registerLaw(Q, {id:"education_spending_proposal", title:"Education Spending Increase",
-            colour:"gray", icon:"img/education_icon.svg",
-            description:"Pending budget approval: will take effect the moment a higher spending cap authorizes it.", targets:{}});
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.education_minister_party) && !Q.cat_caretaker_gov && Q.education_spending >= -2 && Q.education_spending < 2 && Q.government_budget > 0 && (Q.education_prepared_level == null || Q.education_prepared_level !== Q.education_spending + 1)) {
+        var previousLevel = Q.education_spending;
+        Q.government_budget -= 1;
+        Q.education_raise_delivered = Q.education_spending + 1 <= Q.social_spending_cap;
+        if (Q.education_raise_delivered) {
+            Q.education_spending += 1;
+            Q.education_prepared_level = null;
+            G.deactivateLaw(Q, "education_spending_proposal", undefined, true);
+        } else {
+            Q.education_prepared_level = Q.education_spending + 1;
+            G.registerLaw(Q, {id:"education_spending_proposal", title:"Education Spending Increase",
+                colour:"gray", icon:"img/education_icon.svg",
+                description:"Pending budget approval: will take effect the moment a higher spending cap authorizes it.", targets:{}});
+        }
+        // Cabinet partners include the constituents of their unity lists.
+        var coalitionPartners = (Q.cat_coalition || []).slice();
+        for (var list of ["jxsi", "jxcat"]) {
+            if (coalitionPartners.includes(list)) {
+                for (var party of Q.parties || []) {
+                    if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+                }
+            }
+        }
+        if (!controlledParties.includes("erc") && Number.isFinite(Q.erc_relations))
+            Q.erc_relations += (previousLevel < 0 ? 1 : 2) * (coalitionPartners.includes("erc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
+            Q[Q.parlament_current_ciu + "_relations"] += (previousLevel < 0 ? 0 : -1) * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+        if (!controlledParties.includes("psc") && Number.isFinite(Q.psc_relations))
+            Q.psc_relations += (previousLevel < 0 ? 1 : 2) * (coalitionPartners.includes("psc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+            Q[Q.parlament_current_icv + "_relations"] += (previousLevel < 0 ? 2 : 3) * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+        if (!controlledParties.includes("cup") && Number.isFinite(Q.cup_relations))
+            Q.cup_relations += 2 * (coalitionPartners.includes("cup") ? 2 : 1);
+        if (!controlledParties.includes("ppc") && Number.isFinite(Q.ppc_relations))
+            Q.ppc_relations += (previousLevel < 0 ? 0 : -1) * (coalitionPartners.includes("ppc") ? 2 : 1);
+        if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
+            Q.cs_relations += (previousLevel < 0 ? 0 : -1) * (coalitionPartners.includes("cs") ? 2 : 1);
+        // An outside cabinet list follows its CiU-family leadership.
+        for (var list of ["jxsi", "jxcat"]) {
+            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                Q[list + "_relations"] += (previousLevel < 0 ? 0 : -1) * 2;
+        }
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent += previousLevel < 0 ? -2 : -3;
+            Q.erc_core_dissent -= 1;
+            Q.erc_pragmatic_dissent += previousLevel < 0 ? -1 : 0;
+        }
+        if (Q.player_party == "cup") {
+            Q.cup_endavant_dissent -= 3;
+            Q.cup_poblelliure_dissent -= 1;
+            Q.cup_thirdsector_dissent -= 3;
+        }
     }
 !}
 call: generalitat_setpolicy

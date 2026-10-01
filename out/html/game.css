@@ -135,7 +135,7 @@ body.dark-mode {
   color: #111;
 }
 .chamber-vote__outcome--not-present {
-  background: transparent;
+  background: repeating-linear-gradient(-45deg, transparent 0, transparent 3px, rgba(128, 128, 128, 0.3) 3px, rgba(128, 128, 128, 0.3) 6px);
   color: var(--text-color);
 }
 .chamber-vote__outcome--no {
