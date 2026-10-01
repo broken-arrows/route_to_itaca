@@ -14,13 +14,23 @@ on-arrival: {!
     var tax = right ? Q.tax_policy_level : Math.min(6, Q.tax_policy_level + 2);
     function prepared(id) {
         var law = (Q.active_mods || {})[id];
-        return !!law && law.active && law.def.colour == "gray";
+        if (!law || !law.active || law.def.colour != "gray") return false;
+        if (id == "territory_water2") return Q.territory_water == 1;
+        if (id == "territory_water3") return Q.territory_water == 2;
+        if (id == "territory_tmobilitat2") return Q.territory_tmobilitat == 1;
+        if (id == "territory_rail2") return Q.territory_tmobilitat == 2;
+        return true;
     }
     var projects = {
         county:prepared("territory_county_roads") && !["cup", "ppc", "cs"].includes(party),
         b40:prepared("territory_b40") && right,
         metro1:prepared("territory_metro1") && !["ppc", "cs", "cup"].includes(party),
-        metro2:prepared("territory_metro2") && !right
+        metro2:prepared("territory_metro2") && !right,
+        water2:prepared("territory_water2"),
+        water3:prepared("territory_water3") && !right,
+        tmobilitat2:prepared("territory_tmobilitat2") && !right,
+        rail1:prepared("territory_rail1"),
+        rail2:prepared("territory_rail2") && !right
     };
     for (var record of Q.coalition_policy_commitments || []) {
         if (record.scope != "cabinet" || !["pending_budget", "applied"].includes(record.status)) continue;
@@ -30,7 +40,8 @@ on-arrival: {!
     // Prefer a restrained tax package, but seek revenue when inherited finances require it.
     if (right) {
         var yields = [-3, -2, -1, 0, 3, 3, 2, 1.5, 2, 3];
-        var costs = (projects.county ? 1 : 0) + (projects.b40 ? 2 : 0) + (projects.metro1 ? 2 : 0) + (projects.metro2 ? 1 : 0);
+        var costs = (projects.county ? 1 : 0) + (projects.b40 ? 2 : 0) + (projects.metro1 ? 2 : 0) + (projects.metro2 ? 1 : 0) +
+            (projects.water2 ? 1 : 0) + (projects.water3 ? 2 : 0) + (projects.tmobilitat2 ? 2 : 0) + (projects.rail1 ? 1 : 0) + (projects.rail2 ? 2 : 0);
         var bestMargin = -Infinity;
         var minimumTax = tax;
         for (var candidate = Math.max(-3, Q.tax_policy_level - 2); candidate <= Math.min(6, Q.tax_policy_level + 2); candidate++) {

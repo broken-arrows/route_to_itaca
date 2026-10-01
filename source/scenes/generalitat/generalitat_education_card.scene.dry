@@ -7,7 +7,6 @@ on-arrival: {!
 !}
 is-card: true
 card-image: img/education_icon.svg
-face-image: img/education_icon.svg
 frequency: 100
 tags: generalitat
 role: card-gov
@@ -17,8 +16,6 @@ role: card-gov
 TODO: More things other than funding
 
 TODO: Party factions effects
-TODO: Electoral effects!
-
 
 - @education_public
 - @education_expand

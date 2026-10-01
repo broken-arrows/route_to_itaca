@@ -127,6 +127,13 @@
       "image": "img/achievements/jxsi_dedebo.jpg"
     },
     {
+      "id": "frikitrens",
+      "name": "Frikitrens",
+      "description": "Build out every single railway and metro project in the game.",
+      "stars": 4,
+      "image": "img/achievements/frikitrens.jpg"
+    },
+    {
       "id": "independencia_socialisme_feminisme",
       "name": "Independència, Socialisme, i Feminisme",
       "description": "As an ERC-CUP government, declare independence and keep the new republic alive until the end of the game.",

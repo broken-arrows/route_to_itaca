@@ -11,7 +11,7 @@ on-arrival: {!
             description: "Targeted relief through surgically lower autonomous taxes through schemes like family deductions.",
             targets: {generalitat_surplus: 0, gdp_growth: 0.06, social_dissent_eq: -2}},
         "0": {id: "budget_tax_moderate", title: "Budget Revenue Measures",
-            description: "Tax and fees increases across the board are part of the" + Q.year + " budget's fiscal measures",
+            description: "Tax and fees increases across the board are part of the " + Q.year + " budget's fiscal measures",
             targets: {generalitat_surplus: 0.02}},
         "1": {id: "tax_increase_broad", title: "Broad Income Tax Increase",
             description: "Higher rates across much of the Generalitat's autonomous general-income taxes, including middle incomes.",
@@ -42,7 +42,7 @@ on-arrival: {!
         });
         if (!Q.active_mods || !Q.active_mods[taxPolicy.id] || !Q.active_mods[taxPolicy.id].active) {
             G.registerLaw(Q, {id: taxPolicy.id, title: taxPolicy.title,
-                description: taxPolicy.description, colour: taxPolicy < 0 ? "red" : taxPolicy <= 2 ?  "orange" : "green", icon: "img/economy_icon.svg",
+                description: taxPolicy.description, colour: Q.tax_policy_level < 0 ? "red" : Q.tax_policy_level <= 2 ?  "orange" : "green", icon: "img/economy_icon.svg",
                 targets: taxPolicy.targets});
         }
     }
@@ -396,6 +396,61 @@ on-arrival: {!
             G.deactivateLaw(Q, raise.law, undefined, true);
         }
     });
+    // Each Territory track has one enacted package. Prepared projects have
+    // their own empty-target records until funding and delivery are complete.
+    var territoryPackages = [
+        {id:"territory_renewables", level:Q.territory_renewables,
+            title:["", "Renewable Deployment Coordination", "Broad Renewable Rollout", "Renewable Energy Priority"],
+            description:["", "The Ministy of Territory now gives renewable projects greater priority. Approvals are now swifter and take less time and effort.",
+                "Energy and territorial planning are coordinating a broader renewable rollout under the Climate Change Law.",
+                "Renewables have priority across energy and land-use projects all across departments and ministries."],
+            icon:"img/leaf_icon.svg", ramp:6,
+            targets:[{}, {gdp_growth:0.005, welfare_index_growth:0.015, generalitat_surplus:-0.002},
+                {gdp_growth:0.01, welfare_index_growth:0.03, generalitat_surplus:-0.004},
+                {gdp_growth:0.015, welfare_index_growth:0.045, generalitat_surplus:-0.006}]},
+        {id:"territory_livestock", level:Q.territory_livestock,
+            title:["", "Agricultural Policy"], icon:"img/leaf_icon.svg",
+            targets:{"-2":{gdp_growth:0.04, welfare_index_growth:0.05, generalitat_surplus:-0.006},
+                "-1":{gdp_growth:0.02, welfare_index_growth:0.025, generalitat_surplus:-0.003},
+                "1":{welfare_index_growth:-0.035, social_dissent_eq:1},
+                "2":{welfare_index_growth:-0.07, social_dissent_eq:2}}},
+        {id:"territory_water", level:Q.territory_water,
+            title:["", "Water Management and Drought Preparedness", "Public Water Facilities", "Public Water Supply and Management"],
+            description:["", "Water installations and collection systems have been refurbished, and new plans for water crisis management have been put in place.",
+                "Public facilities and protocols for water management have been expanded and modernized, alongside harsher sanctioning system for private mismanagement.",
+                "Supply and management of water resources has mostly been transferred away from private operators across Catalonia."],
+            icon:"img/water_icon.svg",
+            targets:[{},
+                {welfare_index_growth:0.02, generalitat_surplus:-0.003},
+                {gdp_growth:0.01, welfare_index_growth:0.05, generalitat_surplus:-0.015},
+                {gdp_growth:0.02, welfare_index_growth:0.07, generalitat_surplus:-0.02}]},
+        {id:"territory_tmobilitat", level:Q.territory_tmobilitat,
+            title:["", "T-Mobilitat", "Catalonia-Wide T-mobilitat"],
+            description:["", "A unified, contactless ticketing system for public transportation has been deployed in the Barcelona metropolitan area.",
+                "Electronic ticketing technology and operation has been under public control, and has been deployed all around Catalonia."],
+            icon:"img/territory_icon.svg",
+            targets:[{}, {gdp_growth:0.01, welfare_index_growth:0.03, generalitat_surplus:-0.005},
+                {gdp_growth:0.025, welfare_index_growth:0.06, generalitat_surplus:-0.015}]}
+    ];
+    for (var policy of territoryPackages) {
+        var previous = (Q.active_mods || {})[policy.id];
+        if (!policy.level) {
+            G.deactivateLaw(Q, policy.id, undefined, true);
+            continue;
+        }
+        if (previous && previous.active && previous.def.territory_level == policy.level) continue;
+        var livestock = policy.id == "territory_livestock";
+        var title = livestock ? policy.level > 0 ? "Intensive Pig-Farming Dependence" : "Diversified Agriculture" : policy.title[policy.level];
+        var description = livestock ? policy.level > 0 ?
+            "Agricultural policy favours intensive pig farming. Pressure on water quality and living conditions persists make this a recurring point of contention." :
+            "Agricultural support and advice prioritize varied production." : policy.description[policy.level];
+        if (policy.level > 0) {
+            G.registerLaw(Q, {id:policy.id, title:title, description:description,
+            colour:livestock && policy.level > 0 ? "red" : "green", icon:policy.icon,
+            territory_level:policy.level, ramp_ticks:livestock && policy.level < 0 ? 12 : policy.ramp,
+            targets:policy.targets[policy.level]});
+        }   
+    }
 !}
 
 You should NOT see this text, if you do, report a bug!! (and ask for a wish)

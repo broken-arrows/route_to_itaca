@@ -433,6 +433,9 @@ if (has_time_passed || Q.coalition_rupture_recheck) {
 }
 
 // 4. Achievement check
+if (Q.territory_rail2_countdown <= 0 && Q.territory_metro2_countdown <= 0) {
+    this.achieve("frikitrens");
+}
 if (Q.spanish_pm == "Pedro Sánchez") {
     Q.psoe_sanchez_president_ever = true;
     if (Q.psoe_barons_revolted ) {
@@ -507,6 +510,28 @@ if (Q.territory_metro2_trigger) {
                 welfare_index_growth:0.03, generalitat_surplus:-0.005}});
 }
 
+if (Q.territory_tmobilitat2_trigger) {
+    Q.territory_tmobilitat2_trigger = false;
+    G.deactivateLaw(Q, "territory_tmobilitat2", undefined, true);
+    Q.territory_tmobilitat = 2;
+    Q.climate_transition_points += 1;
+}
+if (Q.territory_rail1_trigger) {
+    Q.territory_rail1_trigger = false;
+    Q.climate_transition_points += 1;
+    G.deactivateLaw(Q, "territory_rail1", undefined, true);
+    G.registerLaw(Q, {id:"territory_rail1", title:"Lleida-La Pobla Railway", colour:"green", icon:"img/rail_icon.svg",
+        description:"FGC has managed to ressurrect the Lleida-La Pobla line with new trains and improved services.",
+        targets:{gdp_growth:0.02, welfare_index_growth:0.02, unemployment_recovery:0.005, generalitat_surplus:-0.005}});
+}
+if (Q.territory_rail2_trigger) {
+    Q.territory_rail2_trigger = false;
+    Q.climate_transition_points += 1;
+    G.deactivateLaw(Q, "territory_rail2", undefined, true);
+    G.registerLaw(Q, {id:"territory_rail2", title:"Regional Train-Trams", colour:"green", icon:"img/rail_icon.svg",
+        description:"Train-trams in the Camp de Tarragona and the Girona counties have been built.",
+        targets:{gdp_growth:0.035, welfare_index_growth:0.05, unemployment_recovery:0.01, generalitat_surplus:-0.01}});
+}
 
 if (!Q.hidden_right_consolidation && (Q.year == 2019 && Q.month == 10)) {
     Q.hidden_right_consolidation = true;
@@ -627,6 +652,7 @@ if (choices && choices[0].title != "Continue...") {
     Q.has_election = 1;
 }
 !}
+call: generalitat_setpolicy
 on-departure: {!
 // TODO: set historical/international events. Hardcoded ones are easier to handle as qdisplays.
 if (Q.historical_event == Q.last_historical_event) {

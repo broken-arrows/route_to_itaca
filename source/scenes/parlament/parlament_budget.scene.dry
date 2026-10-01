@@ -35,12 +35,16 @@ on-arrival: {!
         "Restore ordinary services and pay", "Authorize expanded services and improved pay",
         "Authorize modernized services and broader pay improvements",
         "Full spending authorization, including exceptional service laws"];
-    var projectIds = {county:"territory_county_roads", b40:"territory_b40", metro1:"territory_metro1", metro2:"territory_metro2"};
-    var projectCosts = {county:1, b40:2, metro1:2, metro2:1};
+    var projectIds = {county:"territory_county_roads", b40:"territory_b40", metro1:"territory_metro1", metro2:"territory_metro2", water2:"territory_water2", water3:"territory_water3", tmobilitat2:"territory_tmobilitat2", rail1:"territory_rail1", rail2:"territory_rail2"};
+    var projectCosts = {county:1, b40:2, metro1:2, metro2:1, water2:1, water3:2, tmobilitat2:2, rail1:1, rail2:2};
     var available = {};
     for (var key of Object.keys(projectIds)) {
         var law = (Q.active_mods || {})[projectIds[key]];
         available[key] = !!law && law.active && law.def.colour == "gray";
+        if (key == "water2") available[key] = available[key] && (Q.territory_water == 1);
+        if (key == "water3") available[key] = available[key] && (Q.territory_water == 2);
+        if (key == "tmobilitat2") available[key] = available[key] && (Q.territory_tmobilitat == 1);
+        if (key == "rail2") available[key] = available[key] && (Q.territory_tmobilitat == 2);
         Q["parlament_budget_" + key + "_available"] = available[key];
         Q["parlament_budget_" + key] = !!draft.projects[key];
     }
@@ -198,14 +202,15 @@ on-arrival: {!
         var tax = projection.tax;
         var capChange = projection.cap - origin.enacted_social_spending_cap;
         var expanding = capChange > 0 || spending.some(function (kind) { return projection.levels[kind] > Q[kind]; });
-        var metro = draft.projects.metro1 || draft.projects.metro2;
+        var metro = draft.projects.metro1 || draft.projects.metro2 || draft.projects.rail1 ||
+            draft.projects.rail2 || draft.projects.tmobilitat2;
         if (["ciu", "cdc", "dl", "pdcat", "junts", "unio"].includes(party))
             return projection.shortfall == 0 && (capChange <= 0 || promised(party, "social_spending_cap", projection)) &&
                 (tax < 4 || promised(party, "tax_progressivity", projection)) ? "yes" : "no";
         var agreedTax = promised(party, "tax_progressivity", projection);
         var agreedCap = promised(party, "social_spending_cap", projection);
         if (party == "erc") return (tax >= 1 || agreedTax) && (projection.cap >= Math.min(0, origin.enacted_social_spending_cap) || agreedCap) ? "yes" : "no";
-        if (party == "cup") return (expanding || projection.cap >= 1 || agreedCap) && (tax >= 3 || tax >= 1 && draft.projects.metro2 || agreedTax) ? "yes" : "no";
+        if (party == "cup") return (expanding || projection.cap >= 1 || agreedCap) && (tax >= 3 || tax >= 1 && (draft.projects.metro2 || draft.projects.rail2 || draft.projects.tmobilitat2 || draft.projects.water3) || agreedTax) ? "yes" : "no";
         if (["icv", "csqp", "cecp", "ecp"].includes(party)) return (expanding || projection.cap >= 1 || agreedCap) && (tax >= 1 || agreedTax) ? "yes" : "no";
         if (party == "psc") return (pscFacesIndyCabinet ? expanding && (tax >= 1 && tax <= 2 || tax >= 3 && metro) :
             (projection.cap >= Math.min(0, origin.enacted_social_spending_cap) || agreedCap) && (tax >= 0 || agreedTax) && (tax < 4 || metro || agreedTax)) ? "yes" : "no";
@@ -282,16 +287,23 @@ on-arrival: {!
             if (!project(proposed).valid) proposed.social_spending_cap = draft.social_spending_cap;
             if (available.county) proposed.projects.county = true;
             if (available.b40) proposed.projects.b40 = true;
+            if (available.water2) proposed.projects.water2 = true;
+            if (available.rail1) proposed.projects.rail1 = true;
         } else {
             proposed.tax_policy_level = Math.min(taxMax, draft.tax_policy_level + 1);
             proposed.social_spending_cap = Math.min(capMax, draft.social_spending_cap + 1);
             if (["cup", "icv", "csqp", "cecp", "ecp"].includes(party)) proposed.projects.b40 = false;
             if (available.metro2) proposed.projects.metro2 = true;
             else if (available.metro1) proposed.projects.metro1 = true;
+            else if (available.rail2) proposed.projects.rail2 = true;
+            else if (available.tmobilitat2) proposed.projects.tmobilitat2 = true;
+            else if (available.rail1) proposed.projects.rail1 = true;
+            if (available.water3) proposed.projects.water3 = true;
+            else if (available.water2) proposed.projects.water2 = true;
         }
         if (proposed.tax_policy_level != draft.tax_policy_level) terms.push("Taxes: " + taxProfiles[proposed.tax_policy_level + 3].name + ".");
         if (proposed.social_spending_cap != draft.social_spending_cap) terms.push("Spending authorization: " + capNames[proposed.social_spending_cap + 2] + ".");
-        var projectNames = {county:"county roads", b40:"the B-40", metro1:"the L9/L10", metro2:"the L1/L3 expansion"};
+        var projectNames = {county:"county roads", b40:"the B-40", metro1:"the L9/L10", metro2:"the L1/L3 expansion", water2:"public water facilities", water3:"public water supply and management", tmobilitat2: "Catalonia-wide T-mobilitat", rail1:"the Lleida-La Pobla railway", rail2:"the Tarragona and Girona train-trams"};
         for (var key of Object.keys(projectIds)) if (proposed.projects[key] != draft.projects[key]) terms.push((proposed.projects[key] ? "Fund " : "Remove ") + projectNames[key] + ".");
         var p = project(proposed);
         var reasons = hardVetoReasons(party, proposed, p);
@@ -352,6 +364,11 @@ on-arrival: {!
 [? if parlament_budget_b40: · Fund the prepared Fourth Belt B-40 extension.?]
 [? if parlament_budget_metro1: · Fund the prepared L9/L10 Metro project.?]
 [? if parlament_budget_metro2: · Fund the prepared L1/L3 Metro expansion.?]
+[? if parlament_budget_water2: · Fund expanded public water facilities.?]
+[? if parlament_budget_water3: · Fund public water supply and management.?]
+[? if parlament_budget_tmobilitat2: · Fund public Catalonia-wide T-mobilitat.?]
+[? if parlament_budget_rail1: · Fund the Lleida-La Pobla railway.?]
+[? if parlament_budget_rail2: · Fund the Tarragona and Girona train-trams.?]
 
 [? if parlament_budget_commitment_summary: **Agreed policy commitments:** [+ parlament_budget_commitment_summary +]?]
 
@@ -376,6 +393,11 @@ on-arrival: {!
 - @b40
 - @metro1
 - @metro2
+- @water2
+- @water3
+- @tmobilitat2
+- @rail1
+- @rail2
 - @vote_yes
 - @vote_no
 - @approach_cup
@@ -459,6 +481,56 @@ title: [? if parlament_budget_metro2: Remove the L1 and L3 Metro expansion from 
 view-if: parlament_budget_metro2_available
 on-arrival: {!
     Q.budget_draft.projects.metro2 = !Q.budget_draft.projects.metro2;
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@water2
+title: [? if parlament_budget_water2: Remove expanded public water facilities from the budget?][? if not parlament_budget_water2: Fund expanded public water facilities?]
+view-if: parlament_budget_water2_available
+on-arrival: {!
+    Q.budget_draft.projects.water2 = !Q.budget_draft.projects.water2;
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@water3
+title: [? if parlament_budget_water3: Remove public water supply and management from the budget?][? if not parlament_budget_water3: Fund public water supply and management?]
+view-if: parlament_budget_water3_available
+on-arrival: {!
+    Q.budget_draft.projects.water3 = !Q.budget_draft.projects.water3;
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@tmobilitat2
+title: [? if parlament_budget_tmobilitat2: Remove the Catalonia-wide T-mobilitat from the budget?][? if not parlament_budget_tmobilitat2: Fund the Catalonia-wide T-mobilitat?]
+view-if: parlament_budget_tmobilitat2_available
+on-arrival: {!
+    Q.budget_draft.projects.tmobilitat2 = !Q.budget_draft.projects.tmobilitat2;
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@rail1
+title: [? if parlament_budget_rail1: Remove the Lleida-La Pobla railway from the budget?][? if not parlament_budget_rail1: Fund the Lleida-La Pobla railway?]
+view-if: parlament_budget_rail1_available
+on-arrival: {!
+    Q.budget_draft.projects.rail1 = !Q.budget_draft.projects.rail1;
+    Q.parlament_budget_deals = [];
+    Q.parlament_budget_changes_made = true;
+!}
+go-to: review
+
+@rail2
+title: [? if parlament_budget_rail2: Remove the Tarragona and Girona train-trams from the budget?][? if not parlament_budget_rail2: Fund the Tarragona and Girona train-trams?]
+view-if: parlament_budget_rail2_available
+on-arrival: {!
+    Q.budget_draft.projects.rail2 = !Q.budget_draft.projects.rail2;
     Q.parlament_budget_deals = [];
     Q.parlament_budget_changes_made = true;
 !}
@@ -699,6 +771,45 @@ on-arrival: {!
             targets:{generalitat_surplus:-0.01, unemployment_recovery:0.01}});
         if (!Q.countdowns.includes("territory_metro2")) Q.countdowns.push("territory_metro2");
         Q.territory_metro2_countdown = 36;
+    }
+    if (Q.parlament_budget_water2) {
+        creditBudgetBurden();
+        G.deactivateLaw(Q, "territory_water2", undefined, true);
+        Q.territory_water = 2;
+        Q.climate_transition_points += 1;
+    }
+    if (Q.parlament_budget_water3) {
+        creditBudgetBurden();
+        G.deactivateLaw(Q, "territory_water3", undefined, true);
+        Q.territory_water = 3;
+        Q.climate_transition_points += 1;
+    }
+    if (Q.parlament_budget_tmobilitat2) {
+        creditBudgetBurden();
+        G.deactivateLaw(Q, "territory_tmobilitat2", undefined, true);
+        G.registerLaw(Q, {id:"territory_tmobilitat2", title:"Catalonia-Wide T-mobilitat", colour:"orange",
+            icon:"img/territory_icon.svg", description:"Under deployment: ticketing technology and operation is being brought under public control, and will see its implementation extended to cover all of Catalonia.",
+            targets:{}});
+        if (!Q.countdowns.includes("territory_tmobilitat2")) Q.countdowns.push("territory_tmobilitat2");
+        Q.territory_tmobilitat2_countdown = 12;
+    }
+    if (Q.parlament_budget_rail1) {
+        creditBudgetBurden();
+        G.deactivateLaw(Q, "territory_rail1", undefined, true);
+        G.registerLaw(Q, {id:"territory_rail1", title:"Lleida-La Pobla Railway", colour:"orange",
+            icon:"img/rail_icon.svg", description:"Under deployment: revitalization the FGC Lleida-La Pobla line with new trains and improved services.",
+            targets:{generalitat_surplus:-0.005, unemployment_recovery:0.005}});
+        if (!Q.countdowns.includes("territory_rail1")) Q.countdowns.push("territory_rail1");
+        Q.territory_rail1_countdown = 12;
+    }
+    if (Q.parlament_budget_rail2) {
+        creditBudgetBurden();
+        G.deactivateLaw(Q, "territory_rail2", undefined, true);
+        G.registerLaw(Q, {id:"territory_rail2", title:"Tarragona and Girona Train-Trams", colour:"orange",
+            icon:"img/rail_icon.svg", description:"Under construction: build-out train-tram networks in the Camp de Tarragona and the Girona counties.",
+            targets:{generalitat_surplus:-0.01, unemployment_recovery:0.01}});
+        if (!Q.countdowns.includes("territory_rail2")) Q.countdowns.push("territory_rail2");
+        Q.territory_rail2_countdown = 36;
     }
     Q.budget_year = Q.year;
     Q.budget_failed_times = 0;

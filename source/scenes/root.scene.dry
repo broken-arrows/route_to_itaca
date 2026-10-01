@@ -145,6 +145,11 @@ on-arrival: {!
   Q.climate_transition_points = 0;
   Q.territory_roads_approved = 0;  
   Q.territory_metro_approved = 0;
+  Q.territory_renewables = 0;
+  Q.territory_livestock = 0;
+  Q.territory_water = 0;
+  Q.territory_tmobilitat = 0;
+  Q.territory_rail_approved = 0;
 
   // start Parlament composition
   Q.parlament_seats = {
