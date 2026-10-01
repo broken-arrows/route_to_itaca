@@ -5,6 +5,7 @@ on-arrival: {!
     Q.month_actions += 1;
     Q.generalitat_presidency_timer += 4;
 !}
+call: generalitat_coalition_card.prepare
 is-card: true
 card-image: img/cat_seal.svg
 face-image: img/cat_seal.svg
@@ -35,5 +36,6 @@ go-to: question_of_the_question
 
 @kick_out_coalition_partners
 title: Kick our coalition partners out of the government
-subtitle: We'll become the heads of a <span class="generalitat-coalition" data-parties="[? if player_in_jxsi: jxsi?][? if player_in_jxcat: jxcat?][? if not (player_in_jxcat or player_in_jxsi): [+ player_party +]?]" data-summary="Minority government - [+ player_parlament_s +]/[+ parlament_s_majority +]"><span style='color: [+ player_party +]; font-weight: bold; font-style: italic'>minority government</span></span> instead.
+view-if: coalition_expulsion_available
+subtitle: We'll govern alone as a [+ coalition_expulsion_government_disp +].
 go-to: generalitat_coalition_card.kick_them_out
