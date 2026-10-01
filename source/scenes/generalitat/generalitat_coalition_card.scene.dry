@@ -5,23 +5,8 @@ face-image: img/generalitat/abracada.jpg
 card-image: img/generalitat/abracada.jpg
 frequency: 100
 tags: generalitat
-on-arrival: {!
-    Q.month_actions += 1;
-    Q.generalitat_coalition_timer = 5;
-    var playerVehicle = Q[Q.player_party + "_in_jxsi"] ? "jxsi" : Q[Q.player_party + "_in_jxcat"] ? "jxcat" : Q.player_party;
-    Q.player_parlament_s = Q[playerVehicle + "_parlament_s"];
-
-    Q.parlament_current_ciu_relations = Q[Q.parlament_current_ciu + "_relations"];
-    Q.coalition_affairs_includes_ciu = Q.cat_coalition.includes(Q.parlament_current_ciu) && Q.parlament_current_ciu != "jxsi" && Q.parlament_current_ciu != "jxcat";
-    Q.coalition_affairs_includes_erc = Q.cat_coalition.includes("erc");
-    Q.coalition_affairs_includes_cup = Q.cat_coalition.includes("cup");
-    Q.coalition_affairs_includes_psc = Q.cat_coalition.includes("psc");
-    Q.parlament_current_icv_relations = Q[Q.parlament_current_icv + "_relations"];
-    Q.coalition_affairs_includes_icv = Q.cat_coalition.includes(Q.parlament_current_icv);
-    Q.coalition_affairs_includes_jxsi = Q.cat_coalition.includes("jxsi") && !Q.player_in_jxsi;
-    Q.coalition_affairs_includes_jxcat = Q.cat_coalition.includes("jxcat") && !Q.player_in_jxcat;
-    Q.coalition_affairs_concession_target = "";
-!}
+on-arrival: month_actions += 1; generalitat_coalition_timer = 5
+call: generalitat_coalition_card.prepare
 role: card-gov
 
 = Coalition Disunity
@@ -35,6 +20,11 @@ The current [+ cat_coalition_disp +] is struggling with internal dissent, and th
 - @concessions_psc
 - @concessions_icv
 - @concessions_cup
+- @independence_erc
+- @independence_cup
+- @independence_ciu
+- @independence_jxsi
+- @independence_jxcat
 - @go_chill_demands
 - @resources
 - @new_elections
@@ -43,19 +33,19 @@ The current [+ cat_coalition_disp +] is struggling with internal dissent, and th
 - @easy_discard
 
 @concessions_jxcat
-title: Give concessions to JxCat
+title: Give policy concessions to JxCat
 view-if: coalition_affairs_includes_jxcat and jxcat_relations < 55 
 on-arrival: coalition_affairs_concession_target = "jxcat"
 go-to: concessions_ciu
 
 @concessions_jxsi
-title: Give concessions to JxSí
+title: Give policy concessions to JxSí
 view-if: coalition_affairs_includes_jxsi and jxsi_relations < 55
 on-arrival: coalition_affairs_concession_target = "jxsi"
 go-to: concessions_ciu
 
 @concessions_ciu
-title: Give concessions to [+ parlament_current_ciu +]
+title: Give policy concessions to [+ parlament_current_ciu +]
 view-if: player_party != "ciu" and coalition_affairs_includes_ciu and parlament_current_ciu_relations < 55
 on-arrival: {!
     if (Q.generalitat_surplus < 0) {
@@ -106,11 +96,12 @@ call: generalitat_setpolicy
 [? if coalition_affairs_concession_target = "": [+ parlament_current_ciu +]?][? if coalition_affairs_concession_target != "": [+ coalition_affairs_concession_target +]?] has been somewhat pleased by [? if generalitat_surplus < 0: the introduction of new, "targeted" spending cuts. ?][? if generalitat_surplus >= 0: a reduction of taxes across the board and other facilities for business. ?]Let's hope this is for the better.
 
 @concessions_erc
-title: Give concessions to ERC
+title: Give policy concessions to ERC
 view-if: player_party != "erc" and coalition_affairs_includes_erc and erc_relations < 55
 on-arrival: {!
-    // TODO
+    Q.coalition_affairs_concession_target = "erc";
 !}
+go-to: concessions_icv
 
 @concessions_psc
 title: Give concessions to the PSC
@@ -124,23 +115,25 @@ go-to: concessions_ciu if random_seed <= 0.5; concessions_icv
 @concessions_icv
 title: Give concessions to [+ parlament_current_icv +]
 view-if: coalition_affairs_includes_icv and parlament_current_icv_relations < 55
-choose-if: (generalitat_surplus < 0 and tax_policy_level >= -3 and tax_policy_level < 6) or (generalitat_surplus >= 0 and ((education_spending >= -2 and education_spending < 2 and education_spending < social_spending_cap) or (healthcare_spending >= -2 and healthcare_spending < 2 and healthcare_spending < social_spending_cap) or (public_salary_level >= -2 and public_salary_level < 2 and public_salary_level < social_spending_cap) or economy_cuts > 0))
-unavailable-subtitle: [? if generalitat_surplus < 0: Taxes are already as high as they can be under the Statute of Autonomy.?][? if generalitat_surplus >= 0: Further social spending requires a higher social spending cap.?]
+choose-if: (tax_policy_level >= -3 and tax_policy_level < 6) or (education_spending >= -2 and education_spending < 2 and education_spending < social_spending_cap) or (healthcare_spending >= -2 and healthcare_spending < 2 and healthcare_spending < social_spending_cap) or (public_salary_level >= -2 and public_salary_level < 2 and public_salary_level < social_spending_cap) or economy_cuts > 0
+unavailable-subtitle: Taxes are already at their limit, and no further spending increase or austerity reversal is available.
 on-arrival: {!
     Q.coalition_affairs_icv_concession = "";
-    if (Q.generalitat_surplus < 0) {
-        if (Q.tax_policy_level >= -3 && Q.tax_policy_level < 6) {
-            Q.tax_policy_level += 1;
-            Q.coalition_affairs_icv_concession = "taxes";
+    var raiseField = "";
+    for (var field of ["education_spending", "healthcare_spending", "public_salary_level"]) {
+        if (Q[field] >= -2 && Q[field] < 2 && Q[field] + 1 <= Q.social_spending_cap
+            && (!raiseField || Q[field] < Q[raiseField])) {
+            raiseField = field;
         }
-    } else {
-        var raiseField = "";
-        for (var field of ["education_spending", "healthcare_spending", "public_salary_level"]) {
-            if (Q[field] >= -2 && Q[field] < 2 && Q[field] + 1 <= Q.social_spending_cap
-                && (!raiseField || Q[field] < Q[raiseField])) {
-                raiseField = field;
-            }
-        }
+    }
+    var canSpend = !!raiseField || Q.economy_cuts > 0;
+    var canTax = Q.tax_policy_level >= -3 && Q.tax_policy_level < 6;
+    var spendingChance = Q.generalitat_surplus < 0 ? 0.3 : 0.7;
+    spendingChance += (Q.social_dissent - 50) / 200;
+    spendingChance += (50 - Q.welfare_index) / 200;
+    spendingChance = Math.max(0.1, Math.min(0.9, spendingChance));
+
+    if (canSpend && (!canTax || Math.random() < spendingChance)) {
         if (raiseField) {
             Q[raiseField] += 1;
             Q.coalition_affairs_icv_concession = "spending";
@@ -149,6 +142,9 @@ on-arrival: {!
             Q.economy_cuts -= 1;
             Q.coalition_affairs_icv_concession = "austerity";
         }
+    } else if (canTax) {
+        Q.tax_policy_level += 1;
+        Q.coalition_affairs_icv_concession = "taxes";
     }
     if (Q.coalition_affairs_icv_concession) {
         var target = Q.coalition_affairs_concession_target || Q.parlament_current_icv;
@@ -158,14 +154,127 @@ on-arrival: {!
 !}
 call: generalitat_setpolicy
 
-[? if coalition_affairs_icv_concession: [? if coalition_affairs_concession_target = "": [+ parlament_current_icv +]?][? if coalition_affairs_concession_target != "": [+ coalition_affairs_concession_target +]?] has been somewhat pleased by [? if coalition_affairs_icv_concession = "taxes": a progressive increase in taxes to fund public services. ?][? if coalition_affairs_icv_concession = "spending": an increase in funding for public services and workers. ?][? if coalition_affairs_icv_concession = "austerity": the reversal of extraordinary austerity measures. ?]Let's hope this is for the better.?]
+[? if coalition_affairs_icv_concession: [? if coalition_affairs_concession_target = "": [+ parlament_current_icv +]?][? if coalition_affairs_concession_target != "": [+ coalition_affairs_concession_target +]?] has _changebeen somewhat pleased by [? if coalition_affairs_icv_concession = "taxes": a progressive increase in taxes to fund public services. ?][? if coalition_affairs_icv_concession = "spending": an increase in funding for public services and workers. ?][? if coalition_affairs_icv_concession = "austerity": the reversal of extraordinary austerity measures. ?]Let's hope this is for the better.?]
 
 @concessions_cup
-title: Give concessions to the CUP
+title: Give policy concessions to the CUP
 view-if: player_party != "cup" and coalition_affairs_includes_cup and cup_relations < 55
 on-arrival: {!
-    // TODO
+    Q.coalition_affairs_concession_target = "cup";
 !}
+go-to: concessions_icv
+
+@independence_erc
+title: Give independence concessions to ERC
+view-if: player_party != "erc" and coalition_affairs_includes_erc and erc_relations < 55
+choose-if: coalition_affairs_indy_erc_available
+unavailable-subtitle: [? if coalition_affairs_indy_erc_pending: We already owe ERC partner passage of a law. ?][? if not coalition_affairs_indy_erc_pending: [? if coalition_affairs_indy_erc_aligned: Our roadmaps are already aligned. ?][? if coalition_affairs_indy_erc_no_roadmap: Our current roadmap positions are to different. ?][? if not coalition_affairs_indy_erc_aligned and not coalition_affairs_indy_erc_no_roadmap: [? if player_in_jxsi or player_in_jxcat: We cannot change our party's roadmap separately while in a unity list. ?][? if consultation_pending: We cannot change our roadmap with a consultation pending. ?][? if referendum_pending: We cannot change our roadmap with a referendum pending. ?][? if congreso_decidir_countdown > 0 and player_roadmap < 2: We cannot change our roadmap while waiting for the Congreso's right-to-decide vote. ?][? if not player_roadmap_change_trigger: We have changed our roadmap too recently. ?][? if coalition_affairs_indy_erc_faction_blocked: Our party factions are too strong to accept the requested roadmap change. ?]?][? if coalition_affairs_indy_erc_no_law: This partner's roadmap offers no compatible law commitment. ?][? if not coalition_affairs_indy_erc_no_law and not parlament_sovereignty_declaration: A parliamentary Declaration of Sovereignty is required before committing to any further sovereignty laws. ?][? if coalition_affairs_indy_erc_consultations_passed: The Law on Non-Binding Consultations has already been passed. ?][? if coalition_affairs_indy_erc_referendum_passed: The Law on the Referendum has already been passed. ?]?]
+on-arrival: {!
+    Q.coalition_affairs_concession_target = "erc";
+    Q.coalition_affairs_indy_demand = Q.coalition_affairs_indy_demands["erc"];
+!}
+go-to: independence_demand
+
+@independence_cup
+title: Give independence concessions to the CUP
+view-if: player_party != "cup" and coalition_affairs_includes_cup and cup_relations < 55
+choose-if: coalition_affairs_indy_cup_available
+unavailable-subtitle: [? if coalition_affairs_indy_cup_pending: We already owe the CUP passage of a law. ?][? if not coalition_affairs_indy_cup_pending: [? if coalition_affairs_indy_cup_aligned: Our roadmaps are already aligned. ?][? if coalition_affairs_indy_cup_no_roadmap: Our current roadmap positions are to different. ?][? if not coalition_affairs_indy_cup_aligned and not coalition_affairs_indy_cup_no_roadmap: [? if player_in_jxsi or player_in_jxcat: We cannot change our party's roadmap separately while in a unity list. ?][? if consultation_pending: We cannot change our roadmap with a consultation pending. ?][? if referendum_pending: We cannot change our roadmap with a referendum pending. ?][? if congreso_decidir_countdown > 0 and player_roadmap < 2: We cannot change our roadmap while waiting for the Congreso's right-to-decide vote. ?][? if not player_roadmap_change_trigger: We have changed our roadmap too recently. ?][? if coalition_affairs_indy_cup_faction_blocked: Our party factions are too strong to accept the requested roadmap change. ?]?][? if coalition_affairs_indy_cup_no_law: This partner's roadmap offers no compatible law commitment. ?][? if not coalition_affairs_indy_cup_no_law and not parlament_sovereignty_declaration:A parliamentary Declaration of Sovereignty is required before committing to any further sovereignty law. ?][? if coalition_affairs_indy_cup_consultations_passed: The Law on Non-Binding Consultations has already been passed. ?][? if coalition_affairs_indy_cup_referendum_passed: The Law on the Referendum has already been passed. ?]?]
+on-arrival: {!
+    Q.coalition_affairs_concession_target = "cup";
+    Q.coalition_affairs_indy_demand = Q.coalition_affairs_indy_demands["cup"];
+!}
+go-to: independence_demand
+
+@independence_ciu
+title: Give independence concessions to [+ parlament_current_ciu +]
+view-if: coalition_affairs_includes_ciu and parlament_current_ciu_relations < 55
+choose-if: coalition_affairs_indy_ciu_available
+unavailable-subtitle: [? if coalition_affairs_indy_ciu_pending: We already owe [+ parlament_current_ciu +] partner passage of a law. ?][? if not coalition_affairs_indy_ciu_pending: [? if coalition_affairs_indy_ciu_aligned: Our roadmaps are already aligned. ?][? if coalition_affairs_indy_ciu_no_roadmap: Our current roadmap positions are to different. ?][? if not coalition_affairs_indy_ciu_aligned and not coalition_affairs_indy_ciu_no_roadmap: [? if player_in_jxsi or player_in_jxcat: We cannot change our party's roadmap separately while in a unity list. ?][? if consultation_pending: We cannot change our roadmap with a consultation pending. ?][? if referendum_pending: We cannot change our roadmap with a referendum pending. ?][? if congreso_decidir_countdown > 0 and player_roadmap < 2: We cannot change our roadmap while waiting for the Congreso's right-to-decide vote. ?][? if not player_roadmap_change_trigger: We have changed our roadmap too recently. ?][? if coalition_affairs_indy_ciu_faction_blocked: Our party factions are too strong to accept the requested roadmap change. ?]?][? if coalition_affairs_indy_ciu_no_law: This partner's roadmap offers no compatible law commitment. ?][? if not coalition_affairs_indy_ciu_no_law and not parlament_sovereignty_declaration:A parliamentary Declaration of Sovereignty is required before committing to any further sovereignty law. ?][? if coalition_affairs_indy_ciu_consultations_passed: The Law on Non-Binding Consultations has already been passed. ?][? if coalition_affairs_indy_ciu_referendum_passed: The Law on the Referendum has already been passed. ?]?]
+on-arrival: {!
+    Q.coalition_affairs_concession_target = Q.parlament_current_ciu;
+    Q.coalition_affairs_indy_demand = Q.coalition_affairs_indy_demands[Q.parlament_current_ciu];
+!}
+go-to: independence_demand
+
+@independence_jxsi
+title: Give independence concessions to JxSí
+view-if: coalition_affairs_includes_jxsi and jxsi_relations < 55
+choose-if: coalition_affairs_indy_jxsi_available
+unavailable-subtitle: [? if coalition_affairs_indy_jxsi_pending: We already owe jxsi passage of a law. ?][? if not coalition_affairs_indy_jxsi_pending: [? if coalition_affairs_indy_jxsi_aligned: Our roadmaps are already aligned. ?][? if coalition_affairs_indy_jxsi_no_roadmap: Our current roadmap positions are to different. ?][? if not coalition_affairs_indy_jxsi_aligned and not coalition_affairs_indy_jxsi_no_roadmap: [? if player_in_jxsi or player_in_jxcat: We cannot change our party's roadmap separately while in a unity list. ?][? if consultation_pending: We cannot change our roadmap with a consultation pending. ?][? if referendum_pending: We cannot change our roadmap with a referendum pending. ?][? if congreso_decidir_countdown > 0 and player_roadmap < 2: We cannot change our roadmap while waiting for the Congreso's right-to-decide vote. ?][? if not player_roadmap_change_trigger: We have changed our roadmap too recently. ?][? if coalition_affairs_indy_jxsi_faction_blocked: Our party factions are too strong to accept the requested roadmap change. ?]?][? if coalition_affairs_indy_jxsi_no_law: There's no law commitment that we can offer that would satisfy them. ?][? if not coalition_affairs_indy_jxsi_no_law and not parlament_sovereignty_declaration:A parliamentary Declaration of Sovereignty is required before committing to any further sovereignty law. ?][? if coalition_affairs_indy_jxsi_consultations_passed: The Law on Non-Binding Consultations has already been passed. ?][? if coalition_affairs_indy_jxsi_referendum_passed: The Law on the Referendum has already been passed. ?]?]
+on-arrival: {!
+    Q.coalition_affairs_concession_target = "jxsi";
+    Q.coalition_affairs_indy_demand = Q.coalition_affairs_indy_demands["jxsi"];
+!}
+go-to: independence_demand
+
+@independence_jxcat
+title: Give independence concessions to JxCat
+view-if: coalition_affairs_includes_jxcat and jxcat_relations < 55
+choose-if: coalition_affairs_indy_jxcat_available
+unavailable-subtitle: [? if coalition_affairs_indy_jxcat_pending: We already owe jxcat passage of a law. ?][? if not coalition_affairs_indy_jxcat_pending: [? if coalition_affairs_indy_jxcat_aligned: Our roadmaps are already aligned. ?][? if coalition_affairs_indy_jxcat_no_roadmap: Our current roadmap positions are to different. ?][? if not coalition_affairs_indy_jxcat_aligned and not coalition_affairs_indy_jxcat_no_roadmap: [? if player_in_jxsi or player_in_jxcat: We cannot change our party's roadmap separately while in a unity list. ?][? if consultation_pending: We cannot change our roadmap with a consultation pending. ?][? if referendum_pending: We cannot change our roadmap with a referendum pending. ?][? if congreso_decidir_countdown > 0 and player_roadmap < 2:We cannot change our roadmap while waiting for the Congreso's right-to-decide vote. ?][? if not player_roadmap_change_trigger: We have changed our roadmap too recently. ?][? if coalition_affairs_indy_jxcat_faction_blocked: Our party factions are too strong to accept the requested roadmap change. ?]?][? if coalition_affairs_indy_jxcat_no_law: There's no law commitment that we can offer that would satisfy them. ?][? if not coalition_affairs_indy_jxcat_no_law and not parlament_sovereignty_declaration:A parliamentary Declaration of Sovereignty is required before committing to any further sovereignty law. ?][? if coalition_affairs_indy_jxcat_consultations_passed: The Law on Non-Binding Consultations has already been passed. ?][? if coalition_affairs_indy_jxcat_referendum_passed: The Law on the Referendum has already been passed. ?]?]
+on-arrival: {!
+    Q.coalition_affairs_concession_target = "jxcat";
+    Q.coalition_affairs_indy_demand = Q.coalition_affairs_indy_demands["jxcat"];
+!}
+go-to: independence_demand
+
+@independence_demand
+new-page: true
+on-arrival: {!
+    Q.coalition_affairs_indy_kind = Q.coalition_affairs_indy_demand.kind;
+    Q.coalition_affairs_indy_roadmap = Q.coalition_affairs_indy_demand.roadmap || 0;
+    Q.coalition_affairs_indy_law = Q.coalition_affairs_indy_demand.law || "";
+!}
+
+[+ coalition_affairs_concession_target +] demands [? if coalition_affairs_indy_kind = "roadmap": that we move towards a [+ coalition_affairs_indy_roadmap : roadmap +] roadmap.?][? if coalition_affairs_indy_kind = "law": that we pass the [? if coalition_affairs_indy_law = "parlament_non_binding_consultations": Law on Non-Binding Consultations?][? if coalition_affairs_indy_law = "parlament_referendum_law": Law on the Referendum?] within six months.?]
+
+- @accept_independence: Accept this new commitment
+- @no_change: We refuse to change our goals!
+
+@accept_independence
+on-arrival: {!
+    var target = Q.coalition_affairs_concession_target;
+    var demand = Q.coalition_affairs_indy_demand;
+    if (demand && demand.kind == "roadmap") {
+        Q[Q.player_party + "_roadmap"] = demand.roadmap;
+        Q.player_roadmap = demand.roadmap;
+        Q.independence_trust += demand.direction > 0 ? 5 : -15;
+        if (Q.player_party == "erc") {
+            if (demand.direction > 0) {
+                Q.erc_pragmatic_dissent += 10;
+                Q.erc_civic_dissent -= 5;
+                Q.erc_civic_strength += 5;
+            } else {
+                Q.erc_civic_dissent += 10;
+                Q.erc_pragmatic_dissent -= 5;
+                Q.erc_pragmatic_strength += 5;
+            }
+        } else if (Q.player_party == "cup") {
+            if (demand.direction > 0) {
+                Q.cup_thirdsector_dissent += 10;
+                Q.cup_endavant_dissent -= 5;
+                Q.cup_endavant_strength += 5;
+            } else {
+                Q.cup_endavant_dissent += 10;
+                Q.cup_thirdsector_dissent -= 5;
+                Q.cup_thirdsector_strength += 5;
+            }
+        }
+        Q.player_roadmap_change_countdown = 9;
+        Q.player_roadmap_change_trigger = false;
+        if (!Q.countdowns.includes("player_roadmap_change")) Q.countdowns.push("player_roadmap_change");
+        Q[target + "_relations"] += 8;
+    } else if (demand && demand.kind == "law" && !Q[demand.law]) {
+        if (!Q.coalition_indy_commitments) Q.coalition_indy_commitments = [];
+        if (!Q.coalition_indy_commitments.some(function(record) { return record.target == target && record.status == "pending"; })) {
+            Q.coalition_indy_commitments.push({target: target, law: demand.law, deadline: Q.year * 12 + Q.month + 12, status: "pending"});
+            Q[target + "_relations"] += 8;
+        }
+    }
+!}
+
+We have accepted their demand. [? if coalition_affairs_indy_kind = "law": Failure to deliver within a year will heavily damage our relations.?]
 
 @go_chill_demands
 title: TODO: if government in Moncloa shares parties with coalition, relax demands to appease
@@ -316,3 +425,70 @@ Let's hope this was the right move. There's no going back now.
 title: Take none of these actions
 
 It does not look like the issues plaguing our coalition will go away magically, but maybe we can find thinking out of the box instead?
+
+@prepare
+title: Prepare coalition concessions
+on-arrival: {!
+    var playerVehicle = Q[Q.player_party + "_in_jxsi"] ? "jxsi" : Q[Q.player_party + "_in_jxcat"] ? "jxcat" : Q.player_party;
+    Q.player_parlament_s = Q[playerVehicle + "_parlament_s"];
+
+    Q.parlament_current_ciu_relations = Q[Q.parlament_current_ciu + "_relations"];
+    Q.coalition_affairs_includes_ciu = Q.cat_coalition.includes(Q.parlament_current_ciu) && Q.parlament_current_ciu != "jxsi" && Q.parlament_current_ciu != "jxcat";
+    Q.coalition_affairs_includes_erc = Q.cat_coalition.includes("erc");
+    Q.coalition_affairs_includes_cup = Q.cat_coalition.includes("cup");
+    Q.coalition_affairs_includes_psc = Q.cat_coalition.includes("psc");
+    Q.parlament_current_icv_relations = Q[Q.parlament_current_icv + "_relations"];
+    Q.coalition_affairs_includes_icv = Q.cat_coalition.includes(Q.parlament_current_icv);
+    Q.coalition_affairs_includes_jxsi = Q.cat_coalition.includes("jxsi") && !Q.player_in_jxsi;
+    Q.coalition_affairs_includes_jxcat = Q.cat_coalition.includes("jxcat") && !Q.player_in_jxcat;
+    Q.coalition_affairs_concession_target = "";
+
+    Q.coalition_affairs_indy_demands = {};
+    for (var target of ["erc", "cup", Q.parlament_current_ciu, "jxsi", "jxcat"]) {
+        var own = Q[Q.player_party + "_roadmap"];
+        var theirs = Q[target + "_roadmap"];
+        var direction = Math.sign(theirs - own);
+        var canMove = own >= 1 && own <= 3 && theirs >= 1 && theirs <= 3 && direction != 0
+            && !Q.player_in_jxsi && !Q.player_in_jxcat
+            && !Q.consultation_pending && !Q.referendum_pending
+            && !(Q.congreso_decidir_countdown > 0 && own < 2)
+            && Q.player_roadmap_change_trigger;
+        if (Q.player_party == "erc") {
+            canMove = canMove && (direction < 0 ? Q.erc_civic_strength < 30 : Q.erc_pragmatic_strength < 30);
+        } else if (Q.player_party == "cup") {
+            canMove = canMove && (direction < 0 ? Q.cup_endavant_strength < 30 : Q.cup_thirdsector_strength < 30);
+        }
+        var pending = (Q.coalition_indy_commitments || []).some(function(record) {
+            return record.target == target && record.status == "pending";
+        });
+        if (pending) continue;
+        if (canMove) {
+            Q.coalition_affairs_indy_demands[target] = {kind: "roadmap", direction: direction, roadmap: own + direction};
+        } else if (Q.parlament_sovereignty_declaration) {
+            var law = theirs == 1 ? "parlament_non_binding_consultations" : theirs >= 2 ? "parlament_referendum_law" : "";
+            if (law && !Q[law]) Q.coalition_affairs_indy_demands[target] = {kind: "law", law: law};
+        }
+    }
+    for (var entry of [["erc", "erc"], ["cup", "cup"], ["ciu", Q.parlament_current_ciu], ["jxsi", "jxsi"], ["jxcat", "jxcat"]]) {
+        var prefix = "coalition_affairs_indy_" + entry[0];
+        var target = entry[1];
+        var own = Q[Q.player_party + "_roadmap"];
+        var theirs = Q[target + "_roadmap"];
+        Q[prefix + "_pending"] = (Q.coalition_indy_commitments || []).some(function(record) {
+            return record.target == target && record.status == "pending";
+        });
+        Q[prefix + "_aligned"] = own == theirs;
+        Q[prefix + "_no_roadmap"] = !(own >= 1 && own <= 3 && theirs >= 1 && theirs <= 3);
+        Q[prefix + "_faction_blocked"] = own != theirs && (Q.player_party == "erc"
+            ? (theirs < own ? Q.erc_civic_strength >= 30 : Q.erc_pragmatic_strength >= 30)
+            : (theirs < own ? Q.cup_endavant_strength >= 30 : Q.cup_thirdsector_strength >= 30));
+        Q[prefix + "_consultations_passed"] = theirs == 1 && !!Q.parlament_non_binding_consultations;
+        Q[prefix + "_referendum_passed"] = theirs >= 2 && !!Q.parlament_referendum_law;
+        Q[prefix + "_no_law"] = !(theirs >= 1 && theirs <= 3);
+    }
+    Q.coalition_affairs_indy_erc_available = !!Q.coalition_affairs_indy_demands.erc;
+    Q.coalition_affairs_indy_cup_available = !!Q.coalition_affairs_indy_demands.cup;
+    Q.coalition_affairs_indy_ciu_available = !!Q.coalition_affairs_indy_demands[Q.parlament_current_ciu];
+    Q.coalition_affairs_indy_jxsi_available = !!Q.coalition_affairs_indy_demands.jxsi;
+    Q.coalition_affairs_indy_jxcat_available = !!Q.coalition_affairs_indy_demands.jxcat;
+!}

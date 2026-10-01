@@ -331,6 +331,20 @@ if (has_time_passed) {
     }
 }
 
+// Coalition law promises are checked after countdowns and against actual passage.
+for (var record of Q.coalition_indy_commitments || []) {
+    if (["broken", "penalized"].includes(record.status) && Q[record.law]) record.status = "fulfilled";
+    if (record.status != "pending") continue;
+    if (!Q.cat_coalition.includes(record.target) || !Q[Q.player_party + "_in_gob"]) {
+        record.status = "retired";
+    } else if (Q[record.law]) {
+        record.status = "fulfilled";
+    } else if (Q.year * 12 + Q.month >= record.deadline) {
+        record.status = "broken";
+        Q.coalition_indy_breach_trigger = true;
+    }
+}
+
 // 3. re-calculate dissent.
 for (var p of Q.parties) {
     var total_strength = 0;
@@ -377,15 +391,44 @@ if (Q.player_in_jxsi) {
     Q.jxcat_dissent = Q.jxcat_dissent / jxcat_count;
 }
 
-if (Q[Q.player_party + "_in_gob"] || (Q[Q.player_party + "_in_jxsi"] && Q.cat_coalition.includes("jxsi")) || (Q[Q.player_party + "_in_jxcat"] && Q.cat_coalition.includes("jxcat"))) {
-    Q.cat_coalition_dissent = 0;
-    var coalition_count = 0;
-    for (var p of Q.cat_coalition) {
-        coalition_count += 1;
-        Q.cat_coalition_dissent += 80 - Q[p + "_relations"];
-    }
-    if (coalition_count > 1) {
-        Q.cat_coalition_dissent = Q.cat_coalition_dissent / coalition_count;
+var playerVehicle = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+Q.cat_coalition_dissent = 0;
+var partners = (Q.cat_coalition || []).filter(function(p) { return p != playerVehicle; });
+if ((Q.cat_coalition || []).includes(playerVehicle) && partners.length) {
+    Q.cat_coalition_dissent = partners.reduce(function(total, p) { return total + 80 - Q[p + "_relations"]; }, 0) / partners.length;
+}
+
+// One rupture at a time, per partner; never infer relations between NPC parties.
+if (has_time_passed || Q.coalition_rupture_recheck) {
+    Q.coalition_rupture_recheck = false;
+    Q.coalition_rupture_trigger = false;
+    Q.coalition_rupture_target = "";
+    if (!Q.cat_caretaker_gov && (Q.cat_coalition || []).includes(playerVehicle)) {
+        for (var partner of partners) {
+            var relations = Q[partner + "_relations"];
+            var ownRoadmap = Q[playerVehicle + "_roadmap"];
+            var partnerRoadmap = Q[partner + "_roadmap"];
+            var incompatible = ownRoadmap >= 1 && partnerRoadmap >= 1 && Math.abs(ownRoadmap - partnerRoadmap) > 1;
+            var brokenLaw = (Q.coalition_indy_commitments || []).some(function(record) {
+                return record.target == partner && ["broken", "penalized"].includes(record.status) && !Q[record.law];
+            });
+            var brokenPolicy = (Q.coalition_policy_commitments || []).some(function(record) {
+                if (record.scope != "cabinet" || !(record.signatories || []).includes(partner)) return false;
+                if (!["broken", "applied"].includes(record.status)) return false;
+                var actual = record.kind == "tax_progressivity" ? Q.tax_policy_level : Q[record.kind];
+                if (record.status == "broken" && actual >= record.target) record.status = "applied";
+                return actual < record.target;
+            });
+            if (relations < 30 || (relations < 40 && (brokenLaw || brokenPolicy || incompatible || Q.budget_failed_times >= 2))) {
+                Q.coalition_rupture_target = partner;
+                Q.coalition_rupture_trigger = true;
+                Q.coalition_rupture_low_relations = relations < 30;
+                Q.coalition_rupture_broken_agreement = brokenLaw || brokenPolicy;
+                Q.coalition_rupture_roadmap_conflict = incompatible;
+                Q.coalition_rupture_budget_paralysis = Q.budget_failed_times >= 2;
+                break;
+            }
+        }
     }
 }
 

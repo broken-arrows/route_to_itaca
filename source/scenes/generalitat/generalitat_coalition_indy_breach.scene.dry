@@ -1,0 +1,26 @@
+title: Broken Commitments
+subtitle: Our promises to [+ coalition_indy_breach_partners +] have gone unfulfilled.
+new-page: true
+tags: event
+role: event
+view-if: coalition_indy_breach_trigger
+on-arrival: {!
+    Q.coalition_indy_breach_trigger = false;
+    Q.coalition_rupture_recheck = true;
+    Q.coalition_indy_breach_partners = "";
+    for (var record of Q.coalition_indy_commitments || []) {
+        if (record.status != "broken") continue;
+        if (!Q.cat_coalition.includes(record.target)) {
+            record.status = "retired";
+            continue;
+        }
+        Q[record.target + "_relations"] -= 15;
+        Q.coalition_indy_breach_partners += (Q.coalition_indy_breach_partners ? ", " : "") + record.target;
+        record.status = "penalized";
+    }
+!}
+
+= Broken Commitments
+
+We promised to push further in our independence aspirations a year ago, yet the deadline has passed without any meaningful progress. Our partners ([+ coalition_indy_breach_partners +]) are, unsurprisingly, very disappointed. We'll have to see if the relations can even be mended at this point.
+

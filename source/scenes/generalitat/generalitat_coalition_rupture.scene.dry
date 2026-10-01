@@ -1,0 +1,187 @@
+title: Government on the verge of collapse
+subtitle: The current [+ cat_coalition_disp +] may very well be living its last days.
+new-page: true
+face-image: img/events/government_breakup.webp
+tags: event
+role: event
+view-if: coalition_rupture_trigger
+on-arrival: coalition_rupture_trigger = false
+call: generalitat_coalition_card.prepare
+go-to: options
+
+@options
+on-arrival: {!
+    var target = Q.coalition_rupture_target;
+    Q.coalition_rupture_relations = Q[target + "_relations"];
+    Q.coalition_rupture_expulsion = target == Q.president_party;
+    Q.coalition_affairs_concession_target = target;
+    Q.coalition_affairs_indy_demand = Q.coalition_affairs_indy_demands[target];
+    Q.coalition_rupture_indy_available = !!Q.coalition_affairs_indy_demand;
+    var reasonPrefix = "coalition_affairs_indy_" + (target == Q.parlament_current_ciu ? "ciu" : target);
+    for (var reason of ["pending", "aligned", "no_roadmap", "faction_blocked", "consultations_passed", "referendum_passed", "no_law"]) {
+        Q["coalition_rupture_indy_" + reason] = !!Q[reasonPrefix + "_" + reason];
+    }
+    if (!["erc", "cup", Q.parlament_current_ciu, "jxsi", "jxcat"].includes(target)) {
+        Q.coalition_rupture_indy_no_roadmap = true;
+        Q.coalition_rupture_indy_no_law = true;
+    }
+    Q.coalition_rupture_policy_right = ["ciu", "cdc", "dl", "pdcat", "junts", "jxsi", "jxcat"].includes(target)
+        || (Q[target + "_ideology"] || "").includes("Conservatism");
+    var canLeft = Q.tax_policy_level >= -3 && Q.tax_policy_level < 6 || Q.economy_cuts > 0;
+    for (var field of ["education_spending", "healthcare_spending", "public_salary_level"]) {
+        if (Q[field] >= -2 && Q[field] < 2 && Q[field] + 1 <= Q.social_spending_cap) canLeft = true;
+    }
+    Q.coalition_rupture_policy_available = Q.coalition_rupture_policy_right || canLeft;
+    // PSC's random policy route must have a deliverable outcome on either branch.
+    if (target == "psc") Q.coalition_rupture_policy_available = canLeft;
+    Q.coalition_rupture_resource_gain = Q.difficulty < 0 ? 5 : 3;
+    if (Q.coalition_affairs_indy_demand) {
+        Q.coalition_affairs_indy_kind = Q.coalition_affairs_indy_demand.kind;
+        Q.coalition_affairs_indy_roadmap = Q.coalition_affairs_indy_demand.roadmap || 0;
+        Q.coalition_affairs_indy_law = Q.coalition_affairs_indy_demand.law || "";
+    }
+!}
+
+= Government on the verge of collapse
+
+After many disagreements since the start of the legislature, our relations with [+ coalition_rupture_target +] are at an all time low. So much so, that right now they [? if coalition_rupture_expulsion: intend to expel us from the government! ?][? if not coalition_rupture_expulsion: intends to withdraw from the government! ?][? if coalition_rupture_low_relations: Relations have deteriorated just way past beyond what they are willing to tolerate. ?][? if coalition_rupture_broken_agreement: We have failed to acquiesce with the agreement we reached with them. ?][? if coalition_rupture_roadmap_conflict: Our roadmaps to independence differ too much. ?][? if coalition_rupture_budget_paralysis: The repeated failure to pass even a budget has undermined their confidence in the coalition. ?]
+
+- @policy
+- @independence
+- @resources
+- @elections
+- @leave
+
+@policy
+title: Offer policy concessions to preserve the coalition
+subtitle: This may be our last resort to avoid a government breakup
+choose-if: coalition_rupture_policy_available and coalition_rupture_relations + 8 >= 40
+unavailable-subtitle: [? if not coalition_rupture_policy_available: No deliverable policy concession possible that would satisfy their needs. ?][? if coalition_rupture_relations + 8 < 40: This is simply not enough to calm their dissent. ?]
+on-arrival: {!
+    Q.coalition_affairs_concession_target = Q.coalition_rupture_target;
+    Q.coalition_rupture_random = Math.random();
+!}
+go-to: policy_right if coalition_rupture_policy_right or (coalition_rupture_target = "psc" and coalition_rupture_random <= 0.5); policy_left
+
+@policy_right
+call: generalitat_coalition_card.concessions_ciu
+go-to: saved_policy
+
+@policy_left
+call: generalitat_coalition_card.concessions_icv
+go-to: saved_policy
+
+@saved_policy
+call: generalitat_setpolicy
+go-to: saved
+
+@independence
+title: Offer independence concessions to preserve the coalition
+subtitle: This may be our last resort to avoid a government breakup. [? if coalition_rupture_indy_available: [? if coalition_affairs_indy_kind = "roadmap": We'll adopt a [+ coalition_affairs_indy_roadmap : roadmap +] roadmap.?][? if coalition_affairs_indy_kind = "law": Commit to passing the [? if coalition_affairs_indy_law = "parlament_non_binding_consultations": Law on Non-Binding Consultations?][? if coalition_affairs_indy_law = "parlament_referendum_law": Law on the Referendum?] within a year.?]?]
+choose-if: coalition_rupture_indy_available and coalition_rupture_relations + 8 >= 40
+unavailable-subtitle: [? if not coalition_rupture_indy_available: [? if coalition_rupture_indy_pending: We already owe this partner further strides towards independence... ?][? if not coalition_rupture_indy_pending: [? if coalition_rupture_indy_aligned: Our roadmaps are already aligned. ?][? if coalition_rupture_indy_no_roadmap: Our current roadmaps are just too different. ?][? if not coalition_rupture_indy_aligned and not coalition_rupture_indy_no_roadmap: [? if player_in_jxsi or player_in_jxcat: We cannot change our party's roadmap separately while in a unity list. ?][? if consultation_pending or referendum_pending: A vote on independence is pending already! ?][? if congreso_decidir_countdown > 0 and player_roadmap < 2: We must wait for the Congreso's right-to-decide vote before we can reasonably chance our stance on independence. ?][? if not player_roadmap_change_trigger: We have changed our roadmap too recently. ?][? if coalition_rupture_indy_faction_blocked: Our current party's internal power dynamics block the necessary roadmap changes. ?]?][? if coalition_rupture_indy_no_law: No possible commitment to independence seems to be available at the moment that would satisfy them. ?][? if not coalition_rupture_indy_no_law and not parlament_sovereignty_declaration: A parliamentary Declaration of Sovereignty is required before any further steps towards independence can be made. ?][? if coalition_rupture_indy_consultations_passed: The Law on Non-Binding Consultations has already been passed. ?][? if coalition_rupture_indy_referendum_passed: The Law on the Referendum has already been passed. ?]?]?][? if coalition_rupture_relations + 8 < 40: This is simply not enough to calm their dissent. ?]
+call: generalitat_coalition_card.accept_independence
+go-to: saved
+
+@resources
+title: Mobilize our party to preserve the coalition
+subtitle: This will require significant effort on our side. \[-3 resources\]
+view-if: difficulty < 1
+choose-if: party_resources >= 3 and coalition_rupture_relations + coalition_rupture_resource_gain >= 40
+unavailable-subtitle: [? if party_resources < 3: Not enough resources. ?][? if coalition_rupture_relations + coalition_rupture_resource_gain < 40: This is simply not enough to calm their dissent. ?]
+on-arrival: {!
+    Q.party_resources -= 3;
+    Q[Q.coalition_rupture_target + "_relations"] += Q.coalition_rupture_resource_gain;
+!}
+go-to: saved
+
+@saved
+on-arrival: {!
+    Q.coalition_rupture_recheck = true;
+    // A direct arrival must not report success for an undelivered concession.
+    Q.coalition_rupture_saved = Q[Q.coalition_rupture_target + "_relations"] >= 40;
+!}
+go-to: leave if not coalition_rupture_saved
+
+Against all predictions, it seems like the current [+ cat_coalition_disp +] will live to fight another day. So far, it seems like [+ coalition_rupture_target +] has accepted our concessions, but we better watch out in the future...
+
+@elections
+title: Call a snap election instead!
+subtitle: It may be time to let the voters decide instead.
+choose-if: (player_in_jxsi and president_party == "jxsi") or (player_in_jxcat and president_party == "jxcat") or (player_party == president_party)
+unavailable-subtitle: We do not control the Presidency.
+on-arrival: {!
+    Q[Q.coalition_rupture_target + "_relations"] += 3;
+!}
+go-to: snap_election
+
+@leave
+title: [? if coalition_rupture_expulsion: We've been expelled from the Generalitat?][? if not coalition_rupture_expulsion: [+ coalition_rupture_target +] withdraws from the Generalitat ?]
+subtitle: There is nothing we can do.
+on-arrival: {!
+    var vehicle = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    var target = Q.coalition_rupture_target;
+    var removed = [target == Q.president_party ? vehicle : target];
+    var ciuFamily = ["ciu", "cdc", "dl", "pdcat", "junts"];
+    if (removed.includes("erc") && Q.cat_coalition.includes("cup") && Q.cat_coalition.some(function(p) { return ciuFamily.includes(p); })) {
+        removed.push("cup");
+    }
+    Q.coalition_rupture_removed = removed.join(", ");
+    Q.cat_coalition = Q.cat_coalition.filter(function(p) { return !removed.includes(p); });
+    Q.cat_coalition_support = (Q.cat_coalition_support || []).filter(function(p) { return !removed.includes(p); });
+    Q.cat_coalition_abstain = (Q.cat_coalition_abstain || []).filter(function(p) { return !removed.includes(p); });
+    var belongs = function(p, parties) {
+        return parties.includes(p) || ["jxsi", "jxcat"].some(function(list) { return parties.includes(list) && Q[p + "_in_" + list]; });
+    };
+    for (var party of Q.parties) {
+        Q[party + "_in_gob"] = belongs(party, Q.cat_coalition);
+        Q[party + "_supporting"] = Q[party + "_in_gob"] || belongs(party, Q.cat_coalition_support);
+    }
+    Q.position_disp = belongs(Q.player_party, Q.cat_coalition) ? "Generalitat" : "<span style='font-style: italic'>Opposition</span>";
+    if (!belongs(Q.player_party, Q.cat_coalition)) {
+        Q.burdens_time = 0;
+        Q.burdens_goal = 0;
+        Q.burdens_pending_points = 0;
+        Q.burdens_start_trigger = false;
+        Q.burdens_start_countdown = 0;
+        Q.countdowns = Q.countdowns.filter(function(id) { return id != "burdens_start"; });
+    }
+    for (var record of Q.coalition_indy_commitments || []) {
+        if (removed.includes(record.target) || removed.includes(vehicle)) record.status = "retired";
+    }
+    for (var record of Q.coalition_policy_commitments || []) {
+        if (!(record.signatories || []).some(function(p) { return removed.includes(p); })) continue;
+        record.status = "retired";
+        G.deactivateLaw(Q, "coalition_pending_" + record.kind, undefined, true);
+    }
+    var seats = Q.cat_coalition.reduce(function(total, p) { return total + (Q[p + "_parlament_s"] || 0); }, 0);
+    var strength = seats >= Q.parlament_s_majority ? "Majority government" : "Minority government";
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, strength + " - " + seats + "/" + Q.parlament_s_majority, Q.cat_coalition.join("–") + " " + strength.toLowerCase());
+    Q.coalition_rupture_preserved_offices = {};
+    var offices = {president: "president", vp: "vicepresident", economy: "economy_minister", interior: "interior_minister", health: "health_minister", education: "education_minister", territory: "territory_minister", foreign: "foreign_minister", bnl: "bnl_minister"};
+    for (var key in offices) {
+        var office = offices[key];
+        var replacement = removed.includes(Q[office + "_party"]);
+        Q["parlament_coalition_proposal_" + key] = replacement ? Q.president_party : Q[office + "_party"];
+        if (!replacement) Q.coalition_rupture_preserved_offices[key] = {party: Q[office + "_party"], name: Q[office], gender: Q[office + "_gender"]};
+    }
+    Q.coalition_rupture_recheck = true;
+!}
+call: parlament_coalition_setnames
+go-to: reshuffled
+
+@reshuffled
+on-arrival: {!
+    var offices = {president: "president", vp: "vicepresident", economy: "economy_minister", interior: "interior_minister", health: "health_minister", education: "education_minister", territory: "territory_minister", foreign: "foreign_minister", bnl: "bnl_minister"};
+    for (var key in offices) {
+        var office = offices[key];
+        var saved = Q.coalition_rupture_preserved_offices[key];
+        Q[office + "_party"] = saved ? saved.party : Q["parlament_coalition_proposal_" + key];
+        Q[office] = saved ? saved.name : Q["parlament_coalition_proposal_" + key + "_name"];
+        Q[office + "_gender"] = saved ? saved.gender : Q["parlament_coalition_proposal_" + key + "_gender"];
+    }
+    Q.historical_event = Q.coalition_rupture_removed + " left the Generalitat government after a coalition rupture. " + Q.president + " continues to lead " + Q.cat_coalition_disp + ".";
+!}
+
+With [+ coalition_rupture_removed +] out of the government, the Generalitat is now under a [+ cat_coalition_disp +]. We'll have to see how long this lasts...
+ 
