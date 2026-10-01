@@ -1,9 +1,11 @@
 title: Ministry of Health
 new-page: true
-view-if: generalitat_health_timer <= 0 and (health_minister_party == player_party or (player_in_jxsi and health_minister_party = "jxsi") or (player_in_jxcat and health_minister_party = "jxcat"))
+view-if: generalitat_health_timer <= 0 and (health_minister_party == player_party or (player_in_jxsi and health_minister_party = "jxsi") or (player_in_jxcat and health_minister_party = "jxcat")) and not cat_caretaker_gov
 on-arrival: {!
     Q.month_actions += 1;
-    Q.generalitat_health_timer += 3;
+    Q.generalitat_health_timer += 4;
+    Q.healthcare_raise_pending = Q.healthcare_prepared_level != null &&
+        Q.healthcare_prepared_level === Q.healthcare_spending + 1;
 !}
 is-card: true
 card-image: img/health_icon.svg
@@ -64,8 +66,8 @@ We are asking the Parlament to replace the public-only healthcare framework with
 title: Expand Healthcare funding
 view-if: healthcare_spending >= 0 and healthcare_spending < 2
 subtitle: \[-1 budget [? if healthcare_spending >= social_spending_cap: on spending cap increase approval ?]\]
-choose-if: government_budget > 0 and healthcare_prepared_level != healthcare_spending + 1
-unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if healthcare_prepared_level = healthcare_spending + 1: This increase is already awaiting budget authorization.?]
+choose-if: government_budget > 0 and not healthcare_raise_pending
+unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if healthcare_raise_pending: This increase is already awaiting budget authorization.?]
 go-to: approve_raise
 
 @healthcare_cuts
@@ -121,8 +123,8 @@ Against the wishes of big parts of the party, who accuse us of going against eve
 title: Revert Healthcare spending cuts
 view-if: healthcare_spending < 0 and healthcare_spending > -3
 subtitle: \[-1 budget [? if healthcare_spending >= social_spending_cap: on spending cap increase approval ?]\]
-choose-if: government_budget > 0 and healthcare_prepared_level != healthcare_spending + 1
-unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if healthcare_prepared_level = healthcare_spending + 1: This increase is already awaiting budget authorization.?]
+choose-if: government_budget > 0 and not healthcare_raise_pending
+unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if healthcare_raise_pending: This increase is already awaiting budget authorization.?]
 go-to: approve_raise
 
 @approve_raise

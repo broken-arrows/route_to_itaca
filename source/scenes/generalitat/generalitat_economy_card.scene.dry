@@ -1,9 +1,11 @@
 title: Ministry of the Economy
 new-page: true
-view-if: generalitat_economy_timer <= 0 and (economy_minister_party == player_party or (player_in_jxsi and economy_minister_party == "jxsi") or (player_in_jxcat and economy_minister_party == "jxcat"))
+view-if: generalitat_economy_timer <= 0 and (economy_minister_party == player_party or (player_in_jxsi and economy_minister_party == "jxsi") or (player_in_jxcat and economy_minister_party == "jxcat")) and not cat_caretaker_gov
 on-arrival: {!
     Q.month_actions += 1;
-    Q.generalitat_economy_timer += 3;
+    Q.generalitat_economy_timer += 4;
+    Q.public_salary_raise_pending = Q.public_salary_prepared_level != null &&
+        Q.public_salary_prepared_level === Q.public_salary_level + 1;
 !}
 is-card: true
 card-image: img/economy_icon.svg
@@ -31,8 +33,8 @@ view-if: 1==0
 title: [? if public_salary_level < 0: Revert public salary cuts ?][? if public_salary_level >= 0: Improve public-salaries ?]
 view-if: public_salary_level < 2 and economy_cuts <= 0
 subtitle: \[-1 budget [? if public_salary_level >= social_spending_cap: on spending cap increase approval ?] \] 
-choose-if: public_salary_level >= -2 and public_salary_level < 2 and government_budget > 0 and public_salary_prepared_level != public_salary_level + 1
-unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if public_salary_prepared_level = public_salary_level + 1: This pay increase is already awaiting budget authorization.?]
+choose-if: public_salary_level >= -2 and public_salary_level < 2 and government_budget > 0 and not public_salary_raise_pending
+unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if public_salary_raise_pending: This pay increase is already awaiting budget authorization.?]
 on-arrival: {!
     Q.government_budget -= 1;
     Q.economy_pay_delivered = Q.public_salary_level + 1 <= Q.social_spending_cap;

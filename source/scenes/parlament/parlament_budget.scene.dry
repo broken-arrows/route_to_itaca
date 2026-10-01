@@ -218,7 +218,12 @@ on-arrival: {!
         return party == "si" ? "abstain" : "no";
     }
     var deals = Q.parlament_budget_deals;
+    var playerVehicle = Q.player_in_jxsi && Q.jxsi_parlament_s > 0 ? "jxsi" :
+        Q.player_in_jxcat && Q.jxcat_parlament_s > 0 ? "jxcat" : Q.player_party;
     function position(party) {
+        // The player's choice controls their live ballot carrier.
+        if (party == playerVehicle && Q.parlament_budget_player_vote != "auto")
+            return Q.parlament_budget_player_vote == "yes" && !Q.parlament_budget_player_can_yes ? "no" : Q.parlament_budget_player_vote;
         if (party == "jxsi" || party == "jxcat") {
             var members = ["cdc"];
             if (Q["erc_in_" + party]) members.push("erc");
@@ -227,8 +232,6 @@ on-arrival: {!
             return memberVotes.every(function (v) { return v == "yes"; }) ? "yes" : memberVotes.includes("no") ? "no" : "abstain";
         }
         if (hardVetoReasons(party, draft, projection).length) return "no";
-        if (party == Q.player_party && Q.parlament_budget_player_vote != "auto")
-            return Q.parlament_budget_player_vote == "yes" && !Q.parlament_budget_player_can_yes ? "no" : Q.parlament_budget_player_vote;
         if (deals.some(function (d) { return d.party == party; })) return "yes";
         return basePosition(party);
     }
@@ -237,14 +240,14 @@ on-arrival: {!
         if (["erc", "cup"].includes(party)) return ["jxsi", "jxcat"].some(function (list) { return Q[party + "_in_" + list] && Q[list + "_parlament_s"] > 0; });
         return ["ciu", "cdc", "dl", "pdcat", "junts"].includes(party) && (Q.jxsi_parlament_s > 0 || Q.jxcat_parlament_s > 0);
     }
-    Q.parlament_budget_player_has_seats = hasSeats(Q.player_party);
+    Q.parlament_budget_player_has_seats = hasSeats(playerVehicle);
     Q.parlament_budget_player_policy_can_yes = !hardVetoReasons(Q.player_party, draft, projection).length;
     Q.parlament_budget_player_default = Q.parlament_budget_player_policy_can_yes ? basePosition(Q.player_party) : "no";
     Q.parlament_budget_player_resource_required = Q.parlament_budget_player_default == "no" &&
         (Q.player_party == "erc" && projection.tax <= 0 || Q.player_party == "cup" && projection.tax < 3) ? 1 : 0;
     Q.parlament_budget_player_can_yes = Q.parlament_budget_player_policy_can_yes && Q.party_resources >= Q.parlament_budget_player_resource_required;
     Q.parlament_budget_player_resource_cost = Q.parlament_budget_player_vote == "yes" && Q.parlament_budget_player_default == "no" ? Q.parlament_budget_player_resource_required : 0;
-    Q.parlament_budget_player_position = position(Q.player_party);
+    Q.parlament_budget_player_position = position(playerVehicle);
     var parties = ["ciu", "cdc", "dl", "pdcat", "junts", "jxsi", "jxcat", "erc", "cup", "psc", "icv", "csqp", "cecp", "ecp", "ppc", "cs", "unio", "si", "vox", "pxc", "fnc"];
     var labels = {ciu:"CiU", cdc:"CDC", dl:"DL", pdcat:"PDeCAT", junts:"Junts", jxsi:"JxSí", jxcat:"JxCat", erc:"ERC", cup:"CUP", psc:"PSC", icv:"ICV-EUiA", csqp:"CSQP", cecp:"CECP", ecp:"ECP", ppc:"PPC", cs:"Cs", unio:"UDC", si:"SI", vox:"Vox", pxc:"PxC", fnc:"FNC"};
     var groups = {yes:[], abstain:[], no:[]};

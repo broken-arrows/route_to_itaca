@@ -2,9 +2,10 @@ title: Ministry of Business and Labour
 view-if: generalitat_bnl_timer <= 0 and (bnl_minister_party == player_party or (player_in_jxsi and bnl_minister_party == "jxsi") or (player_in_jxcat and bnl_minister_party == "jxcat"))
 on-arrival: {!
     Q.month_actions += 1;
-    Q.generalitat_bnl_timer += 3;
+    Q.generalitat_bnl_timer += 4;
 !}
 is-card: true
+new-page: true
 card-image: img/labour_icon.svg
 frequency: 100
 tags: generalitat

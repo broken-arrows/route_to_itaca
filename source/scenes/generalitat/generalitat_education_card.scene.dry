@@ -1,9 +1,11 @@
 title: Ministry of Education
 new-page: true
-view-if: generalitat_education_timer <= 0 and (education_minister_party == player_party or (player_in_jxsi and education_minister_party = "jxsi") or (player_in_jxcat and education_minister_party = "jxcat"))
+view-if: generalitat_education_timer <= 0 and (education_minister_party == player_party or (player_in_jxsi and education_minister_party = "jxsi") or (player_in_jxcat and education_minister_party = "jxcat")) and not cat_caretaker_gov
 on-arrival: {!
     Q.month_actions += 1;
-    Q.generalitat_education_timer += 3;
+    Q.generalitat_education_timer += 4;
+    Q.education_raise_pending = Q.education_prepared_level != null &&
+        Q.education_prepared_level === Q.education_spending + 1;
 !}
 is-card: true
 card-image: img/education_icon.svg
@@ -65,8 +67,8 @@ We are asking the Parlament to replace the public-only education framework with 
 title: Expand Education funding
 view-if: education_spending >= 0 and education_spending < 2
 subtitle: \[-1 budget [? if education_spending >= social_spending_cap: on spending cap increase approval ?] \]
-choose-if: government_budget > 0 and education_prepared_level != education_spending + 1
-unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if education_prepared_level = education_spending + 1: This increase is already awaiting budget authorization.?]
+choose-if: government_budget > 0 and not education_raise_pending
+unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if education_raise_pending: This increase is already awaiting budget authorization.?]
 go-to: approve_raise
 
 @education_cuts
@@ -122,8 +124,8 @@ Against the wishes of big parts of the party, who accuse us of going against eve
 title: Revert Education spending cuts
 view-if: education_spending < 0 and education_spending > -3
 subtitle: \[-1 budget budget [? if education_spending >= social_spending_cap: on spending cap increase approval ?] \]
-choose-if: government_budget > 0 and education_prepared_level != education_spending + 1
-unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if education_prepared_level = education_spending + 1: This increase is already awaiting budget authorization.?]
+choose-if: government_budget > 0 and not education_raise_pending
+unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if education_raise_pending: This increase is already awaiting budget authorization.?]
 go-to: approve_raise
 
 @approve_raise
@@ -144,4 +146,3 @@ on-arrival: {!
 call: generalitat_setpolicy
 
 [? if education_raise_delivered and education_spending <= 0: Austerity measures affecting public education have been reversed, but years of spending cuts have left a mark. Significant effort remains to recover and improve the system.?][? if education_raise_delivered and education_spending > 0: We've invested further in Education, giving the system much needed breathing room and modernization.?][? if not education_raise_delivered: While the increase has been approved, it will only take effect when a passed budget raises the social spending cap. ?]
-
