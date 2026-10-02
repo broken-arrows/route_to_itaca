@@ -141,6 +141,8 @@ on-arrival: {!
   Q.education_prepared_level = null;
   Q.healthcare_prepared_level = null;
   Q.tax_policy_level = 1;
+  Q.economy_atc_level = 0;
+  Q.economy_asset_sales = 0;
   Q.social_spending_cap = 0;
   Q.climate_transition_points = 0;
   Q.territory_roads_approved = 0;  

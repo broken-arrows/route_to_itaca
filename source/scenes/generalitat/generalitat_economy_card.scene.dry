@@ -15,9 +15,13 @@ role: card-gov
 
 = Ministry of the Economy
 
-TODO: more things to do here!
+The Ministry of the Economy is one of the heavy weights in the Generalitat. It controls the budget, public debt, financial enforcement, and many more levers. What should we do here now?
 
-- @catalan_tax_agency
+- @atc1
+- @atc2
+- @borrow
+- @repay
+- @sell_assets
 - @prepare_budget
 - @raise_pay
 - @cut_pay
@@ -25,9 +29,210 @@ TODO: more things to do here!
 - @post_event: We don't want to do anything in this ministry at the moment
 - @easy_discard
 
-@catalan_tax_agency
-title: Catalan Tax Agency TODO
-view-if: 1==0
+@atc1
+title: Expand the Catalan Tax Agency
+view-if: economy_atc_level == 0
+subtitle: The ATC is quite barebones at the moment, we may want to expand it if it is ever to control the taxes of a new country \[-1 budget\]
+choose-if: government_budget >= 1
+unavailable-subtitle: Not enough budget.
+on-arrival: {!
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.economy_minister_party) && !Q.cat_caretaker_gov && Q.economy_atc_level == 0 &&
+        Q.government_budget >= 1) {
+        Q.government_budget -= 1;
+        Q.economy_atc_level = 1;
+        G.registerLaw(Q, {id:"economy_atc1", title:"Expanded Catalan Tax Agency",
+            colour:"green", icon:"img/economy_icon.svg",
+            description:"With expanded staff, inspection and collection systems, the Generalitat is already improving its revenue collection with better fraud protection and more agile systems.",
+            ramp_ticks:6, targets:{generalitat_surplus:0.015}});
+        var coalitionPartners = (Q.cat_coalition || []).slice();
+        for (var list of ["jxsi", "jxcat"]) {
+            if (coalitionPartners.includes(list)) {
+                for (var party of Q.parties || []) {
+                    if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+                }
+            }
+        }
+        if (!controlledParties.includes("erc") && Number.isFinite(Q["erc" + "_relations"]))
+            Q["erc" + "_relations"] += 1 * (coalitionPartners.includes("erc") ? 2 : 1);
+        if (!controlledParties.includes("psc") && Number.isFinite(Q["psc" + "_relations"]))
+            Q["psc" + "_relations"] += 1 * (coalitionPartners.includes("psc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+            Q[Q.parlament_current_icv + "_relations"] += 1 * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+        if (!controlledParties.includes("cup") && Number.isFinite(Q["cup" + "_relations"]))
+            Q["cup" + "_relations"] += 1 * (coalitionPartners.includes("cup") ? 2 : 1);
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent += -1;
+            Q.erc_pragmatic_dissent += -1;
+        }
+        if (Q.player_party == "cup") {
+            Q.cup_endavant_dissent += -1;
+            Q.cup_thirdsector_dissent += -1;
+        }
+    }
+!}
+
+The Catalan Tax Agency has been expanded. With expanded staff, inspection and collection systems, the hope is that the Generalitat will be able to improve its revenue collection with better fraud protection and more agile systems.
+
+- @post_event
+
+@atc2
+title: Expand the Catalan Tax Agency into a state-ready structure
+view-if: economy_atc_level == 1
+subtitle: \[-2 budget\]
+choose-if: government_budget >= 2
+unavailable-subtitle: Not enough budget.
+on-arrival: {!
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.economy_minister_party) && !Q.cat_caretaker_gov && Q.economy_atc_level == 1 &&
+        Q.government_budget >= 2) {
+        Q.government_budget -= 2;
+        Q.economy_atc_level = 2;
+        // Preserve the first investment's revenue ramp as the hidden baseline.
+        if (Q.active_mods && Q.active_mods.economy_atc1) Q.active_mods.economy_atc1.hidden = true;
+        G.registerLaw(Q, {id:"economy_atc2", title:"State-Ready Catalan Tax Agency",
+            colour:"green", icon:"img/economy_icon.svg",
+            description:"A state-ready territorial network, staff and systems extend the strengthened tax agency. Additional revenue gains develop gradually; Spanish tax powers have not been transferred.",
+            ramp_ticks:12, targets:{generalitat_surplus:0.005}});
+        Q.independence_trust = Math.min(100, Q.independence_trust + 2);
+        var coalitionPartners = (Q.cat_coalition || []).slice();
+        for (var list of ["jxsi", "jxcat"]) {
+            if (coalitionPartners.includes(list)) {
+                for (var party of Q.parties || []) {
+                    if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+                }
+            }
+        }
+        if (!controlledParties.includes("erc") && Number.isFinite(Q["erc" + "_relations"]))
+            Q["erc" + "_relations"] += 3 * (coalitionPartners.includes("erc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
+            Q[Q.parlament_current_ciu + "_relations"] += 2 * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+        if (!controlledParties.includes("psc") && Number.isFinite(Q["psc" + "_relations"]))
+            Q["psc" + "_relations"] += -1 * (coalitionPartners.includes("psc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+            Q[Q.parlament_current_icv + "_relations"] += 1 * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+        if (!controlledParties.includes("cup") && Number.isFinite(Q["cup" + "_relations"]))
+            Q["cup" + "_relations"] += 3 * (coalitionPartners.includes("cup") ? 2 : 1);
+        if (!controlledParties.includes("ppc") && Number.isFinite(Q["ppc" + "_relations"]))
+            Q["ppc" + "_relations"] += -3 * (coalitionPartners.includes("ppc") ? 2 : 1);
+        if (!controlledParties.includes("cs") && Number.isFinite(Q["cs" + "_relations"]))
+            Q["cs" + "_relations"] += -3 * (coalitionPartners.includes("cs") ? 2 : 1);
+        for (var list of ["jxsi", "jxcat"]) {
+            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                Q[list + "_relations"] += 2 * 2;
+        }
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent += -2;
+            Q.erc_core_dissent += -3;
+            Q.erc_pragmatic_dissent += -1;
+            Q.erc_civic_dissent += -4;
+        }
+        if (Q.player_party == "cup") {
+            Q.cup_endavant_dissent += -3;
+            Q.cup_poblelliure_dissent += -3;
+            Q.cup_thirdsector_dissent += -2;
+        }
+    }
+!}
+
+The ATC has been expanded into an true state-ready agency. While it may be a bit of an overkill bureaucratic structure for an autonomy, its readiness may indeed come handy if we're ever to become independent.
+
+- @post_event
+
+@borrow
+title: Increase borrowing
+subtitle: \[ +1 budget\]
+choose-if: public_debt >= 0 and public_debt <= 79
+unavailable-subtitle: Public debt leaves no room for another borrowing operation.
+on-arrival: {!
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.economy_minister_party) && !Q.cat_caretaker_gov && Q.public_debt >= 0 && Q.public_debt <= 79) {
+        Q.government_budget += 1;
+        Q.public_debt += 1;
+    }
+!}
+
+Borrowing from different financial institutions, including the central government, does give us more room to act. Let's hope it does not come bite us later on, though...
+
+- @post_event
+
+@repay
+title: Reduce public debt
+subtitle: \[-1 budget\]
+choose-if: government_budget >= 1 and public_debt >= 1
+unavailable-subtitle: [? if government_budget < 1: Not enough budget.?][? if public_debt < 1: Catalan public debt is virtually zero!?]
+on-arrival: {!
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.economy_minister_party) && !Q.cat_caretaker_gov && Q.government_budget >= 1 && Q.public_debt >= 1) {
+        Q.government_budget -= 1;
+        Q.public_debt -= 1;
+    }
+!}
+
+We have used part of our available budget to reduce the public debt burden.
+
+- @post_event
+
+@sell_assets
+title: Sell public assets
+view-if: economy_asset_sales < 3
+subtitle: We'll have to lease them back for continued use. \[ +1 budget \]
+choose-if: economy_asset_sales >= 0 and economy_asset_sales < 3
+unavailable-subtitle: There's no remaining assets that can be reasonably sold.
+on-arrival: {!
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.economy_minister_party) && !Q.cat_caretaker_gov && Q.economy_asset_sales >= 0 && Q.economy_asset_sales < 3) {
+        Q.economy_asset_sales += 1;
+        Q.government_budget += 1;
+        // No icon, no colour = not visible, as intended
+        G.registerLaw(Q, {id:"economy_asset_sale_" + Q.economy_asset_sales,
+            title:"Public Buildings Sale and Leaseback " + Q.economy_asset_sales,
+            description:"A package of Generalitat administrative buildings has been sold. Continued use requires ongoing rental payments.",
+            targets:{generalitat_surplus: -0.003}});
+        var coalitionPartners = (Q.cat_coalition || []).slice();
+        for (var list of ["jxsi", "jxcat"]) {
+            if (coalitionPartners.includes(list)) {
+                for (var party of Q.parties || []) {
+                    if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+                }
+            }
+        }
+        if (!controlledParties.includes("erc") && Number.isFinite(Q["erc" + "_relations"]))
+            Q["erc" + "_relations"] += -2 * (coalitionPartners.includes("erc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
+            Q[Q.parlament_current_ciu + "_relations"] += 2 * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+        if (!controlledParties.includes("psc") && Number.isFinite(Q["psc" + "_relations"]))
+            Q["psc" + "_relations"] += -1 * (coalitionPartners.includes("psc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+            Q[Q.parlament_current_icv + "_relations"] += -3 * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+        if (!controlledParties.includes("cup") && Number.isFinite(Q["cup" + "_relations"]))
+            Q["cup" + "_relations"] += -4 * (coalitionPartners.includes("cup") ? 2 : 1);
+        if (!controlledParties.includes("ppc") && Number.isFinite(Q["ppc" + "_relations"]))
+            Q["ppc" + "_relations"] += 1 * (coalitionPartners.includes("ppc") ? 2 : 1);
+        if (!controlledParties.includes("cs") && Number.isFinite(Q["cs" + "_relations"]))
+            Q["cs" + "_relations"] += 1 * (coalitionPartners.includes("cs") ? 2 : 1);
+        for (var list of ["jxsi", "jxcat"]) {
+            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                Q[list + "_relations"] += 2 * 2;
+        }
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent += 4;
+            Q.erc_core_dissent += 1;
+            Q.erc_civic_dissent += 1;
+        }
+        if (Q.player_party == "cup") {
+            Q.cup_endavant_dissent += 6;
+            Q.cup_poblelliure_dissent += 2;
+            Q.cup_thirdsector_dissent += 4;
+        }
+    }
+!}
+
+The sale of administrative buildings gives us has given us some breathing room financially, but the Generalitat will now have to use them as tenant... It's not like rentals are going to be an issue ever, right?
+
+- @post_event
 
 @raise_pay
 title: [? if public_salary_level < 0: Revert public salary cuts ?][? if public_salary_level >= 0: Improve public-salaries ?]
