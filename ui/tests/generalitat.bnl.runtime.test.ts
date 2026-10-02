@@ -123,7 +123,7 @@ describe('Business and Labour policies', () => {
     expect(q.bnl_icf_prepared_branch).toBe(null);
   });
 
-  it.each(['icf1', 'inspection1', 'tourism_more', 'unions_sovereigntist'])('%s rejects wrong authority, caretaker and insufficient resources', name => {
+  it.each(['icf1', 'inspection1', 'tourism_more', 'unions_sovereignty'])('%s rejects wrong authority, caretaker and insufficient resources', name => {
     for (const overrides of [{ bnl_minister_party: 'psc' }, { cat_caretaker_gov: true }, { government_budget: 0 }]) {
       const { adapter, q } = setup(overrides);
       const before = [q.government_budget, q.psc_relations, q.erc_left_dissent];
@@ -192,21 +192,21 @@ describe('Business and Labour policies', () => {
 
   it('keeps union preference hidden, inert, bounded and politically reversible', () => {
     const { adapter, q } = setup({ player_party: 'cup', bnl_minister_party: 'cup' });
-    for (let i = 0; i < 2; i++) action(adapter, 'unions_sovereigntist');
+    for (let i = 0; i < 2; i++) action(adapter, 'unions_sovereignty');
     expect(q.bnl_union_level).toBe(2);
     expect(q.cup_endavant_dissent).toBe(4);
     expect(q.cup_poblelliure_dissent).toBe(2);
     expect(q.active_mods.bnl_union_policy.def.targets).toEqual({});
     expect(lib.getLawsForUI(q).some((law: any) => law.id === 'bnl_union_policy')).toBe(false);
     const resources = q.government_budget;
-    action(adapter, 'unions_sovereigntist');
+    action(adapter, 'unions_sovereignty');
     expect(q.government_budget).toBe(resources);
     for (let i = 0; i < 4; i++) action(adapter, 'unions_established');
     expect(q.bnl_union_level).toBe(-2);
     const lowerResources = q.government_budget;
     action(adapter, 'unions_established');
     expect(q.government_budget).toBe(lowerResources);
-    for (let i = 0; i < 2; i++) action(adapter, 'unions_sovereigntist');
+    for (let i = 0; i < 2; i++) action(adapter, 'unions_sovereignty');
     expect(q.bnl_union_level).toBe(0);
     expect(q.active_mods.bnl_union_policy.active).toBe(false);
     expect(q.cup_poblelliure_dissent).toBe(10);

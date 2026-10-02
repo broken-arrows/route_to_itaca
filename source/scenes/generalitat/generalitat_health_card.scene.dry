@@ -16,8 +16,12 @@ role: card-gov
 
 = Ministry of Health
 
-TODO: More things other than funding
+The Ministry of Health commands the highest budget allocation of the Generalitat, and is 
 
+- @universal_access1
+- @universal_access2
+- @reproductive_care
+- @trans_care
 - @healthcare_public
 - @healthcare_expand
 - @revert_cuts
@@ -399,3 +403,229 @@ on-arrival: {!
 call: generalitat_setpolicy
 
 [? if health_raise_delivered and healthcare_spending <= 0: Austerity measures affecting public healthcare have been reversed, but years of spending cuts have left a mark. Significant effort remains to recover and improve the system.?][? if health_raise_delivered and healthcare_spending = 1: We've invested further in Healthcare, increasing staffing, reducing waiting times and improving and expanding mental health services.?][? if health_raise_delivered and healthcare_spending = 2: We've expanded the public system to include dental coverage, giving everyone access to care that many previously had to pay for themselves.?][? if not health_raise_delivered: While the increase has been approved, it will only take effect when a passed budget raises the social spending cap. ?]
+
+@universal_access1
+title: Remove barriers to healthcare access
+view-if: healthcare_universal_level = 0
+subtitle: Not only administrative, but geographic too. \[-1 budget\]
+choose-if: government_budget >= 1 and healthcare_spending >= 0
+unavailable-subtitle: [? if healthcare_spending < 0: Budget cuts need to be reversed first. ?][? if healthcare_spending > 1: Not enough budget.?]
+on-arrival: {!
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.health_minister_party) && !Q.cat_caretaker_gov && Q.healthcare_universal_level == 0 && Q.government_budget >= 1) {
+        Q.government_budget -= 1;
+        Q.healthcare_universal_level = 1;
+        G.registerLaw(Q, {id:"healthcare_universal1", title:"Broader Healthcare Access", colour:"green", icon:"img/health_icon.svg",
+            description:"Healthcare access has been expanded, with better rural reach and improved administrative protocols, erasing many of the previously existing barriers.",
+            targets:{welfare_index_growth:0.05, generalitat_surplus:-0.01, social_dissent_eq:-1}, ramp_ticks:6});
+        var coalitionPartners = (Q.cat_coalition || []).slice();
+        for (var list of ["jxsi", "jxcat"]) {
+            if (coalitionPartners.includes(list)) {
+                for (var party of Q.parties || []) {
+                    if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+                }
+            }
+        }
+        if (!controlledParties.includes("erc") && Number.isFinite(Q["erc" + "_relations"]))
+            Q["erc" + "_relations"] += 2 * 1 * (coalitionPartners.includes("erc") ? 2 : 1);
+        if (!controlledParties.includes("psc") && Number.isFinite(Q["psc" + "_relations"]))
+            Q["psc" + "_relations"] += 2 * 1 * (coalitionPartners.includes("psc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+            Q[Q.parlament_current_icv + "_relations"] += 3 * 1 * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+        if (!controlledParties.includes("cup") && Number.isFinite(Q["cup" + "_relations"]))
+            Q["cup" + "_relations"] += 3 * 1 * (coalitionPartners.includes("cup") ? 2 : 1);
+        if (!controlledParties.includes("ppc") && Number.isFinite(Q["ppc" + "_relations"]))
+            Q["ppc" + "_relations"] += -1 * 1 * (coalitionPartners.includes("ppc") ? 2 : 1);
+        for (var list of ["jxsi", "jxcat"]) {
+            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                Q[list + "_relations"] += 0 * 1 * 2;
+        }
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent += -3 * 1;
+            Q.erc_core_dissent += -1 * 1;
+        }
+        if (Q.player_party == "cup") {
+            Q.cup_endavant_dissent += -4 * 1;
+            Q.cup_poblelliure_dissent += -1 * 1;
+            Q.cup_thirdsector_dissent += -3 * 1;
+        }
+    }
+!}
+
+Healthcare access has been expanded, with better rural reach and improved administrative protocols, erasing many of the previously existing barriers.
+
+- @post_event
+
+@universal_access2
+title: Deploy truly universal healthcare
+view-if: healthcare_universal_level = 1
+subtitle: Healthcare access will be guarnateeed to all residents, regardless of legal status. \[-1 budget\]
+choose-if: government_budget >= 1 and not healthcare_universal_introduced
+unavailable-subtitle: [? if not healthcare_universal_introduced and government_budget < 1: Not enough budget.?][? if healthcare_universal_introduced: This proposal is already awaiting budget approval ?]
+on-arrival: {!
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.health_minister_party) && !Q.cat_caretaker_gov && Q.healthcare_universal_level == 1 && Q.government_budget >= 1 && !Q.healthcare_universal_introduced) {
+        Q.government_budget -= 1;
+        Q.healthcare_universal_introduced = true;
+        G.registerLaw(Q, {id:"healthcare_universal_proposal", title: "True Universal Healthcare Access", colour:"gray", icon:"img/health_icon.svg",
+            description:"Pending budget approval: universal entitlement to publicly funded healthcare is to be gratned to all residents, regardless of legal status.", targets:{}});
+        var coalitionPartners = (Q.cat_coalition || []).slice();
+        for (var list of ["jxsi", "jxcat"]) {
+            if (coalitionPartners.includes(list)) {
+                for (var party of Q.parties || []) {
+                    if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+                }
+            }
+        }
+        if (!controlledParties.includes("erc") && Number.isFinite(Q["erc" + "_relations"]))
+            Q["erc" + "_relations"] += 2 * 1 * (coalitionPartners.includes("erc") ? 2 : 1);
+        if (!controlledParties.includes("psc") && Number.isFinite(Q["psc" + "_relations"]))
+            Q["psc" + "_relations"] += 2 * 1 * (coalitionPartners.includes("psc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+            Q[Q.parlament_current_icv + "_relations"] += 3 * 1 * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+        if (!controlledParties.includes("cup") && Number.isFinite(Q["cup" + "_relations"]))
+            Q["cup" + "_relations"] += 3 * 1 * (coalitionPartners.includes("cup") ? 2 : 1);
+        if (!controlledParties.includes("ppc") && Number.isFinite(Q["ppc" + "_relations"]))
+            Q["ppc" + "_relations"] += -2 * 1 * (coalitionPartners.includes("ppc") ? 2 : 1);
+        for (var list of ["jxsi", "jxcat"]) {
+            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                Q[list + "_relations"] += 0 * 1 * 2;
+        }
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent += -4 * 1;
+            Q.erc_core_dissent += -1 * 1;
+        }
+        if (Q.player_party == "cup") {
+            Q.cup_endavant_dissent += -5 * 1;
+            Q.cup_poblelliure_dissent += -2 * 1;
+            Q.cup_thirdsector_dissent += -4 * 1;
+        }
+    }
+!}
+
+A true universal healthcare access framework has been developed. Once funding is secured in the next budget, it is set to guarantee universal entitlement to publicly funded healthcare for all residents, regardless of legal status.
+
+- @post_event
+
+@reproductive_care
+title: Guarantee abortion and reproductive healthcare access
+view-if: healthcare_sexual_level = 0
+subtitle: \[-1 budget\]
+choose-if: government_budget >= 1
+unavailable-subtitle: [? if government_budget < 1: Not enough budget.?]
+on-arrival: {!
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.health_minister_party) && !Q.cat_caretaker_gov && Q.healthcare_sexual_level == 0 && Q.government_budget >= 1) {
+        Q.government_budget -= 1;
+        Q.healthcare_sexual_level = 1;
+        G.registerLaw(Q, {id:"healthcare_reproductive", title:"Guaranteed Abortion and Reproductive Healthcare Access", colour:"green", icon:"img/health_icon.svg",
+            description:"Better sexual education is being tought, while better protocols for both abortion and other forms of reproductive health have been deployed.",
+            targets:{generalitat_surplus:-0.01, social_dissent_eq:-1}, ramp_ticks:6});
+        Q.welfare_index = Math.min(100, Q.welfare_index + 0.15);
+        var coalitionPartners = (Q.cat_coalition || []).slice();
+        for (var list of ["jxsi", "jxcat"]) {
+            if (coalitionPartners.includes(list)) {
+                for (var party of Q.parties || []) {
+                    if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+                }
+            }
+        }
+        if (!controlledParties.includes("erc") && Number.isFinite(Q["erc" + "_relations"]))
+            Q["erc" + "_relations"] += 2 * 1 * (coalitionPartners.includes("erc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
+            Q[Q.parlament_current_ciu + "_relations"] += (Q.parlament_current_ciu == "ciu" ? -1 : 0) * 1 * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+        if (!controlledParties.includes("psc") && Number.isFinite(Q["psc" + "_relations"]))
+            Q["psc" + "_relations"] += 2 * 1 * (coalitionPartners.includes("psc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+            Q[Q.parlament_current_icv + "_relations"] += 3 * 1 * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+        if (!controlledParties.includes("cup") && Number.isFinite(Q["cup" + "_relations"]))
+            Q["cup" + "_relations"] += 3 * 1 * (coalitionPartners.includes("cup") ? 2 : 1);
+        if (!controlledParties.includes("ppc") && Number.isFinite(Q["ppc" + "_relations"]))
+            Q["ppc" + "_relations"] += -2 * 1 * (coalitionPartners.includes("ppc") ? 2 : 1);
+        if (!controlledParties.includes("cs") && Number.isFinite(Q["cs" + "_relations"]))
+            Q["cs" + "_relations"] += 1 * 1 * (coalitionPartners.includes("cs") ? 2 : 1);
+        if (!controlledParties.includes("unio") && Q.parlament_current_ciu != "unio" && Number.isFinite(Q.unio_relations))
+            Q.unio_relations += -3 * 1 * (coalitionPartners.includes("unio") ? 2 : 1);
+        for (var list of ["jxsi", "jxcat"]) {
+            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                Q[list + "_relations"] += (Q.parlament_current_ciu == "ciu" ? -1 : 0) * 1 * 2;
+        }
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent += -3 * 1;
+            Q.erc_core_dissent += -1 * 1;
+        }
+        if (Q.player_party == "cup") {
+            Q.cup_endavant_dissent += -4 * 1;
+            Q.cup_poblelliure_dissent += -1 * 1;
+            Q.cup_thirdsector_dissent += -3 * 1;
+        }
+    }
+!}
+
+Better sexual education is being tought, while better protocols for both abortion and other forms of reproductive health have been deployed.
+
+- @post_event
+
+@trans_care
+title: Include gender-affirming care into the public umbrella
+view-if: healthcare_sexual_level = 1
+subtitle: \[-1 budget\]
+choose-if: government_budget >= 1 and parlament_lgbt_passed
+unavailable-subtitle: [? if government_budget < 1: Not enough budget.?][? if not parlament_lgbt_passed: The Parlament must first pass the Catalan LGBTI law.?]
+on-arrival: {!
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (controlledParties.includes(Q.health_minister_party) && !Q.cat_caretaker_gov && Q.healthcare_sexual_level == 1 && Q.government_budget >= 1 && Q.parlament_lgbt_passed) {
+        Q.government_budget -= 1;
+        Q.healthcare_sexual_level = 2;
+        if (Q.active_mods && Q.active_mods.healthcare_reproductive) Q.active_mods.healthcare_reproductive.hidden = true;
+        G.registerLaw(Q, {id:"healthcare_trans", title:"Inclusive Gender Healthcare", colour:"green", icon:"img/health_icon.svg",
+            description:"Gender affirming and other forms of sexual and gender care have been included into the public system into a model without a psychiatric-diagnosis requirement.",
+            targets:{generalitat_surplus:-0.01, social_dissent_eq:-1}, ramp_ticks:12});
+        Q.welfare_index = Math.min(100, Q.welfare_index + 0.15);
+        var coalitionPartners = (Q.cat_coalition || []).slice();
+        for (var list of ["jxsi", "jxcat"]) {
+            if (coalitionPartners.includes(list)) {
+                for (var party of Q.parties || []) {
+                    if (Q[party + "_in_" + list]) coalitionPartners.push(party);
+                }
+            }
+        }
+        if (!controlledParties.includes("erc") && Number.isFinite(Q["erc" + "_relations"]))
+            Q["erc" + "_relations"] += 2 * 1 * (coalitionPartners.includes("erc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
+            Q[Q.parlament_current_ciu + "_relations"] += (Q.parlament_current_ciu == "ciu" ? 0 : 1) * 1 * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+        if (!controlledParties.includes("psc") && Number.isFinite(Q["psc" + "_relations"]))
+            Q["psc" + "_relations"] += 2 * 1 * (coalitionPartners.includes("psc") ? 2 : 1);
+        if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
+            Q[Q.parlament_current_icv + "_relations"] += 3 * 1 * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+        if (!controlledParties.includes("cup") && Number.isFinite(Q["cup" + "_relations"]))
+            Q["cup" + "_relations"] += 3 * 1 * (coalitionPartners.includes("cup") ? 2 : 1);
+        if (!controlledParties.includes("ppc") && Number.isFinite(Q["ppc" + "_relations"]))
+            Q["ppc" + "_relations"] += -1 * 1 * (coalitionPartners.includes("ppc") ? 2 : 1);
+        if (!controlledParties.includes("cs") && Number.isFinite(Q["cs" + "_relations"]))
+            Q["cs" + "_relations"] += 1 * 1 * (coalitionPartners.includes("cs") ? 2 : 1);
+        if (!controlledParties.includes("unio") && Q.parlament_current_ciu != "unio" && Number.isFinite(Q.unio_relations))
+            Q.unio_relations += -3 * 1 * (coalitionPartners.includes("unio") ? 2 : 1);
+        for (var list of ["jxsi", "jxcat"]) {
+            if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
+                list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
+                Q[list + "_relations"] += (Q.parlament_current_ciu == "ciu" ? 0 : 1) * 1 * 2;
+        }
+        if (Q.player_party == "erc") {
+            Q.erc_left_dissent += -3 * 1;
+            Q.erc_core_dissent += -1 * 1;
+        }
+        if (Q.player_party == "cup") {
+            Q.cup_endavant_dissent += -4 * 1;
+            Q.cup_poblelliure_dissent += -1 * 1;
+            Q.cup_thirdsector_dissent += -4 * 1;
+        }
+    }
+!}
+
+Gender affirming and other forms of sexual and gender care have been included into the public system into a model without a psychiatric-diagnosis requirement.
+
+- @post_event

@@ -371,7 +371,7 @@ on-arrival: {!
     Q.economy_budget_proposal = {
         tax_policy_level: Q.tax_policy_level,
         social_spending_cap: Q.social_spending_cap,
-        projects: {county:false, b40:false, metro1:false, metro2:false, water2:false, water3:false, tmobilitat2:false, rail1:false, rail2:false, icf:false}
+        projects: {county:false, b40:false, metro1:false, metro2:false, water2:false, water3:false, tmobilitat2:false, rail1:false, rail2:false, icf:false, digital:false, universal:false}
     };
 !}
 go-to: budget_review
@@ -433,6 +433,14 @@ on-arrival: {!
     Q.economy_budget_icf = !!proposal.projects.icf;
     Q.economy_budget_icf_name = Q.bnl_icf_prepared_branch == "cooperative" ? "ICF cooperative and social-economy lending" : "expanded ICF public guarantees";
     if (proposal.projects.icf && !Q.economy_budget_icf_available) Q.economy_budget_valid = false;
+    Q.economy_budget_digital_available = prepared("vp_digital3_proposal") && Q.vp_digital_level == 2 && Q.vp_digital_prepared &&
+        !Q.cat_caretaker_gov && controlledParties.includes(Q.vicepresident_party) && Q.parlament_digital_passed && ["generalitat", "catalonia"].includes(Q.cybersecurity_agency_scope) && (Q.active_mods || {}).digital_agency_core && Q.active_mods.digital_agency_core.active;
+    Q.economy_budget_digital = !!proposal.projects.digital;
+    if (proposal.projects.digital && !Q.economy_budget_digital_available) Q.economy_budget_valid = false;
+    Q.economy_budget_universal_available = prepared("healthcare_universal_proposal") && Q.healthcare_universal_level == 1 && Q.healthcare_universal_introduced &&
+        !Q.cat_caretaker_gov && controlledParties.includes(Q.health_minister_party);
+    Q.economy_budget_universal = !!proposal.projects.universal;
+    if (proposal.projects.universal && !Q.economy_budget_universal_available) Q.economy_budget_valid = false;
 !}
 
 = Prepare the annual budget
@@ -452,6 +460,8 @@ Projects:
 [? if economy_budget_rail1: - Lleida-La Pobla Railway. ?]
 [? if economy_budget_rail2: - Camp de Tarragona and Girona counties Train-Trams. ?]
 [? if economy_budget_icf: - [+ economy_budget_icf_name +]. ?]
+[? if economy_budget_digital: - Digital administrative continuity. ?]
+[? if economy_budget_universal: - Universal healthcare access. ?]
 
 While this is our proposal, passing it through the Parlament may require some tweaks to gather enough support, but we'll cross that bridge once we get there.
 
@@ -469,6 +479,8 @@ While this is our proposal, passing it through the Parlament may require some tw
 - @budget_rail1
 - @budget_rail2
 - @budget_icf
+- @budget_digital
+- @budget_universal
 - @submit_budget
 - @post_event: Leave this proposal unsubmitted
 
@@ -587,6 +599,28 @@ choose-if: economy_budget_icf_available or economy_budget_icf
 on-arrival: {!
     if (Q.economy_budget_icf_available || Q.economy_budget_proposal.projects.icf)
         Q.economy_budget_proposal.projects.icf = !Q.economy_budget_proposal.projects.icf;
+!}
+go-to: budget_review
+
+@budget_digital
+title: [? if economy_budget_digital: Remove ?][? if not economy_budget_digital: Include ?] digital administrative continuity
+subtitle: Requires one fiscal margin point.
+view-if: economy_budget_digital_available or economy_budget_digital
+choose-if: economy_budget_digital_available or economy_budget_digital
+on-arrival: {!
+    if (Q.economy_budget_digital_available || Q.economy_budget_proposal.projects.digital)
+        Q.economy_budget_proposal.projects.digital = !Q.economy_budget_proposal.projects.digital;
+!}
+go-to: budget_review
+
+@budget_universal
+title: [? if economy_budget_universal: Remove ?][? if not economy_budget_universal: Include ?] universal healthcare access
+subtitle: Requires one fiscal margin point.
+view-if: economy_budget_universal_available or economy_budget_universal
+choose-if: economy_budget_universal_available or economy_budget_universal
+on-arrival: {!
+    if (Q.economy_budget_universal_available || Q.economy_budget_proposal.projects.universal)
+        Q.economy_budget_proposal.projects.universal = !Q.economy_budget_proposal.projects.universal;
 !}
 go-to: budget_review
 

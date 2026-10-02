@@ -149,6 +149,10 @@ on-arrival: {!
   Q.bnl_inspection_level = 0;
   Q.bnl_tourism_level = 0;
   Q.bnl_union_level = 0;
+  Q.vp_digital_level = 0;
+  Q.institutional_alignment = 0;
+  Q.healthcare_universal_level = 0;
+  Q.healthcare_sexual_level = 0;
   Q.social_spending_cap = 0;
   Q.climate_transition_points = 0;
   Q.territory_roads_approved = 0;  

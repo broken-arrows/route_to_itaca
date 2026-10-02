@@ -31,8 +31,8 @@ on-arrival: {!
         "Restore ordinary services and pay", "Authorize expanded services and improved pay",
         "Authorize modernized services and broader pay improvements",
         "Full spending authorization, including exceptional service laws"];
-    var projectIds = {county:"territory_county_roads", b40:"territory_b40", metro1:"territory_metro1", metro2:"territory_metro2", water2:"territory_water2", water3:"territory_water3", tmobilitat2:"territory_tmobilitat2", rail1:"territory_rail1", rail2:"territory_rail2", icf:"bnl_icf_proposal"};
-    var projectCosts = {county:1, b40:2, metro1:2, metro2:1, water2:1, water3:2, tmobilitat2:2, rail1:1, rail2:2, icf:2};
+    var projectIds = {county:"territory_county_roads", b40:"territory_b40", metro1:"territory_metro1", metro2:"territory_metro2", water2:"territory_water2", water3:"territory_water3", tmobilitat2:"territory_tmobilitat2", rail1:"territory_rail1", rail2:"territory_rail2", icf:"bnl_icf_proposal", digital:"vp_digital3_proposal", universal:"healthcare_universal_proposal"};
+    var projectCosts = {county:1, b40:2, metro1:2, metro2:1, water2:1, water3:2, tmobilitat2:2, rail1:1, rail2:2, icf:2, digital:1, universal:1};
     var available = {};
     var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
     Q.parlament_budget_icf_name = Q.bnl_icf_prepared_branch == "cooperative" ? "ICF cooperative and social-economy lending" : "expanded ICF public guarantees";
@@ -46,6 +46,10 @@ on-arrival: {!
         if (key == "icf") available[key] = available[key] && Q.bnl_icf_level == 1 &&
             ["guarantees", "cooperative"].includes(Q.bnl_icf_prepared_branch) && !Q.cat_caretaker_gov &&
             controlledParties.includes(Q.bnl_minister_party) && controlledParties.includes(Q.economy_minister_party);
+        if (key == "digital") available[key] = available[key] && Q.vp_digital_level == 2 && Q.vp_digital_prepared &&
+            !Q.cat_caretaker_gov && controlledParties.includes(Q.vicepresident_party) && Q.parlament_digital_passed && ["generalitat", "catalonia"].includes(Q.cybersecurity_agency_scope) && (Q.active_mods || {}).digital_agency_core && Q.active_mods.digital_agency_core.active;
+        if (key == "universal") available[key] = available[key] && Q.healthcare_universal_level == 1 && Q.healthcare_universal_introduced &&
+            !Q.cat_caretaker_gov && controlledParties.includes(Q.health_minister_party);
         Q["parlament_budget_" + key + "_available"] = available[key];
         Q["parlament_budget_" + key] = !!draft.projects[key];
     }
@@ -309,7 +313,7 @@ on-arrival: {!
         }
         if (proposed.tax_policy_level != draft.tax_policy_level) terms.push("Autonomic Taxes: " + taxProfiles[proposed.tax_policy_level + 2].name + ".");
         if (proposed.social_spending_cap != draft.social_spending_cap) terms.push("Spending authorization: " + capNames[proposed.social_spending_cap + 2] + ".");
-        var projectNames = {county:"county roads", b40:"the B-40", metro1:"the L9/L10", metro2:"the L1/L3 expansion", water2:"public water facilities", water3:"public water supply and management", tmobilitat2: "Catalonia-wide T-mobilitat", rail1:"the Lleida-La Pobla railway", rail2:"the Tarragona and Girona train-trams", icf:Q.parlament_budget_icf_name};
+        var projectNames = {county:"county roads", b40:"the B-40", metro1:"the L9/L10", metro2:"the L1/L3 expansion", water2:"public water facilities", water3:"public water supply and management", tmobilitat2: "Catalonia-wide T-mobilitat", rail1:"the Lleida-La Pobla railway", rail2:"the Tarragona and Girona train-trams", icf:Q.parlament_budget_icf_name, digital:"fully-digital administration", universal:"truly universal healthcare access"};
         for (var key of Object.keys(projectIds)) if (proposed.projects[key] != draft.projects[key]) terms.push((proposed.projects[key] ? "Fund " : "Remove ") + projectNames[key] + ".");
         var p = project(proposed);
         var reasons = hardVetoReasons(party, proposed, p);
@@ -374,6 +378,8 @@ on-arrival: {!
 [? if parlament_budget_rail1: · Fund the Lleida-La Pobla railway.?]
 [? if parlament_budget_rail2: · Fund the Tarragona and Girona train-trams.?]
 [? if parlament_budget_icf: · Fund [+ parlament_budget_icf_name +].?]
+[? if parlament_budget_digital: · Fund the transformation into a Fully-Digital administration.?]
+[? if parlament_budget_universal: · Fund truly universal healthcare access.?]
 
 [? if parlament_budget_commitment_summary: **Agreed policy commitments:** [+ parlament_budget_commitment_summary +]?]
 
@@ -404,6 +410,8 @@ on-arrival: {!
 - @rail1
 - @rail2
 - @icf
+- @digital
+- @universal
 - @vote_yes
 - @vote_no
 - @approach_cup
@@ -555,6 +563,32 @@ on-arrival: {!
 !}
 go-to: review
 
+@digital
+title: [? if parlament_budget_digital: Remove ?][? if not parlament_budget_digital: Fund ?] digital administrative continuity
+view-if: parlament_budget_digital_available or parlament_budget_digital
+choose-if: parlament_budget_digital_available or parlament_budget_digital
+on-arrival: {!
+    if (Q.parlament_budget_digital_available || Q.budget_draft.projects.digital) {
+        Q.budget_draft.projects.digital = !Q.budget_draft.projects.digital;
+        Q.parlament_budget_deals = [];
+        Q.parlament_budget_changes_made = true;
+    }
+!}
+go-to: review
+
+@universal
+title: [? if parlament_budget_universal: Remove ?][? if not parlament_budget_universal: Fund ?] truly universal healthcare access
+view-if: parlament_budget_universal_available or parlament_budget_universal
+choose-if: parlament_budget_universal_available or parlament_budget_universal
+on-arrival: {!
+    if (Q.parlament_budget_universal_available || Q.budget_draft.projects.universal) {
+        Q.budget_draft.projects.universal = !Q.budget_draft.projects.universal;
+        Q.parlament_budget_deals = [];
+        Q.parlament_budget_changes_made = true;
+    }
+!}
+go-to: review
+
 @vote_yes
 title: Change our party's vote to YES
 view-if: parlament_budget_player_has_seats and parlament_budget_player_position != "yes"
@@ -653,6 +687,22 @@ on-arrival: {!
             !["guarantees", "cooperative"].includes(Q.bnl_icf_prepared_branch) ||
             !icfProposal || !icfProposal.active || icfProposal.def.colour != "gray")
             throw new Error("ICF budget funding conditions changed");
+    }
+    // Recheck digital authority before any budget mutation, even for a stale YES.
+    if (Q.budget_draft.projects.digital) {
+        var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+        var digitalProposal = (Q.active_mods || {}).vp_digital3_proposal;
+        if (Q.cat_caretaker_gov || !controlledParties.includes(Q.vicepresident_party) || Q.vp_digital_level != 2 ||
+            !Q.vp_digital_prepared || !digitalProposal || !digitalProposal.active || digitalProposal.def.colour != "gray" ||
+            !(Q.parlament_digital_passed && ["generalitat", "catalonia"].includes(Q.cybersecurity_agency_scope) && (Q.active_mods || {}).digital_agency_core && Q.active_mods.digital_agency_core.active)) throw new Error("Digital budget funding conditions changed");
+    }
+    // Recheck health authority before charging resources or enacting any budget terms.
+    if (Q.budget_draft.projects.universal) {
+        var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+        var universalProposal = (Q.active_mods || {}).healthcare_universal_proposal;
+        if (Q.cat_caretaker_gov || !controlledParties.includes(Q.health_minister_party) || Q.healthcare_universal_level != 1 ||
+            !Q.healthcare_universal_introduced || !universalProposal || !universalProposal.active || universalProposal.def.colour != "gray")
+            throw new Error("Universal healthcare budget funding conditions changed");
     }
     var projection = Q.parlament_budget_projection;
     var origin = Q.budget_draft_origin;
@@ -927,6 +977,25 @@ on-arrival: {!
                 "Expanded public guarantees improve business access to investment finance alongside existing SME lending.",
             targets:cooperative ? {gdp_growth:0.04, unemployment_recovery:0.01, welfare_index_growth:0.06, generalitat_surplus:-0.02} :
                 {gdp_growth:0.12, unemployment_recovery:0.02, generalitat_surplus:-0.02}});
+    }
+    if (Q.budget_draft.projects.digital) {
+        Q.vp_digital_level = 3;
+        Q.vp_digital_prepared = false;
+        G.deactivateLaw(Q, "vp_digital3_proposal", undefined, true);
+        if (Q.active_mods && Q.active_mods.vp_digital2) Q.active_mods.vp_digital2.hidden = true;
+        G.registerLaw(Q, {id:"vp_digital3", title:"Digital Administrative Continuity", colour:"green", icon:"img/comms_icon.svg",
+            description:"Redundant services, recovery arrangements and independent operating capacity have allowed the secure full digitalization of all of the Generalitat's systems.",
+            targets:{generalitat_surplus:-0.01}, ramp_ticks:12});
+        Q.independence_trust = Math.min(60, Q.independence_trust + 2);
+    }
+    if (Q.budget_draft.projects.universal) {
+        Q.healthcare_universal_level = 2;
+        Q.healthcare_universal_introduced = false;
+        G.deactivateLaw(Q, "healthcare_universal_proposal", undefined, true);
+        if (Q.active_mods && Q.active_mods.healthcare_universal1) Q.active_mods.healthcare_universal1.hidden = true;
+        G.registerLaw(Q, {id:"healthcare_universal2", title:"True Universal Healthcare Access", colour:"green", icon:"img/health_icon.svg",
+            description:"Universal entitlement to publicly funded healthcare has been funded for all residents, regardless of legal status.",
+            targets:{welfare_index_growth:0.05, generalitat_surplus:-0.02, social_dissent_eq:-1}, ramp_ticks:12});
     }
     if (Q.parlament_budget_county) {
         Q.territory_roads_approved = Math.max(Q.territory_roads_approved, 1);

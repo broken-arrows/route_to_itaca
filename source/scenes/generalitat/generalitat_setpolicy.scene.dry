@@ -356,7 +356,7 @@ on-arrival: {!
             targets:{welfare_index_growth:0.06, social_dissent_eq:-0.5, generalitat_surplus:-0.02}},
         {id:"public_salary_expansion", applies:Q.public_salary_level == 2,
             title:"Broad Public-Sector Pay Improvements", colour:"green",
-            description:"Further improvements to Generalitat-overseen public workers have led to a betterment of conditions across the boards.",
+            description:"Further improvements to Generalitat-overseen public workers have led to a betterment of conditions across the board.",
             targets:{welfare_index_growth:0.08, social_dissent_eq:-1, generalitat_surplus:-0.03}}
     ];
     salaryPolicies.forEach(function (policy) {
@@ -393,8 +393,8 @@ on-arrival: {!
         var tourismNames = ["Strongly Restrictive", "Restrictive", "Ordinary", "Permissive", "Strongly Permissive"];
         G.registerLaw(Q, {id:"bnl_tourism", title:tourismNames[Q.bnl_tourism_level + 2] + " Tourism Policy",
             colour:Q.bnl_tourism_level < 0 ? "green" : Q.bnl_tourism_level >= 2 ? "red" : "orange", icon:"img/tourism_icon.svg", bnl_level:Q.bnl_tourism_level,
-            description:Q.bnl_tourism_level < 0 ? "Accommodation regulation and enforcement limit tourism expansion." :
-                "Accommodation regulation favours tourism expansion, to the dismay of many residents.",
+            description:Q.bnl_tourism_level < 0 ? "Tourism regulation favours working conditions and environmental respect, limiting tourism expansion." :
+                "The current regulatory framework favours tourism expansion, to the dismay of many residents.",
             targets:tourismTargets[Q.bnl_tourism_level]});
     }
     var unionPolicy = (Q.active_mods || {}).bnl_union_policy;
