@@ -415,7 +415,7 @@ if (has_time_passed || Q.coalition_rupture_recheck) {
             var brokenPolicy = (Q.coalition_policy_commitments || []).some(function(record) {
                 if (record.scope != "cabinet" || !(record.signatories || []).includes(partner)) return false;
                 if (!["broken", "applied"].includes(record.status)) return false;
-                var actual = record.kind == "tax_progressivity" ? Q.tax_policy_level : Q[record.kind];
+                var actual = Q[record.kind];
                 if (record.status == "broken" && actual >= record.target) record.status = "applied";
                 return actual < record.target;
             });

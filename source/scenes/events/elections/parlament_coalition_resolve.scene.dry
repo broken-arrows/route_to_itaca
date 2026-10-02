@@ -150,13 +150,13 @@ on-arrival: {!
             {selected: Q.parlament_coalition_policy_education, kind: "education_spending", spending: true, target: Q.parlament_coalition_policy_education_target, title: "Education spending increase", icon: "img/education_icon.svg"},
             {selected: Q.parlament_coalition_policy_health, kind: "healthcare_spending", spending: true, target: Q.parlament_coalition_policy_health_target, title: "Health spending increase", icon: "img/health_icon.svg"},
             {selected: Q.parlament_coalition_policy_pay, kind: "public_salary_level", spending: true, target: Q.parlament_coalition_policy_pay_target, title: "Public salaries increase", icon: "img/economy_icon.svg"},
-            {selected: Q.parlament_coalition_policy_tax, kind: "tax_progressivity", target: Q.parlament_coalition_policy_tax_target, title: "More progressive tax scheme", icon: "img/people_icon.svg"}
+            {selected: Q.parlament_coalition_policy_tax, kind: "tax_policy_level", target: Q.parlament_coalition_policy_tax_target, title: "Higher Regional Taxes", icon: "img/economy_icon.svg"}
         ];
         commitments.forEach(function (item) {
             if (!item.selected) return;
-            var current = item.kind == "tax_progressivity" ? Q.tax_policy_level : Q[item.kind];
-            var maximum = item.kind == "tax_progressivity" ? 6 : item.kind == "social_spending_cap" ? 3 : 2;
-            var minimum = item.kind == "tax_progressivity" ? -3 : -2;
+            var current = Q[item.kind];
+            var maximum = item.kind == "social_spending_cap" ? 3 : 2;
+            var minimum = -2;
             if (!Number.isInteger(current) || current < minimum || current >= maximum || !Number.isInteger(item.target) || item.target != current + 1) {
                 resolutionError("invalid ordinary target for " + item.kind);
                 return;
@@ -178,7 +178,7 @@ on-arrival: {!
                         ? "The government agreement commits its signatories to raising the social spending cap in the next budget negotiations."
                         : item.spending
                             ? "Pending budget approval: this extra spending package is conditional on an increase in the social spending cap."
-                            : "The government agreement commits its signatories to implementing a more progressive tax package in the next budget negotiations.",
+                            : "The government agreement commits its signatories to Autonomic Taxes in the next budget negotiations.",
                     targets: {}
                 });
             }

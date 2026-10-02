@@ -140,7 +140,7 @@ on-arrival: {!
   Q.public_salary_prepared_level = null;
   Q.education_prepared_level = null;
   Q.healthcare_prepared_level = null;
-  Q.tax_policy_level = 0;
+  Q.tax_policy_level = 1;
   Q.social_spending_cap = 0;
   Q.climate_transition_points = 0;
   Q.territory_roads_approved = 0;  

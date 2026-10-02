@@ -27,13 +27,14 @@ on-arrival: {!
     }
     Q.coalition_rupture_policy_right = ["ciu", "cdc", "dl", "pdcat", "junts", "jxsi", "jxcat"].includes(target)
         || (Q[target + "_ideology"] || "").includes("Conservatism");
-    var canLeft = Q.tax_policy_level >= -3 && Q.tax_policy_level < 6 || Q.economy_cuts > 0;
+    var canLeft = Q.tax_policy_level >= -2 && Q.tax_policy_level < 2 || Q.economy_cuts > 0;
     for (var field of ["education_spending", "healthcare_spending", "public_salary_level"]) {
         if (Q[field] >= -2 && Q[field] < 2 && Q[field] + 1 <= Q.social_spending_cap) canLeft = true;
     }
-    Q.coalition_rupture_policy_available = Q.coalition_rupture_policy_right || canLeft;
+    var canRight = Q.generalitat_surplus < 0 || Q.tax_policy_level > -2;
+    Q.coalition_rupture_policy_available = Q.coalition_rupture_policy_right ? canRight : canLeft;
     // PSC's random policy route must have a deliverable outcome on either branch.
-    if (target == "psc") Q.coalition_rupture_policy_available = canLeft;
+    if (target == "psc") Q.coalition_rupture_policy_available = canRight && canLeft;
     Q.coalition_rupture_resource_gain = Q.difficulty < 0 ? 5 : 3;
     if (Q.coalition_affairs_indy_demand) {
         Q.coalition_affairs_indy_kind = Q.coalition_affairs_indy_demand.kind;

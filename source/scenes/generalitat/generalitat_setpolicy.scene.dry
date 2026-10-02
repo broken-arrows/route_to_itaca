@@ -1,48 +1,31 @@
 title: helper set policies scene
 on-arrival: {!
     var taxPolicies = {
-        "-3": {id: "tax_relief_income_wealth", title: "Income and Wealth Tax Relief",
-            description: "Broad cuts have been introduced to the autonomous general-income rates, together with relief on wealth taxes.",
-            targets: {generalitat_surplus: -0.04, gdp_growth: 0.01, social_dissent_eq: 3}},
-        "-2": {id: "tax_relief_broad_income", title: "Moderate Income Tax Cuts",
-            description: "Moderate tax reductions have been approved within the autonomous general-income rates. While the scale remains somewhat progressive, this does clearly benefit those with higher incomes.",
-            targets: {generalitat_surplus: -0.02, gdp_growth: 0.03, social_dissent_eq: 1}},
-        "-1": {id: "tax_relief_targeted", title: "Lower-Income and Family Tax Relief",
-            description: "Targeted relief through surgically lower autonomous taxes through schemes like family deductions.",
-            targets: {generalitat_surplus: 0, gdp_growth: 0.06, social_dissent_eq: -2}},
-        "0": {id: "budget_tax_moderate", title: "Budget Revenue Measures",
-            description: "Tax and fees increases across the board are part of the " + Q.year + " budget's fiscal measures",
+        "-2": {id: "regional_taxes_very_low", title: "Very Low Autonomic Taxes",
+            description: "Taxes and regional tax components the Generalitat can adjust are at their lowest possible levels.",
+            targets: {generalitat_surplus: -0.04, gdp_growth: 0.06, social_dissent_eq: -3}},
+        "-1": {id: "regional_taxes_low", title: "Low Autonomic Taxes",
+            description: "Taxes and regional tax components the Generalitat can adjust have been adjusted downwards and sit now at significantly reduced levels.",
+            targets: {generalitat_surplus: -0.02, gdp_growth: 0.04, social_dissent_eq: -2}},
+        "0": {id: "regional_taxes_moderate", title: "Moderate Autonomic Taxes",
+            description: "Taxes and regional tax components the Generalitat can adjust sit at comparatively standard levels.",
+            targets: {generalitat_surplus: 0, gdp_growth: 0.02, social_dissent_eq: -1}},
+        "1": {id: "regional_taxes_high", title: "High Autonomic Taxes",
+            description: "Taxes and regional tax components the Generalitat can adjust have been risen as part as the " + Q.year + " fiscal measures plan.",
             targets: {generalitat_surplus: 0.02}},
-        "1": {id: "tax_increase_broad", title: "Broad Income Tax Increase",
-            description: "Higher rates across much of the Generalitat's autonomous general-income taxes, including middle incomes.",
-            targets: {generalitat_surplus: 0.08, gdp_growth: -0.12, social_dissent_eq: 3}},
-        "2": {id: "tax_increase_graduated", title: "Graduated Income Tax Increase",
-            description: "A graduated rise across most of the autonomous general-income tax scale raises and places a slightly larger burden on higher incomes, though many households still have to contribute more than before.",
-            targets: {generalitat_surplus: 0.08, gdp_growth: -0.06, social_dissent_eq: 2}},
-        "3": {id: "tax_increase_lower_income_relief", title: "Graduated Taxes with Lower-Income Relief",
-            description: "Higher autonomous general-income rates have been combined with relief in lower income brackets, making the tax structure more progressive and shielding lower-income households.",
-            targets: {generalitat_surplus: 0.06, gdp_growth: -0.02, social_dissent_eq: -0.5}},
-        "4": {id: "tax_increase_upper_income", title: "Upper-Income Tax Increase",
-            description: "Autonomous general-income tax increases have been concentrated on upper-middle and high incomes,meaning additional taxes are not affecting most households.",
-            targets: {generalitat_surplus: 0.05, gdp_growth: -0.01, social_dissent_eq: -1}},
-        "5": {id: "tax_increase_income_wealth", title: "High-Income and Wealth Tax Increase",
-            description: "Higher autonomous general-income tax rates for high earners are combined with increases to the existing wealth tax. This is one of the most progressive tax packages ever, but its effect is limited by the small amount of tax collection the Generalitat is actually responsible for.",
-            targets: {generalitat_surplus: 0.06, gdp_growth: -0.01, social_dissent_eq: -2}},
-        "6": {id: "tax_increase_income_wealth_strong", title: "Stronger High-Income and Wealth Taxes",
-            description: "Stronger increases to high-earner autonomous general-income rates and the existing wealth tax have been extended even further. Yet, despite its undeniably progressist nature, its effect is now as limited as it can be by the small amount of tax collection the Generalitat is actually responsible for.",
-            targets: {generalitat_surplus: 0.08, gdp_growth: -0.02, social_dissent_eq: -3}}
+        "2": {id: "regional_taxes_very_high", title: "Very High Autonomic Taxes",
+            description: "Taxes and regional tax components the Generalitat can adjust sit at an all-time high.",
+            targets: {generalitat_surplus: 0.04, gdp_growth: -0.02, social_dissent_eq: 1}}
     };
     var taxPolicy = typeof Q.tax_policy_level == "number" && taxPolicies[Q.tax_policy_level];
     if (taxPolicy) {
-        ["budget_tax_moderate", "budget_tax_progressive", "budget_tax_property",
-            "budget_tax_broad_income", "budget_tax_top_income", "no_taxes"].concat(
-                Object.keys(taxPolicies).map(function (level) { return taxPolicies[level].id; })
-            ).forEach(function (id) {
+        Object.keys(taxPolicies).forEach(function (level) {
+            var id = taxPolicies[level].id;
             if (id != taxPolicy.id) G.deactivateLaw(Q, id, undefined, true);
         });
         if (!Q.active_mods || !Q.active_mods[taxPolicy.id] || !Q.active_mods[taxPolicy.id].active) {
             G.registerLaw(Q, {id: taxPolicy.id, title: taxPolicy.title,
-                description: taxPolicy.description, colour: Q.tax_policy_level < 0 ? "red" : Q.tax_policy_level <= 2 ?  "orange" : "green", icon: "img/economy_icon.svg",
+                description: taxPolicy.description, colour: "orange", icon: "img/economy_icon.svg",
                 targets: taxPolicy.targets});
         }
     }

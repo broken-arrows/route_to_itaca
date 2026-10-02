@@ -175,24 +175,20 @@ go-to: budget_review
 new-page: true
 on-arrival: {!
     var proposal = Q.economy_budget_proposal;
-    var taxNames = ["Income and Wealth Tax Relief", "Moderate Income Tax Cuts",
-        "Lower-Income and Family Tax Relief", "Budget Revenue Measures",
-        "Broad Income Tax Increase", "Graduated Income Tax Increase",
-        "Graduated Taxes with Lower-Income Relief", "Upper-Income Tax Increase",
-        "High-Income and Wealth Tax Increase", "Stronger High-Income and Wealth Taxes"];
+    var taxNames = ["Very low", "Low", "Moderate", "High", "Very high"];
     var capNames = ["Further austerity", "Maintain reduced services and pay",
         "Restore ordinary services and pay", "Authorize expanded services and improved pay",
         "Authorize modernized services and broader pay improvements",
         "Full spending authorization, effectively a removal of spending caps."];
-    Q.economy_budget_tax_name = taxNames[proposal.tax_policy_level + 3];
+    Q.economy_budget_tax_name = taxNames[proposal.tax_policy_level + 2];
     Q.economy_budget_cap_name = capNames[proposal.social_spending_cap + 2];
-    Q.economy_budget_tax_lower = proposal.tax_policy_level > Math.max(-3, Q.tax_policy_level - 2);
-    Q.economy_budget_tax_higher = proposal.tax_policy_level < Math.min(6, Q.tax_policy_level + 2);
+    Q.economy_budget_tax_lower = proposal.tax_policy_level > Math.max(-2, Q.tax_policy_level - 2);
+    Q.economy_budget_tax_higher = proposal.tax_policy_level < Math.min(2, Q.tax_policy_level + 2);
     Q.economy_budget_cap_lower = proposal.social_spending_cap > -2 &&
         Q.education_spending != 3 && Q.healthcare_spending != 3;
     Q.economy_budget_cap_higher = proposal.social_spending_cap < 3;
-    Q.economy_budget_valid = proposal.tax_policy_level >= Math.max(-3, Q.tax_policy_level - 2) &&
-        proposal.tax_policy_level <= Math.min(6, Q.tax_policy_level + 2) &&
+    Q.economy_budget_valid = proposal.tax_policy_level >= Math.max(-2, Q.tax_policy_level - 2) &&
+        proposal.tax_policy_level <= Math.min(2, Q.tax_policy_level + 2) &&
         proposal.social_spending_cap >= -2 && proposal.social_spending_cap <= 3 &&
         (proposal.social_spending_cap == 3 || Q.education_spending != 3 && Q.healthcare_spending != 3);
     Q.economy_budget_education_cut = Q.education_spending > proposal.social_spending_cap;
@@ -229,7 +225,7 @@ on-arrival: {!
 
 = Prepare the annual budget
 
-Tax structure: **[+ economy_budget_tax_name +]**.
+Autonomic Taxes: **[+ economy_budget_tax_name +]**.
 
 Social spending authorization: **[+ economy_budget_cap_name +]**. This effectively caps the maximum spending of the different ministries. [? if economy_budget_education_cut: Approving this would reduce Education spending to fit the new ceiling. ?][? if economy_budget_health_cut: Approving this would reduce Healthcare spending to fit the new ceiling. ?][? if economy_budget_pay_cut: Approving this would reduce public-sector pay to fit the new ceiling. ?][? if education_spending = 3 or healthcare_spending = 3: Exceptional public-service frameworks must, however, be first removed for the ceiling to be lowered. ?]
 
@@ -263,18 +259,18 @@ While this is our proposal, passing it through the Parlament may require some tw
 - @post_event: Leave this proposal unsubmitted
 
 @budget_tax_lower
-title: Move towards a lower tax package
+title: Lower Autonomic Taxes
 choose-if: economy_budget_tax_lower
-unavailable-subtitle: Our proposal is already changing the tax package as radically as it can be done in one pass.
+unavailable-subtitle: Our proposal is already changing Autonomic Taxes as radically as it can be done in one pass.
 on-arrival: {!
     Q.economy_budget_proposal.tax_policy_level -= 1;
 !}
 go-to: budget_review
 
 @budget_tax_higher
-title: Move towards a higher yet more progressive tax package
+title: Raise Autonomic Taxes
 choose-if: economy_budget_tax_higher
-unavailable-subtitle: Our proposal is already changing the tax package as radically as it can be done in one pass.
+unavailable-subtitle: Our proposal is already changing Autonomic Taxes as radically as it can be done in one pass.
 on-arrival: {!
     Q.economy_budget_proposal.tax_policy_level += 1;
 !}

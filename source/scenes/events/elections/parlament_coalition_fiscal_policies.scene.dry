@@ -82,16 +82,16 @@ on-arrival: {!
 !}
 go-to: jumpScene
 
-@progressive_tax
+@regional_tax
 tags: fiscal_concessions
-title: [? if parlament_coalition_policy_tax: Withdraw our demand for more progressive taxes?][? if not parlament_coalition_policy_tax: Demand a more progressive tax package?]
-view-if: parlament_coalition_policy_tax or (tax_policy_level >= -3 and tax_policy_level < 6)
-choose-if: parlament_coalition_policy_tax or (parlament_coalition_leverage >= 5 and parlament_coalition_policy_tax_target = tax_policy_level + 1 and tax_policy_level >= -3 and tax_policy_level < 6)
+title: [? if parlament_coalition_policy_tax: Withdraw our demand for higher Regional Taxes?][? if not parlament_coalition_policy_tax: Demand higher Regional Taxes?]
+view-if: parlament_coalition_policy_tax or (tax_policy_level >= -2 and tax_policy_level < 2)
+choose-if: parlament_coalition_policy_tax or (parlament_coalition_leverage >= 5 and parlament_coalition_policy_tax_target = tax_policy_level + 1 and tax_policy_level >= -2 and tax_policy_level < 2)
 subtitle: This will have to be approved as part of the next budget negotiations.
 unavailable-subtitle: We don't have enough leverage to propose more concessions.
 on-arrival: {!
     var taking = !Q.parlament_coalition_policy_tax;
-    var canDemand = Q.tax_policy_level >= -3 && Q.tax_policy_level < 6
+    var canDemand = Q.tax_policy_level >= -2 && Q.tax_policy_level < 2
         && Q.parlament_coalition_policy_tax_target === Q.tax_policy_level + 1
         && Q.parlament_coalition_leverage >= 5;
     if (!taking || canDemand) {
@@ -130,7 +130,7 @@ on-arrival: {!
         ["education", "education_spending", -2, 2, "We're asking for too much of a education funding increase."],
         ["health", "healthcare_spending", -2, 2, "We're asking for too much of a healthcare funding increase."],
         ["pay", "public_salary_level", -2, 2, "We're asking for too much of a public salaries increase."],
-        ["tax", "tax_policy_level", -3, 6, "We're asking for too much of a radical change in taxes."]
+        ["tax", "tax_policy_level", -2, 2, "We're asking for too much of a radical change in taxes."]
     ];
     var selected = false;
     for (var term of terms) {
@@ -158,4 +158,4 @@ go-to: jumpScene
 [? if parlament_coalition_policy_education: - We've added a commitment to increase Education spending. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_education_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
 [? if parlament_coalition_policy_health: - We've added a commitment to increase Healthcare spending. [? if parlament_coalition_policy_effective_cap >= parlament_coalition_policy_health_target: Takes effect when the government is formed.?][? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_health_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
 [? if parlament_coalition_policy_pay: - We've added a commitment to raise all public salaries. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_pay_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
-[? if parlament_coalition_policy_tax: - We've added a commitment to make taxes more progressive when the next budget is discussed.?]
+[? if parlament_coalition_policy_tax: - We've added a commitment to raise Autonomic Taxes when the next budget is discussed.?]

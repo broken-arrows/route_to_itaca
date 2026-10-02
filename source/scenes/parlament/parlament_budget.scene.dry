@@ -19,17 +19,13 @@ on-arrival: {!
     var origin = Q.budget_draft_origin;
     var draft = Q.budget_draft;
     var spending = ["education_spending", "healthcare_spending", "public_salary_level"];
+    // Fiscal points relative to the inherited High (+1) policy.
     var taxProfiles = [
-        {name:"Income and Wealth Tax Relief", revenue:-3, progressive:-2, broad:-1, property:-1},
-        {name:"Moderate Income Tax Cuts", revenue:-2, progressive:-1, broad:-1, property:0},
-        {name:"Lower-Income and Family Tax Relief", revenue:-1, progressive:0, broad:-0.5, property:0},
-        {name:"Budget Revenue Measures", revenue:0, progressive:0, broad:0.5, property:0.5},
-        {name:"Broad Income Tax Increase", revenue:3, progressive:0.5, broad:1, property:0.5},
-        {name:"Graduated Income Tax Increase", revenue:3, progressive:1, broad:0.5, property:0.5},
-        {name:"Graduated Taxes with Lower-Income Relief", revenue:2, progressive:1.5, broad:0, property:0.5},
-        {name:"Upper-Income Tax Increase", revenue:1.5, progressive:2, broad:0, property:0.5},
-        {name:"High-Income and Wealth Tax Increase", revenue:2, progressive:2.5, broad:0, property:1},
-        {name:"Stronger High-Income and Wealth Taxes", revenue:3, progressive:3, broad:0, property:1.5}
+        {name:"Very low", revenue:-3},
+        {name:"Low", revenue:-2},
+        {name:"Moderate", revenue:-1},
+        {name:"High", revenue:0},
+        {name:"Very high", revenue:1}
     ];
     var capNames = ["Further austerity", "Maintain reduced services and pay",
         "Restore ordinary services and pay", "Authorize expanded services and improved pay",
@@ -48,8 +44,8 @@ on-arrival: {!
         Q["parlament_budget_" + key + "_available"] = available[key];
         Q["parlament_budget_" + key] = !!draft.projects[key];
     }
-    var taxMin = Math.max(-3, origin.tax_policy_level - 1, origin.enacted_tax_policy_level - 2);
-    var taxMax = Math.min(6, origin.tax_policy_level + 1, origin.enacted_tax_policy_level + 2);
+    var taxMin = Math.max(-2, origin.tax_policy_level - 1, origin.enacted_tax_policy_level - 2);
+    var taxMax = Math.min(2, origin.tax_policy_level + 1, origin.enacted_tax_policy_level + 2);
     var capMin = Math.max(-2, origin.social_spending_cap - 1);
     var capMax = Math.min(3, origin.social_spending_cap + 1);
     var cabinet = (Q.cat_coalition || []).concat(Q.president_party).filter(function (p, i, all) {
@@ -65,7 +61,7 @@ on-arrival: {!
         return record.status == "pending_budget" || record.status == "applied";
     });
     function matches(record, projection) {
-        if (record.kind == "tax_progressivity") return projection.tax >= record.target;
+        if (record.kind == "tax_policy_level") return projection.tax >= record.target;
         if (record.kind == "social_spending_cap") return projection.cap >= record.target;
         // Conditional ministry promises do not independently require a cap raise.
         return record.status == "pending_budget" && record.target > projection.cap ||
@@ -106,9 +102,9 @@ on-arrival: {!
             if (!available[key]) valid = false;
             cost += projectCosts[key];
         }
-        var profile = taxProfiles[tax + 3];
+        var profile = taxProfiles[tax + 2];
         var margin = 1 + origin.surplus_at_draft / 0.7 + profile.revenue -
-            taxProfiles[origin.enacted_tax_policy_level + 3].revenue -
+            taxProfiles[origin.enacted_tax_policy_level + 2].revenue -
             2 * (cap - origin.enacted_social_spending_cap) - cost;
         var result = {valid:valid, tax:tax, cap:cap, levels:levels, cuts:cuts,
             margin:margin, shortfall:Math.max(0, -margin), taxProfile:profile};
@@ -121,7 +117,7 @@ on-arrival: {!
     Q.parlament_budget_tax_name = projection.taxProfile.name;
     Q.parlament_budget_cap_name = capNames[projection.cap + 2];
     var commitmentNames = {social_spending_cap:"Higher social spending authorization", education_spending:"Education improvement",
-        healthcare_spending:"Health improvement", public_salary_level:"Public-pay improvement", tax_progressivity:"More progressive taxes"};
+        healthcare_spending:"Health improvement", public_salary_level:"Public-pay improvement", tax_policy_level:"Higher Regional Taxes"};
     Q.parlament_budget_commitment_summary = commitments.map(function (record) {
         var outcome;
         if (!matches(record, projection)) outcome = "this draft would breach the government-formation agreement";
@@ -161,7 +157,7 @@ on-arrival: {!
     function promised(party, kind, p) {
         return commitments.some(function (r) {
             return r.kind == kind && belongs(party, r.signatories || []) && matches(r, p) &&
-                (kind == "tax_progressivity" ? p.tax : p.cap) <= r.target;
+                (kind == "tax_policy_level" ? p.tax : p.cap) <= r.target;
         });
     }
     function hardVetoReasons(party, proposal, p) {
@@ -172,8 +168,8 @@ on-arrival: {!
         if (belongs(party, (Q.cat_coalition_support || []).concat(Q.cat_coalition_abstain || [])) && p.brokenExternal.some(function (r) {
             return belongs(party, r.signatories || []);
         })) reasons.push("The proposed budget goes against coalition-support agreement.");
-        if (party == "ciu" && p.tax >= 4 && !promised(party, "tax_progressivity", p))
-            reasons.push("CiU will not approve this level of top-income tax increase.");
+        if (party == "ciu" && p.tax >= 2 && !promised(party, "tax_policy_level", p))
+            reasons.push("CiU will not approve of such a radical tax increase.");
         if (party == "ciu" && p.shortfall > 0) reasons.push("CiU will not approve a budget with a funding gap.");
         if (["cdc", "dl", "pdcat", "junts", "unio"].includes(party) && p.shortfall > 1)
             reasons.push(party + " will not accept this large a funding gap.");
@@ -206,14 +202,14 @@ on-arrival: {!
             draft.projects.rail2 || draft.projects.tmobilitat2;
         if (["ciu", "cdc", "dl", "pdcat", "junts", "unio"].includes(party))
             return projection.shortfall == 0 && (capChange <= 0 || promised(party, "social_spending_cap", projection)) &&
-                (tax < 4 || promised(party, "tax_progressivity", projection)) ? "yes" : "no";
-        var agreedTax = promised(party, "tax_progressivity", projection);
+                (tax < 2 || promised(party, "tax_policy_level", projection)) ? "yes" : "no";
+        var agreedTax = promised(party, "tax_policy_level", projection);
         var agreedCap = promised(party, "social_spending_cap", projection);
         if (party == "erc") return (tax >= 1 || agreedTax) && (projection.cap >= Math.min(0, origin.enacted_social_spending_cap) || agreedCap) ? "yes" : "no";
-        if (party == "cup") return (expanding || projection.cap >= 1 || agreedCap) && (tax >= 3 || tax >= 1 && (draft.projects.metro2 || draft.projects.rail2 || draft.projects.tmobilitat2 || draft.projects.water3) || agreedTax) ? "yes" : "no";
+        if (party == "cup") return (expanding || projection.cap >= 1 || agreedCap) && (tax >= 2 || tax >= 1 && (draft.projects.metro2 || draft.projects.rail2 || draft.projects.tmobilitat2 || draft.projects.water3) || agreedTax) ? "yes" : "no";
         if (["icv", "csqp", "cecp", "ecp"].includes(party)) return (expanding || projection.cap >= 1 || agreedCap) && (tax >= 1 || agreedTax) ? "yes" : "no";
-        if (party == "psc") return (pscFacesIndyCabinet ? expanding && (tax >= 1 && tax <= 2 || tax >= 3 && metro) :
-            (projection.cap >= Math.min(0, origin.enacted_social_spending_cap) || agreedCap) && (tax >= 0 || agreedTax) && (tax < 4 || metro || agreedTax)) ? "yes" : "no";
+        if (party == "psc") return (pscFacesIndyCabinet ? expanding && (tax == 1 || tax == 2 && metro) :
+            (projection.cap >= Math.min(0, origin.enacted_social_spending_cap) || agreedCap) && (tax >= 0 || agreedTax) && (tax < 2 || metro || agreedTax)) ? "yes" : "no";
         if (["ppc", "cs"].includes(party)) return (capChange <= 0 || agreedCap) && (tax <= 0 || agreedTax) && projection.shortfall == 0 ? "yes" : "no";
         return party == "si" ? "abstain" : "no";
     }
@@ -244,7 +240,7 @@ on-arrival: {!
     Q.parlament_budget_player_policy_can_yes = !hardVetoReasons(Q.player_party, draft, projection).length;
     Q.parlament_budget_player_default = Q.parlament_budget_player_policy_can_yes ? basePosition(Q.player_party) : "no";
     Q.parlament_budget_player_resource_required = Q.parlament_budget_player_default == "no" &&
-        (Q.player_party == "erc" && projection.tax <= 0 || Q.player_party == "cup" && projection.tax < 3) ? 1 : 0;
+        (Q.player_party == "erc" && projection.tax <= 0 || Q.player_party == "cup" && projection.tax < 2) ? 1 : 0;
     Q.parlament_budget_player_can_yes = Q.parlament_budget_player_policy_can_yes && Q.party_resources >= Q.parlament_budget_player_resource_required;
     Q.parlament_budget_player_resource_cost = Q.parlament_budget_player_vote == "yes" && Q.parlament_budget_player_default == "no" ? Q.parlament_budget_player_resource_required : 0;
     Q.parlament_budget_player_position = position(playerVehicle);
@@ -304,7 +300,7 @@ on-arrival: {!
             if (available.water3) proposed.projects.water3 = true;
             else if (available.water2) proposed.projects.water2 = true;
         }
-        if (proposed.tax_policy_level != draft.tax_policy_level) terms.push("Taxes: " + taxProfiles[proposed.tax_policy_level + 3].name + ".");
+        if (proposed.tax_policy_level != draft.tax_policy_level) terms.push("Autonomic Taxes: " + taxProfiles[proposed.tax_policy_level + 2].name + ".");
         if (proposed.social_spending_cap != draft.social_spending_cap) terms.push("Spending authorization: " + capNames[proposed.social_spending_cap + 2] + ".");
         var projectNames = {county:"county roads", b40:"the B-40", metro1:"the L9/L10", metro2:"the L1/L3 expansion", water2:"public water facilities", water3:"public water supply and management", tmobilitat2: "Catalonia-wide T-mobilitat", rail1:"the Lleida-La Pobla railway", rail2:"the Tarragona and Girona train-trams"};
         for (var key of Object.keys(projectIds)) if (proposed.projects[key] != draft.projects[key]) terms.push((proposed.projects[key] ? "Fund " : "Remove ") + projectNames[key] + ".");
@@ -347,16 +343,14 @@ on-arrival: {!
     Q.parlament_budget_cabinet_actors = [];
     var cabinetCarriers = cabinet.map(carrier).filter(function (p, i, all) { return all.indexOf(p) == i; });
     for (var party of cabinetCarriers) Q.parlament_budget_cabinet_actors.push({party:party, weight:1 / cabinetCarriers.length});
-    var previous = taxProfiles[origin.enacted_tax_policy_level + 3];
-    Q.parlament_budget_tax_changes = {progressive:projection.taxProfile.progressive - previous.progressive,
-        broad:projection.taxProfile.broad - previous.broad, property:projection.taxProfile.property - previous.property};
+    Q.parlament_budget_tax_change = projection.tax - origin.enacted_tax_policy_level;
 !}
 
 = Budget Negotiations
 
 [? if economy_minister_gender = "f": Consellera?][? if economy_minister_gender = "m": Conseller?] of Economy [+ economy_minister +] has submitted a budget for the [+ year +], which would give the current [+ cat_coalition_disp +] breathing room to operate. [? if parlament_budget_changes_made: After amendments, the terms are:?][? if not parlament_budget_changes_made: [? if economy_minister_gender = "f": Her?][? if economy_minister_gender = "m": His?] proposed terms are:?]
 
-· Taxes: **[+ parlament_budget_tax_name +]**.
+· Regional Taxes: **[+ parlament_budget_tax_name +]**.
 
 · Spending authorization: **[+ parlament_budget_cap_name +]**.
 
@@ -430,7 +424,7 @@ on-arrival: {!
 go-to: review
 
 @tax_lower
-title: Lower taxes across the board
+title: Lower Autonomic Taxes
 view-if: parlament_budget_tax_lower
 on-arrival: {!
     Q.budget_draft.tax_policy_level += -1;
@@ -440,7 +434,7 @@ on-arrival: {!
 go-to: review
 
 @tax_higher
-title: Progressively raise taxes
+title: Raise Autonomic Taxes
 view-if: parlament_budget_tax_higher
 on-arrival: {!
     Q.budget_draft.tax_policy_level += 1;
@@ -637,26 +631,24 @@ on-arrival: {!
         if (Q.burdens_start_countdown > 0 || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
     }
     var spending = ["education_spending", "healthcare_spending", "public_salary_level"];
-    var enactedBefore = {tax_progressivity:Q.tax_policy_level};
+    var enactedBefore = {tax_policy_level:Q.tax_policy_level};
     for (var kind of spending) enactedBefore[kind] = Q[kind];
     var deliveredCommitments = (Q.coalition_policy_commitments || []).filter(function (record) {
         if (record.status != "pending_budget" || record.kind == "social_spending_cap") return false;
-        var actual = record.kind == "tax_progressivity" ? projection.tax : projection.levels[record.kind];
+        var actual = record.kind == "tax_policy_level" ? projection.tax : projection.levels[record.kind];
         return actual >= record.target && actual > enactedBefore[record.kind];
     });
     var serviceChange = spending.reduce(function (sum, kind) { return sum + projection.levels[kind] - Q[kind]; }, 0) / 3;
     var capChange = (projection.cap - origin.enacted_social_spending_cap) * 0.2;
     var socialChange = serviceChange + capChange;
-    var taxChanges = Q.parlament_budget_tax_changes;
+    var taxChange = Q.parlament_budget_tax_change;
     for (var record of deliveredCommitments) creditBudgetBurden();
     // Coalition deliveries receive their own points, so the same change cannot
-    // also earn the budget's aggregate social or top-income-tax point.
+    // also earn the budget's aggregate social point.
     var otherServiceChange = spending.reduce(function (sum, kind) {
         return sum + (deliveredCommitments.some(function (record) { return record.kind == kind; }) ? 0 : projection.levels[kind] - enactedBefore[kind]);
     }, 0);
     if (otherServiceChange > 0) creditBudgetBurden();
-    if (projection.tax >= 4 && origin.enacted_tax_policy_level < 4 &&
-        !deliveredCommitments.some(function (record) { return record.kind == "tax_progressivity"; })) creditBudgetBurden();
     var votes = Q.parlament_budget_positions;
     var left = ["cup", Q.parlament_current_icv, "erc", "psc"].find(function (p) { return votes[p] == "no"; }) || "abstain";
     var right = ["ppc", "cs", Q.parlament_current_ciu, "unio"].find(function (p) { return votes[p] == "no"; }) || "abstain";
@@ -673,13 +665,10 @@ on-arrival: {!
     }
     shift({unemployed:1.2, young:0.9, ind:0.75, middle:0.5, rural:0.35, retired:0.25}, socialChange, left);
     shift({buss:0.35, rural:0.15, retired:0.1}, -socialChange, right);
-    shift({unemployed:0.3, young:0.25, ind:0.2, middle:0.12}, taxChanges.progressive, left);
-    shift({buss:0.4, retired:0.12, middle:0.1}, -taxChanges.progressive, right);
-    shift({middle:0.35, retired:0.25, ind:0.18}, -taxChanges.broad, left);
-    shift({young:0.3, middle:0.28, buss:0.18}, -taxChanges.property, right);
+    shift({middle:0.35, retired:0.25, ind:0.18, young:0.15, buss:0.2}, -taxChange, taxChange > 0 ? right : left);
     // Smaller local and national signals share the same collective responsibility.
-    var signal = 0.27 * socialChange + 0.06 * taxChanges.progressive - 0.06 * taxChanges.broad - 0.06 * taxChanges.property;
-    var national = 0.03 * socialChange + 0.01 * taxChanges.progressive - 0.01 * taxChanges.broad - 0.005 * taxChanges.property;
+    var signal = 0.27 * socialChange - 0.06 * taxChange;
+    var national = 0.03 * socialChange - 0.01 * taxChange;
     for (var actor of Q.parlament_budget_actors) {
         var party = actor.party;
         var local = party == "ppc" ? "pp" : party;
@@ -714,47 +703,47 @@ on-arrival: {!
     // Only the player-authored Economy package carries these executive reactions.
     if (origin.author == "player") {
         if (projection.tax != Q.tax_policy_level) {
-            var ercTaxAffinity = [-2, -1, 1, 0, 0, 1, 2, 2, 3, 3];
+            var ercTaxAffinity = [-1, 0, 0, 0, 0];
             if (!controlledParties.includes("erc") && Number.isFinite(Q.erc_relations))
-                Q.erc_relations += Math.max(-4, Math.min(4, ercTaxAffinity[projection.tax + 3] - ercTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes("erc") ? 2 : 1);
-            var ciuTaxAffinity = [2, 1, 0, 0, -1, -1, -1, -2, -3, -3];
+                Q.erc_relations += Math.max(-4, Math.min(4, ercTaxAffinity[projection.tax + 2] - ercTaxAffinity[Q.tax_policy_level + 2])) * (coalitionPartners.includes("erc") ? 2 : 1);
+            var ciuTaxAffinity = [3, 2, 1, 0, -1];
             if (!controlledParties.includes(Q.parlament_current_ciu) && Number.isFinite(Q[Q.parlament_current_ciu + "_relations"]))
-                Q[Q.parlament_current_ciu + "_relations"] += Math.max(-4, Math.min(4, ciuTaxAffinity[projection.tax + 3] - ciuTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
-            var pscTaxAffinity = [-1, 0, 1, 0, 1, 1, 1, 0, 0, -1];
+                Q[Q.parlament_current_ciu + "_relations"] += Math.max(-4, Math.min(4, ciuTaxAffinity[projection.tax + 2] - ciuTaxAffinity[Q.tax_policy_level + 2])) * (coalitionPartners.includes(Q.parlament_current_ciu) ? 2 : 1);
+            var pscTaxAffinity = [0, 0, 1, 0, 0];
             if (!controlledParties.includes("psc") && Number.isFinite(Q.psc_relations))
-                Q.psc_relations += Math.max(-4, Math.min(4, pscTaxAffinity[projection.tax + 3] - pscTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes("psc") ? 2 : 1);
-            var icvTaxAffinity = [-3, -1, 1, 0, 0, 1, 2, 2, 3, 3];
+                Q.psc_relations += Math.max(-4, Math.min(4, pscTaxAffinity[projection.tax + 2] - pscTaxAffinity[Q.tax_policy_level + 2])) * (coalitionPartners.includes("psc") ? 2 : 1);
+            var icvTaxAffinity = [-1, 0, 0, 0, 0];
             if (!controlledParties.includes(Q.parlament_current_icv) && Number.isFinite(Q[Q.parlament_current_icv + "_relations"]))
-                Q[Q.parlament_current_icv + "_relations"] += Math.max(-4, Math.min(4, icvTaxAffinity[projection.tax + 3] - icvTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
-            var cupTaxAffinity = [-3, -1, 1, 0, -1, 0, 2, 2, 3, 3];
+                Q[Q.parlament_current_icv + "_relations"] += Math.max(-4, Math.min(4, icvTaxAffinity[projection.tax + 2] - icvTaxAffinity[Q.tax_policy_level + 2])) * (coalitionPartners.includes(Q.parlament_current_icv) ? 2 : 1);
+            var cupTaxAffinity = [-1, 0, 0, 0, -1];
             if (!controlledParties.includes("cup") && Number.isFinite(Q.cup_relations))
-                Q.cup_relations += Math.max(-4, Math.min(4, cupTaxAffinity[projection.tax + 3] - cupTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes("cup") ? 2 : 1);
-            var ppcTaxAffinity = [3, 2, 1, 0, -2, -2, -2, -2, -3, -3];
+                Q.cup_relations += Math.max(-4, Math.min(4, cupTaxAffinity[projection.tax + 2] - cupTaxAffinity[Q.tax_policy_level + 2])) * (coalitionPartners.includes("cup") ? 2 : 1);
+            var ppcTaxAffinity = [3, 2, 1, 0, -2];
             if (!controlledParties.includes("ppc") && Number.isFinite(Q.ppc_relations))
-                Q.ppc_relations += Math.max(-4, Math.min(4, ppcTaxAffinity[projection.tax + 3] - ppcTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes("ppc") ? 2 : 1);
-            var csTaxAffinity = [3, 2, 1, 0, -2, -2, -2, -2, -3, -3];
+                Q.ppc_relations += Math.max(-4, Math.min(4, ppcTaxAffinity[projection.tax + 2] - ppcTaxAffinity[Q.tax_policy_level + 2])) * (coalitionPartners.includes("ppc") ? 2 : 1);
+            var csTaxAffinity = [3, 2, 1, 0, -2];
             if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
-                Q.cs_relations += Math.max(-4, Math.min(4, csTaxAffinity[projection.tax + 3] - csTaxAffinity[Q.tax_policy_level + 3])) * (coalitionPartners.includes("cs") ? 2 : 1);
+                Q.cs_relations += Math.max(-4, Math.min(4, csTaxAffinity[projection.tax + 2] - csTaxAffinity[Q.tax_policy_level + 2])) * (coalitionPartners.includes("cs") ? 2 : 1);
             for (var list of ["jxsi", "jxcat"]) {
                 if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
                     list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
-                    Q[list + "_relations"] += Math.max(-4, Math.min(4, ciuTaxAffinity[projection.tax + 3] - ciuTaxAffinity[Q.tax_policy_level + 3])) * 2;
+                    Q[list + "_relations"] += Math.max(-4, Math.min(4, ciuTaxAffinity[projection.tax + 2] - ciuTaxAffinity[Q.tax_policy_level + 2])) * 2;
             }
             if (Q.player_party == "erc") {
-                var erc_leftTaxDissent = [3, 1, -1, 0, 2, 1, -2, -2, -3, -3];
-                Q.erc_left_dissent += Math.max(-6, Math.min(6, erc_leftTaxDissent[projection.tax + 3] - erc_leftTaxDissent[Q.tax_policy_level + 3]));
-                var erc_coreTaxDissent = [1, 0, 0, 0, 0, 0, -1, -1, -1, -1];
-                Q.erc_core_dissent += Math.max(-6, Math.min(6, erc_coreTaxDissent[projection.tax + 3] - erc_coreTaxDissent[Q.tax_policy_level + 3]));
-                var erc_pragmaticTaxDissent = [-1, -1, 0, 0, 0, 0, 0, 1, 1, 2];
-                Q.erc_pragmatic_dissent += Math.max(-6, Math.min(6, erc_pragmaticTaxDissent[projection.tax + 3] - erc_pragmaticTaxDissent[Q.tax_policy_level + 3]));
+                var erc_leftTaxDissent = [1, 0, 0, 0, 1];
+                Q.erc_left_dissent += Math.max(-6, Math.min(6, erc_leftTaxDissent[projection.tax + 2] - erc_leftTaxDissent[Q.tax_policy_level + 2]));
+                var erc_coreTaxDissent = [0, 0, 0, 0, 0];
+                Q.erc_core_dissent += Math.max(-6, Math.min(6, erc_coreTaxDissent[projection.tax + 2] - erc_coreTaxDissent[Q.tax_policy_level + 2]));
+                var erc_pragmaticTaxDissent = [-1, -1, 0, 0, 1];
+                Q.erc_pragmatic_dissent += Math.max(-6, Math.min(6, erc_pragmaticTaxDissent[projection.tax + 2] - erc_pragmaticTaxDissent[Q.tax_policy_level + 2]));
             }
             if (Q.player_party == "cup") {
-                var cup_endavantTaxDissent = [4, 2, -1, 0, 3, 1, -3, -3, -4, -4];
-                Q.cup_endavant_dissent += Math.max(-6, Math.min(6, cup_endavantTaxDissent[projection.tax + 3] - cup_endavantTaxDissent[Q.tax_policy_level + 3]));
-                var cup_poblelliureTaxDissent = [2, 1, 0, 0, 1, 0, -1, -1, -1, -1];
-                Q.cup_poblelliure_dissent += Math.max(-6, Math.min(6, cup_poblelliureTaxDissent[projection.tax + 3] - cup_poblelliureTaxDissent[Q.tax_policy_level + 3]));
-                var cup_thirdsectorTaxDissent = [3, 1, -1, 0, 2, 1, -2, -2, -3, -3];
-                Q.cup_thirdsector_dissent += Math.max(-6, Math.min(6, cup_thirdsectorTaxDissent[projection.tax + 3] - cup_thirdsectorTaxDissent[Q.tax_policy_level + 3]));
+                var cup_endavantTaxDissent = [2, 1, 0, 0, 2];
+                Q.cup_endavant_dissent += Math.max(-6, Math.min(6, cup_endavantTaxDissent[projection.tax + 2] - cup_endavantTaxDissent[Q.tax_policy_level + 2]));
+                var cup_poblelliureTaxDissent = [1, 0, 0, 0, 1];
+                Q.cup_poblelliure_dissent += Math.max(-6, Math.min(6, cup_poblelliureTaxDissent[projection.tax + 2] - cup_poblelliureTaxDissent[Q.tax_policy_level + 2]));
+                var cup_thirdsectorTaxDissent = [1, 0, 0, 0, 1];
+                Q.cup_thirdsector_dissent += Math.max(-6, Math.min(6, cup_thirdsectorTaxDissent[projection.tax + 2] - cup_thirdsectorTaxDissent[Q.tax_policy_level + 2]));
             }
         }
         var forcedCuts = spending.some(function (kind) { return projection.levels[kind] < enactedBefore[kind]; });
@@ -884,7 +873,7 @@ on-arrival: {!
     }
     for (var record of Q.coalition_policy_commitments || []) {
         if (record.status != "pending_budget") continue;
-        var actual = record.kind == "tax_progressivity" ? Q.tax_policy_level : Q[record.kind];
+        var actual = Q[record.kind];
         if (actual >= record.target) {
             record.status = "applied";
             G.deactivateLaw(Q, "coalition_pending_" + record.kind, undefined, true);

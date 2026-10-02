@@ -34,61 +34,60 @@ The current [+ cat_coalition_disp +] is struggling with internal dissent, and th
 
 @concessions_jxcat
 title: Give policy concessions to JxCat
-view-if: coalition_affairs_includes_jxcat and jxcat_relations < 55 
+view-if: coalition_affairs_includes_jxcat and jxcat_relations < 55
+choose-if: generalitat_surplus < 0 or tax_policy_level > -2
+unavailable-subtitle: Autonomic Taxes are already at their lowest level.
 on-arrival: coalition_affairs_concession_target = "jxcat"
 go-to: concessions_ciu
 
 @concessions_jxsi
 title: Give policy concessions to JxSí
 view-if: coalition_affairs_includes_jxsi and jxsi_relations < 55
+choose-if: generalitat_surplus < 0 or tax_policy_level > -2
+unavailable-subtitle: Autonomic Taxes are already at their lowest level.
 on-arrival: coalition_affairs_concession_target = "jxsi"
 go-to: concessions_ciu
 
 @concessions_ciu
 title: Give policy concessions to [+ parlament_current_ciu +]
 view-if: player_party != "ciu" and coalition_affairs_includes_ciu and parlament_current_ciu_relations < 55
+choose-if: generalitat_surplus < 0 or tax_policy_level > -2
+unavailable-subtitle: Autonomic Taxes are already at their lowest level.
 on-arrival: {!
-    if (Q.generalitat_surplus < 0) {
-        var cut_round = 2
-        while (cut_round > -2) {
-            if (Q.education_spending == cut_round) {
-                Q.education_spending -= 1;
-                cut_round = -10;
-            } else if (Q.healthcare_spending == cut_round) {
-                Q.healthcare_spending -= 1;
-                cut_round = -10
-            } else if (Q.public_salary_level == cut_round) {
-                Q.public_salary_level -= 1;
-                cut_round = -10
+    if (Q.generalitat_surplus < 0 || Q.tax_policy_level > -2) {
+        if (Q.generalitat_surplus < 0) {
+            var cut_round = 2
+            while (cut_round > -2) {
+                if (Q.education_spending == cut_round) {
+                    Q.education_spending -= 1;
+                    cut_round = -10;
+                } else if (Q.healthcare_spending == cut_round) {
+                    Q.healthcare_spending -= 1;
+                    cut_round = -10
+                } else if (Q.public_salary_level == cut_round) {
+                    Q.public_salary_level -= 1;
+                    cut_round = -10
+                }
+                cut_round -= 1;
             }
-            cut_round -= 1;
-        }
-        if (cut_round == -3) {
-            if (!Q.economy_cuts) Q.economy_cuts = 1;
-            else Q.economy_cuts += 1;
-            G.registerLaw(Q, {id:"general_cuts_" + Q.economy_cuts, title:"Extraordinary Austerity Measures of " + Q.month + " " + Q.year,
-                colour:"red", icon:"img/scissors_icon.svg",
-                description: "Spending cuts have been applied across the board in another round of austerity measures.",
-                targets:{welfare_index_growth:-0.2, social_dissent_eq:1, generalitat_surplus: 0.1, unemployment_recovery: -0.1, gdp_growth: -0.01 }});
-        }
-    } else {
-        if (Q.tax_policy_level > -3) {
-            Q.tax_policy_level -= 1;
+            if (cut_round == -3) {
+                if (!Q.economy_cuts) Q.economy_cuts = 1;
+                else Q.economy_cuts += 1;
+                G.registerLaw(Q, {id:"general_cuts_" + Q.economy_cuts, title:"Extraordinary Austerity Measures of " + Q.month + " " + Q.year,
+                    colour:"red", icon:"img/scissors_icon.svg",
+                    description: "Spending cuts have been applied across the board in another round of austerity measures.",
+                    targets:{welfare_index_growth:-0.2, social_dissent_eq:1, generalitat_surplus: 0.1, unemployment_recovery: -0.1, gdp_growth: -0.01 }});
+            }
         } else {
-            if (!Q.economy_tax_cuts) Q.economy_tax_cuts = 1;
-            else Q.economy_tax_cuts += 1;
-            G.registerLaw(Q, {id:"economy_tax_cuts" + Q.economy_tax_cuts, title:"Tax Reduction Package of " + Q.month + " " + Q.year,
-                colour:"orange", icon:"img/economy_icon.svg",
-                description: "Taxes have been more or less equally across the board, though this makes the system slightly less progressive.",
-                targets:{generalitat_surplus: -0.03, gdp_growth: 0.025 }});
+            Q.tax_policy_level -= 1;
         }
-    }
-    if (Q.coalition_affairs_concession_target == "") {
-        Q[Q.parlament_current_ciu + "_relations"] += 8;
-        Q.burdens_done -= 1;
-    } else if (Q.coalition_affairs_concession_target != 0) {
-        Q[Q.coalition_affairs_concession_target + "_relations"] += 8;
-        Q.burdens_done -= 1;
+        if (Q.coalition_affairs_concession_target == "") {
+            Q[Q.parlament_current_ciu + "_relations"] += 8;
+            Q.burdens_done -= 1;
+        } else if (Q.coalition_affairs_concession_target != 0) {
+            Q[Q.coalition_affairs_concession_target + "_relations"] += 8;
+            Q.burdens_done -= 1;
+        }
     }
 !}
 call: generalitat_setpolicy
@@ -110,13 +109,13 @@ on-arrival: {!
     Q.coalition_affairs_concession_target = "psc";
     Q.random_seed = Math.random();
 !}
-go-to: concessions_ciu if random_seed <= 0.5; concessions_icv
+go-to: concessions_ciu if random_seed <= 0.5 and (generalitat_surplus < 0 or tax_policy_level > -2); concessions_icv if random_seed > 0.5 or (generalitat_surplus >= 0 and tax_policy_level <= -2)
 
 @concessions_icv
 title: Give concessions to [+ parlament_current_icv +]
 view-if: coalition_affairs_includes_icv and parlament_current_icv_relations < 55
-choose-if: (tax_policy_level >= -3 and tax_policy_level < 6) or (education_spending >= -2 and education_spending < 2 and education_spending < social_spending_cap) or (healthcare_spending >= -2 and healthcare_spending < 2 and healthcare_spending < social_spending_cap) or (public_salary_level >= -2 and public_salary_level < 2 and public_salary_level < social_spending_cap) or economy_cuts > 0
-unavailable-subtitle: Taxes are already at their limit, and no further spending increase or austerity reversal is available.
+choose-if: (tax_policy_level >= -2 and tax_policy_level < 2) or (education_spending >= -2 and education_spending < 2 and education_spending < social_spending_cap) or (healthcare_spending >= -2 and healthcare_spending < 2 and healthcare_spending < social_spending_cap) or (public_salary_level >= -2 and public_salary_level < 2 and public_salary_level < social_spending_cap) or economy_cuts > 0
+unavailable-subtitle: There's no austerity to revert, nor funding to public services expand!?.
 on-arrival: {!
     Q.coalition_affairs_icv_concession = "";
     var raiseField = "";
@@ -127,7 +126,7 @@ on-arrival: {!
         }
     }
     var canSpend = !!raiseField || Q.economy_cuts > 0;
-    var canTax = Q.tax_policy_level >= -3 && Q.tax_policy_level < 6;
+    var canTax = Q.tax_policy_level >= -2 && Q.tax_policy_level < 2;
     var spendingChance = Q.generalitat_surplus < 0 ? 0.3 : 0.7;
     spendingChance += (Q.social_dissent - 50) / 200;
     spendingChance += (50 - Q.welfare_index) / 200;
@@ -154,7 +153,7 @@ on-arrival: {!
 !}
 call: generalitat_setpolicy
 
-[? if coalition_affairs_icv_concession: [? if coalition_affairs_concession_target = "": [+ parlament_current_icv +]?][? if coalition_affairs_concession_target != "": [+ coalition_affairs_concession_target +]?] has _changebeen somewhat pleased by [? if coalition_affairs_icv_concession = "taxes": a progressive increase in taxes to fund public services. ?][? if coalition_affairs_icv_concession = "spending": an increase in funding for public services and workers. ?][? if coalition_affairs_icv_concession = "austerity": the reversal of extraordinary austerity measures. ?]Let's hope this is for the better.?]
+[? if coalition_affairs_icv_concession: [? if coalition_affairs_concession_target = "": [+ parlament_current_icv +]?][? if coalition_affairs_concession_target != "": [+ coalition_affairs_concession_target +]?] has _changebeen somewhat pleased by [? if coalition_affairs_icv_concession = "taxes": an increase in Autonomic Taxes to fund public services. ?][? if coalition_affairs_icv_concession = "spending": an increase in funding for public services and workers. ?][? if coalition_affairs_icv_concession = "austerity": the reversal of extraordinary austerity measures. ?]Let's hope this is for the better.?]
 
 @concessions_cup
 title: Give policy concessions to the CUP

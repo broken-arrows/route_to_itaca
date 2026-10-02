@@ -23,7 +23,7 @@
     },
     {
       "id": "ni_un_paper",
-      "name": "Ni un paper al terra",
+      "name": "Ni un paper a terra",
       "description": "Reach the end of the game without seeing any \"order-breaking\" pro-independence riot.",
       "stars": 1,
       "image": "img/achievements/ni_un_paper.jpg"
@@ -99,10 +99,17 @@
       "image": "img/achievements/asalto_cielos.avif"
     },
     {
+      "id": "barones",
+      "name": "Barones del PSOE",
+      "description": "Have the Barons of the PSOE successfully oust Pedro Sánchez and keep him away from the leadership for the rest of the game.",
+      "stars": 3,
+      "image": "img/achievements/barones.webp"
+    },
+    {
       "id": "josep_maria",
       "name": "Josep Maria",
       "description": "Manage to have the Catalan far-right break into the Parlament a decade early.",
-      "stars": 3,
+      "stars": 4,
       "image": "img/achievements/josepmaria.png"
     },
     {
@@ -111,13 +118,6 @@
       "description": "Pass the Generalitat's budget every year, without fail, from 2013 to the end of the game.",
       "stars": 4,
       "image": "img/achievements/financially_responsible.png"
-    },
-    {
-      "id": "barones",
-      "name": "Barones del PSOE",
-      "description": "Have the Barons of the PSOE successfully oust Pedro Sánchez and keep him away from the leadership for the rest of the game.",
-      "stars": 4,
-      "image": "img/achievements/barones.webp"
     },
     {
       "id": "jxsi_de_debo",
@@ -129,7 +129,7 @@
     {
       "id": "frikitrens",
       "name": "Frikitrens",
-      "description": "Build out every single railway and metro project in the game.",
+      "description": "Build out every single railway and metro project in a single playthrough.",
       "stars": 4,
       "image": "img/achievements/frikitrens.jpg"
     },

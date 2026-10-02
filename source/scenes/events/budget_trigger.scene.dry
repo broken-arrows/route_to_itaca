@@ -11,7 +11,7 @@ on-arrival: {!
     var right = ["ciu", "cdc", "dl", "pdcat", "junts", "unio", "ppc", "cs", "vox"].includes(party);
     var cap = right ? Math.min(Q.social_spending_cap, Math.max(-2,
         Q.education_spending, Q.healthcare_spending, Q.public_salary_level)) : Math.min(3, Q.social_spending_cap + 1);
-    var tax = right ? Q.tax_policy_level : Math.min(6, Q.tax_policy_level + 2);
+    var tax = right ? Q.tax_policy_level : Math.min(2, Q.tax_policy_level + 2);
     function prepared(id) {
         var law = (Q.active_mods || {})[id];
         if (!law || !law.active || law.def.colour != "gray") return false;
@@ -32,21 +32,25 @@ on-arrival: {!
         rail1:prepared("territory_rail1"),
         rail2:prepared("territory_rail2") && !right
     };
+    var taxPromised = false;
     for (var record of Q.coalition_policy_commitments || []) {
         if (record.scope != "cabinet" || !["pending_budget", "applied"].includes(record.status)) continue;
         if (record.kind == "social_spending_cap") cap = Math.max(cap, record.target);
-        if (record.kind == "tax_progressivity") tax = Math.max(tax, Math.min(Q.tax_policy_level + 2, record.target));
+        if (record.kind == "tax_policy_level") {
+            tax = Math.max(tax, Math.min(2, Q.tax_policy_level + 2, record.target));
+            taxPromised = true;
+        }
     }
     // Prefer a restrained tax package, but seek revenue when inherited finances require it.
     if (right) {
-        var yields = [-3, -2, -1, 0, 3, 3, 2, 1.5, 2, 3];
+        var yields = [-3, -2, -1, 0, 1];
         var costs = (projects.county ? 1 : 0) + (projects.b40 ? 2 : 0) + (projects.metro1 ? 2 : 0) + (projects.metro2 ? 1 : 0) +
             (projects.water2 ? 1 : 0) + (projects.water3 ? 2 : 0) + (projects.tmobilitat2 ? 2 : 0) + (projects.rail1 ? 1 : 0) + (projects.rail2 ? 2 : 0);
         var bestMargin = -Infinity;
         var minimumTax = tax;
-        for (var candidate = Math.max(-3, Q.tax_policy_level - 2); candidate <= Math.min(6, Q.tax_policy_level + 2); candidate++) {
-            if (candidate < minimumTax || party == "ciu" && candidate >= 4) continue;
-            var margin = 1 + Q.generalitat_surplus / 0.7 + yields[candidate + 3] - yields[Q.tax_policy_level + 3] -
+        for (var candidate = Math.max(-2, Q.tax_policy_level - 2); candidate <= Math.min(2, Q.tax_policy_level + 2); candidate++) {
+            if (candidate < minimumTax || party == "ciu" && candidate >= 2 && !taxPromised) continue;
+            var margin = 1 + Q.generalitat_surplus / 0.7 + yields[candidate + 2] - yields[Q.tax_policy_level + 2] -
                 2 * (cap - Q.social_spending_cap) - costs;
             if (margin > bestMargin) { tax = candidate; bestMargin = margin; }
             if (margin >= 0) break;
