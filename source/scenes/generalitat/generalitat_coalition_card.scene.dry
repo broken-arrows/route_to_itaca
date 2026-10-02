@@ -70,13 +70,13 @@ on-arrival: {!
                 }
                 cut_round -= 1;
             }
-            if (cut_round == -3) {
+            if (cut_round == -2) {
                 if (!Q.economy_cuts) Q.economy_cuts = 1;
                 else Q.economy_cuts += 1;
                 G.registerLaw(Q, {id:"general_cuts_" + Q.economy_cuts, title:"Extraordinary Austerity Measures of " + Q.month + " " + Q.year,
                     colour:"red", icon:"img/scissors_icon.svg",
                     description: "Spending cuts have been applied across the board in another round of austerity measures.",
-                    targets:{welfare_index_growth:-0.2, social_dissent_eq:1, generalitat_surplus: 0.1, unemployment_recovery: -0.1, gdp_growth: -0.01 }});
+                    targets:{welfare_index_growth:-0.2, social_dissent_eq:1, generalitat_surplus: 0.05, unemployment_recovery: -0.1, gdp_growth: -0.1 }});
             }
         } else {
             Q.tax_policy_level -= 1;

@@ -93,7 +93,7 @@ on-arrival: {!
         G.registerLaw(Q, {id:"economy_atc2", title:"State-Ready Catalan Tax Agency",
             colour:"green", icon:"img/economy_icon.svg",
             description:"A state-ready territorial network, staff and systems extend the strengthened tax agency. Additional revenue gains develop gradually; Spanish tax powers have not been transferred.",
-            ramp_ticks:12, targets:{generalitat_surplus:0.005}});
+            ramp_ticks:12, targets:{generalitat_surplus:0.015}});
         Q.independence_trust = Math.min(100, Q.independence_trust + 2);
         var coalitionPartners = (Q.cat_coalition || []).slice();
         for (var list of ["jxsi", "jxcat"]) {
@@ -189,7 +189,7 @@ on-arrival: {!
         G.registerLaw(Q, {id:"economy_asset_sale_" + Q.economy_asset_sales,
             title:"Public Buildings Sale and Leaseback " + Q.economy_asset_sales,
             description:"A package of Generalitat administrative buildings has been sold. Continued use requires ongoing rental payments.",
-            targets:{generalitat_surplus: -0.003}});
+            targets:{generalitat_surplus: -0.01}});
         var coalitionPartners = (Q.cat_coalition || []).slice();
         for (var list of ["jxsi", "jxcat"]) {
             if (coalitionPartners.includes(list)) {
@@ -371,7 +371,7 @@ on-arrival: {!
     Q.economy_budget_proposal = {
         tax_policy_level: Q.tax_policy_level,
         social_spending_cap: Q.social_spending_cap,
-        projects: {county:false, b40:false, metro1:false, metro2:false, water2:false, water3:false, tmobilitat2:false, rail1:false, rail2:false}
+        projects: {county:false, b40:false, metro1:false, metro2:false, water2:false, water3:false, tmobilitat2:false, rail1:false, rail2:false, icf:false}
     };
 !}
 go-to: budget_review
@@ -426,6 +426,13 @@ on-arrival: {!
     Q.economy_budget_rail1 = !!proposal.projects.rail1;
     Q.economy_budget_rail2_available = prepared("territory_rail2");
     Q.economy_budget_rail2 = !!proposal.projects.rail2;
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    Q.economy_budget_icf_available = prepared("bnl_icf_proposal") && Q.bnl_icf_level == 1 &&
+        ["guarantees", "cooperative"].includes(Q.bnl_icf_prepared_branch) && !Q.cat_caretaker_gov &&
+        controlledParties.includes(Q.bnl_minister_party) && controlledParties.includes(Q.economy_minister_party);
+    Q.economy_budget_icf = !!proposal.projects.icf;
+    Q.economy_budget_icf_name = Q.bnl_icf_prepared_branch == "cooperative" ? "ICF cooperative and social-economy lending" : "expanded ICF public guarantees";
+    if (proposal.projects.icf && !Q.economy_budget_icf_available) Q.economy_budget_valid = false;
 !}
 
 = Prepare the annual budget
@@ -444,6 +451,7 @@ Projects:
 [? if economy_budget_tmobilitat2: - Catalonia-Wide T-mobilitat. ?]
 [? if economy_budget_rail1: - Lleida-La Pobla Railway. ?]
 [? if economy_budget_rail2: - Camp de Tarragona and Girona counties Train-Trams. ?]
+[? if economy_budget_icf: - [+ economy_budget_icf_name +]. ?]
 
 While this is our proposal, passing it through the Parlament may require some tweaks to gather enough support, but we'll cross that bridge once we get there.
 
@@ -460,6 +468,7 @@ While this is our proposal, passing it through the Parlament may require some tw
 - @budget_tmobilitat2
 - @budget_rail1
 - @budget_rail2
+- @budget_icf
 - @submit_budget
 - @post_event: Leave this proposal unsubmitted
 
@@ -568,6 +577,16 @@ title: [? if economy_budget_rail2: Remove ?][? if not economy_budget_rail2: Incl
 view-if: economy_budget_rail2_available
 on-arrival: {!
     Q.economy_budget_proposal.projects.rail2 = !Q.economy_budget_proposal.projects.rail2;
+!}
+go-to: budget_review
+
+@budget_icf
+title: [? if economy_budget_icf: Remove ?][? if not economy_budget_icf: Include ?] [+ economy_budget_icf_name +]
+view-if: economy_budget_icf_available or economy_budget_icf
+choose-if: economy_budget_icf_available or economy_budget_icf
+on-arrival: {!
+    if (Q.economy_budget_icf_available || Q.economy_budget_proposal.projects.icf)
+        Q.economy_budget_proposal.projects.icf = !Q.economy_budget_proposal.projects.icf;
 !}
 go-to: budget_review
 

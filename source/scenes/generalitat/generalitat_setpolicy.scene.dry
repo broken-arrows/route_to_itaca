@@ -353,11 +353,11 @@ on-arrival: {!
         {id:"public_salary_improvement", applies:Q.public_salary_level > 0,
             title:"Improved Public-Sector Pay", colour:"green",
             description:"Negotiated improvements to public-service workers have been approved.",
-            targets:{welfare_index_growth:0.04, social_dissent_eq:-0.5, generalitat_surplus:-0.02}},
+            targets:{welfare_index_growth:0.06, social_dissent_eq:-0.5, generalitat_surplus:-0.02}},
         {id:"public_salary_expansion", applies:Q.public_salary_level == 2,
             title:"Broad Public-Sector Pay Improvements", colour:"green",
             description:"Further improvements to Generalitat-overseen public workers have led to a betterment of conditions across the boards.",
-            targets:{welfare_index_growth:0.05, social_dissent_eq:-1, generalitat_surplus:-0.03}}
+            targets:{welfare_index_growth:0.08, social_dissent_eq:-1, generalitat_surplus:-0.03}}
     ];
     salaryPolicies.forEach(function (policy) {
         if (!policy.applies) {
@@ -379,6 +379,32 @@ on-arrival: {!
             G.deactivateLaw(Q, raise.law, undefined, true);
         }
     });
+    // Tourism has one current package; union preference is hidden preparation
+    // for future mobilisation events, with no standing macroeconomic reward.
+    var tourismTargets = {
+        "-2":{gdp_growth:-0.20, welfare_index_growth:0.18, social_dissent_eq:-3},
+        "-1":{gdp_growth:-0.08, welfare_index_growth:0.10, social_dissent_eq:-1.5},
+        "1":{gdp_growth:0.15, welfare_index_growth:-0.15, social_dissent_eq:2},
+        "2":{gdp_growth:0.18, welfare_index_growth:-0.35, social_dissent_eq:4}
+    };
+    var tourism = (Q.active_mods || {}).bnl_tourism;
+    if (Q.bnl_tourism_level == 0) G.deactivateLaw(Q, "bnl_tourism", undefined, true);
+    else if (tourismTargets[Q.bnl_tourism_level] && (!tourism || !tourism.active || tourism.def.bnl_level != Q.bnl_tourism_level)) {
+        var tourismNames = ["Strongly Restrictive", "Restrictive", "Ordinary", "Permissive", "Strongly Permissive"];
+        G.registerLaw(Q, {id:"bnl_tourism", title:tourismNames[Q.bnl_tourism_level + 2] + " Tourism Policy",
+            colour:Q.bnl_tourism_level < 0 ? "green" : Q.bnl_tourism_level >= 2 ? "red" : "orange", icon:"img/tourism_icon.svg", bnl_level:Q.bnl_tourism_level,
+            description:Q.bnl_tourism_level < 0 ? "Accommodation regulation and enforcement limit tourism expansion." :
+                "Accommodation regulation favours tourism expansion, to the dismay of many residents.",
+            targets:tourismTargets[Q.bnl_tourism_level]});
+    }
+    var unionPolicy = (Q.active_mods || {}).bnl_union_policy;
+    if (Q.bnl_union_level == 0) G.deactivateLaw(Q, "bnl_union_policy", undefined, true);
+    else if (Number.isInteger(Q.bnl_union_level) && Q.bnl_union_level >= -2 && Q.bnl_union_level <= 2 &&
+        (!unionPolicy || !unionPolicy.active || unionPolicy.def.bnl_level != Q.bnl_union_level)) {
+        G.registerLaw(Q, {id:"bnl_union_policy", title:"Union Institutional Preference", bnl_level:Q.bnl_union_level,
+            description:"Institutional preference informs future union mobilization events.", targets:{}});
+        Q.active_mods.bnl_union_policy.hidden = true;
+    }
     // Each Territory track has one enacted package. Prepared projects have
     // their own empty-target records until funding and delivery are complete.
     var territoryPackages = [

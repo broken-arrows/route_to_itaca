@@ -1040,7 +1040,7 @@
   // | unemployment_recovery | u_delta directly                                | natural u_delta ≈ -0.9 to +0.6/tick cat_engine.js                | ±0.02–0.08   | ±0.08–0.2    | ±0.2–0.4     |
   // | welfare_index_growth  | welfare_delta, pre-cap                          | delta capped to [-1.2, +0.8]/tick cat_engine.js                  | ±0.05–0.15   | ±0.15–0.4    | ±0.4–0.8     |
   // | welfare_index_abs     | level directly, uncapped                        | no natural analog — new lever                                    | ±0.02–0.05   | ±0.05–0.15   | ±0.15–0.3    |
-  // | generalitat_surplus   | surplus drift                                   | base_drift≈0.02; gdp effect≈0.035; noise σ=0.1 cat_engine.js     | ±0.01–0.03   | ±0.03–0.08   | ±0.08–0.15   |
+  // | generalitat_surplus   | surplus drift                                   | base_drift≈0.02; gdp effect≈0.0015 at 3%; noise σ=0.1          | ±0.01–0.03   | ±0.03–0.08   | ±0.08–0.15   |
   // | cat_spa_relations     | cat_spa_drift                                   | normal ±0.15; ART155 shock=-2.0; noise σ=0.6 cat_engine.js       | ±0.1–0.3     | ±0.3–0.8     | ±0.8–2.0     |
   // | independence_trust    | trust_drift                                     | normal +0.06; ART155 penalty=-1.8; noise σ=0.4 cat_engine.js     | ±0.1–0.3     | ±0.3–0.8     | ±0.8–1.8     |
   // | social_dissent_eq     | dissent equilibrium (eq), approached at 4%/tick | unemp_contrib up to ~70; welfare_contrib up to ~28 cat_engine.js | ±1–3         | ±3–8         | ±8–15        |

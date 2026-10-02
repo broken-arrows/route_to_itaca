@@ -19,6 +19,11 @@ on-arrival: {!
         if (id == "territory_water3") return Q.territory_water == 2;
         if (id == "territory_tmobilitat2") return Q.territory_tmobilitat == 1;
         if (id == "territory_rail2") return Q.territory_tmobilitat == 2;
+        if (id == "bnl_icf_proposal") {
+            var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+            return Q.bnl_icf_level == 1 && ["guarantees", "cooperative"].includes(Q.bnl_icf_prepared_branch) &&
+                !Q.cat_caretaker_gov && controlledParties.includes(Q.bnl_minister_party) && controlledParties.includes(Q.economy_minister_party);
+        }
         return true;
     }
     var projects = {
@@ -32,6 +37,7 @@ on-arrival: {!
         rail1:prepared("territory_rail1"),
         rail2:prepared("territory_rail2") && !right
     };
+    projects.icf = prepared("bnl_icf_proposal") && (Q.bnl_icf_prepared_branch == "guarantees" || !right);
     var taxPromised = false;
     for (var record of Q.coalition_policy_commitments || []) {
         if (record.scope != "cabinet" || !["pending_budget", "applied"].includes(record.status)) continue;
@@ -45,7 +51,7 @@ on-arrival: {!
     if (right) {
         var yields = [-3, -2, -1, 0, 1];
         var costs = (projects.county ? 1 : 0) + (projects.b40 ? 2 : 0) + (projects.metro1 ? 2 : 0) + (projects.metro2 ? 1 : 0) +
-            (projects.water2 ? 1 : 0) + (projects.water3 ? 2 : 0) + (projects.tmobilitat2 ? 2 : 0) + (projects.rail1 ? 1 : 0) + (projects.rail2 ? 2 : 0);
+            (projects.water2 ? 1 : 0) + (projects.water3 ? 2 : 0) + (projects.tmobilitat2 ? 2 : 0) + (projects.rail1 ? 1 : 0) + (projects.rail2 ? 2 : 0) + (projects.icf ? 2 : 0);
         var bestMargin = -Infinity;
         var minimumTax = tax;
         for (var candidate = Math.max(-2, Q.tax_policy_level - 2); candidate <= Math.min(2, Q.tax_policy_level + 2); candidate++) {

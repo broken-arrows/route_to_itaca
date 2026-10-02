@@ -31,9 +31,11 @@ on-arrival: {!
         "Restore ordinary services and pay", "Authorize expanded services and improved pay",
         "Authorize modernized services and broader pay improvements",
         "Full spending authorization, including exceptional service laws"];
-    var projectIds = {county:"territory_county_roads", b40:"territory_b40", metro1:"territory_metro1", metro2:"territory_metro2", water2:"territory_water2", water3:"territory_water3", tmobilitat2:"territory_tmobilitat2", rail1:"territory_rail1", rail2:"territory_rail2"};
-    var projectCosts = {county:1, b40:2, metro1:2, metro2:1, water2:1, water3:2, tmobilitat2:2, rail1:1, rail2:2};
+    var projectIds = {county:"territory_county_roads", b40:"territory_b40", metro1:"territory_metro1", metro2:"territory_metro2", water2:"territory_water2", water3:"territory_water3", tmobilitat2:"territory_tmobilitat2", rail1:"territory_rail1", rail2:"territory_rail2", icf:"bnl_icf_proposal"};
+    var projectCosts = {county:1, b40:2, metro1:2, metro2:1, water2:1, water3:2, tmobilitat2:2, rail1:1, rail2:2, icf:2};
     var available = {};
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    Q.parlament_budget_icf_name = Q.bnl_icf_prepared_branch == "cooperative" ? "ICF cooperative and social-economy lending" : "expanded ICF public guarantees";
     for (var key of Object.keys(projectIds)) {
         var law = (Q.active_mods || {})[projectIds[key]];
         available[key] = !!law && law.active && law.def.colour == "gray";
@@ -41,6 +43,9 @@ on-arrival: {!
         if (key == "water3") available[key] = available[key] && (Q.territory_water == 2);
         if (key == "tmobilitat2") available[key] = available[key] && (Q.territory_tmobilitat == 1);
         if (key == "rail2") available[key] = available[key] && (Q.territory_tmobilitat == 2);
+        if (key == "icf") available[key] = available[key] && Q.bnl_icf_level == 1 &&
+            ["guarantees", "cooperative"].includes(Q.bnl_icf_prepared_branch) && !Q.cat_caretaker_gov &&
+            controlledParties.includes(Q.bnl_minister_party) && controlledParties.includes(Q.economy_minister_party);
         Q["parlament_budget_" + key + "_available"] = available[key];
         Q["parlament_budget_" + key] = !!draft.projects[key];
     }
@@ -288,6 +293,7 @@ on-arrival: {!
             if (available.b40) proposed.projects.b40 = true;
             if (available.water2) proposed.projects.water2 = true;
             if (available.rail1) proposed.projects.rail1 = true;
+            if (available.icf && Q.bnl_icf_prepared_branch == "guarantees") proposed.projects.icf = true;
         } else {
             proposed.tax_policy_level = Math.min(taxMax, draft.tax_policy_level + 1);
             proposed.social_spending_cap = Math.min(capMax, draft.social_spending_cap + 1);
@@ -299,10 +305,11 @@ on-arrival: {!
             else if (available.rail1) proposed.projects.rail1 = true;
             if (available.water3) proposed.projects.water3 = true;
             else if (available.water2) proposed.projects.water2 = true;
+            if (available.icf && Q.bnl_icf_prepared_branch == "cooperative") proposed.projects.icf = true;
         }
         if (proposed.tax_policy_level != draft.tax_policy_level) terms.push("Autonomic Taxes: " + taxProfiles[proposed.tax_policy_level + 2].name + ".");
         if (proposed.social_spending_cap != draft.social_spending_cap) terms.push("Spending authorization: " + capNames[proposed.social_spending_cap + 2] + ".");
-        var projectNames = {county:"county roads", b40:"the B-40", metro1:"the L9/L10", metro2:"the L1/L3 expansion", water2:"public water facilities", water3:"public water supply and management", tmobilitat2: "Catalonia-wide T-mobilitat", rail1:"the Lleida-La Pobla railway", rail2:"the Tarragona and Girona train-trams"};
+        var projectNames = {county:"county roads", b40:"the B-40", metro1:"the L9/L10", metro2:"the L1/L3 expansion", water2:"public water facilities", water3:"public water supply and management", tmobilitat2: "Catalonia-wide T-mobilitat", rail1:"the Lleida-La Pobla railway", rail2:"the Tarragona and Girona train-trams", icf:Q.parlament_budget_icf_name};
         for (var key of Object.keys(projectIds)) if (proposed.projects[key] != draft.projects[key]) terms.push((proposed.projects[key] ? "Fund " : "Remove ") + projectNames[key] + ".");
         var p = project(proposed);
         var reasons = hardVetoReasons(party, proposed, p);
@@ -366,6 +373,7 @@ on-arrival: {!
 [? if parlament_budget_tmobilitat2: · Fund public Catalonia-wide T-mobilitat.?]
 [? if parlament_budget_rail1: · Fund the Lleida-La Pobla railway.?]
 [? if parlament_budget_rail2: · Fund the Tarragona and Girona train-trams.?]
+[? if parlament_budget_icf: · Fund [+ parlament_budget_icf_name +].?]
 
 [? if parlament_budget_commitment_summary: **Agreed policy commitments:** [+ parlament_budget_commitment_summary +]?]
 
@@ -395,6 +403,7 @@ on-arrival: {!
 - @tmobilitat2
 - @rail1
 - @rail2
+- @icf
 - @vote_yes
 - @vote_no
 - @approach_cup
@@ -533,6 +542,19 @@ on-arrival: {!
 !}
 go-to: review
 
+@icf
+title: [? if parlament_budget_icf: Remove ?][? if not parlament_budget_icf: Fund ?] [+ parlament_budget_icf_name +]
+view-if: parlament_budget_icf_available or parlament_budget_icf
+choose-if: parlament_budget_icf_available or parlament_budget_icf
+on-arrival: {!
+    if (Q.parlament_budget_icf_available || Q.budget_draft.projects.icf) {
+        Q.budget_draft.projects.icf = !Q.budget_draft.projects.icf;
+        Q.parlament_budget_deals = [];
+        Q.parlament_budget_changes_made = true;
+    }
+!}
+go-to: review
+
 @vote_yes
 title: Change our party's vote to YES
 view-if: parlament_budget_player_has_seats and parlament_budget_player_position != "yes"
@@ -622,6 +644,16 @@ unavailable-subtitle: [? if not parlament_budget_chamber_majority: Not enough pa
 on-arrival: {!
     if (!Q.parlament_budget_can_pass || Q.budget_year >= Q.year || Q.party_resources < Q.parlament_budget_player_resource_cost)
         throw new Error("Budget approval conditions changed");
+    // Recheck ICF funding authority before charging resources or enacting any terms.
+    if (Q.budget_draft.projects.icf) {
+        var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+        var icfProposal = (Q.active_mods || {}).bnl_icf_proposal;
+        if (Q.cat_caretaker_gov || !controlledParties.includes(Q.bnl_minister_party) ||
+            !controlledParties.includes(Q.economy_minister_party) || Q.bnl_icf_level != 1 ||
+            !["guarantees", "cooperative"].includes(Q.bnl_icf_prepared_branch) ||
+            !icfProposal || !icfProposal.active || icfProposal.def.colour != "gray")
+            throw new Error("ICF budget funding conditions changed");
+    }
     var projection = Q.parlament_budget_projection;
     var origin = Q.budget_draft_origin;
     Q.party_resources -= Q.parlament_budget_player_resource_cost;
@@ -878,6 +910,23 @@ on-arrival: {!
             record.status = "applied";
             G.deactivateLaw(Q, "coalition_pending_" + record.kind, undefined, true);
         }
+    }
+    if (Q.parlament_budget_icf && Q.bnl_icf_level == 1 &&
+        ["guarantees", "cooperative"].includes(Q.bnl_icf_prepared_branch) && !Q.cat_caretaker_gov &&
+        [Q.player_party, Q.player_in_jxsi ? "jxsi" : null, Q.player_in_jxcat ? "jxcat" : null].includes(Q.bnl_minister_party) &&
+        [Q.player_party, Q.player_in_jxsi ? "jxsi" : null, Q.player_in_jxcat ? "jxcat" : null].includes(Q.economy_minister_party)) {
+        Q.bnl_icf_level = 2;
+        Q.bnl_icf_branch = Q.bnl_icf_prepared_branch;
+        Q.bnl_icf_prepared_branch = null;
+        G.deactivateLaw(Q, "bnl_icf_proposal", undefined, true);
+        if (Q.active_mods && Q.active_mods.bnl_icf1) Q.active_mods.bnl_icf1.hidden = true;
+        var cooperative = Q.bnl_icf_branch == "cooperative";
+        G.registerLaw(Q, {id:"bnl_icf2", title:cooperative ? "ICF Cooperative and Social-Economy Lending" : "Expanded ICF Public Guarantees",
+            colour:"green", icon:"img/economy_icon.svg", bnl_branch:Q.bnl_icf_branch, ramp_ticks:6,
+            description:cooperative ? "Dedicated ICF finance supports cooperatives and social-economy enterprises alongside existing SME lending." :
+                "Expanded public guarantees improve business access to investment finance alongside existing SME lending.",
+            targets:cooperative ? {gdp_growth:0.04, unemployment_recovery:0.01, welfare_index_growth:0.06, generalitat_surplus:-0.02} :
+                {gdp_growth:0.12, unemployment_recovery:0.02, generalitat_surplus:-0.02}});
     }
     if (Q.parlament_budget_county) {
         Q.territory_roads_approved = Math.max(Q.territory_roads_approved, 1);

@@ -143,6 +143,12 @@ on-arrival: {!
   Q.tax_policy_level = 1;
   Q.economy_atc_level = 0;
   Q.economy_asset_sales = 0;
+  Q.bnl_icf_level = 0;
+  Q.bnl_icf_branch = null;
+  Q.bnl_icf_prepared_branch = null;
+  Q.bnl_inspection_level = 0;
+  Q.bnl_tourism_level = 0;
+  Q.bnl_union_level = 0;
   Q.social_spending_cap = 0;
   Q.climate_transition_points = 0;
   Q.territory_roads_approved = 0;  

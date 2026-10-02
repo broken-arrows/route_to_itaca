@@ -158,6 +158,38 @@
       }
     },
     {
+      "id": "ccoo",
+      "match": ["CCOO"],
+      "display": "CCOO",
+      "colour": "#ed292d",
+      "bold": true,
+      "tooltip": {
+        "title": "Workers' Comissions",
+        "subtitle": "Comisiones Obreras",
+        "img": "img/parties/logo_ccoo.svg",
+        "infoDesc": "Workers' Union",
+        "q": {
+          "ideology": "Social Democracy, Federalism"
+        }
+      }
+    },
+    {
+      "id": "ugt",
+      "match": ["UGT"],
+      "display": "UGT",
+      "colour": "#851412",
+      "bold": true,
+      "tooltip": {
+        "title": "General Union of Workers",
+        "subtitle": "Unión General de Trabajadores",
+        "img": "img/parties/logo_ugt.png",
+        "infoDesc": "Workers' Union",
+        "q": {
+          "ideology": "Social Democracy, Federalism"
+        }
+      }
+    },
+    {
       "id": "artur_mas",
       "match": ["Artur Mas", "Artur Mas i Gavarró", "artur mas"],
       "colour": "cdc",
