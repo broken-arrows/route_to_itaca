@@ -104,6 +104,16 @@ on-arrival: {!
             Q["ppc" + "_relations"] += 1 * 1 * (coalitionPartners.includes("ppc") ? 2 : 1);
         if (!controlledParties.includes("cs") && Number.isFinite(Q["cs" + "_relations"]))
             Q["cs" + "_relations"] += 1 * 1 * (coalitionPartners.includes("cs") ? 2 : 1);
+        if (Q.pdcat_split && Q.parlament_current_ciu != "pdcat" && !controlledParties.includes("pdcat") && Number.isFinite(Q.pdcat_relations))
+            Q.pdcat_relations += 2 * (coalitionPartners.includes("pdcat") ? 2 : 1);
+        if (Q.unio_split && !Q.unio_dissolved && Q.parlament_current_ciu != "unio" && !controlledParties.includes("unio") && Number.isFinite(Q.unio_relations))
+            Q.unio_relations += 1 * (coalitionPartners.includes("unio") ? 2 : 1);
+        if (Q.fnc_formed && !controlledParties.includes("fnc") && Number.isFinite(Q.fnc_relations))
+            Q.fnc_relations += 1 * (coalitionPartners.includes("fnc") ? 2 : 1);
+        if (!Q.pxc_dissolved && !controlledParties.includes("pxc") && Number.isFinite(Q.pxc_relations))
+            Q.pxc_relations += 1 * (coalitionPartners.includes("pxc") ? 2 : 1);
+        if (Q.vox_active && !controlledParties.includes("vox") && Number.isFinite(Q.vox_relations))
+            Q.vox_relations += 1 * (coalitionPartners.includes("vox") ? 2 : 1);
         for (var list of ["jxsi", "jxcat"]) {
             if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
                 list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
@@ -157,6 +167,16 @@ on-arrival: {!
             Q["ppc" + "_relations"] += 1 * 1 * (coalitionPartners.includes("ppc") ? 2 : 1);
         if (!controlledParties.includes("cs") && Number.isFinite(Q["cs" + "_relations"]))
             Q["cs" + "_relations"] += 1 * 1 * (coalitionPartners.includes("cs") ? 2 : 1);
+        if (Q.pdcat_split && Q.parlament_current_ciu != "pdcat" && !controlledParties.includes("pdcat") && Number.isFinite(Q.pdcat_relations))
+            Q.pdcat_relations += 2 * (coalitionPartners.includes("pdcat") ? 2 : 1);
+        if (Q.unio_split && !Q.unio_dissolved && Q.parlament_current_ciu != "unio" && !controlledParties.includes("unio") && Number.isFinite(Q.unio_relations))
+            Q.unio_relations += 1 * (coalitionPartners.includes("unio") ? 2 : 1);
+        if (Q.fnc_formed && !controlledParties.includes("fnc") && Number.isFinite(Q.fnc_relations))
+            Q.fnc_relations += 1 * (coalitionPartners.includes("fnc") ? 2 : 1);
+        if (!Q.pxc_dissolved && !controlledParties.includes("pxc") && Number.isFinite(Q.pxc_relations))
+            Q.pxc_relations += 1 * (coalitionPartners.includes("pxc") ? 2 : 1);
+        if (Q.vox_active && !controlledParties.includes("vox") && Number.isFinite(Q.vox_relations))
+            Q.vox_relations += 1 * (coalitionPartners.includes("vox") ? 2 : 1);
         for (var list of ["jxsi", "jxcat"]) {
             if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
                 list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
@@ -209,6 +229,16 @@ on-arrival: {!
             Q["ppc" + "_relations"] += -2 * 1 * (coalitionPartners.includes("ppc") ? 2 : 1);
         if (!controlledParties.includes("cs") && Number.isFinite(Q["cs" + "_relations"]))
             Q["cs" + "_relations"] += -2 * 1 * (coalitionPartners.includes("cs") ? 2 : 1);
+        if (Q.pdcat_split && Q.parlament_current_ciu != "pdcat" && !controlledParties.includes("pdcat") && Number.isFinite(Q.pdcat_relations))
+            Q.pdcat_relations += 1 * (coalitionPartners.includes("pdcat") ? 2 : 1);
+        if (Q.unio_split && !Q.unio_dissolved && Q.parlament_current_ciu != "unio" && !controlledParties.includes("unio") && Number.isFinite(Q.unio_relations))
+            Q.unio_relations += -1 * (coalitionPartners.includes("unio") ? 2 : 1);
+        if (Q.fnc_formed && !controlledParties.includes("fnc") && Number.isFinite(Q.fnc_relations))
+            Q.fnc_relations += 2 * (coalitionPartners.includes("fnc") ? 2 : 1);
+        if (!Q.pxc_dissolved && !controlledParties.includes("pxc") && Number.isFinite(Q.pxc_relations))
+            Q.pxc_relations += -2 * (coalitionPartners.includes("pxc") ? 2 : 1);
+        if (Q.vox_active && !controlledParties.includes("vox") && Number.isFinite(Q.vox_relations))
+            Q.vox_relations += -3 * (coalitionPartners.includes("vox") ? 2 : 1);
         for (var list of ["jxsi", "jxcat"]) {
             if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
                 list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
@@ -269,6 +299,16 @@ on-arrival: {!
             Q["ppc" + "_relations"] += -1 * 1 * (coalitionPartners.includes("ppc") ? 2 : 1);
         if (!controlledParties.includes("cs") && Number.isFinite(Q["cs" + "_relations"]))
             Q["cs" + "_relations"] += -1 * 1 * (coalitionPartners.includes("cs") ? 2 : 1);
+        if (Q.pdcat_split && Q.parlament_current_ciu != "pdcat" && !controlledParties.includes("pdcat") && Number.isFinite(Q.pdcat_relations))
+            Q.pdcat_relations += 1 * (coalitionPartners.includes("pdcat") ? 2 : 1);
+        if (Q.unio_split && !Q.unio_dissolved && Q.parlament_current_ciu != "unio" && !controlledParties.includes("unio") && Number.isFinite(Q.unio_relations))
+            Q.unio_relations += -1 * (coalitionPartners.includes("unio") ? 2 : 1);
+        if (Q.fnc_formed && !controlledParties.includes("fnc") && Number.isFinite(Q.fnc_relations))
+            Q.fnc_relations += 2 * (coalitionPartners.includes("fnc") ? 2 : 1);
+        if (!Q.pxc_dissolved && !controlledParties.includes("pxc") && Number.isFinite(Q.pxc_relations))
+            Q.pxc_relations += -1 * (coalitionPartners.includes("pxc") ? 2 : 1);
+        if (Q.vox_active && !controlledParties.includes("vox") && Number.isFinite(Q.vox_relations))
+            Q.vox_relations += -2 * (coalitionPartners.includes("vox") ? 2 : 1);
         for (var list of ["jxsi", "jxcat"]) {
             if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
                 list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))

@@ -6,6 +6,8 @@ tags: event
 new-page: true
 max-visits: 1
 on-arrival: {!
+    if (!Number.isFinite(Q.fnc_relations))
+        Q.fnc_relations = Number.isFinite(Q.pxc_relations) ? Q.pxc_relations : 0;
     Q.fnc_formed = true;
     Q.pxc_dissolved = true;
     for (var c of Q.parlament_constituencies) {

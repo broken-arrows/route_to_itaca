@@ -137,9 +137,6 @@ on-arrival: {!
   Q.education_spending = -1;
   Q.healthcare_spending = -1;
   Q.public_salary_level = -1;
-  Q.public_salary_prepared_level = null;
-  Q.education_prepared_level = null;
-  Q.healthcare_prepared_level = null;
   Q.tax_policy_level = 1;
   Q.economy_atc_level = 0;
   Q.economy_asset_sales = 0;
@@ -175,6 +172,7 @@ on-arrival: {!
   Q.parlament_s_majority = Math.floor(Q.parlament_size/2) + 1;
 
   Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si', 'cdc', 'unio', 'dl', 'jxsi', 'junts', 'jxcat', 'pdcat', 'csqp', 'cecp', 'ecp', 'vox', 'fnc', 'pxc'];
+  Q.fnc_relations = 0;
 
   Q.parlament_current_ciu = "ciu";
   Q.parlament_current_icv = "icv";

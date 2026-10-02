@@ -361,7 +361,7 @@ on-arrival: {!
 
 [? if economy_minister_gender = "f": Consellera?][? if economy_minister_gender = "m": Conseller?] of Economy [+ economy_minister +] has submitted a budget for the [+ year +], which would give the current [+ cat_coalition_disp +] breathing room to operate. [? if parlament_budget_changes_made: After amendments, the terms are:?][? if not parlament_budget_changes_made: [? if economy_minister_gender = "f": Her?][? if economy_minister_gender = "m": His?] proposed terms are:?]
 
-· Regional Taxes: **[+ parlament_budget_tax_name +]**.
+· Autonomic Taxes: **[+ parlament_budget_tax_name +]**.
 
 · Spending authorization: **[+ parlament_budget_cap_name +]**.
 
@@ -806,6 +806,16 @@ on-arrival: {!
             var csTaxAffinity = [3, 2, 1, 0, -2];
             if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
                 Q.cs_relations += Math.max(-4, Math.min(4, csTaxAffinity[projection.tax + 2] - csTaxAffinity[Q.tax_policy_level + 2])) * (coalitionPartners.includes("cs") ? 2 : 1);
+            if (Q.pdcat_split && Q.parlament_current_ciu != "pdcat" && !controlledParties.includes("pdcat") && Number.isFinite(Q.pdcat_relations))
+                Q.pdcat_relations += (Math.max(-4, Math.min(4, ciuTaxAffinity[projection.tax + 2] - ciuTaxAffinity[Q.tax_policy_level + 2]))) * (coalitionPartners.includes("pdcat") ? 2 : 1);
+            if (Q.unio_split && !Q.unio_dissolved && Q.parlament_current_ciu != "unio" && !controlledParties.includes("unio") && Number.isFinite(Q.unio_relations))
+                Q.unio_relations += (Math.max(-4, Math.min(4, ciuTaxAffinity[projection.tax + 2] - ciuTaxAffinity[Q.tax_policy_level + 2]))) * (coalitionPartners.includes("unio") ? 2 : 1);
+            if (Q.fnc_formed && !controlledParties.includes("fnc") && Number.isFinite(Q.fnc_relations))
+                Q.fnc_relations += (Math.max(-4, Math.min(4, ppcTaxAffinity[projection.tax + 2] - ppcTaxAffinity[Q.tax_policy_level + 2]))) * (coalitionPartners.includes("fnc") ? 2 : 1);
+            if (!Q.pxc_dissolved && !controlledParties.includes("pxc") && Number.isFinite(Q.pxc_relations))
+                Q.pxc_relations += (Math.max(-4, Math.min(4, ppcTaxAffinity[projection.tax + 2] - ppcTaxAffinity[Q.tax_policy_level + 2]))) * (coalitionPartners.includes("pxc") ? 2 : 1);
+            if (Q.vox_active && !controlledParties.includes("vox") && Number.isFinite(Q.vox_relations))
+                Q.vox_relations += (Math.max(-4, Math.min(4, ppcTaxAffinity[projection.tax + 2] - ppcTaxAffinity[Q.tax_policy_level + 2]))) * (coalitionPartners.includes("vox") ? 2 : 1);
             for (var list of ["jxsi", "jxcat"]) {
                 if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
                     list != Q.parlament_current_ciu && Number.isFinite(Q[list + "_relations"]))
@@ -848,6 +858,16 @@ on-arrival: {!
                             Q.ppc_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("ppc") ? 2 : 1);
                         if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
                             Q.cs_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("cs") ? 2 : 1);
+                        if (Q.pdcat_split && Q.parlament_current_ciu != "pdcat" && !controlledParties.includes("pdcat") && Number.isFinite(Q.pdcat_relations))
+                            Q.pdcat_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("pdcat") ? 2 : 1);
+                        if (Q.unio_split && !Q.unio_dissolved && Q.parlament_current_ciu != "unio" && !controlledParties.includes("unio") && Number.isFinite(Q.unio_relations))
+                            Q.unio_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("unio") ? 2 : 1);
+                        if (Q.fnc_formed && !controlledParties.includes("fnc") && Number.isFinite(Q.fnc_relations))
+                            Q.fnc_relations += 0 * (coalitionPartners.includes("fnc") ? 2 : 1);
+                        if (!Q.pxc_dissolved && !controlledParties.includes("pxc") && Number.isFinite(Q.pxc_relations))
+                            Q.pxc_relations += 0 * (coalitionPartners.includes("pxc") ? 2 : 1);
+                        if (Q.vox_active && !controlledParties.includes("vox") && Number.isFinite(Q.vox_relations))
+                            Q.vox_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("vox") ? 2 : 1);
                         // An outside cabinet list follows its CiU-family leadership.
                         for (var list of ["jxsi", "jxcat"]) {
                             if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
@@ -879,6 +899,16 @@ on-arrival: {!
                             Q.ppc_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("ppc") ? 2 : 1);
                         if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
                             Q.cs_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("cs") ? 2 : 1);
+                        if (Q.pdcat_split && Q.parlament_current_ciu != "pdcat" && !controlledParties.includes("pdcat") && Number.isFinite(Q.pdcat_relations))
+                            Q.pdcat_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("pdcat") ? 2 : 1);
+                        if (Q.unio_split && !Q.unio_dissolved && Q.parlament_current_ciu != "unio" && !controlledParties.includes("unio") && Number.isFinite(Q.unio_relations))
+                            Q.unio_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("unio") ? 2 : 1);
+                        if (Q.fnc_formed && !controlledParties.includes("fnc") && Number.isFinite(Q.fnc_relations))
+                            Q.fnc_relations += 0 * (coalitionPartners.includes("fnc") ? 2 : 1);
+                        if (!Q.pxc_dissolved && !controlledParties.includes("pxc") && Number.isFinite(Q.pxc_relations))
+                            Q.pxc_relations += 0 * (coalitionPartners.includes("pxc") ? 2 : 1);
+                        if (Q.vox_active && !controlledParties.includes("vox") && Number.isFinite(Q.vox_relations))
+                            Q.vox_relations += (previousLevel > 0 ? 1 : 0) * (coalitionPartners.includes("vox") ? 2 : 1);
                         // An outside cabinet list follows its CiU-family leadership.
                         for (var list of ["jxsi", "jxcat"]) {
                             if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
@@ -914,6 +944,16 @@ on-arrival: {!
                 Q.ppc_relations += (-authorizationChange) * (coalitionPartners.includes("ppc") ? 2 : 1);
             if (!controlledParties.includes("cs") && Number.isFinite(Q.cs_relations))
                 Q.cs_relations += (-authorizationChange) * (coalitionPartners.includes("cs") ? 2 : 1);
+            if (Q.pdcat_split && Q.parlament_current_ciu != "pdcat" && !controlledParties.includes("pdcat") && Number.isFinite(Q.pdcat_relations))
+                Q.pdcat_relations += (-authorizationChange) * (coalitionPartners.includes("pdcat") ? 2 : 1);
+            if (Q.unio_split && !Q.unio_dissolved && Q.parlament_current_ciu != "unio" && !controlledParties.includes("unio") && Number.isFinite(Q.unio_relations))
+                Q.unio_relations += (-authorizationChange) * (coalitionPartners.includes("unio") ? 2 : 1);
+            if (Q.fnc_formed && !controlledParties.includes("fnc") && Number.isFinite(Q.fnc_relations))
+                Q.fnc_relations += (-authorizationChange) * (coalitionPartners.includes("fnc") ? 2 : 1);
+            if (!Q.pxc_dissolved && !controlledParties.includes("pxc") && Number.isFinite(Q.pxc_relations))
+                Q.pxc_relations += (-authorizationChange) * (coalitionPartners.includes("pxc") ? 2 : 1);
+            if (Q.vox_active && !controlledParties.includes("vox") && Number.isFinite(Q.vox_relations))
+                Q.vox_relations += (-authorizationChange) * (coalitionPartners.includes("vox") ? 2 : 1);
             // An outside cabinet list follows its CiU-family leadership.
             for (var list of ["jxsi", "jxcat"]) {
                 if ((Q.cat_coalition || []).includes(list) && !controlledParties.includes(list) &&
@@ -1121,7 +1161,6 @@ on-arrival: {!
     }
     Q.coming_from_parlament = false;
 !}
-new-page: true
 
 No agreement seems to be possible... The Generalitat will continue to operate under its last approved budget from [+ budget_year +].
 
