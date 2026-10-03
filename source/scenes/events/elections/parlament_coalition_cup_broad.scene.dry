@@ -45,6 +45,8 @@ go-to: setup
 @setup
 on-arrival: {!
     Q.cup_broad_coalition_phase = 1;
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
     Q.parlament_coalition_push = 0;
     Q.parlament_coalition_cabinet_seats = Q.erc_parlament_s + Q.parlament_current_icv_s;
     if (Q.cup_broad_kind == "new_popular_front" || Q.cup_broad_kind == "minority_left_tripartite") {
@@ -99,7 +101,7 @@ Before cabinet negotiations begin, the prospective partners must settle the Spea
 
 @accept_nominee
 title: [? if player_party = "cup" and cup_broad_kind != "popular_unity": Accept the cabinet's nominee?][? if player_party = "cup" and cup_broad_kind = "popular_unity" and parlament_coalition_leader != "cup": Accept the leader's proposal?][? if player_party = "cup" and cup_broad_kind = "popular_unity" and parlament_coalition_leader = "cup": Nominate [+ speaker_party +] for Speaker?][? if player_party = "erc" and parlament_coalition_leader = "erc": Nominate [+ speaker_party +] for Speaker?][? if player_party = "erc" and parlament_coalition_leader != "erc": Accept the leader's proposal?]
-go-to: parlament_coalition_cup_broad_phase
+go-to: post_event
 
 @player_speaker
 title: [? if player_party = "cup" and cup_broad_kind != "popular_unity": Demand the Speaker for CUP?][? if player_party = "cup" and cup_broad_kind = "popular_unity" and parlament_coalition_leader = "cup": Retain the Speaker for CUP?][? if player_party = "cup" and cup_broad_kind = "popular_unity" and parlament_coalition_leader != "cup": Demand the Speaker for CUP?][? if player_party = "erc" and parlament_coalition_leader = "erc": Retain the Speaker for ERC?][? if player_party = "erc" and parlament_coalition_leader != "erc": Demand the Speaker for ERC?]
@@ -114,4 +116,4 @@ on-arrival: {!
         Q.speaker_gender = Q.year < 2016 ? "f" : "m";
     }
 !}
-go-to: parlament_coalition_cup_broad_phase
+go-to: post_event

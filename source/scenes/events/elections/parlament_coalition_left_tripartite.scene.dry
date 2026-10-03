@@ -15,6 +15,7 @@ on-arrival: {!
     if (Q.psc_leader != "Montserrat Tura" && Q.psc_leader != "Àngel Ros" && Q.psc_relations <= 55) {
         Q.party_resources -= 1;
     }
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
     Q.left_tripartite_coalition_phase = 1;
 

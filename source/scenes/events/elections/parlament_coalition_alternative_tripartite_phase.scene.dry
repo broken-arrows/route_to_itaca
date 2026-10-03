@@ -2,7 +2,7 @@ title: <span class="generalitat-coalition" data-parties="[+ parlament_current_ic
 subtitle: [? if alternative_tripartite_coalition_phase = 1: The first round of government formation negotiations begins.?][? if alternative_tripartite_coalition_phase = 2: The parties enter the second round of government formation negotiations.?][? if alternative_tripartite_coalition_phase = 3: The third and final round of government formation negotiations begins.?]
 tags: event
 new-page: true
-view-if: alternative_tripartite_coalition_phase > 0 and player_party == "erc"
+view-if: alternative_tripartite_coalition_phase > 0 and player_party == "erc" and coalition_phase_timer <= 0
 on-arrival: {!
     Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_changes = false;
@@ -188,6 +188,7 @@ go-to: new_elections if alternative_tripartite_coalition_phase >= 3; new_phase_2
 on-arrival: {!
     Q.parlament_coalition_changes = false;
     Q.alternative_tripartite_coalition_phase += 1;
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
     Q[Q.parlament_current_icv + "_relations"] -= 2;
     Q.psc_relations -= 1;
@@ -206,6 +207,7 @@ on-arrival: {!
     Q.parlament_coalition_policy_accepted = true;
     Q.parlament_coalition_policy_scope = "cabinet";
     Q.alternative_tripartite_coalition_phase = 0;
+    Q.coalition_phase_timer = 0;
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cup_in_gob = false;
@@ -225,6 +227,7 @@ ERC and the PSC have accepted [+ parlament_current_icv +]'s proposal for a new c
 @new_elections
 on-arrival: {!
     Q.alternative_tripartite_coalition_phase = 0;
+    Q.coalition_phase_timer = 0;
     Q.parlament_repeat_election = true;
     Q.snap_blame = Q.player_party;
     Q.snap_counterparty = Q.parlament_current_icv;

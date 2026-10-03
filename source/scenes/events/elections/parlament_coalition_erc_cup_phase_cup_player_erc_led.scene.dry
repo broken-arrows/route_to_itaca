@@ -3,7 +3,7 @@ subtitle: [? if erc_cup_coalition_phase = 1: ERC submits its opening government 
 tags: event
 role: event
 new-page: true
-view-if: erc_cup_coalition_phase > 0 and player_party = "cup" and parlament_coalition_leader = "erc"
+view-if: erc_cup_coalition_phase > 0 and player_party = "cup" and parlament_coalition_leader = "erc" and coalition_phase_timer <= 0
 on-arrival: {!
     Q.parlament_coalition_changes = false;
     Q.parlament_coalition_concessions_indy = 0;
@@ -202,6 +202,7 @@ on-arrival: {!
     Q.parlament_coalition_policy_accepted = true;
     Q.parlament_coalition_policy_scope = "cabinet";
     Q.erc_cup_coalition_phase = 0;
+    Q.coalition_phase_timer = 0;
     Q.cat_coalition = [Q.parlament_coalition_leader, Q.parlament_coalition_follower];
     Q.cat_coalition_support = [];
     Q.cat_coalition_abstain = [];
@@ -225,6 +226,7 @@ go-to: new_elections if erc_cup_coalition_phase >= 3; wait if erc_cup_coalition_
 @wait
 on-arrival: {!
     Q.erc_cup_coalition_phase += 1;
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
     Q.independence_trust -= 2;
 !}
@@ -239,6 +241,7 @@ on-arrival: {!
 on-arrival: {!
     Q.parlament_repeat_election = true;
     Q.erc_cup_coalition_phase = 0;
+    Q.coalition_phase_timer = 0;
     Q.erc_relations -= 5;
     Q.cup_relations -= 5;
     Q.independence_trust -= 10;

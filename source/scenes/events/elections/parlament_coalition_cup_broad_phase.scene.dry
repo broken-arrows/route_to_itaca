@@ -3,7 +3,7 @@ subtitle: [? if cup_broad_coalition_phase = 1: The parties have opened the first
 tags: event
 role: event
 new-page: true
-view-if: cup_broad_coalition_phase > 0
+view-if: cup_broad_coalition_phase > 0 and coalition_phase_timer <= 0
 on-arrival: {!
     Q.parlament_coalition_changes = false;
     Q.parlament_coalition_concessions = false;
@@ -271,6 +271,7 @@ on-arrival: {!
     Q.parlament_coalition_policy_accepted = true;
     Q.parlament_coalition_policy_scope = (Q.cup_broad_kind == "popular_unity" ? "cabinet" : "external_support");
     Q.cup_broad_coalition_phase = 0;
+    Q.coalition_phase_timer = 0;
     if (Q.cup_broad_kind == "republican") {
         Q.cat_coalition = ["erc", Q.parlament_current_icv];
     }
@@ -322,6 +323,7 @@ go-to: new_elections if cup_broad_coalition_phase >= 3; wait if cup_broad_coalit
 @wait
 on-arrival: {!
     Q.cup_broad_coalition_phase += 1;
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
     Q.social_dissent += 2;
 !}
@@ -336,6 +338,7 @@ on-arrival: {!
 on-arrival: {!
     Q.parlament_repeat_election = true;
     Q.cup_broad_coalition_phase = 0;
+    Q.coalition_phase_timer = 0;
     Q.cup_relations -= 5;
     Q[Q.parlament_current_icv + "_relations"] -= 3;
     Q.snap_blame = Q.player_party;

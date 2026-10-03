@@ -2654,6 +2654,10 @@
 
   function cardLiveAmong(Q, contest, constituency, demographic, candidates) {
     for (const party of candidates) {
+      if (party === "jxsi" || party === "jxcat") {
+        if (contest === "congreso" && !Q[party + "_in_congreso"]) continue;
+        if (contest === "barcelona" && !Q[party + "_in_local"]) continue;
+      }
       const key = cardSupportKey(contest, party, constituency, demographic);
       if (Number(Q[key]) > 0) return party;
     }
@@ -2674,6 +2678,8 @@
     for (const membership of memberships) {
       if (!Q[membership[1]]) continue;
       const carrier = membership[0];
+      if (contest === "congreso" && !Q[carrier + "_in_congreso"]) continue;
+      if (contest === "barcelona" && !Q[carrier + "_in_local"]) continue;
       const key = cardSupportKey(contest, carrier, constituency, demographic);
       if (Number(Q[key]) > 0) return carrier;
     }
@@ -2701,7 +2707,9 @@
           contest,
           constituency,
           demographic,
-          CARD_CIU_PARTIES,
+          contest === "parlament"
+            ? [Q.parlament_current_ciu, ...CARD_CIU_PARTIES].filter(Boolean)
+            : CARD_CIU_PARTIES,
         ) ||
         (contest === "parlament" ? Q.parlament_current_ciu : null) ||
         "ciu"

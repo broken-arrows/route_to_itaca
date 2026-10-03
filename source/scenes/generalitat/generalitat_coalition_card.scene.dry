@@ -54,6 +54,9 @@ view-if: player_party != "ciu" and coalition_affairs_includes_ciu and parlament_
 choose-if: generalitat_surplus < 0 or tax_policy_level > -2
 unavailable-subtitle: Autonomic Taxes are already at their lowest level.
 on-arrival: {!
+    var electoralBefore = {education_spending:Q.education_spending, healthcare_spending:Q.healthcare_spending,
+        public_salary_level:Q.public_salary_level, tax_policy_level:Q.tax_policy_level, economy_cuts:Q.economy_cuts || 0};
+
     if (Q.generalitat_surplus < 0 || Q.tax_policy_level > -2) {
         if (Q.generalitat_surplus < 0) {
             var cut_round = 2
@@ -89,6 +92,252 @@ on-arrival: {!
             Q.burdens_done -= 1;
         }
     }
+
+    // Concessions deliver government policy collectively; bargaining itself earns no votes.
+    var electoralPlayer = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    if (!Q.cat_caretaker_gov && (Q.cat_coalition || []).includes(electoralPlayer)) {
+        var electoralCabinet = [];
+        for (var electoralParty of Q.cat_coalition || []) {
+            if (electoralParty == "ciu") electoralParty = Q.parlament_current_ciu || "ciu";
+            if (electoralParty == "federal_left") electoralParty = Q.parlament_current_icv || "icv";
+            for (var electoralList of ["jxsi", "jxcat"]) {
+                if (Q[electoralParty + "_in_" + electoralList] && (Q.parties || []).includes(electoralList) &&
+                    (Q.parlament_constituencies || []).some(function (province) {
+                        return (Q.parlament_demographics || []).some(function (demo) {
+                            return Q[electoralList + "_parlament_" + province + "_" + demo + "_support"] > 0;
+                        });
+                    })) electoralParty = electoralList;
+            }
+            if (!electoralCabinet.includes(electoralParty) && (Q.parties || []).includes(electoralParty)) electoralCabinet.push(electoralParty);
+        }
+        var electoralActors = [];
+        for (var electoralParty of electoralCabinet) electoralActors.push({party:electoralParty, weight:1 / electoralCabinet.length});
+        var electoralPolicies = [];
+        var electoralServiceProfiles = {
+            "healthcare_spending": {
+                "provinces": {
+                    "barcelona": 1,
+                    "girona": 1.1,
+                    "lleida": 1.1,
+                    "tarragona": 1.05
+                },
+                "tiers": [
+                    {
+                        "retired": 0.9,
+                        "ind": 0.8,
+                        "unemployed": 0.7,
+                        "young": 0.3,
+                        "middle": 0.25
+                    },
+                    {
+                        "retired": 0.9,
+                        "ind": 0.8,
+                        "unemployed": 0.7,
+                        "young": 0.3,
+                        "middle": 0.25
+                    },
+                    {
+                        "retired": 0.7,
+                        "ind": 0.6,
+                        "unemployed": 0.55,
+                        "young": 0.55,
+                        "middle": 0.4
+                    },
+                    {
+                        "retired": 0.9,
+                        "ind": 1,
+                        "unemployed": 1.1,
+                        "young": 0.6,
+                        "middle": 0.3
+                    }
+                ],
+                "congreso": [
+                    0.045,
+                    0.045,
+                    0.04,
+                    0.05
+                ],
+                "barcelona": [
+                    0.09,
+                    0.09,
+                    0.08,
+                    0.1
+                ]
+            },
+            "education_spending": {
+                "provinces": {
+                    "barcelona": 1,
+                    "girona": 0.95,
+                    "lleida": 0.95,
+                    "tarragona": 1.05
+                },
+                "tiers": [
+                    {
+                        "young": 0.9,
+                        "ind": 0.8,
+                        "unemployed": 0.7,
+                        "middle": 0.7,
+                        "retired": 0.15
+                    },
+                    {
+                        "young": 0.9,
+                        "ind": 0.8,
+                        "unemployed": 0.7,
+                        "middle": 0.7,
+                        "retired": 0.15
+                    },
+                    {
+                        "young": 0.65,
+                        "ind": 0.5,
+                        "unemployed": 0.5,
+                        "middle": 0.5,
+                        "retired": 0.1
+                    },
+                    {
+                        "young": 0.85,
+                        "ind": 0.6,
+                        "unemployed": 0.5,
+                        "middle": 0.65,
+                        "retired": 0.1
+                    }
+                ],
+                "congreso": [
+                    0.045,
+                    0.045,
+                    0.035,
+                    0.04
+                ],
+                "barcelona": [
+                    0.09,
+                    0.09,
+                    0.07,
+                    0.08
+                ]
+            },
+            "public_salary_level": {
+                "provinces": {
+                    "barcelona": 1,
+                    "girona": 1,
+                    "lleida": 1,
+                    "tarragona": 1
+                },
+                "tiers": [
+                    {
+                        "middle": 0.6,
+                        "ind": 0.4,
+                        "unemployed": 0.15,
+                        "retired": 0.1
+                    },
+                    {
+                        "middle": 0.6,
+                        "ind": 0.4,
+                        "unemployed": 0.15,
+                        "retired": 0.1
+                    },
+                    {
+                        "middle": 0.5,
+                        "ind": 0.35,
+                        "unemployed": 0.1,
+                        "retired": 0.1
+                    },
+                    {
+                        "middle": 0.5,
+                        "ind": 0.35,
+                        "unemployed": 0.1,
+                        "retired": 0.1
+                    }
+                ],
+                "congreso": [
+                    0.025,
+                    0.025,
+                    0.02,
+                    0.02
+                ],
+                "barcelona": [
+                    0.05,
+                    0.05,
+                    0.04,
+                    0.04
+                ]
+            }
+        };
+        for (var electoralKind of ["education_spending", "healthcare_spending", "public_salary_level"]) {
+            if (electoralBefore[electoralKind] == Q[electoralKind]) continue;
+            var electoralDirection = Math.sign(Q[electoralKind] - electoralBefore[electoralKind]);
+            for (var electoralTier = Math.min(electoralBefore[electoralKind], Q[electoralKind]);
+                    electoralTier < Math.max(electoralBefore[electoralKind], Q[electoralKind]); electoralTier++) {
+                var electoralProfile = electoralServiceProfiles[electoralKind];
+                if (!electoralProfile.tiers[electoralTier + 2]) continue;
+                electoralPolicies.push({origin:Q.player_party, actors:electoralActors, direction:electoralDirection,
+                    demographics:electoralProfile.tiers[electoralTier + 2], provinces:electoralProfile.provinces,
+                    gains:Q.player_party == "cup" ? [["federal_left",0.45],["erc",0.30],["abstain",0.25]] : [["psc",0.45],["federal_left",0.30],["abstain",0.25]],
+                    barcelona:(electoralProfile.barcelona[electoralTier + 2]), congreso:(electoralProfile.congreso[electoralTier + 2])});
+            }
+        }
+        var electoralTaxChange = Q.tax_policy_level - electoralBefore.tax_policy_level;
+        if (electoralTaxChange) electoralPolicies.push({origin:Q.player_party, actors:electoralActors, direction:-electoralTaxChange,
+            demographics:{buss:0.45,middle:0.30,retired:0.12,ind:0.10,young:0.08}, provinces:{barcelona:1.05,girona:0.95,lleida:0.90,tarragona:1.10},
+            gains:Q.player_party == "cup" ? [["erc",0.45],["ciu",0.35],["psc",0.20]] : [["ciu",0.50],["cs",0.30],["psc",0.20]],
+            losses:Q.player_party == "cup" ? [["erc",0.45],["ciu",0.35],["abstain",0.20]] : [["ciu",0.50],["cs",0.35],["abstain",0.15]],
+            barcelona:(0.025), congreso:(0.01)});
+        var electoralAusterityChange = (Q.economy_cuts || 0) - electoralBefore.economy_cuts;
+        if (electoralAusterityChange) electoralPolicies.push({origin:Q.player_party, actors:electoralActors, direction:-electoralAusterityChange,
+            demographics:{ind:1,young:0.90,unemployed:1.10,middle:0.50,retired:0.40}, provinces:{barcelona:1,girona:0.85,lleida:0.85,tarragona:1.05},
+            gains:Q.player_party == "cup" ? [["federal_left",0.45],["erc",0.30],["abstain",0.25]] : [["federal_left",0.40],["psc",0.35],["abstain",0.25]],
+            barcelona:(0.11), congreso:(0.055)});
+
+        // Named routes keep their shares when a donor is absent or on the same list.
+        for (var electoralPolicy of electoralPolicies) {
+            var voterOrigin = electoralPolicy.origin;
+            var voterActors = [];
+            for (var electoralActor of electoralPolicy.actors) voterActors.push({party:electoralActor.party,
+                origin:["jxsi","jxcat"].includes(electoralActor.party) ? voterOrigin : electoralActor.party,weight:electoralActor.weight});
+            var voterCells = [];
+            for (var voterProvince of Q.parlament_constituencies || []) for (var voterDemo of Q.parlament_demographics || []) {
+                var voterAmount = (electoralPolicy.demographics[voterDemo] || 0) * (electoralPolicy.provinces[voterProvince] || 0);
+                if (voterAmount) voterCells.push({contest:"parlament",province:voterProvince,demo:voterDemo,amount:voterAmount});
+            }
+            if (electoralPolicy.congreso && (Q.congreso_constituencies || []).includes("catalunya")) voterCells.push({contest:"congreso",province:"catalunya",demo:null,amount:electoralPolicy.congreso});
+            if (electoralPolicy.barcelona) voterCells.push({contest:"barcelona",province:null,demo:null,amount:electoralPolicy.barcelona});
+            for (var voterCell of voterCells) {
+                var voterContest = voterCell.contest;
+                var voterLineup = voterContest == "parlament" ? (Q.parties || []).concat(["abstain"]) : voterContest == "congreso" ? (Q.congreso_parties_catalunya || []).concat(["abstain"]) : Q.parties_bcn || [];
+                var voterSuffix = voterContest == "parlament" ? "_parlament_" + voterCell.province + "_" + voterCell.demo + "_support" : voterContest == "congreso" ? "_congreso_catalunya_support" : "_local_barcelona_support";
+                var voterSignedAmount = voterCell.amount * (Math.abs(electoralPolicy.direction));
+                if (!Number.isFinite(voterSignedAmount) || voterSignedAmount == 0) continue;
+                var voterDirection = electoralPolicy.direction > 0 ? 1 : -1;
+                for (var voterActor of voterActors) {
+                    var voterRouteList = electoralPolicy.direction > 0 ? electoralPolicy.gains : electoralPolicy.losses || (voterActor.origin == "erc" ? [["cup",0.45],["fl",0.35],["abstain",0.20]] : voterActor.origin == "cup" ? [["fl",0.45],["erc",0.35],["abstain",0.20]] : voterActor.origin == "psc" ? [["fl",0.45],["erc",0.30],["abstain",0.25]] : ["ecp","cecp","csqp","icv","federal_left"].includes(voterActor.origin) ? [["cup",0.40],["erc",0.30],["abstain",0.30]] : [["erc",0.40],["fl",0.35],["abstain",0.25]]);
+                    for (var voterRoute of voterRouteList) {
+                        var voterPair = [];
+                        for (var voterParty of [voterContest == "parlament" ? voterActor.party : voterActor.origin, voterRoute[0]]) {
+                            var voterCandidates = [voterParty];
+                            if (voterParty == "erc" || voterParty == "cup") voterCandidates = [Q[voterParty + "_in_jxsi"] ? "jxsi" : "", Q[voterParty + "_in_jxcat"] ? "jxcat" : "", voterParty];
+                            if (["ciu","cdc","dl","junts"].includes(voterParty) || voterParty == "pdcat" && !Q.pdcat_split) voterCandidates = [Q.parlament_current_ciu,"jxsi","jxcat","junts","pdcat","dl","cdc","ciu"];
+                            if (["fl","federal_left","icv","csqp","cecp","ecp"].includes(voterParty)) voterCandidates = voterContest == "parlament" ? [Q.parlament_current_icv,"ecp","cecp","csqp","icv"] : voterContest == "congreso" ? ["sumar","mpais","up","podemos","iu"] : ["bcomu","icv"];
+                            if (voterParty == "psc" && voterContest == "congreso") voterCandidates = ["psoe"];
+                            if (voterParty == "ppc" && voterContest != "parlament") voterCandidates = ["pp"];
+                            if (["jxsi","jxcat"].includes(voterParty) && voterContest != "parlament" && !Q[voterParty + (voterContest == "congreso" ? "_in_congreso" : "_in_local")]) voterCandidates = [voterOrigin,Q.parlament_current_ciu,"junts","pdcat","dl","cdc","ciu"];
+                            var voterCarrier = null;
+                            for (var voterCandidate of voterCandidates) {
+                                if (!voterLineup.includes(voterCandidate)) continue;
+                                if (["jxsi","jxcat"].includes(voterCandidate) && voterContest != "parlament" && !Q[voterCandidate + (voterContest == "congreso" ? "_in_congreso" : "_in_local")]) continue;
+                                if (Number.isFinite(Q[voterCandidate + voterSuffix]) && (Q[voterCandidate + voterSuffix] > 0 || voterCandidate == "abstain")) { voterCarrier = voterCandidate; break; }
+                            }
+                            voterPair.push(voterCarrier);
+                        }
+                        if (!voterPair[0] || !voterPair[1] || voterPair[0] == voterPair[1]) continue;
+                        var voterFrom = voterPair[voterDirection > 0 ? 1 : 0], voterTo = voterPair[voterDirection > 0 ? 0 : 1];
+                        var voterOptions = {contest:voterContest,from:voterFrom,to:voterTo,amount:Math.abs(voterSignedAmount) * voterActor.weight * voterRoute[1],maxDonorFraction:0.5};
+                        if (voterContest == "parlament") { voterOptions.constituencies = [voterCell.province]; voterOptions.demographics = [voterCell.demo]; }
+                        if (voterContest == "congreso") voterOptions.constituencies = ["catalunya"];
+                        G.cardSupportTransfer(Q,voterOptions);
+
+                    }
+                }
+            }
+        }
+    }
 !}
 call: generalitat_setpolicy
 
@@ -117,6 +366,9 @@ view-if: coalition_affairs_includes_icv and parlament_current_icv_relations < 55
 choose-if: (tax_policy_level >= -2 and tax_policy_level < 2) or (education_spending >= -2 and education_spending < 2 and education_spending < social_spending_cap) or (healthcare_spending >= -2 and healthcare_spending < 2 and healthcare_spending < social_spending_cap) or (public_salary_level >= -2 and public_salary_level < 2 and public_salary_level < social_spending_cap) or economy_cuts > 0
 unavailable-subtitle: There's no austerity to revert, nor funding to public services expand!?.
 on-arrival: {!
+    var electoralBefore = {education_spending:Q.education_spending, healthcare_spending:Q.healthcare_spending,
+        public_salary_level:Q.public_salary_level, tax_policy_level:Q.tax_policy_level, economy_cuts:Q.economy_cuts || 0};
+
     Q.coalition_affairs_icv_concession = "";
     var raiseField = "";
     for (var field of ["education_spending", "healthcare_spending", "public_salary_level"]) {
@@ -149,6 +401,252 @@ on-arrival: {!
         var target = Q.coalition_affairs_concession_target || Q.parlament_current_icv;
         Q[target + "_relations"] += 8;
         Q.burdens_done += 1;
+    }
+
+    // Concessions deliver government policy collectively; bargaining itself earns no votes.
+    var electoralPlayer = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    if (!Q.cat_caretaker_gov && (Q.cat_coalition || []).includes(electoralPlayer)) {
+        var electoralCabinet = [];
+        for (var electoralParty of Q.cat_coalition || []) {
+            if (electoralParty == "ciu") electoralParty = Q.parlament_current_ciu || "ciu";
+            if (electoralParty == "federal_left") electoralParty = Q.parlament_current_icv || "icv";
+            for (var electoralList of ["jxsi", "jxcat"]) {
+                if (Q[electoralParty + "_in_" + electoralList] && (Q.parties || []).includes(electoralList) &&
+                    (Q.parlament_constituencies || []).some(function (province) {
+                        return (Q.parlament_demographics || []).some(function (demo) {
+                            return Q[electoralList + "_parlament_" + province + "_" + demo + "_support"] > 0;
+                        });
+                    })) electoralParty = electoralList;
+            }
+            if (!electoralCabinet.includes(electoralParty) && (Q.parties || []).includes(electoralParty)) electoralCabinet.push(electoralParty);
+        }
+        var electoralActors = [];
+        for (var electoralParty of electoralCabinet) electoralActors.push({party:electoralParty, weight:1 / electoralCabinet.length});
+        var electoralPolicies = [];
+        var electoralServiceProfiles = {
+            "healthcare_spending": {
+                "provinces": {
+                    "barcelona": 1,
+                    "girona": 1.1,
+                    "lleida": 1.1,
+                    "tarragona": 1.05
+                },
+                "tiers": [
+                    {
+                        "retired": 0.9,
+                        "ind": 0.8,
+                        "unemployed": 0.7,
+                        "young": 0.3,
+                        "middle": 0.25
+                    },
+                    {
+                        "retired": 0.9,
+                        "ind": 0.8,
+                        "unemployed": 0.7,
+                        "young": 0.3,
+                        "middle": 0.25
+                    },
+                    {
+                        "retired": 0.7,
+                        "ind": 0.6,
+                        "unemployed": 0.55,
+                        "young": 0.55,
+                        "middle": 0.4
+                    },
+                    {
+                        "retired": 0.9,
+                        "ind": 1,
+                        "unemployed": 1.1,
+                        "young": 0.6,
+                        "middle": 0.3
+                    }
+                ],
+                "congreso": [
+                    0.045,
+                    0.045,
+                    0.04,
+                    0.05
+                ],
+                "barcelona": [
+                    0.09,
+                    0.09,
+                    0.08,
+                    0.1
+                ]
+            },
+            "education_spending": {
+                "provinces": {
+                    "barcelona": 1,
+                    "girona": 0.95,
+                    "lleida": 0.95,
+                    "tarragona": 1.05
+                },
+                "tiers": [
+                    {
+                        "young": 0.9,
+                        "ind": 0.8,
+                        "unemployed": 0.7,
+                        "middle": 0.7,
+                        "retired": 0.15
+                    },
+                    {
+                        "young": 0.9,
+                        "ind": 0.8,
+                        "unemployed": 0.7,
+                        "middle": 0.7,
+                        "retired": 0.15
+                    },
+                    {
+                        "young": 0.65,
+                        "ind": 0.5,
+                        "unemployed": 0.5,
+                        "middle": 0.5,
+                        "retired": 0.1
+                    },
+                    {
+                        "young": 0.85,
+                        "ind": 0.6,
+                        "unemployed": 0.5,
+                        "middle": 0.65,
+                        "retired": 0.1
+                    }
+                ],
+                "congreso": [
+                    0.045,
+                    0.045,
+                    0.035,
+                    0.04
+                ],
+                "barcelona": [
+                    0.09,
+                    0.09,
+                    0.07,
+                    0.08
+                ]
+            },
+            "public_salary_level": {
+                "provinces": {
+                    "barcelona": 1,
+                    "girona": 1,
+                    "lleida": 1,
+                    "tarragona": 1
+                },
+                "tiers": [
+                    {
+                        "middle": 0.6,
+                        "ind": 0.4,
+                        "unemployed": 0.15,
+                        "retired": 0.1
+                    },
+                    {
+                        "middle": 0.6,
+                        "ind": 0.4,
+                        "unemployed": 0.15,
+                        "retired": 0.1
+                    },
+                    {
+                        "middle": 0.5,
+                        "ind": 0.35,
+                        "unemployed": 0.1,
+                        "retired": 0.1
+                    },
+                    {
+                        "middle": 0.5,
+                        "ind": 0.35,
+                        "unemployed": 0.1,
+                        "retired": 0.1
+                    }
+                ],
+                "congreso": [
+                    0.025,
+                    0.025,
+                    0.02,
+                    0.02
+                ],
+                "barcelona": [
+                    0.05,
+                    0.05,
+                    0.04,
+                    0.04
+                ]
+            }
+        };
+        for (var electoralKind of ["education_spending", "healthcare_spending", "public_salary_level"]) {
+            if (electoralBefore[electoralKind] == Q[electoralKind]) continue;
+            var electoralDirection = Math.sign(Q[electoralKind] - electoralBefore[electoralKind]);
+            for (var electoralTier = Math.min(electoralBefore[electoralKind], Q[electoralKind]);
+                    electoralTier < Math.max(electoralBefore[electoralKind], Q[electoralKind]); electoralTier++) {
+                var electoralProfile = electoralServiceProfiles[electoralKind];
+                if (!electoralProfile.tiers[electoralTier + 2]) continue;
+                electoralPolicies.push({origin:Q.player_party, actors:electoralActors, direction:electoralDirection,
+                    demographics:electoralProfile.tiers[electoralTier + 2], provinces:electoralProfile.provinces,
+                    gains:Q.player_party == "cup" ? [["federal_left",0.45],["erc",0.30],["abstain",0.25]] : [["psc",0.45],["federal_left",0.30],["abstain",0.25]],
+                    barcelona:(electoralProfile.barcelona[electoralTier + 2]), congreso:(electoralProfile.congreso[electoralTier + 2])});
+            }
+        }
+        var electoralTaxChange = Q.tax_policy_level - electoralBefore.tax_policy_level;
+        if (electoralTaxChange) electoralPolicies.push({origin:Q.player_party, actors:electoralActors, direction:-electoralTaxChange,
+            demographics:{buss:0.45,middle:0.30,retired:0.12,ind:0.10,young:0.08}, provinces:{barcelona:1.05,girona:0.95,lleida:0.90,tarragona:1.10},
+            gains:Q.player_party == "cup" ? [["erc",0.45],["ciu",0.35],["psc",0.20]] : [["ciu",0.50],["cs",0.30],["psc",0.20]],
+            losses:Q.player_party == "cup" ? [["erc",0.45],["ciu",0.35],["abstain",0.20]] : [["ciu",0.50],["cs",0.35],["abstain",0.15]],
+            barcelona:(0.025), congreso:(0.01)});
+        var electoralAusterityChange = (Q.economy_cuts || 0) - electoralBefore.economy_cuts;
+        if (electoralAusterityChange) electoralPolicies.push({origin:Q.player_party, actors:electoralActors, direction:-electoralAusterityChange,
+            demographics:{ind:1,young:0.90,unemployed:1.10,middle:0.50,retired:0.40}, provinces:{barcelona:1,girona:0.85,lleida:0.85,tarragona:1.05},
+            gains:Q.player_party == "cup" ? [["federal_left",0.45],["erc",0.30],["abstain",0.25]] : [["federal_left",0.40],["psc",0.35],["abstain",0.25]],
+            barcelona:(0.11), congreso:(0.055)});
+
+        // Named routes keep their shares when a donor is absent or on the same list.
+        for (var electoralPolicy of electoralPolicies) {
+            var voterOrigin = electoralPolicy.origin;
+            var voterActors = [];
+            for (var electoralActor of electoralPolicy.actors) voterActors.push({party:electoralActor.party,
+                origin:["jxsi","jxcat"].includes(electoralActor.party) ? voterOrigin : electoralActor.party,weight:electoralActor.weight});
+            var voterCells = [];
+            for (var voterProvince of Q.parlament_constituencies || []) for (var voterDemo of Q.parlament_demographics || []) {
+                var voterAmount = (electoralPolicy.demographics[voterDemo] || 0) * (electoralPolicy.provinces[voterProvince] || 0);
+                if (voterAmount) voterCells.push({contest:"parlament",province:voterProvince,demo:voterDemo,amount:voterAmount});
+            }
+            if (electoralPolicy.congreso && (Q.congreso_constituencies || []).includes("catalunya")) voterCells.push({contest:"congreso",province:"catalunya",demo:null,amount:electoralPolicy.congreso});
+            if (electoralPolicy.barcelona) voterCells.push({contest:"barcelona",province:null,demo:null,amount:electoralPolicy.barcelona});
+            for (var voterCell of voterCells) {
+                var voterContest = voterCell.contest;
+                var voterLineup = voterContest == "parlament" ? (Q.parties || []).concat(["abstain"]) : voterContest == "congreso" ? (Q.congreso_parties_catalunya || []).concat(["abstain"]) : Q.parties_bcn || [];
+                var voterSuffix = voterContest == "parlament" ? "_parlament_" + voterCell.province + "_" + voterCell.demo + "_support" : voterContest == "congreso" ? "_congreso_catalunya_support" : "_local_barcelona_support";
+                var voterSignedAmount = voterCell.amount * (Math.abs(electoralPolicy.direction));
+                if (!Number.isFinite(voterSignedAmount) || voterSignedAmount == 0) continue;
+                var voterDirection = electoralPolicy.direction > 0 ? 1 : -1;
+                for (var voterActor of voterActors) {
+                    var voterRouteList = electoralPolicy.direction > 0 ? electoralPolicy.gains : electoralPolicy.losses || (voterActor.origin == "erc" ? [["cup",0.45],["fl",0.35],["abstain",0.20]] : voterActor.origin == "cup" ? [["fl",0.45],["erc",0.35],["abstain",0.20]] : voterActor.origin == "psc" ? [["fl",0.45],["erc",0.30],["abstain",0.25]] : ["ecp","cecp","csqp","icv","federal_left"].includes(voterActor.origin) ? [["cup",0.40],["erc",0.30],["abstain",0.30]] : [["erc",0.40],["fl",0.35],["abstain",0.25]]);
+                    for (var voterRoute of voterRouteList) {
+                        var voterPair = [];
+                        for (var voterParty of [voterContest == "parlament" ? voterActor.party : voterActor.origin, voterRoute[0]]) {
+                            var voterCandidates = [voterParty];
+                            if (voterParty == "erc" || voterParty == "cup") voterCandidates = [Q[voterParty + "_in_jxsi"] ? "jxsi" : "", Q[voterParty + "_in_jxcat"] ? "jxcat" : "", voterParty];
+                            if (["ciu","cdc","dl","junts"].includes(voterParty) || voterParty == "pdcat" && !Q.pdcat_split) voterCandidates = [Q.parlament_current_ciu,"jxsi","jxcat","junts","pdcat","dl","cdc","ciu"];
+                            if (["fl","federal_left","icv","csqp","cecp","ecp"].includes(voterParty)) voterCandidates = voterContest == "parlament" ? [Q.parlament_current_icv,"ecp","cecp","csqp","icv"] : voterContest == "congreso" ? ["sumar","mpais","up","podemos","iu"] : ["bcomu","icv"];
+                            if (voterParty == "psc" && voterContest == "congreso") voterCandidates = ["psoe"];
+                            if (voterParty == "ppc" && voterContest != "parlament") voterCandidates = ["pp"];
+                            if (["jxsi","jxcat"].includes(voterParty) && voterContest != "parlament" && !Q[voterParty + (voterContest == "congreso" ? "_in_congreso" : "_in_local")]) voterCandidates = [voterOrigin,Q.parlament_current_ciu,"junts","pdcat","dl","cdc","ciu"];
+                            var voterCarrier = null;
+                            for (var voterCandidate of voterCandidates) {
+                                if (!voterLineup.includes(voterCandidate)) continue;
+                                if (["jxsi","jxcat"].includes(voterCandidate) && voterContest != "parlament" && !Q[voterCandidate + (voterContest == "congreso" ? "_in_congreso" : "_in_local")]) continue;
+                                if (Number.isFinite(Q[voterCandidate + voterSuffix]) && (Q[voterCandidate + voterSuffix] > 0 || voterCandidate == "abstain")) { voterCarrier = voterCandidate; break; }
+                            }
+                            voterPair.push(voterCarrier);
+                        }
+                        if (!voterPair[0] || !voterPair[1] || voterPair[0] == voterPair[1]) continue;
+                        var voterFrom = voterPair[voterDirection > 0 ? 1 : 0], voterTo = voterPair[voterDirection > 0 ? 0 : 1];
+                        var voterOptions = {contest:voterContest,from:voterFrom,to:voterTo,amount:Math.abs(voterSignedAmount) * voterActor.weight * voterRoute[1],maxDonorFraction:0.5};
+                        if (voterContest == "parlament") { voterOptions.constituencies = [voterCell.province]; voterOptions.demographics = [voterCell.demo]; }
+                        if (voterContest == "congreso") voterOptions.constituencies = ["catalunya"];
+                        G.cardSupportTransfer(Q,voterOptions);
+
+                    }
+                }
+            }
+        }
     }
 !}
 call: generalitat_setpolicy

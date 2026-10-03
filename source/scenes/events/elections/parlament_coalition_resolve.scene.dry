@@ -1,5 +1,6 @@
 title: resolve coalition
 on-arrival: {!
+    Q.coalition_phase_timer = 0;
     var rawCabinet = Array.isArray(Q.cat_coalition) ? Q.cat_coalition : [];
     var rawSupport = Array.isArray(Q.cat_coalition_support) ? Q.cat_coalition_support : [];
     var rawAbstain = Array.isArray(Q.cat_coalition_abstain) ? Q.cat_coalition_abstain : [];

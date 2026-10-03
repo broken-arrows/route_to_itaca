@@ -2,7 +2,7 @@ title: [? if left_tripartite_coalition_phase = 1: Opening proposal for the ?][? 
 subtitle: [? if left_tripartite_coalition_phase = 1: ERC presents its opening cabinet proposal to the PSC and [+ parlament_current_icv +].?][? if left_tripartite_coalition_phase = 2: <span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span> negotiations advance.?][? if left_tripartite_coalition_phase = 3: This is set to be the final round of <span style="color: var(--erc); font-style: italic;">Left</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Tri</span><span style='color: var(--psc); font-style: italic;'>partite</span> negotiations.?]
 tags: event
 new-page: true
-view-if: left_tripartite_coalition_phase != 0 and player_party == "erc"
+view-if: left_tripartite_coalition_phase != 0 and player_party == "erc" and coalition_phase_timer <= 0
 on-arrival: {!
     Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_changes = false;
@@ -425,6 +425,7 @@ go-to: new_elections if left_tripartite_coalition_phase >= 3; new_phase_2 if not
 on-arrival: {!
     Q.parlament_coalition_changes = false;
     Q.left_tripartite_coalition_phase += 1;
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
     Q.independence_trust -= 2;
     Q.social_dissent += 5;
@@ -498,6 +499,7 @@ on-arrival: {!
     Q.parlament_coalition_policy_accepted = true;
     Q.parlament_coalition_policy_scope = "cabinet";
     Q.left_tripartite_coalition_phase = 0;
+    Q.coalition_phase_timer = 0;
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cat_coalition = ["psc", "erc", Q.parlament_current_icv];
@@ -524,6 +526,7 @@ title: new elections
 on-arrival: {!
     Q.parlament_repeat_election = true;
     Q.left_tripartite_coalition_phase = 0;
+    Q.coalition_phase_timer = 0;
     Q[Q.parlament_current_icv + "_relations"] -= 5;
     Q.psc_relations -= 5;
     Q.social_dissent += 10;

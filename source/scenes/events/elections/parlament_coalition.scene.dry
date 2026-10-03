@@ -25,6 +25,7 @@ on-arrival: {!
     }
 
     // Reset stuffs
+    Q.coalition_phase_timer = 0;
     Q.parlament_coalition_leverage = 0;
     Q.parlament_coalition_concessions = false;
     Q.parlament_coalition_changes = false;

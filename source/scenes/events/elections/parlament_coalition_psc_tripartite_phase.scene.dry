@@ -2,7 +2,7 @@ title: [? if psc_tripartite_coalition_phase = 1: PSC's <span class="generalitat-
 subtitle: [? if psc_tripartite_coalition_phase = 1: The PSC has submitted a government formation proposal to ERC and [+ parlament_current_icv +].?][? if psc_tripartite_coalition_phase = 2: PSC-ERC-[+ parlament_current_icv +] government negotiations advance.?][? if psc_tripartite_coalition_phase = 3: This is the final round of negotiations.?]
 tags: event
 new-page: true
-view-if: psc_tripartite_coalition_phase != 0 and player_party == "erc"
+view-if: psc_tripartite_coalition_phase != 0 and player_party == "erc" and coalition_phase_timer <= 0
 on-arrival: {!
     Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_changes = false;
@@ -389,6 +389,7 @@ go-to: new_elections if psc_tripartite_coalition_phase >= 3; new_phase_2 if not 
 on-arrival: {!
     Q.parlament_coalition_changes = false;
     Q.psc_tripartite_coalition_phase += 1;
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
     Q.independence_trust -= 2;
     Q.social_dissent += 3;
@@ -409,6 +410,7 @@ on-arrival: {!
     Q.parlament_coalition_policy_accepted = true;
     Q.parlament_coalition_policy_scope = "cabinet";
     Q.psc_tripartite_coalition_phase = 0;
+    Q.coalition_phase_timer = 0;
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cup_in_gob = false;
@@ -432,6 +434,7 @@ title: new elections
 on-arrival: {!
     Q.parlament_repeat_election = true;
     Q.psc_tripartite_coalition_phase = 0;
+    Q.coalition_phase_timer = 0;
     Q.psc_relations -= 5;
     Q[Q.parlament_current_icv + "_relations"] -= 3;
     Q.social_dissent += 5;

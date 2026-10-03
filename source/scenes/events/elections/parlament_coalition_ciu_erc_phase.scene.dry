@@ -2,7 +2,7 @@ title: [? if pdcat_external_support: <span class="generalitat-coalition" data-pa
 subtitle: [? if pdcat_external_support and ciu_erc_coalition_phase = 1: The pdcat would support the investiture while remaining outside the cabinet. This is the opening round of negotiations.?][? if pdcat_external_support and ciu_erc_coalition_phase = 2: The pdcat remains willing to support the investiture. The governing parties have returned for a second round of negotiations.?][? if pdcat_external_support and ciu_erc_coalition_phase = 3: The pdcat remains willing to support the investiture. This is the final round of negotiations.?][? if not pdcat_external_support and ciu_erc_coalition_phase = 1: [+ parlament_current_ciu +] presents its opening cabinet proposal to ERC.?][? if not pdcat_external_support and ciu_erc_coalition_phase = 2: [+ parlament_current_ciu +]-ERC coalition negotiations advance.?][? if not pdcat_external_support and ciu_erc_coalition_phase = 3: This is set to be the final round of [+ parlament_current_ciu +]-ERC negotiations.?]
 tags: event
 new-page: true
-view-if: ciu_erc_coalition_phase != 0 and player_party == "erc"
+view-if: ciu_erc_coalition_phase != 0 and player_party == "erc" and coalition_phase_timer <= 0
 on-arrival: {!
     Q.parlament_coalition_changes = false;
     Q.parlament_coalition_pdcat_support_resolved = false;
@@ -402,6 +402,7 @@ go-to: new_elections if ciu_erc_coalition_phase >= 3; new_phase_2 if not ciu_erc
 @new_phase_2
 on-arrival: {!
     Q.ciu_erc_coalition_phase += 1;
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
     Q.independence_trust -= 5;
 !} 
@@ -421,6 +422,7 @@ on-arrival: {!
     Q.parlament_coalition_policy_accepted = true;
     Q.parlament_coalition_policy_scope = "cabinet";
     Q.ciu_erc_coalition_phase = 0;
+    Q.coalition_phase_timer = 0;
     Q.cat_coalition = [Q.parlament_current_ciu, "erc"];
     Q.cat_coalition_support = Q.pdcat_external_support ? ["pdcat"] : [];
     Q.cat_coalition_abstain = [];
@@ -454,6 +456,7 @@ on-arrival: {!
     Q.parlament_repeat_election = true;
     Q.pdcat_external_support = false;
     Q.ciu_erc_coalition_phase = 0;
+    Q.coalition_phase_timer = 0;
     Q[Q.parlament_current_ciu + "_relations"] -= 5;
     Q.independence_trust -= 10;
     Q.snap_blame = Q.player_party;

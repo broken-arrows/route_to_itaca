@@ -20,6 +20,7 @@ on-arrival: {!
     Q.parlament_coalition_proposal_interior = Q.parlament_current_ciu;
 
     Q.parlament_coalition_leverage = Math.max(10, (Q.parlament_s_majority - Q.parlament_current_ciu_s));
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
     Q.ciu_min_coalition_phase = 1;
 !}

@@ -9,6 +9,7 @@ choose-if: parlament_coalition_icv_psc_erc_s >= parlament_s_majority and psc_rel
 unavailable-subtitle: [? if parlament_coalition_icv_psc_erc_s < parlament_s_majority: Not enough parliamentary support. ?][? if psc_relations <= 40: The PSC will not enter this coalition with us. ?][? if parlament_current_icv_relations <= 40: [+ parlament_current_icv +] will not offer us a place in its government. ?]
 subtitle: The largest party of the left has invited ERC and PSC to negotiate an alternative tripartite.
 on-arrival: {!
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
     Q.alternative_tripartite_coalition_phase = 1;
     Q.parlament_coalition_push = 0;

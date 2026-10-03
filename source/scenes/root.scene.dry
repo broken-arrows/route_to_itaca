@@ -1378,6 +1378,7 @@ on-arrival: {!
 
   // these get _timer and appended
   Q.timers = [
+    "coalition_phase",
     "congreso_party_tour",
     "advisor_action",
     "parlament",

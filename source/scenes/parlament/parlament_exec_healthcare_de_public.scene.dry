@@ -5,7 +5,6 @@ tags: event
 new-page: true
 role: event
 on-arrival: {!
-    Q.healthcare_de_public_introduced = false;
     Q.parlament_healthcare_de_public_player_vote = undefined;
     var parties = ["ciu","cdc","dl","pdcat","jxsi","jxcat","junts","erc","cup","psc","ppc","cs","icv","csqp","cecp","ecp","unio","si","vox","pxc","fnc"];
     Q.parlament_hemicycle = {
@@ -23,7 +22,7 @@ on-arrival: {!
 
 {!<div id="parlament" data-widget="hemicycle" data-props='{"configFrom":"parlament_hemicycle"}'></div>!}
 
-[? if health_minister_gender = "m": Conseller ?][? if health_minister_gender = "f": Consellera ?]of Health [+ health_minister +], working under the current [+ cat_coalition_disp +], is asking the chamber to replace the public-only framework, re-introducing a more mixed healthcare approach. 
+[? if health_minister_gender = "m": Conseller ?][? if health_minister_gender = "f": Consellera ?]of Health [+ health_minister +], working under the current [+ cat_coalition_disp +], is asking the chamber to replace the public-only framework, re-introducing a more mixed healthcare approach.
 
 - @vote_no: We'll vote against this backsliding!
 - @vote_yes: We'll vote in favour of such a proposal
@@ -68,7 +67,7 @@ on-arrival: {!
             noParties.push({label:labels[party]});
         }
     }
-    Q.parlament_healthcare_de_public_passed = Q.parlament_healthcare_de_public_yes > Q.parlament_healthcare_de_public_no &&
+    Q.parlament_healthcare_de_public_passed = Q.healthcare_de_public_introduced && Q.parlament_healthcare_de_public_yes > Q.parlament_healthcare_de_public_no &&
         Q.healthcare_spending == 3;
     Q.parlament_healthcare_de_public_vote_result = {outcomes:[
         {kind:"yes",label:"Yes",votes:Q.parlament_healthcare_de_public_yes,parties:yesParties},
@@ -83,8 +82,83 @@ go-to: on_yes if parlament_healthcare_de_public_passed; on_no if not parlament_h
 
 @on_yes
 on-arrival: {!
-    Q.government_budget += 1;
-    Q.healthcare_spending = 2;
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (Q.parlament_healthcare_de_public_passed && Q.healthcare_de_public_introduced && Q.healthcare_spending == 3 && !Q.cat_caretaker_gov && controlledParties.includes(Q.health_minister_party)) {
+        Q.government_budget += 1;
+        Q.healthcare_spending = 2;
+        var voterPolicies = [{demographics:{retired:1.2,ind:1.1,unemployed:1.2,young:0.65,middle:0.45}, provinces:{barcelona:1,girona:1.1,lleida:1.1,tarragona:1.05}, routes:(null), sign:-1, congreso:(0.06), barcelona:(0.12)},{demographics:Q.player_party == "cup" ? {buss:0.08,middle:0.02} : {buss:0.18,middle:0.05}, provinces:{barcelona:1,girona:1,lleida:1,tarragona:1}, routes:([["ciu",0.65],["cs",0.35]]), sign:1, congreso:(0.006), barcelona:(0.012)}];
+
+        // Policy voters: explicit demographic/province transfers, with ministry responsibility 80/20.
+        var voterOrigin = Q.player_party;
+        var voterCabinet = Array.from(new Set(Q.cat_coalition || []));
+        // Allocate ministry responsibility once across unique Parlament ballot carriers.
+        var voterActors = [];
+        for (var voterParty of [voterOrigin].concat(voterCabinet)) {
+
+            var voterCandidates = [voterParty];
+            if (voterParty == "erc" || voterParty == "cup") voterCandidates = [Q[voterParty + "_in_jxsi"] ? "jxsi" : "", Q[voterParty + "_in_jxcat"] ? "jxcat" : "", voterParty];
+            if (["ciu","cdc","dl","junts"].includes(voterParty) || voterParty == "pdcat" && !Q.pdcat_split) voterCandidates = [Q.parlament_current_ciu,"jxsi","jxcat","junts","pdcat","dl","cdc","ciu"];
+            if (["fl","federal_left","icv","csqp","cecp","ecp"].includes(voterParty)) voterCandidates = [Q.parlament_current_icv,"ecp","cecp","csqp","icv"];
+            var voterCarrier = null;
+            for (var voterCandidate of voterCandidates) {
+                if (!(Q.parties || []).includes(voterCandidate)) continue;
+                for (var voterProvince of Q.parlament_constituencies || []) for (var voterDemo of Q.parlament_demographics || [])
+                    if (Q[voterCandidate + "_parlament_" + voterProvince + "_" + voterDemo + "_support"] > 0) voterCarrier = voterCandidate;
+                if (voterCarrier) break;
+            }
+            if (voterParty == voterOrigin && !voterCarrier) break;
+            if (voterCarrier && !voterActors.some(function (actor) { return actor.party == voterCarrier; })) voterActors.push({party:voterCarrier,origin:voterParty});
+        }
+        for (var voterActorIndex = 0; voterActorIndex < voterActors.length; voterActorIndex++)
+            voterActors[voterActorIndex].weight = voterActors.length == 1 ? 1 : voterActorIndex == 0 ? 0.8 : 0.2 / (voterActors.length - 1);
+        for (var voterPolicy of voterPolicies) {
+            var voterCells = [];
+            for (var voterProvince of Q.parlament_constituencies || []) for (var voterDemo of Q.parlament_demographics || []) {
+                var voterAmount = (voterPolicy.demographics[voterDemo] || 0) * (voterPolicy.provinces[voterProvince] || 0);
+                if (voterAmount) voterCells.push({contest:"parlament",province:voterProvince,demo:voterDemo,amount:voterAmount});
+            }
+            if (voterPolicy.congreso && (Q.congreso_constituencies || []).includes("catalunya")) voterCells.push({contest:"congreso",province:"catalunya",demo:null,amount:voterPolicy.congreso});
+            if (voterPolicy.barcelona) voterCells.push({contest:"barcelona",province:null,demo:null,amount:voterPolicy.barcelona});
+            for (var voterCell of voterCells) {
+                var voterContest = voterCell.contest;
+                var voterLineup = voterContest == "parlament" ? (Q.parties || []).concat(["abstain"]) : voterContest == "congreso" ? (Q.congreso_parties_catalunya || []).concat(["abstain"]) : Q.parties_bcn || [];
+                var voterSuffix = voterContest == "parlament" ? "_parlament_" + voterCell.province + "_" + voterCell.demo + "_support" : voterContest == "congreso" ? "_congreso_catalunya_support" : "_local_barcelona_support";
+                var voterSignedAmount = voterCell.amount * (Math.abs(voterPolicy.sign));
+                if (!Number.isFinite(voterSignedAmount) || voterSignedAmount == 0) continue;
+                var voterDirection = voterPolicy.sign > 0 ? 1 : -1;
+                for (var voterActor of voterActors) {
+                    var voterRouteList = voterPolicy.routes || (voterPolicy.backlash ? (voterActor.origin == "cup" ? [["erc",0.60],["ciu",0.25],["abstain",0.15]] : voterActor.origin == "erc" ? [["ciu",0.60],["cs",0.25],["abstain",0.15]] : [["ciu",0.45],["cs",0.35],["abstain",0.20]]) : (voterActor.origin == "erc" ? [["cup",0.45],["fl",0.35],["abstain",0.20]] : voterActor.origin == "cup" ? [["fl",0.45],["erc",0.35],["abstain",0.20]] : voterActor.origin == "psc" ? [["fl",0.45],["erc",0.30],["abstain",0.25]] : ["ecp","cecp","csqp","icv"].includes(voterActor.origin) ? [["cup",0.40],["erc",0.30],["abstain",0.30]] : [["erc",0.40],["fl",0.35],["abstain",0.25]]));
+                    for (var voterRoute of voterRouteList) {
+                        var voterPair = [];
+                        for (var voterParty of [voterContest == "parlament" ? voterActor.party : voterActor.origin, voterRoute[0]]) {
+                            var voterCandidates = [voterParty];
+                            if (voterParty == "erc" || voterParty == "cup") voterCandidates = [Q[voterParty + "_in_jxsi"] ? "jxsi" : "", Q[voterParty + "_in_jxcat"] ? "jxcat" : "", voterParty];
+                            if (["ciu","cdc","dl","junts"].includes(voterParty) || voterParty == "pdcat" && !Q.pdcat_split) voterCandidates = [Q.parlament_current_ciu,"jxsi","jxcat","junts","pdcat","dl","cdc","ciu"];
+                            if (["fl","federal_left","icv","csqp","cecp","ecp"].includes(voterParty)) voterCandidates = voterContest == "parlament" ? [Q.parlament_current_icv,"ecp","cecp","csqp","icv"] : voterContest == "congreso" ? ["sumar","mpais","up","podemos","iu"] : ["bcomu","icv"];
+                            if (voterParty == "psc" && voterContest == "congreso") voterCandidates = ["psoe"];
+                            if (voterParty == "ppc" && voterContest != "parlament") voterCandidates = ["pp"];
+                            if (["jxsi","jxcat"].includes(voterParty) && voterContest != "parlament" && !Q[voterParty + (voterContest == "congreso" ? "_in_congreso" : "_in_local")]) voterCandidates = [voterOrigin,Q.parlament_current_ciu,"junts","pdcat","dl","cdc","ciu"];
+                            var voterCarrier = null;
+                            for (var voterCandidate of voterCandidates) {
+                                if (!voterLineup.includes(voterCandidate)) continue;
+                                if (["jxsi","jxcat"].includes(voterCandidate) && voterContest != "parlament" && !Q[voterCandidate + (voterContest == "congreso" ? "_in_congreso" : "_in_local")]) continue;
+                                if (Number.isFinite(Q[voterCandidate + voterSuffix]) && (Q[voterCandidate + voterSuffix] > 0 || voterCandidate == "abstain")) { voterCarrier = voterCandidate; break; }
+                            }
+                            voterPair.push(voterCarrier);
+                        }
+                        if (!voterPair[0] || !voterPair[1] || voterPair[0] == voterPair[1]) continue;
+                        var voterFrom = voterPair[voterDirection > 0 ? 1 : 0], voterTo = voterPair[voterDirection > 0 ? 0 : 1];
+                        var voterOptions = {contest:voterContest,from:voterFrom,to:voterTo,amount:Math.abs(voterSignedAmount) * voterActor.weight * voterRoute[1],maxDonorFraction:0.5};
+                        if (voterContest == "parlament") { voterOptions.constituencies = [voterCell.province]; voterOptions.demographics = [voterCell.demo]; }
+                        if (voterContest == "congreso") voterOptions.constituencies = ["catalunya"];
+                        G.cardSupportTransfer(Q,voterOptions);
+
+                    }
+                }
+            }
+        }
+    }
+    Q.healthcare_de_public_introduced = false;
 !}
 call: generalitat_setpolicy
 
@@ -93,6 +167,7 @@ The Parlament has re-introduced a mixed approach to healthcare. Private hospital
 - @post_event
 
 @on_no
+on-arrival: healthcare_de_public_introduced = false
 
 The proposal has not passed! The Public-Only system will continue to operate as it has so far.
 

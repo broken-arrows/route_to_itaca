@@ -127,6 +127,77 @@ on-arrival: {!
         if (Q.player_party == "cup") {
             Q.cup_poblelliure_dissent += -1 * 1;
         }
+        var voterPolicies = [{demographics:{buss:0.25,middle:0.25,young:0.15}, provinces:{barcelona:1,girona:1,lleida:1,tarragona:1}, routes:(Q.player_party == "cup" ? [["fl",0.40],["erc",0.35],["abstain",0.25]] : [["psc",0.40],["ciu",0.35],["abstain",0.25]]), sign:1, congreso:(0.015), barcelona:(0.03)}];
+
+        // Policy voters: explicit demographic/province transfers, with ministry responsibility 80/20.
+        var voterOrigin = Q.player_party;
+        var voterCabinet = Array.from(new Set(Q.cat_coalition || []));
+        // Allocate ministry responsibility once across unique Parlament ballot carriers.
+        var voterActors = [];
+        for (var voterParty of [voterOrigin].concat(voterCabinet)) {
+
+            var voterCandidates = [voterParty];
+            if (voterParty == "erc" || voterParty == "cup") voterCandidates = [Q[voterParty + "_in_jxsi"] ? "jxsi" : "", Q[voterParty + "_in_jxcat"] ? "jxcat" : "", voterParty];
+            if (["ciu","cdc","dl","junts"].includes(voterParty) || voterParty == "pdcat" && !Q.pdcat_split) voterCandidates = [Q.parlament_current_ciu,"jxsi","jxcat","junts","pdcat","dl","cdc","ciu"];
+            if (["fl","federal_left","icv","csqp","cecp","ecp"].includes(voterParty)) voterCandidates = [Q.parlament_current_icv,"ecp","cecp","csqp","icv"];
+            var voterCarrier = null;
+            for (var voterCandidate of voterCandidates) {
+                if (!(Q.parties || []).includes(voterCandidate)) continue;
+                for (var voterProvince of Q.parlament_constituencies || []) for (var voterDemo of Q.parlament_demographics || [])
+                    if (Q[voterCandidate + "_parlament_" + voterProvince + "_" + voterDemo + "_support"] > 0) voterCarrier = voterCandidate;
+                if (voterCarrier) break;
+            }
+            if (voterParty == voterOrigin && !voterCarrier) break;
+            if (voterCarrier && !voterActors.some(function (actor) { return actor.party == voterCarrier; })) voterActors.push({party:voterCarrier,origin:voterParty});
+        }
+        for (var voterActorIndex = 0; voterActorIndex < voterActors.length; voterActorIndex++)
+            voterActors[voterActorIndex].weight = voterActors.length == 1 ? 1 : voterActorIndex == 0 ? 0.8 : 0.2 / (voterActors.length - 1);
+        for (var voterPolicy of voterPolicies) {
+            var voterCells = [];
+            for (var voterProvince of Q.parlament_constituencies || []) for (var voterDemo of Q.parlament_demographics || []) {
+                var voterAmount = (voterPolicy.demographics[voterDemo] || 0) * (voterPolicy.provinces[voterProvince] || 0);
+                if (voterAmount) voterCells.push({contest:"parlament",province:voterProvince,demo:voterDemo,amount:voterAmount});
+            }
+            if (voterPolicy.congreso && (Q.congreso_constituencies || []).includes("catalunya")) voterCells.push({contest:"congreso",province:"catalunya",demo:null,amount:voterPolicy.congreso});
+            if (voterPolicy.barcelona) voterCells.push({contest:"barcelona",province:null,demo:null,amount:voterPolicy.barcelona});
+            for (var voterCell of voterCells) {
+                var voterContest = voterCell.contest;
+                var voterLineup = voterContest == "parlament" ? (Q.parties || []).concat(["abstain"]) : voterContest == "congreso" ? (Q.congreso_parties_catalunya || []).concat(["abstain"]) : Q.parties_bcn || [];
+                var voterSuffix = voterContest == "parlament" ? "_parlament_" + voterCell.province + "_" + voterCell.demo + "_support" : voterContest == "congreso" ? "_congreso_catalunya_support" : "_local_barcelona_support";
+                var voterSignedAmount = voterCell.amount * (Math.abs(voterPolicy.sign));
+                if (!Number.isFinite(voterSignedAmount) || voterSignedAmount == 0) continue;
+                var voterDirection = voterPolicy.sign > 0 ? 1 : -1;
+                for (var voterActor of voterActors) {
+                    var voterRouteList = voterPolicy.routes || (voterActor.origin == "erc" ? [["cup",0.45],["fl",0.35],["abstain",0.20]] : voterActor.origin == "cup" ? [["fl",0.45],["erc",0.35],["abstain",0.20]] : voterActor.origin == "psc" ? [["fl",0.45],["erc",0.30],["abstain",0.25]] : ["ecp","cecp","csqp","icv"].includes(voterActor.origin) ? [["cup",0.40],["erc",0.30],["abstain",0.30]] : [["erc",0.40],["fl",0.35],["abstain",0.25]]);
+                    for (var voterRoute of voterRouteList) {
+                        var voterPair = [];
+                        for (var voterParty of [voterContest == "parlament" ? voterActor.party : voterActor.origin, voterRoute[0]]) {
+                            var voterCandidates = [voterParty];
+                            if (voterParty == "erc" || voterParty == "cup") voterCandidates = [Q[voterParty + "_in_jxsi"] ? "jxsi" : "", Q[voterParty + "_in_jxcat"] ? "jxcat" : "", voterParty];
+                            if (["ciu","cdc","dl","junts"].includes(voterParty) || voterParty == "pdcat" && !Q.pdcat_split) voterCandidates = [Q.parlament_current_ciu,"jxsi","jxcat","junts","pdcat","dl","cdc","ciu"];
+                            if (["fl","federal_left","icv","csqp","cecp","ecp"].includes(voterParty)) voterCandidates = voterContest == "parlament" ? [Q.parlament_current_icv,"ecp","cecp","csqp","icv"] : voterContest == "congreso" ? ["sumar","mpais","up","podemos","iu"] : ["bcomu","icv"];
+                            if (voterParty == "psc" && voterContest == "congreso") voterCandidates = ["psoe"];
+                            if (voterParty == "ppc" && voterContest != "parlament") voterCandidates = ["pp"];
+                            if (["jxsi","jxcat"].includes(voterParty) && voterContest != "parlament" && !Q[voterParty + (voterContest == "congreso" ? "_in_congreso" : "_in_local")]) voterCandidates = [voterOrigin,Q.parlament_current_ciu,"junts","pdcat","dl","cdc","ciu"];
+                            var voterCarrier = null;
+                            for (var voterCandidate of voterCandidates) {
+                                if (!voterLineup.includes(voterCandidate)) continue;
+                                if (["jxsi","jxcat"].includes(voterCandidate) && voterContest != "parlament" && !Q[voterCandidate + (voterContest == "congreso" ? "_in_congreso" : "_in_local")]) continue;
+                                if (Number.isFinite(Q[voterCandidate + voterSuffix]) && (Q[voterCandidate + voterSuffix] > 0 || voterCandidate == "abstain")) { voterCarrier = voterCandidate; break; }
+                            }
+                            voterPair.push(voterCarrier);
+                        }
+                        if (!voterPair[0] || !voterPair[1] || voterPair[0] == voterPair[1]) continue;
+                        var voterFrom = voterPair[voterDirection > 0 ? 1 : 0], voterTo = voterPair[voterDirection > 0 ? 0 : 1];
+                        var voterOptions = {contest:voterContest,from:voterFrom,to:voterTo,amount:Math.abs(voterSignedAmount) * voterActor.weight * voterRoute[1],maxDonorFraction:0.5};
+                        if (voterContest == "parlament") { voterOptions.constituencies = [voterCell.province]; voterOptions.demographics = [voterCell.demo]; }
+                        if (voterContest == "congreso") voterOptions.constituencies = ["catalunya"];
+                        G.cardSupportTransfer(Q,voterOptions);
+
+                    }
+                }
+            }
+        }
     }
 !}
 
@@ -191,6 +262,77 @@ on-arrival: {!
         if (Q.player_party == "cup") {
             Q.cup_poblelliure_dissent += -1 * 1;
         }
+        var voterPolicies = [{demographics:{buss:0.15,middle:0.15,young:0.10}, provinces:{barcelona:1,girona:1,lleida:1,tarragona:1}, routes:(Q.player_party == "cup" ? [["fl",0.40],["erc",0.35],["abstain",0.25]] : [["psc",0.40],["ciu",0.35],["abstain",0.25]]), sign:1, congreso:(0.01), barcelona:(0.02)}];
+
+        // Policy voters: explicit demographic/province transfers, with ministry responsibility 80/20.
+        var voterOrigin = Q.player_party;
+        var voterCabinet = Array.from(new Set(Q.cat_coalition || []));
+        // Allocate ministry responsibility once across unique Parlament ballot carriers.
+        var voterActors = [];
+        for (var voterParty of [voterOrigin].concat(voterCabinet)) {
+
+            var voterCandidates = [voterParty];
+            if (voterParty == "erc" || voterParty == "cup") voterCandidates = [Q[voterParty + "_in_jxsi"] ? "jxsi" : "", Q[voterParty + "_in_jxcat"] ? "jxcat" : "", voterParty];
+            if (["ciu","cdc","dl","junts"].includes(voterParty) || voterParty == "pdcat" && !Q.pdcat_split) voterCandidates = [Q.parlament_current_ciu,"jxsi","jxcat","junts","pdcat","dl","cdc","ciu"];
+            if (["fl","federal_left","icv","csqp","cecp","ecp"].includes(voterParty)) voterCandidates = [Q.parlament_current_icv,"ecp","cecp","csqp","icv"];
+            var voterCarrier = null;
+            for (var voterCandidate of voterCandidates) {
+                if (!(Q.parties || []).includes(voterCandidate)) continue;
+                for (var voterProvince of Q.parlament_constituencies || []) for (var voterDemo of Q.parlament_demographics || [])
+                    if (Q[voterCandidate + "_parlament_" + voterProvince + "_" + voterDemo + "_support"] > 0) voterCarrier = voterCandidate;
+                if (voterCarrier) break;
+            }
+            if (voterParty == voterOrigin && !voterCarrier) break;
+            if (voterCarrier && !voterActors.some(function (actor) { return actor.party == voterCarrier; })) voterActors.push({party:voterCarrier,origin:voterParty});
+        }
+        for (var voterActorIndex = 0; voterActorIndex < voterActors.length; voterActorIndex++)
+            voterActors[voterActorIndex].weight = voterActors.length == 1 ? 1 : voterActorIndex == 0 ? 0.8 : 0.2 / (voterActors.length - 1);
+        for (var voterPolicy of voterPolicies) {
+            var voterCells = [];
+            for (var voterProvince of Q.parlament_constituencies || []) for (var voterDemo of Q.parlament_demographics || []) {
+                var voterAmount = (voterPolicy.demographics[voterDemo] || 0) * (voterPolicy.provinces[voterProvince] || 0);
+                if (voterAmount) voterCells.push({contest:"parlament",province:voterProvince,demo:voterDemo,amount:voterAmount});
+            }
+            if (voterPolicy.congreso && (Q.congreso_constituencies || []).includes("catalunya")) voterCells.push({contest:"congreso",province:"catalunya",demo:null,amount:voterPolicy.congreso});
+            if (voterPolicy.barcelona) voterCells.push({contest:"barcelona",province:null,demo:null,amount:voterPolicy.barcelona});
+            for (var voterCell of voterCells) {
+                var voterContest = voterCell.contest;
+                var voterLineup = voterContest == "parlament" ? (Q.parties || []).concat(["abstain"]) : voterContest == "congreso" ? (Q.congreso_parties_catalunya || []).concat(["abstain"]) : Q.parties_bcn || [];
+                var voterSuffix = voterContest == "parlament" ? "_parlament_" + voterCell.province + "_" + voterCell.demo + "_support" : voterContest == "congreso" ? "_congreso_catalunya_support" : "_local_barcelona_support";
+                var voterSignedAmount = voterCell.amount * (Math.abs(voterPolicy.sign));
+                if (!Number.isFinite(voterSignedAmount) || voterSignedAmount == 0) continue;
+                var voterDirection = voterPolicy.sign > 0 ? 1 : -1;
+                for (var voterActor of voterActors) {
+                    var voterRouteList = voterPolicy.routes || (voterActor.origin == "erc" ? [["cup",0.45],["fl",0.35],["abstain",0.20]] : voterActor.origin == "cup" ? [["fl",0.45],["erc",0.35],["abstain",0.20]] : voterActor.origin == "psc" ? [["fl",0.45],["erc",0.30],["abstain",0.25]] : ["ecp","cecp","csqp","icv"].includes(voterActor.origin) ? [["cup",0.40],["erc",0.30],["abstain",0.30]] : [["erc",0.40],["fl",0.35],["abstain",0.25]]);
+                    for (var voterRoute of voterRouteList) {
+                        var voterPair = [];
+                        for (var voterParty of [voterContest == "parlament" ? voterActor.party : voterActor.origin, voterRoute[0]]) {
+                            var voterCandidates = [voterParty];
+                            if (voterParty == "erc" || voterParty == "cup") voterCandidates = [Q[voterParty + "_in_jxsi"] ? "jxsi" : "", Q[voterParty + "_in_jxcat"] ? "jxcat" : "", voterParty];
+                            if (["ciu","cdc","dl","junts"].includes(voterParty) || voterParty == "pdcat" && !Q.pdcat_split) voterCandidates = [Q.parlament_current_ciu,"jxsi","jxcat","junts","pdcat","dl","cdc","ciu"];
+                            if (["fl","federal_left","icv","csqp","cecp","ecp"].includes(voterParty)) voterCandidates = voterContest == "parlament" ? [Q.parlament_current_icv,"ecp","cecp","csqp","icv"] : voterContest == "congreso" ? ["sumar","mpais","up","podemos","iu"] : ["bcomu","icv"];
+                            if (voterParty == "psc" && voterContest == "congreso") voterCandidates = ["psoe"];
+                            if (voterParty == "ppc" && voterContest != "parlament") voterCandidates = ["pp"];
+                            if (["jxsi","jxcat"].includes(voterParty) && voterContest != "parlament" && !Q[voterParty + (voterContest == "congreso" ? "_in_congreso" : "_in_local")]) voterCandidates = [voterOrigin,Q.parlament_current_ciu,"junts","pdcat","dl","cdc","ciu"];
+                            var voterCarrier = null;
+                            for (var voterCandidate of voterCandidates) {
+                                if (!voterLineup.includes(voterCandidate)) continue;
+                                if (["jxsi","jxcat"].includes(voterCandidate) && voterContest != "parlament" && !Q[voterCandidate + (voterContest == "congreso" ? "_in_congreso" : "_in_local")]) continue;
+                                if (Number.isFinite(Q[voterCandidate + voterSuffix]) && (Q[voterCandidate + voterSuffix] > 0 || voterCandidate == "abstain")) { voterCarrier = voterCandidate; break; }
+                            }
+                            voterPair.push(voterCarrier);
+                        }
+                        if (!voterPair[0] || !voterPair[1] || voterPair[0] == voterPair[1]) continue;
+                        var voterFrom = voterPair[voterDirection > 0 ? 1 : 0], voterTo = voterPair[voterDirection > 0 ? 0 : 1];
+                        var voterOptions = {contest:voterContest,from:voterFrom,to:voterTo,amount:Math.abs(voterSignedAmount) * voterActor.weight * voterRoute[1],maxDonorFraction:0.5};
+                        if (voterContest == "parlament") { voterOptions.constituencies = [voterCell.province]; voterOptions.demographics = [voterCell.demo]; }
+                        if (voterContest == "congreso") voterOptions.constituencies = ["catalunya"];
+                        G.cardSupportTransfer(Q,voterOptions);
+
+                    }
+                }
+            }
+        }
     }
 !}
 
@@ -201,7 +343,7 @@ The newly established Catalan Cybersecurity Agency has been tightly integrated w
 @digital3
 title: Fully-Digital administration
 view-if: vp_digital_level = 2
-subtitle: This will require reserved provisions in the next budget. \[-2 budget \] 
+subtitle: This will require reserved provisions in the next budget. \[-2 budget \]
 choose-if: government_budget >= 2 and vp_digital_agency_ready and not vp_digital_prepared
 unavailable-subtitle: [? if government_budget < 2: Not enough budget.?][? if not vp_digital_agency_ready: The Cybersecurity Agency must be established and operational.?][? if vp_digital_prepared: Deployment is already awaiting budget funding.?]
 on-arrival: {!
@@ -209,7 +351,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.vicepresident_party) && !Q.cat_caretaker_gov && Q.vp_digital_level == 2 && Q.government_budget >= 2 && Q.parlament_digital_passed && ["generalitat", "catalonia"].includes(Q.cybersecurity_agency_scope) && (Q.active_mods || {}).digital_agency_core && Q.active_mods.digital_agency_core.active && !Q.vp_digital_prepared) {
         Q.government_budget -= 2;
         Q.vp_digital_prepared = true;
-        G.registerLaw(Q, {id:"vp_digital3_proposal", title:"Fully-Digital Administration", colour:"gray", icon:"img/comms_icon.svg",
+        G.registerLaw(Q, {id:"vp_digital3_proposal", electoral_origin:Q.player_party, electoral_cabinet:Array.from(new Set(Q.cat_coalition || [])), title:"Fully-Digital Administration", colour:"gray", icon:"img/comms_icon.svg",
             description:"Pending budget approval: Redundant services, recovery arrangements and independent operating capacity is to allow the secure full digitalization of all of the Generalitat's systems.", targets:{}});
         var coalitionPartners = (Q.cat_coalition || []).slice();
         for (var list of ["jxsi", "jxcat"]) {

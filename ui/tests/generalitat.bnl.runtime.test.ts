@@ -124,12 +124,13 @@ describe('Business and Labour policies', () => {
   });
 
   it.each(['icf1', 'inspection1', 'tourism_more', 'unions_sovereignty'])('%s rejects wrong authority, caretaker and insufficient resources', name => {
-    for (const overrides of [{ bnl_minister_party: 'psc' }, { cat_caretaker_gov: true }, { government_budget: 0 }]) {
+    const cost = name === 'unions_sovereignty' ? { party_resources: 0 } : { government_budget: 0 };
+    for (const overrides of [{ bnl_minister_party: 'psc' }, { cat_caretaker_gov: true }, cost]) {
       const { adapter, q } = setup(overrides);
-      const before = [q.government_budget, q.psc_relations, q.erc_left_dissent];
+      const before = [q.government_budget, q.party_resources, q.psc_relations, q.erc_left_dissent];
       action(adapter, name);
       expect([q.bnl_icf_level, q.bnl_inspection_level, q.bnl_tourism_level, q.bnl_union_level]).toEqual([0, 0, 0, 0]);
-      expect([q.government_budget, q.psc_relations, q.erc_left_dissent]).toEqual(before);
+      expect([q.government_budget, q.party_resources, q.psc_relations, q.erc_left_dissent]).toEqual(before);
     }
   });
 

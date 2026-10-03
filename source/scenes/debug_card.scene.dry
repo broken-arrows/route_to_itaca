@@ -66,10 +66,33 @@ new-page: true
 May (very probably) mess up your save
 
 - @debug_menu: Back
+- @jxsi_inject
 - @psc_inject
 - @ciu_inject
 - @psoe_inject
 - @post_event: Done
+
+@jxsi_inject
+title: jxsi
+
+** jxsi situations **
+
+- @inject_party: Back
+- @jxsi_form
+- @jxsi_dissolved
+- @post_event: Done
+
+@jxsi_form
+title: go-to jxsi formation
+choose-if: not jxsi_formed
+unavailable-subtitle: jxsi has already been formed
+go-to: jxsi_formation
+
+@jxsi_dissolved
+title: go-to jxsi dissolution
+choose-if: player_in_jxsi
+unavailable-subtitle: player not in jxsi
+go-to: jxsi_dissolution
 
 @psoe_inject
 title: PSOE

@@ -17,6 +17,7 @@ on-arrival: {!
     Q.speaker_party = "cup";
     Q.speaker = Q.year < 2017 ? "Julià de Jòdar" : "Vidal Aragonés";
     Q.speaker_gender = "m";
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
 
@@ -27,7 +28,7 @@ As the party that will hold the Presidency, ERC will lead the government negotia
 
 @erc_leader_accept_cup_speaker
 title: Nominate [+ speaker +] for Speaker
-go-to: parlament_coalition_erc_cup_phase_erc_player_erc_led
+go-to: post_event
 
 @erc_leader_retain_speaker
 title: Retain the Speaker of the House for ERC
@@ -36,7 +37,7 @@ on-arrival: {!
     Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
     Q.speaker_gender = Q.year < 2016 ? "f" : "m";
 !}
-go-to: parlament_coalition_erc_cup_phase_erc_player_erc_led
+go-to: post_event
 
 @erc_player_cup_led
 title: CUP-led <span class="generalitat-coalition" data-parties="cup erc" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--cup); font-style: italic;"> Left-Independence</span> <span style="color: var(--erc); font-style: italic;"><span style="color: var(--cup); font-style: italic;">Government</span></span>
@@ -53,12 +54,13 @@ on-arrival: {!
     Q.speaker_party = "erc";
     Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
     Q.speaker_gender = Q.year < 2016 ? "f" : "m";
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
 
 The CUP will hold the Presidency and lead the government negotiations. Its opening institutional proposal gives ERC the Speaker before the CUP presents us with its cabinet offer.
 
-- @parlament_coalition_erc_cup_phase_erc_player_cup_led: Accept [+ speaker +] as Speaker
+- @post_event: Accept [+ speaker +] as Speaker
 
 @cup_player_erc_led
 title: ERC-led <span class="generalitat-coalition" data-parties="erc cup" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">Left-Independence</span> <span style="color: var(--cup); font-style: italic;">Government</span></span>
@@ -75,12 +77,13 @@ on-arrival: {!
     Q.speaker_party = "cup";
     Q.speaker = Q.year < 2017 ? "Julià de Jòdar" : "Vidal Aragonés";
     Q.speaker_gender = "m";
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
 
 ERC will hold the Presidency and lead the government negotiations. Its opening institutional proposal gives the CUP the Speaker of the House before ERC presents us with its cabinet offer.
 
-- @parlament_coalition_erc_cup_phase_cup_player_erc_led: Accept [+ speaker +] as Speaker
+- @post_event: Accept [+ speaker +] as Speaker
 
 @cup_player_cup_led
 title: CUP-led <span class="generalitat-coalition" data-parties="cup erc" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--cup); font-style: italic;">Left-Independence</span> <span style="color: var(--erc); font-style: italic;">Government</span></span>
@@ -97,6 +100,7 @@ on-arrival: {!
     Q.speaker_party = "erc";
     Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
     Q.speaker_gender = Q.year < 2016 ? "f" : "m";
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
 
@@ -107,13 +111,13 @@ As the party that will hold the Presidency, the CUP will lead the government neg
 
 @cup_leader_accept_erc_speaker
 title: Nominate [+ speaker +] (ERC) for Speaker
-go-to: parlament_coalition_erc_cup_phase_cup_player_cup_led
+go-to: post_event
 
 @cup_leader_retain_speaker
-title: Retain the Speaker of the House for the CUP
+title: Keep the Speaker of the House for the CUP
 on-arrival: {!
     Q.speaker_party = "cup";
     Q.speaker = Q.year < 2017 ? "Julià de Jòdar" : "Vidal Aragonés";
     Q.speaker_gender = "m";
 !}
-go-to: parlament_coalition_erc_cup_phase_cup_player_cup_led
+go-to: post_event

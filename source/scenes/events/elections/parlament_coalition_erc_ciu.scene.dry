@@ -9,6 +9,7 @@ choose-if: parlament_coalition_erc_ciu_s >= parlament_s_majority and erc_parlame
 unavailable-subtitle: [? if parlament_coalition_erc_ciu_s < parlament_s_majority: Not enough parliamentary support. ?][? if not ((parlament_current_ciu == "ciu" and ciu_relations > 40) or (parlament_current_ciu == "pdcat" and pdcat_relations > 40) or (parlament_current_ciu == "cdc" and cdc_relations > 40) or (parlament_current_ciu == "dl" and dl_relations > 40) or (parlament_current_ciu == "jxcat" and jxcat_relations > 40) or (parlament_current_ciu == "junts" and junts_relations > 40)): [+ parlament_current_ciu +] does not trust us enough to form a government together. ?][? if not ((parlament_current_ciu == "ciu" and ciu_roadmap != 0) or (parlament_current_ciu == "pdcat" and pdcat_roadmap != 0) or (parlament_current_ciu == "cdc" and cdc_roadmap != 0) or (parlament_current_ciu == "dl" and dl_roadmap != 0) or (parlament_current_ciu == "jxcat" and jxcat_roadmap != 0) or (parlament_current_ciu == "junts" and junts_roadmap != 0)): [+ parlament_current_ciu +] has no Roadmap for Independence. ?]
 subtitle: [+ parlament_current_ciu +] expects us to reach an agreement to continue the push for independence.
 on-arrival: {!
+    Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
     Q.erc_ciu_coalition_phase = 1;
 !}

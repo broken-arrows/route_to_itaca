@@ -54,9 +54,18 @@ describe('authored coalition tooltip metadata', () => {
   ])('routes the explicit %s-player/%s-led menu entry to its own phase tree', (player, leader, follower, entryId, phaseId) => {
     const adapter = DendryAdapter.fromJSONText(gameText);
     adapter.beginGame([1, 2, 3, 4]);
+    adapter.goToScene('root.start_menu');
+    adapter.goToScene('root.start');
     Object.assign(adapter.qualities, {
       player_party: player,
-      year: 2018,
+      year: 2013,
+      month: 2,
+      time: 6,
+      rubicon: false,
+      month_actions: 0,
+      countdowns: [],
+      next_spanish_election_time: 100,
+      next_election_time: 100,
       erc_parlament_s: leader === 'erc' ? 40 : 32,
       cup_parlament_s: leader === 'cup' ? 40 : 32,
       parlament_coalition_erc_cup_s: 72,
@@ -65,7 +74,12 @@ describe('authored coalition tooltip metadata', () => {
     });
 
     const speakerFrame = adapter.goToScene(entryId);
-    const phaseFrame = adapter.choose(speakerFrame.choices.findIndex((choice) => choice.canChoose));
+    const newspaperFrame = adapter.choose(speakerFrame.choices.findIndex((choice) => choice.canChoose));
+    expect(adapter.qualities.month).toBe(3);
+    expect(adapter.qualities.coalition_phase_timer).toBe(0);
+    const phaseIndex = newspaperFrame.choices.findIndex((choice) => choice.id === phaseId);
+    expect(phaseIndex).toBeGreaterThanOrEqual(0);
+    const phaseFrame = adapter.choose(phaseIndex);
 
     expect(adapter.qualities.parlament_coalition_leader).toBe(leader);
     expect(adapter.qualities.parlament_coalition_follower).toBe(follower);
