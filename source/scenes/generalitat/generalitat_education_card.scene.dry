@@ -9,7 +9,8 @@ on-arrival: {!
 !}
 call: generalitat_education_card.policy_prepare
 is-card: true
-card-image: img/education_icon.svg
+card-image: img/generalitat/educacio.jpg
+face-image: img/generalitat/educacio.jpg
 frequency: 100
 tags: generalitat
 role: card-gov

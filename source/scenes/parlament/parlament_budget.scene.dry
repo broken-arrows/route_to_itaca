@@ -6,6 +6,7 @@ on-arrival: {!
     if (!Q.budget_draft_origin || !Q.budget_draft || Q.budget_draft_origin.year != Q.year)
         throw new Error("A budget must be submitted by the Economy ministry");
     Q.budget_year_attempted = Q.year;
+    Q.budget_postponed_trigger = false;
     Q.budget_parlament_trigger = false;
     Q.parlament_budget_changes_made = false;
     Q.parlament_budget_player_vote = "auto";
@@ -112,7 +113,7 @@ on-arrival: {!
             cost += projectCosts[key];
         }
         var profile = taxProfiles[tax + 2];
-        var margin = 1 + origin.surplus_at_draft / 0.7 + profile.revenue -
+        var margin = 1 + origin.surplus_at_draft + profile.revenue -
             taxProfiles[origin.enacted_tax_policy_level + 2].revenue -
             2 * (cap - origin.enacted_social_spending_cap) - cost;
         var result = {valid:valid, tax:tax, cap:cap, levels:levels, cuts:cuts,
@@ -122,6 +123,17 @@ on-arrival: {!
         return result;
     }
     var projection = project(draft);
+    var submittedProjection = project(origin);
+    function isNpcAuthor(party) {
+        return origin.author == "npc" && (party == origin.proposer_party || party == origin.proposer_policy_party);
+    }
+    function submittedTerms(proposal) {
+        return proposal.tax_policy_level == origin.tax_policy_level && proposal.social_spending_cap == origin.social_spending_cap &&
+            Object.keys(projectIds).every(function (key) { return !!proposal.projects[key] == !!origin.projects[key]; });
+    }
+    function acceptsFunding(party, p, ordinaryLimit) {
+        return p.shortfall <= (isNpcAuthor(party) ? submittedProjection.shortfall + 1e-9 : ordinaryLimit);
+    }
     Q.parlament_budget_projection = projection;
     Q.parlament_budget_tax_name = projection.taxProfile.name;
     Q.parlament_budget_cap_name = capNames[projection.cap + 2];
@@ -177,41 +189,50 @@ on-arrival: {!
         if (belongs(party, (Q.cat_coalition_support || []).concat(Q.cat_coalition_abstain || [])) && p.brokenExternal.some(function (r) {
             return belongs(party, r.signatories || []);
         })) reasons.push("The proposed budget goes against coalition-support agreement.");
-        if (party == "ciu" && p.tax >= 2 && !promised(party, "tax_policy_level", p))
+        // An NPC owns its submitted package, but not invalid terms, agreement breaches or extra financing added later.
+        if (isNpcAuthor(party)) {
+            if (!acceptsFunding(party, p, 0)) reasons.push("The amended budget needs more deficit financing than they proposed.");
+            if (submittedTerms(proposal)) return reasons;
+        }
+        if (party == "ciu" && p.tax >= 2 && !promised(party, "tax_policy_level", p) &&
+            !(isNpcAuthor(party) && p.tax <= origin.tax_policy_level))
             reasons.push("CiU will not approve of such a radical tax increase.");
-        if (party == "ciu" && p.shortfall > 0) reasons.push("CiU will not approve a budget with a funding gap.");
-        if (["cdc", "dl", "pdcat", "junts", "unio"].includes(party) && p.shortfall > 1)
+        if (party == "ciu" && !isNpcAuthor(party) && p.shortfall > 0) reasons.push("CiU will not approve a budget with a funding gap.");
+        if (["cdc", "dl", "pdcat", "junts", "unio"].includes(party) && !isNpcAuthor(party) && p.shortfall > 1)
             reasons.push(party + " will not accept this large a funding gap.");
         if (["ciu", "cdc", "dl", "pdcat", "junts", "unio", "ppc", "cs"].includes(party) && expanding &&
-            origin.surplus_at_draft < 0 && !promised(party, "social_spending_cap", p))
+            origin.surplus_at_draft < 0 && !promised(party, "social_spending_cap", p) &&
+            !(isNpcAuthor(party) && p.cap <= origin.social_spending_cap))
             reasons.push("They oppose a higher spending cap while the Generalitat remains in deficit.");
         if (["erc", "cup", "psc", "icv", "csqp", "cecp", "ecp"].includes(party) && p.cuts.length)
             reasons.push(party + " will not accept compulsory cuts to public services.");
         if (["cup", "icv", "csqp", "cecp", "ecp"].includes(party) && proposal.projects.b40)
             reasons.push("They oppose the building of the Fourth Belt.");
-        if (["icv", "csqp", "cecp", "ecp"].includes(party) && Q.year >= 2013 && roadmap > 1) {
+        if (["icv", "csqp", "cecp", "ecp"].includes(party) && !isNpcAuthor(party) && Q.year >= 2013 && roadmap > 1) {
             var exceptional = party == "csqp" && Q.csqp_leader == "Arcadi Oliveres" ||
                 party == "cecp" && ["Arcadi Oliveres", "Jaume Asens"].includes(Q.cecp_leader);
             if (!exceptional) reasons.push("Their leadership is against the Generalitat's current independence roadmap.");
             else if (!expanding || p.tax < 1) reasons.push("Their leadership expects expanded social funding and a credible tax package.");
         }
-        if (party == "psc" && Q.year >= 2013 && roadmap > 1) {
+        if (party == "psc" && !isNpcAuthor(party) && Q.year >= 2013 && roadmap > 1) {
             if (Q.psc_leader != "Montserrat Tura") reasons.push("The PSC will not support this government's independence roadmap.");
             else if (!expanding || p.tax < 1 || proposal.projects.b40) reasons.push("The PSC expoects greater funding for public services.");
         }
-        if (["ppc", "cs"].includes(party) && Q.year >= 2013 && roadmap > 0)
+        if (["ppc", "cs"].includes(party) && !isNpcAuthor(party) && Q.year >= 2013 && roadmap > 0)
             reasons.push("Their leadership is against the Generalitat's current independence roadmap.");
         return reasons;
     }
     function basePosition(party) {
+        if (isNpcAuthor(party) && submittedTerms(draft)) return "yes";
         var tax = projection.tax;
         var capChange = projection.cap - origin.enacted_social_spending_cap;
         var expanding = capChange > 0 || spending.some(function (kind) { return projection.levels[kind] > Q[kind]; });
         var metro = draft.projects.metro1 || draft.projects.metro2 || draft.projects.rail1 ||
             draft.projects.rail2 || draft.projects.tmobilitat2;
         if (["ciu", "cdc", "dl", "pdcat", "junts", "unio"].includes(party))
-            return projection.shortfall == 0 && (capChange <= 0 || promised(party, "social_spending_cap", projection)) &&
-                (tax < 2 || promised(party, "tax_policy_level", projection)) ? "yes" : "no";
+            return acceptsFunding(party, projection, 0) && (capChange <= 0 || promised(party, "social_spending_cap", projection) ||
+                isNpcAuthor(party) && projection.cap <= origin.social_spending_cap) &&
+                (tax < 2 || promised(party, "tax_policy_level", projection) || isNpcAuthor(party) && tax <= origin.tax_policy_level) ? "yes" : "no";
         var agreedTax = promised(party, "tax_policy_level", projection);
         var agreedCap = promised(party, "social_spending_cap", projection);
         if (party == "erc") return (tax >= 1 || agreedTax) && (projection.cap >= Math.min(0, origin.enacted_social_spending_cap) || agreedCap) ? "yes" : "no";
@@ -219,7 +240,8 @@ on-arrival: {!
         if (["icv", "csqp", "cecp", "ecp"].includes(party)) return (expanding || projection.cap >= 1 || agreedCap) && (tax >= 1 || agreedTax) ? "yes" : "no";
         if (party == "psc") return (pscFacesIndyCabinet ? expanding && (tax == 1 || tax == 2 && metro) :
             (projection.cap >= Math.min(0, origin.enacted_social_spending_cap) || agreedCap) && (tax >= 0 || agreedTax) && (tax < 2 || metro || agreedTax)) ? "yes" : "no";
-        if (["ppc", "cs"].includes(party)) return (capChange <= 0 || agreedCap) && (tax <= 0 || agreedTax) && projection.shortfall == 0 ? "yes" : "no";
+        if (["ppc", "cs"].includes(party)) return (capChange <= 0 || agreedCap || isNpcAuthor(party) && projection.cap <= origin.social_spending_cap) &&
+            (tax <= 0 || agreedTax || isNpcAuthor(party) && tax <= origin.tax_policy_level) && acceptsFunding(party, projection, 0) ? "yes" : "no";
         return party == "si" ? "abstain" : "no";
     }
     var deals = Q.parlament_budget_deals;
@@ -229,6 +251,8 @@ on-arrival: {!
         // The player's choice controls their live ballot carrier.
         if (party == playerVehicle && Q.parlament_budget_player_vote != "auto")
             return Q.parlament_budget_player_vote == "yes" && !Q.parlament_budget_player_can_yes ? "no" : Q.parlament_budget_player_vote;
+        if (hardVetoReasons(party, draft, projection).length) return "no";
+        if (isNpcAuthor(party) && submittedTerms(draft)) return "yes";
         if (party == "jxsi" || party == "jxcat") {
             var members = ["cdc"];
             if (Q["erc_in_" + party]) members.push("erc");
@@ -236,7 +260,6 @@ on-arrival: {!
             var memberVotes = members.map(position);
             return memberVotes.every(function (v) { return v == "yes"; }) ? "yes" : memberVotes.includes("no") ? "no" : "abstain";
         }
-        if (hardVetoReasons(party, draft, projection).length) return "no";
         if (deals.some(function (d) { return d.party == party; })) return "yes";
         return basePosition(party);
     }
@@ -396,6 +419,7 @@ on-arrival: {!
 
 - @pass
 - @walk_away
+- @postpone
 - @cap_lower
 - @cap_higher
 - @tax_lower
@@ -670,9 +694,22 @@ on-arrival: {!
 !}
 go-to: review
 
+@postpone
+title: Can we instead postpone the vote?
+choose-if: month < 11 and not parlament_budget_can_pass
+unavailable-subtitle: [? if month >= 11 : The year is already about to end. ?][? if parlament_budget_can_pass: There is already a majority supporting this budget. ?]
+on-arrival: {!
+    Q.budget_postponed_trigger = false;
+    Q.budget_postponed_countdown = 11 - Q.month;
+    if (!Q.countdowns.includes("budget_postponed")) Q.countdowns.push("budget_postponed");
+!}
+
+The Parlament will reconvene in [+ budget_postponed_countdown +] [? if rubicon: weeks?][? if not rubicon: months?] to discuss the budget again. Let's hope negotiations are more fruitful then...
+
+
 @pass
 title: Approve the budget
-subtitle: [? if parlament_budget_player_governs: \[+[+ parlament_budget_executive_grant +] budget\]?]
+subtitle: [? if parlament_budget_player_governs: \[ +[+ parlament_budget_executive_grant +] budget\]?]1
 choose-if: parlament_budget_can_pass
 unavailable-subtitle: [? if not parlament_budget_chamber_majority: Not enough parliamentary support.?][? if not parlament_budget_cabinet_yes: Every cabinet party must approve the budget.?]
 on-arrival: {!

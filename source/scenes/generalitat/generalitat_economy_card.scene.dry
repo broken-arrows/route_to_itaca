@@ -681,7 +681,7 @@ unavailable-subtitle: [? if budget_year >= year: This year's budget has already 
 on-arrival: {!
     var proposal = Q.economy_budget_proposal;
     Q.budget_draft_origin = {
-        author:"player", year:Q.year,
+        author:"player", proposer_party:Q.economy_minister_party, year:Q.year,
         tax_policy_level:proposal.tax_policy_level,
         social_spending_cap:proposal.social_spending_cap,
         enacted_tax_policy_level:Q.tax_policy_level,

@@ -9,8 +9,8 @@ on-arrival: {!
         ["generalitat", "catalonia"].includes(Q.cybersecurity_agency_scope) && !!agency && agency.active;
 !}
 is-card: true
-card-image: img/cat_seal.svg
-face-image: img/cat_seal.svg
+card-image: img/generalitat_interior.jpg
+face-image: img/generalitat_interior.jpg
 frequency: 100
 tags: generalitat
 role: card-gov

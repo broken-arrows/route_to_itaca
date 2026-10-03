@@ -136,7 +136,7 @@ on-arrival: {!
   // Cap zero permits one restoration step in each service under the 2012 budget.
   Q.education_spending = -1;
   Q.healthcare_spending = -1;
-  Q.public_salary_level = -1;
+  Q.public_salary_level = 0;
   Q.tax_policy_level = 1;
   Q.economy_atc_level = 0;
   Q.economy_asset_sales = 0;

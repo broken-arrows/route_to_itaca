@@ -8,15 +8,15 @@ on-arrival: {!
         Q.healthcare_prepared_level === Q.healthcare_spending + 1;
 !}
 is-card: true
-card-image: img/health_icon.svg
-face-image: img/health_icon.svg
+card-image: img/generalitat/catsalut.jpg
+face-image: img/generalitat/catsalut.jpg
 frequency: 100
 tags: generalitat
 role: card-gov
 
 = Ministry of Health
 
-The Ministry of Health commands the highest budget allocation of the Generalitat, and is 
+The Ministry of Health commands the highest budget allocation of the Generalitat. What do we want to do here?
 
 - @universal_access1
 - @universal_access2

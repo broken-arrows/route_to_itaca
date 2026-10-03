@@ -9,7 +9,8 @@ on-arrival: {!
 !}
 is-card: true
 new-page: true
-card-image: img/labour_icon.svg
+card-image: img/generalitat/treball.png
+face-image: img/generalitat/treball.png
 frequency: 100
 tags: generalitat
 role: card-gov

@@ -3,8 +3,8 @@ new-page: true
 view-if: generalitat_interior_timer <= 0 and (interior_minister_party == player_party) and not cat_caretaker_gov
 on-arrival: month_actions += 1; generalitat_interior_timer += 4;
 is-card: true
-card-image: img/generalitat/mossos_desquadra.webp
-face-image: img/generalitat/mossos_desquadra.webp
+card-image: img/generalitat/mossos.png
+face-image: img/generalitat/mossos.png
 frequency: 100
 tags: generalitat
 role: card-gov

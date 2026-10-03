@@ -7,8 +7,8 @@ on-arrival: {!
 !}
 call: generalitat_coalition_card.prepare
 is-card: true
-card-image: img/cat_seal.svg
-face-image: img/cat_seal.svg
+card-image: img/generalitat/office.jpg
+face-image: img/generalitat/office.jpg
 frequency: 100
 tags: generalitat
 role: card-gov

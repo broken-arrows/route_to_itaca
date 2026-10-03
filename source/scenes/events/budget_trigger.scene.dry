@@ -1,7 +1,8 @@
 title: [+ cat_coalition_disp +], to kickstart Parlament budget negotiations
-subtitle: [? if president_gender = "m": President?][? if president_gender = "f": Presidenta?] [+ president +] is looking to pass a budget for this year [+ year +].
+subtitle: [? if president_gender = "m": President?][? if president_gender = "f": Presidenta?] [+ president +] is looking [? if budget_postponed_trigger: , again, ?]to pass a budget for this year [+ year +].
 new-page: true
 on-arrival: {!
+    Q.budget_postponed_trigger = false;
     Q.coming_from_parlament = false;
     Q.budget_parlament_trigger = false;
     Q.budget_year_attempted = Q.year;
@@ -68,18 +69,19 @@ on-arrival: {!
         var minimumTax = tax;
         for (var candidate = Math.max(-2, Q.tax_policy_level - 2); candidate <= Math.min(2, Q.tax_policy_level + 2); candidate++) {
             if (candidate < minimumTax || party == "ciu" && candidate >= 2 && !taxPromised) continue;
-            var margin = 1 + Q.generalitat_surplus / 0.7 + yields[candidate + 2] - yields[Q.tax_policy_level + 2] -
+            var margin = 1 + Q.generalitat_surplus + yields[candidate + 2] - yields[Q.tax_policy_level + 2] -
                 2 * (cap - Q.social_spending_cap) - costs;
             if (margin > bestMargin) { tax = candidate; bestMargin = margin; }
             if (margin >= 0) break;
         }
     }
-    Q.budget_draft_origin = {author:"npc", year:Q.year, tax_policy_level:tax, social_spending_cap:cap,
+    Q.budget_draft_origin = {author:"npc", proposer_party:Q.economy_minister_party, proposer_policy_party:party,
+        year:Q.year, tax_policy_level:tax, social_spending_cap:cap,
         enacted_tax_policy_level:Q.tax_policy_level, enacted_social_spending_cap:Q.social_spending_cap,
         surplus_at_draft:Q.generalitat_surplus, projects:Object.assign({}, projects)};
     Q.budget_draft = {tax_policy_level:tax, social_spending_cap:cap, projects:projects};
 !}
-view-if: budget_parlament_trigger
+view-if: budget_parlament_trigger or budget_postponed_trigger
 tags: event
 role: event
 go-to: parlament_budget
