@@ -421,13 +421,12 @@ if (has_time_passed || Q.coalition_rupture_recheck) {
                 if (record.status == "broken" && actual >= record.target) record.status = "applied";
                 return actual < record.target;
             });
-            if (relations < 30 || (relations < 40 && (brokenLaw || brokenPolicy || incompatible || Q.budget_failed_times >= 2))) {
+            if (relations < 30 || (relations < 40 && (brokenLaw || brokenPolicy || incompatible))) {
                 Q.coalition_rupture_target = partner;
                 Q.coalition_rupture_trigger = true;
                 Q.coalition_rupture_low_relations = relations < 30;
                 Q.coalition_rupture_broken_agreement = brokenLaw || brokenPolicy;
                 Q.coalition_rupture_roadmap_conflict = incompatible;
-                Q.coalition_rupture_budget_paralysis = Q.budget_failed_times >= 2;
                 break;
             }
         }
@@ -461,13 +460,17 @@ if (has_time_passed && !Q.budget_postponed_countdown > 0 && !Q.rubicon && !Q.cat
     }
 }
 
-// Trigger snap election on failures when trying to pass a budget
-if (has_time_passed && !Q.cat_caretaker_gov && !Q.rubicon && (Q.next_election_year - Q.year >= 3) && (Q.budget_failed_times > 0 || (Q.next_election_year - 4 > Q.budget_year && Q.next_election_year - Q.year <= 2)) && Q.year > Q.budget_year && !((Q[Q.player_party + "_in_jxsi"] && Q.president_party == "jxsi") || (Q[Q.player_party + "_in_jxcat"] && Q.president_party == "jxcat") || Q.president_party == Q.player_party)) {
-    var rnd = Math.random();
-    if (rnd < (0.1 + ((Q.year - Q.budget_year)/10))) {
-        Q.parlament_snap_election = 1;
-    }
+
+if (has_time_passed && !Q.cat_caretaker_gov && !Q.rubicon && !Q.coalition_rupture_trigger &&
+    !Q.parlament_snap_election && Q.budget_internal_failed_times >= 2 &&
+    Q.year > Q.budget_year && Q.next_election_time - Q.time > 2 &&
+    (Q.cat_coalition || []).includes(playerVehicle) && Q.president_party != playerVehicle &&
+    Number.isFinite(Q[Q.president_party + "_relations"]) && Q[Q.president_party + "_relations"] < 40 &&
+    Math.random() < 0.20) {
+    Q.parlament_snap_election = 1;
+    Q.snap_budget_distrust = true;
 }
+
 
 if (Q.broken_roadmap_expires_trigger) {
     Q.broken_roadmap_expires_trigger = false;

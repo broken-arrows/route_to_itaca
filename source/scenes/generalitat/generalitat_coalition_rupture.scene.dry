@@ -45,7 +45,7 @@ on-arrival: {!
 
 = Government on the verge of collapse
 
-After many disagreements since the start of the legislature, our relations with [+ coalition_rupture_target +] are at an all time low. So much so, that right now they [? if coalition_rupture_expulsion: intend to expel us from the government! ?][? if not coalition_rupture_expulsion: intends to withdraw from the government! ?][? if coalition_rupture_low_relations: Relations have deteriorated just way past beyond what they are willing to tolerate. ?][? if coalition_rupture_broken_agreement: We have failed to acquiesce with the agreement we reached with them. ?][? if coalition_rupture_roadmap_conflict: Our roadmaps to independence differ too much. ?][? if coalition_rupture_budget_paralysis: The repeated failure to pass even a budget has undermined their confidence in the coalition. ?]
+After many disagreements since the start of the legislature, our relations with [+ coalition_rupture_target +] are at an all time low. So much so, that right now they [? if coalition_rupture_expulsion: intend to expel us from the government! ?][? if not coalition_rupture_expulsion: intends to withdraw from the government! ?][? if coalition_rupture_low_relations: Relations have deteriorated just way past beyond what they are willing to tolerate. ?][? if coalition_rupture_broken_agreement: We have failed to acquiesce with the agreement we reached with them. ?][? if coalition_rupture_roadmap_conflict: Our roadmaps to independence differ too much. ?]
 
 - @policy
 - @independence

@@ -699,12 +699,17 @@ title: Can we instead postpone the vote?
 choose-if: month < 11 and not parlament_budget_can_pass
 unavailable-subtitle: [? if month >= 11 : The year is already about to end. ?][? if parlament_budget_can_pass: There is already a majority supporting this budget. ?]
 on-arrival: {!
+    Q.parlament_budget_trust_outcome = "";
+    if (Q.month >= 11 || Q.parlament_budget_can_pass || Q.budget_year >= Q.year)
+        throw new Error("Budget postponement conditions changed");
     Q.budget_postponed_trigger = false;
     Q.budget_postponed_countdown = 11 - Q.month;
     if (!Q.countdowns.includes("budget_postponed")) Q.countdowns.push("budget_postponed");
+    Q.parlament_budget_trust_outcome = "postpone";
 !}
+call: parlament_budget.trust_loss
 
-The Parlament will reconvene in [+ budget_postponed_countdown +] [? if rubicon: weeks?][? if not rubicon: months?] to discuss the budget again. Let's hope negotiations are more fruitful then...
+The Parlament will reconvene in [+ budget_postponed_countdown +] [? if rubicon: weeks?][? if not rubicon: months?] to discuss the budget again. Let's hope negotiations are more fruitful then... 
 
 
 @pass
@@ -1157,6 +1162,8 @@ on-arrival: {!
     }
     Q.budget_year = Q.year;
     Q.budget_failed_times = 0;
+    Q.budget_internal_failed_times = 0;
+    Q.budget_trust_record = null;
     Q.coming_from_parlament = false;
 !}
 call: generalitat_setpolicy
@@ -1175,6 +1182,8 @@ subtitle: The Generalitat will continue to operate under its [+ budget_year +] b
 choose-if: parlament_budget_player_authored or not parlament_budget_can_pass
 unavailable-subtitle: This government has enough votes to pass its proposal.
 on-arrival: {!
+    Q.parlament_budget_trust_outcome = "";
+    if (Q.budget_year >= Q.year) throw new Error("This year's budget has already been approved");
     if (Q.parlament_budget_can_pass && !Q.parlament_budget_player_authored) throw new Error("An NPC budget with sufficient support cannot be withdrawn");
     if (Q.parlament_budget_failed_year != Q.year) {
         var penalty = Q.parlament_budget_can_pass ? 0.32 : 0.18;
@@ -1196,9 +1205,51 @@ on-arrival: {!
         Q.parlament_budget_failed_year = Q.year;
         Q.budget_failed_times += 1;
     }
+    Q.parlament_budget_trust_outcome = "failure";
     Q.coming_from_parlament = false;
 !}
+call: parlament_budget.trust_loss
 
 No agreement seems to be possible... The Generalitat will continue to operate under its last approved budget from [+ budget_year +].
 
 - @post_event
+
+@trust_loss
+on-arrival: {!
+    Q.parlament_budget_trust_loss_applied = false;
+    var vehicle = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+    var cabinet = Q.cat_coalition || [];
+    // A united cabinet blocked by the chamber has not lost trust in its partners.
+    if (["postpone", "failure"].includes(Q.parlament_budget_trust_outcome) &&
+        !Q.cat_caretaker_gov && Q.budget_year < Q.year &&
+        Q.budget_draft_origin && Q.budget_draft_origin.year == Q.year &&
+        cabinet.includes(vehicle) && cabinet.length > 1 && Q.parlament_budget_cabinet_yes === false) {
+        if (!Q.budget_trust_record || Q.budget_trust_record.year != Q.year)
+            Q.budget_trust_record = {year:Q.year, failed:false, losses:{}};
+        var record = Q.budget_trust_record;
+        if (Q.parlament_budget_trust_outcome == "failure" && !record.failed) {
+            record.failed = true;
+            Q.budget_internal_failed_times = (Number(Q.budget_internal_failed_times) || 0) + 1;
+        }
+        var loss = Q.parlament_budget_trust_outcome == "failure" ?
+            (Q.budget_internal_failed_times > 1 ? 5 : 3) : 1;
+        // Postponement is part of the eventual annual loss, not an extra charge.
+        // Include represented list members, while excluding the player's vehicle.
+        var recipients = new Set();
+        for (var partner of cabinet.filter(function(p) { return p != vehicle; })) {
+            recipients.add(partner);
+            if (partner == "jxsi" || partner == "jxcat")
+                for (var member of Q.parties || []) if (Q[member + "_in_" + partner]) recipients.add(member);
+        }
+        for (var partner of recipients) {
+            if (partner == Q.player_party || !Number.isFinite(Q[partner + "_relations"])) continue;
+            var previous = record.losses[partner] || 0;
+            if (loss > previous) {
+                Q[partner + "_relations"] = Math.max(0, Q[partner + "_relations"] - (loss - previous));
+                record.losses[partner] = loss;
+                Q.parlament_budget_trust_loss_applied = true;
+                Q.coalition_rupture_recheck = true;
+            }
+        }
+    }
+!}

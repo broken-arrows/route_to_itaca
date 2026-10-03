@@ -132,6 +132,9 @@ on-arrival: {!
   // Government stuff:
   Q.budget_year = 2012;
   Q.budget_year_attempted = 2012;
+  Q.budget_internal_failed_times = 0;
+  Q.budget_trust_record = null;
+  Q.snap_budget_distrust = false;
   // Inherited austerity and revenue are enacted by the shared policy setter.
   // Cap zero permits one restoration step in each service under the 2012 budget.
   Q.education_spending = -1;

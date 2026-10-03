@@ -99,10 +99,11 @@ on-arrival: {!
     console.info("Set new election date for ", Q.next_election_month, Q.next_election_year, ", week", Q.next_election_week);
 !}
 role: event
+on-departure: snap_budget_distrust = false
 
 = New Parlament elections called!
 
-President [+ president +] seems to have run out of options, and the current [+ cat_coalition_disp_old +] will be no more. [? if budget_failed_times > 0: Repeated failures to pass the Generalitat's budget seem to have been the main reason motivating this decision. ?]
+President [+ president +] seems to have run out of options, and the current [+ cat_coalition_disp_old +] will be no more. [? if snap_budget_distrust: Repeated failures to pass the Generalitat's budget, componded by trust erosion in the other members of the coalition, seem to have been the main reason motivating this decision. ?][? if not snap_budget_distrust and budget_failed_times > 0: Repeated failures to pass the Generalitat's budget seem to have been the main reason motivating this decision. ?]
 The Parlament has now been disolved, and the next elections will be held in two months time, on [+ next_election_month : month +], [+ next_election_year +].
 
 Until then, the functions of the Generalitat will be limited, and handled by a [+ cat_coalition_disp +].

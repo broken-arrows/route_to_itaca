@@ -187,6 +187,8 @@ on-arrival: {!
     }
     Q.parlament_coalition_resolution_valid = Q.parlament_coalition_resolution_errors.length == 0;
     Q.budget_failed_times = 0;
+    Q.budget_internal_failed_times = 0;
+    Q.budget_trust_record = null;
 !}
 call: generalitat_setpolicy
 go-to: post_event
