@@ -84,6 +84,7 @@ go-to: on_yes if parlament_education_public_passed; on_no if not parlament_educa
 @on_yes
 on-arrival: {!
     Q.government_budget -= 2;
+    if (Q.education_spending == 2 && (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0)) Q.burdens_done += 1;
     Q.education_spending = 3;
     if (!Q.education_public_ruling) {
         if (!Q.countdowns.includes("constitutional_education_public")) Q.countdowns.push("constitutional_education_public");

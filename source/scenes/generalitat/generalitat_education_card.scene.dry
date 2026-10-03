@@ -395,6 +395,7 @@ on-arrival: {!
         Q.education_raise_delivered = Q.education_spending + 1 <= Q.social_spending_cap;
         if (Q.education_raise_delivered) {
             Q.education_spending += 1;
+            if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
             Q.education_prepared_level = null;
             G.deactivateLaw(Q, "education_spending_proposal", undefined, true);
         } else {
@@ -664,6 +665,7 @@ on-arrival: {!
             for (var i = 0; i < cup.length; i++) cup[i] += focus.cup[i] * item.weight;
         }
         Q.government_budget -= 1;
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
         Q.education_policy_main = main;
         Q.education_policy_secondary = secondary;
         Q.education_policy_next_revision_month = month + 12;

@@ -82,6 +82,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.vicepresident_party) && !Q.cat_caretaker_gov && Q.vp_digital_level == 0 && Q.government_budget >= 1) {
         Q.government_budget -= 1;
         Q.vp_digital_level = 1;
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
         G.registerLaw(Q, {id:"vp_digital1", title:"Expanded Digital Administration", colour:"green", icon:"img/comms_icon.svg",
             description:"Electronic records, notifications and procedures have been further digitalized and unified.", targets:{gdp_growth:0.05, generalitat_surplus:-0.01}, ramp_ticks:6});
         var coalitionPartners = (Q.cat_coalition || []).slice();
@@ -144,6 +145,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.vicepresident_party) && !Q.cat_caretaker_gov && Q.vp_digital_level == 1 && Q.government_budget >= 1 && Q.parlament_digital_passed && ["generalitat", "catalonia"].includes(Q.cybersecurity_agency_scope) && (Q.active_mods || {}).digital_agency_core && Q.active_mods.digital_agency_core.active) {
         Q.government_budget -= 1;
         Q.vp_digital_level = 2;
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
         if (Q.active_mods && Q.active_mods.vp_digital1) Q.active_mods.vp_digital1.hidden = true;
         G.registerLaw(Q, {id:"vp_digital2", title:"Integrated and Secure Digital Administration", colour:"green", icon:"img/comms_icon.svg",
             description:"The newly established Catalan Cybersecurity Agency has been tightly integrated with the rest of the digitalized administration, which has been further expanded and more tightly integrated.", targets:{gdp_growth:0.05, generalitat_surplus:-0.01}, ramp_ticks:12});

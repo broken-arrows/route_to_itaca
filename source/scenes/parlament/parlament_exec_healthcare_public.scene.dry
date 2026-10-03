@@ -84,6 +84,7 @@ go-to: on_yes if parlament_healthcare_public_passed; on_no if not parlament_heal
 @on_yes
 on-arrival: {!
     Q.government_budget -= 2;
+    if (Q.healthcare_spending == 2 && (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0)) Q.burdens_done += 1;
     Q.healthcare_spending = 3;
     if (!Q.healthcare_public_ruling) {
         if (!Q.countdowns.includes("constitutional_healthcare_public")) Q.countdowns.push("constitutional_healthcare_public");

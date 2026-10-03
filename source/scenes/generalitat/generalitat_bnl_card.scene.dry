@@ -42,6 +42,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.bnl_minister_party) && !Q.cat_caretaker_gov && Q.government_budget >= 1 && Q.bnl_icf_level == 0) {
         Q.government_budget -= 1;
         Q.bnl_icf_level = 1;
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
         G.registerLaw(Q, {id:"bnl_icf1", title:"Expanded Public Lending", colour:"green", icon:"img/economy_icon.svg",
             description:"The ICF now offers improved access to credit for the self-employed and small business.",
             ramp_ticks:6, targets:{gdp_growth:0.08, unemployment_recovery:0.02, generalitat_surplus:-0.01}});
@@ -234,6 +235,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.bnl_minister_party) && !Q.cat_caretaker_gov && Q.government_budget >= 1 && Q.bnl_inspection_level == 0) {
         Q.government_budget -= 1;
         Q.bnl_inspection_level = 1;
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
         G.registerLaw(Q, {id:"bnl_inspection1", title:"Strengthened labour inspections", colour:"green", icon:"img/labour_icon.svg",
             description:"Additional inspectors and enforcement resources have been deployed.",
             ramp_ticks:6, targets:{welfare_index_growth:0.06, social_dissent_eq:-1, generalitat_surplus:-0.01}});
@@ -290,6 +292,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.bnl_minister_party) && !Q.cat_caretaker_gov && Q.government_budget >= 1 && Q.bnl_inspection_level == 1) {
         Q.government_budget -= 1;
         Q.bnl_inspection_level = 2;
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
         if (Q.active_mods && Q.active_mods.bnl_inspection1) Q.active_mods.bnl_inspection1.hidden = true;
         G.registerLaw(Q, {id:"bnl_inspection2", title:"Intensify enforcement against persistent labour violations", colour:"green", icon:"img/labour_icon.svg",
             description:"Additional inspectors and enforcement resources address labour-law violations.",
@@ -357,6 +360,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.bnl_minister_party) && !Q.cat_caretaker_gov && Q.government_budget >= 1 && Number.isInteger(Q.bnl_tourism_level) && Q.bnl_tourism_level >= -2 && Q.bnl_tourism_level <= 2 && Q.bnl_tourism_level > -2) {
         Q.government_budget -= 1;
         Q.bnl_tourism_level += -1;
+        if (Q.bnl_tourism_level < 0 && (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0)) Q.burdens_done += 1;
         var coalitionPartners = (Q.cat_coalition || []).slice();
         for (var list of ["jxsi", "jxcat"]) {
             if (coalitionPartners.includes(list)) {

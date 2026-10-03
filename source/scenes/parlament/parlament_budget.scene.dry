@@ -750,10 +750,8 @@ on-arrival: {!
     var origin = Q.budget_draft_origin;
     Q.party_resources -= Q.parlament_budget_player_resource_cost;
     if (Q.parlament_budget_player_governs) Q.government_budget += Q.parlament_budget_executive_grant;
-    function creditBudgetBurden() {
-        if (!Q.parlament_budget_player_governs) return;
-        if (Q.burdens_start_countdown > 0 || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
-    }
+    var creditBurden = Q.parlament_budget_player_governs &&
+        (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0);
     var spending = ["education_spending", "healthcare_spending", "public_salary_level"];
     var enactedBefore = {tax_policy_level:Q.tax_policy_level};
     for (var kind of spending) enactedBefore[kind] = Q[kind];
@@ -766,13 +764,13 @@ on-arrival: {!
     var capChange = (projection.cap - origin.enacted_social_spending_cap) * 0.2;
     var socialChange = serviceChange + capChange;
     var taxChange = Q.parlament_budget_tax_change;
-    for (var record of deliveredCommitments) creditBudgetBurden();
-    // Coalition deliveries receive their own points, so the same change cannot
-    // also earn the budget's aggregate social point.
-    var otherServiceChange = spending.reduce(function (sum, kind) {
-        return sum + (deliveredCommitments.some(function (record) { return record.kind == kind; }) ? 0 : projection.levels[kind] - enactedBefore[kind]);
-    }, 0);
-    if (otherServiceChange > 0) creditBudgetBurden();
+    // Count each delivered tier once, regardless of overlapping ministry/coalition promises.
+    if (creditBurden) {
+        for (var kind of spending) Q.burdens_done += Math.max(0, projection.levels[kind] - enactedBefore[kind]);
+        for (var record of deliveredCommitments) {
+            if (record.kind == "tax_policy_level") Q.burdens_done += 1;
+        }
+    }
     var votes = Q.parlament_budget_positions;
     var left = ["cup", Q.parlament_current_icv, "erc", "psc"].find(function (p) { return votes[p] == "no"; }) || "abstain";
     var right = ["ppc", "cs", Q.parlament_current_ciu, "unio"].find(function (p) { return votes[p] == "no"; }) || "abstain";
@@ -1053,6 +1051,7 @@ on-arrival: {!
         G.deactivateLaw(Q, "bnl_icf_proposal", undefined, true);
         if (Q.active_mods && Q.active_mods.bnl_icf1) Q.active_mods.bnl_icf1.hidden = true;
         var cooperative = Q.bnl_icf_branch == "cooperative";
+        if (cooperative && creditBurden) Q.burdens_done += 1;
         G.registerLaw(Q, {id:"bnl_icf2", title:cooperative ? "ICF Cooperative and Social-Economy Lending" : "Expanded ICF Public Guarantees",
             colour:"green", icon:"img/economy_icon.svg", bnl_branch:Q.bnl_icf_branch, ramp_ticks:6,
             description:cooperative ? "Dedicated ICF finance supports cooperatives and social-economy enterprises alongside existing SME lending." :
@@ -1062,6 +1061,7 @@ on-arrival: {!
     }
     if (Q.budget_draft.projects.digital) {
         Q.vp_digital_level = 3;
+        if (creditBurden) Q.burdens_done += 1;
         Q.vp_digital_prepared = false;
         G.deactivateLaw(Q, "vp_digital3_proposal", undefined, true);
         if (Q.active_mods && Q.active_mods.vp_digital2) Q.active_mods.vp_digital2.hidden = true;
@@ -1072,6 +1072,7 @@ on-arrival: {!
     }
     if (Q.budget_draft.projects.universal) {
         Q.healthcare_universal_level = 2;
+        if (creditBurden) Q.burdens_done += 1;
         Q.healthcare_universal_introduced = false;
         G.deactivateLaw(Q, "healthcare_universal_proposal", undefined, true);
         if (Q.active_mods && Q.active_mods.healthcare_universal1) Q.active_mods.healthcare_universal1.hidden = true;
@@ -1100,7 +1101,7 @@ on-arrival: {!
         Q.territory_b40_countdown = 24;
     }
     if (Q.parlament_budget_metro1) {
-        creditBudgetBurden();
+        if (creditBurden) Q.burdens_done += 1;
         Q.territory_metro_approved = Math.max(Q.territory_metro_approved, 1);
         G.deactivateLaw(Q, "territory_metro1", undefined, true);
         G.registerLaw(Q, {id:"territory_metro1", colour:"orange",
@@ -1111,7 +1112,7 @@ on-arrival: {!
         Q.territory_metro1_countdown = 48;
     }
     if (Q.parlament_budget_metro2) {
-        creditBudgetBurden();
+        if (creditBurden) Q.burdens_done += 1;
         Q.territory_metro_approved = 2;
         G.deactivateLaw(Q, "territory_metro2", undefined, true);
         G.registerLaw(Q, {id:"territory_metro2", colour:"orange",
@@ -1122,19 +1123,19 @@ on-arrival: {!
         Q.territory_metro2_countdown = 36;
     }
     if (Q.parlament_budget_water2) {
-        creditBudgetBurden();
+        if (creditBurden) Q.burdens_done += 1;
         G.deactivateLaw(Q, "territory_water2", undefined, true);
         Q.territory_water = 2;
         Q.climate_transition_points += 1;
     }
     if (Q.parlament_budget_water3) {
-        creditBudgetBurden();
+        if (creditBurden) Q.burdens_done += 1;
         G.deactivateLaw(Q, "territory_water3", undefined, true);
         Q.territory_water = 3;
         Q.climate_transition_points += 1;
     }
     if (Q.parlament_budget_tmobilitat2) {
-        creditBudgetBurden();
+        if (creditBurden) Q.burdens_done += 1;
         G.deactivateLaw(Q, "territory_tmobilitat2", undefined, true);
         G.registerLaw(Q, {id:"territory_tmobilitat2", title:"Catalonia-Wide T-mobilitat", colour:"orange",
             icon:"img/territory_icon.svg", description:"Under deployment: ticketing technology and operation is being brought under public control, and will see its implementation extended to cover all of Catalonia.",
@@ -1143,7 +1144,7 @@ on-arrival: {!
         Q.territory_tmobilitat2_countdown = 12;
     }
     if (Q.parlament_budget_rail1) {
-        creditBudgetBurden();
+        if (creditBurden) Q.burdens_done += 1;
         G.deactivateLaw(Q, "territory_rail1", undefined, true);
         G.registerLaw(Q, {id:"territory_rail1", title:"Lleida-La Pobla Railway", colour:"orange",
             icon:"img/rail_icon.svg", description:"Under deployment: revitalization the FGC Lleida-La Pobla line with new trains and improved services.",
@@ -1152,7 +1153,7 @@ on-arrival: {!
         Q.territory_rail1_countdown = 12;
     }
     if (Q.parlament_budget_rail2) {
-        creditBudgetBurden();
+        if (creditBurden) Q.burdens_done += 1;
         G.deactivateLaw(Q, "territory_rail2", undefined, true);
         G.registerLaw(Q, {id:"territory_rail2", title:"Tarragona and Girona Train-Trams", colour:"orange",
             icon:"img/rail_icon.svg", description:"Under construction: build-out train-tram networks in the Camp de Tarragona and the Girona counties.",

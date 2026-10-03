@@ -41,6 +41,7 @@ on-arrival: {!
         Q.government_budget >= 1) {
         Q.government_budget -= 1;
         Q.economy_atc_level = 1;
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
         G.registerLaw(Q, {id:"economy_atc1", title:"Expanded Catalan Tax Agency",
             colour:"green", icon:"img/economy_icon.svg",
             description:"With expanded staff, inspection and collection systems, the Generalitat is already improving its revenue collection with better fraud protection and more agile systems.",
@@ -98,6 +99,7 @@ on-arrival: {!
         Q.government_budget >= 2) {
         Q.government_budget -= 2;
         Q.economy_atc_level = 2;
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
         // Preserve the first investment's revenue ramp as the hidden baseline.
         if (Q.active_mods && Q.active_mods.economy_atc1) Q.active_mods.economy_atc1.hidden = true;
         G.registerLaw(Q, {id:"economy_atc2", title:"State-Ready Catalan Tax Agency",
@@ -278,6 +280,7 @@ on-arrival: {!
         Q.economy_pay_delivered = Q.public_salary_level + 1 <= Q.social_spending_cap;
         if (Q.economy_pay_delivered) {
             Q.public_salary_level += 1;
+            if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
             Q.public_salary_prepared_level = null;
             G.deactivateLaw(Q, "public_salary_proposal", undefined, true);
         } else {
@@ -709,6 +712,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.economy_minister_party) && !Q.cat_caretaker_gov && Q.economy_cuts > 0 && Q.government_budget > 0) {
         G.deactivateLaw(Q, "general_cuts_" + Q.economy_cuts, undefined, true);
         Q.economy_cuts -= 1;
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
         Q.government_budget -= 1;
         // Cabinet partners include the constituents of their unity lists.
         var coalitionPartners = (Q.cat_coalition || []).slice();

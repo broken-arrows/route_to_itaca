@@ -397,6 +397,7 @@ on-arrival: {!
         Q.health_raise_delivered = Q.healthcare_spending + 1 <= Q.social_spending_cap;
         if (Q.health_raise_delivered) {
             Q.healthcare_spending += 1;
+            if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
             Q.healthcare_prepared_level = null;
             G.deactivateLaw(Q, "healthcare_spending_proposal", undefined, true);
         } else {
@@ -471,6 +472,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.health_minister_party) && !Q.cat_caretaker_gov && Q.healthcare_universal_level == 0 && Q.government_budget >= 1) {
         Q.government_budget -= 1;
         Q.healthcare_universal_level = 1;
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
         G.registerLaw(Q, {id:"healthcare_universal1", title:"Broader Healthcare Access", colour:"green", icon:"img/health_icon.svg",
             description:"Healthcare access has been expanded, with better rural reach and improved administrative protocols, erasing many of the previously existing barriers.",
             targets:{welfare_index_growth:0.05, generalitat_surplus:-0.01, social_dissent_eq:-1}, ramp_ticks:6});
@@ -596,6 +598,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.health_minister_party) && !Q.cat_caretaker_gov && Q.healthcare_sexual_level == 0 && Q.government_budget >= 1) {
         Q.government_budget -= 1;
         Q.healthcare_sexual_level = 1;
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
         G.registerLaw(Q, {id:"healthcare_reproductive", title:"Guaranteed Abortion and Reproductive Healthcare Access", colour:"green", icon:"img/health_icon.svg",
             description:"Better sexual education is being tought, while better protocols for both abortion and other forms of reproductive health have been deployed.",
             targets:{generalitat_surplus:-0.01, social_dissent_eq:-1}, ramp_ticks:6});
@@ -664,6 +667,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.health_minister_party) && !Q.cat_caretaker_gov && Q.healthcare_sexual_level == 1 && Q.government_budget >= 1 && Q.parlament_lgbt_passed) {
         Q.government_budget -= 1;
         Q.healthcare_sexual_level = 2;
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
         if (Q.active_mods && Q.active_mods.healthcare_reproductive) Q.active_mods.healthcare_reproductive.hidden = true;
         G.registerLaw(Q, {id:"healthcare_trans", title:"Inclusive Gender Healthcare", colour:"green", icon:"img/health_icon.svg",
             description:"Gender affirming and other forms of sexual and gender care have been included into the public system into a model without a psychiatric-diagnosis requirement.",
