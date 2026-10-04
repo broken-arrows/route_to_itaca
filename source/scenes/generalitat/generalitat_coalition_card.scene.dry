@@ -96,6 +96,12 @@ on-arrival: {!
     // Concessions deliver government policy collectively; bargaining itself earns no votes.
     var electoralPlayer = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
     if (!Q.cat_caretaker_gov && (Q.cat_coalition || []).includes(electoralPlayer)) {
+        if (Q.education_spending < electoralBefore.education_spending ||
+            Q.healthcare_spending < electoralBefore.healthcare_spending ||
+            Q.public_salary_level < electoralBefore.public_salary_level ||
+            Q.economy_cuts > electoralBefore.economy_cuts ||
+            Q.tax_policy_level < electoralBefore.tax_policy_level &&
+                (Q.player_party == "cup" || electoralBefore.tax_policy_level > 0)) Q.burdens_broken = true;
         var electoralCabinet = [];
         for (var electoralParty of Q.cat_coalition || []) {
             if (electoralParty == "ciu") electoralParty = Q.parlament_current_ciu || "ciu";

@@ -714,7 +714,7 @@ The Parlament will reconvene in [+ budget_postponed_countdown +] [? if rubicon: 
 
 @pass
 title: Approve the budget
-subtitle: [? if parlament_budget_player_governs: \[ +[+ parlament_budget_executive_grant +] budget\]?]1
+subtitle: [? if parlament_budget_player_governs: \[ +[+ parlament_budget_executive_grant +] budget\]?]
 choose-if: parlament_budget_can_pass
 unavailable-subtitle: [? if not parlament_budget_chamber_majority: Not enough parliamentary support.?][? if not parlament_budget_cabinet_yes: Every cabinet party must approve the budget.?]
 on-arrival: {!
@@ -761,6 +761,8 @@ on-arrival: {!
         return actual >= record.target && actual > enactedBefore[record.kind];
     });
     var taxChange = Q.parlament_budget_tax_change;
+    if (Q.parlament_budget_player_governs && projection.tax < enactedBefore.tax_policy_level &&
+        (Q.player_party == "cup" || enactedBefore.tax_policy_level > 0)) Q.burdens_broken = true;
     // Count each delivered tier once, regardless of overlapping ministry/coalition promises.
     if (creditBurden) {
         for (var kind of spending) Q.burdens_done += Math.max(0, projection.levels[kind] - enactedBefore[kind]);

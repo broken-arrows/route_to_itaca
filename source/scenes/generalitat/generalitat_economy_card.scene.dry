@@ -349,6 +349,7 @@ on-arrival: {!
     var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
     if (controlledParties.includes(Q.economy_minister_party) && !Q.cat_caretaker_gov && Q.economy_asset_sales >= 0 && Q.economy_asset_sales < 3) {
         Q.economy_asset_sales += 1;
+        if (Q.player_party == "cup") Q.burdens_broken = true;
         Q.government_budget += 1;
         // No icon, no colour = not visible, as intended
         G.registerLaw(Q, {id:"economy_asset_sale_" + Q.economy_asset_sales,
@@ -645,6 +646,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.economy_minister_party) && !Q.cat_caretaker_gov && Q.public_salary_level > -2 && Q.public_salary_level <= 2) {
         var previousLevel = Q.public_salary_level;
         Q.public_salary_level -= 1;
+        Q.burdens_broken = true;
         Q.government_budget += 1;
         Q.public_salary_prepared_level = null;
         G.deactivateLaw(Q, "public_salary_proposal", undefined, true);

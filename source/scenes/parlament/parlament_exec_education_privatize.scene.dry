@@ -285,6 +285,7 @@ on-arrival: {!
     if (Q.parlament_education_privatization_passed && Q.education_privatization_introduced && Q.education_spending == -2 && !Q.cat_caretaker_gov && controlledParties.includes(Q.education_minister_party)) {
         Q.government_budget += 2;
         Q.education_spending = -3;
+        Q.burdens_broken = true;
         if (!Q.education_privatized_ruling) {
             if (!Q.countdowns.includes("constitutional_education_privatization")) Q.countdowns.push("constitutional_education_privatization");
             Q.constitutional_education_privatization_countdown = 6;

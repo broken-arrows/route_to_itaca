@@ -186,6 +186,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.education_minister_party) && !Q.cat_caretaker_gov && Q.education_spending > -2 && Q.education_spending < 3) {
         var previousLevel = Q.education_spending;
         Q.education_spending -= 1;
+        Q.burdens_broken = true;
         Q.education_prepared_level = null;
         G.deactivateLaw(Q, "education_spending_proposal", undefined, true);
         Q.government_budget += 1;

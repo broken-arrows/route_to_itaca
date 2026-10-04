@@ -753,6 +753,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.bnl_minister_party) && !Q.cat_caretaker_gov && Q.government_budget >= 1 && Number.isInteger(Q.bnl_tourism_level) && Q.bnl_tourism_level >= -2 && Q.bnl_tourism_level <= 2 && Q.bnl_tourism_level < 2) {
         Q.government_budget -= 1;
         Q.bnl_tourism_level += 1;
+        if (Q.player_party == "cup" || Q.bnl_tourism_level <= 0) Q.burdens_broken = true;
         // Undo the realized current package before applying the new package. This prevents
         // asymmetric saturation from rewarding policy cycling; only current-package state is saved.
         for (var voterOldRoute of (Q.bnl_tourism_electoral_routes || []).slice().reverse()) {
@@ -1105,6 +1106,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.bnl_minister_party) && !Q.cat_caretaker_gov && Q.party_resources >= 1 && Number.isInteger(Q.bnl_union_level) && Q.bnl_union_level >= -2 && Q.bnl_union_level <= 2 && Q.bnl_union_level > -2) {
         Q.party_resources -= 1;
         Q.bnl_union_level += -1;
+        if (Q.player_party == "cup") Q.burdens_broken = true;
         // Undo the realized current package before applying the new package. This prevents
         // asymmetric saturation from rewarding policy cycling; only current-package state is saved.
         for (var voterOldRoute of (Q.bnl_union_electoral_routes || []).slice().reverse()) {

@@ -186,6 +186,7 @@ on-arrival: {!
     var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
     if (controlledParties.includes(Q.territory_minister_party) && !Q.cat_caretaker_gov && Q.government_budget >= 1 && Q.territory_livestock < 2) {
         Q.territory_livestock += 1;
+        if (Q.player_party == "cup" || Q.territory_livestock <= 0) Q.burdens_broken = true;
         Q.government_budget -= 1;
         G.deactivateLaw(Q, "territory_livestock_boost", undefined, true);
         if (Q.territory_livestock > 0) {

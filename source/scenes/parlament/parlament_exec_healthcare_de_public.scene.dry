@@ -86,6 +86,7 @@ on-arrival: {!
     if (Q.parlament_healthcare_de_public_passed && Q.healthcare_de_public_introduced && Q.healthcare_spending == 3 && !Q.cat_caretaker_gov && controlledParties.includes(Q.health_minister_party)) {
         Q.government_budget += 1;
         Q.healthcare_spending = 2;
+        Q.burdens_broken = true;
         var voterPolicies = [{demographics:{retired:1.2,ind:1.1,unemployed:1.2,young:0.65,middle:0.45}, provinces:{barcelona:1,girona:1.1,lleida:1.1,tarragona:1.05}, routes:(null), sign:-1, congreso:(0.06), barcelona:(0.12)},{demographics:Q.player_party == "cup" ? {buss:0.08,middle:0.02} : {buss:0.18,middle:0.05}, provinces:{barcelona:1,girona:1,lleida:1,tarragona:1}, routes:([["ciu",0.65],["cs",0.35]]), sign:1, congreso:(0.006), barcelona:(0.012)}];
 
         // Policy voters: explicit demographic/province transfers, with ministry responsibility 80/20.

@@ -188,6 +188,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.health_minister_party) && !Q.cat_caretaker_gov && Q.healthcare_spending > -2 && Q.healthcare_spending < 3) {
         var previousLevel = Q.healthcare_spending;
         Q.healthcare_spending -= 1;
+        Q.burdens_broken = true;
         Q.healthcare_prepared_level = null;
         G.deactivateLaw(Q, "healthcare_spending_proposal", undefined, true);
         Q.government_budget += 1;

@@ -86,6 +86,7 @@ on-arrival: {!
     if (Q.parlament_education_de_public_passed && Q.education_de_public_introduced && Q.education_spending == 3 && !Q.cat_caretaker_gov && controlledParties.includes(Q.education_minister_party)) {
         Q.government_budget += 1;
         Q.education_spending = 2;
+        Q.burdens_broken = true;
         var voterPolicies = [{demographics:{young:1.2,ind:1,unemployed:1.05,middle:0.75,retired:0.15}, provinces:{barcelona:1,girona:0.95,lleida:0.95,tarragona:1.05}, routes:(null), sign:-1, congreso:(0.06), barcelona:(0.12)},{demographics:Q.player_party == "cup" ? {buss:0.08,middle:0.02} : {buss:0.18,middle:0.05}, provinces:{barcelona:1,girona:1,lleida:1,tarragona:1}, routes:([["ciu",0.65],["cs",0.35]]), sign:1, congreso:(0.006), barcelona:(0.012)}];
 
         // Policy voters: explicit demographic/province transfers, with ministry responsibility 80/20.

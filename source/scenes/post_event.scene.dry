@@ -500,6 +500,9 @@ if (Q.broken_roadmap_expires_trigger) {
     Q.broken_roadmap = 0;
 }
 
+if (Q.broken_roadmap && ((Q.cat_coalition || []).includes(Q.player_party) ||
+    (Q.cat_coalition || []).includes(playerVehicle))) Q.burdens_broken = true;
+
 if (Q.territory_county_roads_trigger) {
     Q.territory_county_roads_trigger = false;
     var voterSnapshot = ((Q.active_mods || {})["territory_county_roads"] || {}).def || {};

@@ -30,10 +30,6 @@ on-arrival: {!
         if (!carriers.includes(carrier)) carriers.push(carrier);
         if (party != Q.player_party) Q[party + "_relations"] -= 5;
     }
-    var playerInvolved = involved.includes(Q.player_party) || ["jxsi", "jxcat"].some(function (list) {
-        return involved.includes(list) && Q[Q.player_party + "_in_" + list];
-    });
-    if (playerInvolved) Q.burdens_broken = 1;
     // One shared loss for the rupture, regardless of the number of breached clauses.
     for (var carrier of carriers) {
         for (var constituency of Q.parlament_constituencies)

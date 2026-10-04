@@ -285,6 +285,7 @@ on-arrival: {!
     if (Q.parlament_healthcare_privatization_passed && Q.healthcare_privatization_introduced && Q.healthcare_spending == -2 && !Q.cat_caretaker_gov && controlledParties.includes(Q.health_minister_party)) {
         Q.government_budget += 2;
         Q.healthcare_spending = -3;
+        Q.burdens_broken = true;
         if (!Q.healthcare_privatized_ruling) {
             if (!Q.countdowns.includes("constitutional_healthcare_privatization")) Q.countdowns.push("constitutional_healthcare_privatization");
             Q.constitutional_healthcare_privatization_countdown = 6;
