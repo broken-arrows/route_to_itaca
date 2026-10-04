@@ -1,6 +1,12 @@
 title: congreso progressive coalitions
 
-You should not be here? Report a bug if you see this text.
+You should not be here??! Report a bug if you see this 🙏🙏
+
+-> please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
 
 @progressive
 title: <span class="gobierno-coalition" data-parties="psoe [+ congreso_left_carrier +]" data-summary="[? if psoe_congreso_s + congreso_left_carrier_s >= congreso_s_majority: Majority government?][? if psoe_congreso_s + congreso_left_carrier_s < congreso_s_majority: Minority government?] - [+ psoe_congreso_s + congreso_left_carrier_s +]/[+ congreso_s_majority +]"><span style="color: var(--psoe); font-style: italic;">Progressist</span> <span style="color: var(--up); font-style: italic;">Coalition</span></span> (PSOE - [? if congreso_left_carrier == "up": UP?][?if congreso_left_carrier != "up": [+ congreso_left_carrier +]?])

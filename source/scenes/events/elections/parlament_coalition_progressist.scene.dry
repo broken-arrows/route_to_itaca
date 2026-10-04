@@ -1,6 +1,12 @@
 title: parlament progressist coalition
 
-You should not be here? Report a bug if you see this text.
+You should not be here??! Report a bug if you see this 🙏🙏
+
+-> please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
 
 @any
 title: <span class="generalitat-coalition" data-parties="psc [+ parlament_current_icv +]" data-summary="Majority government - [+ parlament_coalition_psc_icv_s +]/[+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Progressive</span> <span style="color: [? if parlament_current_icv = 'icv': var(--icv)?][? if parlament_current_icv = 'csqp': var(--csqp)?][? if parlament_current_icv = 'cecp': var(--cecp)?][? if parlament_current_icv = 'ecp': var(--ecp)?]; font-style: italic;">Government</span></span> ([? if parlament_current_icv_s > psc_parlament_s: [+ parlament_current_icv +]-PSC?][? if parlament_current_icv_s <= psc_parlament_s: PSC-[+ parlament_current_icv +]?])

@@ -1,6 +1,12 @@
 title: left congreso coalitions
 
-You should not be here? Report a bug if you see this text.
+You should not be here??! Report a bug if you see this 🙏🙏
+
+-> please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
 
 @change
 title: <span class="gobierno-coalition" data-parties="[+ congreso_left_carrier +] psoe [? if congreso_left_iu_s > 0:  iu?]" data-summary="[? if congreso_left_carrier_s + psoe_congreso_s + congreso_left_iu_s >= congreso_s_majority: Majority government?][? if congreso_left_carrier_s + psoe_congreso_s + congreso_left_iu_s < congreso_s_majority: Minority government?] - [+ congreso_left_carrier_s + psoe_congreso_s + congreso_left_iu_s +]/[+ congreso_s_majority +]"><span style="color: var(--up); font-style: italic;">Change</span> <span style="color: var(--psoe); font-style: italic;">Coalition</span></span> ([? if congreso_left_carrier == "up": UP?][?if congreso_left_carrier != "up": [+ congreso_left_carrier +]?] - PSOE [? if congreso_left_iu_s > 0: - IU?])

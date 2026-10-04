@@ -47,26 +47,38 @@ interface Row {
   description: string;
   stars: number;
   image: string;
+  hidden?: boolean;
   unlocked: boolean;
   unlockedLabel?: string;
 }
 
-const rows = computed<Row[]>(() => {
+const allRows = computed<Row[]>(() => {
   const q = props.q ?? {};
   const prefix = props.scope === 'playthrough' ? 'game_achievement_' : 'achievement_';
-  return game.achievements
-    .filter((a) => props.scope !== 'playthrough' || !!q[prefix + a.id])
-    .map((a) => ({
-      ...a,
-      unlocked: !!q[prefix + a.id],
-      unlockedLabel: q[prefix + a.id] ? unlockedLabel(a.id) : undefined,
-    }));
+  return game.achievements.map((a) => ({
+    ...a,
+    unlocked: !!q[prefix + a.id],
+    unlockedLabel: q[prefix + a.id] ? unlockedLabel(a.id) : undefined,
+  }));
 });
 
-const unlockedCount = computed(() => rows.value.filter((row) => row.unlocked).length);
-const totalCount = computed(() =>
-  props.scope === 'playthrough' ? game.achievements.length : rows.value.length,
+const rows = computed(() =>
+  allRows.value.filter((row) => row.unlocked || (props.scope !== 'playthrough' && !row.hidden)),
 );
+const completion = computed(() => {
+  const total = allRows.value.filter((row) => !row.hidden).length;
+  const ordinary = allRows.value.filter((row) => !row.hidden && row.unlocked).length;
+  const hidden = allRows.value.filter((row) => row.hidden && row.unlocked).length;
+  const percentage = total ? Math.round(((ordinary + hidden) / total) * 1000) / 10 : null;
+  return { total, ordinary, hidden, percentage, fill: Math.min(percentage ?? 0, 100) };
+});
+const percentageLabel = computed(() => completion.value.percentage === null
+  ? '—%'
+  : `${new Intl.NumberFormat(locale.value).format(completion.value.percentage)}%`);
+const countLabel = computed(() => t('shell.achievements.count', {
+  unlocked: `${completion.value.ordinary}${completion.value.hidden ? `+${completion.value.hidden}` : ''}`,
+  total: completion.value.total,
+}));
 
 // Registry image paths are web-root-relative (`img/...`), same as every other
 // art path in compiled content — resolve against BASE_URL and fall back to the
@@ -80,8 +92,20 @@ function imgSrc(row: Row): string | null {
 
 <template>
   <div class="achievement-gallery" data-test="achievement-gallery">
-    <div class="achievement-gallery-count" data-test="achievement-count">
-      {{ t('shell.achievements.count', { unlocked: unlockedCount, total: totalCount }) }}
+    <div class="achievement-gallery-completion">
+      <span class="achievement-gallery-percentage" data-test="achievement-percentage">{{ percentageLabel }}</span>
+      <div
+        class="achievement-gallery-progress"
+        role="progressbar"
+        :aria-label="countLabel"
+        :aria-valuenow="completion.fill"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        :aria-valuetext="`${percentageLabel} — ${countLabel}`"
+      >
+        <div class="achievement-gallery-progress-fill" :style="{ width: `${completion.fill}%` }"></div>
+      </div>
+      <span class="achievement-gallery-count" data-test="achievement-count">{{ countLabel }}</span>
     </div>
     <div
       v-for="row in rows"
@@ -127,11 +151,31 @@ function imgSrc(row: Row): string | null {
   flex-direction: column;
   gap: 10px;
 }
-.achievement-gallery-count {
-  align-self: flex-end;
+.achievement-gallery-completion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-family: var(--font-body);
   font-size: 12px;
   color: var(--ink-1, var(--ink-0));
+}
+.achievement-gallery-percentage,
+.achievement-gallery-count {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.achievement-gallery-progress {
+  flex: 1;
+  min-width: 0;
+  height: 8px;
+  overflow: hidden;
+  border: 1px solid var(--ink-0);
+  border-radius: 2px;
+  background: var(--paper-3);
+}
+.achievement-gallery-progress-fill {
+  height: 100%;
+  background: var(--accent-gold);
 }
 .achievement-row {
   display: flex;
@@ -153,6 +197,7 @@ function imgSrc(row: Row): string | null {
 }
 .achievement-row-image {
   flex: 0 0 auto;
+  background: var(--paper-0);
   width: 72px;
   aspect-ratio: 3 / 2;
   overflow: hidden;

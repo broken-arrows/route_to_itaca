@@ -83,8 +83,7 @@ on-arrival: {!
         Q.government_budget -= 1;
         Q.vp_digital_level = 1;
         if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
-        G.registerLaw(Q, {id:"vp_digital1", title:"Expanded Digital Administration", colour:"green", icon:"img/comms_icon.svg",
-            description:"Electronic records, notifications and procedures have been further digitalized and unified.", targets:{gdp_growth:0.05, generalitat_surplus:-0.01}, ramp_ticks:6});
+
         var coalitionPartners = (Q.cat_coalition || []).slice();
         for (var list of ["jxsi", "jxcat"]) {
             if (coalitionPartners.includes(list)) {
@@ -200,6 +199,7 @@ on-arrival: {!
         }
     }
 !}
+call: generalitat_setpolicy
 
 Electronic records, notifications and procedures have been further digitalized and unified. The idCat system now opens more doors for those who use it.
 
@@ -217,9 +217,7 @@ on-arrival: {!
         Q.government_budget -= 1;
         Q.vp_digital_level = 2;
         if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
-        if (Q.active_mods && Q.active_mods.vp_digital1) Q.active_mods.vp_digital1.hidden = true;
-        G.registerLaw(Q, {id:"vp_digital2", title:"Integrated and Secure Digital Administration", colour:"green", icon:"img/comms_icon.svg",
-            description:"The newly established Catalan Cybersecurity Agency has been tightly integrated with the rest of the digitalized administration, which has been further expanded and more tightly integrated.", targets:{gdp_growth:0.05, generalitat_surplus:-0.01}, ramp_ticks:12});
+
         var coalitionPartners = (Q.cat_coalition || []).slice();
         for (var list of ["jxsi", "jxcat"]) {
             if (coalitionPartners.includes(list)) {
@@ -335,6 +333,7 @@ on-arrival: {!
         }
     }
 !}
+call: generalitat_setpolicy
 
 The newly established Catalan Cybersecurity Agency has been tightly integrated with the rest of the digitalized administration, which has been further expanded and more tightly integrated.
 
@@ -416,13 +415,7 @@ on-arrival: {!
     if (!Q.cat_caretaker_gov && (controlledParties.includes(Q.president_party) || controlledParties.includes(Q.vicepresident_party)) && Q.party_resources >= 1 && Q.institutional_alignment < 10) {
         Q.party_resources -= 1;
         Q.institutional_alignment += 1;
-        if (Q.institutional_alignment == 0) G.deactivateLaw(Q, "institutional_alignment", undefined, true);
-        else {
-            G.registerLaw(Q, {id:"institutional_alignment", title:"Institutional Alignment", alignment:Q.institutional_alignment,
-                cooperation_probability_adjustment:Q.institutional_alignment * 0.02,
-                description:"Institutional alignment informs future cooperation under political pressure.", targets:{}});
-            Q.active_mods.institutional_alignment.hidden = true;
-        }
+
         var coalitionPartners = (Q.cat_coalition || []).slice();
         for (var list of ["jxsi", "jxcat"]) {
             if (coalitionPartners.includes(list)) {
@@ -468,6 +461,7 @@ on-arrival: {!
         }
     }
 !}
+call: generalitat_setpolicy
 
 Gradually, and using some party influence, high-ranking officials and other directive positions are being elected in line with our positions on independence, so we can somewhat trust that they will remain in their duties whatever may come.
 

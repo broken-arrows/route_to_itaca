@@ -764,22 +764,16 @@ on-arrival: {!
     var focuses = {
         language:{name:"Catalan-language protection", minimum:0,
             description:"Strengthen the Catalan model of language immersion, with better teacher preparation and inclusion for the newly arrived.",
-            targets:{welfare_index_growth:0.05, generalitat_surplus:-0.01, social_dissent_eq:-1, cat_spa_relations:-0.10},
             relations:[2,2,0,1,2,-3,-4,1,2,-4,3,-3], erc:[-1,-2,0,-3], cup:[-1,-3,-1]},
         democratic:{name:"Democratic schooling and coeducation", minimum:0,
-            targets:{welfare_index_growth:0.05, generalitat_surplus:-0.01, social_dissent_eq:-1},
             relations:[2,-1,2,3,2,-2,1,-2,0,-4,-2,-3], erc:[-2,-2,0,0], cup:[-2,-1,-2]},
         humanities:{name:"Humanities and cultural education", minimum:0,
-            targets:{gdp_growth:0.05, welfare_index_growth:0.04, generalitat_surplus:-0.01},
             relations:[1,1,1,1,1,0,0,1,1,0,1,0], erc:[-1,-1,0,0], cup:[-1,-1,-1]},
         science:{name:"Science and digital skills", minimum:1,
-            targets:{gdp_growth:0.10, unemployment_recovery:0.02, generalitat_surplus:-0.02},
             relations:[1,2,1,1,0,1,2,1,2,1,1,1], erc:[-1,0,-1,0], cup:[0,0,-1]},
         vocational:{name:"Vocational training and industry integration", minimum:1,
-            targets:{gdp_growth:0.08, unemployment_recovery:0.04, welfare_index_growth:0.02, generalitat_surplus:-0.02},
             relations:[2,2,2,1,1,1,2,2,2,1,1,1], erc:[-1,0,-2,0], cup:[-1,-1,-2]},
         segregation:{name:"Anti-segregation methods", minimum:2,
-            targets:{unemployment_recovery:0.02, welfare_index_growth:0.10, generalitat_surplus:-0.03, social_dissent_eq:-2},
             relations:[3,-2,3,3,4,-1,1,-2,-1,-3,-3,-4], erc:[-4,-1,1,0], cup:[-4,-1,-4]}
     };
     var main = Q.education_policy_draft_main;
@@ -793,7 +787,6 @@ on-arrival: {!
         Q.education_spending >= focuses[main].minimum && Q.education_spending >= focuses[secondary].minimum &&
         (main != "vocational" && secondary != "vocational" || controlledParties.includes(Q.bnl_minister_party)) &&
         (main != Q.education_policy_main || secondary != Q.education_policy_secondary)) {
-        var targets = {};
         var relations = Array(12).fill(0);
         var erc = Array(4).fill(0);
         var cup = Array(3).fill(0);
@@ -803,8 +796,6 @@ on-arrival: {!
         for (var item of packages) {
             if (!Object.prototype.hasOwnProperty.call(focuses, item.focus)) continue;
             var focus = focuses[item.focus];
-            if (item.weight > 0) for (var target of Object.keys(focus.targets))
-                targets[target] = (targets[target] || 0) + focus.targets[target] * item.weight;
             for (var i = 0; i < relations.length; i++) relations[i] += focus.relations[i] * item.weight;
             for (var i = 0; i < erc.length; i++) erc[i] += focus.erc[i] * item.weight;
             for (var i = 0; i < cup.length; i++) cup[i] += focus.cup[i] * item.weight;
@@ -929,18 +920,14 @@ on-arrival: {!
         Q.education_policy_main = main;
         Q.education_policy_secondary = secondary;
         Q.education_policy_next_revision_month = month + 12;
-        var definition = {id:"education_school_policy", electoral_origin:Q.player_party, electoral_cabinet:Array.from(new Set(Q.cat_coalition || [])), electoral_transfers:voterRecord, title:"Revised Education Curriculum", colour:"green", icon:"img/education_icon.svg",
-            description:"The Catalan Education Curriculum has been revised, and will now focus on " + focuses[main].name + "; and " + focuses[secondary].name + ". ",
-            targets:targets, ramp_ticks:12};
         var policy = (Q.active_mods || {}).education_school_policy;
-        if (policy && policy.active) {
-            policy.def = definition;
-            delete policy.colour;
-            policy.hidden = false;
-            policy.live_effect = {};
-            var scale = Math.min(policy.ticks_active / 12, 1);
-            for (var target of Object.keys(targets)) policy.live_effect[target] = targets[target] * scale;
-        } else G.registerLaw(Q, definition);
+        if (!policy || !policy.active) {
+            G.registerLaw(Q, {id:"education_school_policy", targets:{}});
+            policy = Q.active_mods.education_school_policy;
+        }
+        policy.def.electoral_origin = Q.player_party;
+        policy.def.electoral_cabinet = Array.from(new Set(Q.cat_coalition || []));
+        policy.def.electoral_transfers = voterRecord;
         var coalitionPartners = (Q.cat_coalition || []).slice();
         for (var list of ["jxsi", "jxcat"]) {
             if (coalitionPartners.includes(list)) {
@@ -993,7 +980,23 @@ on-arrival: {!
         Q.education_policy_applied = true;
     }
 !}
+call: generalitat_setpolicy
+go-to: wishmaking if not education_policy_applied; education_done if education_policy_applied
 
-[? if education_policy_applied: The Catalan Education system will now prioritize [+ education_policy_main_name +], with [+ education_policy_secondary_name +] as its secondary focus. Teaching support and programme development will follow these priorities.?][? if not education_policy_applied: This revision could not be enacted. Our existing education curriculum remains unchanged (report a bug maybe?).?]
+@education_done
+
+The Catalan Education system will now prioritize [+ education_policy_main_name +]; and [+ education_policy_secondary_name +]. While it make take a bit, schools and teachers will gradually adopt these principles throughout the country.
 
 - @post_event
+
+@wishmaking
+
+This curriculum revision could not be enacted?? everything remains unchanged
+
+You should not be here??! Report a bug if you see this 🙏🙏
+
+-> please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish

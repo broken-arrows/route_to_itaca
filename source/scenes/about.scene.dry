@@ -7,7 +7,7 @@ new-page: true
 
 = Route to Ítaca - An Alternate History
 
-It's hard to classify this work. What am I modding from? Formally it is a fork from <a class="link" href="https://red-autumn.itch.io/petrograd-1917">Petrograd 1917</a>, but it clearly takes a lot form the  <a class="link" href="https://originn0.github.io/dynamic_social_democracy/">Dynamic Social Democracy</a> mod and, by extension, from the original <a class="link" href="https://red-autumn.itch.io/social-democracy">Social Democracy, an Alternate History</a> game. It could have been a fork from that amazing mod for all that matters.
+It's hard to classify this work. What am I modding from? Formally it is a fork from <a class="link" target="_blank" href="https://red-autumn.itch.io/petrograd-1917">Petrograd 1917</a>, but it clearly takes a lot form the  <a class="link" target="_blank" href="https://originn0.github.io/dynamic_social_democracy/">Dynamic Social Democracy</a> mod and, by extension, from the original <a class="link" target="_blank" href="https://red-autumn.itch.io/social-democracy">Social Democracy, an Alternate History</a> game. It could have been a fork from that amazing mod for all that matters.
 
 In any case, if you're lost or confused on what's this about, do check the info here.
 
@@ -48,7 +48,7 @@ Most probably not. Excluding the three main pro-indy parties, I *might* do one f
 
 = Bug Reporting
 
-If you encounter any bugs, issues, typos, or whatever other issue that bothers you, please report them via <a class="link" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>. If you don't have a GitHub account, you can also contact me via Reddit DM at <a class="link" href="https://www.reddit.com/user/broken_arrows_/">u/broken_arrows_</a>.
+If you encounter any bugs, issues, typos, or whatever other issue that bothers you, please report them via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>. If you don't have a GitHub account, you can also contact me via Reddit DM at <a class="link" target="_blank" href="https://www.reddit.com/user/broken_arrows_/">u/broken_arrows_</a>.
 
 If you believe you found a game-breaking bug, please include as much information as possible, like:
 

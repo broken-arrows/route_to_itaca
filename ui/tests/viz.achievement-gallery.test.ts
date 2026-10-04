@@ -30,6 +30,7 @@ const GAME = {
       achievements: [
         { id: 'a', name: 'Achievement A', description: 'Do A.', stars: 1, image: 'img/a.png' },
         { id: 'b', name: 'Achievement B', description: 'Do B.', stars: 5, image: 'img/b.png' },
+        { id: 'secret', name: 'Secret Achievement', description: 'Discover this.', stars: 5, image: 'img/secret.png', hidden: true },
       ],
     },
   },
@@ -52,12 +53,13 @@ describe('AchievementGallery', () => {
 
   afterEach(() => vi.useRealTimers());
 
-  it('renders one row per registry entry, in registry order', () => {
+  it('renders ordinary registry entries in order without exposing locked hidden achievements', () => {
     const w = mountGallery({ q: {} });
     const rows = w.findAll('[data-test^="achievement-row-"]');
     expect(rows).toHaveLength(2);
     expect(rows[0].attributes('data-test')).toBe('achievement-row-a');
     expect(rows[1].attributes('data-test')).toBe('achievement-row-b');
+    expect(w.text()).not.toContain('Secret Achievement');
   });
 
   it('marks a row unlocked when scope="ever" and Q.achievement_<id> is truthy', () => {
@@ -105,6 +107,50 @@ describe('AchievementGallery', () => {
   it('shows the real unlocked and registry totals', () => {
     const w = mountGallery({ q: { achievement_a: 1 } });
     expect(w.get('[data-test="achievement-count"]').text()).toBe('1 / 2 unlocked');
+    expect(w.get('[data-test="achievement-percentage"]').text()).toBe('50%');
+    expect(w.get('.achievement-gallery-progress-fill').attributes('style')).toContain('width: 50%');
+  });
+
+  it('reveals unlocked hidden achievements and separates their bonus count above 100%', () => {
+    const w = mountGallery({ q: { achievement_a: 1, achievement_b: 1, achievement_secret: 1 } });
+    expect(w.get('[data-test="achievement-row-secret"]').classes()).toContain('achievement-row--unlocked');
+    expect(w.get('[data-test="achievement-count"]').text()).toBe('2+1 / 2 unlocked');
+    expect(w.get('[data-test="achievement-percentage"]').text()).toBe('150%');
+    expect(w.get('.achievement-gallery-progress-fill').attributes('style')).toContain('width: 100%');
+    expect(w.get('[role="progressbar"]').attributes('aria-valuetext')).toBe('150% — 2+1 / 2 unlocked');
+  });
+
+  it('updates hidden visibility and completion when unlock qualities change', async () => {
+    const w = mountGallery({ q: {} });
+    await w.setProps({ q: { achievement_secret: 1 } });
+    expect(w.find('[data-test="achievement-row-secret"]').exists()).toBe(true);
+    expect(w.get('[data-test="achievement-count"]').text()).toBe('0+1 / 2 unlocked');
+    expect(w.get('[data-test="achievement-percentage"]').text()).toBe('50%');
+    await w.setProps({ q: {} });
+    expect(w.find('[data-test="achievement-row-secret"]').exists()).toBe(false);
+    expect(w.get('[data-test="achievement-count"]').text()).toBe('0 / 2 unlocked');
+  });
+
+  it('counts hidden unlocks only in the selected playthrough scope', () => {
+    const w = mountGallery({ scope: 'playthrough', q: {
+      achievement_a: 1, achievement_secret: 1, game_achievement_b: 1,
+    } });
+    expect(w.find('[data-test="achievement-row-secret"]').exists()).toBe(false);
+    expect(w.get('[data-test="achievement-count"]').text()).toBe('1 / 2 unlocked');
+    expect(w.get('[data-test="achievement-percentage"]').text()).toBe('50%');
+  });
+
+  it('includes hidden achievements earned this run in the playthrough summary', () => {
+    const w = mountGallery({ scope: 'playthrough', q: { game_achievement_secret: 1 } });
+    expect(w.findAll('[data-test^="achievement-row-"]')).toHaveLength(1);
+    expect(w.get('[data-test="achievement-count"]').text()).toBe('0+1 / 2 unlocked');
+  });
+
+  it('shows zero completion even when the playthrough list has no rows', () => {
+    const w = mountGallery({ scope: 'playthrough', q: { achievement_secret: 1 } });
+    expect(w.findAll('[data-test^="achievement-row-"]')).toHaveLength(0);
+    expect(w.get('[data-test="achievement-count"]').text()).toBe('0 / 2 unlocked');
+    expect(w.get('[data-test="achievement-percentage"]').text()).toBe('0%');
   });
 
   it('renders relative labels below 24 hours from the engine-owned ledger', () => {
@@ -153,7 +199,7 @@ describe('AchievementGallery', () => {
     expect(rowA.get('img').attributes('src')).toBe(`${import.meta.env.BASE_URL}img/a.png`);
   });
 
-  it('renders nothing but stays mounted when the game carries no achievements registry', () => {
+  it('shows an undefined percentage without dividing by zero when there is no registry', () => {
     const pinia = createPinia();
     setActivePinia(pinia);
     const game = useGameStore();
@@ -168,6 +214,9 @@ describe('AchievementGallery', () => {
     const w = mount(AchievementGallery, { props: { q: {} }, global: { plugins: [pinia, i18n] } });
     expect(w.find('[data-test="achievement-gallery"]').exists()).toBe(true);
     expect(w.findAll('[data-test^="achievement-row-"]')).toHaveLength(0);
+    expect(w.get('[data-test="achievement-count"]').text()).toBe('0 / 0 unlocked');
+    expect(w.get('[data-test="achievement-percentage"]').text()).toBe('—%');
+    expect(w.get('.achievement-gallery-progress-fill').attributes('style')).toContain('width: 0%');
   });
 
   it('does not throw when q is undefined (WidgetHost always passes it, but stay defensive)', () => {

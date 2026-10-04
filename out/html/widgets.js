@@ -423,17 +423,26 @@
       var reg =
         ((window.dendryUI.game.data || {}).achievements || {}).achievements ||
         [];
-      if (scope === "playthrough") {
-        reg = reg.filter(function (a) {
-          return !!Q[prefix + a.id];
-        });
-      }
-      if (!reg.length) {
-        el.innerHTML = "";
-        return;
-      }
+      var total = reg.filter(function (a) { return !a.hidden; }).length;
+      var ordinary = reg.filter(function (a) { return !a.hidden && !!Q[prefix + a.id]; }).length;
+      var hidden = reg.filter(function (a) { return a.hidden && !!Q[prefix + a.id]; }).length;
+      var percentage = total ? Math.round(((ordinary + hidden) / total) * 1000) / 10 : null;
+      var percentageLabel = percentage === null ? "—%" : percentage + "%";
+      var fill = Math.min(percentage === null ? 0 : percentage, 100);
+      var count = ordinary + (hidden ? "+" + hidden : "") + " / " + total;
+      var summary =
+        '<div class="achievement-completion">' +
+        '<span class="achievement-percentage">' + percentageLabel + '</span>' +
+        '<div class="achievement-progress" role="progressbar" aria-label="' + count +
+        '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + fill +
+        '" aria-valuetext="' + percentageLabel + ' — ' + count + '">' +
+        '<div class="achievement-progress-fill" style="width:' + fill + '%"></div></div>' +
+        '<span class="achievement-count">' + count + '</span></div>';
 
-      el.innerHTML = reg
+      el.innerHTML = summary + reg
+        .filter(function (a) {
+          return !!Q[prefix + a.id] || (scope !== "playthrough" && !a.hidden);
+        })
         .map(function (a) {
           var state = Q[prefix + a.id] ? "unlocked" : "locked";
           var stars = "";

@@ -1395,7 +1395,7 @@ on-arrival: {!
     "generalitat_presidency",
     "generalitat_territory",
     "generalitat_vp",
-    "government_does_things", //TODO!
+    "government_does_things",
     //erc_party
     'erc_media',
     'erc_shuffle_leadership',
@@ -1431,6 +1431,8 @@ on-arrival: {!
   for (timer of Q.rubicon_timers) {
     Q[timer+'_rubicon_timer'] = 0;
   }
+
+  Q.government_does_things_timer = 8;
 
   // ADVISOR LIST (note that they actually get initalized on chosing a party)
   // ERC Advisors
@@ -1515,6 +1517,7 @@ on-arrival: {!
       Q.random_seed_author = "Pasqual Maragall, President de la Generalitat, 2005";
       break;
   }
+  this.achieve("made_a_wish");
 !}
 set-bg: img/3rd_October_2017.jpg
 new-page: true

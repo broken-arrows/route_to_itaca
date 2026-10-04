@@ -351,8 +351,11 @@ on-arrival: {!
     for (var key of Object.keys(approachParties)) {
         var party = approachParties[key];
         var eligible = key == "cup" || key == "psc" ? Q.player_party == "erc" : key == "erc" ? Q.player_party == "cup" : true;
+        // Explicit player votes already control their whole unity-list ballot.
+        // A separately seated party still has its own vote to negotiate.
+        var ownBallot = party == playerVehicle || !Q[party + "_parlament_s"] && belongs(party, [playerVehicle]);
         var offer = supportOffer(party);
-        Q["parlament_budget_can_approach_" + key] = eligible && party != Q.player_party && hasSeats(party) && position(party) != "yes" && !deals.some(function (d) { return d.party == party; });
+        Q["parlament_budget_can_approach_" + key] = eligible && party != Q.player_party && !ownBallot && hasSeats(party) && position(party) != "yes" && !deals.some(function (d) { return d.party == party; });
         Q["parlament_budget_" + key + "_deal_possible"] = offer.possible;
         Q["parlament_budget_" + key + "_block_reason"] = offer.reason;
         Q["parlament_budget_" + key + "_deal_terms"] = offer.terms;
@@ -985,6 +988,10 @@ on-arrival: {!
             if (!Number.isFinite(voterSignedAmount) || voterSignedAmount == 0) continue;
             var voterDirection = electoralPolicy.direction > 0 ? 1 : -1;
             for (var voterActor of voterActors) {
+                var voterWeight = voterActor.weight;
+                if (electoralPolicy.direction < 0 && origin.initiative_protest_party == Q.player_party &&
+                    (voterActor.party == Q.player_party || Q.player_in_jxsi && voterActor.party == "jxsi" ||
+                        Q.player_in_jxcat && voterActor.party == "jxcat")) voterWeight *= 0.5;
                 var voterRouteList = electoralPolicy.direction > 0 ? electoralPolicy.gains : electoralPolicy.losses || (voterActor.origin == "erc" ? [["cup",0.45],["fl",0.35],["abstain",0.20]] : voterActor.origin == "cup" ? [["fl",0.45],["erc",0.35],["abstain",0.20]] : voterActor.origin == "psc" ? [["fl",0.45],["erc",0.30],["abstain",0.25]] : ["ecp","cecp","csqp","icv","federal_left"].includes(voterActor.origin) ? [["cup",0.40],["erc",0.30],["abstain",0.30]] : [["erc",0.40],["fl",0.35],["abstain",0.25]]);
                 for (var voterRoute of voterRouteList) {
                     var voterPair = [];
@@ -1006,7 +1013,7 @@ on-arrival: {!
                     }
                     if (!voterPair[0] || !voterPair[1] || voterPair[0] == voterPair[1]) continue;
                     var voterFrom = voterPair[voterDirection > 0 ? 1 : 0], voterTo = voterPair[voterDirection > 0 ? 0 : 1];
-                    var voterOptions = {contest:voterContest,from:voterFrom,to:voterTo,amount:Math.abs(voterSignedAmount) * voterActor.weight * voterRoute[1],maxDonorFraction:0.5};
+                    var voterOptions = {contest:voterContest,from:voterFrom,to:voterTo,amount:Math.abs(voterSignedAmount) * voterWeight * voterRoute[1],maxDonorFraction:0.5};
                     if (voterContest == "parlament") { voterOptions.constituencies = [voterCell.province]; voterOptions.demographics = [voterCell.demo]; }
                     if (voterContest == "congreso") voterOptions.constituencies = ["catalunya"];
                     G.cardSupportTransfer(Q,voterOptions);

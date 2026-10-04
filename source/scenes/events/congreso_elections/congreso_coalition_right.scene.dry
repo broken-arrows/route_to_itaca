@@ -1,6 +1,12 @@
 title: congreso right coalitions
 
-You should not be here? Report a bug if you see this text.
+You should not be here??! Report a bug if you see this 🙏🙏
+
+-> please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
 
 @pp_cs
 title: <span class="gobierno-coalition" data-parties="pp cs" data-summary="[? if pp_congreso_s + cs_congreso_s >= congreso_s_majority: Majority government?][? if pp_congreso_s + cs_congreso_s < congreso_s_majority: Minority government?] - [+ pp_congreso_s + cs_congreso_s +]/[+ congreso_s_majority +]"><span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Right</span> Coalition</span> (PP - csspa)

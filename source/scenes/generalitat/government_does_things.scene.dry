@@ -1,0 +1,534 @@
+title: A new government initiative
+subtitle: Ministers of the [+ cat_coalition_disp +] beyond [+ player_party +] present their newest agenda
+new-page: true
+role: event
+tags: event
+view-if: {!
+    return !Q.cat_caretaker_gov && !(Q.government_does_things_timer > 0) &&
+        (Q.cat_coalition || []).some(function (party) {
+            party = party == "ciu" ? Q.parlament_current_ciu || party : party == "federal_left" ? Q.parlament_current_icv || party : party;
+            return party != Q.player_party;
+        });
+!}
+call: government_does_things.prepare
+go-to: fallback if npc_government_initiative == null
+
+= A new government initiative
+
+[+ npc_government_party +] intends to **[+ npc_government_title +]** through the [+ npc_government_office +]. [+ npc_government_reason +]
+
+[? if npc_government_can_influence: We do have a unique chance here to influence our allies, though. ?]
+
+- @accept
+- @protest
+- @alternative
+- @stop
+
+@accept
+title: [? if npc_government_can_influence: We can't but accept this new development?][? if not npc_government_can_influence: [+ npc_government_party +] proceeds with their plans?]
+on-arrival: npc_government_response = "accept"
+go-to: resolve
+
+@protest
+title: Vehemently protest against this!
+subtitle: Not something that [+ npc_government_party +] will like, but at least we will make our position clear.
+choose-if: npc_government_can_protest
+unavailable-subtitle: It's not like they are in government because of us, so there's little we can do.
+on-arrival: npc_government_response = "protest"
+go-to: resolve
+
+@alternative
+title: Can we instead raise taxes to curve the deficit?
+subtitle: This will requires dedicated budget approval.
+view-if: npc_government_is_cut
+choose-if: npc_government_can_alternative
+unavailable-subtitle: [+ npc_government_alternative_blocker +]
+on-arrival: npc_government_response = "alternative"
+go-to: resolve
+
+@stop
+title: Persuade them against this
+subtitle: We can try to sway [+ npc_government_party +] to abandon this path, at least for now. \[-[+ npc_government_stop_cost +] resources\]
+choose-if: npc_government_can_stop
+unavailable-subtitle: [+ npc_government_stop_blocker +]
+on-arrival: npc_government_response = "stop"
+go-to: resolve
+
+@prepare
+on-arrival: {!
+    // TODO: Adapt proposals and responses to Rubicon's concrete circumstances and weekly cadence.
+    var player = Q.player_party;
+    var controlled = [player];
+    for (var list of ["jxsi", "jxcat"])
+        if (Q["player_in_" + list] || Q[player + "_in_" + list]) controlled.push(list);
+    function current(party) {
+        if (party == "ciu") return Q.parlament_current_ciu || party;
+        if (party == "federal_left") return Q.parlament_current_icv || party;
+        return party;
+    }
+    var cabinet = (Q.cat_coalition || []).map(current);
+    var fields = ["president_party", "vicepresident_party", "economy_minister_party", "health_minister_party",
+        "education_minister_party", "bnl_minister_party", "territory_minister_party", "foreign_minister_party", "interior_minister_party"];
+    function carrier(party) {
+        party = current(party);
+        if (cabinet.includes(party)) return party;
+        for (var list of ["jxsi", "jxcat"])
+            if (cabinet.includes(list) && Q[party + "_in_" + list]) return list;
+        if (party == "ciu" && cabinet.includes(Q.parlament_current_ciu)) return Q.parlament_current_ciu;
+        if (party == "federal_left" && cabinet.includes(Q.parlament_current_icv)) return Q.parlament_current_icv;
+        return null;
+    }
+    var president = carrier(Q.president_party);
+    var owners = {};
+    var actors = [];
+    for (var field of fields) {
+        var holder = Q[field];
+        // Independent appointments belong to the President's cabinet allocation.
+        var owner = ["indp.", "ind.", "independent"].includes(holder) ? president : carrier(holder);
+        owners[field] = owner;
+        // Joint-list ministries remain player-accessible but can also initiate NPC policy.
+        if (owner && owner != player && !actors.includes(owner)) actors.push(owner);
+    }
+    var support = (Q.cat_coalition_support || []).map(current);
+    var canBudget = Q.budget_year < Q.year && Q.budget_year_attempted != Q.year && !Q.budget_parlament_trigger && !Q.budget_postponed_trigger &&
+        !(Q.budget_postponed_countdown > 0) && !(Q.budget_draft && Q.budget_draft_origin && Q.budget_draft_origin.year == Q.year);
+    function catalogue(actor) {
+        var ideology = (Q[actor + "_ideology"] || "").split(",").map(function (part) {
+            return part.trim().toLowerCase().replace(/center/g, "centre");
+        });
+        var economic = ideology[0] || "";
+        var territorial = ideology[1] || "";
+        // A national list has no economic label of its own: use its current policy leadership.
+        var policyParty = actor;
+        if (economic == "national coalition") {
+            policyParty = actor == "jxsi" ? (Q.jxsi_formation_num > 50 ? "erc" : "cdc") :
+                (Q.jxcat_leader_party == "erc" ? "erc" : "cdc");
+            economic = (Q[policyParty + "_ideology"] || "").split(",")[0].trim().toLowerCase().replace(/center/g, "centre");
+        }
+        var radical = economic.includes("anticapitalism") || economic.includes("anti-austerity");
+        var green = economic.includes("green");
+        var left = radical || green || economic.includes("social democracy") || economic.includes("left");
+        var market = economic.includes("liberal") || economic.includes("conservatism") || economic.includes("christian democracy") || economic.includes("far-right");
+        var conservative = economic.includes("conservatism") || economic.includes("christian democracy") || economic.includes("far-right");
+        var sovereign = territorial.includes("independence") || territorial.includes("unilateralism");
+        var central = territorial.includes("centralism");
+        var confrontational = territorial.includes("unilateralism");
+        var deficit = Q.generalitat_surplus < 0;
+        var distress = Q.social_dissent > 60 || Q.welfare_index < 60;
+        var unemployment = Q.unemployment > 15;
+        var momentum = Q.independence_movement > 60 && Q.independence_trust > 30;
+        var candidates = [];
+        var offices = {president_party:"Presidency", vicepresident_party:"Vice-Presidency", economy_minister_party:"Ministry of Economy",
+            health_minister_party:"Ministry of Health", education_minister_party:"Ministry of Education", bnl_minister_party:"Ministry of Business and Labour",
+            territory_minister_party:"Ministry of Territory", foreign_minister_party:"Ministry of Foreign Affairs"};
+        function add(holder, field, to, title, reason, weight, profile, kind, extra) {
+            if (owners[holder] != actor || !(weight > 0)) return;
+            var from = Q[field];
+            if (from === undefined && kind != "curriculum") return;
+            if (from == to && kind != "curriculum") return;
+            for (var record of Q.coalition_policy_commitments || []) {
+                if (record.status == "retired" || record.status == "penalized" || !Number.isFinite(record.target)) continue;
+                if (record.kind == field && to < from && to < record.target) return;
+            }
+            if (field == "institutional_alignment" && to < from && (Q.coalition_indy_commitments || []).some(function (record) {
+                return record.status == "pending" && record.law == "parlament_referendum_law";
+            })) return;
+            candidates.push(Object.assign({id:holder + ":" + field + ":" + to, holder:holder, field:field, from:from, to:to,
+                title:title, reason:reason, office:offices[holder], weight:weight, profile:profile || "neutral", kind:kind || "policy",
+                policyParty:policyParty}, extra || {}));
+        }
+        for (var service of [["education_minister_party", "education_spending", "education"], ["health_minister_party", "healthcare_spending", "healthcare"]]) {
+            var level = Q[service[1]];
+            if (Number.isInteger(level) && level >= -2 && level < 2 && level < Q.social_spending_cap && Q.generalitat_surplus > -3 &&
+                Q[service[1] == "education_spending" ? "education_prepared_level" : "healthcare_prepared_level"] == null)
+                add(service[0], service[1], level + 1, level < 0 ? "restore " + service[2] + " cuts" : "expand " + service[2] + " funding",
+                    distress ? "The ministry argues that it about time crisis-era cuts are reverted." : "The ministry is pushing forward a reform for better funding and expanded resources.",
+                    left ? (distress ? 5 : 3) : !deficit ? 1 : 0, "services");
+            if (Number.isInteger(level) && level > -2 && level <= 2)
+                add(service[0], service[1], level - 1, "reduce " + service[2] + " funding",
+                    "The ministry is pushing for further cuts to curve down the current deficit of the Generalitat.",
+                    market && deficit ? 4 : left && !radical && Q.generalitat_surplus < -2 ? 1 : 0, "services", "cut");
+        }
+        if (Number.isInteger(Q.public_salary_level) && Q.public_salary_level >= -2 && Q.public_salary_level < 2 && Q.economy_cuts <= 0 &&
+            Q.public_salary_level < Q.social_spending_cap && Q.generalitat_surplus > -3 && Q.public_salary_prepared_level == null)
+            add("economy_minister_party", "public_salary_level", Q.public_salary_level + 1, "improve public-sector pay",
+                ((economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + economy_minister + " says it is time public-service working conditions are restored and improved."), left ? 3 : !deficit ? 1 : 0, "services");
+        if (Number.isInteger(Q.public_salary_level) && Q.public_salary_level > -2 && Q.public_salary_level <= 2)
+            add("economy_minister_party", "public_salary_level", Q.public_salary_level - 1, "reduce public-sector pay",
+                (economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + economy_minister + ", worried about public deficit, says pay restraint is the only solution to address the current financial situation.", market && deficit ? 4 : left && !radical && Q.generalitat_surplus < -2 ? 1 : 0, "services", "cut");
+        var acceptsTax = left || market && Q.tax_policy_level < 1 && Q.generalitat_surplus < -1;
+        if (canBudget && Q.tax_policy_level < 2)
+            add("economy_minister_party", "tax_policy_level", Q.tax_policy_level + 1, "raise regional taxes",
+                (economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + economy_minister + " is this may be the only acceptable options for the numbers to make sense in the coming budget.", acceptsTax ? (deficit ? 4 : 1) : 0, "taxes", "budget");
+        if (canBudget && Q.tax_policy_level > -2 && !deficit)
+            add("economy_minister_party", "tax_policy_level", Q.tax_policy_level - 1, "lower regional taxes",
+                (economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + economy_minister + " argues it is time for lower pressure to business development to allow further investments into the Catalan economy.", market ? 3 : 0, "taxes", "budget");
+        if (Q.economy_cuts > 0)
+            add("economy_minister_party", "economy_cuts", Q.economy_cuts - 1, "reverse extraordinary austerity measures",
+                (economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + economy_minister + " proposes finally withdrawing the extraordinary austerity package that has been burdening the public sector.", left && Q.generalitat_surplus > -2 ? 4 : !deficit ? 1 : 0, "services", "austerity");
+        if (Q.economy_atc_level >= 0 && Q.economy_atc_level < 2)
+            add("economy_minister_party", "economy_atc_level", Q.economy_atc_level + 1,
+                Q.economy_atc_level == 0 ? "expand the Catalan Tax Agency" : "develop a state-ready Catalan Tax Agency",
+                (economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + economy_minister + " argues it is a necessary step towards true sovereignty, and that it should also help in combatting fraud and making the administration more agile.",
+                Q.economy_atc_level == 0 ? 2 : sovereign && momentum ? 4 : 0, "institutional", "atc");
+        if (Q.bnl_icf_level == 0)
+            add("bnl_minister_party", "bnl_icf_level", 1, "expand public lending to small business",
+                (bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + bnl_minister + " proposes more government-led guarantees to improve credit access for the self-employed and small firms.", unemployment ? 4 : 1, "business", "icf");
+        if (Q.bnl_inspection_level >= 0 && Q.bnl_inspection_level < 2)
+            add("bnl_minister_party", "bnl_inspection_level", Q.bnl_inspection_level + 1, "strengthen labour inspection",
+                (bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + bnl_minister + " demands that the Generalitat takes a stronger stance towards the enforcement of workers' rights.", left ? (distress ? 4 : 2) : 0, "labour", "inspection");
+        if (Q.bnl_tourism_level > -2)
+            add("bnl_minister_party", "bnl_tourism_level", Q.bnl_tourism_level - 1, "tighten tourism regulation",
+                (bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour" + bnl_minister + " is set on tackling the issues related to tourism, hoping to reduce pressure on the housing market and redirect economic development to other, more promising projects.", radical || green ? (distress ? 4 : 2) : left && distress ? 1 : 0, "tourism");
+        if (Q.bnl_tourism_level < 2)
+            add("bnl_minister_party", "bnl_tourism_level", Q.bnl_tourism_level + 1, "ease tourism regulation",
+                (bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + bnl_minister + " argues tourism investment is now the best way to support employment and growth.", market ? (unemployment ? 4 : 2) : 0, "tourism");
+        if (sovereign && Q.bnl_union_level < 2)
+            add("bnl_minister_party", "bnl_union_level", Q.bnl_union_level + 1, "support pro-sovereignty unions",
+                (bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + bnl_minister + " hopes that better support for labour representation ultimately contributes to Catalan sovereignty.", momentum ? 3 : 1, "sovereignty");
+        if (!sovereign && Q.bnl_union_level > -2)
+            add("bnl_minister_party", "bnl_union_level", Q.bnl_union_level - 1, "prioritize cooperation with established unions",
+                (bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + bnl_minister + " hopes that better alignment with labour organizations can quell social dissent and produce better collective agreements.", left ? 3 : 1, "labour");
+        if (Q.territory_renewables == 0)
+            add("territory_minister_party", "territory_renewables", 1, "facilitate renewable-energy deployment",
+                (territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + territory_minister + " hopes to develop a more comprehensive system for renewable investment and project approvals.", green ? 4 : 1, "environment");
+        if (Q.territory_livestock > -2)
+            add("territory_minister_party", "territory_livestock", Q.territory_livestock - 1, "diversify agricultural production",
+                (territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + territory_minister + " is proposing a drastic reduction of intensive pig farming practices and a gradual switch to other forms of agricultural development.", green || radical ? 3 : left ? 1 : 0, "agriculture");
+        if (Q.territory_livestock < 2)
+            add("territory_minister_party", "territory_livestock", Q.territory_livestock + 1, "increase support for intensive pig farming",
+                (territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + territory_minister + " is pushing for a further expansion of Catalonia's main agricultural export.", market ? 2 : 0, "agriculture");
+        if (Q.territory_water == 0)
+            add("territory_minister_party", "territory_water", 1, "improve water management and drought preparedness",
+                (territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + territory_minister + " is hoping to improve drought resilience in the face of climate change.", green ? 3 : 1, "environment");
+        if (Q.territory_tmobilitat == 0)
+            add("territory_minister_party", "territory_tmobilitat", 1, "introduce unified public-transport ticketing",
+                (territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + territory_minister + " is pushing for a faster development of the long-awaited contactless, integrated ticketing system for the Barcelona metropolitan area.", left ? 2 : 1, "services");
+        if (Q.healthcare_universal_level == 0 && Q.healthcare_spending >= 0)
+            add("health_minister_party", "healthcare_universal_level", 1, "remove barriers to healthcare access",
+                (health_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Health " + health_minister + " proposes new funding serves public health services reach broader geographic reach and do so with fewer administrative barriers.", left ? 3 : 1, "services", "access");
+        if (Q.healthcare_sexual_level == 0)
+            add("health_minister_party", "healthcare_sexual_level", 1, "guarantee reproductive healthcare access",
+                (health_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Health " + health_minister + " hopes to fully protect accessible abortion and reproductive care.", !conservative ? 2 : 0, "rights", "sexual");
+        if (Q.healthcare_sexual_level == 1 && Q.parlament_lgbt_passed)
+            add("health_minister_party", "healthcare_sexual_level", 2, "extend public healthcare to gender-affirming care",
+                (health_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Health " + health_minister + " is pushing for the recently-approved Catalan LGBTI Law to be fully and coherently deployed in the public health circuit.", !conservative ? 2 : 0, "rights", "sexual");
+        if (Q.vp_digital_level == 0)
+            add("vicepresident_party", "vp_digital_level", 1, "expand digital administration",
+                (vicepresident_gender == "m" ? "Vicepresident " : "Vicepresidenta ") + vicepresident + " is pushing for broader digitalization of procedures and unifying the administration's systems.", 2, "institutional", "digital");
+        if (Q.vp_digital_level == 1 && Q.parlament_digital_passed && ["generalitat", "catalonia"].includes(Q.cybersecurity_agency_scope) &&
+            (Q.active_mods || {}).digital_agency_core && Q.active_mods.digital_agency_core.active)
+            add("vicepresident_party", "vp_digital_level", 2, "integrate and secure digital administration",
+                (vicepresident_gender == "m" ? "Vicepresident " : "Vicepresidenta ") + vicepresident + " hopes to make further use of the newly-established Catalan Cybersecurity Agency to protect the digital administration.", 2, "institutional", "digital");
+        var alignmentOffice = owners.president_party == actor ? "president_party" : "vicepresident_party";
+        if (!sovereign && Q.institutional_alignment > -10 && (central || Q.institutional_alignment > 0))
+            add(alignmentOffice, "institutional_alignment", Q.institutional_alignment - 1, "prioritize institutional accommodation",
+                "The current executive seems to be cleaning house, appointing directors and high-secretaries highly aligned with the ideas of further centralization.", 1, "sovereignty", "alignment");
+        if (!Q.art155_ever && Q.cat_spa_relations < 95) {
+            var diplomaticGain = ["podemos", "iu", "up"].includes(Q.spanish_pm_party) ? 12 : Q.spanish_pm_party == "psoe" ? 8 :
+                ["vox", "cs"].includes(Q.spanish_pm_party) ? 2 : 5;
+            add("foreign_minister_party", "cat_spa_relations", Math.min(100, Q.cat_spa_relations + diplomaticGain), "seek improved relations with Madrid",
+                (foreign_minister_gender == "m" ? "Conseller " : "Consellera ") + " of Foreign Affairs " + foreign_minister + " is pushing for a renewed effort to mend relations with the Spanish government.", confrontational ? 0 : 2, "neutral", "diplomacy");
+        }
+        // Curriculum packages use the existing two-focus model and revision interval.
+        var month = Q.year * 12 + Q.month;
+        if (owners.education_minister_party == actor && Q.education_spending >= 0 &&
+            (Q.education_policy_next_revision_month == null || month >= Q.education_policy_next_revision_month)) {
+            var focuses = ["humanities"];
+            if (sovereign || !central && territorial.includes("plurinationalism")) focuses.push("language");
+            if (left) focuses.push("democratic");
+            if (Q.education_spending >= 1) focuses.push("science");
+            if (Q.education_spending >= 1 && owners.bnl_minister_party == actor) focuses.push("vocational");
+            if (Q.education_spending >= 2 && left) focuses.push("segregation");
+            var names = {humanities:"humanities and cultural education", language:"Catalan-language protection", democratic:"coeducation and democratic schooling",
+                science:"science and digital skills", vocational:"vocational training", segregation:"anti-segregation methods"};
+            for (var focus of focuses) {
+                var secondary = focus == "humanities" ? (left ? "democratic" : "science") : "humanities";
+                if (!focuses.includes(secondary) || focus == Q.education_policy_main && secondary == Q.education_policy_secondary) continue;
+                add("education_minister_party", "education_policy_main", focus, "revise the education Curriculum, focusing on " + names[focus],
+                    "It seems like "+ names[secondary] + " may also be considered as a goal.",
+                    focus == "vocational" && unemployment ? 4 : focus == "language" && momentum ? 3 : 1, "curriculum", "curriculum",
+                    {secondary:secondary, previousSecondary:Q.education_policy_secondary || null});
+            }
+        }
+        return candidates.map(function (candidate) { return Object.assign(candidate, {party:actor, acceptsTax:acceptsTax}); });
+    }
+
+    if (!Q.npc_government_response && !Q.npc_government_initiative && actors.length && !Q.cat_caretaker_gov) {
+        var actor = actors[Math.floor(Math.random() * actors.length)];
+        var candidates = catalogue(actor);
+        var total = candidates.reduce(function (sum, item) { return sum + item.weight; }, 0);
+        var roll = Math.random() * total;
+        for (var candidate of candidates) {
+            roll -= candidate.weight;
+            if (roll < 0) { Q.npc_government_initiative = candidate; break; }
+        }
+    }
+    if (Q.npc_government_initiative) {
+        Q.npc_government_party = Q.npc_government_initiative.party;
+        Q.npc_government_title = Q.npc_government_initiative.title;
+        Q.npc_government_reason = Q.npc_government_initiative.reason;
+        Q.npc_government_office = Q.npc_government_initiative.office;
+    }
+    var initiative = Q.npc_government_initiative;
+    var valid = false;
+    Q.npc_government_can_influence = false;
+    Q.npc_government_can_stop = false;
+    Q.npc_government_can_alternative = false;
+    Q.npc_government_can_protest = false;
+    Q.npc_government_stop_cost = 2;
+    Q.npc_government_is_cut = !!initiative && initiative.kind == "cut";
+    Q.npc_government_stop_blocker = "It's not like they are in government because of us, so there's little we can do.";
+    Q.npc_government_alternative_blocker = "It's not like they are in government because of us, so there's little we can do.";
+    if (initiative) {
+        valid = !Q.cat_caretaker_gov && owners[initiative.holder] == initiative.party &&
+            initiative.party != player && Q[initiative.field] == initiative.from;
+        for (var record of Q.coalition_policy_commitments || []) {
+            if (!["retired", "penalized"].includes(record.status) && record.kind == initiative.field &&
+                Number.isFinite(record.target) && initiative.to < initiative.from && initiative.to < record.target)
+                valid = false;
+        }
+        if (initiative.kind == "consultation" && (!Q.parlament_non_binding_consultations || Q.consultation_happened || Q.referendum_pending)) valid = false;
+        if (initiative.field == "institutional_alignment" && initiative.to < initiative.from &&
+            (Q.coalition_indy_commitments || []).some(function (record) { return record.status == "pending" && record.law == "parlament_referendum_law"; })) valid = false;
+        if (initiative.kind == "budget" && !canBudget) valid = false;
+        if (initiative.kind == "curriculum" && (Q.education_policy_secondary != initiative.previousSecondary ||
+            Q.education_spending < Math.max({science:1,vocational:1,segregation:2}[initiative.to] || 0,
+                {science:1,vocational:1,segregation:2}[initiative.secondary] || 0) ||
+            Q.education_policy_next_revision_month > Q.year * 12 + Q.month ||
+            ([initiative.to, initiative.secondary].includes("vocational") && owners.bnl_minister_party != initiative.party)))
+            valid = false;
+        if (initiative.kind == "sexual" && initiative.to == 2 && !Q.parlament_lgbt_passed) valid = false;
+        if (initiative.kind == "access" && Q.healthcare_spending < 0) valid = false;
+        if (initiative.kind == "digital" && initiative.to == 2 && (!Q.parlament_digital_passed ||
+            !["generalitat", "catalonia"].includes(Q.cybersecurity_agency_scope) || !(Q.active_mods || {}).digital_agency_core ||
+            !Q.active_mods.digital_agency_core.active)) valid = false;
+        if (initiative.profile == "services" && initiative.to > initiative.from &&
+            ["education_spending", "healthcare_spending", "public_salary_level"].includes(initiative.field) &&
+            (initiative.to > Q.social_spending_cap || Q.generalitat_surplus <= -3)) valid = false;
+        Q.npc_government_can_influence = controlled.some(function (party) {
+            return cabinet.includes(party) || support.includes(party);
+        });
+        var relations = Q[initiative.party + "_relations"];
+        Q.npc_government_can_protest = valid && Number.isFinite(relations);
+        Q.npc_government_stop_cost = relations >= 65 ? 1 : 2;
+        if (Q.npc_government_can_influence) {
+            Q.npc_government_stop_blocker = !Number.isFinite(relations) || relations < 55 ? "We don't have good enough relations with " + npc_government_party :
+                Q.party_resources < Q.npc_government_stop_cost ? "Not enough resources." : "";
+            Q.npc_government_can_stop = valid && Q.npc_government_stop_blocker == "";
+            Q.npc_government_alternative_blocker = owners.economy_minister_party != initiative.party ? "(???)" :
+                !initiative.acceptsTax ? initiative.party + " is against further tax increases." :
+                Q.tax_policy_level >= 2 ? "Regional taxes are already at their maximum level." :
+                !canBudget ? "This year's budget has already been discussed..." : "";
+            Q.npc_government_can_alternative = valid && Q.npc_government_is_cut && Q.npc_government_alternative_blocker == "";
+        }
+        if (!valid) {
+            Q.npc_government_stop_blocker = "The proposed initiative is no longer feasible (???).";
+            Q.npc_government_alternative_blocker = "The proposed initiative is no longer feasible (???).";
+        }
+    }
+    if (!Q.npc_government_response) return;
+    var response = Q.npc_government_response;
+    Q.npc_government_budget_pending = false;
+    Q.npc_government_outcome = "The initiative could not proceed (???).";
+    var authorized = valid && (response == "accept" || response == "protest" && Q.npc_government_can_protest ||
+        response == "stop" && Q.npc_government_can_stop || response == "alternative" && Q.npc_government_can_alternative);
+    if (authorized) {
+        if (response == "stop") {
+            Q.party_resources -= Q.npc_government_stop_cost;
+            Q.npc_government_outcome = "We persuaded " + initiative.party + " to abandon the initiative.";
+        } else {
+            if (response == "protest") {
+                Q[initiative.party + "_relations"] -= 5;
+                Q.coalition_rupture_recheck = true;
+            }
+            if (response == "alternative") initiative = Object.assign({}, initiative, {kind:"budget", field:"tax_policy_level",
+                from:Q.tax_policy_level, to:Q.tax_policy_level + 1, title:"raise regional taxes", profile:"taxes"});
+            var field = initiative.field;
+            var next = initiative.to;
+            Q.npc_government_outcome = initiative.party + " has decided to " + initiative.title + ".";
+            if (initiative.kind == "budget") {
+                var projects = {};
+                for (var key of ["county", "b40", "metro1", "metro2", "water2", "water3", "tmobilitat2", "rail1", "rail2", "icf", "digital", "universal"]) projects[key] = false;
+                var cap = Q.social_spending_cap;
+                var tax = next;
+                for (var record of Q.coalition_policy_commitments || []) {
+                    if (!["pending_budget", "applied", "broken"].includes(record.status)) continue;
+                    if (record.kind == "social_spending_cap") cap = Math.max(cap, record.target);
+                    if (record.kind == "tax_policy_level") tax = Math.max(tax, record.target);
+                }
+                Q.budget_draft_origin = {author:"npc", proposer_party:initiative.party, proposer_policy_party:initiative.policyParty,
+                    year:Q.year, tax_policy_level:tax, social_spending_cap:cap, enacted_tax_policy_level:Q.tax_policy_level,
+                    enacted_social_spending_cap:Q.social_spending_cap, surplus_at_draft:Q.generalitat_surplus, projects:Object.assign({}, projects),
+                    initiative_protest_party:response == "protest" ? Q.player_party : null};
+                Q.budget_draft = {tax_policy_level:tax, social_spending_cap:cap, projects:projects};
+                Q.npc_government_budget_pending = true;
+                Q.npc_government_outcome = "Following our alternative proposal, " + initiative.party + " has submitted a regional-tax proposal for the coming annual budget. We'll have to see if it passes, though.";
+            } else {
+                var packageKey = {bnl_tourism_level:"bnl_tourism_electoral_routes",bnl_union_level:"bnl_union_electoral_routes",
+                    territory_livestock:"territory_livestock_electoral_routes"}[field];
+                var oldCurriculum = (Q.active_mods || {}).education_school_policy;
+                var previousRoutes = packageKey ? Q[packageKey] || [] : initiative.kind == "curriculum" && oldCurriculum ? oldCurriculum.def.electoral_transfers || [] : [];
+                Q[field] = next;
+                if (initiative.kind == "austerity") G.deactivateLaw(Q, "general_cuts_" + initiative.from, undefined, true);
+                if (initiative.kind == "atc" && next == 2) Q.independence_trust = Math.min(100, Q.independence_trust + 2);
+                if (initiative.kind == "sexual") Q.welfare_index = Math.min(100, Q.welfare_index + 0.15);
+                if (initiative.kind == "consultation") {
+                    Q.consultation_question = initiative.question;
+                    Q.question_of_the_question_trigger = false;
+                    if (!Q.countdowns.includes("consultation_day")) Q.countdowns.push("consultation_day");
+                    Q.consultation_day_countdown = 3;
+                }
+                if (initiative.kind == "curriculum") {
+                    Q.education_policy_secondary = initiative.secondary;
+                    Q.education_policy_next_revision_month = Q.year * 12 + Q.month + 12;
+                    if (!oldCurriculum || !oldCurriculum.active)
+                        G.registerLaw(Q, {id:"education_school_policy", targets:{}});
+                }
+                if (field == "territory_renewables") Q.climate_transition_points = (Q.climate_transition_points || 0) + 1;
+                // Burdens concern the player's voters, independently of signed agreements.
+                var inCabinet = controlled.some(function (party) { return cabinet.includes(party); });
+                var protective = initiative.profile == "services" && next > initiative.from || initiative.kind == "access" || initiative.kind == "inspection" ||
+                    initiative.kind == "sexual" || initiative.kind == "digital" || initiative.kind == "atc" || initiative.kind == "icf" || initiative.kind == "curriculum" ||
+                    field == "territory_renewables" || field == "territory_water" || field == "territory_tmobilitat" ||
+                    field == "bnl_tourism_level" && next < initiative.from;
+                if (inCabinet && protective && (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0)) Q.burdens_done += 1;
+                if (inCabinet && (initiative.kind == "cut" || field == "bnl_tourism_level" && next > initiative.from && (initiative.from < 0 || Q.player_party == "cup") ||
+                    field == "bnl_union_level" && next < initiative.from && (initiative.from > 0 || Q.player_party == "cup") ||
+                    field == "territory_livestock" && next > initiative.from && (initiative.from < 0 || Q.player_party == "cup"))) Q.burdens_broken = true;
+                // Direct electoral responsibility: 80% initiating party, 20% other cabinet parties.
+                // Protest reduces only the player's losses; policy modifiers remain unchanged.
+                cabinet = Array.from(new Set(cabinet));
+                var recipients = [initiative.party].concat(cabinet.filter(function (party) { return party != initiative.party; }));
+                var publicGain = initiative.kind == "cut" ? -1 : 1;
+                var packageScale = 1;
+                if (packageKey) {
+                    publicGain = field == "bnl_union_level" ? Math.sign(next) : -Math.sign(next);
+                    packageScale = Math.abs(next);
+                }
+                if (field == "institutional_alignment") publicGain = next > initiative.from ? 1 : -1;
+                var electorate = {
+                    services:[["young",0.30],["ind",0.25],["unemployed",0.20],["middle",0.15]],
+                    labour:[["ind",0.30],["young",0.20],["unemployed",0.15],["buss",-0.08]],
+                    business:[["buss",0.30],["middle",0.10]], rights:[["young",0.20],["middle",0.08]],
+                    tourism:[["young",0.20],["unemployed",0.12],["buss",-0.10]], agriculture:[["young",0.15],["rural",-0.10]],
+                    environment:[["young",0.15],["rural",0.12]], institutional:[["middle",0.10],["buss",0.08]],
+                    sovereignty:[["ind",0.18],["young",0.08]],curriculum:[["young",0.15],["middle",0.08]],neutral:[]
+                }[initiative.profile] || [];
+                var leftPolicy = ["services","labour","rights","environment","curriculum"].includes(initiative.profile) ||
+                    ["tourism","agriculture"].includes(initiative.profile) && publicGain > 0;
+                var competitor = leftPolicy ? (initiative.party == "cup" ? Q.parlament_current_icv : "cup") :
+                    initiative.party == Q.parlament_current_ciu ? "cs" : Q.parlament_current_ciu;
+                function sideBallot(party, contest) {
+                    if (party == "abstain") return contest == "congreso" ? "abstain" : null;
+                    var lineup = contest == "congreso" ? Q.congreso_parties_catalunya || [] : Q.parties_bcn || [];
+                    var candidates = [party];
+                    if (["icv","csqp","cecp","ecp","federal_left","fl"].includes(party)) candidates = contest == "congreso" ?
+                        ["sumar","mpais","up","podemos","iu"] : ["bcomu","icv"];
+                    if (["ciu","cdc","dl","pdcat","junts"].includes(party)) candidates = [Q.parlament_current_ciu,"junts","pdcat","dl","cdc","ciu"];
+                    if (["jxsi","jxcat"].includes(party) && !Q[party + (contest == "congreso" ? "_in_congreso" : "_in_local")])
+                        candidates = [initiative.policyParty].concat((Q.parties || []).filter(function (p) { return Q[p + "_in_" + party]; }));
+                    if (party == "psc" && contest == "congreso") candidates = Q.psc_split ? ["psc"] : ["psoe"];
+                    if (party == "ppc") candidates = ["pp"];
+                    var suffix = contest == "congreso" ? "_congreso_catalunya_support" : "_local_barcelona_support";
+                    return candidates.find(function (candidate) {
+                        return lineup.includes(candidate) && Number(Q[candidate + suffix]) > 0;
+                    });
+                }
+                // Reuse the current-package records shared with the player ministry actions.
+                for (var route of previousRoutes.slice().reverse()) {
+                    if (!(route.amount > 0)) continue;
+                    var from = route.to, to = route.from;
+                    if (route.contest != "parlament") {
+                        from = sideBallot(from, route.contest);
+                        to = sideBallot(to, route.contest);
+                    }
+                    if (!from || !to || from == to) continue;
+                    var options = {contest:route.contest,from:from,to:to,amount:route.amount,maxDonorFraction:0.5};
+                    if (route.contest == "parlament") { options.constituencies = [route.province]; options.demographics = [route.group || route.demo]; }
+                    if (route.contest == "congreso") options.constituencies = ["catalunya"];
+                    G.cardSupportTransfer(Q, options);
+                }
+                var realizedRoutes = [];
+                for (var r = 0; r < recipients.length; r++) {
+                    var recipient = recipients[r];
+                    var weight = recipients.length == 1 ? 1 : r == 0 ? 0.8 : 0.2 / (recipients.length - 1);
+                    for (var row of electorate) {
+                        var amount = row[1] * publicGain * weight * packageScale;
+                        if (!amount) continue;
+                        if (amount < 0 && response == "protest" && controlled.includes(recipient)) amount *= 0.5;
+                        var from = amount > 0 ? "abstain" : recipient;
+                        var to = amount > 0 ? recipient : competitor;
+                        if (from == to) to = "abstain";
+                        for (var province of Q.parlament_constituencies || []) {
+                            var realized = G.cardSupportTransfer(Q,{contest:"parlament",from:from,to:to,amount:Math.abs(amount),maxDonorFraction:0.5,
+                                constituencies:[province],demographics:[row[0]]});
+                            realizedRoutes.push({contest:"parlament",province:province,group:row[0],demo:row[0],from:from,to:to,amount:realized});
+                        }
+                    }
+                    if (electorate.length) {
+                        var side = publicGain * weight * 0.015 * packageScale;
+                        if (!side) continue;
+                        if (side < 0 && response == "protest" && controlled.includes(recipient)) side *= 0.5;
+                        var congreso = sideBallot(recipient, "congreso");
+                        if (congreso && (Q.congreso_constituencies || []).includes("catalunya")) {
+                            var realized = G.cardSupportTransfer(Q,{contest:"congreso",from:side > 0 ? "abstain" : congreso,to:side > 0 ? congreso : "abstain",
+                                amount:Math.abs(side),maxDonorFraction:0.5,constituencies:["catalunya"]});
+                            realizedRoutes.push({contest:"congreso",province:"catalunya",from:side > 0 ? "abstain" : congreso,to:side > 0 ? congreso : "abstain",amount:realized});
+                        }
+                        var local = sideBallot(recipient, "barcelona");
+                        var localRival = sideBallot(local == "psc" ? "icv" : "psc", "barcelona");
+                        if (local && localRival && local != localRival) {
+                            var realized = G.cardSupportTransfer(Q,{contest:"barcelona",from:side > 0 ? localRival : local,to:side > 0 ? local : localRival,
+                                amount:Math.abs(side) * 2,maxDonorFraction:0.5});
+                            realizedRoutes.push({contest:"barcelona",from:side > 0 ? localRival : local,to:side > 0 ? local : localRival,amount:realized});
+                        }
+                    }
+                }
+                if (packageKey) Q[packageKey] = realizedRoutes;
+                if (initiative.kind == "curriculum") {
+                    Q.active_mods.education_school_policy.def.electoral_transfers = realizedRoutes;
+                    Q.active_mods.education_school_policy.def.electoral_origin = initiative.party;
+                    Q.active_mods.education_school_policy.def.electoral_cabinet = cabinet.slice();
+                }
+            }
+            if (response == "protest") Q.npc_government_outcome += "Much to the dismay of " + Q.npc_government_party + ", we've broken line and openly protested against their new direction. No one is particularly happy about this, and it seems like they won't be abandoning this new agenda any time soon anyway...";
+        }
+    }
+    Q.government_does_things_timer = 8 + Math.floor(Math.random() * 3);
+    Q.npc_government_initiative = null;
+    Q.npc_government_response = null;
+!}
+
+@resolve
+call: government_does_things.prepare
+go-to: outcome
+
+@outcome
+new-page: true
+call: generalitat_setpolicy
+
+[+ npc_government_outcome +]
+
+- @review_budget
+- @continue
+
+@fallback
+new-page: true
+on-arrival: {! 
+    Q.government_does_things_timer = 8 + Math.floor(Math.random() * 3); 
+!}
+
+It seems like the government will continue to prioritizes ongoing work. No new measures have been announced after all?
+
+- @post_event: What?
+
+@review_budget
+title: Let's review this newly proposed budget!
+view-if: npc_government_budget_pending
+go-to: parlament_budget
+
+@continue
+title: Continue...
+view-if: not npc_government_budget_pending
+go-to: post_event

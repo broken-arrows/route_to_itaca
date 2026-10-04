@@ -1,6 +1,12 @@
 title: congreso single-party majority
 
-You should not be here? Report a bug if you see this text.
+You should not be here??! Report a bug if you see this 🙏🙏
+
+-> please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
 
 @party
 title: [? if congreso_coalition_majority_party == "cs": csspa ?][? if congreso_coalition_majority_party != "cs": [+ congreso_coalition_majority_party +]?] <span class="gobierno-coalition" data-parties="[+ congreso_coalition_majority_party +]" data-summary="Majority government - [+ congreso_coalition_majority_s +]/[+ congreso_s_majority +]">Majority Government</span>

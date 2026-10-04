@@ -43,9 +43,7 @@ on-arrival: {!
         Q.government_budget -= 1;
         Q.bnl_icf_level = 1;
         if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
-        G.registerLaw(Q, {id:"bnl_icf1", title:"Expanded Public Lending", colour:"green", icon:"img/economy_icon.svg",
-            description:"The ICF now offers improved access to credit for the self-employed and small business.",
-            ramp_ticks:6, targets:{gdp_growth:0.08, unemployment_recovery:0.02, generalitat_surplus:-0.01}});
+
         var voterOrigin = Q.player_party;
         var voterCabinet = [Q.player_party].concat(Q.cat_coalition || []);
         var voterProfile = [["barcelona","buss",0.55,"sme"],["barcelona","middle",0.15,"sme"],["girona","buss",0.55,"sme"],["girona","middle",0.15,"sme"],["lleida","buss",0.55,"sme"],["lleida","middle",0.15,"sme"],["tarragona","buss",0.55,"sme"],["tarragona","middle",0.15,"sme"]];
@@ -160,6 +158,7 @@ on-arrival: {!
         }
     }
 !}
+call: generalitat_setpolicy
 
 The ICF is now set to offer improved access to credit for the self-employed and small business. We'll have to give it time for this policy to be judged in its merits or failures...
 
@@ -314,9 +313,7 @@ on-arrival: {!
         Q.government_budget -= 1;
         Q.bnl_inspection_level = 1;
         if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
-        G.registerLaw(Q, {id:"bnl_inspection1", title:"Strengthened labour inspections", colour:"green", icon:"img/labour_icon.svg",
-            description:"Additional inspectors and enforcement resources have been deployed.",
-            ramp_ticks:6, targets:{welfare_index_growth:0.06, social_dissent_eq:-1, generalitat_surplus:-0.01}});
+
         var voterOrigin = Q.player_party;
         var voterCabinet = [Q.player_party].concat(Q.cat_coalition || []);
         var voterProfile = [["barcelona","ind",0.6,"labour"],["barcelona","young",0.4,"labour"],["barcelona","unemployed",0.25,"labour"],["girona","ind",0.54,"labour"],["girona","young",0.36000000000000004,"labour"],["girona","unemployed",0.225,"labour"],["lleida","ind",0.42,"labour"],["lleida","young",0.27999999999999997,"labour"],["lleida","unemployed",0.175,"labour"],["tarragona","ind",0.6,"labour"],["tarragona","young",0.4,"labour"],["tarragona","unemployed",0.25,"labour"],["barcelona","buss",-0.12,"employer_loss"],["girona","buss",-0.108,"employer_loss"],["lleida","buss",-0.08399999999999999,"employer_loss"],["tarragona","buss",-0.12,"employer_loss"]];
@@ -424,6 +421,7 @@ on-arrival: {!
         }
     }
 !}
+call: generalitat_setpolicy
 
 Labour inspection has received additional staff and resources. 
 
@@ -441,10 +439,7 @@ on-arrival: {!
         Q.government_budget -= 1;
         Q.bnl_inspection_level = 2;
         if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
-        if (Q.active_mods && Q.active_mods.bnl_inspection1) Q.active_mods.bnl_inspection1.hidden = true;
-        G.registerLaw(Q, {id:"bnl_inspection2", title:"Intensify enforcement against persistent labour violations", colour:"green", icon:"img/labour_icon.svg",
-            description:"Additional inspectors and enforcement resources address labour-law violations.",
-            ramp_ticks:6, targets:{welfare_index_growth:0.06, social_dissent_eq:-1, generalitat_surplus:-0.01}});
+
         var voterOrigin = Q.player_party;
         var voterCabinet = [Q.player_party].concat(Q.cat_coalition || []);
         var voterProfile = [["barcelona","ind",0.5,"labour"],["barcelona","young",0.35,"labour"],["barcelona","unemployed",0.2,"labour"],["girona","ind",0.45,"labour"],["girona","young",0.315,"labour"],["girona","unemployed",0.18000000000000002,"labour"],["lleida","ind",0.35,"labour"],["lleida","young",0.24499999999999997,"labour"],["lleida","unemployed",0.13999999999999999,"labour"],["tarragona","ind",0.5,"labour"],["tarragona","young",0.35,"labour"],["tarragona","unemployed",0.2,"labour"],["barcelona","buss",-0.1,"employer_loss"],["girona","buss",-0.09000000000000001,"employer_loss"],["lleida","buss",-0.06999999999999999,"employer_loss"],["tarragona","buss",-0.1,"employer_loss"]];
@@ -563,6 +558,7 @@ on-arrival: {!
         }
     }
 !}
+call: generalitat_setpolicy
 
 Labour inspection has received additional staff and resources. 
 

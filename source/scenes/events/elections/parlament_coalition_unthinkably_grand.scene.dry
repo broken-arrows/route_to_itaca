@@ -1,6 +1,12 @@
 title: unthinkably grand emergency coalition
 
-You should not be here? Report a bug if you see this text.
+You should not be here??! Report a bug if you see this 🙏🙏
+
+-> please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
 
 @any
 title: <span class="generalitat-coalition" data-parties="psc[? if parlament_emergency_psc_icv_core = 'psc_comuns':  [+ parlament_current_icv +]?][? if parlament_emergency_psc_icv_core = 'psc_cs':  cs?]" data-summary="Minority government with cross-bloc support"><span style="color: var(--psc); font-style: italic;">Unthinkably</span> <span style="color: [? if parlament_emergency_psc_icv_core = 'psc_comuns': var(--[+ parlament_current_icv +])?][? if parlament_emergency_psc_icv_core = 'psc_cs': var(--cs)?][? if parlament_emergency_psc_icv_core = 'psc_solo': var(--psc)?]; font-style: italic;">Grand</span> <span style="color: var(--cs); font-style: italic;">Coalition</span></span> ([? if parlament_emergency_psc_icv_core = "psc_solo": PSC minority cabinet, supported by [+ parlament_current_icv +] and Cs?][? if parlament_emergency_psc_icv_core = "psc_comuns": PSC-[+ parlament_current_icv +] cabinet, supported by Cs?][? if parlament_emergency_psc_icv_core = "psc_cs": PSC-Cs cabinet, supported by [+ parlament_current_icv +]?][? if parlament_emergency_psc_icv_use_ppc: , PPC?][? if parlament_emergency_psc_icv_use_unio: , and Unió?][? if parlament_emergency_psc_icv_use_vox: , with Vox abstaining?])

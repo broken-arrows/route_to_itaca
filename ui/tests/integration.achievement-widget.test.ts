@@ -46,7 +46,7 @@ const HAVE_GAME = existsSync(GAME_JSON);
       return wrapper;
     }
 
-    // The invariant is "every registry entry renders a row" — NOT today's count.
+    // The invariant is "every ordinary registry entry renders a row" — NOT today's count.
     // This was hardcoded to 13 and broke the moment content gained a 14th
     // achievement, which is the literal-vs-invariant trap already recorded in
     // LEARNINGS. Derive it from the same registry the gallery reads, and guard
@@ -54,7 +54,7 @@ const HAVE_GAME = existsSync(GAME_JSON);
     function expectedRowCount(): number {
       const registry = JSON.parse(realText).data?.achievements?.achievements ?? [];
       expect(registry.length).toBeGreaterThan(0);
-      return registry.length;
+      return registry.filter((entry: { hidden?: boolean }) => !entry.hidden).length;
     }
 
     it('@achievements (the main gallery, scope=ever)', () => {

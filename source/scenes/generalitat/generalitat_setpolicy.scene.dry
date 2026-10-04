@@ -453,13 +453,113 @@ on-arrival: {!
         var description = livestock ? policy.level > 0 ?
             "Agricultural policy favours intensive pig farming. Pressure on water quality and living conditions persists make this a recurring point of contention." :
             "Agricultural support and advice prioritize varied production." : policy.description[policy.level];
-        if (policy.level > 0) {
+        if (policy.level > 0 || livestock && policy.level < 0) {
             G.registerLaw(Q, {id:policy.id, title:title, description:description,
             colour:livestock && policy.level > 0 ? "red" : "green", icon:policy.icon,
             territory_level:policy.level, ramp_ticks:livestock && policy.level < 0 ? 12 : policy.ramp,
             targets:policy.targets[policy.level]});
         }   
     }
+    // Ministry levels share their law definitions across player and NPC enactment.
+    // Existing investments retain their elapsed ramps.
+    if (Q.economy_atc_level >= 1 && !(Q.active_mods || {}).economy_atc1) {
+        G.registerLaw(Q, {id:"economy_atc1", title:"Expanded Catalan Tax Agency",
+            colour:"green", icon:"img/economy_icon.svg",
+            description:"With expanded staff, inspection and collection systems, the Generalitat is already improving its revenue collection with better fraud protection and more agile systems.",
+            ramp_ticks:6, targets:{generalitat_surplus:0.015}});
+    }
+    if (Q.economy_atc_level >= 2 && !(Q.active_mods || {}).economy_atc2) {
+        G.registerLaw(Q, {id:"economy_atc2", title:"State-Ready Catalan Tax Agency",
+            colour:"green", icon:"img/economy_icon.svg",
+            description:"A state-ready agency with a developed territorial network, staff and systems.",
+            ramp_ticks:12, targets:{generalitat_surplus:0.015}});
+    }
+    if (Q.economy_atc_level >= 2 && (Q.active_mods || {}).economy_atc1) Q.active_mods.economy_atc1.hidden = true;
+    if (Q.bnl_icf_level >= 1 && !(Q.active_mods || {}).bnl_icf1) {
+        G.registerLaw(Q, {id:"bnl_icf1", title:"Expanded Public Lending", colour:"green", icon:"img/economy_icon.svg",
+            description:"The ICF now offers improved access to credit for the self-employed and small business.",
+            ramp_ticks:6, targets:{gdp_growth:0.08, unemployment_recovery:0.02, generalitat_surplus:-0.01}});
+    }
+    if (Q.bnl_inspection_level >= 1 && !(Q.active_mods || {}).bnl_inspection1) {
+        G.registerLaw(Q, {id:"bnl_inspection1", title:"Strengthened labour inspections", colour:"green", icon:"img/labour_icon.svg",
+            description:"Additional inspectors and enforcement resources have been deployed.",
+            ramp_ticks:6, targets:{welfare_index_growth:0.06, social_dissent_eq:-1, generalitat_surplus:-0.01}});
+    }
+    if (Q.bnl_inspection_level >= 2 && !(Q.active_mods || {}).bnl_inspection2) {
+        G.registerLaw(Q, {id:"bnl_inspection2", title:"Intensify enforcement against persistent labour violations", colour:"green", icon:"img/labour_icon.svg",
+            description:"Additional inspectors and enforcement resources address labour-law violations.",
+            ramp_ticks:6, targets:{welfare_index_growth:0.06, social_dissent_eq:-1, generalitat_surplus:-0.01}});
+    }
+    if (Q.bnl_inspection_level >= 2 && (Q.active_mods || {}).bnl_inspection1) Q.active_mods.bnl_inspection1.hidden = true;
+    if (Q.healthcare_universal_level >= 1 && !(Q.active_mods || {}).healthcare_universal1) {
+        G.registerLaw(Q, {id:"healthcare_universal1", title:"Broader Healthcare Access", colour:"green", icon:"img/health_icon.svg",
+            description:"Healthcare access has been expanded, with better rural reach and improved administrative protocols, erasing many of the previously existing barriers.",
+            targets:{welfare_index_growth:0.05, generalitat_surplus:-0.01, social_dissent_eq:-1}, ramp_ticks:6});
+    }
+    if (Q.healthcare_sexual_level >= 1 && !(Q.active_mods || {}).healthcare_reproductive) {
+        G.registerLaw(Q, {id:"healthcare_reproductive", title:"Guaranteed Abortion and Reproductive Healthcare Access", colour:"green", icon:"img/health_icon.svg",
+            description:"Better sexual education is being taught, while better protocols for both abortion and other forms of reproductive health have been deployed.",
+            targets:{generalitat_surplus:-0.01, social_dissent_eq:-1}, ramp_ticks:6});
+    }
+    if (Q.healthcare_sexual_level >= 2 && !(Q.active_mods || {}).healthcare_trans) {
+        G.registerLaw(Q, {id:"healthcare_trans", title:"Inclusive Gender Healthcare", colour:"green", icon:"img/health_icon.svg",
+            description:"Gender affirming and other forms of sexual and gender care have been included into the public system into a model without a psychiatric-diagnosis requirement.",
+            targets:{generalitat_surplus:-0.01, social_dissent_eq:-1}, ramp_ticks:12});
+    }
+    if (Q.healthcare_sexual_level >= 2 && (Q.active_mods || {}).healthcare_reproductive) Q.active_mods.healthcare_reproductive.hidden = true;
+    if (Q.vp_digital_level >= 1 && !(Q.active_mods || {}).vp_digital1) {
+        G.registerLaw(Q, {id:"vp_digital1", title:"Expanded Digital Administration", colour:"green", icon:"img/comms_icon.svg",
+            description:"Electronic records, notifications and procedures have been further digitalized and unified.", targets:{gdp_growth:0.05, generalitat_surplus:-0.01}, ramp_ticks:6});
+    }
+    if (Q.vp_digital_level >= 2 && !(Q.active_mods || {}).vp_digital2) {
+        G.registerLaw(Q, {id:"vp_digital2", title:"Integrated and Secure Digital Administration", colour:"green", icon:"img/comms_icon.svg",
+            description:"The newly established Catalan Cybersecurity Agency has been tightly integrated with the rest of the digitalized administration, providing a wide umbrella of cyber capabilities.", targets:{gdp_growth:0.05, generalitat_surplus:-0.01}, ramp_ticks:12});
+    }
+    if (Q.vp_digital_level >= 2 && (Q.active_mods || {}).vp_digital1) Q.active_mods.vp_digital1.hidden = true;
+    if (!Q.institutional_alignment) G.deactivateLaw(Q, "institutional_alignment", undefined, true);
+    else if (!(Q.active_mods || {}).institutional_alignment || !Q.active_mods.institutional_alignment.active ||
+        Q.active_mods.institutional_alignment.def.alignment != Q.institutional_alignment) {
+        G.registerLaw(Q, {id:"institutional_alignment", title:"Institutional Alignment", alignment:Q.institutional_alignment,
+            cooperation_probability_adjustment:Q.institutional_alignment * 0.02,
+            description:"Institutional alignment informs future cooperation under political pressure.", targets:{}});
+        Q.active_mods.institutional_alignment.hidden = true;
+    }
+    var curriculumProfiles = {
+        language:{name:"Catalan-language protection",targets:{welfare_index_growth:0.05, generalitat_surplus:-0.01, social_dissent_eq:-1, cat_spa_relations:-0.10}},
+        democratic:{name:"Democratic schooling and coeducation",targets:{welfare_index_growth:0.05, generalitat_surplus:-0.01, social_dissent_eq:-1}},
+        humanities:{name:"Humanities and cultural education",targets:{gdp_growth:0.05, welfare_index_growth:0.04, generalitat_surplus:-0.01}},
+        science:{name:"Science and digital skills",targets:{gdp_growth:0.10, unemployment_recovery:0.02, generalitat_surplus:-0.02}},
+        vocational:{name:"Vocational training and industry integration",targets:{gdp_growth:0.08, unemployment_recovery:0.04, welfare_index_growth:0.02, generalitat_surplus:-0.02}},
+        segregation:{name:"Anti-segregation methods",targets:{unemployment_recovery:0.02, welfare_index_growth:0.10, generalitat_surplus:-0.03, social_dissent_eq:-2}}
+    };
+    var main = Q.education_policy_main, secondary = Q.education_policy_secondary;
+    if (curriculumProfiles[main] && curriculumProfiles[secondary]) {
+        var policy = (Q.active_mods || {}).education_school_policy;
+        if (!policy || !policy.active || policy.def.main_focus != main || policy.def.secondary_focus != secondary) {
+            var targets = {};
+            for (var item of [[main,1],[secondary,0.5]])
+                for (var target of Object.keys(curriculumProfiles[item[0]].targets))
+                    targets[target] = (targets[target] || 0) + curriculumProfiles[item[0]].targets[target] * item[1];
+            var definition = Object.assign({}, policy && policy.def || {}, {id:"education_school_policy",
+                title:"Revised Education Curriculum", colour:"green", icon:"img/education_icon.svg",
+                description:"The Catalan Education Curriculum has been revised, and will now focus on " + curriculumProfiles[main].name + "; and " + curriculumProfiles[secondary].name + ". ",
+                main_focus:main, secondary_focus:secondary, targets:targets, ramp_ticks:12});
+            if (policy && policy.active) {
+                policy.def = definition;
+                delete policy.colour;
+                policy.hidden = false;
+                policy.live_effect = {};
+                for (var target of Object.keys(targets)) policy.live_effect[target] = targets[target] * Math.min(policy.ticks_active / 12, 1);
+            } else G.registerLaw(Q, definition);
+        }
+    }
+
 !}
 
-You should NOT see this text, if you do, report a bug!! (and ask for a wish)
+You should not be here??! Report a bug if you see this 🙏🙏
+
+-> please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish

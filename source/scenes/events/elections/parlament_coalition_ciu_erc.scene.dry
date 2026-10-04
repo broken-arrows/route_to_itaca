@@ -1,6 +1,12 @@
 title: ciu-erc coalition negotiations phase 0
 
-You should not be here? Report a bug if you see this text.
+You should not be here??! Report a bug if you see this 🙏🙏
+
+-> please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
 
 @erc
 title: [+ parlament_current_ciu +]-ERC <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +] erc" data-summary="Majority government - [+ parlament_coalition_ciu_erc_s +]/[+ parlament_s_majority +]"><span style="font-style: italic;color: [? if parlament_current_ciu = 'ciu': var(--ciu)?][? if parlament_current_ciu = 'cdc': var(--cdc)?][? if parlament_current_ciu = 'dl': var(--dl)?][? if parlament_current_ciu = 'pdcat': var(--pdcat)?][? if parlament_current_ciu = 'jxcat': var(--jxcat)?][? if parlament_current_ciu = 'junts': var(--junts)?]">Sovereignty</span> <span style="font-style: italic;color: var(--erc);">government</span></span>

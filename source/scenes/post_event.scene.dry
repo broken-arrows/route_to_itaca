@@ -1198,3 +1198,11 @@ role: newspaper
 # go-to: main
 
 # This scene is solely for updating numbers after events, and routing to special events.
+
+@make_a_wish
+title: Yes, of course I will report this!
+subtitle: *"Thanks"*, says the modman.
+on-arrival: {!
+    this.achieve("made_a_wish");
+!}
+go-to: post_event

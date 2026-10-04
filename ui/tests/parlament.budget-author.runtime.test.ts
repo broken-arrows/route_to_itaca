@@ -197,3 +197,64 @@ describe('NPC budget authors and fiscal conversion', () => {
     expect(q.parlament_budget_yes + q.parlament_budget_no + q.parlament_budget_abstain).toBe(70);
   });
 });
+
+describe('Budget approaches respect the player ballot', () => {
+  it.each(['jxsi', 'jxcat'].flatMap((list) => ['erc', 'cup'].flatMap((player) =>
+    [-2.3, 0].map((surplus) => ({ list, player, surplus })))))
+  ('hides own constituents in $list for $player with surplus $surplus', ({ list, player, surplus }) => {
+    const { adapter, q } = setup(list, {
+      player_party: player, ['player_in_' + list]: true,
+      ['erc_in_' + list]: true, ['cup_in_' + list]: true,
+      parlament_current_ciu: list === 'jxsi' ? 'cdc' : 'jxcat',
+      generalitat_surplus: surplus,
+    });
+    propose(adapter);
+    const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      adapter.goToScene('parlament_budget.tax_lower');
+      expect(q.parlament_budget_projection.valid).toBe(true);
+      expect(q.parlament_budget_positions[list]).toBe('no');
+      const choices = adapter.engine.getCurrentChoices()!.map((choice: any) => choice.id);
+      for (const member of ['ciu', 'erc', 'cup'])
+        expect(choices).not.toContain('parlament_budget.approach_' + member);
+      expect(choices).toContain('parlament_budget.vote_yes');
+      adapter.goToScene('parlament_budget.vote_yes');
+      expect(q.parlament_budget_positions[list]).toBe('yes');
+      expect(q.parlament_budget_yes).toBe(70);
+      expect(q.parlament_budget_no).toBe(0);
+      expect(errors.mock.calls.filter(([message]) => !String(message).startsWith('Page loaded from unexpected origin'))).toEqual([]);
+    } finally {
+      errors.mockRestore();
+    }
+  });
+
+  it('keeps the approach to a separate CiU cabinet partner', () => {
+    const { adapter } = setup('erc', {
+      player_party: 'erc', cat_coalition: ['erc', 'ciu'],
+      ciu_parlament_s: 30, erc_parlament_s: 70,
+    });
+    propose(adapter);
+    expect(adapter.engine.getCurrentChoices()!.map((choice: any) => choice.id))
+      .toContain('parlament_budget.approach_ciu');
+  });
+
+  it('keeps the approach to separately seated PDeCAT beside the player unity list', () => {
+    const { adapter } = setup('jxcat', {
+      player_party: 'erc', player_in_jxcat: true, erc_in_jxcat: true,
+      parlament_current_ciu: 'pdcat', pdcat_parlament_s: 10,
+    });
+    propose(adapter);
+    expect(adapter.engine.getCurrentChoices()!.map((choice: any) => choice.id))
+      .toContain('parlament_budget.approach_ciu');
+  });
+
+  it('keeps constituent negotiations with a unity list outside the player ballot', () => {
+    const { adapter } = setup('erc', {
+      player_party: 'erc', cat_coalition: ['erc'], parlament_current_ciu: 'jxcat',
+      jxcat_parlament_s: 30, erc_parlament_s: 70,
+    });
+    propose(adapter);
+    expect(adapter.engine.getCurrentChoices()!.map((choice: any) => choice.id))
+      .toContain('parlament_budget.approach_ciu');
+  });
+});

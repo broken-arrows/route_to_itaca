@@ -117,6 +117,7 @@ const achievementImgSrc = computed(() =>
 }
 .toast-achievement-image {
   flex: 1 0 0;
+  background: var(--paper-0);
   aspect-ratio: 3 / 2;
   object-fit: cover;
   border-radius: 2px;

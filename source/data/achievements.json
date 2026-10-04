@@ -146,6 +146,14 @@
       "description": "Somehow, manage to lose a non-agreement referendum or non-binding consultation to the \"No\" option.",
       "stars": 5,
       "image": "img/achievements/majoria_silenciosa.jpg"
+    },
+    {
+      "id": "made_a_wish",
+      "name": "Lucky one",
+      "description": "You made a wish. And reported it, right?",
+      "stars": 5,
+      "image": "img/achievements/lucky.png",
+      "hidden": true
     }
   ]
 }

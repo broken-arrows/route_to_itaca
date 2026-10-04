@@ -73,7 +73,9 @@ describe('Economy modifier scaling', () => {
     maturity(q, 1);
     expect(contribution(q, 'generalitat_surplus')).toBeGreaterThan(baseline);
     maturity(q, 11);
-    expect(contribution(q, 'generalitat_surplus')).toBeCloseTo(0.03);
+    // The shared setter also synchronizes taxes; measure the ATC investments themselves.
+    expect(q.active_mods.economy_atc1.live_effect.generalitat_surplus +
+      q.active_mods.economy_atc2.live_effect.generalitat_surplus).toBeCloseTo(0.03);
   });
 
   it('stacks rental obligations and improved pay without changing opening pay cuts', () => {

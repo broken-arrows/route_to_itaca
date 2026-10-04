@@ -94,6 +94,8 @@ export interface AchievementEntry {
   description: string;
   stars: number;
   image: string;
+  /** Reveal only after unlocking; excluded from the completion denominator. */
+  hidden?: boolean;
 }
 
 export type AchievementLedgerValue = number | { unlockedAt?: string };

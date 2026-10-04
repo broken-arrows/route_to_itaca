@@ -618,9 +618,7 @@ on-arrival: {!
         Q.government_budget -= 1;
         Q.healthcare_universal_level = 1;
         if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
-        G.registerLaw(Q, {id:"healthcare_universal1", title:"Broader Healthcare Access", colour:"green", icon:"img/health_icon.svg",
-            description:"Healthcare access has been expanded, with better rural reach and improved administrative protocols, erasing many of the previously existing barriers.",
-            targets:{welfare_index_growth:0.05, generalitat_surplus:-0.01, social_dissent_eq:-1}, ramp_ticks:6});
+
         var coalitionPartners = (Q.cat_coalition || []).slice();
         for (var list of ["jxsi", "jxcat"]) {
             if (coalitionPartners.includes(list)) {
@@ -736,6 +734,7 @@ on-arrival: {!
         }
     }
 !}
+call: generalitat_setpolicy
 
 Healthcare access has been expanded, with better rural reach and improved administrative protocols, erasing many of the previously existing barriers.
 
@@ -815,9 +814,7 @@ on-arrival: {!
         Q.government_budget -= 1;
         Q.healthcare_sexual_level = 1;
         if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
-        G.registerLaw(Q, {id:"healthcare_reproductive", title:"Guaranteed Abortion and Reproductive Healthcare Access", colour:"green", icon:"img/health_icon.svg",
-            description:"Better sexual education is being tought, while better protocols for both abortion and other forms of reproductive health have been deployed.",
-            targets:{generalitat_surplus:-0.01, social_dissent_eq:-1}, ramp_ticks:6});
+
         Q.welfare_index = Math.min(100, Q.welfare_index + 0.15);
         var coalitionPartners = (Q.cat_coalition || []).slice();
         for (var list of ["jxsi", "jxcat"]) {
@@ -938,6 +935,7 @@ on-arrival: {!
         }
     }
 !}
+call: generalitat_setpolicy
 
 Better sexual education is being tought, while better protocols for both abortion and other forms of reproductive health have been deployed.
 
@@ -955,10 +953,7 @@ on-arrival: {!
         Q.government_budget -= 1;
         Q.healthcare_sexual_level = 2;
         if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
-        if (Q.active_mods && Q.active_mods.healthcare_reproductive) Q.active_mods.healthcare_reproductive.hidden = true;
-        G.registerLaw(Q, {id:"healthcare_trans", title:"Inclusive Gender Healthcare", colour:"green", icon:"img/health_icon.svg",
-            description:"Gender affirming and other forms of sexual and gender care have been included into the public system into a model without a psychiatric-diagnosis requirement.",
-            targets:{generalitat_surplus:-0.01, social_dissent_eq:-1}, ramp_ticks:12});
+
         Q.welfare_index = Math.min(100, Q.welfare_index + 0.15);
         var coalitionPartners = (Q.cat_coalition || []).slice();
         for (var list of ["jxsi", "jxcat"]) {
@@ -1079,6 +1074,7 @@ on-arrival: {!
         }
     }
 !}
+call: generalitat_setpolicy
 
 Gender affirming and other forms of sexual and gender care have been included into the public system into a model without a psychiatric-diagnosis requirement.
 

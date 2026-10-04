@@ -4,7 +4,13 @@ on-arrival: {!
     Q.parlament_coalition_concessions = Q.parlament_coalition_policy_cap || Q.parlament_coalition_policy_education || Q.parlament_coalition_policy_health || Q.parlament_coalition_policy_pay || Q.parlament_coalition_policy_tax || Q.parlament_coalition_policy_indy_demanded;
 !}
 
-You should not see this text. If you do, please report a bug! (and make a wish!)
+You should not be here??! Report a bug if you see this 🙏🙏
+
+-> please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
 
 @spending_cap
 tags: fiscal_concessions

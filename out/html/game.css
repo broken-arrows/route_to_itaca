@@ -1684,6 +1684,33 @@ table {
 
 /* Achievement display */
 
+.achievement-completion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 10px 14px;
+  color: var(--text-color);
+  font-size: 0.85em;
+}
+.achievement-percentage,
+.achievement-count {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.achievement-progress {
+  flex: 1;
+  min-width: 0;
+  height: 8px;
+  overflow: hidden;
+  border: 1px solid var(--card-border-color);
+  border-radius: 3px;
+  background: var(--card-bg-color);
+}
+.achievement-progress-fill {
+  height: 100%;
+  background: #dc9600;
+}
+
 .achievement {
   display: flex;
   align-items: center;
@@ -1700,6 +1727,8 @@ table {
 
 .achievement-image {
   flex-shrink: 0;
+  /* Keep transparent artwork on light paper, including in dark mode. */
+  background: #f3f3f3;
   width: 90px;
   height: 60px;
   border-radius: 8px;
@@ -1721,12 +1750,10 @@ table {
 }
 
 .achievement-image--unlocked {
-  background: #2a2030;
   box-shadow: 0 0 0 1px rgba(220,150,0,.4), 0 0 14px rgba(220,150,0,.5), 0 0 28px rgba(220,150,0,.2);
 }
 
 .achievement-image--locked {
-  background: #1c1c24;
   filter: grayscale(1);
   opacity: .4;
 }
