@@ -1,0 +1,647 @@
+title: Coalition Builder
+set-bg: img/generalitat_interior.jpg
+new-page: true
+on-arrival: {!
+    Q.playground_coalitions_needed_seats = 0;
+    Q.playground_coalitions_set_seats = 0;
+    Q.playground_coalitions = null;
+!}
+choose-if: achievement_game_completed
+unavailable-subtitle: Finish the game once to unlock.
+call: root.start_menu
+
+= Coalition Builder
+
+The Coalition Builder is an in-game tool used mostly for debugging and testing. Test its limits here!
+
+- @parlament: Parlament de Catalunya
+- @congreso: Congreso de los Diputados
+- @local: Saló de Plens de Barcelona
+- @root: Exit Playground
+
+@parlament
+set-bg: img/parlament_de_catalunya.jpg
+new-page: true
+call: parlament_coalition
+on-arrival: {!
+    if (Q.playground_coalitions_type !== "parlament") Q.playground_coalitions = null;
+    Q.playground_coalitions_type = "parlament";
+    var parlament_size = 0;
+    for (var constituency of Q.parlament_constituencies) {
+        parlament_size += Q.parlament_seats[constituency];
+    }
+    Q.parlament_s_majority = Math.floor(parlament_size/2) + 1;
+    Q.playground_coalitions_needed_seats = parlament_size;
+    Q.playground_coalitions_set_seats = parlament_size;
+!}
+on-display: {!
+    if (!Q.playground_coalitions) {
+        Q.playground_coalitions = G.coalitionBuilderConfig(Q, "parlament", [
+            ["si","SI"],
+            ["cup","CUP"],
+            ["jxsi","JxSí"],
+            ["icv","ICV-EUiA"],
+            ["cecp","CECP"],
+            ["ecp","ECP"],
+            ["erc","ERC"],
+            ["csqp","CSQP"],
+            ["psc","PSC"],
+            ["jxcat","JxCat"],
+            ["junts","Junts"],
+            ["dl","DL"],
+            ["cdc","CDC"],
+            ["pdcat","PDeCAT"],
+            ["cs","Cs"],
+            ["ciu","CiU"],
+            ["unio","UDC"],
+            ["ppc","PPC"],
+            ["pxc","PxC"],
+            ["fnc","FNC"],
+            ["vox","Vox"]
+        ]);
+    }
+
+    const data = [];
+    if (Q.dl_parlament_s) data.push({ id: "dl", seats: Q.dl_parlament_s });
+
+    if (Q.si_parlament_s) {
+        data.push({
+            "id": "si",
+            "legend": "SI",
+            "name": "SI",
+            "seats": Q.si_parlament_s,
+        });
+    }
+
+    if (Q.cup_parlament_s) {
+        data.push({
+            "id": "cup",
+            "legend": "CUP",
+            "name": "CUP",
+            "seats": Q.cup_parlament_s,
+        });
+    }
+
+    if (Q.jxsi_parlament_s) {
+        data.push({
+            "id": "jxsi",
+            "legend": "JxSí",
+            "name": "JxSí",
+            "seats": Q.jxsi_parlament_s,
+        });
+    }
+
+    if (Q.icv_parlament_s) {
+        data.push({
+            "id": "icv",
+            "legend": "ICV-EUiA",
+            "name": "ICV-EUiA",
+            "seats": Q.icv_parlament_s,
+        });
+    }
+
+    if (Q.cecp_parlament_s) {
+        data.push({
+            "id": "cecp",
+            "legend": "CECP",
+            "name": "CECP",
+            "seats": Q.cecp_parlament_s,
+        });
+    }
+
+    if(Q.ecp_parlament_s) {
+        data.push({
+            "id": "ecp",
+            "legend": "ECP",
+            "name": "ECP",
+            "seats": Q.ecp_parlament_s,
+        });
+    }
+
+    if (Q.erc_parlament_s) {
+        data.push({
+            "id": "erc",
+            "legend": "ERC",
+            "name": "ERC",
+            "seats": Q.erc_parlament_s,
+        });
+    }
+
+    if (Q.csqp_parlament_s) {
+        data.push({
+            "id": "csqp",
+            "legend": "CSQP",
+            "name": "CSQP",
+            "seats": Q.csqp_parlament_s,
+        });
+    }
+
+    if (Q.psc_parlament_s) {
+        data.push({
+            "id": "psc",
+            "legend": "PSC",
+            "name": "PSC",
+            "seats": Q.psc_parlament_s,
+        });
+    }
+
+    if (Q.jxcat_parlament_s) {
+        data.push({
+            "id": "jxcat",
+            "legend": "JxCat",
+            "name": "JxCat",
+            "seats": Q.jxcat_parlament_s,
+        });
+    }
+
+    if (Q.junts_parlament_s) {
+        data.push({
+            "id": "junts",
+            "legend": "Junts",
+            "name": "Junts",
+            "seats": Q.junts_parlament_s,
+        });
+    }
+
+    if (Q.cdc_parlament_s) {
+        data.push({
+            "id": "cdc",
+            "legend": "CDC",
+            "name": "CDC",
+            "seats": Q.cdc_parlament_s,
+        });
+    }
+
+    if (Q.pdcat_parlament_s) {
+        data.push({
+            "id": "pdcat",
+            "legend": "PDeCAT",
+            "name": "PDeCAT",
+            "seats": Q.pdcat_parlament_s,
+        });
+    }
+
+    if (Q.cs_parlament_s) {
+        data.push({
+            "id": "cs",
+            "legend": "Cs",
+            "name": "Cs",
+            "seats": Q.cs_parlament_s,
+        });
+    }
+
+    if (Q.ciu_parlament_s) {
+        data.push({
+            "id": "ciu",
+            "legend": "CiU",
+            "name": "CiU",
+            "seats": Q.ciu_parlament_s,
+        });
+    }
+
+    if (Q.unio_parlament_s) {
+        data.push({
+            "id": "unio",
+            "legend": "UDC",
+            "name": "UDC",
+            "seats": Q.unio_parlament_s,
+        });
+    }
+
+    if (Q.ppc_parlament_s) {
+        data.push({
+            "id": "ppc",
+            "legend": "PPC",
+            "name": "PPC",
+            "seats": Q.ppc_parlament_s,
+        });
+    }
+
+    if (Q.pxc_parlament_s) {
+        data.push({
+            "id": "pxc",
+            "legend": "PxC",
+            "name": "PxC",
+            "seats": Q.pxc_parlament_s,
+        });
+    }
+
+    if (Q.fnc_parlament_s) {
+        data.push({
+            "id": "fnc",
+            "legend": "FNC",
+            "name": "FNC",
+            "seats": Q.fnc_parlament_s,
+        });
+    }
+
+    if (Q.vox_parlament_s) {
+        data.push({
+            "id": "vox",
+            "legend": "Vox",
+            "name": "Vox",
+            "seats": Q.vox_parlament_s,
+        });
+    }
+
+    Q.election_simulation_parlament_hemicycle = {
+        seats: data.map(function (party) {
+            return { party: party.id, seats: party.seats, colour: party.id };
+        }),
+        majority: Q.parlament_s_majority,
+    };
+
+    Q.playground_coalition_parlament_none_s = 0;
+!}
+
+= Coalitions - Parlament
+
+{!<div id="parlament" data-widget="hemicycle" data-props='{"configFrom":"election_simulation_parlament_hemicycle","animate":true}'></div>!}
+
+{!<div id="parlament-coalition-widget" data-widget="coalitions" data-props='{"configFrom":"parlament_coalition_config"}'></div>!}
+
+{!<div id="parlament-coalition-builder-playground" data-widget="builder-playground" data-props='{"configFrom": "playground_coalitions"}'></div>!}
+
+- @run_parlament
+- @coalition_builder: Back
+
+@run_parlament
+on-arrival: {! G.applyCoalitionBuilder(Q); !}
+title: Set this Parlament
+choose-if: playground_coalitions_set_seats == playground_coalitions_needed_seats
+unavailable-subtitle: [+ playground_coalitions_set_seats +] assigned seats, **[+ playground_coalitions_needed_seats +]** required.
+go-to: parlament
+
+
+@congreso
+set-bg: img/congreso.jpg
+new-page: true
+call: congreso_coalition
+on-arrival: {!
+    if (Q.playground_coalitions_type !== "congreso") Q.playground_coalitions = null;
+    Q.playground_coalitions_type = "congreso";
+    var congreso_size = 0;
+    for (var constituency of Q.congreso_constituencies) {
+        congreso_size += Q.congreso_seats[constituency];
+    }
+    Q.congreso_s_majority = Math.floor(congreso_size/2) + 1;
+    Q.playground_coalitions_needed_seats = congreso_size;
+    Q.playground_coalitions_set_seats = congreso_size;
+!}
+on-display: {!
+    if (!Q.playground_coalitions) {
+        Q.playground_coalitions = G.coalitionBuilderConfig(Q, "congreso", [
+            ["cup","CUP"],
+            ["fr","FR"],
+            ["ehbildu","EH Bildu"],
+            ["amaiur","Amaiur"],
+            ["bng","BNG"],
+            ["mes","MES"],
+            ["iu","IU"],
+            ["up","UP"],
+            ["sumar","Sumar"],
+            ["gbai","gbai"],
+            ["compromis","Compromís"],
+            ["erc","ERC"],
+            ["mpais","Más País"],
+            ["podemos","Podemos"],
+            ["psc","PSC"],
+            ["psoe","PSOE"],
+            ["upyd","UPyD"],
+            ["cc","CC-PNC"],
+            ["prc","PRC"],
+            ["te","¡TE!"],
+            ["pnv","EAJ-PNV"],
+            ["upn","UPN"],
+            ["jxsi","JxSí"],
+            ["jxcat","JxCat"],
+            ["junts","Junts"],
+            ["dl","DL"],
+            ["cdc","CDC"],
+            ["ciu","CiU"],
+            ["pdcat","PDeCAT"],
+            ["unio","UDC"],
+            ["cs","Cs"],
+            ["nsuma","NA+"],
+            ["pp","PP"],
+            ["fac","FAC"],
+            ["vox","Vox"]
+        ]);
+    }
+
+    const data = [];
+    if (Q.psc_congreso_s) data.push({ id: "psc", seats: Q.psc_congreso_s });
+
+    if (Q.cup_congreso_s) {
+        data.push({
+            "id": "cup",
+            "legend": "CUP",
+            "name": "CUP",
+            "seats": Q.cup_congreso_s,
+        });
+    }
+    if (Q.fr_congreso_s) {
+        data.push({
+            "id": "fr",
+            "legend": "FR",
+            "name": "FR",
+            "seats": Q.fr_congreso_s,
+        });
+    }
+    if (Q.ehbildu_congreso_s) {
+        data.push({
+            "id": "ehbildu",
+            "legend": "EH Bildu",
+            "name": "EH Bildu",
+            "seats": Q.ehbildu_congreso_s,
+        });
+    }
+    if (Q.amaiur_congreso_s) {
+        data.push({
+            "id": "amaiur",
+            "legend": "Amaiur",
+            "name": "Amaiur",
+            "seats": Q.amaiur_congreso_s,
+        });
+    }
+    if (Q.bng_congreso_s) {
+        data.push({
+            "id": "bng",
+            "legend": "BNG",
+            "name": "BNG",
+            "seats": Q.bng_congreso_s,
+        });
+    }
+    if (Q.mes_congreso_s) {
+        data.push({
+            "id": "mes",
+            "legend": "MES",
+            "name": "MES",
+            "seats": Q.mes_congreso_s,
+        });
+    }
+
+    if (Q.iu_congreso_s) {
+        data.push({
+            "id": "iu",
+            "legend": "IU",
+            "name": "IU",
+            "seats": Q.iu_congreso_s,
+        });
+    }
+    if (Q.up_congreso_s) {
+        data.push({
+            "id": "up",
+            "legend": "UP",
+            "name": "UP",
+            "seats": Q.up_congreso_s,
+        });
+    }
+    if (Q.sumar_congreso_s) {
+        data.push({
+            "id": "sumar",
+            "legend": "Sumar",
+            "name": "Sumar",
+            "seats": Q.sumar_congreso_s,
+        });
+    }
+    if (Q.gbai_congreso_s) {
+        data.push({
+            "id": "gbai",
+            "legend": "GBAI",
+            "name": "GBAI",
+            "seats": Q.gbai_congreso_s,
+        });
+    }
+    if (Q.compromis_congreso_s) {
+        data.push({
+            "id": "compromis",
+            "legend": "Compromís",
+            "name": "Compromís",
+            "seats": Q.compromis_congreso_s,
+        });
+    }
+    if (Q.erc_congreso_s) {
+        data.push({
+            "id": "erc",
+            "legend": "ERC",
+            "name": "ERC",
+            "seats": Q.erc_congreso_s,
+        });
+    }
+    if (Q.mpais_congreso_s) {
+        data.push({
+            "id": "mpais",
+            "legend": "Más País",
+            "name": "Más País",
+            "seats": Q.mpais_congreso_s,
+        });
+    }
+    if (Q.podemos_congreso_s) {
+        data.push({
+            "id": "podemos",
+            "legend": "Podemos",
+            "name": "Podemos",
+            "seats": Q.podemos_congreso_s,
+        });
+    }
+    if (Q.psoe_congreso_s) {
+        data.push({
+            "id": "psoe",
+            "legend": "PSOE",
+            "name": "PSOE",
+            "seats": Q.psoe_congreso_s,
+        });
+    }
+    if (Q.upyd_congreso_s) {
+        data.push({
+            "id": "upyd",
+            "legend": "UPyD",
+            "name": "UPyD",
+            "seats": Q.upyd_congreso_s,
+        });
+    }
+
+    if (Q.cc_congreso_s) {
+        data.push({
+            "id": "cc",
+            "legend": "CC-PNC",
+            "name": "CC-PNC",
+            "seats": Q.cc_congreso_s,
+        });
+    }
+
+    if (Q.prc_congreso_s) {
+        data.push({
+            "id": "prc",
+            "legend": "PRC",
+            "name": "PRC",
+            "seats": Q.prc_congreso_s,
+        });
+    }
+
+    if (Q.te_congreso_s) {
+        data.push({
+            "id": "te",
+            "legend": "¡TE!",
+            "name": "¡TE!",
+            "seats": Q.te_congreso_s,
+        });
+    }
+
+    if (Q.pnv_congreso_s) {
+        data.push({
+            "id": "pnv",
+            "legend": "EAJ-PNV",
+            "name": "EAJ-PNV",
+            "seats": Q.pnv_congreso_s,
+        });
+    }
+    if (Q.upn_congreso_s) {
+        data.push({
+            "id": "upn",
+            "legend": "UPN",
+            "name": "UPN",
+            "seats": Q.upn_congreso_s,
+        });
+    }
+    if (Q.jxsi_congreso_s) {
+        data.push({
+            "id": "jxsi",
+            "legend": "JxSí",
+            "name": "JxSí",
+            "seats": Q.jxsi_congreso_s,
+        });
+    }
+    if (Q.jxcat_congreso_s) {
+        data.push({
+            "id": "jxcat",
+            "legend": "JxCat",
+            "name": "JxCat",
+            "seats": Q.jxcat_congreso_s,
+        });
+    }
+    if (Q.junts_congreso_s) {
+        data.push({
+            "id": "junts",
+            "legend": "Junts",
+            "name": "Junts",
+            "seats": Q.junts_congreso_s,
+        });
+    }
+    if (Q.dl_congreso_s) {
+        data.push({
+            "id": "dl",
+            "legend": "DL",
+            "name": "DL",
+            "seats": Q.dl_congreso_s,
+        });
+    }
+    if (Q.cdc_congreso_s) {
+        data.push({
+            "id": "cdc",
+            "legend": "CDC",
+            "name": "CDC",
+            "seats": Q.cdc_congreso_s,
+        });
+    }
+    if (Q.ciu_congreso_s) {
+        data.push({
+            "id": "ciu",
+            "legend": "CiU",
+            "name": "CiU",
+            "seats": Q.ciu_congreso_s,
+        });
+    }
+    if (Q.pdcat_congreso_s) {
+        data.push({
+            "id": "pdcat",
+            "legend": "PDeCAT",
+            "name": "PDeCAT",
+            "seats": Q.pdcat_congreso_s,
+        });
+    }
+    if (Q.unio_congreso_s) {
+        data.push({
+            "id": "unio",
+            "legend": "UDC",
+            "name": "UDC",
+            "seats": Q.unio_congreso_s,
+        });
+    }
+
+    if (Q.cs_congreso_s) {
+        data.push({
+            "id": "cs",
+            "legend": "Cs",
+            "name": "Cs",
+            "seats": Q.cs_congreso_s,
+        });
+    }
+
+    if (Q.nsuma_congreso_s) {
+        data.push({
+            "id": "nsuma",
+            "legend": "NA+",
+            "name": "NA+",
+            "seats": Q.nsuma_congreso_s,
+        });
+    }
+    if (Q.pp_congreso_s) {
+        data.push({
+            "id": "pp",
+            "legend": "PP",
+            "name": "PP",
+            "seats": Q.pp_congreso_s,
+        });
+    }
+    if (Q.fac_congreso_s) {
+        data.push({
+            "id": "fac",
+            "legend": "FAC",
+            "name": "FAC",
+            "seats": Q.fac_congreso_s,
+        });
+    }
+    if (Q.vox_congreso_s) {
+        data.push({
+            "id": "vox",
+            "legend": "Vox",
+            "name": "Vox",
+            "seats": Q.vox_congreso_s,
+        });
+    }
+
+
+    Q.election_simulation_congreso_hemicycle = {
+        seats: data.map(function (party) {
+            return { party: party.id, seats: party.seats, colour: party.id };
+        }),
+        majority: Q.congreso_s_majority,
+        highlightedParty: (Q.player_in_jxsi && Q.jxsi_in_congreso) ? "jxsi"
+            : ((Q.player_in_jxcat && Q.jxcat_in_congreso) ? "jxcat" : Q.player_party),
+    };
+!}
+
+= Coalitions - Congreso
+
+{!<div id="congreso" data-widget="hemicycle" data-props='{"configFrom":"election_simulation_congreso_hemicycle","animate":true}'></div>!}
+
+{!<div id="parlament-coalition-widget" data-widget="coalitions" data-props='{"configFrom":"congreso_coalition_config"}'></div>!}
+
+{!<div id="congreso-coalition-builder-playground" data-widget="builder-playground" data-props='{"configFrom": "playground_coalitions"}'></div>!}
+
+- @run_congreso
+- @coalition_builder: Back
+
+@run_congreso
+on-arrival: {! G.applyCoalitionBuilder(Q); !}
+title: Set this Congreso
+choose-if: playground_coalitions_set_seats == playground_coalitions_needed_seats
+unavailable-subtitle: [+ playground_coalitions_set_seats +] assigned seats, **[+ playground_coalitions_needed_seats +]** required.
+go-to: congreso
+
+@local
+choose-if: 1==0
+unavailable-subtitle: Work in Progress...
+# TODO: deferred for now.

@@ -838,7 +838,7 @@ on-arrival: {!
 
 - @start: New Game
 - @game_over.achievements: Achievements
-- @election_simulation: Election Simulation
+- @playground: Playground
 - @about: About
 
 @start

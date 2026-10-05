@@ -70,8 +70,8 @@ on-arrival: {!
     if(Q.ecp_parlament_s) {
         data.push({
             "id": "ecp",
-            "legend": "ECP-PEC",
-            "name": "ECP-PEC",
+            "legend": "ECP",
+            "name": "ECP",
             "seats": Q.ecp_parlament_s,
         });
     }

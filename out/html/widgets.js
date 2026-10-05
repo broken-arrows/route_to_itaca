@@ -81,6 +81,121 @@
   // reading whatever data-props it needs; the shell's renderers themselves
   // are called exactly as they always were (by id + Q [+ config]).
   var HANDLERS = {
+    "builder-playground": function (el, Q) {
+      var config = resolveProps(el, Q);
+      var engine = window.dendryUI && window.dendryUI.dendryEngine;
+      if (!engine || !config.rows) return;
+      el.replaceChildren();
+      var jointRows = config.rows.filter(function (row) { return (row.isJoint || row.slot === "joint") && !row.hidden; });
+      var hasJoint = jointRows.length > 0;
+      var groups = jointRows.filter(function (row) { return row.seats > 0; }).map(function (row) {
+        return { slot: row.slot, start: row.position || 1, end: Math.max.apply(null, [row.position || 1].concat(
+          config.rows.filter(function (member) { return member.member && (member.group || "joint") === row.slot; })
+            .map(function (member) { return member.position || 1; }))) + 1 };
+      });
+      el.classList.add("builder-playground");
+      el.classList.toggle("has-joint", hasJoint);
+      el.style.cssText = "";
+      groups.forEach(function (group) {
+        var brace = document.createElement("div");
+        brace.className = "builder-brace";
+        brace.setAttribute("aria-hidden", "true");
+        brace.dataset.group = group.slot;
+        brace.style.gridRow = group.start + " / " + group.end;
+        el.appendChild(brace);
+      });
+      function refresh(changed, remount) {
+        if (!changed) return;
+        engine.ui.removeChoices();
+        engine.choiceCache = engine._compileChoices(engine.getCurrentScene());
+        engine.displayChoices();
+        if (remount) HANDLERS["builder-playground"](el, Q);
+      }
+      config.rows.filter(function (row) { return !row.hidden; }).forEach(function (row) {
+        var entry = document.createElement("div");
+        entry.className = "builder-party";
+        entry.dataset.party = row.id;
+        entry.style.minWidth = "0";
+        if (row.column !== undefined) {
+          entry.style.gridColumn = row.column + (hasJoint ? (row.column === 0 ? 1 : 2) : 0);
+          var group = groups.find(function (group) { return group.slot === row.slot; });
+          entry.style.gridRow = group ? group.start + " / " + group.end : row.position;
+          if (row.isJoint || row.slot === "joint") entry.style.alignSelf = "center";
+        }
+        var label = document.createElement("div");
+        label.className = "builder-name";
+        if (row.canJoin) {
+          var checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.className = "builder-checkbox";
+          checkbox.checked = !!row.member;
+          checkbox.setAttribute("aria-label", "Include " + row.name + " in the joint list");
+          checkbox.onchange = function () { refresh(engine.gameLib.toggleCoalitionBuilderMember(Q, row.slot), true); };
+          label.appendChild(checkbox);
+        }
+        function arrow(direction) {
+          var button = document.createElement("button");
+          button.type = "button";
+          button.textContent = direction < 0 ? "‹" : "›";
+          button.setAttribute("aria-label", (direction < 0 ? "Previous" : "Next") + " party for " + row.name);
+          button.className = direction < 0 ? "builder-previous" : "builder-next";
+          button.onclick = function () { refresh(engine.gameLib.switchCoalitionBuilderParty(Q, row.slot, direction), true); };
+          return button;
+        }
+        var switches = row.variants && row.variants.length > 1;
+        if (switches) label.appendChild(arrow(-1));
+        var name = document.createElement("span");
+        name.className = "builder-label";
+        if (typeof window.applyWholesome === "function") name.innerHTML = window.applyWholesome(row.name);
+        else name.textContent = row.name;
+        label.appendChild(name);
+        if (switches) label.appendChild(arrow(1));
+        var controls = document.createElement("div");
+        controls.className = "builder-controls";
+        var minus = document.createElement("button");
+        var input = document.createElement("input");
+        var plus = document.createElement("button");
+        minus.textContent = "−";
+        plus.textContent = "+";
+        minus.type = plus.type = "button";
+        minus.setAttribute("aria-label", "Remove a seat from " + row.name);
+        plus.setAttribute("aria-label", "Add a seat to " + row.name);
+        input.setAttribute("aria-label", row.name + " seats");
+        input.type = "text";
+        input.inputMode = "numeric";
+        input.pattern = "[0-9]*";
+        function paint() {
+          entry.classList.toggle("is-muted", row.seats === 0 || !!row.member);
+          input.value = row.seats;
+          input.disabled = !!row.member;
+          minus.disabled = row.member || row.seats <= 0;
+          plus.disabled = row.member || row.seats >= Q.playground_coalitions_needed_seats;
+          [minus, input, plus].forEach(function (control) { control.style.opacity = control.disabled ? ".35" : "1"; });
+        }
+        function edit(seats) {
+          refresh(engine.gameLib.editCoalitionBuilder(Q, row.id, seats), row.isJoint || row.slot === "joint");
+          paint();
+        }
+        minus.onclick = function () { edit(row.seats - 1); };
+        plus.onclick = function () { edit(row.seats + 1); };
+        input.onchange = function () { edit(input.value === "" ? NaN : Number(input.value)); };
+        paint();
+        controls.append(minus, input, plus);
+        entry.append(label, controls);
+        if (row.isJoint || row.slot === "joint") {
+          var members = document.createElement("div");
+          members.className = "builder-members";
+          config.rows.filter(function (party) { return party.member && party.slot !== "si" && (party.group || "joint") === row.slot; }).forEach(function (party) {
+            var member = document.createElement("div");
+            if (typeof window.applyWholesome === "function") member.innerHTML = window.applyWholesome(party.name);
+            else member.textContent = party.name;
+            members.appendChild(member);
+          });
+          entry.appendChild(members);
+        }
+        el.appendChild(entry);
+      });
+    },
     hemicycle: function (el, Q) {
       var props = readDataProps(el);
       var config =

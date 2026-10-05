@@ -23,6 +23,132 @@ function selectableIds(frame: ReturnType<DendryAdapter['goToScene']>) {
 }
 
 describe('Parlament coalition availability regressions', () => {
+  it.each(['erc', 'cup'].flatMap(player =>
+    [[16, 23, 'erc'], [23, 16, 'ciu'], [20, 20, 'ciu']].map(
+      ([ciu, erc, leader]) => [player, ciu, erc, leader] as const,
+    ),
+  ))('shows distant CUP support and cabinet routes for %s with Junts %s/ERC %s (%s-led)',
+    (player, ciu, erc, leader) => {
+      const { adapter, frame } = enterCoalitionMenu({
+        player_party: player, parlament_s_majority: 68,
+        junts_parlament_s: ciu, erc_parlament_s: erc, cup_parlament_s: 3,
+      });
+      const q = adapter.qualities;
+      const pairKey = leader === 'ciu' ? 'ciu_erc_gov' : 'erc_ciu_gov';
+      const supportKey = leader === 'ciu' ? 'ciu_erc_cup_sup' : 'erc_ciu_cup_sup';
+      const rows = (q.parlament_coalition_config as {
+        coalitions: { seatsVar: string; members: { party: string; type: string }[] }[];
+      }).coalitions;
+
+      expect(q[`parlament_coalition_option_${pairKey}_visible`]).toBe(false);
+      expect(rows.some(c => c.seatsVar === `parlament_coalition_${leader === 'ciu' ? 'ciu_erc' : 'erc_ciu'}_s`)).toBe(false);
+      for (const [role, key] of [['support', supportKey], ['government', 'ciu_erc_cup_gov']]) {
+        expect(frame.choices.find(c => c.id ===
+          `parlament_coalition_ciu_erc_cup.${player}_player_${leader}_led_${role}`))
+          .toMatchObject({ canChoose: false });
+        const row = rows.find(c => c.seatsVar === `parlament_coalition_${key}_s`);
+        expect(row?.members.at(-1)).toEqual({ party: 'cup', type: role });
+        expect(q[`parlament_coalition_${key}_s`]).toBe(Number(ciu) + Number(erc) + 3);
+      }
+      expect(q.parlament_coalition_sovereignty_triple_available).toBe(false);
+    },
+  );
+
+  it.each([[16, 23, 'erc'], [23, 16, 'ciu'], [24, 24, 'ciu']])(
+    'keeps the pair bypass without CUP and applies near miss with CUP: Junts %s/ERC %s',
+    (ciu, erc, leader) => {
+      const { adapter, frame } = enterCoalitionMenu({
+        player_party: 'erc', parlament_s_majority: 68,
+        junts_parlament_s: ciu, erc_parlament_s: erc,
+      });
+      const pairId = leader === 'ciu' ? 'parlament_coalition_ciu_erc.erc' : 'parlament_coalition_erc_ciu.erc';
+      expect(frame.choices.find(c => c.id === pairId)).toMatchObject({ canChoose: false });
+      expect(frame.choices.some(c => c.id.startsWith('parlament_coalition_ciu_erc_cup.'))).toBe(false);
+
+      adapter.qualities.cup_parlament_s = 3;
+      const withCup = adapter.goToScene('parlament_coalition');
+      expect(withCup.choices.some(c => c.id === pairId)).toBe(Number(ciu) + Number(erc) >= 48);
+      expect(withCup.choices.filter(c => c.id.startsWith('parlament_coalition_ciu_erc_cup.'))).toHaveLength(2);
+
+      adapter.qualities.cup_parlament_s = 0;
+      const withoutCup = adapter.goToScene('parlament_coalition');
+      expect(withoutCup.choices.find(c => c.id === pairId)).toMatchObject({ canChoose: false });
+      expect(withoutCup.choices.some(c => c.id.startsWith('parlament_coalition_ciu_erc_cup.'))).toBe(false);
+    },
+  );
+
+  it.each(['icv', 'csqp', 'cecp', 'ecp'])(
+    'requires seated %s for the emergency bridge and clears it when those seats disappear', party => {
+      const { adapter, frame } = enterCoalitionMenu({
+        player_party: 'cup', parlament_s_majority: 68,
+        cat_spa_relations: 30, parlament_repeat_election: true, erc_roadmap: 2,
+        ciu_parlament_s: 64, ciu_roadmap: 2,
+        ppc_parlament_s: 30, cs_parlament_s: 20, psc_parlament_s: 15, vox_parlament_s: 6,
+      });
+      const emergencyId = 'parlament_coalition_unthinkably_grand.any';
+      const assertHidden = (current: typeof frame) => {
+        expect(current.choices.some(c => c.id === emergencyId)).toBe(false);
+        expect(adapter.qualities.parlament_emergency_psc_icv_available).toBe(false);
+        expect(adapter.qualities.parlament_emergency_psc_icv_politically_available).toBe(false);
+        expect(adapter.qualities.parlament_coalition_unthinkable_left_s).toBe(0);
+        expect(adapter.qualities.parlament_coalition_option_unthinkable_left_visible).toBe(false);
+        const rows = (adapter.qualities.parlament_coalition_config as {
+          coalitions: { seatsVar: string }[];
+        }).coalitions;
+        expect(rows.some(c => c.seatsVar === 'parlament_coalition_unthinkable_left_s')).toBe(false);
+        expect(selectableIds(current)).toContain('parlament_coalition_unionist.cs_ppc_psc_vox_abst');
+      };
+      assertHidden(frame);
+
+      adapter.qualities[`${party}_parlament_s`] = 1;
+      adapter.qualities.ciu_parlament_s = 63;
+      const seated = adapter.goToScene('parlament_coalition');
+      expect(seated.choices.find(c => c.id === emergencyId)).toMatchObject({ canChoose: true });
+      expect(adapter.qualities.parlament_coalition_option_unthinkable_left_visible).toBe(true);
+      expect(adapter.qualities.parlament_coalition_unthinkable_left_s).toBe(72);
+
+      adapter.qualities[`${party}_parlament_s`] = 0;
+      adapter.qualities.ciu_parlament_s = 64;
+      assertHidden(adapter.goToScene('parlament_coalition'));
+    },
+  );
+
+  it.each(['icv', 'csqp', 'cecp', 'ecp'].flatMap(party =>
+    [18, 47, 48, 67, 68].map(seats => [party, seats] as const),
+  ))('requires a near miss to display PSC + %s with %s seats', (party, seats) => {
+    const { adapter, frame } = enterCoalitionMenu({
+      player_party: 'cup', parlament_s_majority: 68,
+      ciu_parlament_s: 135 - seats, psc_parlament_s: 12,
+      [`${party}_parlament_s`]: seats - 12,
+    });
+    const visible = seats >= 48;
+    const rows = (adapter.qualities.parlament_coalition_config as {
+      coalitions: { seatsVar: string }[];
+    }).coalitions;
+    const choice = frame.choices.find(c => c.id === 'parlament_coalition_progressist.any');
+
+    expect(rows.some(c => c.seatsVar === 'parlament_coalition_psc_icv_s')).toBe(visible);
+    expect(adapter.qualities.parlament_coalition_option_psc_icv_visible).toBe(visible);
+    expect(!!choice).toBe(visible);
+    expect(choice?.canChoose ?? false).toBe(seats >= 68);
+    expect(adapter.qualities.parlament_coalition_psc_icv_s).toBe(seats);
+  });
+
+  it('uses the current majority threshold and clears progressive visibility on re-entry', () => {
+    const { adapter, frame } = enterCoalitionMenu({
+      player_party: 'cup', parlament_s_majority: 51,
+      psc_parlament_s: 20, icv_parlament_s: 11,
+    });
+    expect(frame.choices.find(c => c.id === 'parlament_coalition_progressist.any'))
+      .toMatchObject({ canChoose: false });
+
+    adapter.qualities.icv_parlament_s = 10;
+    const next = adapter.goToScene('parlament_coalition');
+    expect(next.choices.some(c => c.id === 'parlament_coalition_progressist.any')).toBe(false);
+    expect(adapter.qualities.parlament_coalition_option_psc_icv_visible).toBe(false);
+    expect(adapter.qualities.parlament_coalition_psc_icv_s).toBe(30);
+  });
+
   it('selects exactly the minimum viable unionist package at each broken ladder tier', () => {
     const cases = [
       {

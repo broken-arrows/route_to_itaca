@@ -1,6 +1,7 @@
 import type { Component } from 'vue';
 import { WIDGET_NAMES } from './widget-names.mjs';
 import Hemicycle from './Hemicycle.vue';
+import BuilderPlayground from './BuilderPlayground.vue';
 import AchievementGallery from './AchievementGallery.vue';
 import LevelBars from './LevelBars.vue';
 import TensionRows from './TensionRows.vue';
@@ -24,6 +25,7 @@ export type WidgetName = (typeof WIDGET_NAMES)[number];
 // that isn't a WidgetName at all — see widget.registry.test.ts's "WIDGETS
 // keys ⊆ WIDGET_NAMES" guard for the runtime equivalent against real content.
 export const WIDGETS: Partial<Record<WidgetName, Component>> = {
+  'builder-playground': BuilderPlayground,
   hemicycle: Hemicycle,
   'achievement-gallery': AchievementGallery,
   'level-bars': LevelBars,

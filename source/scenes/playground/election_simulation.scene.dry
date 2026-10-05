@@ -1,34 +1,35 @@
 title: Election Simulation
-role: main-menu-item
-set-bg: img/parlament_de_catalunya.jpg
+set-bg: img/generalitat_interior.jpg
 new-page: true
 on-arrival: {!
-// Reset everything
-Q.art155_ever = false;
-for (var p of Q.parties) {
-    Q[p + '_parlament_s'] = 0;
-    Q[p + '_parlament_pv'] = 0;
-    for (var constituency of Q.parlament_constituencies) {
-        for (var demographic of Q.parlament_demographics) {
-            Q[p + '_parlament_' + constituency + '_' + demographic + '_support'] = 0;
+    // Reset everything
+    Q.art155_ever = false;
+    for (var p of Q.parties) {
+        Q[p + '_parlament_s'] = 0;
+        Q[p + '_parlament_pv'] = 0;
+        for (var constituency of Q.parlament_constituencies) {
+            for (var demographic of Q.parlament_demographics) {
+                Q[p + '_parlament_' + constituency + '_' + demographic + '_support'] = 0;
+            }
         }
     }
-}
-for (var constituency of Q.congreso_constituencies) {
-    for (var p of Q['congreso_parties_' + constituency]) {
-        Q[p + '_congreso_s'] = 0;
-        Q[p + '_congreso_pv'] = 0;
-        if (constituency == 'catalunya') Q[p + '_congreso_pv_cat'] = 0;
-        Q[p + '_congreso_' + constituency + '_support'] = 0;
+    for (var constituency of Q.congreso_constituencies) {
+        for (var p of Q['congreso_parties_' + constituency]) {
+            Q[p + '_congreso_s'] = 0;
+            Q[p + '_congreso_pv'] = 0;
+            if (constituency == 'catalunya') Q[p + '_congreso_pv_cat'] = 0;
+            Q[p + '_congreso_' + constituency + '_support'] = 0;
+        }
     }
-}
-for (var p of Q.parties_bcn) {
-    Q[p + '_local_barcelona_s'] = 0;
-    Q[p + '_local_barcelona_pv'] = 0;
-}
+    for (var p of Q.parties_bcn) {
+        Q[p + '_local_barcelona_s'] = 0;
+        Q[p + '_local_barcelona_pv'] = 0;
+    }
 !}
 call: root.start_menu
 set-jump: post_election_sim
+
+= Election Simulation
 
 The Election Simulation system is an in-game tool used for debugging and testing. Do play around with historic election results and see how the game handles them!
 
@@ -41,7 +42,7 @@ The Election Simulation system is an in-game tool used for debugging and testing
 - @2019_4: Spanish Congreso (April 2019)
 - @2019_5: Local Elections (May 2019)
 - @2019_11: Spanish Congreso (November 2019)
-- @root: Back
+- @root: Exit Playground
 
 @2015_5
 on-arrival: {!
@@ -2563,8 +2564,8 @@ if (Q.cecp_parlament_s) {
 if(Q.ecp_parlament_s) {
     data.push({
         "id": "ecp",
-        "legend": "ECP-PEC",
-        "name": "ECP-PEC",
+        "legend": "ECP",
+        "name": "ECP",
         "seats": Q.ecp_parlament_s,
     });
 }

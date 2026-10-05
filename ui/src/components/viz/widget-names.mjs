@@ -24,6 +24,7 @@
  *   Government sheet.
  */
 export const WIDGET_NAMES = [
+  "builder-playground",
   "hemicycle",
   "achievement-gallery",
   "poll-map",

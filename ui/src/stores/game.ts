@@ -145,6 +145,10 @@ export const useGameStore = defineStore('game', () => {
     if (useShellStore().blocksEngineChoices) return;
     apply(adapter.value!.choose(i));
   }
+  function editQualities(edit: (q: Record<string, unknown>) => boolean): void {
+    if (!adapter.value || useShellStore().blocksEngineChoices) return;
+    if (edit(adapter.value.qualities)) apply(adapter.value.refreshChoices());
+  }
   function chooseFromShell(i: number): void {
     apply(adapter.value!.choose(i));
   }
@@ -356,6 +360,7 @@ export const useGameStore = defineStore('game', () => {
     setContentLanguage,
     newGame,
     choose,
+    editQualities,
     chooseFromShell,
     goToScene,
     roleHub,

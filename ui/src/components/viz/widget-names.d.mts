@@ -1,4 +1,5 @@
 export declare const WIDGET_NAMES: readonly [
+  'builder-playground',
   'hemicycle',
   'achievement-gallery',
   'poll-map',

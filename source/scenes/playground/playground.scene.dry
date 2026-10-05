@@ -1,0 +1,12 @@
+title: Playground
+role: main-menu-item
+set-bg: img/generalitat_interior.jpg
+new-page: true
+
+= Playground
+
+The place to mess around with different game systems with no consequences.
+
+- @election_simulation
+- @coalition_builder
+- @root: Exit Playground

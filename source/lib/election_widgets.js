@@ -176,7 +176,323 @@
     });
   }
 
+  // The builder edits a draft. Published seat qualities and both charts remain
+  // untouched until the authored Run choice commits it.
+  function coalitionBuilderConfig(Q, chamber, parties) {
+    if (chamber === "parlament") return parlamentBuilderConfig(Q, parties);
+    if (chamber === "congreso") return congresoBuilderConfig(Q, parties);
+    var constituencies = Q[chamber + "_constituencies"] || [];
+    return {
+      chamber: chamber,
+      rows: parties.filter(function (party) {
+        var id = party[0];
+        if (Q[id + "_" + chamber + "_s"] > 0 || Q[id + "_" + chamber + "_pv"] > 0) return true;
+        return constituencies.some(function (c) {
+          if (chamber === "congreso") return Q[id + "_congreso_" + c + "_support"] > 0;
+          return (Q.parlament_demographics || []).some(function (d) {
+            return Q[id + "_parlament_" + c + "_" + d + "_support"] > 0;
+          });
+        });
+      }).map(function (party) {
+        return { id: party[0], name: party[1], seats: Number(Q[party[0] + "_" + chamber + "_s"]) || 0 };
+      }),
+    };
+  }
+
+  function builderPartyRow(Q, chamber, names, slot, variants, column, position) {
+    var id = variants.find(function (p) { return Q[p + "_" + chamber + "_s"] > 0; }) || variants[0];
+    return { slot: slot, id: id, name: names[id], variants: variants, column: column, position: position,
+      seats: variants.reduce(function (sum, p) { return sum + (Number(Q[p + "_" + chamber + "_s"]) || 0); }, 0) };
+  }
+
+  function congresoBuilderConfig(Q, parties) {
+    var names = Object.fromEntries(parties);
+    // Sumar is outside this editor's scope; retain its live seats on Run.
+    delete names.sumar;
+    function row(slot, variants, column, position) {
+      return builderPartyRow(Q, "congreso", names, slot, variants, column, position);
+    }
+    var up = row("up", ["up"], 0, 1);
+    up.isJoint = true;
+    var joint = row("joint", ["jxsi", "jxcat"], 0, 6);
+    joint.isJoint = true;
+    var core = row("ciu", ["ciu", "cdc", "dl", "pdcat", "junts"], 1, 6);
+    var mainBallot = core.variants.find(function (p) { return p !== "pdcat" && Q[p + "_congreso_s"] > 0; });
+    if (mainBallot) { core.id = mainBallot; core.name = names[mainBallot]; }
+    var separate = row("pdcat", ["pdcat"], 2, 9);
+    if (core.id !== "pdcat") core.seats -= separate.seats;
+    else separate.seats = 0;
+    var rows = [up, joint, row("iu", ["iu"], 1, 1), row("podemos", ["podemos"], 1, 2),
+      row("compromis", ["compromis"], 1, 3), row("mes", ["mes"], 1, 4), row("bng", ["bng"], 1, 5),
+      core, row("erc", ["erc"], 1, 7), row("cup", ["cup"], 1, 8), row("fr", ["fr"], 1, 9),
+      row("pnv", ["pnv"], 2, 1), row("amaiur", ["amaiur", "ehbildu"], 2, 2), row("gbai", ["gbai"], 2, 3), row("cc", ["cc"], 2, 4),
+      row("mpais", ["mpais"], 2, 5), row("prc", ["prc"], 2, 6), row("te", ["te"], 2, 7), row("unio", ["unio"], 2, 8), separate,
+      row("psoe", ["psoe"], 3, 1), row("psc", ["psc"], 3, 2), row("pp", ["pp"], 3, 3), row("cs", ["cs"], 3, 4),
+      row("nsuma", ["nsuma"], 3, 5), row("upn", ["upn"], 3, 6), row("fac", ["fac"], 3, 7), row("upyd", ["upyd"], 3, 8), row("vox", ["vox"], 3, 9)];
+    var config = { chamber: "congreso", names: names, rows: rows };
+    rows.filter(function (entry) { return entry.column === 1; }).forEach(function (entry) {
+      if (entry.slot === "fr") {
+        entry.group = null;
+        entry.canJoin = false;
+        entry.member = false;
+        entry.contribution = 0;
+        return;
+      }
+      entry.group = entry.position <= 5 ? "up" : "joint";
+      entry.canJoin = true;
+      entry.member = false;
+      entry.contribution = 0;
+      var list = entry.group === "up" ? up : joint;
+      var selected = entry.group === "up"
+        ? (!entry.canJoin || Q["spa_" + entry.slot + "_active"] === false)
+        : (!entry.canJoin || !!Q[entry.id + "_in_" + joint.id]);
+      if (list.seats > 0 && selected) setBuilderMember(config, entry, true);
+    });
+    up.disabled = false;
+    joint.disabled = false;
+    syncCoalitionBuilder(config);
+    return config;
+  }
+
+  function parlamentBuilderConfig(Q, parties) {
+    var names = Object.fromEntries(parties);
+    function row(slot, variants, column, position) {
+      var id = variants.find(function (p) { return Q[p + "_parlament_s"] > 0; }) || variants[0];
+      return { slot: slot, id: id, name: names[id], variants: variants,
+        column: column, position: position, seats: variants.reduce(function (sum, p) { return sum + (Number(Q[p + "_parlament_s"]) || 0); }, 0) };
+    }
+    var core = row("ciu", ["ciu", "cdc", "dl", "pdcat", "junts"], 1, 1);
+    var mainBallot = core.variants.find(function (p) { return p !== "pdcat" && Q[p + "_parlament_s"] > 0; });
+    if (mainBallot) { core.id = mainBallot; core.name = names[mainBallot]; }
+    // A split PDeCAT keeps its own ballot alongside another CiU successor.
+    if (core.id !== "pdcat") core.seats -= Number(Q.pdcat_parlament_s) || 0;
+    var separate = row("pdcat", ["pdcat"], 2, 2);
+    separate.hidden = core.id === "pdcat";
+    if (separate.hidden) separate.seats = 0;
+    var joint = row("joint", ["jxsi", "jxcat"], 0, 1);
+    joint.isJoint = true;
+    var rows = [joint, core, row("erc", ["erc"], 1, 2), row("si", ["si"], 1, 3), row("cup", ["cup"], 1, 4),
+      row("icv", ["icv", "csqp", "cecp", "ecp"], 2, 1), separate, row("unio", ["unio"], 2, 3), row("pxc", ["pxc", "fnc"], 2, 4),
+      row("cs", ["cs"], 3, 1), row("psc", ["psc"], 3, 2), row("ppc", ["ppc"], 3, 3), row("vox", ["vox"], 3, 4)];
+    [core, rows[2], rows[4]].forEach(function (entry) {
+      entry.member = false;
+      entry.group = "joint";
+      entry.canJoin = true;
+      entry.contribution = 0;
+    });
+    var config = { chamber: "parlament", names: names, rows: rows };
+    if (joint.seats > 0) {
+      [core, rows[2], rows[4]].forEach(function (entry) {
+        if (entry.slot === "ciu" || Q[entry.id + "_in_" + joint.id]) setBuilderMember(config, entry, true);
+      });
+    }
+    joint.disabled = false;
+    syncCoalitionBuilder(config);
+    return config;
+  }
+
+  function setBuilderMember(config, row, member) {
+    if (!!row.member === member) return;
+    var joint = config.rows.find(function (entry) { return entry.slot === (row.group || "joint"); });
+    if (member) {
+      row.contribution = row.seats;
+      joint.seats += row.seats;
+      row.seats = 0;
+    } else {
+      row.seats = Math.min(row.contribution || 0, joint.seats);
+      joint.seats -= row.seats;
+      row.contribution = 0;
+    }
+    row.member = member;
+  }
+
+  function clearCoalition(config, group) {
+    config.rows.filter(function (entry) { return (entry.group || entry.slot) === group.slot; })
+      .forEach(function (entry) {
+        if (entry.member) {
+          entry.seats = Math.max(0, entry.contribution || 0);
+          entry.member = false;
+        }
+        entry.contribution = 0;
+        entry.autoRequired = false;
+      });
+    group.seats = 0;
+    group.disabled = true;
+  }
+
+  // Keep dependent slots consistent after every draft change. Hidden ballots
+  // merge into their family carrier so identity switches cannot lose seats.
+  function syncCoalitionBuilder(config) {
+    var rows = config.rows;
+    var joint = rows.find(function (row) { return row.slot === "joint"; });
+    var core = rows.find(function (row) { return row.slot === "ciu"; });
+    var erc = rows.find(function (row) { return row.slot === "erc"; });
+    var si = rows.find(function (row) { return row.slot === "si"; });
+    var pdcat = rows.find(function (row) { return row.slot === "pdcat"; });
+    var unio = rows.find(function (row) { return row.slot === "unio"; });
+    joint.hidden = false;
+    core.canJoin = true;
+    if (si) { si.group = "joint"; setBuilderMember(config, si, !!erc.member); }
+    var jointActive = joint.seats > 0 || rows.some(function (row) {
+      return row.member && row.autoRequired && (row.group || "joint") === "joint";
+    });
+    if (!core.disabled) setBuilderMember(config, core, jointActive);
+    pdcat.hidden = core.id === "pdcat" || (core.id !== "junts" && joint.id !== "jxcat");
+    unio.hidden = core.id === "ciu";
+    [pdcat, unio].forEach(function (row) {
+      if (!row.hidden || !row.seats) return;
+      if (core.member) {
+        joint.seats += row.seats;
+        core.contribution = (core.contribution || 0) + row.seats;
+      } else core.seats += row.seats;
+      row.seats = 0;
+    });
+    if (config.chamber === "congreso") {
+      var up = rows.find(function (row) { return row.slot === "up"; });
+      if (!up.disabled) {
+        var upRequired = up.seats > 0 || rows.some(function (row) {
+          return row.member && row.autoRequired && (row.group || "joint") === "up";
+        });
+        ["iu", "podemos"].forEach(function (slot) {
+          setBuilderMember(config, rows.find(function (row) { return row.slot === slot; }), upRequired);
+        });
+      }
+      var mpais = rows.find(function (row) { return row.slot === "mpais"; });
+      mpais.hidden = up.seats <= 0;
+      if (mpais.hidden && mpais.seats) {
+        rows.find(function (row) { return row.slot === "podemos"; }).seats += mpais.seats;
+        mpais.seats = 0;
+      }
+    }
+  }
+
+  function switchCoalitionBuilderParty(Q, slot, direction) {
+    var config = Q.playground_coalitions;
+    if (!config || (direction !== -1 && direction !== 1)) return false;
+    var row = config.rows.find(function (entry) { return entry.slot === slot; });
+    if (!row || row.variants.length < 2) return false;
+    var index = row.variants.indexOf(row.id);
+    row.id = row.variants[(index + direction + row.variants.length) % row.variants.length];
+    row.name = config.names[row.id];
+    syncCoalitionBuilder(config);
+    return true;
+  }
+
+  function toggleCoalitionBuilderMember(Q, slot) {
+    var config = Q.playground_coalitions;
+    if (!config) return false;
+    var row = config.rows.find(function (entry) { return entry.slot === slot; });
+    if (!row || !row.canJoin) return false;
+    if ((row.slot === "ciu" || row.slot === "iu" || row.slot === "podemos") && row.member) {
+      var group = config.rows.find(function (entry) { return entry.slot === row.group; });
+      if (group) {
+        clearCoalition(config, group);
+        syncCoalitionBuilder(config);
+        return true;
+      }
+    }
+    if (row.member) row.autoRequired = false;
+    setBuilderMember(config, row, !row.member);
+    if (row.member) {
+      if (row.slot === "ciu") {
+        row.autoRequired = true;
+      } else if (row.slot === "iu" || row.slot === "podemos") {
+        row.autoRequired = true;
+        var requiredPeer = config.rows.find(function (entry) {
+          return entry.slot === (row.slot === "iu" ? "podemos" : "iu");
+        });
+        requiredPeer.autoRequired = true;
+        setBuilderMember(config, requiredPeer, true);
+      } else if (row.slot === "cup") {
+        var core = config.rows.find(function (entry) { return entry.slot === "ciu"; });
+        var erc = config.rows.find(function (entry) { return entry.slot === "erc"; });
+        core.autoRequired = true;
+        erc.autoRequired = true;
+        setBuilderMember(config, core, true);
+        setBuilderMember(config, erc, true);
+      } else if (row.group === "up" && ["bng", "compromis", "mes"].indexOf(row.slot) !== -1) {
+        ["iu", "podemos"].forEach(function (slot) {
+          var required = config.rows.find(function (entry) { return entry.slot === slot; });
+          required.autoRequired = true;
+          setBuilderMember(config, required, true);
+        });
+      }
+    }
+    syncCoalitionBuilder(config);
+    return true;
+  }
+
+  function editCoalitionBuilder(Q, id, seats) {
+    var config = Q.playground_coalitions;
+    if (!config || !Number.isSafeInteger(seats) || seats < 0 || seats > Q.playground_coalitions_needed_seats) return false;
+    var row = config.rows.find(function (entry) { return entry.id === id && !entry.hidden; });
+    if (!row || row.member) return false;
+    Q.playground_coalitions_set_seats += seats - row.seats;
+    row.seats = seats;
+    if (row.isJoint && seats > 0) row.disabled = false;
+    if (row.isJoint && seats === 0) {
+      config.rows.filter(function (entry) { return (entry.group || "joint") === row.slot; })
+        .forEach(function (entry) { entry.member = false; entry.contribution = 0; entry.autoRequired = false; });
+    }
+    syncCoalitionBuilder(config);
+    return true;
+  }
+
+  function applyCoalitionBuilder(Q) {
+    var config = Q.playground_coalitions;
+    if (!config || Q.playground_coalitions_set_seats !== Q.playground_coalitions_needed_seats) return;
+    Object.keys(config.names).forEach(function (id) { Q[id + "_" + config.chamber + "_s"] = 0; });
+    if (config.chamber === "parlament") {
+      ["jxsi", "jxcat"].forEach(function (list) {
+        ["ciu", "cdc", "dl", "pdcat", "junts", "erc", "si", "cup"].forEach(function (id) { Q[id + "_in_" + list] = false; });
+        Q["player_in_" + list] = false;
+        Q[list + "_formed"] = false;
+        Q[list + "_dissolved"] = true;
+      });
+      var joint = config.rows[0];
+      if (joint.seats > 0) {
+        Q[joint.id + "_formed"] = true;
+        Q[joint.id + "_dissolved"] = false;
+        config.rows.filter(function (row) { return row.member; }).forEach(function (row) {
+          Q[row.id + "_in_" + joint.id] = true;
+          if (row.id === Q.player_party) Q["player_in_" + joint.id] = true;
+        });
+      }
+      var core = config.rows.find(function (row) { return row.slot === "ciu"; });
+      var pdcat = config.rows.find(function (row) { return row.slot === "pdcat"; });
+      Q.pdcat_split = core.id !== "pdcat" && pdcat.seats > 0;
+    }
+    if (config.chamber === "congreso") {
+      var up = config.rows.find(function (row) { return row.slot === "up"; });
+      var joint = config.rows.find(function (row) { return row.slot === "joint"; });
+      Q.iu_in_up = up.seats > 0;
+      ["bng", "compromis", "mes"].forEach(function (slot) {
+        Q["spa_" + slot + "_active"] = !config.rows.find(function (row) { return row.slot === slot; }).member;
+      });
+      Q.spa_mpais_active = config.rows.find(function (row) { return row.slot === "mpais"; }).seats > 0;
+      ["jxsi", "jxcat"].forEach(function (list) {
+        Q[list + "_in_congreso"] = joint.id === list && joint.seats > 0;
+        ["ciu", "cdc", "dl", "pdcat", "junts", "erc", "cup"].forEach(function (id) { Q[id + "_in_" + list] = false; });
+        Q["player_in_" + list] = false;
+      });
+      if (joint.seats > 0) {
+        config.rows.filter(function (row) { return row.group === "joint" && row.member; }).forEach(function (row) {
+          Q[row.id + "_in_" + joint.id] = true;
+          if (row.id === Q.player_party) Q["player_in_" + joint.id] = true;
+        });
+      }
+    }
+    config.rows.filter(function (row) { return !row.hidden; }).forEach(function (row) {
+      Q[row.id + "_" + config.chamber + "_s"] = row.member ? 0 : row.seats;
+    });
+  }
+
   var api = {
+    coalitionBuilderConfig: coalitionBuilderConfig,
+    editCoalitionBuilder: editCoalitionBuilder,
+    switchCoalitionBuilderParty: switchCoalitionBuilderParty,
+    toggleCoalitionBuilderMember: toggleCoalitionBuilderMember,
+    applyCoalitionBuilder: applyCoalitionBuilder,
     congresoResultsMap: congresoResultsMap,
     localResultsMap: localResultsMap,
     congresoPartyTour: congresoPartyTour,

@@ -263,6 +263,14 @@ export class DendryAdapter {
     return this.buildFrame();
   }
 
+  /** Re-evaluate authored options after an inline edit, without scene actions. */
+  refreshChoices(): Frame {
+    this.ui.removeChoices();
+    this.engine.choiceCache = this.engine._compileChoices(this.engine.getCurrentScene());
+    this.engine.displayChoices();
+    return this.buildFrame();
+  }
+
   choose(choiceIndex: number): Frame {
     this.ui.resetTransient();
     this.engine.choose(choiceIndex);

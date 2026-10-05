@@ -15,6 +15,9 @@ export interface AllegianceEntry {
 }
 
 export interface GameLib {
+  editCoalitionBuilder(q: Record<string, unknown>, id: string, seats: number): boolean;
+  switchCoalitionBuilderParty(q: Record<string, unknown>, slot: string, direction: number): boolean;
+  toggleCoalitionBuilderMember(q: Record<string, unknown>, slot: string): boolean;
   congresoResultsMap(q: Record<string, unknown>): {
     regions: Array<{ id: string; constituency: string; winner: string | null }>;
     panels: Record<string, { name: string; seats: number; rows: Array<{ party: string; seats: number; support: number }> }>;
