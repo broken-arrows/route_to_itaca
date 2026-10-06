@@ -362,7 +362,7 @@ title: Give concessions to the PSC
 view-if: coalition_affairs_includes_psc and psc_relations < 55
 on-arrival: {!
     Q.coalition_affairs_concession_target = "psc";
-    Q.random_seed = Math.random();
+    Q.random_seed = G.random(Q);
 !}
 go-to: concessions_ciu if random_seed <= 0.5 and (generalitat_surplus < 0 or tax_policy_level > -2); concessions_icv if random_seed > 0.5 or (generalitat_surplus >= 0 and tax_policy_level <= -2)
 
@@ -390,7 +390,7 @@ on-arrival: {!
     spendingChance += (50 - Q.welfare_index) / 200;
     spendingChance = Math.max(0.1, Math.min(0.9, spendingChance));
 
-    if (canSpend && (!canTax || Math.random() < spendingChance)) {
+    if (canSpend && (!canTax || G.random(Q) < spendingChance)) {
         if (raiseField) {
             Q[raiseField] += 1;
             Q.coalition_affairs_icv_concession = "spending";

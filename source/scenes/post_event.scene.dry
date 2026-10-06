@@ -477,7 +477,7 @@ if (Q.year + 1 > Q.budget_year) {
 
 // Trigger governing party budget negotiations
 if (has_time_passed && !Q.budget_postponed_countdown > 0 && !Q.rubicon && !Q.cat_caretaker_gov && Q.year > Q.budget_year && Q.budget_year_attempted != Q.year && Q.month > 5 && !((Q[Q.player_party + "_in_jxsi"] && Q.economy_minister_party == "jxsi") || (Q[Q.player_party + "_in_jxcat"] && Q.economy_minister_party == "jxcat") || Q.economy_minister_party == Q.player_party)) {
-    var rnd = Math.random();
+    var rnd = G.random(Q);
     if (rnd <= 0.2) {
         Q.budget_parlament_trigger  = true;
     }
@@ -489,7 +489,7 @@ if (has_time_passed && !Q.cat_caretaker_gov && !Q.rubicon && !Q.coalition_ruptur
     Q.year > Q.budget_year && Q.next_election_time - Q.time > 2 &&
     (Q.cat_coalition || []).includes(playerVehicle) && Q.president_party != playerVehicle &&
     Number.isFinite(Q[Q.president_party + "_relations"]) && Q[Q.president_party + "_relations"] < 40 &&
-    Math.random() < 0.20) {
+    G.random(Q) < 0.20) {
     Q.parlament_snap_election = 1;
     Q.snap_budget_distrust = true;
 }

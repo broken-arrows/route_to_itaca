@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { gameLib } from '../src/game-bindings';
@@ -31,8 +31,7 @@ beforeAll(() => {
 function tick(q: Record<string, any>) {
   q.parlament_vote_trace_enabled = true;
   q.parlament_vote_trace = { ticks: 0, mechanisms: {} };
-  const rng = vi.spyOn(Math, 'random').mockReturnValue(0.6);
-  try { gameLib.engineTick(q); } finally { rng.mockRestore(); }
+  gameLib.engineTick(q);
 }
 function ready() {
   const q = JSON.parse(JSON.stringify(fixture));

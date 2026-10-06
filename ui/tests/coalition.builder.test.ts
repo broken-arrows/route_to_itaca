@@ -216,7 +216,7 @@ describe('Congreso party layout and independent joint lists', () => {
     expect([1, 2, 3].map(column => rows.filter((r: any) => r.column === column).map((r: any) => r.slot))).toEqual([
       ['iu', 'podemos', 'compromis', 'mes', 'bng', 'ciu', 'erc', 'cup', 'fr'],
       ['pnv', 'amaiur', 'gbai', 'cc', 'mpais', 'prc', 'te', 'unio', 'pdcat'],
-      ['psoe', 'psc', 'pp', 'cs', 'nsuma', 'upn', 'fac', 'upyd', 'vox'],
+      ['psoe', 'psc', 'pp', 'cs', 'upn', 'fac', 'upyd', 'vox'],
     ]);
     expect(rows.filter((r: any) => r.isJoint).map((r: any) => [r.id, r.position])).toEqual([['up', 1], ['jxsi', 6]]);
     expect(rows.some((r: any) => r.id === 'si' || r.id === 'sumar')).toBe(false);
@@ -226,6 +226,29 @@ describe('Congreso party layout and independent joint lists', () => {
     for (const name of ['iu', 'podemos', 'ciu']) expect(slot(q, name).canJoin).toBe(true);
     for (const name of ['bng', 'compromis', 'mes', 'erc', 'cup']) expect(slot(q, name).canJoin).toBe(true);
   });
+
+  it.each([[2, 0, 'upn'], [0, 2, 'nsuma'], [1, 1, 'upn']] as const)(
+    'combines UPN %i and NA+ %i seats in one switchable draft slot', (upnSeats, naSeats, initialId) => {
+      const { a, q } = setup('congreso');
+      Object.assign(q, { psoe_congreso_s: 178, upn_congreso_s: upnSeats, nsuma_congreso_s: naSeats,
+        playground_coalitions: null });
+      a.goToScene('coalition_builder.congreso');
+      expect(slot(q, 'upn')).toMatchObject({ id: initialId, seats: 2, variants: ['upn', 'nsuma'], column: 3, position: 5 });
+      expect(slot(q, 'nsuma')).toBeUndefined();
+      const total = q.playground_coalitions_set_seats;
+      for (const direction of [1, -1, 1]) {
+        gameLib.switchCoalitionBuilderParty(q, 'upn', direction);
+        expect(slot(q, 'upn').seats).toBe(2);
+        expect(q.playground_coalitions_set_seats).toBe(total);
+        expect(q.upn_congreso_s).toBe(upnSeats);
+        expect(q.nsuma_congreso_s).toBe(naSeats);
+      }
+      const selectedId = slot(q, 'upn').id;
+      const frame = a.refreshChoices();
+      a.choose(frame.choices.findIndex(c => c.id.endsWith('run_congreso')));
+      expect(q[`${selectedId}_congreso_s`]).toBe(2);
+      expect(q[`${selectedId === 'upn' ? 'nsuma' : 'upn'}_congreso_s`]).toBe(0);
+    });
 
   it('automatically includes IU and Podemos and restores optional contributions without changing totals', () => {
     const { q } = setup('congreso');
@@ -446,6 +469,21 @@ describe('Congreso party layout and independent joint lists', () => {
     expect(wrapper.find('[data-party="up"]').exists()).toBe(true);
     expect(wrapper.find('[data-party="jxsi"]').exists()).toBe(true);
     expect(wrapper.find('[data-party="mpais"]').exists()).toBe(false);
+    expect(wrapper.find('[data-party="nsuma"]').exists()).toBe(false);
+    await wrapper.get('[data-party="upn"] .builder-controls input').setValue('2');
+    await wrapper.get('[data-party="upn"] .builder-next').trigger('click');
+    expect((wrapper.get('[data-party="nsuma"] .builder-controls input').element as HTMLInputElement).value).toBe('2');
+    expect(wrapper.find('[data-party="upn"]').exists()).toBe(false);
+    await wrapper.get('[data-party="nsuma"] .builder-previous').trigger('click');
+    expect(wrapper.find('[data-party="upn"]').exists()).toBe(true);
+    // Zero-seat selections still give summaries the full member span.
+    await wrapper.get('[data-party="iu"] .builder-checkbox').setValue(true);
+    await wrapper.get('[data-party="mes"] .builder-checkbox').setValue(true);
+    expect((wrapper.get('[data-party="up"]').element as HTMLElement).style.gridRow).toBe('1 / 5');
+    await wrapper.get('[data-party="iu"] .builder-checkbox').setValue(false);
+    await wrapper.get('[data-party="cup"] .builder-checkbox').setValue(true);
+    expect((wrapper.get('[data-party="jxsi"]').element as HTMLElement).style.gridRow).toBe('6 / 9');
+    await wrapper.get('[data-party="ciu"] .builder-checkbox').setValue(false);
     await wrapper.get('[data-party="iu"] .builder-controls input').setValue('10');
     await wrapper.get('[data-party="podemos"] .builder-controls input').setValue('20');
     await wrapper.get('[data-party="up"] .builder-controls input').setValue('1');
@@ -482,6 +520,22 @@ describe('Congreso party layout and independent joint lists', () => {
     }
     function join(id: string) { (document.querySelector(`[data-party="${id}"] .builder-checkbox`) as HTMLInputElement).click(); }
     expect(document.querySelectorAll('.builder-checkbox')).toHaveLength(8);
+    expect(document.querySelector('[data-party="nsuma"]')).toBeNull();
+    edit('upn', 2);
+    (document.querySelector('[data-party="upn"] .builder-next') as HTMLButtonElement).click();
+    expect((document.querySelector('[data-party="nsuma"] .builder-controls input') as HTMLInputElement).value).toBe('2');
+    expect(document.querySelector('[data-party="upn"]')).toBeNull();
+    (document.querySelector('[data-party="nsuma"] .builder-previous') as HTMLButtonElement).click();
+    expect(document.querySelector('[data-party="upn"]')).not.toBeNull();
+    // Zero-seat selections still give summaries the full member span.
+    join('iu');
+    join('mes');
+    expect((document.querySelector('[data-party="up"]') as HTMLElement).style.gridRow).toBe('1 / 5');
+    expect(document.querySelector('[data-party="up"]')!.classList.contains('is-joint')).toBe(true);
+    join('iu');
+    join('cup');
+    expect((document.querySelector('[data-party="jxsi"]') as HTMLElement).style.gridRow).toBe('6 / 9');
+    join('ciu');
     edit('iu', 10);
     edit('podemos', 20);
     edit('up', 1);

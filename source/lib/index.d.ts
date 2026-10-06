@@ -15,6 +15,10 @@ export interface AllegianceEntry {
 }
 
 export interface GameLib {
+  /** Initialize once per game; an explicit uint32 seed permits replay. */
+  initRandom(q: Record<string, unknown>, seed?: number): void;
+  /** Next gameplay draw in [0, 1), with the stream position saved in q. */
+  random(q: Record<string, unknown>): number;
   editCoalitionBuilder(q: Record<string, unknown>, id: string, seats: number): boolean;
   switchCoalitionBuilderParty(q: Record<string, unknown>, slot: string, direction: number): boolean;
   toggleCoalitionBuilderMember(q: Record<string, unknown>, slot: string): boolean;

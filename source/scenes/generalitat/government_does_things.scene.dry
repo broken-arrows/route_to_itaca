@@ -152,74 +152,74 @@ on-arrival: {!
         if (Number.isInteger(Q.public_salary_level) && Q.public_salary_level >= -2 && Q.public_salary_level < 2 && Q.economy_cuts <= 0 &&
             Q.public_salary_level < Q.social_spending_cap && Q.generalitat_surplus > -3 && Q.public_salary_prepared_level == null)
             add("economy_minister_party", "public_salary_level", Q.public_salary_level + 1, "improve public-sector pay",
-                ((economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + economy_minister + " says it is time public-service working conditions are restored and improved."), left ? 3 : !deficit ? 1 : 0, "services");
+                ((Q.economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + Q.economy_minister + " says it is time public-service working conditions are restored and improved."), left ? 3 : !deficit ? 1 : 0, "services");
         if (Number.isInteger(Q.public_salary_level) && Q.public_salary_level > -2 && Q.public_salary_level <= 2)
             add("economy_minister_party", "public_salary_level", Q.public_salary_level - 1, "reduce public-sector pay",
-                (economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + economy_minister + ", worried about public deficit, says pay restraint is the only solution to address the current financial situation.", market && deficit ? 4 : left && !radical && Q.generalitat_surplus < -2 ? 1 : 0, "services", "cut");
+                (Q.economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + Q.economy_minister + ", worried about public deficit, says pay restraint is the only solution to address the current financial situation.", market && deficit ? 4 : left && !radical && Q.generalitat_surplus < -2 ? 1 : 0, "services", "cut");
         var acceptsTax = left || market && Q.tax_policy_level < 1 && Q.generalitat_surplus < -1;
         if (canBudget && Q.tax_policy_level < 2)
             add("economy_minister_party", "tax_policy_level", Q.tax_policy_level + 1, "raise regional taxes",
-                (economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + economy_minister + " is this may be the only acceptable options for the numbers to make sense in the coming budget.", acceptsTax ? (deficit ? 4 : 1) : 0, "taxes", "budget");
+                (Q.economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + Q.economy_minister + " is this may be the only acceptable options for the numbers to make sense in the coming budget.", acceptsTax ? (deficit ? 4 : 1) : 0, "taxes", "budget");
         if (canBudget && Q.tax_policy_level > -2 && !deficit)
             add("economy_minister_party", "tax_policy_level", Q.tax_policy_level - 1, "lower regional taxes",
-                (economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + economy_minister + " argues it is time for lower pressure to business development to allow further investments into the Catalan economy.", market ? 3 : 0, "taxes", "budget");
+                (Q.economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + Q.economy_minister + " argues it is time for lower pressure to business development to allow further investments into the Catalan economy.", market ? 3 : 0, "taxes", "budget");
         if (Q.economy_cuts > 0)
             add("economy_minister_party", "economy_cuts", Q.economy_cuts - 1, "reverse extraordinary austerity measures",
-                (economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + economy_minister + " proposes finally withdrawing the extraordinary austerity package that has been burdening the public sector.", left && Q.generalitat_surplus > -2 ? 4 : !deficit ? 1 : 0, "services", "austerity");
+                (Q.economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + Q.economy_minister + " proposes finally withdrawing the extraordinary austerity package that has been burdening the public sector.", left && Q.generalitat_surplus > -2 ? 4 : !deficit ? 1 : 0, "services", "austerity");
         if (Q.economy_atc_level >= 0 && Q.economy_atc_level < 2)
             add("economy_minister_party", "economy_atc_level", Q.economy_atc_level + 1,
                 Q.economy_atc_level == 0 ? "expand the Catalan Tax Agency" : "develop a state-ready Catalan Tax Agency",
-                (economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + economy_minister + " argues it is a necessary step towards true sovereignty, and that it should also help in combatting fraud and making the administration more agile.",
+                (Q.economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + Q.economy_minister + " argues it is a necessary step towards true sovereignty, and that it should also help in combatting fraud and making the administration more agile.",
                 Q.economy_atc_level == 0 ? 2 : sovereign && momentum ? 4 : 0, "institutional", "atc");
         if (Q.bnl_icf_level == 0)
             add("bnl_minister_party", "bnl_icf_level", 1, "expand public lending to small business",
-                (bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + bnl_minister + " proposes more government-led guarantees to improve credit access for the self-employed and small firms.", unemployment ? 4 : 1, "business", "icf");
+                (Q.bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + Q.bnl_minister + " proposes more government-led guarantees to improve credit access for the self-employed and small firms.", unemployment ? 4 : 1, "business", "icf");
         if (Q.bnl_inspection_level >= 0 && Q.bnl_inspection_level < 2)
             add("bnl_minister_party", "bnl_inspection_level", Q.bnl_inspection_level + 1, "strengthen labour inspection",
-                (bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + bnl_minister + " demands that the Generalitat takes a stronger stance towards the enforcement of workers' rights.", left ? (distress ? 4 : 2) : 0, "labour", "inspection");
+                (Q.bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + Q.bnl_minister + " demands that the Generalitat takes a stronger stance towards the enforcement of workers' rights.", left ? (distress ? 4 : 2) : 0, "labour", "inspection");
         if (Q.bnl_tourism_level > -2)
             add("bnl_minister_party", "bnl_tourism_level", Q.bnl_tourism_level - 1, "tighten tourism regulation",
-                (bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour" + bnl_minister + " is set on tackling the issues related to tourism, hoping to reduce pressure on the housing market and redirect economic development to other, more promising projects.", radical || green ? (distress ? 4 : 2) : left && distress ? 1 : 0, "tourism");
+                (Q.bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour" + Q.bnl_minister + " is set on tackling the issues related to tourism, hoping to reduce pressure on the housing market and redirect economic development to other, more promising projects.", radical || green ? (distress ? 4 : 2) : left && distress ? 1 : 0, "tourism");
         if (Q.bnl_tourism_level < 2)
             add("bnl_minister_party", "bnl_tourism_level", Q.bnl_tourism_level + 1, "ease tourism regulation",
-                (bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + bnl_minister + " argues tourism investment is now the best way to support employment and growth.", market ? (unemployment ? 4 : 2) : 0, "tourism");
+                (Q.bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + Q.bnl_minister + " argues tourism investment is now the best way to support employment and growth.", market ? (unemployment ? 4 : 2) : 0, "tourism");
         if (sovereign && Q.bnl_union_level < 2)
             add("bnl_minister_party", "bnl_union_level", Q.bnl_union_level + 1, "support pro-sovereignty unions",
-                (bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + bnl_minister + " hopes that better support for labour representation ultimately contributes to Catalan sovereignty.", momentum ? 3 : 1, "sovereignty");
+                (Q.bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + Q.bnl_minister + " hopes that better support for labour representation ultimately contributes to Catalan sovereignty.", momentum ? 3 : 1, "sovereignty");
         if (!sovereign && Q.bnl_union_level > -2)
             add("bnl_minister_party", "bnl_union_level", Q.bnl_union_level - 1, "prioritize cooperation with established unions",
-                (bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + bnl_minister + " hopes that better alignment with labour organizations can quell social dissent and produce better collective agreements.", left ? 3 : 1, "labour");
+                (Q.bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + Q.bnl_minister + " hopes that better alignment with labour organizations can quell social dissent and produce better collective agreements.", left ? 3 : 1, "labour");
         if (Q.territory_renewables == 0)
             add("territory_minister_party", "territory_renewables", 1, "facilitate renewable-energy deployment",
-                (territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + territory_minister + " hopes to develop a more comprehensive system for renewable investment and project approvals.", green ? 4 : 1, "environment");
+                (Q.territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + Q.territory_minister + " hopes to develop a more comprehensive system for renewable investment and project approvals.", green ? 4 : 1, "environment");
         if (Q.territory_livestock > -2)
             add("territory_minister_party", "territory_livestock", Q.territory_livestock - 1, "diversify agricultural production",
-                (territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + territory_minister + " is proposing a drastic reduction of intensive pig farming practices and a gradual switch to other forms of agricultural development.", green || radical ? 3 : left ? 1 : 0, "agriculture");
+                (Q.territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + Q.territory_minister + " is proposing a drastic reduction of intensive pig farming practices and a gradual switch to other forms of agricultural development.", green || radical ? 3 : left ? 1 : 0, "agriculture");
         if (Q.territory_livestock < 2)
             add("territory_minister_party", "territory_livestock", Q.territory_livestock + 1, "increase support for intensive pig farming",
-                (territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + territory_minister + " is pushing for a further expansion of Catalonia's main agricultural export.", market ? 2 : 0, "agriculture");
+                (Q.territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + Q.territory_minister + " is pushing for a further expansion of Catalonia's main agricultural export.", market ? 2 : 0, "agriculture");
         if (Q.territory_water == 0)
             add("territory_minister_party", "territory_water", 1, "improve water management and drought preparedness",
-                (territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + territory_minister + " is hoping to improve drought resilience in the face of climate change.", green ? 3 : 1, "environment");
+                (Q.territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + Q.territory_minister + " is hoping to improve drought resilience in the face of climate change.", green ? 3 : 1, "environment");
         if (Q.territory_tmobilitat == 0)
             add("territory_minister_party", "territory_tmobilitat", 1, "introduce unified public-transport ticketing",
-                (territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + territory_minister + " is pushing for a faster development of the long-awaited contactless, integrated ticketing system for the Barcelona metropolitan area.", left ? 2 : 1, "services");
+                (Q.territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + Q.territory_minister + " is pushing for a faster development of the long-awaited contactless, integrated ticketing system for the Barcelona metropolitan area.", left ? 2 : 1, "services");
         if (Q.healthcare_universal_level == 0 && Q.healthcare_spending >= 0)
             add("health_minister_party", "healthcare_universal_level", 1, "remove barriers to healthcare access",
-                (health_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Health " + health_minister + " proposes new funding serves public health services reach broader geographic reach and do so with fewer administrative barriers.", left ? 3 : 1, "services", "access");
+                (Q.health_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Health " + Q.health_minister + " proposes new funding serves public health services reach broader geographic reach and do so with fewer administrative barriers.", left ? 3 : 1, "services", "access");
         if (Q.healthcare_sexual_level == 0)
             add("health_minister_party", "healthcare_sexual_level", 1, "guarantee reproductive healthcare access",
-                (health_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Health " + health_minister + " hopes to fully protect accessible abortion and reproductive care.", !conservative ? 2 : 0, "rights", "sexual");
+                (Q.health_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Health " + Q.health_minister + " hopes to fully protect accessible abortion and reproductive care.", !conservative ? 2 : 0, "rights", "sexual");
         if (Q.healthcare_sexual_level == 1 && Q.parlament_lgbt_passed)
             add("health_minister_party", "healthcare_sexual_level", 2, "extend public healthcare to gender-affirming care",
-                (health_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Health " + health_minister + " is pushing for the recently-approved Catalan LGBTI Law to be fully and coherently deployed in the public health circuit.", !conservative ? 2 : 0, "rights", "sexual");
+                (Q.health_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Health " + Q.health_minister + " is pushing for the recently-approved Catalan LGBTI Law to be fully and coherently deployed in the public health circuit.", !conservative ? 2 : 0, "rights", "sexual");
         if (Q.vp_digital_level == 0)
             add("vicepresident_party", "vp_digital_level", 1, "expand digital administration",
-                (vicepresident_gender == "m" ? "Vicepresident " : "Vicepresidenta ") + vicepresident + " is pushing for broader digitalization of procedures and unifying the administration's systems.", 2, "institutional", "digital");
+                (Q.vicepresident_gender == "m" ? "Vicepresident " : "Vicepresidenta ") + Q.vicepresident + " is pushing for broader digitalization of procedures and unifying the administration's systems.", 2, "institutional", "digital");
         if (Q.vp_digital_level == 1 && Q.parlament_digital_passed && ["generalitat", "catalonia"].includes(Q.cybersecurity_agency_scope) &&
             (Q.active_mods || {}).digital_agency_core && Q.active_mods.digital_agency_core.active)
             add("vicepresident_party", "vp_digital_level", 2, "integrate and secure digital administration",
-                (vicepresident_gender == "m" ? "Vicepresident " : "Vicepresidenta ") + vicepresident + " hopes to make further use of the newly-established Catalan Cybersecurity Agency to protect the digital administration.", 2, "institutional", "digital");
+                (Q.vicepresident_gender == "m" ? "Vicepresident " : "Vicepresidenta ") + Q.vicepresident + " hopes to make further use of the newly-established Catalan Cybersecurity Agency to protect the digital administration.", 2, "institutional", "digital");
         var alignmentOffice = owners.president_party == actor ? "president_party" : "vicepresident_party";
         if (!sovereign && Q.institutional_alignment > -10 && (central || Q.institutional_alignment > 0))
             add(alignmentOffice, "institutional_alignment", Q.institutional_alignment - 1, "prioritize institutional accommodation",
@@ -228,7 +228,7 @@ on-arrival: {!
             var diplomaticGain = ["podemos", "iu", "up"].includes(Q.spanish_pm_party) ? 12 : Q.spanish_pm_party == "psoe" ? 8 :
                 ["vox", "cs"].includes(Q.spanish_pm_party) ? 2 : 5;
             add("foreign_minister_party", "cat_spa_relations", Math.min(100, Q.cat_spa_relations + diplomaticGain), "seek improved relations with Madrid",
-                (foreign_minister_gender == "m" ? "Conseller " : "Consellera ") + " of Foreign Affairs " + foreign_minister + " is pushing for a renewed effort to mend relations with the Spanish government.", confrontational ? 0 : 2, "neutral", "diplomacy");
+                (Q.foreign_minister_gender == "m" ? "Conseller " : "Consellera ") + " of Foreign Affairs " + Q.foreign_minister + " is pushing for a renewed effort to mend relations with the Spanish government.", confrontational ? 0 : 2, "neutral", "diplomacy");
         }
         // Curriculum packages use the existing two-focus model and revision interval.
         var month = Q.year * 12 + Q.month;
@@ -255,10 +255,10 @@ on-arrival: {!
     }
 
     if (!Q.npc_government_response && !Q.npc_government_initiative && actors.length && !Q.cat_caretaker_gov) {
-        var actor = actors[Math.floor(Math.random() * actors.length)];
+        var actor = actors[Math.floor(G.random(Q) * actors.length)];
         var candidates = catalogue(actor);
         var total = candidates.reduce(function (sum, item) { return sum + item.weight; }, 0);
-        var roll = Math.random() * total;
+        var roll = G.random(Q) * total;
         for (var candidate of candidates) {
             roll -= candidate.weight;
             if (roll < 0) { Q.npc_government_initiative = candidate; break; }
@@ -313,7 +313,7 @@ on-arrival: {!
         Q.npc_government_can_protest = valid && Number.isFinite(relations);
         Q.npc_government_stop_cost = relations >= 65 ? 1 : 2;
         if (Q.npc_government_can_influence) {
-            Q.npc_government_stop_blocker = !Number.isFinite(relations) || relations < 55 ? "We don't have good enough relations with " + npc_government_party :
+            Q.npc_government_stop_blocker = !Number.isFinite(relations) || relations < 55 ? "We don't have good enough relations with " + Q.npc_government_party :
                 Q.party_resources < Q.npc_government_stop_cost ? "Not enough resources." : "";
             Q.npc_government_can_stop = valid && Q.npc_government_stop_blocker == "";
             Q.npc_government_alternative_blocker = owners.economy_minister_party != initiative.party ? "(???)" :
@@ -495,7 +495,7 @@ on-arrival: {!
             if (response == "protest") Q.npc_government_outcome += "Much to the dismay of " + Q.npc_government_party + ", we've broken line and openly protested against their new direction. No one is particularly happy about this, and it seems like they won't be abandoning this new agenda any time soon anyway...";
         }
     }
-    Q.government_does_things_timer = 8 + Math.floor(Math.random() * 3);
+    Q.government_does_things_timer = 8 + Math.floor(G.random(Q) * 3);
     Q.npc_government_initiative = null;
     Q.npc_government_response = null;
 !}
@@ -516,7 +516,7 @@ call: generalitat_setpolicy
 @fallback
 new-page: true
 on-arrival: {! 
-    Q.government_does_things_timer = 8 + Math.floor(Math.random() * 3); 
+    Q.government_does_things_timer = 8 + Math.floor(G.random(Q) * 3);
 !}
 
 It seems like the government will continue to prioritizes ongoing work. No new measures have been announced after all?

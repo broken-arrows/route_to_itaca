@@ -187,7 +187,7 @@ on-arrival: {!
     }
 
     while (empty_positions.length !== 0) {
-        let random_pos = empty_positions[Math.floor(Math.random()*empty_positions.length)];
+        let random_pos = empty_positions[Math.floor(G.random(Q)*empty_positions.length)];
         if (psc_leverage >= icv_leverage) {
             if (empty_positions.includes("interior") && psc_leverage >= 10) {
                 Q.parlament_coalition_proposal_interior = "psc";

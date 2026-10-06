@@ -712,9 +712,30 @@
 
   // --- UTILS ---
 
-  function gaussianRandom(mean = 0, stdev = 1) {
-    let u = 1 - Math.random();
-    let v = Math.random();
+  // Keep the stream in qualities so save/load restores the next draw. A
+  // separate stream leaves Dendry's routing and UI animations independent.
+  function initRandom(Q, seed) {
+    if (Number.isInteger(Q.game_random_state)) return;
+    Q.game_random_seed = (seed === undefined
+      ? Math.floor(Math.random() * 4294967296)
+      : seed) >>> 0;
+    Q.game_random_state = Q.game_random_seed;
+  }
+
+  function random(Q) {
+    // Saves predating the stream use a fixed initial seed: repeatedly loading
+    // the same old save must not generate fresh luck before it is saved again.
+    initRandom(Q, 0);
+    // Mulberry32; uint32 state and output in [0, 1), including for seed zero.
+    let value = Q.game_random_state = (Q.game_random_state + 0x6D2B79F5) >>> 0;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  }
+
+  function gaussianRandom(Q, mean = 0, stdev = 1) {
+    let u = 1 - random(Q);
+    let v = random(Q);
     let z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
     return z * stdev + mean;
   }
@@ -1331,7 +1352,7 @@
       law_mod_gdp;
     const ar = gen_key === "ART155" ? 0.6 : 0.72;
     Q.gdp_growth =
-      ar * Q.gdp_growth + (1 - ar) * gdp_target + gaussianRandom(0, 0.28);
+      ar * Q.gdp_growth + (1 - ar) * gdp_target + gaussianRandom(Q, 0, 0.28);
     Q.gdp_growth = clamp(Q.gdp_growth, -9, 7);
     Q.gdp_growth_change = getArrowGoodUp(prev_gdp, Q.gdp_growth);
 
@@ -1367,7 +1388,7 @@
         fla_bonus +
         gdp_surplus_effect +
         law_mod_surplus +
-        gaussianRandom(0, 0.1),
+        gaussianRandom(Q, 0, 0.1),
       -5,
       2,
     );
@@ -1393,7 +1414,7 @@
       spending_pressure +
       gdp_welfare_boost +
       law_mod_welfare_growth +
-      gaussianRandom(0, 0.2);
+      gaussianRandom(Q, 0, 0.2);
     welfare_delta =
       welfare_delta > 0
         ? Math.min(welfare_delta, 0.8)
@@ -1438,7 +1459,7 @@
       Q.cat_spa_relations +
         cat_spa_drift +
         law_mod_catspa +
-        gaussianRandom(0, 0.6),
+        gaussianRandom(Q, 0, 0.6),
       5,
       80,
     );
@@ -1467,7 +1488,7 @@
       Q.independence_movement +
         imov_reversion +
         seasonal +
-        gaussianRandom(0, 0.7),
+        gaussianRandom(Q, 0, 0.7),
       25,
       95,
     );
@@ -1475,7 +1496,7 @@
     const law_mod_trust = mod(Q, "independence_trust"); // <-- policy hook
     const trust_drift = (gen_key === "ART155" ? -1.8 : 0.06) + law_mod_trust;
     Q.independence_trust = clamp(
-      Q.independence_trust + trust_drift + gaussianRandom(0, 0.4),
+      Q.independence_trust + trust_drift + gaussianRandom(Q, 0, 0.4),
       15,
       60,
     );
@@ -1505,7 +1526,7 @@
 
     const gap = eq - Q.social_dissent;
     Q.social_dissent = clamp(
-      Q.social_dissent + 0.04 * gap + gaussianRandom(0, 0.8),
+      Q.social_dissent + 0.04 * gap + gaussianRandom(Q, 0, 0.8),
       0,
       100,
     );
@@ -2518,7 +2539,7 @@
         // months of memory; stationary spread is ~sd/sqrt(2*0.03).
         const devKey = "_noise_" + p + "_" + c;
         const prev = Q[devKey] || 0;
-        const next = prev * 0.97 + gaussianRandom(0, sd);
+        const next = prev * 0.97 + gaussianRandom(Q, 0, sd);
         Q[devKey] = next;
         deltas[p] += next - prev;
       }
@@ -3551,6 +3572,8 @@
 
   // source/lib/index.js forwards these helpers to the engine's G object.
   var api = {
+    initRandom,
+    random,
     buildParlamentCorruptionTransfers,
     advanceParlamentDisappointment,
     buildParlamentDisappointmentTransfers,

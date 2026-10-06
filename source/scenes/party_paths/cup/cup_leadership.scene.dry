@@ -80,7 +80,7 @@ on-arrival: {!
     var new_candidate_gender = Q.cup_leader_gender;
     var rnd = 0;
     while (new_candidate == Q.cup_leader) {
-        rnd = Math.floor(Math.random() * 4);
+        rnd = Math.floor(G.random(Q) * 4);
         switch (rnd) {
             default:
                 new_candidate = "David Fernàndez";
@@ -122,7 +122,7 @@ on-arrival: {!
     var new_candidate_gender = Q.cup_leader_gender;
     var rnd = 0;
     while (new_candidate == Q.cup_leader) {
-        rnd = Math.floor(Math.random() * 5);
+        rnd = Math.floor(G.random(Q) * 5);
         switch (rnd) {
             default:
                 new_candidate = "Carles Riera";
@@ -168,7 +168,7 @@ on-arrival: {!
     var new_candidate_gender = Q.cup_leader_gender;
     var rnd = 0;
     while (new_candidate == Q.cup_leader) {
-        rnd = Math.floor(Math.random() * 3);
+        rnd = Math.floor(G.random(Q) * 3);
         switch (rnd) {
             default:
                 new_candidate = "Antonio Baños";

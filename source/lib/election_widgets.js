@@ -228,7 +228,7 @@
       row("pnv", ["pnv"], 2, 1), row("amaiur", ["amaiur", "ehbildu"], 2, 2), row("gbai", ["gbai"], 2, 3), row("cc", ["cc"], 2, 4),
       row("mpais", ["mpais"], 2, 5), row("prc", ["prc"], 2, 6), row("te", ["te"], 2, 7), row("unio", ["unio"], 2, 8), separate,
       row("psoe", ["psoe"], 3, 1), row("psc", ["psc"], 3, 2), row("pp", ["pp"], 3, 3), row("cs", ["cs"], 3, 4),
-      row("nsuma", ["nsuma"], 3, 5), row("upn", ["upn"], 3, 6), row("fac", ["fac"], 3, 7), row("upyd", ["upyd"], 3, 8), row("vox", ["vox"], 3, 9)];
+      row("upn", ["upn", "nsuma"], 3, 5), row("fac", ["fac"], 3, 6), row("upyd", ["upyd"], 3, 7), row("vox", ["vox"], 3, 8)];
     var config = { chamber: "congreso", names: names, rows: rows };
     rows.filter(function (entry) { return entry.column === 1; }).forEach(function (entry) {
       if (entry.slot === "fr") {

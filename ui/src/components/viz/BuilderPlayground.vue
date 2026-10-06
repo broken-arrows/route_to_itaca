@@ -32,10 +32,13 @@ function members(slot: string) {
 }
 function placement(row: BuilderRow) {
   if (row.column === undefined) return undefined;
-  const group = groups.value.find(group => group.slot === row.slot);
+  const joint = row.isJoint || row.slot === 'joint';
+  const start = row.position ?? 1;
+  const end = Math.max(start, ...visibleRows.value.filter(member => member.member &&
+    (member.group ?? 'joint') === row.slot).map(member => member.position ?? 1)) + 1;
   return {
     gridColumn: row.column + (hasJoint.value ? (row.column === 0 ? 1 : 2) : 0),
-    gridRow: group ? `${group.start} / ${group.end}` : row.position,
+    gridRow: joint ? `${start} / ${end}` : row.position,
   };
 }
 function cycle(slot: string, direction: number) {
@@ -62,19 +65,21 @@ function input(id: string, event: Event, previous: number) {
   <div class="builder-playground" :class="{ 'has-joint': hasJoint }">
     <div v-for="group in groups" :key="group.slot" class="builder-brace" :data-group="group.slot" aria-hidden="true" :style="{ gridRow: `${group.start} / ${group.end}` }" />
     <div v-for="row in visibleRows" :key="row.slot ?? row.id" class="builder-party" :class="{ 'is-muted': row.seats === 0 || row.member, 'is-joint': row.isJoint || row.slot === 'joint' }" :data-party="row.id" :style="placement(row)">
-      <div class="builder-name">
-        <input v-if="row.canJoin" class="builder-checkbox" type="checkbox" :checked="row.member" :aria-label="`Include ${row.name} in the joint list`" @change="join(row.slot!)">
-        <button v-if="(row.variants?.length ?? 0) > 1" class="builder-previous" type="button" :aria-label="`Previous party for ${row.name}`" @click="cycle(row.slot!, -1)">‹</button>
-        <span class="builder-label"><Prose :html="markGlossary(row.name, game.glossary)" tag="span" /></span>
-        <button v-if="(row.variants?.length ?? 0) > 1" class="builder-next" type="button" :aria-label="`Next party for ${row.name}`" @click="cycle(row.slot!, 1)">›</button>
-      </div>
-      <div class="builder-controls">
-        <button type="button" :aria-label="`Remove a seat from ${row.name}`" :disabled="row.member || row.seats <= 0" @click="edit(row.id, row.seats - 1)">−</button>
-        <input type="text" inputmode="numeric" pattern="[0-9]*" :disabled="row.member" :aria-label="`${row.name} seats`" :value="row.seats" @change="input(row.id, $event, row.seats)">
-        <button type="button" :aria-label="`Add a seat to ${row.name}`" :disabled="row.member || row.seats >= Number(q.playground_coalitions_needed_seats)" @click="edit(row.id, row.seats + 1)">+</button>
-      </div>
-      <div v-if="row.isJoint || row.slot === 'joint'" class="builder-members">
-        <div v-for="member in members(row.slot!)" :key="member.slot ?? member.id"><Prose :html="markGlossary(member.name, game.glossary)" /></div>
+      <div class="builder-content">
+        <div class="builder-name">
+          <input v-if="row.canJoin" class="builder-checkbox" type="checkbox" :checked="row.member" :aria-label="`Include ${row.name} in the joint list`" @change="join(row.slot!)">
+          <button v-if="(row.variants?.length ?? 0) > 1" class="builder-previous" type="button" :aria-label="`Previous party for ${row.name}`" @click="cycle(row.slot!, -1)">‹</button>
+          <span class="builder-label"><Prose :html="markGlossary(row.name, game.glossary)" tag="span" /></span>
+          <button v-if="(row.variants?.length ?? 0) > 1" class="builder-next" type="button" :aria-label="`Next party for ${row.name}`" @click="cycle(row.slot!, 1)">›</button>
+        </div>
+        <div class="builder-controls">
+          <button type="button" :aria-label="`Remove a seat from ${row.name}`" :disabled="row.member || row.seats <= 0" @click="edit(row.id, row.seats - 1)">−</button>
+          <input type="text" inputmode="numeric" pattern="[0-9]*" :disabled="row.member" :aria-label="`${row.name} seats`" :value="row.seats" @change="input(row.id, $event, row.seats)">
+          <button type="button" :aria-label="`Add a seat to ${row.name}`" :disabled="row.member || row.seats >= Number(q.playground_coalitions_needed_seats)" @click="edit(row.id, row.seats + 1)">+</button>
+        </div>
+        <div v-if="row.isJoint || row.slot === 'joint'" class="builder-members">
+          <div v-for="member in members(row.slot!)" :key="member.slot ?? member.id"><Prose :html="markGlossary(member.name, game.glossary)" /></div>
+        </div>
       </div>
     </div>
   </div>
@@ -90,8 +95,12 @@ function input(id: string, event: Event, previous: number) {
 .builder-checkbox { grid-column: 1; grid-row: 1; appearance: none; width: .85rem; height: .85rem; margin: 0; padding: 0; border: 0; border-radius: 3px; cursor: pointer; box-shadow: inset 0 0 0 1px currentColor; display: grid; place-items: center; position: relative; top: .9rem; z-index: 1; }
 .builder-checkbox:checked::after { content: ''; width: .35rem; height: .35rem; border-radius: 50%; background: currentColor; }
 .builder-members { display: flex; flex-direction: column; gap: .15em; font-size: .75em; text-align: center; }
-.builder-party { display: flex; flex-direction: column; gap: .35rem; min-width: 0; }
-.builder-party.is-joint { align-self: center; }
+.builder-members:empty { display: none; }
+.builder-party { min-width: 0; }
+.builder-content { display: flex; flex-direction: column; gap: .35rem; }
+/* Joint-list summaries must not resize the tracks used by editable parties. */
+.builder-party.is-joint { position: relative; align-self: stretch; }
+.is-joint .builder-content { position: absolute; inset: 0; justify-content: safe center; }
 .builder-controls { display: flex; justify-content: center; align-items: center; gap: .1rem; }
 button, input { font: inherit; color: inherit; background: transparent; padding: .2rem; }
 button { border: 0; border-radius: 0; cursor: pointer; padding: .2rem 0; min-width: 1.1rem; box-shadow: none; }

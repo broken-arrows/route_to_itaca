@@ -1111,7 +1111,7 @@ table {
 
 .hemicycle-majority {
   margin-top: -2em;
-  margin-right: 1.5em;
+  margin-right: 2em;
   color: var(--text-color);
   font-size: 0.9em;
   font-style: italic;
@@ -1950,7 +1950,10 @@ header {
 
 .builder-playground { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1em .5em; margin: 1em 0; padding: .35em 0; }
 .builder-playground.has-joint { grid-template-columns: minmax(0, 1fr) 1em repeat(3, minmax(0, 1fr)); }
-.builder-playground .builder-party { display: flex; flex-direction: column; gap: .35em; min-width: 0; }
+.builder-playground .builder-party { min-width: 0; }
+.builder-playground .builder-content { display: flex; flex-direction: column; gap: .35em; }
+.builder-playground .builder-party.is-joint { position: relative; align-self: stretch; }
+.builder-playground .is-joint .builder-content { position: absolute; inset: 0; justify-content: safe center; }
 .builder-playground .builder-name { display: grid; grid-template-columns: 1.1em minmax(0, 1fr) 1.1em; align-items: center; min-height: 1.8em; text-align: center; }
 .builder-playground .builder-label { grid-column: 2; grid-row: 1; }
 .builder-playground .builder-previous { grid-column: 1; grid-row: 1; }
@@ -1964,6 +1967,7 @@ header {
 .builder-playground .builder-checkbox:checked::after { content: ''; width: .35em; height: .35em; border-radius: 50%; background: currentColor; }
 .builder-playground button:focus-visible, .builder-playground input:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 .builder-playground .builder-members { display: flex; flex-direction: column; gap: .15em; font-size: .75em; text-align: center; }
+.builder-playground .builder-members:empty { display: none; }
 .builder-playground .is-muted .builder-label { filter: grayscale(1); opacity: .4; }
 .builder-playground .builder-brace { grid-column: 3; position: relative; border: 1px solid currentColor; border-radius: 7px; margin: -.35em -.3em; min-width: 0; pointer-events: none; }
 .builder-playground .builder-brace::before { content: ''; position: absolute; top: 50%; right: 100%; width: 1.7em; border-top: 1px solid currentColor; }

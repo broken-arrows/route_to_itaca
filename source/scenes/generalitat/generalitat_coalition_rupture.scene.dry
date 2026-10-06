@@ -60,7 +60,7 @@ choose-if: coalition_rupture_policy_available and coalition_rupture_relations + 
 unavailable-subtitle: [? if not coalition_rupture_policy_available: No deliverable policy concession possible that would satisfy their needs. ?][? if coalition_rupture_relations + 8 < 40: This is simply not enough to calm their dissent. ?]
 on-arrival: {!
     Q.coalition_affairs_concession_target = Q.coalition_rupture_target;
-    Q.coalition_rupture_random = Math.random();
+    Q.coalition_rupture_random = G.random(Q);
 !}
 go-to: policy_right if coalition_rupture_policy_right or (coalition_rupture_target = "psc" and coalition_rupture_random <= 0.5); policy_left
 

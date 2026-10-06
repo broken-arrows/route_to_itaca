@@ -47,12 +47,13 @@ function setup(overrides: Record<string, any> = {}) {
     const found = new Map<string, any>();
     const saved = q.npc_government_initiative;
     const timer = q.government_does_things_timer;
-    const random = vi.spyOn(Math, 'random');
+    const random = vi.spyOn(gameLib, 'random');
     for (let step = 0; step < 100; step++) {
       q.npc_government_initiative = null;
       q.government_does_things_timer = 0;
       random.mockReturnValue((step + 0.5) / 100);
       adapter.goToScene(scene);
+      expect(errors.mock.calls.filter(call => String(call[0]).includes('action'))).toEqual([]);
       const item = q.npc_government_initiative;
       if (item) found.set(item.party + item.id, structuredClone(item));
     }
@@ -67,6 +68,7 @@ function setup(overrides: Record<string, any> = {}) {
 function due(f: ReturnType<typeof setup>) {
   f.q.government_does_things_timer = 0;
   f.adapter.goToScene(scene);
+  expect(f.errors.mock.calls.filter(call => String(call[0]).includes('action'))).toEqual([]);
   return f.q.npc_government_initiative;
 }
 

@@ -114,14 +114,20 @@
       config.rows.filter(function (row) { return !row.hidden; }).forEach(function (row) {
         var entry = document.createElement("div");
         entry.className = "builder-party";
+        var isJoint = row.isJoint || row.slot === "joint";
+        entry.classList.toggle("is-joint", !!isJoint);
         entry.dataset.party = row.id;
         entry.style.minWidth = "0";
         if (row.column !== undefined) {
           entry.style.gridColumn = row.column + (hasJoint ? (row.column === 0 ? 1 : 2) : 0);
-          var group = groups.find(function (group) { return group.slot === row.slot; });
-          entry.style.gridRow = group ? group.start + " / " + group.end : row.position;
-          if (row.isJoint || row.slot === "joint") entry.style.alignSelf = "center";
+          var start = row.position || 1;
+          var end = Math.max.apply(null, [start].concat(config.rows.filter(function (member) {
+            return member.member && !member.hidden && (member.group || "joint") === row.slot;
+          }).map(function (member) { return member.position || 1; }))) + 1;
+          entry.style.gridRow = isJoint ? start + " / " + end : row.position;
         }
+        var content = document.createElement("div");
+        content.className = "builder-content";
         var label = document.createElement("div");
         label.className = "builder-name";
         if (row.canJoin) {
@@ -181,7 +187,7 @@
         input.onchange = function () { edit(input.value === "" ? NaN : Number(input.value)); };
         paint();
         controls.append(minus, input, plus);
-        entry.append(label, controls);
+        content.append(label, controls);
         if (row.isJoint || row.slot === "joint") {
           var members = document.createElement("div");
           members.className = "builder-members";
@@ -191,8 +197,9 @@
             else member.textContent = party.name;
             members.appendChild(member);
           });
-          entry.appendChild(members);
+          content.appendChild(members);
         }
+        entry.appendChild(content);
         el.appendChild(entry);
       });
     },

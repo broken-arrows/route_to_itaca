@@ -8,7 +8,7 @@ on-arrival: {!
     Q.psoe_leadership_sanchez_default = 1;
     Q.psoe_leadership_madina_default = 0;
     if (Q.psc_split) {
-        var rnd = Math.random();
+        var rnd = G.random(Q);
         if (rnd < 0.5) {
             Q.psoe_leadership_sanchez_default = 1;
             Q.psoe_leadership_madina_default = 0;

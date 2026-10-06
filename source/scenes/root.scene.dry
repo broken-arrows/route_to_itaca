@@ -9,7 +9,8 @@ new-page: true
 set-bg: img/3rd_October_2017.jpg
 call: generalitat_setpolicy
 on-arrival: {!
-  // check origin 
+  G.initRandom(Q);
+  // check origin
   // TODO: allow via url
   const valid_urls = [
     // "https://broken-arrows.github.io/route_to_itaca",
