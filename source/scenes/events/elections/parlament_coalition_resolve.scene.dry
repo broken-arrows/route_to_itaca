@@ -2,7 +2,7 @@ title: resolve coalition
 on-arrival: {!
     Q.coalition_phase_timer = 0;
     Q.npc_government_initiative = null;
-    Q.government_does_things_timer = 8 + Math.floor(Math.random() * 3);
+    Q.government_does_things_timer = 8 + Math.floor(G.random(Q) * 3);
     var rawCabinet = Array.isArray(Q.cat_coalition) ? Q.cat_coalition : [];
     var rawSupport = Array.isArray(Q.cat_coalition_support) ? Q.cat_coalition_support : [];
     var rawAbstain = Array.isArray(Q.cat_coalition_abstain) ? Q.cat_coalition_abstain : [];
@@ -189,6 +189,8 @@ on-arrival: {!
         Q.parlament_coalition_policy_accepted = false;
     }
     Q.parlament_coalition_resolution_valid = Q.parlament_coalition_resolution_errors.length == 0;
+    Q.parlament_coalition_sovereignty_kind = "";
+    Q.parlament_coalition_sovereignty_phase = 0;
     Q.budget_failed_times = 0;
     Q.budget_internal_failed_times = 0;
     Q.budget_trust_record = null;

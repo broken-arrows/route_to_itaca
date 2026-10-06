@@ -81,7 +81,7 @@ view-if: n_advisors < max_advisors
 
 @add_dolors_bassa
 title: Dolors Bassa i Coll
-subtitle: Secretary General of the UGT syndicate in Girona, has a strong link with many progressive social movements.
+subtitle: Secretary General of the UGT in Girona, has a strong link with many progressive social movements.
 choose-if: dolors_bassa_advisor = 0
 unavailable-subtitle: Already an advisor
 view-if: n_advisors < max_advisors and dolors_bassa_advisor_available = 1

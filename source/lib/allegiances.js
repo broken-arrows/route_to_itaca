@@ -56,10 +56,12 @@
       return [{ colour: "indp", label: "indp." }];
     },
     artur_mas: function (Q) {
-      var list = [
-        { colour: "cdc", label: "CDC" },
-        { colour: "ciu", label: "CiU" },
-      ];
+      var list = [{ colour: "cdc", label: "CDC" }];
+      if (Q.unio_split) {
+        list.push({ colour: "ciu", label: "CiU", note: "former" });
+      } else {
+        list.push({ colour: "ciu", label: "CiU" });
+      }
       if (Q.dl_formed) list.push({ colour: "dl", label: "DL" });
       if (Q.jxsi_formed) list.push({ colour: "jxsi", label: "JxSí" });
       if (Q.pdcat_formed) list.push({ colour: "pdcat", label: "PDeCAT" });
@@ -69,11 +71,28 @@
         list.push({ colour: "junts", label: "Junts" });
       return list;
     },
-    carles_puigdemont: function (Q) {
+    neus_munte: function (Q) {
       var list = [
+        { colour: "#851412", label: "UGT", note: "former" },
         { colour: "cdc", label: "CDC" },
-        { colour: "ciu", label: "CiU" },
       ];
+      if (Q.unio_split) {
+        list.push({ colour: "ciu", label: "CiU", note: "former" });
+      } else {
+        list.push({ colour: "ciu", label: "CiU" });
+      }
+      if (Q.dl_formed) list.push({ colour: "dl", label: "DL" });
+      if (Q.jxsi_formed) list.push({ colour: "jxsi", label: "JxSí" });
+      if (Q.pdcat_formed) list.push({ colour: "pdcat", label: "PDeCAT" });
+      return list;
+    },
+    carles_puigdemont: function (Q) {
+      var list = [{ colour: "cdc", label: "CDC" }];
+      if (Q.unio_split) {
+        list.push({ colour: "ciu", label: "CiU", note: "former" });
+      } else {
+        list.push({ colour: "ciu", label: "CiU" });
+      }
       if (Q.dl_formed) list.push({ colour: "dl", label: "DL" });
       if (Q.jxsi_formed) list.push({ colour: "jxsi", label: "JxSí" });
       if (Q.pdcat_formed && !Q.pdcat_split) {
@@ -86,10 +105,13 @@
       return list;
     },
     josep_antoni_duran_i_lleida: function (Q) {
-      return [
-        { colour: "unio", label: "UDC" },
-        { colour: "ciu", label: "CiU" },
-      ];
+      var list = [{ colour: "unio", label: "UDC" }];
+      if (Q.unio_split) {
+        list.push({ colour: "ciu", label: "CiU", note: "former" });
+      } else {
+        list.push({ colour: "ciu", label: "CiU" });
+      }
+      return list;
     },
     jordi_sanchez: function (Q) {
       var list = [

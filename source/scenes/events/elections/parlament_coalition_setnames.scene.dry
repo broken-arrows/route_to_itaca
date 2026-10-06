@@ -1,9 +1,11 @@
 title: set coalition names
 on-arrival: {!
     // TODO: Missing unió, pxc/fnc
-    Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
-    Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
-    
+
+    if (!Q.parlament_coalition_sovereignty_kind || Q.parlament_coalition_proposal_president != Q.parlament_coalition_leader || !Q.parlament_coalition_proposal_president_name) {
+        Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
+        Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
+    }
 
     if (Q.parlament_coalition_proposal_vp == Q.parlament_coalition_proposal_president) {
         switch (Q.parlament_coalition_proposal_vp) {
@@ -613,6 +615,17 @@ on-arrival: {!
             Q.parlament_coalition_proposal_territory_name = "Mireia Boya";
             Q.parlament_coalition_proposal_territory_gender = "m";
             break;
+    }
+    if (Q.parlament_coalition_sovereignty_kind && Q.parlament_coalition_proposal_president_name) {
+        for (var office of ["vp", "interior", "economy", "foreign", "health", "education", "territory", "bnl"]) {
+            var key = "parlament_coalition_proposal_" + office;
+            if (Q[key + "_name"] == Q.parlament_coalition_proposal_president_name) {
+                Q[key + "_name"] = Q[key] == "erc"
+                    ? (office == "foreign" ? "Alfred Bosch" : "Marta Rovira")
+                    : (office == "foreign" ? "Francesc Homs" : "Jordi Turull");
+                Q[key + "_gender"] = Q[key + "_name"] == "Marta Rovira" ? "f" : "m";
+            }
+        }
     }
 !}
 go-to: jumpScene

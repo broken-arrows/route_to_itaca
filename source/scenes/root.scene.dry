@@ -588,9 +588,9 @@ on-arrival: {!
   // Local weights
 
   Q.RB_DEFAULTS = {
-      "cs_im_coeff":              0.90,
-      "cs_spa_coeff":             0.70,
-      "cs_diss_coeff":            0.30,
+      "cs_im_coeff":              0.70,
+      "cs_spa_coeff":             0.50,
+      "cs_diss_coeff":            0.20,
       "erc_trust_coeff":          1.20,
       "erc_im_coeff":             0.60,
       "erc_no_outreach_penalty":  10.0,
@@ -1246,10 +1246,10 @@ on-arrival: {!
   // is IU; the abertzale left is Amaiur (rebrands to EH Bildu later).
 
   // Catalunya — CiU bloc runs as "ciu"; ERC separate; left space = IU.
-  Q.ciu_congreso_catalunya_support = 24.66;
-  Q.psoe_congreso_catalunya_support = 15.69;
+  Q.ciu_congreso_catalunya_support = 21.00;
+  Q.psoe_congreso_catalunya_support = 18.00;
   Q.pp_congreso_catalunya_support = 10.09;
-  Q.iu_congreso_catalunya_support = 8.41;
+  Q.iu_congreso_catalunya_support = 9.76;
   Q.erc_congreso_catalunya_support = 6.73;
   Q.upyd_congreso_catalunya_support = 1.12;
   Q.abstain_congreso_catalunya_support = 33.30;

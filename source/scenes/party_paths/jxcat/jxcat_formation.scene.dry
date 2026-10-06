@@ -6,127 +6,127 @@ new-page: true
 max-visits: 1
 role: event
 on-arrival: {!
-    {
-        const CDC = ["ciu", "cdc", "dl", "pdcat", "junts"];
-        const num = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
-        const cdc = Q.parlament_current_ciu;
-        Q.jxcat_cdc_leader = Q[cdc + "_leader"];
-        Q.jxcat_cdc_relations = num(Q[cdc + "_relations"]);
-        // Separate Parlament support is the current balance. A common list has
-        // no individual polling: use its allocation only as a fallback, then
-        // prefer existing results in contests the parties fought separately.
-        let erc = 0, right = 0, cup = 0;
-        const pooled = Q.erc_in_jxsi && !Q.jxsi_dissolved;
-        const ercAllocation = num(Q.jxsi_formation_num || 50) / 100;
-        for (const c of Q.parlament_constituencies || []) {
-            for (const d of Q.parlament_demographics || []) {
-                const suffix = `_parlament_${c}_${d}_support`;
-                const pop = num(Q[`parlament_${c}_${d}_pop`]);
-                if (pooled) {
-                    const common = num(Q["jxsi" + suffix]) * pop;
-                    const cupAllocation = Q.cup_in_jxsi
-                        ? Math.min(100, Math.max(10, num(Q.jxsi_cup_formation_num))) / 100 : 0;
-                    erc += common * (1 - cupAllocation) * ercAllocation;
-                    right += common * (1 - cupAllocation) * (1 - ercAllocation);
-                    cup += Q.cup_in_jxsi ? common * cupAllocation : num(Q["cup" + suffix]) * pop;
-                }
-                else {
-                    erc += num(Q["erc" + suffix]) * pop;
-                    right += num(Q[cdc + suffix]) * pop;
-                    cup += num(Q["cup" + suffix]) * pop;
-                }
+    // TODO: how to handle Neus Munté out!!
+    const CDC = ["ciu", "cdc", "dl", "pdcat", "junts"];
+    const num = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
+    const cdc = Q.parlament_current_ciu;
+    Q.jxcat_cdc_leader = Q[cdc + "_leader"];
+    Q.jxcat_cdc_relations = num(Q[cdc + "_relations"]);
+    // Separate Parlament support is the current balance. A common list has
+    // no individual polling: use its allocation only as a fallback, then
+    // prefer existing results in contests the parties fought separately.
+    let erc = 0, right = 0, cup = 0;
+    const pooled = Q.erc_in_jxsi && !Q.jxsi_dissolved;
+    const ercAllocation = num(Q.jxsi_formation_num || 50) / 100;
+    for (const c of Q.parlament_constituencies || []) {
+        for (const d of Q.parlament_demographics || []) {
+            const suffix = `_parlament_${c}_${d}_support`;
+            const pop = num(Q[`parlament_${c}_${d}_pop`]);
+            if (pooled) {
+                const common = num(Q["jxsi" + suffix]) * pop;
+                const cupAllocation = Q.cup_in_jxsi
+                    ? Math.min(100, Math.max(10, num(Q.jxsi_cup_formation_num))) / 100 : 0;
+                erc += common * (1 - cupAllocation) * ercAllocation;
+                right += common * (1 - cupAllocation) * (1 - ercAllocation);
+                cup += Q.cup_in_jxsi ? common * cupAllocation : num(Q["cup" + suffix]) * pop;
+            }
+            else {
+                erc += num(Q["erc" + suffix]) * pop;
+                right += num(Q[cdc + suffix]) * pop;
+                cup += num(Q["cup" + suffix]) * pop;
             }
         }
-        // CUP outside JxSi negotiates from current support against the common
-        // ballot. CUP already inside retains its negotiated places, since
-        // pooled support cannot tell us its separate current polling.
-        Q.jxcat_cup_formation_num = Math.max(10,
-            Math.round(erc + right + cup > 0 ? 100 * cup / (erc + right + cup) : 0));
-        Q.jxcat_erc_balance = erc + right > 0 ? erc / (erc + right) : 0;
-        Q.jxcat_left_balance = erc + right + cup > 0 ? (erc + cup) / (erc + right + cup) : 0;
-        if (pooled) {
-            let ercWeighted = 0, ercWeight = 0, leftWeighted = 0, leftWeight = 0;
-            for (const [contest, suffix, importance] of [
-                ["congreso", "_congreso_pv_cat", 0.4],
-                ["local", "_local_barcelona_pv", 0.2],
-                ["local", "_local_rb_pct", 0.2],
-                ["local", "_local_interior_pct", 0.2],
-            ]) {
-                const ercUnited = ["jxsi", "jxcat"].some(list => Q[`erc_in_${list}`] && (Q[`${list}_in_${contest}`] ||
-                    (contest === "local" && Q[`${list}_united_local`])));
-                if (ercUnited)
-                    continue;
-                const e = num(Q["erc" + suffix]);
-                // Old territorial holdings can survive a rename: never sum brands.
-                const r = Math.max(...CDC.map(p => num(Q[p + suffix])));
-                if (e + r <= 0)
-                    continue;
-                ercWeighted += importance * e / (e + r);
-                ercWeight += importance;
-                const cupUnited = ["jxsi", "jxcat"].some(list => Q[`cup_in_${list}`] && (Q[`${list}_in_${contest}`] ||
-                    (contest === "local" && Q[`${list}_united_local`])));
-                if (cupUnited)
-                    continue;
-                const u = num(Q["cup" + suffix]);
-                leftWeighted += importance * (e + u) / (e + r + u);
-                leftWeight += importance;
-            }
-            if (ercWeight)
-                Q.jxcat_erc_balance = ercWeighted / ercWeight;
-            if (leftWeight)
-                Q.jxcat_left_balance = leftWeighted / leftWeight;
-        }
-        // Incumbency offers a free candidacy; it never excludes alternatives.
-        // Affiliation establishes eligibility even if the party changed leaders.
-        Q.jxcat_president_kind = "";
-        if (Q.rubicon && Q.president && [cdc, "erc", "jxsi"].includes(Q.president_party)) {
-            if (Q.president_party === "jxsi") {
-                const party = [cdc, "erc"].find(p => Q[p + "_leader"] === Q.president);
-                Q.jxcat_president_kind = party === cdc ? "cdc" : party ||
-                    (Q.jxsi_formation_num < 50 ? "cdc" : Q.jxsi_formation_num > 50 ? "erc" : "neutral");
-            } else {
-                Q.jxcat_president_kind = Q.president_party === cdc ? "cdc" : Q.president_party;
-            }
-        }
-        Q.jxcat_president_civic_veto = Q.player_party === "erc" && !!Q.jxcat_president_kind &&
-            num(Q.erc_civic_strength) >= 30;
-        Q.jxcat_president_available = !!Q.jxcat_president_kind && !Q.jxcat_president_civic_veto;
-        Q.jxcat_select_president = false;
-        Q.jxcat_civic_veto = Q.player_party === "erc" && num(Q.erc_civic_strength) >= 30;
-        Q.jxcat_erc_repeat_veto = Q.player_party === "cup" &&
-            !!Q.jxsi_formed && Q.jxsi_formation_num < 50 &&
-            !(Q.jxcat_president_available && Q.president === Q[cdc + "_leader"]);
-        Q.jxcat_failed_renewal = false;
-        Q.jxcat_selected_leader = "";
-        // The ANC puts forward one civic candidate. CUP can back Cuixart
-        // without entering the list; its membership is a separate decision.
-        const cupBacksCompromise = Q.player_party === "cup" ||
-            (Q.cup_faction !== "Endavant" && num(Q.cup_relations) >= 55);
-        Q.jxcat_neutral_candidate = num(Q.independence_movement) >= 85 &&
-            Q.jxcat_left_balance >= 0.65 - 1e-9 && cupBacksCompromise
-            ? "Jordi Cuixart" : "Jordi Sànchez";
-        Q.jxcat_cdc_available = !Q.jxcat_erc_repeat_veto;
-        Q.jxcat_neutral_available = num(Q.party_resources) >= 1 &&
-            (Q.player_party === "erc"
-                ? Q.jxcat_cdc_relations >= 55 && num(Q.erc_civic_strength) >= 15
-                : Q.jxcat_cdc_relations >= 65 && num(Q.erc_relations) >= 65);
-        Q.jxcat_erc_available = !Q.jxcat_civic_veto &&
-            Q.jxcat_erc_balance >= 0.65 - 1e-9 && Q.jxcat_cdc_relations >= 65 &&
-            num(Q.party_resources) >= 1;
-        // Do not let the normal party option bypass a veto on the same person.
-        if (Q.jxcat_president_civic_veto) {
-            if (Q.president === Q[cdc + "_leader"]) Q.jxcat_cdc_available = false;
-            if (Q.president === Q.erc_leader) Q.jxcat_erc_available = false;
-            if (Q.president === Q.jxcat_neutral_candidate) Q.jxcat_neutral_available = false;
-        }
-        Q.jxcat_leader = "???";
-        Q.jxcat_persuade_erc_available = Q.jxcat_erc_repeat_veto &&
-            !(Q.jxcat_president_kind && Q.president === Q[cdc + "_leader"]) &&
-            Q.jxcat_cdc_relations >= 55 && num(Q.erc_relations) >= 55 &&
-            num(Q.party_resources) >= 1;
-        Q.jxcat_failure_available = Q.player_party === "erc" || Q.jxcat_erc_repeat_veto ||
-            !["cdc", "neutral", "erc", "president"].some(p => Q["jxcat_" + p + "_available"]);
     }
+    // CUP outside JxSi negotiates from current support against the common
+    // ballot. CUP already inside retains its negotiated places, since
+    // pooled support cannot tell us its separate current polling.
+    Q.jxcat_cup_formation_num = Math.max(10,
+        Math.round(erc + right + cup > 0 ? 100 * cup / (erc + right + cup) : 0));
+    Q.jxcat_erc_balance = erc + right > 0 ? erc / (erc + right) : 0;
+    Q.jxcat_left_balance = erc + right + cup > 0 ? (erc + cup) / (erc + right + cup) : 0;
+    if (pooled) {
+        let ercWeighted = 0, ercWeight = 0, leftWeighted = 0, leftWeight = 0;
+        for (const [contest, suffix, importance] of [
+            ["congreso", "_congreso_pv_cat", 0.4],
+            ["local", "_local_barcelona_pv", 0.2],
+            ["local", "_local_rb_pct", 0.2],
+            ["local", "_local_interior_pct", 0.2],
+        ]) {
+            const ercUnited = ["jxsi", "jxcat"].some(list => Q[`erc_in_${list}`] && (Q[`${list}_in_${contest}`] ||
+                (contest === "local" && Q[`${list}_united_local`])));
+            if (ercUnited)
+                continue;
+            const e = num(Q["erc" + suffix]);
+            // Old territorial holdings can survive a rename: never sum brands.
+            const r = Math.max(...CDC.map(p => num(Q[p + suffix])));
+            if (e + r <= 0)
+                continue;
+            ercWeighted += importance * e / (e + r);
+            ercWeight += importance;
+            const cupUnited = ["jxsi", "jxcat"].some(list => Q[`cup_in_${list}`] && (Q[`${list}_in_${contest}`] ||
+                (contest === "local" && Q[`${list}_united_local`])));
+            if (cupUnited)
+                continue;
+            const u = num(Q["cup" + suffix]);
+            leftWeighted += importance * (e + u) / (e + r + u);
+            leftWeight += importance;
+        }
+        if (ercWeight)
+            Q.jxcat_erc_balance = ercWeighted / ercWeight;
+        if (leftWeight)
+            Q.jxcat_left_balance = leftWeighted / leftWeight;
+    }
+    // Incumbency offers a free candidacy; it never excludes alternatives.
+    // Affiliation establishes eligibility even if the party changed leaders.
+    Q.jxcat_president_kind = "";
+    if (Q.rubicon && Q.president && [cdc, "erc", "jxsi"].includes(Q.president_party)) {
+        if (Q.president_party === "jxsi") {
+            const party = [cdc, "erc"].find(p => Q[p + "_leader"] === Q.president);
+            Q.jxcat_president_kind = party === cdc ? "cdc" : party ||
+                (Q.jxsi_formation_num < 50 ? "cdc" : Q.jxsi_formation_num > 50 ? "erc" : "neutral");
+        } else {
+            Q.jxcat_president_kind = Q.president_party === cdc ? "cdc" : Q.president_party;
+        }
+    }
+    Q.jxcat_president_civic_veto = Q.player_party === "erc" && !!Q.jxcat_president_kind &&
+        num(Q.erc_civic_strength) >= 30;
+    Q.jxcat_president_available = !!Q.jxcat_president_kind && !Q.jxcat_president_civic_veto;
+    Q.jxcat_select_president = false;
+    Q.jxcat_civic_veto = Q.player_party === "erc" && num(Q.erc_civic_strength) >= 30;
+    Q.jxcat_erc_repeat_veto = Q.player_party === "cup" &&
+        !!Q.jxsi_formed && Q.jxsi_formation_num < 50 &&
+        !(Q.jxcat_president_available && Q.president === Q[cdc + "_leader"]);
+    Q.jxcat_failed_renewal = false;
+    Q.jxcat_selected_leader = "";
+    // The ANC puts forward one civic candidate. CUP can back Cuixart
+    // without entering the list; its membership is a separate decision.
+    const cupBacksCompromise = Q.player_party === "cup" ||
+        (Q.cup_faction !== "Endavant" && num(Q.cup_relations) >= 55);
+    Q.jxcat_neutral_candidate = num(Q.independence_movement) >= 85 &&
+        Q.jxcat_left_balance >= 0.65 - 1e-9 && cupBacksCompromise
+        ? "Jordi Cuixart" : "Jordi Sànchez";
+    Q.jxcat_cdc_available = !Q.jxcat_erc_repeat_veto;
+    Q.jxcat_neutral_available = num(Q.party_resources) >= 1 &&
+        (Q.player_party === "erc"
+            ? Q.jxcat_cdc_relations >= 55 && num(Q.erc_civic_strength) >= 15
+            : Q.jxcat_cdc_relations >= 65 && num(Q.erc_relations) >= 65);
+    Q.jxcat_erc_available = !Q.jxcat_civic_veto &&
+        Q.jxcat_erc_balance >= 0.65 - 1e-9 && Q.jxcat_cdc_relations >= 65 &&
+        num(Q.party_resources) >= 1;
+    // Do not let the normal party option bypass a veto on the same person.
+    if (Q.jxcat_president_civic_veto) {
+        if (Q.president === Q[cdc + "_leader"]) Q.jxcat_cdc_available = false;
+        if (Q.president === Q.erc_leader) Q.jxcat_erc_available = false;
+        if (Q.president === Q.jxcat_neutral_candidate) Q.jxcat_neutral_available = false;
+    }
+    Q.jxcat_leader = "???";
+    Q.jxcat_persuade_erc_available = Q.jxcat_erc_repeat_veto &&
+        !(Q.jxcat_president_kind && Q.president === Q[cdc + "_leader"]) &&
+        Q.jxcat_cdc_relations >= 55 && num(Q.erc_relations) >= 55 &&
+        num(Q.party_resources) >= 1;
+    Q.jxcat_failure_available = Q.player_party === "erc" || Q.jxcat_erc_repeat_veto ||
+        !["cdc", "neutral", "erc", "president"].some(p => Q["jxcat_" + p + "_available"]);
+
 !}
 go-to: choices_cup if player_party == "cup"; choices_erc if player_party == "erc"
 

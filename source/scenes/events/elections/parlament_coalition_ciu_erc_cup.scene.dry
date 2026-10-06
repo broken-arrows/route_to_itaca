@@ -1,0 +1,465 @@
+title: CiU-ERC-CUP government negotiations
+
+You should not be here??! Report a bug if you see this 🙏🙏
+
+please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
+
+@erc_player_ciu_led_support
+title: [+ parlament_current_ciu +]-ERC <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +] erc" data-summary="[? if parlament_current_ciu_s + erc_parlament_s >= parlament_s_majority: Majority government?][? if parlament_current_ciu_s + erc_parlament_s < parlament_s_majority: Minority government?] - [+ parlament_current_ciu_s + erc_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ parlament_current_ciu_s + erc_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">Sovereignty</span> <span style="color: var(--erc); font-style: italic;">government</span></span> with CUP support
+view-if: parlament_coalition_option_ciu_erc_cup_sup_visible and player_party == "erc" and (parlament_current_ciu != "jxcat" or not erc_in_jxcat)
+choose-if: parlament_coalition_sovereignty_triple_available
+unavailable-subtitle: [? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_triple_trust_reasons +]
+subtitle: While National Unity may be cut slightly short, the CUP will at least make the government possible from the outside.
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_kind = "support";
+    Q.parlament_coalition_sovereignty_phase = 1;
+    Q.parlament_coalition_leader = Q.parlament_current_ciu;
+    Q.parlament_coalition_follower = "erc";
+    Q.parlament_coalition_sovereignty_cabinet = [Q.parlament_current_ciu, "erc"];
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_sovereignty_cabinet.reduce(function (n, p) { return n + Q[p + "_parlament_s"]; }, 0);
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_cabinet_seats + Q.cup_parlament_s;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
+    Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
+    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
+    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
+        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
+    }
+    Q.parlament_coalition_sovereignty_dispute_round = 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = 0;
+    Q.parlament_coalition_sovereignty_candidate_exception = false;
+    Q.parlament_coalition_sovereignty_feud = 0;
+    Q.parlament_coalition_sovereignty_mediation_done = false;
+    Q.parlament_coalition_sovereignty_banos_seen = false;
+    Q.parlament_coalition_sovereignty_banos_departure = false;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_sovereignty_reject_reasons = "";
+    Q.parlament_coalition_push = 0;
+    if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
+        Q.cup_endavant_strength = 35;
+        Q.cup_poblelliure_strength = 35;
+        Q.cup_thirdsector_strength = 20;
+        Q.cup_endavant_dissent = 15;
+        Q.cup_poblelliure_dissent = 15;
+        Q.cup_thirdsector_dissent = 10;
+    }
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
+!}
+
+Before the investiture talks can even begin, the Speaker of the House needs deciding. [+ parlament_current_ciu +] is proposing that we take it, but such an offer can always be negotiated.
+
+- @erc_speaker: Keep the Speaker of the House
+- @ciu_speaker: Propose a [+ parlament_current_ciu +]-held Speaker of the House
+- @cup_speaker: Support CUP having the Speaker of the House instead
+
+@cup_player_ciu_led_support
+title: [+ parlament_current_ciu +]-ERC <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +] erc" data-summary="[? if parlament_current_ciu_s + erc_parlament_s >= parlament_s_majority: Majority government?][? if parlament_current_ciu_s + erc_parlament_s < parlament_s_majority: Minority government?] - [+ parlament_current_ciu_s + erc_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ parlament_current_ciu_s + erc_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">Sovereignty</span> <span style="color: var(--erc); font-style: italic;">government</span></span> with CUP support
+view-if: parlament_coalition_option_ciu_erc_cup_sup_visible and player_party == "cup" and (parlament_current_ciu != "jxcat" or not erc_in_jxcat)
+choose-if: parlament_coalition_sovereignty_triple_available
+unavailable-subtitle: [? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_triple_trust_reasons +]
+subtitle: While National Unity may be cut slightly short, we may at least make the government possible from the outside.
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_kind = "support";
+    Q.parlament_coalition_sovereignty_phase = 1;
+    Q.parlament_coalition_leader = Q.parlament_current_ciu;
+    Q.parlament_coalition_follower = "erc";
+    Q.parlament_coalition_sovereignty_cabinet = [Q.parlament_current_ciu, "erc"];
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_sovereignty_cabinet.reduce(function (n, p) { return n + Q[p + "_parlament_s"]; }, 0);
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_cabinet_seats + Q.cup_parlament_s;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
+    Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
+    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
+    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
+        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
+    }
+    Q.parlament_coalition_sovereignty_dispute_round = 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = 0;
+    Q.parlament_coalition_sovereignty_candidate_exception = false;
+    Q.parlament_coalition_sovereignty_feud = 0;
+    Q.parlament_coalition_sovereignty_mediation_done = false;
+    Q.parlament_coalition_sovereignty_banos_seen = false;
+    Q.parlament_coalition_sovereignty_banos_departure = false;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_sovereignty_reject_reasons = "";
+    Q.parlament_coalition_push = 0;
+    if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
+        Q.cup_endavant_strength = 35;
+        Q.cup_poblelliure_strength = 35;
+        Q.cup_thirdsector_strength = 20;
+        Q.cup_endavant_dissent = 15;
+        Q.cup_poblelliure_dissent = 15;
+        Q.cup_thirdsector_dissent = 10;
+    }
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
+!}
+
+Before the investiture talks can even begin, the Speaker of the House needs deciding. [+ parlament_current_ciu +] is proposing that ERC takes it, but such an offer can always be negotiated.
+
+- @ciu_speaker: Propose a [+ parlament_current_ciu +]-held Speaker of the House
+- @erc_speaker: Let ERC keep the Speaker of the House
+- @cup_speaker: Push for us to have the Speaker of the House
+
+@erc_player_erc_led_support
+title: ERC-[+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="[? if parlament_current_ciu_s + erc_parlament_s >= parlament_s_majority: Majority government?][? if parlament_current_ciu_s + erc_parlament_s < parlament_s_majority: Minority government?] - [+ parlament_current_ciu_s + erc_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ parlament_current_ciu_s + erc_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">Sovereignty</span> <span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">government</span></span> with CUP support
+view-if: parlament_coalition_option_erc_ciu_cup_sup_visible and player_party == "erc" and (parlament_current_ciu != "jxcat" or not erc_in_jxcat)
+choose-if: parlament_coalition_sovereignty_triple_available
+unavailable-subtitle: [? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_triple_trust_reasons +]
+subtitle: While National Unity may be cut slightly short, the CUP will at least make the government possible from the outside.
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_kind = "support";
+    Q.parlament_coalition_sovereignty_phase = 1;
+    Q.parlament_coalition_leader = "erc";
+    Q.parlament_coalition_follower = Q.parlament_current_ciu;
+    Q.parlament_coalition_sovereignty_cabinet = ["erc", Q.parlament_current_ciu];
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_sovereignty_cabinet.reduce(function (n, p) { return n + Q[p + "_parlament_s"]; }, 0);
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_cabinet_seats + Q.cup_parlament_s;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
+    Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
+    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
+    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
+        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
+    }
+    Q.parlament_coalition_sovereignty_dispute_round = 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = 0;
+    Q.parlament_coalition_sovereignty_candidate_exception = false;
+    Q.parlament_coalition_sovereignty_feud = 0;
+    Q.parlament_coalition_sovereignty_mediation_done = false;
+    Q.parlament_coalition_sovereignty_banos_seen = false;
+    Q.parlament_coalition_sovereignty_banos_departure = false;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_sovereignty_reject_reasons = "";
+    Q.parlament_coalition_push = 0;
+    if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
+        Q.cup_endavant_strength = 35;
+        Q.cup_poblelliure_strength = 35;
+        Q.cup_thirdsector_strength = 20;
+        Q.cup_endavant_dissent = 15;
+        Q.cup_poblelliure_dissent = 15;
+        Q.cup_thirdsector_dissent = 10;
+    }
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
+!}
+
+Before the investiture talks can even begin, the Speaker of the House needs deciding. Given the results, [+ parlament_current_ciu +] expect us to facilitate them having it, but such an offer can always be negotiated.
+
+- @ciu_speaker: Let [+ parlament_current_ciu +] have the Speaker of the House
+- @cup_speaker: Offer the Speaker of the House to the CUP instead
+- @erc_speaker: Keep the Speaker of the House for us
+
+@cup_player_erc_led_support
+title: ERC-[+ parlament_current_ciu +] <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +]" data-summary="[? if parlament_current_ciu_s + erc_parlament_s >= parlament_s_majority: Majority government?][? if parlament_current_ciu_s + erc_parlament_s < parlament_s_majority: Minority government?] - [+ parlament_current_ciu_s + erc_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ parlament_current_ciu_s + erc_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">Sovereignty</span> <span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">government</span></span> with CUP support
+view-if: parlament_coalition_option_erc_ciu_cup_sup_visible and player_party == "cup" and (parlament_current_ciu != "jxcat" or not erc_in_jxcat)
+choose-if: parlament_coalition_sovereignty_triple_available
+unavailable-subtitle: [? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_triple_trust_reasons +]
+subtitle: While National Unity may be cut slightly short, we would at least make the government possible from the outside.
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_kind = "support";
+    Q.parlament_coalition_sovereignty_phase = 1;
+    Q.parlament_coalition_leader = "erc";
+    Q.parlament_coalition_follower = Q.parlament_current_ciu;
+    Q.parlament_coalition_sovereignty_cabinet = ["erc", Q.parlament_current_ciu];
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_sovereignty_cabinet.reduce(function (n, p) { return n + Q[p + "_parlament_s"]; }, 0);
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_cabinet_seats + Q.cup_parlament_s;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
+    Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
+    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
+    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
+        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
+    }
+    Q.parlament_coalition_sovereignty_dispute_round = 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = 0;
+    Q.parlament_coalition_sovereignty_candidate_exception = false;
+    Q.parlament_coalition_sovereignty_feud = 0;
+    Q.parlament_coalition_sovereignty_mediation_done = false;
+    Q.parlament_coalition_sovereignty_banos_seen = false;
+    Q.parlament_coalition_sovereignty_banos_departure = false;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_sovereignty_reject_reasons = "";
+    Q.parlament_coalition_push = 0;
+    if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
+        Q.cup_endavant_strength = 35;
+        Q.cup_poblelliure_strength = 35;
+        Q.cup_thirdsector_strength = 20;
+        Q.cup_endavant_dissent = 15;
+        Q.cup_poblelliure_dissent = 15;
+        Q.cup_thirdsector_dissent = 10;
+    }
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
+!}
+
+Before the investiture talks can even begin, the Speaker of the House needs deciding. Given the results, [+ parlament_current_ciu +] expect us to facilitate them having it, but such an offer can always be negotiated.
+
+- @ciu_speaker: Let [+ parlament_current_ciu +] keep the Speaker of the House
+- @erc_speaker: Propose that ERC gets the Speaker of the House
+- @cup_speaker: Push for us to have the Speaker of the House
+
+@erc_player_ciu_led_government
+title: [+ parlament_current_ciu +]-ERC-CUP <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +] erc cup" data-summary="[? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s >= parlament_s_majority: Majority government?][? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s < parlament_s_majority: Minority government?] - [+ parlament_current_ciu_s + erc_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">National</span> <span style="color: var(--erc); font-style: italic;">Concentration</span> <span style="color: var(--cup); font-style: italic;">government</span></span>
+view-if: parlament_coalition_option_ciu_erc_cup_gov_visible and parlament_current_ciu_s >= erc_parlament_s and player_party == "erc" and (parlament_current_ciu != "jxcat" or not erc_in_jxcat)
+choose-if: parlament_coalition_sovereignty_triple_government_available
+unavailable-subtitle: [? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_triple_trust_reasons +] [+ parlament_coalition_sovereignty_cup_cabinet_reasons +]
+subtitle: True National Unity? [? if parlament_coalition_sovereignty_cup_cabinet_cost = 1: Pushing the CUP to join into the negotiations will take some effort, though. \[-1 resources\] ?]
+on-arrival: {!
+    Q.party_resources -= Q.parlament_coalition_sovereignty_cup_cabinet_cost;
+    Q.parlament_coalition_sovereignty_kind = "government";
+    Q.parlament_coalition_sovereignty_phase = 1;
+    Q.parlament_coalition_leader = Q.parlament_current_ciu;
+    Q.parlament_coalition_follower = "erc";
+    Q.parlament_coalition_sovereignty_cabinet = [Q.parlament_current_ciu, "erc", "cup"];
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_sovereignty_cabinet.reduce(function (n, p) { return n + Q[p + "_parlament_s"]; }, 0);
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_cabinet_seats + 0;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
+    Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
+    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
+    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
+        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
+    }
+    Q.parlament_coalition_sovereignty_dispute_round = 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = 0;
+    Q.parlament_coalition_sovereignty_candidate_exception = false;
+    Q.parlament_coalition_sovereignty_feud = 0;
+    Q.parlament_coalition_sovereignty_mediation_done = false;
+    Q.parlament_coalition_sovereignty_banos_seen = false;
+    Q.parlament_coalition_sovereignty_banos_departure = false;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_sovereignty_reject_reasons = "";
+    Q.parlament_coalition_push = 0;
+    if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
+        Q.cup_endavant_strength = 35;
+        Q.cup_poblelliure_strength = 35;
+        Q.cup_thirdsector_strength = 20;
+        Q.cup_endavant_dissent = 15;
+        Q.cup_poblelliure_dissent = 15;
+        Q.cup_thirdsector_dissent = 10;
+    }
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
+!}
+
+Before the investiture talks can even begin, the Speaker of the House needs deciding. [+ parlament_current_ciu +] is proposing that we take it, but such an offer can always be negotiated.
+
+- @erc_speaker: Keep the Speaker of the House
+- @ciu_speaker: Propose that [+ parlament_current_ciu +] gets the Speaker of the House
+- @cup_speaker: Support a CUP-held Speaker of the House instead
+
+@cup_player_ciu_led_government
+title: [+ parlament_current_ciu +]-ERC-CUP <span class="generalitat-coalition" data-parties="[+ parlament_current_ciu +] erc cup" data-summary="[? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s >= parlament_s_majority: Majority government?][? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s < parlament_s_majority: Minority government?] - [+ parlament_current_ciu_s + erc_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">National</span> <span style="color: var(--erc); font-style: italic;">Concentration</span> <span style="color: var(--cup); font-style: italic;">government</span></span>
+view-if: parlament_coalition_option_ciu_erc_cup_gov_visible and parlament_current_ciu_s >= erc_parlament_s and player_party == "cup" and (parlament_current_ciu != "jxcat" or not erc_in_jxcat)
+choose-if: parlament_coalition_sovereignty_triple_government_available
+unavailable-subtitle: [? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_triple_trust_reasons +] [+ parlament_coalition_sovereignty_cup_cabinet_reasons +]
+subtitle: True National Unity? [? if parlament_coalition_sovereignty_cup_cabinet_cost = 1: Convincing ERC and [+ parlament_current_ciu +] to negotiate a joint cabinet will take some effort. \[-1 resources\] ?]
+on-arrival: {!
+    Q.party_resources -= Q.parlament_coalition_sovereignty_cup_cabinet_cost;
+    Q.parlament_coalition_sovereignty_kind = "government";
+    Q.parlament_coalition_sovereignty_phase = 1;
+    Q.parlament_coalition_leader = Q.parlament_current_ciu;
+    Q.parlament_coalition_follower = "erc";
+    Q.parlament_coalition_sovereignty_cabinet = [Q.parlament_current_ciu, "erc", "cup"];
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_sovereignty_cabinet.reduce(function (n, p) { return n + Q[p + "_parlament_s"]; }, 0);
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_cabinet_seats + 0;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
+    Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
+    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
+    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
+        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
+    }
+    Q.parlament_coalition_sovereignty_dispute_round = 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = 0;
+    Q.parlament_coalition_sovereignty_candidate_exception = false;
+    Q.parlament_coalition_sovereignty_feud = 0;
+    Q.parlament_coalition_sovereignty_mediation_done = false;
+    Q.parlament_coalition_sovereignty_banos_seen = false;
+    Q.parlament_coalition_sovereignty_banos_departure = false;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_sovereignty_reject_reasons = "";
+    Q.parlament_coalition_push = 0;
+    if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
+        Q.cup_endavant_strength = 35;
+        Q.cup_poblelliure_strength = 35;
+        Q.cup_thirdsector_strength = 20;
+        Q.cup_endavant_dissent = 15;
+        Q.cup_poblelliure_dissent = 15;
+        Q.cup_thirdsector_dissent = 10;
+    }
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
+!}
+
+Before the investiture talks can even begin, the Speaker of the House needs deciding. [+ parlament_current_ciu +] is proposing that ERC takes it, but such an offer can always be negotiated.
+
+- @erc_speaker: Let ERC take the Speaker of the House as expected
+- @ciu_speaker: Support a [+ parlament_current_ciu +]-held Speaker of the House
+- @cup_speaker: Push for us to have Speaker of the House instead
+
+@erc_player_erc_led_government
+title: ERC-[+ parlament_current_ciu +]-CUP <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +] cup" data-summary="[? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s >= parlament_s_majority: Majority government?][? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s < parlament_s_majority: Minority government?] - [+ parlament_current_ciu_s + erc_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">National</span> <span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">Concentration</span> <span style="color: var(--cup); font-style: italic;">government</span></span>
+view-if: parlament_coalition_option_ciu_erc_cup_gov_visible and erc_parlament_s > parlament_current_ciu_s and player_party == "erc" and (parlament_current_ciu != "jxcat" or not erc_in_jxcat)
+choose-if: parlament_coalition_sovereignty_triple_government_available
+unavailable-subtitle: [? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_triple_trust_reasons +] [+ parlament_coalition_sovereignty_cup_cabinet_reasons +]
+subtitle: True National Unity? [? if parlament_coalition_sovereignty_cup_cabinet_cost = 1: Convincing the CUP to even consider these negotiations will take some effort. \[-1 resources\]. ?]
+on-arrival: {!
+    Q.party_resources -= Q.parlament_coalition_sovereignty_cup_cabinet_cost;
+    Q.parlament_coalition_sovereignty_kind = "government";
+    Q.parlament_coalition_sovereignty_phase = 1;
+    Q.parlament_coalition_leader = "erc";
+    Q.parlament_coalition_follower = Q.parlament_current_ciu;
+    Q.parlament_coalition_sovereignty_cabinet = ["erc", Q.parlament_current_ciu, "cup"];
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_sovereignty_cabinet.reduce(function (n, p) { return n + Q[p + "_parlament_s"]; }, 0);
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_cabinet_seats + 0;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
+    Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
+    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
+    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
+        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
+    }
+    Q.parlament_coalition_sovereignty_dispute_round = 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = 0;
+    Q.parlament_coalition_sovereignty_candidate_exception = false;
+    Q.parlament_coalition_sovereignty_feud = 0;
+    Q.parlament_coalition_sovereignty_mediation_done = false;
+    Q.parlament_coalition_sovereignty_banos_seen = false;
+    Q.parlament_coalition_sovereignty_banos_departure = false;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_sovereignty_reject_reasons = "";
+    Q.parlament_coalition_push = 0;
+    if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
+        Q.cup_endavant_strength = 35;
+        Q.cup_poblelliure_strength = 35;
+        Q.cup_thirdsector_strength = 20;
+        Q.cup_endavant_dissent = 15;
+        Q.cup_poblelliure_dissent = 15;
+        Q.cup_thirdsector_dissent = 10;
+    }
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
+!}
+
+Given the electoral results, we are expected to offer [+ parlament_current_ciu +] the Speaker of the House. However, this can of course be negotiated.
+
+- @ciu_speaker: Support a [+ parlament_current_ciu +] Speaker of the House, as proposed
+- @cup_speaker: Offer the Speaker of the House to the CUP
+- @erc_speaker: Retain the Speaker of the House for ERC
+
+@cup_player_erc_led_government
+title: ERC-[+ parlament_current_ciu +]-CUP <span class="generalitat-coalition" data-parties="erc [+ parlament_current_ciu +] cup" data-summary="[? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s >= parlament_s_majority: Majority government?][? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s < parlament_s_majority: Minority government?] - [+ parlament_current_ciu_s + erc_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">National</span> <span style="color: var(--[+ parlament_current_ciu +]); font-style: italic;">Concentration</span> <span style="color: var(--cup); font-style: italic;">government</span></span>
+view-if: parlament_coalition_option_ciu_erc_cup_gov_visible and erc_parlament_s > parlament_current_ciu_s and player_party == "cup" and (parlament_current_ciu != "jxcat" or not erc_in_jxcat)
+choose-if: parlament_coalition_sovereignty_triple_government_available
+unavailable-subtitle: [? if parlament_current_ciu_s + erc_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_triple_trust_reasons +] [+ parlament_coalition_sovereignty_cup_cabinet_reasons +]
+subtitle: True National Unity?  [? if parlament_coalition_sovereignty_cup_cabinet_cost = 1: Convincing ERC and [+ parlament_current_ciu +] to even consider such a joint cabinet will take some effort. \[-1 resources\] ?]
+on-arrival: {!
+    Q.party_resources -= Q.parlament_coalition_sovereignty_cup_cabinet_cost;
+    Q.parlament_coalition_sovereignty_kind = "government";
+    Q.parlament_coalition_sovereignty_phase = 1;
+    Q.parlament_coalition_leader = "erc";
+    Q.parlament_coalition_follower = Q.parlament_current_ciu;
+    Q.parlament_coalition_sovereignty_cabinet = ["erc", Q.parlament_current_ciu, "cup"];
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_sovereignty_cabinet.reduce(function (n, p) { return n + Q[p + "_parlament_s"]; }, 0);
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_cabinet_seats + 0;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
+    Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
+    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
+    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
+        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
+    }
+    Q.parlament_coalition_sovereignty_dispute_round = 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = 0;
+    Q.parlament_coalition_sovereignty_candidate_exception = false;
+    Q.parlament_coalition_sovereignty_feud = 0;
+    Q.parlament_coalition_sovereignty_mediation_done = false;
+    Q.parlament_coalition_sovereignty_banos_seen = false;
+    Q.parlament_coalition_sovereignty_banos_departure = false;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_sovereignty_reject_reasons = "";
+    Q.parlament_coalition_push = 0;
+    if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
+        Q.cup_endavant_strength = 35;
+        Q.cup_poblelliure_strength = 35;
+        Q.cup_thirdsector_strength = 20;
+        Q.cup_endavant_dissent = 15;
+        Q.cup_poblelliure_dissent = 15;
+        Q.cup_thirdsector_dissent = 10;
+    }
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
+!}
+
+Before the investiture talks can even begin, the Speaker of the House needs deciding. [+ parlament_current_ciu +] is expecting to get it given the results, but that can surely always be negotiated.
+
+- @ciu_speaker: Let [+ parlament_current_ciu +] have the Speaker of the House as expected
+- @erc_speaker: Propose an ERC-held Speaker of the House
+- @cup_speaker: Push for us to have the Speaker of the House
+
+@ciu_speaker
+title: Elect a [+ parlament_current_ciu +] Speaker of the House
+on-arrival: {!
+    Q.speaker_party = Q.parlament_current_ciu;
+    switch (Q.parlament_current_ciu) {
+        case "ciu":
+            Q.speaker = "Núria de Gispert";
+            Q.speaker_gender = "f";
+            break;
+        case "cdc":
+        case "dl":
+            Q.speaker = "Carles Campuzano";
+            Q.speaker_gender = "m";
+            break;
+        case "pdcat":
+            Q.speaker = "Lluís Corominas";
+            Q.speaker_gender = "m";
+            break;
+        case "jxcat":
+        case "junts":
+            if (Q.junts_leader != "Laura Borràs") {
+                Q.speaker = "Laura Borràs";
+                Q.speaker_gender = "f";
+            } else {
+                Q.speaker = "Albert Batet";
+                Q.speaker_gender = "m";
+            }
+            break;
+        default:
+            Q.speaker = "Elsa Artadi";
+            Q.speaker_gender = "f";
+            break;
+    }
+!}
+go-to: post_speaker
+
+@erc_speaker
+title: Elect an ERC Speaker of the House
+on-arrival: {!
+    Q.speaker_party = "erc";
+    Q.speaker = Q.year < 2016 ? "Anna Simó" : "Roger Torrent";
+    Q.speaker_gender = Q.year < 2016 ? "f" : "m";
+!}
+go-to: post_speaker
+
+@cup_speaker
+title: Elect a CUP Speaker of the House
+on-arrival: {!
+    Q.speaker_party = "cup";
+    Q.speaker = Q.year < 2017 ? "Julià de Jòdar" : "Vidal Aragonés";
+    Q.speaker_gender = "m";
+!}
+go-to: post_speaker
+
+@post_speaker
+
+[+ speaker +] ([+ speaker_party +]) will be the Speaker of the House for this legislature. Officially the second authority of the country, [+ speaker_party +] will now have a decisive role in the legislative agenda moving forwards. 
+
+- @post_event: And so, time passes...

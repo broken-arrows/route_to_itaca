@@ -6,7 +6,7 @@ on-arrival: {!
     Q.playground_coalitions_set_seats = 0;
     Q.playground_coalitions = null;
 !}
-choose-if: achievement_game_completed
+# choose-if: achievement_game_completed # TODO: set this lock!
 unavailable-subtitle: Finish the game once to unlock.
 call: root.start_menu
 

@@ -202,6 +202,18 @@
       }
     },
     {
+      "id": "neus_munte",
+      "match": ["Neus Munté", "Neus Munté i Fernández", "neus munte"],
+      "colour": "cdc",
+      "tooltip": {
+        "title": "Neus Munté i Fernández",
+        "img": "img/ciu/neusmunte.jpg",
+        "q": {
+          "ideology": "Center-right Liberalism, Pact-Pragmatism"
+        }
+      }
+    },
+    {
       "id": "bcomu",
       "match": ["BComu", "bcomu", "Barcelona en Comú", "BComú"],
       "display": "BComú",

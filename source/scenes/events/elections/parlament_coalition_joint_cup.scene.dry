@@ -1,0 +1,235 @@
+title: Joint-list government with CUP external support
+
+You should not be here??! Report a bug if you see this 🙏🙏
+
+please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
+
+@erc_player_jxsi_led
+title: JxSí <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxsi_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxsi); font-style: italic;">minority Government</span></span> with CUP support
+view-if: parlament_coalition_option_jxsi_min_cup_visible and player_party == "erc"
+choose-if: parlament_coalition_sovereignty_jxsi_available
+unavailable-subtitle: [? if jxsi_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_jxsi_trust_reasons +]
+subtitle: The CUP seems open to support such a government while remaining an external "critical watching eye" over it.
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_kind = "jxsi";
+    Q.parlament_coalition_sovereignty_phase = 1;
+    Q.parlament_coalition_leader = "jxsi";
+    Q.parlament_coalition_follower = "cup";
+    Q.parlament_coalition_sovereignty_cabinet = ["jxsi"];
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_sovereignty_cabinet.reduce(function (n, p) { return n + Q[p + "_parlament_s"]; }, 0);
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_cabinet_seats + Q.cup_parlament_s;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
+    Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
+    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
+    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
+        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
+    }
+    Q.parlament_coalition_sovereignty_dispute_round = 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = 0;
+    Q.parlament_coalition_sovereignty_candidate_exception = false;
+    Q.parlament_coalition_sovereignty_feud = 0;
+    Q.parlament_coalition_sovereignty_mediation_done = false;
+    Q.parlament_coalition_sovereignty_banos_seen = false;
+    Q.parlament_coalition_sovereignty_banos_departure = false;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_sovereignty_reject_reasons = "";
+    Q.parlament_coalition_push = 0;
+    if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
+        Q.cup_endavant_strength = 35;
+        Q.cup_poblelliure_strength = 35;
+        Q.cup_thirdsector_strength = 20;
+        Q.cup_endavant_dissent = 15;
+        Q.cup_poblelliure_dissent = 15;
+        Q.cup_thirdsector_dissent = 10;
+    }
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
+!}
+
+Before negotiations can properly begin, the Parlament needs to convene, and a Speaker of the House needs to be chosen. Given the results, it is expected to be a JxSí one, but we can always offer it to the CUP as a gesture of good will.
+
+- @jxsi_speaker: Retain the Speaker of the House
+- @cup_speaker: Offer the Speaker of the House to the CUP
+
+@cup_player_jxsi_led
+title: JxSí <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxsi_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxsi); font-style: italic;">minority Government</span></span> with CUP support
+view-if: parlament_coalition_option_jxsi_min_cup_visible and player_party == "cup"
+choose-if: parlament_coalition_sovereignty_jxsi_available
+unavailable-subtitle: [? if jxsi_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_jxsi_trust_reasons +]
+subtitle: We would support make a JxSí government possible while holding the keys to the legislature.
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_kind = "jxsi";
+    Q.parlament_coalition_sovereignty_phase = 1;
+    Q.parlament_coalition_leader = "jxsi";
+    Q.parlament_coalition_follower = "cup";
+    Q.parlament_coalition_sovereignty_cabinet = ["jxsi"];
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_sovereignty_cabinet.reduce(function (n, p) { return n + Q[p + "_parlament_s"]; }, 0);
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_cabinet_seats + Q.cup_parlament_s;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
+    Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
+    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
+    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
+        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
+    }
+    Q.parlament_coalition_sovereignty_dispute_round = 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = 0;
+    Q.parlament_coalition_sovereignty_candidate_exception = false;
+    Q.parlament_coalition_sovereignty_feud = 0;
+    Q.parlament_coalition_sovereignty_mediation_done = false;
+    Q.parlament_coalition_sovereignty_banos_seen = false;
+    Q.parlament_coalition_sovereignty_banos_departure = false;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_sovereignty_reject_reasons = "";
+    Q.parlament_coalition_push = 0;
+    if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
+        Q.cup_endavant_strength = 35;
+        Q.cup_poblelliure_strength = 35;
+        Q.cup_thirdsector_strength = 20;
+        Q.cup_endavant_dissent = 15;
+        Q.cup_poblelliure_dissent = 15;
+        Q.cup_thirdsector_dissent = 10;
+    }
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
+!}
+
+Before negotiations can properly begin, the Parlament needs to convene, and a Speaker of the House needs to be chosen. Given the results, it is expected to be a JxSí one, but we can always try to push for us to have it instead, probably.
+
+- @jxsi_speaker: Support JxSí's nominee for Speaker of the House
+- @cup_speaker: Push for us to have the Speaker of the House instead
+
+@erc_player_jxcat_led
+title: JxCat <span class="generalitat-coalition" data-parties="jxcat" data-summary="Minority government - [+ jxcat_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxcat_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxcat); font-style: italic;">minority Government</span></span> with CUP support
+view-if: parlament_coalition_option_jxcat_cup_visible and player_party == "erc"
+choose-if: parlament_coalition_sovereignty_jxcat_available
+unavailable-subtitle: [? if jxcat_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_jxcat_trust_reasons +]
+subtitle: The CUP would support the investiture from outside government and hold no ministries.
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_kind = "jxcat";
+    Q.parlament_coalition_sovereignty_phase = 1;
+    Q.parlament_coalition_leader = "jxcat";
+    Q.parlament_coalition_follower = "cup";
+    Q.parlament_coalition_sovereignty_cabinet = ["jxcat"];
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_sovereignty_cabinet.reduce(function (n, p) { return n + Q[p + "_parlament_s"]; }, 0);
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_cabinet_seats + Q.cup_parlament_s;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
+    Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
+    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
+    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
+        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
+    }
+    Q.parlament_coalition_sovereignty_dispute_round = 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = 0;
+    Q.parlament_coalition_sovereignty_candidate_exception = false;
+    Q.parlament_coalition_sovereignty_feud = 0;
+    Q.parlament_coalition_sovereignty_mediation_done = false;
+    Q.parlament_coalition_sovereignty_banos_seen = false;
+    Q.parlament_coalition_sovereignty_banos_departure = false;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_sovereignty_reject_reasons = "";
+    Q.parlament_coalition_push = 0;
+    if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
+        Q.cup_endavant_strength = 35;
+        Q.cup_poblelliure_strength = 35;
+        Q.cup_thirdsector_strength = 20;
+        Q.cup_endavant_dissent = 15;
+        Q.cup_poblelliure_dissent = 15;
+        Q.cup_thirdsector_dissent = 10;
+    }
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
+!}
+
+Before negotiations can properly begin, the Parlament needs to convene, and a Speaker of the House needs to be chosen. Given the results, it is expected to be a JxCat one, but we can always offer it to the CUP as a gesture of good will.
+
+- @jxcat_speaker: Retain the Speaker of the House
+- @cup_speaker: Offer the Speaker of the House to the CUP
+
+@cup_player_jxcat_led
+title: JxCat <span class="generalitat-coalition" data-parties="jxcat" data-summary="Minority government - [+ jxcat_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxcat_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxcat); font-style: italic;">minority Government</span></span> with CUP support
+view-if: parlament_coalition_option_jxcat_cup_visible and player_party == "cup"
+choose-if: parlament_coalition_sovereignty_jxcat_available
+unavailable-subtitle: [? if jxcat_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_jxcat_trust_reasons +]
+subtitle: We would support a JxCat cabinet from outside government and hold no ministries.
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_kind = "jxcat";
+    Q.parlament_coalition_sovereignty_phase = 1;
+    Q.parlament_coalition_leader = "jxcat";
+    Q.parlament_coalition_follower = "cup";
+    Q.parlament_coalition_sovereignty_cabinet = ["jxcat"];
+    Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_sovereignty_cabinet.reduce(function (n, p) { return n + Q[p + "_parlament_s"]; }, 0);
+    Q.parlament_coalition_support_seats = Q.parlament_coalition_cabinet_seats + Q.cup_parlament_s;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
+    Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
+    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
+    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
+        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
+    }
+    Q.parlament_coalition_sovereignty_dispute_round = 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = 0;
+    Q.parlament_coalition_sovereignty_candidate_exception = false;
+    Q.parlament_coalition_sovereignty_feud = 0;
+    Q.parlament_coalition_sovereignty_mediation_done = false;
+    Q.parlament_coalition_sovereignty_banos_seen = false;
+    Q.parlament_coalition_sovereignty_banos_departure = false;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_sovereignty_reject_reasons = "";
+    Q.parlament_coalition_push = 0;
+    if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
+        Q.cup_endavant_strength = 35;
+        Q.cup_poblelliure_strength = 35;
+        Q.cup_thirdsector_strength = 20;
+        Q.cup_endavant_dissent = 15;
+        Q.cup_poblelliure_dissent = 15;
+        Q.cup_thirdsector_dissent = 10;
+    }
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
+!}
+
+Before negotiations can properly begin, the Parlament needs to convene, and a Speaker of the House needs to be chosen. Given the results, it is expected to be a JxCat one, but we can always try to push for us to have it instead, probably.
+
+- @jxcat_speaker: Support JxCat's nominee for Speaker of the House
+- @cup_speaker: Push for us to have the Speaker of the House instead
+
+
+@cup_speaker
+title: Elect a CUP Speaker of the House
+on-arrival: {!
+    Q.speaker_party = "cup";
+    Q.speaker = Q.year < 2017 ? "Julià de Jòdar" : "Vidal Aragonés";
+    Q.speaker_gender = "m";
+!}
+go-to: post_speaker
+
+@jxsi_speaker
+title: Elect a JxSí Speaker of the House
+on-arrival: {!
+    Q.speaker_party = "jxsi";
+    Q.speaker = "Carme Forcadell";
+    Q.speaker_gender = "f";
+!}
+go-to: post_speaker
+
+@jxcat_speaker
+title: Elect a JxCat Speaker of the House
+on-arrival: {!
+    Q.speaker_party = "jxcat";
+    Q.speaker = Q.jxcat_leader != "Laura Borràs" && Q.junts_leader != "Laura Borràs" ? "Laura Borràs" : "Albert Batet";
+    Q.speaker_gender = Q.speaker == "Laura Borràs" ? "f" : "m";
+!}
+go-to: post_speaker
+
+@post_speaker
+
+[+ speaker +] ([+ speaker_party +]) will be the Speaker of the House for this legislature. Officially the second authority of the country, [+ speaker_party +] will now have a decisive role in the legislative agenda moving forwards. 
+
+- @post_event: And so, time passes...

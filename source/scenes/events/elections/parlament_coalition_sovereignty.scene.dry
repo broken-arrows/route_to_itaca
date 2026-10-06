@@ -1,0 +1,96 @@
+title: Sovereignty negotiations
+
+You should not be here??! Report a bug if you see this 🙏🙏
+
+please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
+
+@next_round
+go-to: failed if parlament_coalition_sovereignty_phase >= 3; wait if parlament_coalition_sovereignty_phase < 3
+
+@wait
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_phase += 1;
+    Q.coalition_phase_timer = 1;
+    Q.month_actions += 1;
+    Q.independence_trust -= 4;
+    
+    // TODO: Author Rubicon-specific stuffs
+    // TODO: Add programme-credibility events separately from the candidate dispute.
+!}
+
+The parties have not reached an agreement. [+ parlament_coalition_sovereignty_reject_reasons +]
+
+[? if parlament_coalition_policy_reject_reasons: [+ parlament_coalition_policy_reject_reasons +]?]
+
+- @post_event: The delegations will have reconvene again...
+
+@accepted
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_can_form = Q.parlament_coalition_sovereignty_phase > 0 && Q.parlament_coalition_proposal_accept && Q.coalition_phase_timer <= 0;
+    if (Q.parlament_coalition_sovereignty_can_form) {
+        Q.parlament_coalition_policy_accepted = true;
+        Q.parlament_coalition_policy_scope = Q.parlament_coalition_sovereignty_kind == "government" ? "cabinet" : "external_support";
+        Q.cat_coalition = Q.parlament_coalition_sovereignty_cabinet.slice();
+        Q.cat_coalition_support = Q.parlament_coalition_sovereignty_kind == "government" ? [] : ["cup"];
+        Q.cat_coalition_abstain = [];
+        Q.cat_coalition_dissent = 0;
+        Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition,
+            (Q.parlament_coalition_cabinet_seats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + Q.parlament_coalition_cabinet_seats + "/" + Q.parlament_s_majority,
+            Q.parlament_coalition_sovereignty_kind == "government" ? "National Concentration Government" : "Sovereignty Government with CUP support");
+        if (Q.parlament_coalition_sovereignty_deadline > Q.year && Q.roadmap_year > Q.parlament_coalition_sovereignty_deadline) Q.roadmap_year = Q.parlament_coalition_sovereignty_deadline;
+        if (Q.parlament_coalition_concessions_indy) {
+            var signatories = Q.cat_coalition.concat(Q.cat_coalition_support);
+            var roadmap = Math.max.apply(null, signatories.map(function (p) { return Q[p + "_roadmap"] || 0; }));
+            for (var party of signatories) Q[party + "_roadmap"] = roadmap;
+            // Constituents share their list's undertaking.
+            for (var list of ["jxsi", "jxcat"]) {
+                if (Q.cat_coalition.indexOf(list) >= 0) {
+                    for (var constituent of ["erc", "cdc", "dl", "pdcat", "junts"]) {
+                        if (Q[constituent + "_in_" + list]) Q[constituent + "_roadmap"] = roadmap;
+                    }
+                }
+            }
+        }
+        Q.parlament_coalition_sovereignty_phase = 0;
+        Q.coalition_phase_timer = 0;
+        Q.independence_trust += 5;
+    }
+!}
+go-to: names if parlament_coalition_sovereignty_can_form; post_event if not parlament_coalition_sovereignty_can_form
+
+@names
+go-to: parlament_coalition_setnames
+set-jump: formed
+
+Pro-independence parties have agreed to form a [+ cat_coalition_disp +]! 
+
+@formed
+
+- @parlament_coalition_resolve: A new government is formed!
+
+@failed
+on-arrival: {!
+    if (Q.parlament_coalition_sovereignty_phase > 0) {
+        if (Q.parlament_coalition_proposal_president_name == "Artur Mas" || Q.parlament_coalition_proposal_president_name == "Neus Munté") {
+            Q.parlament_coalition_mas_veto_failures = (Q.parlament_coalition_mas_veto_failures || 0) + 1;
+        }
+        Q.parlament_repeat_election = true;
+        Q.parlament_coalition_sovereignty_phase = 0;
+        Q.coalition_phase_timer = 0;
+        Q.erc_relations -= 5;
+        Q.cup_relations -= 5;
+        Q.independence_trust -= 10;
+        Q.snap_blame = Q.player_party;
+        Q.snap_counterparty = Q.player_party == "cup" ? "erc" : "cup";
+        Q.snap_severity = 0.14;
+    }
+!}
+call: snap_election
+
+Negotiations have collapsed. [+ parlament_coalition_sovereignty_reject_reasons +] Now there's only one answer: for the people to vote again.
+
+- @post_event: This is highly disheartening...
