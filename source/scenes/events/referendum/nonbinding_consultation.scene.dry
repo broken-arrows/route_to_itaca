@@ -12,6 +12,7 @@ on-arrival: {!
     Q.consultation_happened = true;
     Q.consultation_pending = false;
     Q.roadmap_year = 0;
+    Q.burdens_done += 1;
 !}
 role: event
 

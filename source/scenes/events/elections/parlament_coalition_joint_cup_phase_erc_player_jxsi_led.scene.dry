@@ -1,4 +1,4 @@
-title: JxSí <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxsi_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxsi); font-style: italic;">minority Government</span></span> with CUP support negotiations
+title: JxSí <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxsi); font-style: italic;">minority Government</span></span> with CUP support negotiations
 subtitle: [? if parlament_coalition_sovereignty_phase = 1: The first round of negotiations begins in earnest.?][? if parlament_coalition_sovereignty_phase = 2: The parties return for the second round of negotiations.?][? if parlament_coalition_sovereignty_phase = 3: The third and final round of negotiations begins.?]
 tags: event
 role: event
@@ -33,7 +33,7 @@ new-page: true
 go-to: parlament_coalition_setnames
 set-jump: choices
 
-[? if parlament_coalition_sovereignty_phase = 1: Negotiations with the CUP for the formation of a JxSí <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxsi_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxsi); font-style: italic;">minority Government</span></span> are about to start. We are expected to prepare an initial proposal, and we'll see to what extent the CUP can be swayed. ?]
+[? if parlament_coalition_sovereignty_phase = 1: Negotiations with the CUP for the formation of a JxSí <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxsi); font-style: italic;">minority Government</span></span> are about to start. We are expected to prepare an initial proposal, and we'll see to what extent the CUP can be swayed. ?]
 [? if parlament_coalition_sovereignty_phase != 1: [? if parlament_coalition_sovereignty_reject_reasons: The CUP has rejected our previous investiture proposal. ?][? if parlament_coalition_sovereignty_reject_reasons: [+ parlament_coalition_sovereignty_reject_reasons +] ?]The ball is on our side now to prepare a new proposal.?]
 
 @choices

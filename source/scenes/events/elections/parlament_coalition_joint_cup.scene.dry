@@ -9,7 +9,7 @@ you're allowed to make a wish once you do so! ✨
 - @post_event.make_a_wish
 
 @erc_player_jxsi_led
-title: JxSí <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxsi_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxsi); font-style: italic;">minority Government</span></span> with CUP support
+title: JxSí <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxsi); font-style: italic;">minority Government</span></span> with CUP support
 view-if: parlament_coalition_option_jxsi_min_cup_visible and player_party == "erc"
 choose-if: parlament_coalition_sovereignty_jxsi_available
 unavailable-subtitle: [? if jxsi_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_jxsi_trust_reasons +]
@@ -46,7 +46,7 @@ Before negotiations can properly begin, the Parlament needs to convene, and a Sp
 - @cup_speaker: Offer the Speaker of the House to the CUP
 
 @cup_player_jxsi_led
-title: JxSí <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxsi_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxsi); font-style: italic;">minority Government</span></span> with CUP support
+title: JxSí <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxsi); font-style: italic;">minority Government</span></span> with CUP support
 view-if: parlament_coalition_option_jxsi_min_cup_visible and player_party == "cup"
 choose-if: parlament_coalition_sovereignty_jxsi_available
 unavailable-subtitle: [? if jxsi_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_jxsi_trust_reasons +]
@@ -83,7 +83,7 @@ Before negotiations can properly begin, the Parlament needs to convene, and a Sp
 - @cup_speaker: Push for us to have the Speaker of the House instead
 
 @erc_player_jxcat_led
-title: JxCat <span class="generalitat-coalition" data-parties="jxcat" data-summary="Minority government - [+ jxcat_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxcat_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxcat); font-style: italic;">minority Government</span></span> with CUP support
+title: JxCat <span class="generalitat-coalition" data-parties="jxcat" data-summary="Minority government - [+ jxcat_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxcat); font-style: italic;">minority Government</span></span> with CUP support
 view-if: parlament_coalition_option_jxcat_cup_visible and player_party == "erc"
 choose-if: parlament_coalition_sovereignty_jxcat_available
 unavailable-subtitle: [? if jxcat_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_jxcat_trust_reasons +]
@@ -120,7 +120,7 @@ Before negotiations can properly begin, the Parlament needs to convene, and a Sp
 - @cup_speaker: Offer the Speaker of the House to the CUP
 
 @cup_player_jxcat_led
-title: JxCat <span class="generalitat-coalition" data-parties="jxcat" data-summary="Minority government - [+ jxcat_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxcat_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxcat); font-style: italic;">minority Government</span></span> with CUP support
+title: JxCat <span class="generalitat-coalition" data-parties="jxcat" data-summary="Minority government - [+ jxcat_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxcat); font-style: italic;">minority Government</span></span> with CUP support
 view-if: parlament_coalition_option_jxcat_cup_visible and player_party == "cup"
 choose-if: parlament_coalition_sovereignty_jxcat_available
 unavailable-subtitle: [? if jxcat_parlament_s + cup_parlament_s < parlament_s_majority: Not enough parliamentary support. ?] [+ parlament_coalition_sovereignty_jxcat_trust_reasons +]

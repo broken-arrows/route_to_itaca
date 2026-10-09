@@ -18,7 +18,7 @@ on-arrival: {!
                     Q.parlament_coalition_proposal_vp_gender = Q.erc_leader_gender;
                 } else {
                     Q.parlament_coalition_proposal_vp_name = Q[Q.parlament_current_ciu + "_leader"];
-                    Q.parlament_coalition_proposal_vp_gender = Q[Q.parlament_current_ciu + "_gender"];
+                    Q.parlament_coalition_proposal_vp_gender = Q[Q.parlament_current_ciu + "_leader_gender"];
                 }
                 break;  
             case "ciu":
@@ -27,9 +27,14 @@ on-arrival: {!
                 break;
             case "cdc":
             case "dl":
-                Q.parlament_coalition_proposal_vp_name = "Neus Munté";
-                Q.parlament_coalition_proposal_vp_gender = "f";
-                break;
+                if (Q.dl_leader != "Neus Munté") {
+                    Q.parlament_coalition_proposal_vp_name = "Neus Munté";
+                    Q.parlament_coalition_proposal_vp_gender = "f";
+                } else {
+                    Q.parlament_coalition_proposal_vp_name = "Jordi Turull";
+                    Q.parlament_coalition_proposal_vp_gender = "m";
+                }
+                break
             case "pdcat":
                 Q.parlament_coalition_proposal_vp_name = "Marta Pascal";
                 Q.parlament_coalition_proposal_vp_gender = "f";
@@ -44,8 +49,7 @@ on-arrival: {!
                         Q.parlament_coalition_proposal_vp_gender = "f";
                     }
                 } else {
-                    // (FIXME) Until the internal JxCat composition has its own negotiation,
-                    // use the established ERC second figure instead of exposing a placeholder.
+                    // (FIXME) Until the internal JxCat composition has its own negotiation, use the established ERC second figure instead of exposing a placeholder.
                     if (Q.erc_leader != "Marta Rovira" && Q.speaker != "Marta Rovira") {
                         Q.parlament_coalition_proposal_vp_name = "Marta Rovira";
                         Q.parlament_coalition_proposal_vp_gender = "f";
@@ -481,7 +485,7 @@ on-arrival: {!
             Q.parlament_coalition_proposal_bnl_gender = "f";
             break;
         case "cup":
-            Q.parlament_coalition_proposal_bnl_name = "Vidal Aragonès";
+            Q.parlament_coalition_proposal_bnl_name = "Vidal Aragonés";
             Q.parlament_coalition_proposal_bnl_gender = "m";
             break;
     }

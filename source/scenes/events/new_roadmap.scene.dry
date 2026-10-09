@@ -1,0 +1,66 @@
+title: A new roadmap for [+ player_party +]
+new-page: true
+tags: event
+view-if: broken_roadmap_expires_trigger or (roadmap_year = 0 and year > 2012)
+role: event
+
+= A new roadmap for [+ player_party +]
+
+We have no current deadline for our [+ roadmap : roadmap +] roadmap to independence. Without it, we can hardly have any credibility that we will achieve anything we are proposing. What should we be aiming at?
+
+- @next_two_years
+- @next_four_years
+- @next_election
+- @decade_end
+
+@next_two_years
+title: This cannot wait, we'll achieve our goals in the coming couple years!
+on-arrival: {!
+    Q.roadmap_year = Q.year+2; 
+    Q.ciu_relations += 3; 
+    Q.erc_relations += 8; 
+    Q.cup_relations += 8;
+    Q.independence_trust += 7;
+!}
+
+We've promised to fulfill our roadmap to independence before [+ roadmap_year +]. Let's hope we did not overpromise...
+
+@next_four_years
+title: We'll accomplish our roadmap by [+ year + 4 +]
+on-arrival: {!
+    Q.roadmap_year = Q.year+4; 
+    Q.ciu_relations += 3; 
+    Q.erc_relations += 3; 
+    Q.cup_relations += 5;
+    Q.independence_trust += 5;
+!}
+
+In our new stated goals and political programme, we are now promising that meaningful progress will be done before [+ roadmap_year +].
+
+@next_election
+title: We'll do meaningful progress during this legislature!
+view-if: next_election_year - year > 2
+on-arrival: {!
+    Q.roadmap_year = Q.next_election_year; 
+    Q.ciu_relations += 3; 
+    Q.erc_relations += 3; 
+    Q.cup_relations += 5;
+    Q.independence_trust += 5;
+!}
+
+We've promised to fulfill our roadmap to independence within this legislature. Let's hope we did not overpromise...
+
+@decade_end
+title: There's no rush, we will do it within this decade
+view-if: year < 2017
+on-arrival: {!
+    Q.roadmap_year = 2020; 
+    Q[Q.parlament_current_ciu + "_relations"] -= 2; 
+    Q.cup_relations -= 5; 
+    Q.erc_relations -=2; 
+    Q.psc_relations += 2; 
+    Q.cup_relations -= 5;
+    Q.independence_trust -= 10;
+!}
+
+We have decided to keep it safe and set our goal to the end of the decade. Needless to say, this is a bit disappointing for many, let's hope this is not too slow for our voters.

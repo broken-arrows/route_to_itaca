@@ -697,7 +697,7 @@ go-to: policy_select
 
 @policy_humanities
 title: Humanities and cultural education
-subtitle: Develop arts, literature, history and Catalan-cenered cultural education.
+subtitle: Develop arts, literature, history and Catalan-centered cultural education.
 view-if: education_policy_stage != "secondary" or education_policy_draft_main != "humanities"
 choose-if: education_policy_can_edit and education_policy_humanities_available
 unavailable-subtitle: Cuts to Education funding need to be reversed first.

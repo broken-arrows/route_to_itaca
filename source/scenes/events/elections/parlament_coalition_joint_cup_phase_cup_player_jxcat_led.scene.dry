@@ -1,4 +1,4 @@
-title: JxCat <span class="generalitat-coalition" data-parties="jxcat" data-summary="Minority government - [+ jxcat_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxcat_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxcat); font-style: italic;">minority Government</span></span> with CUP support negotiations
+title: JxCat <span class="generalitat-coalition" data-parties="jxcat" data-summary="Minority government - [+ jxcat_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxcat); font-style: italic;">minority Government</span></span> with CUP support negotiations
 subtitle: [? if parlament_coalition_sovereignty_phase = 1: The first round of negotiations begins in earnest.?][? if parlament_coalition_sovereignty_phase = 2: The parties return for the second round of negotiations.?][? if parlament_coalition_sovereignty_phase = 3: The third and final round of negotiations begins.?]
 tags: event
 role: event
@@ -33,7 +33,7 @@ new-page: true
 go-to: parlament_coalition_setnames
 set-jump: choices
 
-[? if parlament_coalition_sovereignty_phase = 1: Negotiations with JxCat for the formation of a JxCat <span class="generalitat-coalition" data-parties="jxcat" data-summary="Minority government - [+ jxcat_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxcat_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxcat); font-style: italic;">minority Government</span></span> with CUP support are about to start. JxCat has presented its initial investiture proposal. We will remain outside government and negotiate the commitments needed for our support. ?]
+[? if parlament_coalition_sovereignty_phase = 1: Negotiations with JxCat for the formation of a JxCat <span class="generalitat-coalition" data-parties="jxcat" data-summary="Minority government - [+ jxcat_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxcat); font-style: italic;">minority Government</span></span> with CUP support are about to start. JxCat has presented its initial investiture proposal. We will remain outside government and negotiate the commitments needed for our support. ?]
 [? if parlament_coalition_sovereignty_phase != 1: The previous round ended without agreement. [? if parlament_coalition_sovereignty_reject_reasons: [+ parlament_coalition_sovereignty_reject_reasons +] ?]The ball is on our side now to prepare a new counter-proposal.?]
 
 @choices

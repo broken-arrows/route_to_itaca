@@ -105,7 +105,10 @@ call: snap_election
 
 Negotiations have collapsed. [+ parlament_coalition_sovereignty_reject_reasons +] Now there's only one answer: for the people to vote again.
 
-- @post_event: This is highly disheartening...
+- @continue: This is highly disheartening...
+
+@continue
+go-to: jxsi_dissolution if jxsi_formed and not jxsi_dissolved; jxcat_dissolution if jxcat_formed and not jxcat_dissolved; post_event
 
 @initialize
 on-arrival: {!

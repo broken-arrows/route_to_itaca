@@ -133,7 +133,7 @@ on-arrival: {!
                 new_candidate_gender = "f";
                 break;
             case 1:
-                new_candidate = "Vidal Aragonès";
+                new_candidate = "Vidal Aragonés";
                 new_candidate_gender = "m";
                 break;
             case 2:

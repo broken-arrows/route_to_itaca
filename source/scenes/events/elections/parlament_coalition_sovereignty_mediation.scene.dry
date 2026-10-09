@@ -3,7 +3,7 @@ subtitle: ERC and [+ parlament_current_ciu +] have yet to reach a proper agreeme
 tags: event
 role: event
 new-page: true
-view-if: not rubicon and parlament_coalition_sovereignty_phase > 1 and coalition_phase_timer > 0 and (not parlament_coalition_sovereignty_mediation_round or parlament_coalition_sovereignty_mediation_round < parlament_coalition_sovereignty_phase) and (erc_relations < 45 or parlament_coalition_sovereignty_feud > 0 or (parlament_current_ciu = "ciu" and ciu_relations < 45) or (parlament_current_ciu = "cdc" and cdc_relations < 45) or (parlament_current_ciu = "dl" and dl_relations < 45) or (parlament_current_ciu = "pdcat" and pdcat_relations < 45) or (parlament_current_ciu = "junts" and junts_relations < 45) or (parlament_current_ciu = "jxcat" and jxcat_relations < 45))
+view-if: not rubicon and parlament_coalition_sovereignty_phase > 1 and coalition_phase_timer > 0 and (not parlament_coalition_sovereignty_mediation_round or parlament_coalition_sovereignty_mediation_round < parlament_coalition_sovereignty_phase) and (parlament_coalition_sovereignty_feud > 0 or (parlament_current_ciu = "ciu" and ciu_relations < 45) or (parlament_current_ciu = "cdc" and cdc_relations < 45) or (parlament_current_ciu = "dl" and dl_relations < 45) or (parlament_current_ciu = "pdcat" and pdcat_relations < 45) or (parlament_current_ciu = "junts" and junts_relations < 45) or (parlament_current_ciu = "jxcat" and jxcat_relations < 45))
 face-image: img/events/disputa_erc_junts.webp
 
 = The Sovereignty partners turn on each other

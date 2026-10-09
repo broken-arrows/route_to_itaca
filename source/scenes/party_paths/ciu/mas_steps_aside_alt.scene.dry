@@ -1,0 +1,22 @@
+title: Artur Mas steps down
+subtitle: The failure to lead a unity list seems to have marked the end of his political career.
+max-visits: 1
+face-image: img/events/pas_al_costat.webp
+new-page: true
+tags: events
+view-if: jxsi_formed and jxsi_formation_number != 40 and not jxsi_dissolved
+on-arrival: {!
+    // TODO / TBD: other triggers for this?? + trigger to switch to puigdemont at some point??
+    Q[Q.parlament_current_ciu + "_leader"] = "Neus Munté";
+    Q[Q.parlament_current_ciu + "_leader_gender"] = "f";
+    Q[Q.parlament_current_ciu + "_relations"] -= 3;
+!}
+role: event
+
+= ​Artur Mas steps down
+
+While his personal project, a unitary list to push for the independence for Catalonia, has been brought forward, truth is that many expected Artur Mas to end up at the forefront of that list. Instead, jxsi has taken a different direction, despite all the efforts put in by [+ parlament_current_ciu +]. This has left the formation in an uncertain position and looking for answers.
+
+Unlikely to accept the proposed Vice-Presidency offered to him, Artur Mas has decided to publicly step down. While he will still be part of [+ parlament_current_ciu +], and vows to do his best to help rebuild on the "original vision for Catalonia" that CDC had, his role at the helm is very much at an end. His nominated successor, Neus Munté, is little surprise, and has already wide support from most of the party. Well have to see how she fares.
+
+- @post_event: Time for a new [+ parlament_current_ciu +]?

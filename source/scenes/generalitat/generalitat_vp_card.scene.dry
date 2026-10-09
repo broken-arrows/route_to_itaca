@@ -74,7 +74,7 @@ go-to: generalitat_territory_card
 @digital1
 title: Expand the digitalization of the administration
 view-if: vp_digital_level = 0
-subtitle: We'll extend the uses of the idCat system and work towards digital administration unification.- \[-1 budget \]
+subtitle: We'll extend the uses of the idCat system and work towards digital administration unification. \[-1 budget \]
 choose-if: government_budget >= 1
 unavailable-subtitle: [? if government_budget < 1: Not enough budget.?]
 on-arrival: {!
