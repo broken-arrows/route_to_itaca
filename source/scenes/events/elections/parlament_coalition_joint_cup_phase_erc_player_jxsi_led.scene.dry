@@ -37,6 +37,7 @@ set-jump: choices
 [? if parlament_coalition_sovereignty_phase != 1: [? if parlament_coalition_sovereignty_reject_reasons: The CUP has rejected our previous investiture proposal. ?][? if parlament_coalition_sovereignty_reject_reasons: [+ parlament_coalition_sovereignty_reject_reasons +] ?]The ball is on our side now to prepare a new proposal.?]
 
 @choices
+call: parlament_coalition_sovereignty_replacement.check
 go-to: parlament_coalition_fiscal_policies.summary
 set-jump: choices_menu
 
@@ -47,8 +48,9 @@ set-jump: choices_menu
 [? if parlament_coalition_concessions_indy: **Independence commitment:** A more ambitious path towards independence will be pursued by this new government.?]
 
 - @policies
-- @push
 - @submit
+- @accept
+- @candidate_impasse
 
 @policies
 title: Negotiate policy commitments
@@ -58,6 +60,7 @@ set-jump: policies
 - @deadline
 - @roadmap
 - #fiscal_concessions
+- @push_policies
 - @phase_text: Move to other matters
 
 @deadline
@@ -94,6 +97,7 @@ title: Push for more leverage
 choose-if: parlament_coalition_sovereignty_phase < 3 and parlament_coalition_push < parlament_coalition_sovereignty_phase
 unavailable-subtitle: [? if parlament_coalition_sovereignty_phase >= 3: This is the final round; there is no further room to push. ?][? if parlament_coalition_push >= parlament_coalition_sovereignty_phase: We have already pushed for more leverage in this round. ?]
 on-arrival: {!
+    Q.parlament_coalition_changes = true;
     Q.parlament_coalition_push += 1;
     Q.parlament_coalition_leverage += 4;
     Q[Q.player_party == "erc" ? "cup_relations" : "erc_relations"] -= 3;
@@ -123,3 +127,24 @@ on-arrival: {!
 !}
 call: parlament_coalition_sovereignty_replacement.check
 go-to: parlament_coalition_sovereignty_replacement.evaluate
+
+@accept
+title: Accept proposal
+choose-if: not parlament_coalition_changes and not parlament_coalition_concessions and not parlament_coalition_sovereignty_candidate_reason
+unavailable-subtitle: [? if parlament_coalition_changes or parlament_coalition_concessions: We have proposed changes which will require our partners' approval. ?][? if parlament_coalition_sovereignty_candidate_reason: [+ parlament_coalition_sovereignty_candidate_reason +]?]
+go-to: submit
+
+@candidate_impasse
+title: [? if parlament_coalition_sovereignty_phase < 3: Negotiations will continue regarding the candidate to the Presidency... ?][? if parlament_coalition_sovereignty_phase >= 3: Negotiations end without an agreement...?]
+view-if: parlament_coalition_sovereignty_candidate_reason
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_reject_reasons = Q.parlament_coalition_sovereignty_candidate_reason;
+!}
+go-to: parlament_coalition_sovereignty.next_round
+
+@push_policies
+title: Push for more concessions
+choose-if: parlament_coalition_sovereignty_phase < 3 and parlament_coalition_push < parlament_coalition_sovereignty_phase
+unavailable-subtitle: [? if parlament_coalition_sovereignty_phase >= 3: This is the final round; there is no further room to push. ?][? if parlament_coalition_push >= parlament_coalition_sovereignty_phase: We have already pushed for more leverage in this round. ?]
+call: parlament_coalition_joint_cup_phase_erc_player_jxsi_led.push
+go-to: policies

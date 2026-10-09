@@ -77,7 +77,7 @@ title: [? if left_tripartite_coalition_phase = 1 and not parlament_coalition_cha
 - @territory
 - @bnl
 - @push_leverage_positions
-- @go_back: Review the current proposal
+- @go_back: Move to other matters
 
 @go_back
 on-arrival: {!
@@ -378,7 +378,7 @@ go-to: changes
 [? if parlament_coalition_proposal_bnl = "erc": We've added the Business & Labour Ministry to our proposal.?][? if parlament_coalition_proposal_bnl != "erc": We've proposed giving up the Business & Labour Ministry to our coalition partners.?]
 
 @push_leverage_positions
-title: Push for more positions
+title: Push for more concessions
 view-if: parlament_coalition_leverage < 10 and left_tripartite_coalition_phase < 3
 choose-if: parlament_coalition_push < left_tripartite_coalition_phase and left_tripartite_coalition_phase < 3
 unavailable-subtitle: We've already pushed for more demands. [? if left_tripartite_coalition_phase < 3: We'll have to wait for the next round of negotiations to try again. ?]

@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { DendryAdapter } from '../src/engine/adapter';
 
 const directory = resolve(import.meta.dirname, '../../source/scenes/events/elections');
 const files = readdirSync(directory).filter(name => /^parlament_coalition_(joint_cup|ciu_erc_cup)_phase_/.test(name));
@@ -43,16 +44,179 @@ function fixture(file: string): Record<string, any> {
 }
 
 describe('sovereignty pact requirements', () => {
-  it.each(files)('preserves previous rejection feedback until submission or refusal: %s', file => {
+  const governments = files.filter(file => file.includes('ciu_erc_cup') && file.includes('_government'));
+  const cabinetEditors = files.filter(file => file.includes('ciu_erc_cup') && (file.includes('_government') || file.includes('_erc_player_')));
+  it.each(cabinetEditors)('offers only player claims in the compiled cabinet menu: %s', file => {
+    const a = DendryAdapter.fromJSONText(readFileSync(resolve(directory, '../../../../out/game.json'), 'utf8'));
+    a.beginGame([1, 2, 3, 4]); a.goToScene('root.start_menu'); a.goToScene('root.start');
+    const q = fixture(file);
+    Object.assign(a.qualities, q, { parlament_current_ciu_s: 35 });
+    const scene = file.replace('.scene.dry', '');
+    let frame = a.goToScene(scene + '.ministries');
+    expect(frame.choices.filter(c => /\.(vp|interior|economy|foreign|health|education|territory|bnl)$/.test(c.id))).toHaveLength(8);
+    frame = a.choose(frame.choices.findIndex(c => c.id === scene + '.vp'));
+    expect(frame.choices.some(c => /_(ciu|erc|cup)$/.test(c.id))).toBe(false);
+    a.choose(frame.choices.findIndex(c => c.id === scene + '.redistribute'));
+    for (const office of ['vp', 'interior', 'economy', 'foreign', 'health', 'education', 'territory', 'bnl']) {
+      expect(['ciu', 'erc', ...(file.includes('_government') ? ['cup'] : [])]).toContain(a.qualities[`parlament_coalition_proposal_${office}`]);
+    }
+    expect(readFileSync(resolve(directory, file), 'utf8')).not.toMatch(/title: (Assign|Allocate) the/);
+  });
+
+  it.each(governments.filter(file => file.includes('_erc_player_')))('allocates NPC posts by preferences and changes their share with leverage: %s', file => {
+    const q = fixture(file);
+    Object.assign(q, { parlament_current_ciu_s: 20, cup_parlament_s: 30 });
+    for (const office of ['vp', 'interior', 'economy', 'foreign', 'health', 'education', 'territory', 'bnl']) q[`parlament_coalition_proposal_${office}`] = 'erc';
+    for (const office of ['economy', 'health', 'bnl']) q[`parlament_coalition_proposal_${office}`] = null;
+    run(file, q, 'redistribute');
+    expect(q.parlament_coalition_proposal_economy).toBe('ciu');
+    expect(q.parlament_coalition_proposal_bnl).toBe('cup');
+    expect(q.parlament_coalition_proposal_health).toBe('cup');
+    // Reallocate existing NPC holdings, not just null offices.
+    q.parlament_current_ciu_s = 60;
+    q.cup_parlament_s = 5;
+    run(file, q, 'redistribute');
+    expect(q.parlament_coalition_proposal_health).toBe('ciu');
+    expect(q.parlament_coalition_proposal_foreign).toBe('erc');
+  });
+
+  it.each(governments)('keeps a complete opening and redistributes within partner red lines in every round: %s', file => {
+    for (const round of [1, 2, 3]) {
+      const q = fixture(file);
+      Object.assign(q, { parlament_coalition_sovereignty_phase: round, parlament_current_ciu_s: 35 });
+      run(file, q, 'prepare');
+      for (const office of ['vp', 'interior', 'economy', 'foreign', 'health', 'education', 'territory', 'bnl']) {
+        expect(['ciu', 'erc', 'cup']).toContain(q[`parlament_coalition_proposal_${office}`]);
+        q[`parlament_coalition_proposal_${office}`] = null;
+      }
+      run(file, q, 'redistribute');
+      expect(q.parlament_coalition_proposal_economy).not.toBe('cup');
+      if (round === 1) expect(q.parlament_coalition_proposal_interior).toBe('ciu');
+      if (round < 3) expect(q.parlament_coalition_proposal_interior).not.toBe('cup');
+      const snapshot = JSON.stringify(q);
+      run(file, q, 'redistribute');
+      expect(JSON.stringify(q)).toBe(snapshot);
+    }
+  });
+
+  it.each(governments)('negotiates only the player posts and redistributes released offices: %s', file => {
+    const q = fixture(file);
+    q.parlament_current_ciu_s = 35;
+    run(file, q, 'prepare');
+    const president = q.parlament_coalition_proposal_president_name;
+    for (const office of ['vp', 'interior', 'economy', 'foreign', 'health', 'education', 'territory', 'bnl']) {
+      const key = `parlament_coalition_proposal_${office}`;
+      if (q[key] !== q.player_party) run(file, q, office);
+      const leverage = q.parlament_coalition_leverage;
+      run(file, q, office);
+      expect(q[key]).toBeNull();
+      run(file, q, office);
+      expect(q[key]).toBe(q.player_party);
+      expect(q.parlament_coalition_leverage).toBe(leverage);
+      run(file, q, office);
+      run(file, q, 'redistribute');
+      expect(['ciu', 'erc', 'cup'].filter(party => party !== q.player_party)).toContain(q[key]);
+    }
+    expect(q.parlament_coalition_proposal_president_name).toBe(president);
+    const source = readFileSync(resolve(directory, file), 'utf8');
+    expect(source).not.toMatch(/title: Assign the/);
+  });
+
+  it.each(governments)('requires each NPC partner to accept independently: %s', file => {
+    for (const partner of ['ciu', file.includes('_erc_player_') ? 'cup' : 'erc']) {
+      const q = fixture(file);
+      run(file, q, 'submit');
+      expect(q.parlament_coalition_proposal_accept).toBe(true);
+      for (const office of ['interior', 'economy', 'foreign', 'health', 'education', 'territory', 'bnl']) {
+        if (q[`parlament_coalition_proposal_${office}`] === partner) q[`parlament_coalition_proposal_${office}`] = q.player_party;
+      }
+      run(file, q, 'submit');
+      expect(q.parlament_coalition_proposal_accept).toBe(false);
+      expect(q.parlament_coalition_sovereignty_reject_reasons.toLowerCase()).toMatch(partner === 'ciu' ? /(ciu expects|convergents expect)/ : new RegExp(partner + ' expects'));
+    }
+  });
+
+  it.each(files)('preserves previous rejection feedback until submission: %s', file => {
     const q = fixture(file);
     q.parlament_coalition_sovereignty_reject_reasons = 'The partners rejected our proposed commitments.';
     run(file, q, 'prepare');
     expect(q.parlament_coalition_sovereignty_reject_reasons).toBe('The partners rejected our proposed commitments.');
     run(file, q, 'submit');
     expect(q.parlament_coalition_sovereignty_reject_reasons).not.toContain('The partners rejected our proposed commitments.');
+  });
+
+  it.each(files)('records the candidate impasse when reconvening: %s', file => {
+    const q = fixture(file);
     q.parlament_coalition_sovereignty_reject_reasons = 'The partners rejected our proposed commitments.';
-    run(file, q, 'reject');
-    expect(q.parlament_coalition_sovereignty_reject_reasons).toBe('');
+    q.parlament_coalition_sovereignty_candidate_reason = 'The assembly has vetoed Artur Mas.';
+    run(file, q, 'candidate_impasse');
+    expect(q.parlament_coalition_sovereignty_reject_reasons).toBe(q.parlament_coalition_sovereignty_candidate_reason);
+  });
+
+  it.each(files)('aligns acceptance, candidate impasses and submenu pushes in the engine: %s', file => {
+    const a = DendryAdapter.fromJSONText(readFileSync(resolve(directory, '../../../../out/game.json'), 'utf8'));
+    a.beginGame([1, 2, 3, 4]); a.goToScene('root.start_menu'); a.goToScene('root.start');
+    Object.assign(a.qualities, fixture(file), {
+      parlament_coalition_sovereignty_phase: 1, parlament_coalition_push: 0,
+      parlament_coalition_changes: false, parlament_coalition_policy_health: false,
+      parlament_coalition_policy_indy_demanded: false, rubicon: false,
+    });
+    const scene = file.replace('.scene.dry', '');
+    let frame = a.goToScene(scene + '.choices');
+    expect(frame.choices.find(c => c.id === scene + '.accept')?.canChoose).toBe(true);
+    expect(frame.choices.some(c => /\.(reject|push|push_policies|push_ministries|candidate_impasse)$/.test(c.id))).toBe(false);
+    frame = a.goToScene(scene + '.policies');
+    const before = Number(a.qualities.parlament_coalition_leverage);
+    frame = a.choose(frame.choices.findIndex(c => c.id === scene + '.push_policies'));
+    expect(a.qualities.parlament_coalition_leverage).toBe(before + 4);
+    expect(a.qualities.parlament_coalition_push).toBe(1);
+    expect(frame.choices.find(c => c.id === scene + '.push_policies')?.canChoose).toBe(false);
+    if (cabinetEditors.includes(file)) {
+      frame = a.goToScene(scene + '.ministries');
+      expect(frame.choices.find(c => c.id === scene + '.push_ministries')?.canChoose).toBe(false);
+    }
+    frame = a.goToScene(scene + '.choices');
+    expect(frame.choices.find(c => c.id === scene + '.accept')?.canChoose).toBe(false);
+    Object.assign(a.qualities, {
+      parlament_coalition_changes: false, parlament_coalition_proposal_president_name: 'Artur Mas',
+      parlament_coalition_sovereignty_assembly_result: 'veto',
+    });
+    frame = a.goToScene(scene + '.choices');
+    expect(frame.choices.find(c => c.id === scene + '.accept')?.canChoose).toBe(false);
+    expect(frame.choices.find(c => c.id === scene + '.candidate_impasse')?.canChoose).toBe(true);
+    a.choose(frame.choices.findIndex(c => c.id === scene + '.candidate_impasse'));
+    expect(a.qualities.parlament_coalition_sovereignty_phase).toBe(2);
+    expect(a.qualities.coalition_phase_timer).toBe(1);
+    expect(a.qualities.parlament_coalition_sovereignty_reject_reasons).toContain('Artur Mas');
+    a.qualities.parlament_coalition_sovereignty_phase = 3;
+    a.qualities.coalition_phase_timer = 0;
+    frame = a.goToScene(scene + '.choices');
+    expect(frame.choices.find(c => c.id === scene + '.candidate_impasse')?.title).toContain('End negotiations');
+    frame = a.goToScene(scene + '.policies');
+    expect(frame.choices.find(c => c.id === scene + '.push_policies')?.canChoose).toBe(false);
+  });
+
+  it.each(files.filter(file => file.includes('_cup_player_')))('accepts an unchanged eligible pact through the normal checks: %s', file => {
+    const a = DendryAdapter.fromJSONText(readFileSync(resolve(directory, '../../../../out/game.json'), 'utf8'));
+    a.beginGame([1, 2, 3, 4]); a.goToScene('root.start_menu'); a.goToScene('root.start');
+    const q = fixture(file);
+    Object.assign(q, {
+      parlament_coalition_changes: false, parlament_coalition_policy_health: false,
+      parlament_coalition_policy_indy_demanded: false, parlament_coalition_cabinet_seats: 80,
+    });
+    if (file.includes('_support')) {
+      q.parlament_coalition_sovereignty_cabinet = ['ciu', 'erc'];
+      q.parlament_coalition_proposal_health = 'erc';
+      q.parlament_coalition_proposal_education = 'erc';
+    }
+    Object.assign(a.qualities, q);
+    const scene = file.replace('.scene.dry', '');
+    const frame = a.goToScene(scene + '.choices');
+    expect(frame.choices.find(c => c.id === scene + '.accept')?.canChoose).toBe(true);
+    a.choose(frame.choices.findIndex(c => c.id === scene + '.accept'));
+    expect(a.qualities.parlament_coalition_proposal_accept).toBe(true);
+    expect(a.qualities.parlament_coalition_sovereignty_phase).toBe(0);
+    expect(a.qualities.cat_coalition).toEqual(q.parlament_coalition_sovereignty_cabinet);
   });
 
   it('resolves both dispute types independently without repeating either', () => {

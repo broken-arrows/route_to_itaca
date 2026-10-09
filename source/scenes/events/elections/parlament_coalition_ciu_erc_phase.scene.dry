@@ -108,9 +108,6 @@ set-jump: choices_menu
 
 @choices_menu
 
-
-
-
 [? if parlament_coalition_concessions_indy: - [+ parlament_coalition_concessions_indy_text +] ?]
 
 [? if not parlament_coalition_concessions: Even if we accept this proposal, we can still negotiate policy concessions.?]
@@ -348,7 +345,7 @@ go-to: changes
 [? if parlament_coalition_proposal_bnl = "erc": We've added the Business & Labour Ministry to our proposal.?][? if parlament_coalition_proposal_bnl != "erc": We've proposed giving up the Business & Labour Ministry to [+ parlament_current_ciu +].?]
 
 @push_leverage_positions
-title: Push for more positions
+title: Push for more concessions
 view-if: parlament_coalition_leverage < 10 and ciu_erc_coalition_phase < 3
 choose-if: parlament_coalition_push < ciu_erc_coalition_phase and ciu_erc_coalition_phase < 3
 unavailable-subtitle: We've already pushed for more demands. [? if ciu_erc_coalition_phase < 3: We'll have to wait for the next round of negotiations to try again. ?]

@@ -61,7 +61,7 @@ title: [? if erc_cup_coalition_phase = 1: Propose a government composition?][? i
 - @foreign
 - @territory
 - @bnl
-- @finish_changes: Review the current proposal
+- @finish_changes: Move to other matters
 
 @finish_changes
 on-arrival: {!

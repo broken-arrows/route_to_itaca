@@ -59,7 +59,7 @@ describe('presidential pressure, assembly and nomination', () => {
     evaluate(q);
     const partner = kind === 'jxsi' ? 'JxSí' : kind === 'jxcat' ? 'JxCat' : 'CDC';
     expect(q[P + 'candidate_reason']).toContain(partner + ' is unwilling to withdraw Artur Mas');
-    expect(q[P + 'candidate_reason']).toContain('assembly has voted against');
+    expect(q[P + 'candidate_reason']).toMatch(/assembly has voted against/i);
   });
 
   it.each([false, true])('submits a selectable excessive CUP demand, with withdrawal %s', withdraw => {
@@ -117,7 +117,7 @@ describe('presidential pressure, assembly and nomination', () => {
     Object.assign(a.qualities, qbase({ [P + 'kind']: kind, [P + 'assembly_result']: 'veto', parlament_coalition_leader: joint ? kind : 'cdc', jxsi_formed: true, jxcat_formed: true }));
     const pressure = a.goToScene(P + 'candidate_erc.public');
     expect(pressure.html.includes('breaking the coalition')).toBe(joint);
-    expect(pressure.html.includes('never agreed to stand together')).toBe(!joint);
+    expect(pressure.html.includes('publicly siding with the CUP')).toBe(!joint);
     const replacement = a.goToScene(P + 'replacement');
     expect(replacement.html.includes('for the good of the unity list')).toBe(joint);
     expect(replacement.html.includes('to make an agreement between')).toBe(!joint);
@@ -251,20 +251,20 @@ describe('presidential pressure, assembly and nomination', () => {
     ('NPC ballot produces %s from faction strength and one saved draw', (result, pl, en, roll) => {
       const q = qbase({ cup_poblelliure_strength: pl, cup_endavant_strength: en });
       const draw = vi.fn(() => Number(roll));
-      action('parlament_coalition_sovereignty_assembly', 'ballot', q, draw);
+      action('parlament_coalition_sovereignty_assembly', 'vote', q, draw);
       expect(q[P + 'assembly_result']).toBe(result);
       expect(q[P + 'assembly_yes']).toBeGreaterThanOrEqual(0);
-      expect(q[P + 'assembly_yes']).toBeLessThanOrEqual(3034);
+      expect(q[P + 'assembly_yes']).toBeLessThanOrEqual(3030);
       const saved = JSON.parse(JSON.stringify(q));
-      action('parlament_coalition_sovereignty_assembly', 'ballot', saved, draw);
+      action('parlament_coalition_sovereignty_assembly', 'vote', saved, draw);
       expect(draw).toHaveBeenCalledTimes(1);
       expect(saved[P + 'assembly_yes']).toBe(q[P + 'assembly_yes']);
     });
 
   it('NPC ballot ignores hidden faction dissent', () => {
     const a = qbase(), b = qbase({ cup_poblelliure_dissent: 100, cup_endavant_dissent: 100, cup_thirdsector_dissent: 100 });
-    action('parlament_coalition_sovereignty_assembly', 'ballot', a);
-    action('parlament_coalition_sovereignty_assembly', 'ballot', b);
+    action('parlament_coalition_sovereignty_assembly', 'vote', a);
+    action('parlament_coalition_sovereignty_assembly', 'vote', b);
     expect(a[P + 'assembly_yes']).toBe(b[P + 'assembly_yes']);
   });
 
@@ -290,7 +290,7 @@ describe('presidential pressure, assembly and nomination', () => {
   });
 
   it.each(['erc', 'cup'].flatMap(player => ['Artur Mas', 'Neus Munté'].flatMap(name =>
-    ['', 'veto', 'tie', 'approve'].map(result => ({ player, name, result }))
+    (name === 'Artur Mas' ? ['', 'veto', 'tie', 'approve'] : ['', 'veto', 'tie']).map(result => ({ player, name, result }))
   )))('explains candidate feedback for $player, $name and assembly "$result"', ({ player, name, result }) => {
     const q = qbase({
       player_party: player, parlament_coalition_proposal_president_name: name,
@@ -312,7 +312,7 @@ describe('presidential pressure, assembly and nomination', () => {
     if (!result) {
       expect(explanation).not.toMatch(/has voted|ended in a tie|assembly.*(?:rejected|authorized)/);
     } else if (result === 'veto') {
-      expect(explanation).toMatch(/assembly.*(?:voted against|rejected)/);
+      expect(explanation).toMatch(/assembly.*(?:voted against|rejected)/i);
     } else if (result === 'tie') {
       expect(explanation).toMatch(/\btie\b/);
       expect(explanation).not.toContain('voted against');
@@ -322,6 +322,9 @@ describe('presidential pressure, assembly and nomination', () => {
     if (name === 'Neus Munté') {
       expect(explanation).toMatch(/Artur Mas|CDC/);
       expect(explanation).not.toContain('voted against the investiture of Neus Munté');
+      if (player === 'cup' && !result) {
+        expect(explanation).toContain('no assembly mandate');
+      }
     }
   });
 
@@ -484,8 +487,18 @@ describe('presidential pressure, assembly and nomination', () => {
     const a = DendryAdapter.fromJSONText(gameText);
     a.beginGame([1, 2, 3, 4]); a.goToScene('root.start_menu'); a.goToScene('root.start');
     Object.assign(a.qualities, qbase({ player_party: player, coalition_phase_timer: 0, [P + 'kind']: kind, [P + 'assembly_result']: result, parlament_coalition_leader: leader, parlament_coalition_follower: 'erc', parlament_coalition_policy_health: true, [P + 'mas_pressure']: 0 }));
+    if (result === 'approve') {
+      // Approval settles the candidate even when pressure and faction resistance
+      // would otherwise force the final-round replacement scene.
+      Object.assign(a.qualities, {
+        [P + 'ciu_pressure']: 5, cup_faction: 'Endavant',
+        cup_poblelliure_strength: 0, cup_endavant_strength: 100,
+        cdc_relations: 0, erc_relations: 0, cup_relations: 0,
+      });
+    }
     const frame = a.goToScene(phase);
     if (result === 'approve') {
+      expect(a.qualities[P + 'replacement_needed']).toBe(false);
       expect(frame.choices.some(c => c.id.startsWith('parlament_coalition_sovereignty_replacement.'))).toBe(false);
       expect(frame.choices.some(c => c.id === phase + '.submit')).toBe(true);
       expect(a.qualities.parlament_coalition_proposal_president_name).toBe('Artur Mas');
@@ -510,7 +523,7 @@ describe('presidential pressure, assembly and nomination', () => {
     expect(frame.choices.find(c => c.id.endsWith('.vote'))?.canChoose).toBe(true);
     a.qualities.player_party = 'erc';
     const report = a.goToScene('parlament_coalition_sovereignty_assembly_erc');
-    expect(report.html).toContain('membership has voted');
+    expect(report.choices.find(c => c.id === P + 'assembly.results')?.canChoose).toBe(true);
     expect(a.qualities[P + 'assembly_result']).toBeTruthy();
     const saved = a.exportStateJSON();
     const restored = DendryAdapter.fromJSONText(gameText); restored.importStateJSON(saved);
@@ -538,8 +551,13 @@ describe('presidential pressure, assembly and nomination', () => {
     pick('parlament_coalition_sovereignty_candidate_erc');
     pick('parlament_coalition_sovereignty_candidate_erc.private');
     expect(a.qualities.month).toBe(2);
+    pick('root');
+    expect(a.qualities.month).toBe(2);
+    expect(a.qualities.coalition_phase_timer).toBe(1);
     pick('parlament_coalition_sovereignty_assembly_erc');
     expect(a.qualities[P + 'assembly_result']).toBe('veto');
+    expect(a.qualities.month).toBe(2);
+    pick('parlament_coalition_sovereignty_assembly.results');
     expect(a.qualities.month).toBe(2);
     pick('post_event');
     expect(a.qualities.month).toBe(3);

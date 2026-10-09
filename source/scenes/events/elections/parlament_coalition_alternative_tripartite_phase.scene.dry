@@ -95,7 +95,7 @@ title: [? if parlament_coalition_changes: Revisit our counter-proposal?][? if no
 - @claim_territory: Demand the Territory Ministry
 - @claim_bnl: Demand the Business & Labour Ministry
 - @send: Send the counter-proposal
-- @choices: Review the current proposal
+- @choices: Move to other matters
 
 @claim_health
 choose-if: parlament_coalition_leverage >= 7 and parlament_coalition_proposal_health != "erc"

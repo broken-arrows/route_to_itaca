@@ -98,7 +98,7 @@ view-if: player_party = "erc" or (player_party = "cup" and cup_broad_kind = "pop
 - @health
 - @economy
 - @foreign
-- @phase_text: Review the current proposal
+- @phase_text: Move to other matters
 
 @interior
 title: [? if parlament_coalition_proposal_interior != player_party: Demand the Interior Ministry?][? if parlament_coalition_proposal_interior = player_party: Give up the Interior Ministry?]

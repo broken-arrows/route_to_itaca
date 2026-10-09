@@ -219,7 +219,7 @@ go-to: changes
 [? if parlament_coalition_proposal_bnl = "erc": We've added the Business & Labour Ministry to our proposal.?][? if parlament_coalition_proposal_bnl != "erc": We've proposed giving up the Business & Labour Ministry to [+ parlament_current_ciu +].?]
 
 @push_leverage_positions
-title: Push for more positions
+title: Push for more concessions
 view-if: parlament_coalition_leverage < 10 and erc_ciu_coalition_phase < 3
 choose-if: parlament_coalition_push < erc_ciu_coalition_phase and erc_ciu_coalition_phase < 3
 unavailable-subtitle: We've already pushed for more demands. [? if erc_ciu_coalition_phase < 3: We'll have to wait for the next round of negotiations to try again. ?]

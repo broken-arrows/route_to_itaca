@@ -298,7 +298,9 @@ on-arrival: {!
             if (Q.year < 2016) {
                 Q.parlament_coalition_proposal_health_name = "Boi Ruiz";
                 Q.parlament_coalition_proposal_health_gender = "m";
-                Q.parlament_coalition_proposal_health = "indp.";
+                // During sovereignty talks this remains a CiU cabinet allocation,
+                // even when its proposed minister is an independent.
+                if (!(Q.parlament_coalition_sovereignty_phase > 0)) Q.parlament_coalition_proposal_health = "indp.";
             } else {
                 Q.parlament_coalition_proposal_health_name = "Toni Comín";
                 Q.parlament_coalition_proposal_health_gender = "m";

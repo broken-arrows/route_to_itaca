@@ -120,7 +120,7 @@ title: Revise the government composition
 - @territory
 - @bnl
 - @push_leverage_positions
-- @go_back: Review the current proposal
+- @go_back: Move to other matters
 
 @go_back
 on-arrival: {!
@@ -342,7 +342,7 @@ go-to: changes
 [? if parlament_coalition_proposal_bnl = "erc": We've added the Business & Labour Ministry to our counter-proposal.?][? if parlament_coalition_proposal_bnl != "erc": We've released the Business & Labour Ministry.?]
 
 @push_leverage_positions
-title: Push for more positions
+title: Push for more concessions
 view-if: parlament_coalition_leverage < 10 and psc_tripartite_coalition_phase < 3
 choose-if: parlament_coalition_push < psc_tripartite_coalition_phase and psc_tripartite_coalition_phase < 3
 unavailable-subtitle: We've already pushed for more. [? if psc_tripartite_coalition_phase < 3: We'll have to wait for the next round of negotiations to try again. ?]

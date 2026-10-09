@@ -1,0 +1,147 @@
+title: JxCat <span class="generalitat-coalition" data-parties="jxcat" data-summary="Minority government - [+ jxcat_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxcat_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxcat); font-style: italic;">minority Government</span></span> with CUP support negotiations
+subtitle: [? if parlament_coalition_sovereignty_phase = 1: The first round of negotiations begins in earnest.?][? if parlament_coalition_sovereignty_phase = 2: The parties return for the second round of negotiations.?][? if parlament_coalition_sovereignty_phase = 3: The third and final round of negotiations begins.?]
+tags: event
+role: event
+new-page: true
+view-if: parlament_coalition_sovereignty_phase > 0 and parlament_coalition_sovereignty_kind = "jxcat" and player_party = "cup" and parlament_coalition_leader = "jxcat" and coalition_phase_timer <= 0
+call: parlament_coalition_sovereignty_replacement.check
+set-jump: prepare
+go-to: parlament_coalition_sovereignty_replacement if parlament_coalition_sovereignty_replacement_needed; prepare if not parlament_coalition_sovereignty_replacement_needed
+
+@prepare
+on-arrival: {!
+    Q.parlament_coalition_changes = false;
+    Q.parlament_coalition_concessions_indy = 0;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    var offices = ["vp", "interior", "economy", "foreign", "health", "education", "territory", "bnl"];
+    for (var office of offices) Q["parlament_coalition_proposal_" + office] = Q.parlament_coalition_leader;
+
+
+    for (var office of offices) {
+        Q["parlament_coalition_proposal_" + office + "_name"] = null;
+        Q["parlament_coalition_proposal_" + office + "_gender"] = null;
+    }
+    Q.parlament_coalition_leverage = Math.max(15, Q[Q.player_party + "_parlament_s"] * 55 / Math.max(1, Q.parlament_coalition_support_seats)) + (Q.parlament_coalition_sovereignty_phase - 1) * 4 - (Q.speaker_party == Q.player_party ? 5 : 0);
+    Q.parlament_coalition_leverage += Q.parlament_coalition_sovereignty_mas_pressure * 2;
+!}
+call: parlament_coalition_fiscal_policies.initialize
+go-to: phase_text
+
+@phase_text
+new-page: true
+go-to: parlament_coalition_setnames
+set-jump: choices
+
+[? if parlament_coalition_sovereignty_phase = 1: Negotiations with JxCat for the formation of a JxCat <span class="generalitat-coalition" data-parties="jxcat" data-summary="Minority government - [+ jxcat_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxcat_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxcat); font-style: italic;">minority Government</span></span> with CUP support are about to start. JxCat has presented its initial investiture proposal. We will remain outside government and negotiate the commitments needed for our support. ?]
+[? if parlament_coalition_sovereignty_phase != 1: The previous round ended without agreement. [? if parlament_coalition_sovereignty_reject_reasons: [+ parlament_coalition_sovereignty_reject_reasons +] ?]The ball is on our side now to prepare a new counter-proposal.?]
+
+@choices
+call: parlament_coalition_sovereignty_replacement.check
+go-to: parlament_coalition_fiscal_policies.summary
+set-jump: choices_menu
+
+@choices_menu
+
+[? if parlament_coalition_sovereignty_deadline: **Roadmap deadline:** The new government is to fulfill the agreed Roadmap by [+ parlament_coalition_sovereignty_deadline +].?]
+
+[? if parlament_coalition_concessions_indy: **Independence commitment:** A more ambitious path towards independence will be pursued by this new government.?]
+
+- @policies
+- @submit
+- @accept
+- @candidate_impasse
+
+@policies
+title: Negotiate policy commitments
+call: parlament_coalition_fiscal_policies
+set-jump: policies
+
+- @deadline
+- @roadmap
+- #fiscal_concessions
+- @push_policies
+- @phase_text: Move to other matters
+
+@deadline
+title: [? if parlament_coalition_sovereignty_deadline: Withdraw the shorter roadmap deadline?][? if not parlament_coalition_sovereignty_deadline: Commit to fulfilling the roadmap by [+ year + 2 +]?]
+view-if: parlament_coalition_sovereignty_deadline > 0 or roadmap_year > year + 2
+choose-if: parlament_coalition_sovereignty_deadline > 0 or (roadmap_year > year + 2)
+on-arrival: {!
+    if (Q.parlament_coalition_sovereignty_deadline) {
+        Q.parlament_coalition_sovereignty_deadline = 0;
+        Q.parlament_coalition_leverage += 5;
+    } else if (Q.roadmap_year > Q.year + 2) {
+        Q.parlament_coalition_sovereignty_deadline = Q.year + 2;
+        Q.parlament_coalition_leverage -= 5;
+    }
+    Q.parlament_coalition_changes = true;
+!}
+go-to: policies
+
+@roadmap
+title: Include a stronger independence roadmap
+choose-if: not parlament_coalition_concessions_indy
+unavailable-subtitle: [? if parlament_coalition_concessions_indy: We have already committed to this. ?]
+on-arrival: {!
+    Q.parlament_coalition_concessions_indy = 1;
+    Q.parlament_coalition_policy_indy_demanded = true;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_leverage -= 5;
+!}
+go-to: policies
+
+@push
+title: Push for more leverage
+choose-if: parlament_coalition_sovereignty_phase < 3 and parlament_coalition_push < parlament_coalition_sovereignty_phase
+unavailable-subtitle: [? if parlament_coalition_sovereignty_phase >= 3: This is the final round; there is no further room to push. ?][? if parlament_coalition_push >= parlament_coalition_sovereignty_phase: We have already pushed for more leverage in this round. ?]
+on-arrival: {!
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_push += 1;
+    Q.parlament_coalition_leverage += 4;
+    Q[Q.player_party == "erc" ? "cup_relations" : "erc_relations"] -= 3;
+!}
+go-to: phase_text
+
+@submit
+title: Send this counter-proposal
+on-arrival: {!
+    var reasons = [];
+    var ministries = ["interior", "economy", "foreign", "health", "education", "territory", "bnl"];
+    var counts = {};
+    for (var office of ["vp"].concat(ministries)) {
+        var holder = Q["parlament_coalition_proposal_" + office];
+        if (Q.parlament_coalition_sovereignty_cabinet.indexOf(holder) < 0) reasons.push("Some cabinet posts are still unassigned or have been given to a party outside the government.");
+        if (office != "vp") counts[holder] = (counts[holder] || 0) + 1;
+    }
+
+    if (Q.coalition_phase_timer > 0) reasons.push("We must wait for the next round of negotiations before sending another proposal.");
+    if (Q.parlament_coalition_leverage < 0) reasons.push("JxCat is unwilling to accept the full package of concessions we are demanding.");
+
+    Q.parlament_coalition_sovereignty_reject_reasons = reasons.filter(function (r, i) { return reasons.indexOf(r) == i; }).join(" ");
+    Q.parlament_coalition_proposal_accept = reasons.length == 0;
+!}
+call: parlament_coalition_sovereignty_replacement.check
+go-to: parlament_coalition_sovereignty_replacement.evaluate
+
+
+@accept
+title: Accept proposal
+choose-if: not parlament_coalition_changes and not parlament_coalition_concessions and not parlament_coalition_sovereignty_candidate_reason
+unavailable-subtitle: [? if parlament_coalition_changes or parlament_coalition_concessions: We have proposed changes which will require the approval of our coalition partners.?][? if parlament_coalition_sovereignty_candidate_reason: [+ parlament_coalition_sovereignty_candidate_reason +]?]
+go-to: submit
+
+@candidate_impasse
+title: [? if parlament_coalition_sovereignty_phase < 3: Negotiations will continue regarding the candidate to the Presidency... ?][? if parlament_coalition_sovereignty_phase >= 3: Negotiations end without an agreement...?]
+view-if: parlament_coalition_sovereignty_candidate_reason
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_reject_reasons = Q.parlament_coalition_sovereignty_candidate_reason;
+!}
+go-to: parlament_coalition_sovereignty.next_round
+
+@push_policies
+title: Push for more concessions
+choose-if: parlament_coalition_sovereignty_phase < 3 and parlament_coalition_push < parlament_coalition_sovereignty_phase
+unavailable-subtitle: [? if parlament_coalition_sovereignty_phase >= 3: This is the final round; there is no further room to push. ?][? if parlament_coalition_push >= parlament_coalition_sovereignty_phase: We have already pushed for more leverage in this round. ?]
+call: parlament_coalition_joint_cup_phase_cup_player_jxcat_led.push
+go-to: policies
