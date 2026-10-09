@@ -9,7 +9,7 @@ you're allowed to make a wish once you do so! ✨
 - @post_event.make_a_wish
 
 @psc_cs
-title: PSC-led <span class="generalitat-coalition" data-parties="psc" data-summary="Minority government with Cs support"><span style="color: var(--cs); font-style: italic;">Moderation</span> Government</span> with Cs support
+title: PSC-led <span class="generalitat-coalition" data-parties="psc" data-summary="Minority government - [+ psc_parlament_s +] / [+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Moderation</span> Government</span> with Cs support
 view-if: parlament_coalition_option_psc_cs_mod_visible
 choose-if: parlament_route_unionist_psc_cs_available
 unavailable-subtitle: The PSC and Cs lack a majority to form this government.
@@ -20,7 +20,7 @@ on-arrival: {!
 go-to: form
 
 @ppc_cs_psc_abst
-title: PPC-led <span class="generalitat-coalition" data-parties="ppc cs" data-summary="Minority government with PSC abstention"><span style="color: var(--ppc); font-style: italic;">Unity Pact</span></span> with PSC abstention
+title: PPC-led <span class="generalitat-coalition" data-parties="ppc cs" data-summary="Minority government - [+ ppc_parlament_s + cs_parlament_s +] / [+ parlament_s_majority +]"><span style="color: var(--ppc); font-style: italic;">Unity Pact</span></span> with PSC abstention
 view-if: parlament_coalition_option_ppc_cs_psc_abst_visible
 choose-if: parlament_route_unionist_ppc_cs_psc_abst_available
 unavailable-subtitle: PSC abstention is insufficient to elect this government.
@@ -31,7 +31,7 @@ on-arrival: {!
 go-to: form
 
 @ppc_cs_psc_sup
-title: PPC-led <span class="generalitat-coalition" data-parties="ppc cs" data-summary="Minority government with PSC support"><span style="color: var(--ppc); font-style: italic;">Grand Unity Pact</span></span> with PSC support
+title: PPC-led <span class="generalitat-coalition" data-parties="ppc cs" data-summary="Minority government - [+ psc_parlament_s + cs_parlament_s +] / [+ parlament_s_majority +]"><span style="color: var(--ppc); font-style: italic;">Grand Unity Pact</span></span> with PSC support
 view-if: parlament_coalition_option_ppc_cs_psc_sup_visible
 choose-if: parlament_route_unionist_ppc_cs_psc_sup_available
 unavailable-subtitle: PPC, Cs, and PSC cannot elect this government.
@@ -42,7 +42,7 @@ on-arrival: {!
 go-to: form
 
 @cs_ppc_psc_vox_abst
-title: [? if cs_parlament_s > ppc_parlament_s: Cs-led ?][? if cs_parlament_s <= ppc_parlament_s: PPC-Cs ?]<span class="generalitat-coalition" data-parties="[? if cs_parlament_s > ppc_parlament_s: cs?][? if cs_parlament_s <= ppc_parlament_s: ppc cs?]" data-summary="Minority government with [? if cs_parlament_s > ppc_parlament_s: PPC and ?]PSC support and Vox abstention"><span style="color: [? if cs_parlament_s > ppc_parlament_s: var(--cs)?][? if cs_parlament_s <= ppc_parlament_s: var(--ppc)?]; font-style: italic;">Unthinkably</span> <span style="color: var(--psc); font-style: italic;">Grand</span> <span style="color: var(--vox); font-style: italic;">Coalition</span></span> with [? if cs_parlament_s > ppc_parlament_s: PPC and ?]PSC support and Vox abstention
+title: [? if cs_parlament_s > ppc_parlament_s: Cs-led ?][? if cs_parlament_s <= ppc_parlament_s: PPC-Cs ?]<span class="generalitat-coalition" data-parties="[? if cs_parlament_s > ppc_parlament_s: cs?][? if cs_parlament_s <= ppc_parlament_s: ppc cs?]" data-summary="Minority government - [? if cs_parlament_s > ppc_parlament_s: [+ cs_parlament_s +] ?][? if cs_parlament_s <= ppc_parlament_s : [+ ppc + cs_parlament_s +] / [+ parlament_s_majority +]"><span style="color: [? if cs_parlament_s > ppc_parlament_s: var(--cs)?][? if cs_parlament_s <= ppc_parlament_s: var(--ppc)?]; font-style: italic;">Unthinkably</span> <span style="color: var(--psc); font-style: italic;">Grand</span> <span style="color: var(--vox); font-style: italic;">Coalition</span></span> with [? if cs_parlament_s > ppc_parlament_s: PPC and ?]PSC support and Vox abstention
 view-if: parlament_coalition_option_cs_ppc_psc_vox_abst_visible
 choose-if: parlament_route_unionist_cs_ppc_psc_vox_abst_available
 unavailable-subtitle: Even a Vox abstention cannot elect this government.
@@ -53,7 +53,7 @@ on-arrival: {!
 go-to: form
 
 @cs_ppc_vox_psc_abst
-title: [? if cs_parlament_s > ppc_parlament_s: Cs-led ?][? if cs_parlament_s <= ppc_parlament_s: PPC-Cs ?]<span class="generalitat-coalition" data-parties="[? if cs_parlament_s > ppc_parlament_s: cs?][? if cs_parlament_s <= ppc_parlament_s: ppc cs?]" data-summary="Minority government with [? if cs_parlament_s > ppc_parlament_s: PPC and ?]Vox support and PSC abstention"><span style="color: [? if cs_parlament_s > ppc_parlament_s: var(--cs)?][? if cs_parlament_s <= ppc_parlament_s: var(--ppc)?]; font-style: italic;">Unthinkable Unity Pact</span></span> with [? if cs_parlament_s > ppc_parlament_s: PPC, ?]Vox support and PSC abstention
+title: [? if cs_parlament_s > ppc_parlament_s: Cs-led ?][? if cs_parlament_s <= ppc_parlament_s: PPC-Cs ?]<span class="generalitat-coalition" data-parties="[? if cs_parlament_s > ppc_parlament_s: cs?][? if cs_parlament_s <= ppc_parlament_s: ppc cs?]" data-summary="Minority government - [? if cs_parlament_s > ppc_parlament_s: [+ cs_parlament_s +]?][? if cs_parlament_s <= ppc_parlament_s: [+ ppc_parlament_s + cs_parlament_s +]?] / [+ parlament_s_majority +]"><span style="color: [? if cs_parlament_s > ppc_parlament_s: var(--cs)?][? if cs_parlament_s <= ppc_parlament_s: var(--ppc)?]; font-style: italic;">Unthinkable Unity Pact</span></span> with [? if cs_parlament_s > ppc_parlament_s: PPC, ?]Vox support and PSC abstention
 view-if: parlament_coalition_option_cs_ppc_vox_psc_abst_visible
 choose-if: parlament_route_unionist_cs_ppc_vox_psc_abst_available
 unavailable-subtitle: PSC abstention is insufficient to elect this government.
@@ -64,7 +64,7 @@ on-arrival: {!
 go-to: form
 
 @cs_ppc_vox_psc_sup
-title: [? if cs_parlament_s > ppc_parlament_s: Cs-led ?][? if cs_parlament_s <= ppc_parlament_s: PPC-Cs ?]<span class="generalitat-coalition" data-parties="[? if cs_parlament_s > ppc_parlament_s: cs?][? if cs_parlament_s <= ppc_parlament_s: ppc cs?]" data-summary="Minority government with [? if cs_parlament_s > ppc_parlament_s: PPC, ?]Vox and PSC support"><span style="color: [? if cs_parlament_s > ppc_parlament_s: var(--cs)?][? if cs_parlament_s <= ppc_parlament_s: var(--ppc)?]; font-style: italic;">Salvation Government</span></span> with [? if cs_parlament_s > ppc_parlament_s: PPC, ?]Vox and PSC support
+title: [? if cs_parlament_s > ppc_parlament_s: Cs-led ?][? if cs_parlament_s <= ppc_parlament_s: PPC-Cs ?]<span class="generalitat-coalition" data-parties="[? if cs_parlament_s > ppc_parlament_s: cs?][? if cs_parlament_s <= ppc_parlament_s: ppc cs?]" data-summary="Minority government -  [? if cs_parlament_s > ppc_parlament_s: [+ cs_parlament_s +] ?][? if cs_parlament_s <= ppc_parlament_s: [+ cs_parlament_s + ppc_parlament_s +] ?]/ [+ parlament_s_majority +]"><span style="color: [? if cs_parlament_s > ppc_parlament_s: var(--cs)?][? if cs_parlament_s <= ppc_parlament_s: var(--ppc)?]; font-style: italic;">Salvation Government</span></span> with [? if cs_parlament_s > ppc_parlament_s: PPC, ?]Vox and PSC support
 view-if: parlament_coalition_option_cs_ppc_vox_psc_sup_visible
 choose-if: parlament_route_unionist_cs_ppc_vox_psc_sup_available
 unavailable-subtitle: The full constitutional bloc cannot elect this government.
@@ -90,7 +90,7 @@ on-arrival: {!
 go-to: form
 
 @cs_psc_unio
-title: Cs <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government with PSC and UDC support"><span style="color: var(--cs); font-style: italic;">Moderation</span> Government</span> with PSC and UDC support
+title: Cs <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s+] / [+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Moderation</span> Government</span> with PSC and UDC support
 view-if: parlament_coalition_option_cs_psc_unio_mod_visible
 choose-if: cs_parlament_s + psc_parlament_s + unio_parlament_s >= parlament_s_majority
 unavailable-subtitle: Cs, PSC, and UDC cannot elect this government.
@@ -101,7 +101,7 @@ on-arrival: {!
 go-to: form
 
 @psc_cs_unio
-title: PSC-led <span class="generalitat-coalition" data-parties="psc" data-summary="Minority government with Cs and UDC support"><span style="color: var(--cs); font-style: italic;">Moderation</span> Government</span> with Cs and UDC support
+title: PSC-led <span class="generalitat-coalition" data-parties="psc" data-summary="Minority government - [+ psc_parlament_s+] / [+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Moderation</span> Government</span> with Cs and UDC support
 view-if: parlament_coalition_option_psc_cs_unio_mod_visible
 choose-if: psc_parlament_s + cs_parlament_s + unio_parlament_s >= parlament_s_majority
 unavailable-subtitle: PSC, Cs, and UDC cannot elect this government.
@@ -112,7 +112,7 @@ on-arrival: {!
 go-to: form
 
 @psc_cs_unio_ppc_abst
-title: PSC-led <span class="generalitat-coalition" data-parties="psc" data-summary="Minority government with Cs and UDC support and PPC abstention"><span style="color: var(--cs); font-style: italic;">Moderation</span> Government</span> with Cs and UDC support, PPC abstention
+title: PSC-led <span class="generalitat-coalition" data-parties="psc" data-summary="Minority government - [+ psc_parlament_s+] / [+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Moderation</span> Government</span> with Cs and UDC support, PPC abstention
 view-if: parlament_coalition_option_psc_cs_unio_ppc_abst_visible
 choose-if: psc_parlament_s + cs_parlament_s + unio_parlament_s + ppc_parlament_s / 2 >= parlament_s_majority
 unavailable-subtitle: Even a PPC abstention cannot elect this government.
@@ -123,7 +123,7 @@ on-arrival: {!
 go-to: form
 
 @cs_ppc
-title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government with PPC support"><span style="color: var(--ppc); font-style: italic;">Constitutionalist</span> Pact</span> with PPC support
+title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s+] / [+ parlament_s_majority +]"><span style="color: var(--ppc); font-style: italic;">Constitutionalist</span> Pact</span> with PPC support
 view-if: parlament_coalition_option_cs_ppc_visible
 choose-if: parlament_route_unionist_cs_ppc_available
 unavailable-subtitle: Cs and PPC cannot elect this government.
@@ -138,7 +138,7 @@ view-if: false
 go-to: cs_ppc
 
 @cs_ppc_psc_abst
-title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government with PPC support and PSC abstention"><span style="color: var(--cs); font-style: italic;">Unity Pact</span></span> with PPC support and PSC abstention
+title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s+] / [+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Unity Pact</span></span> with PPC support and PSC abstention
 view-if: parlament_coalition_option_cs_ppc_psc_abst_visible
 choose-if: parlament_route_unionist_cs_ppc_psc_abst_available
 unavailable-subtitle: PSC abstention is insufficient to elect this government.
@@ -149,7 +149,7 @@ on-arrival: {!
 go-to: form
 
 @cs_psc_ppc
-title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government with PSC and PPC support"><span style="color: var(--cs); font-style: italic;">Grand Unity Pact</span></span> with PSC and PPC support
+title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s+] / [+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Grand Unity Pact</span></span> with PSC and PPC support
 view-if: parlament_coalition_option_cs_psc_ppc_sup_visible
 choose-if: parlament_route_unionist_cs_psc_ppc_sup_available
 unavailable-subtitle: Cs, the PSC, and the PPC don't have enough seats for this government to be formed.
@@ -160,7 +160,7 @@ on-arrival: {!
 go-to: form
 
 @psc_cs_ppc_abst
-title: PSC-Cs <span class="generalitat-coalition" data-parties="psc cs" data-summary="Minority government with PPC abstention"><span style="color: var(--psc); font-style: italic;">Unity Pact</span></span> with PPC abstention
+title: PSC-Cs <span class="generalitat-coalition" data-parties="psc cs" data-summary="Minority government - [+ cs_parlament_s + psc_parlament_s +] / [+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Unity Pact</span></span> with PPC abstention
 view-if: parlament_coalition_option_psc_cs_ppc_abst_visible
 choose-if: parlament_route_unionist_psc_cs_ppc_abst_available
 unavailable-subtitle: Even with a PPC abstention there are not enough seats to support this government.
@@ -171,7 +171,7 @@ on-arrival: {!
 go-to: form
 
 @psc_cs_ppc
-title: PSC-Cs <span class="generalitat-coalition" data-parties="psc cs" data-summary="Minority government with PPC support"><span style="color: var(--psc); font-style: italic;">Grand Unity Pact</span></span> with PPC support
+title: PSC-Cs <span class="generalitat-coalition" data-parties="psc cs" data-summary="Minority government - [+ psc_parlament_s + cs_parlament_s +] / [+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Grand Unity Pact</span></span> with PPC support
 view-if: parlament_coalition_option_psc_cs_ppc_sup_visible
 choose-if: parlament_route_unionist_psc_cs_ppc_sup_available
 unavailable-subtitle: There are not enough PSC, Cs, and PPC seats to elect this government.
@@ -193,7 +193,7 @@ on-arrival: {!
 go-to: form
 
 @cs_ppc_vox
-title: [? if cs_parlament_s > ppc_parlament_s: Cs-led ?][? if cs_parlament_s <= ppc_parlament_s: PPC-Cs ?]<span class="generalitat-coalition" data-parties="[? if cs_parlament_s > ppc_parlament_s: cs?][? if cs_parlament_s <= ppc_parlament_s: ppc cs?]" data-summary="Minority government with [? if cs_parlament_s > ppc_parlament_s: PPC and ?]Vox support"><span style="color: var(--cs); font-style: italic;">Right</span>-<span style="color: var(--vox); font-style: italic;">Union</span> Coalition</span> with [? if cs_parlament_s > ppc_parlament_s: PPC and ?]Vox support
+title: [? if cs_parlament_s > ppc_parlament_s: Cs-led ?][? if cs_parlament_s <= ppc_parlament_s: PPC-Cs ?]<span class="generalitat-coalition" data-parties="[? if cs_parlament_s > ppc_parlament_s: cs?][? if cs_parlament_s <= ppc_parlament_s: ppc cs?]" data-summary="Minority government - [? if cs_parlament_s > ppc_parlament_s: [+ cs_parlament_s +]?][? if cs_parlament_s <= ppc_parlament_s: [+ cs_parlament_s + ppc_parlament_s +]?] / [+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Right</span>-<span style="color: var(--vox); font-style: italic;">Union</span> Coalition</span> with [? if cs_parlament_s > ppc_parlament_s: PPC and ?]Vox support
 view-if: parlament_coalition_option_cs_ppc_vox_visible
 choose-if: parlament_route_unionist_cs_ppc_vox_available
 unavailable-subtitle: Luckily, the right does not have enough seats to elect this government.
