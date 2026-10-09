@@ -124,9 +124,7 @@ on-arrival: {!
       if (result === 'tie') return continuity
         ? 'Despite the exceptional tie in the CUP\'s assembly, the party seems unwilling to endorse Neus Munté as an exchange token, citing she is just more of the same CDC.'
         : 'The CUP\'s assembly ended in a tie, which hadrly seems to facilitate the investiture of Artur Mas.';
-      if (Q.player_party === 'cup') return continuity
-        ? 'The CUP\'s membership is yet to vote on such an exceptional investiture.'
-        : 'The CUP\'s membership is yet to vote on such an exceptional investiture.';
+      if (Q.player_party === 'cup') return 'We have no assembly mandate to support Neus Munté as an alternative to Artur Mas.';
       return continuity
         ? 'While some within the CUP may see Neus Munté as a viable alternative to Artur Mas, many still see her as more CDC.'
         : 'The CUP maintains its veto of Artur Mas and is does not look like an exception will be made despite the offered terms.';

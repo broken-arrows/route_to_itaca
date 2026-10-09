@@ -33,7 +33,7 @@ on-arrival: {!
 go-to: setup
 
 @minority_left_tripartite
-title: <span class="generalitat-coalition" data-parties="erc psc [+ parlament_current_icv +]" data-summary="Minority government with CUP abstention"><span style="color: var(--erc); font-style: italic;">Minority Left</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Tri</span><span style="color: var(--psc); font-style: italic;">partite</span></span>
+title: <span class="generalitat-coalition" data-parties="erc psc [+ parlament_current_icv +]" data-summary="Minority government with CUP abstention"><span style="color: var(--erc); font-style: italic;">Minority Left</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Tripartite</span> <span style="color: var(--psc); font-style: italic;">government</span></span>
 view-if: parlament_coalition_option_erc_psc_icv_cup_abst_visible
 choose-if: parlament_minority_left_tripartite_available
 unavailable-subtitle: [? if erc_roadmap <= 0: ERC has no active independence roadmap on which to base the agreement. ?][? if parlament_route_minority_left_block_psc: The current PSC leadership is unwilling to join such an outrageous government agreement. ?][? if parlament_route_minority_left_block_leadership: ERC is not leading in seats in the Parlament, so it can hardly propose a leading such coalition. ?][? if parlament_route_minority_left_block_cup_needed: The cabinet already has a majority and does not need the CUP's abstention. ?][? if parlament_route_minority_left_block_seats: Even a CUP abstention is insufficient to elect this cabinet. ?][? if parlament_route_minority_left_block_cup_role: The CUP would rather enter a smaller cabinet instead of merely abstaining. ?]

@@ -79,7 +79,7 @@ face-image: img/events/cup_assemblea_big.jpg
 
 The CUP membership meets in Manresa, with more than 3000 local representatives with voting rights debating for hours on the investiture proposal. Three voting rounds pass with no option crossing the required 50% mark. A fourth and last round is then announced, with no abstentions, no blank votes, and no open questions for further debate a vote to 
 
-    > *"Reject [a government lead] by Artur Mas and thus, the proposed political agreement. Pass the responsibility to find parliamentary support beyond [the CUP] to [? if jxsi_formed and not jxcat_formed: jxsi?][? if jxcat_formed: jxcat?][? if jxsi_dissolved or not jxsi_formed or jxcat_dissolved or not jxcat_formed: [+ parlament_current_ciu +] and ERC?][, ... assuming that] new elections will be held."*
+    > *"Reject \[a government lead\] by Artur Mas and thus, the proposed political agreement. Pass the responsibility to find parliamentary support beyond \[the CUP\] to [? if jxsi_formed and not jxcat_formed: jxsi?][? if jxcat_formed: jxcat?][? if jxsi_dissolved or not jxsi_formed or jxcat_dissolved or not jxcat_formed: [+ parlament_current_ciu +] and ERC?] \[, ... assuming that\] new elections will be held."*
 
 - @results: The assembly votes once more...
 
