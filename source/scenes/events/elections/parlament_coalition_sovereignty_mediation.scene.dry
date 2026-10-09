@@ -1,0 +1,78 @@
+title: Sovereignty partners turn on each other
+subtitle: ERC and [+ parlament_current_ciu +] have yet to reach a proper agreement to form government, but who's to blame?
+tags: event
+role: event
+new-page: true
+view-if: not rubicon and parlament_coalition_sovereignty_phase > 1 and coalition_phase_timer > 0 and (not parlament_coalition_sovereignty_mediation_round or parlament_coalition_sovereignty_mediation_round < parlament_coalition_sovereignty_phase) and (erc_relations < 45 or parlament_coalition_sovereignty_feud > 0 or (parlament_current_ciu = "ciu" and ciu_relations < 45) or (parlament_current_ciu = "cdc" and cdc_relations < 45) or (parlament_current_ciu = "dl" and dl_relations < 45) or (parlament_current_ciu = "pdcat" and pdcat_relations < 45) or (parlament_current_ciu = "junts" and junts_relations < 45) or (parlament_current_ciu = "jxcat" and jxcat_relations < 45))
+face-image: img/events/disputa_erc_junts.webp
+
+= The Sovereignty partners turn on each other
+
+The negotiation delegations of ERC and [+ parlament_current_ciu +] are blaming one another for the failed negotiations round as common trust seems to be hitting new lows.
+
+[? if player_party = "erc": Whatever we do now, may very well decide the immediate future of our relations.?]
+[? if player_party = "cup": If the investiture is to survive, we may have to intervene in this partners' quarrel by themselves.?]
+
+- @erc_compromise
+- @erc_escalate
+- @cup_mediate
+- @cup_erc
+- @cup_ciu
+
+@erc_compromise
+title: Offer [+ parlament_current_ciu +] a compromise
+view-if: player_party = "erc"
+on-arrival: {!
+    if (Q.parlament_coalition_sovereignty_phase <= 1 || Q.coalition_phase_timer <= 0 || Q.parlament_coalition_sovereignty_mediation_round >= Q.parlament_coalition_sovereignty_phase) return;
+    Q.parlament_coalition_sovereignty_dispute_action = "mediate";
+    Q.parlament_coalition_sovereignty_feud = Math.max(0, Q.parlament_coalition_sovereignty_feud - 1);
+    Q[Q.parlament_current_ciu + "_relations"] += 6;
+!}
+go-to: parlament_coalition_sovereignty_dispute.resolve
+
+@erc_escalate
+title: Push them to accept our positions!
+view-if: player_party = "erc"
+on-arrival: {!
+    if (Q.parlament_coalition_sovereignty_phase <= 1 || Q.coalition_phase_timer <= 0 || Q.parlament_coalition_sovereignty_mediation_round >= Q.parlament_coalition_sovereignty_phase) return;
+    Q.parlament_coalition_sovereignty_dispute_action = "escalate";
+    Q.parlament_coalition_sovereignty_feud += 2;
+    Q[Q.parlament_current_ciu + "_relations"] -= 6;
+!}
+go-to: parlament_coalition_sovereignty_dispute.resolve
+
+@cup_mediate
+title: Push to bring them both back to a common proposal
+view-if: player_party = "cup"
+on-arrival: {!
+    if (Q.parlament_coalition_sovereignty_phase <= 1 || Q.coalition_phase_timer <= 0 || Q.parlament_coalition_sovereignty_mediation_round >= Q.parlament_coalition_sovereignty_phase) return;
+    Q.parlament_coalition_sovereignty_dispute_action = "mediate";
+    Q.parlament_coalition_sovereignty_feud = Math.max(0, Q.parlament_coalition_sovereignty_feud - 1);
+    Q.erc_relations += 3;
+    Q[Q.parlament_current_ciu + "_relations"] += 3;
+!}
+go-to: parlament_coalition_sovereignty_dispute.resolve
+
+@cup_erc
+title: Back ERC
+view-if: player_party = "cup"
+on-arrival: {!
+    if (Q.parlament_coalition_sovereignty_phase <= 1 || Q.coalition_phase_timer <= 0 || Q.parlament_coalition_sovereignty_mediation_round >= Q.parlament_coalition_sovereignty_phase) return;
+    Q.parlament_coalition_sovereignty_dispute_action = "escalate";
+    Q.parlament_coalition_sovereignty_feud += 1;
+    Q.erc_relations += 5;
+    Q[Q.parlament_current_ciu + "_relations"] -= 5;
+!}
+go-to: parlament_coalition_sovereignty_dispute.resolve
+
+@cup_ciu
+title: Back [+ parlament_current_ciu +]
+view-if: player_party = "cup"
+on-arrival: {!
+    if (Q.parlament_coalition_sovereignty_phase <= 1 || Q.coalition_phase_timer <= 0 || Q.parlament_coalition_sovereignty_mediation_round >= Q.parlament_coalition_sovereignty_phase) return;
+    Q.parlament_coalition_sovereignty_dispute_action = "escalate";
+    Q.parlament_coalition_sovereignty_feud += 1;
+    Q.erc_relations -= 5;
+    Q[Q.parlament_current_ciu + "_relations"] += 5;
+!}
+go-to: parlament_coalition_sovereignty_dispute.resolve

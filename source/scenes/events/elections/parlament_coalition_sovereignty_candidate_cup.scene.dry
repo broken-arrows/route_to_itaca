@@ -1,0 +1,84 @@
+title: The CUP faces the presidential dispute
+subtitle: Widespread #PressingCUP campaign sets social media on fire.
+tags: event
+role: event
+new-page: true
+view-if: not rubicon and parlament_coalition_sovereignty_phase > 0 and coalition_phase_timer > 0 and parlament_coalition_sovereignty_dispute_round < parlament_coalition_sovereignty_phase and (parlament_coalition_proposal_president_name = "Artur Mas") and player_party = "cup"
+face-image: img/events/pressing_cup.jpg
+
+= Between ​Artur Mas and the ​CUP
+
+Between negotiations recesses and pauses, it's hard not to look at social media, where the #PressingCUP campaign only grows further and louder. Arguing that the elections had a clear candidate winning, they demand the we reconsider our veto to Artur Mas. We have a chance now to act 
+
+- @hold
+- @broker
+- @ultimatum
+- @defend
+
+@hold
+title: We'll maintain our veto!
+subtitle: There's no way we can support the Jordi Pujol's heir, architect of the worst austerity in decades!
+on-arrival: {!
+    if (Q.rubicon || Q.parlament_coalition_sovereignty_phase < 1 || Q.coalition_phase_timer <= 0 || (Q.parlament_coalition_sovereignty_dispute_round || 0) >= Q.parlament_coalition_sovereignty_phase) return;
+    if (Q.parlament_coalition_proposal_president_name != "Artur Mas" && Q.parlament_coalition_proposal_president_name != "Neus Munté") return;
+    Q.parlament_coalition_sovereignty_dispute_round = Q.parlament_coalition_sovereignty_phase;
+    Q.parlament_coalition_sovereignty_ciu_pressure = Q.parlament_coalition_sovereignty_ciu_pressure || 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = Q.parlament_coalition_sovereignty_mas_pressure || 0;
+    Q.parlament_coalition_sovereignty_ciu_pressure += 1;
+    Q.cup_endavant_dissent = Math.max(0, Q.cup_endavant_dissent - 2);
+!}
+
+We have kept the party line and the clear-cut "no" to Artur Mas remains in force. We'll have to see if our [+ cup_parlament_s +] seats in the Parlament are enough to force him out of office.
+
+@broker
+title: Can we approach ERC to mediate a better candidate?
+subtitle: After all, we still may still want an investiture to happen
+on-arrival: {!
+    if (Q.rubicon || Q.parlament_coalition_sovereignty_phase < 1 || Q.coalition_phase_timer <= 0 || (Q.parlament_coalition_sovereignty_dispute_round || 0) >= Q.parlament_coalition_sovereignty_phase) return;
+    if (Q.parlament_coalition_proposal_president_name != "Artur Mas" && Q.parlament_coalition_proposal_president_name != "Neus Munté") return;
+    Q.parlament_coalition_sovereignty_dispute_round = Q.parlament_coalition_sovereignty_phase;
+    Q.parlament_coalition_sovereignty_ciu_pressure = Q.parlament_coalition_sovereignty_ciu_pressure || 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = Q.parlament_coalition_sovereignty_mas_pressure || 0;
+    Q.parlament_coalition_sovereignty_ciu_pressure += 1;
+    Q.parlament_coalition_sovereignty_brokerage = true;
+    Q.erc_relations += 3;
+    Q[Q.parlament_current_ciu + "_relations"] -= 2;
+!}
+
+We've tried our best to, behind the scenes and while keeping our stance, approach ERC and try to have them mediate between us and [+ parlament_current_ciu +], hoping to find an alternative candidate that may satisfy everybody. This, however, is proving challenging, as ERC is closing lines with the rest of the coalition.
+
+
+@ultimatum
+title: Demand a replacement or prepare to walk away
+subtitle: Increase pressure and the danger of a feud.
+view-if: parlament_coalition_sovereignty_phase > 1
+on-arrival: {!
+    if (Q.rubicon || Q.parlament_coalition_sovereignty_phase < 1 || Q.coalition_phase_timer <= 0 || (Q.parlament_coalition_sovereignty_dispute_round || 0) >= Q.parlament_coalition_sovereignty_phase) return;
+    if (Q.parlament_coalition_proposal_president_name != "Artur Mas" && Q.parlament_coalition_proposal_president_name != "Neus Munté") return;
+    Q.parlament_coalition_sovereignty_dispute_round = Q.parlament_coalition_sovereignty_phase;
+    Q.parlament_coalition_sovereignty_ciu_pressure = Q.parlament_coalition_sovereignty_ciu_pressure || 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = Q.parlament_coalition_sovereignty_mas_pressure || 0;
+    Q.parlament_coalition_sovereignty_ciu_pressure += 2;
+    Q.parlament_coalition_sovereignty_feud += 1;
+    Q[Q.parlament_current_ciu + "_relations"] -= 2;
+!}
+
+We have hardened our stance to veto Artur Mas at all costs, even if it means new elections. If this is a stubbornness contest, we are not going to be the ones to lose.
+
+
+@defend
+title: Open the door to the possibility of an agreement
+subtitle: It's still hard to say if the party will agree to that, though.
+on-arrival: {!
+    if (Q.rubicon || Q.parlament_coalition_sovereignty_phase < 1 || Q.coalition_phase_timer <= 0 || (Q.parlament_coalition_sovereignty_dispute_round || 0) >= Q.parlament_coalition_sovereignty_phase) return;
+    if (Q.parlament_coalition_proposal_president_name != "Artur Mas" && Q.parlament_coalition_proposal_president_name != "Neus Munté") return;
+    Q.parlament_coalition_sovereignty_dispute_round = Q.parlament_coalition_sovereignty_phase;
+    Q.parlament_coalition_sovereignty_ciu_pressure = Q.parlament_coalition_sovereignty_ciu_pressure || 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = Q.parlament_coalition_sovereignty_mas_pressure || 0;
+    Q.parlament_coalition_sovereignty_mas_pressure += 1;
+    Q[Q.parlament_current_ciu + "_relations"] += 2;
+!}
+
+While not super loudly, we've started to shift our discourse towards maybe allowing such an investiture provided repeated guarantees. It may be wise to keep all our options open after all.
+
+

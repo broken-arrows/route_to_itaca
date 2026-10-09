@@ -25,20 +25,8 @@ on-arrival: {!
     Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
     Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
     Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
-    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
-    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
-        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
-    }
-    Q.parlament_coalition_sovereignty_dispute_round = 0;
-    Q.parlament_coalition_sovereignty_mas_pressure = 0;
-    Q.parlament_coalition_sovereignty_candidate_exception = false;
-    Q.parlament_coalition_sovereignty_feud = 0;
-    Q.parlament_coalition_sovereignty_mediation_done = false;
-    Q.parlament_coalition_sovereignty_banos_seen = false;
-    Q.parlament_coalition_sovereignty_banos_departure = false;
-    Q.parlament_coalition_sovereignty_deadline = 0;
-    Q.parlament_coalition_sovereignty_reject_reasons = "";
-    Q.parlament_coalition_push = 0;
+
+
     if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
         Q.cup_endavant_strength = 35;
         Q.cup_poblelliure_strength = 35;
@@ -50,6 +38,7 @@ on-arrival: {!
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
+call: parlament_coalition_sovereignty.initialize
 
 Before the investiture talks can even begin, the Speaker of the House needs deciding. [+ parlament_current_ciu +] is proposing that we take it, but such an offer can always be negotiated.
 
@@ -74,20 +63,8 @@ on-arrival: {!
     Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
     Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
     Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
-    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
-    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
-        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
-    }
-    Q.parlament_coalition_sovereignty_dispute_round = 0;
-    Q.parlament_coalition_sovereignty_mas_pressure = 0;
-    Q.parlament_coalition_sovereignty_candidate_exception = false;
-    Q.parlament_coalition_sovereignty_feud = 0;
-    Q.parlament_coalition_sovereignty_mediation_done = false;
-    Q.parlament_coalition_sovereignty_banos_seen = false;
-    Q.parlament_coalition_sovereignty_banos_departure = false;
-    Q.parlament_coalition_sovereignty_deadline = 0;
-    Q.parlament_coalition_sovereignty_reject_reasons = "";
-    Q.parlament_coalition_push = 0;
+
+
     if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
         Q.cup_endavant_strength = 35;
         Q.cup_poblelliure_strength = 35;
@@ -99,6 +76,7 @@ on-arrival: {!
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
+call: parlament_coalition_sovereignty.initialize
 
 Before the investiture talks can even begin, the Speaker of the House needs deciding. [+ parlament_current_ciu +] is proposing that ERC takes it, but such an offer can always be negotiated.
 
@@ -123,20 +101,8 @@ on-arrival: {!
     Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
     Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
     Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
-    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
-    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
-        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
-    }
-    Q.parlament_coalition_sovereignty_dispute_round = 0;
-    Q.parlament_coalition_sovereignty_mas_pressure = 0;
-    Q.parlament_coalition_sovereignty_candidate_exception = false;
-    Q.parlament_coalition_sovereignty_feud = 0;
-    Q.parlament_coalition_sovereignty_mediation_done = false;
-    Q.parlament_coalition_sovereignty_banos_seen = false;
-    Q.parlament_coalition_sovereignty_banos_departure = false;
-    Q.parlament_coalition_sovereignty_deadline = 0;
-    Q.parlament_coalition_sovereignty_reject_reasons = "";
-    Q.parlament_coalition_push = 0;
+
+
     if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
         Q.cup_endavant_strength = 35;
         Q.cup_poblelliure_strength = 35;
@@ -148,6 +114,7 @@ on-arrival: {!
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
+call: parlament_coalition_sovereignty.initialize
 
 Before the investiture talks can even begin, the Speaker of the House needs deciding. Given the results, [+ parlament_current_ciu +] expect us to facilitate them having it, but such an offer can always be negotiated.
 
@@ -172,20 +139,8 @@ on-arrival: {!
     Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
     Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
     Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
-    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
-    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
-        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
-    }
-    Q.parlament_coalition_sovereignty_dispute_round = 0;
-    Q.parlament_coalition_sovereignty_mas_pressure = 0;
-    Q.parlament_coalition_sovereignty_candidate_exception = false;
-    Q.parlament_coalition_sovereignty_feud = 0;
-    Q.parlament_coalition_sovereignty_mediation_done = false;
-    Q.parlament_coalition_sovereignty_banos_seen = false;
-    Q.parlament_coalition_sovereignty_banos_departure = false;
-    Q.parlament_coalition_sovereignty_deadline = 0;
-    Q.parlament_coalition_sovereignty_reject_reasons = "";
-    Q.parlament_coalition_push = 0;
+
+
     if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
         Q.cup_endavant_strength = 35;
         Q.cup_poblelliure_strength = 35;
@@ -197,6 +152,7 @@ on-arrival: {!
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
+call: parlament_coalition_sovereignty.initialize
 
 Before the investiture talks can even begin, the Speaker of the House needs deciding. Given the results, [+ parlament_current_ciu +] expect us to facilitate them having it, but such an offer can always be negotiated.
 
@@ -222,20 +178,8 @@ on-arrival: {!
     Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
     Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
     Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
-    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
-    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
-        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
-    }
-    Q.parlament_coalition_sovereignty_dispute_round = 0;
-    Q.parlament_coalition_sovereignty_mas_pressure = 0;
-    Q.parlament_coalition_sovereignty_candidate_exception = false;
-    Q.parlament_coalition_sovereignty_feud = 0;
-    Q.parlament_coalition_sovereignty_mediation_done = false;
-    Q.parlament_coalition_sovereignty_banos_seen = false;
-    Q.parlament_coalition_sovereignty_banos_departure = false;
-    Q.parlament_coalition_sovereignty_deadline = 0;
-    Q.parlament_coalition_sovereignty_reject_reasons = "";
-    Q.parlament_coalition_push = 0;
+
+
     if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
         Q.cup_endavant_strength = 35;
         Q.cup_poblelliure_strength = 35;
@@ -247,6 +191,7 @@ on-arrival: {!
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
+call: parlament_coalition_sovereignty.initialize
 
 Before the investiture talks can even begin, the Speaker of the House needs deciding. [+ parlament_current_ciu +] is proposing that we take it, but such an offer can always be negotiated.
 
@@ -272,20 +217,8 @@ on-arrival: {!
     Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
     Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
     Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
-    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
-    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
-        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
-    }
-    Q.parlament_coalition_sovereignty_dispute_round = 0;
-    Q.parlament_coalition_sovereignty_mas_pressure = 0;
-    Q.parlament_coalition_sovereignty_candidate_exception = false;
-    Q.parlament_coalition_sovereignty_feud = 0;
-    Q.parlament_coalition_sovereignty_mediation_done = false;
-    Q.parlament_coalition_sovereignty_banos_seen = false;
-    Q.parlament_coalition_sovereignty_banos_departure = false;
-    Q.parlament_coalition_sovereignty_deadline = 0;
-    Q.parlament_coalition_sovereignty_reject_reasons = "";
-    Q.parlament_coalition_push = 0;
+
+
     if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
         Q.cup_endavant_strength = 35;
         Q.cup_poblelliure_strength = 35;
@@ -297,6 +230,7 @@ on-arrival: {!
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
+call: parlament_coalition_sovereignty.initialize
 
 Before the investiture talks can even begin, the Speaker of the House needs deciding. [+ parlament_current_ciu +] is proposing that ERC takes it, but such an offer can always be negotiated.
 
@@ -322,20 +256,8 @@ on-arrival: {!
     Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
     Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
     Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
-    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
-    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
-        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
-    }
-    Q.parlament_coalition_sovereignty_dispute_round = 0;
-    Q.parlament_coalition_sovereignty_mas_pressure = 0;
-    Q.parlament_coalition_sovereignty_candidate_exception = false;
-    Q.parlament_coalition_sovereignty_feud = 0;
-    Q.parlament_coalition_sovereignty_mediation_done = false;
-    Q.parlament_coalition_sovereignty_banos_seen = false;
-    Q.parlament_coalition_sovereignty_banos_departure = false;
-    Q.parlament_coalition_sovereignty_deadline = 0;
-    Q.parlament_coalition_sovereignty_reject_reasons = "";
-    Q.parlament_coalition_push = 0;
+
+
     if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
         Q.cup_endavant_strength = 35;
         Q.cup_poblelliure_strength = 35;
@@ -347,6 +269,7 @@ on-arrival: {!
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
+call: parlament_coalition_sovereignty.initialize
 
 Given the electoral results, we are expected to offer [+ parlament_current_ciu +] the Speaker of the House. However, this can of course be negotiated.
 
@@ -372,20 +295,8 @@ on-arrival: {!
     Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
     Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
     Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
-    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
-    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
-        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
-    }
-    Q.parlament_coalition_sovereignty_dispute_round = 0;
-    Q.parlament_coalition_sovereignty_mas_pressure = 0;
-    Q.parlament_coalition_sovereignty_candidate_exception = false;
-    Q.parlament_coalition_sovereignty_feud = 0;
-    Q.parlament_coalition_sovereignty_mediation_done = false;
-    Q.parlament_coalition_sovereignty_banos_seen = false;
-    Q.parlament_coalition_sovereignty_banos_departure = false;
-    Q.parlament_coalition_sovereignty_deadline = 0;
-    Q.parlament_coalition_sovereignty_reject_reasons = "";
-    Q.parlament_coalition_push = 0;
+
+
     if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
         Q.cup_endavant_strength = 35;
         Q.cup_poblelliure_strength = 35;
@@ -397,6 +308,7 @@ on-arrival: {!
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
+call: parlament_coalition_sovereignty.initialize
 
 Before the investiture talks can even begin, the Speaker of the House needs deciding. [+ parlament_current_ciu +] is expecting to get it given the results, but that can surely always be negotiated.
 
@@ -460,6 +372,6 @@ go-to: post_speaker
 
 @post_speaker
 
-[+ speaker +] ([+ speaker_party +]) will be the Speaker of the House for this legislature. Officially the second authority of the country, [+ speaker_party +] will now have a decisive role in the legislative agenda moving forwards. 
+[+ speaker +] ([+ speaker_party +]) will be the Speaker of the House for this legislature. Officially the second authority of the country, [+ speaker_party +] will now have a decisive role in the legislative agenda moving forwards.
 
 - @post_event: And so, time passes...

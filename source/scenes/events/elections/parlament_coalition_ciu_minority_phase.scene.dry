@@ -91,7 +91,7 @@ set-jump: policy_concessions
 - @indy_concessions
 - #fiscal_concessions
 - @push_leverage_concessions
-- @phase_text: Finish proposing policies
+- @phase_text: Move to other matters
 
 @indy_concessions
 title: Catalan Independence Policies

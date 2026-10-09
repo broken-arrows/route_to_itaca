@@ -1,0 +1,166 @@
+title: Artur Mas steps aside
+subtitle: [+ parlament_coalition_leader +]'s candidate, to leave the political frontline
+new-page: true
+face-image: img/events/pas_al_costat.webp
+max-visits: 1
+call: parlament_coalition_sovereignty_replacement.check
+
+= ​Artur Mas steps aside
+
+In the very last moments before the very last hail-mary negotiations with the CUP to form a [+ parlament_coalition_leader +]-led government, Artur Mas is making a surprise press conference. In it, he announces his willingness to "step aside" [? if parlament_coalition_sovereignty_kind = "jxsi" or parlament_coalition_sovereignty_kind = "jxcat": for the good of the unity list.?][? if parlament_coalition_sovereignty_kind != "jxsi" and parlament_coalition_sovereignty_kind != "jxcat": to make an agreement between [+ parlament_current_ciu +], ERC and the CUP possible.?] In a clear win for the CUP, the doors are open now for an alternative leadership for the new government.
+
+- @puigdemont
+- @munte
+- @romeva
+
+@puigdemont
+title: Carles Puigdemont becomes the candidate
+choose-if: parlament_coalition_sovereignty_replacement_needed
+subtitle: This is the preferred option of [+ parlament_current_ciu +].
+on-arrival: {!
+    Q.independence_trust += 5;
+    Q.parlament_coalition_sovereignty_nominee = "Carles Puigdemont";
+!}
+go-to: nominate
+
+@munte
+title: Neus Munté becomes the candidate
+choose-if: parlament_coalition_sovereignty_replacement_needed and parlament_coalition_sovereignty_munte_available
+subtitle: Certain sectors in ERC and the CUP believe her to be the obvious replacement, even as she is more of a continuity candidate.
+unavailable-subtitle: [? if not parlament_coalition_sovereignty_replacement_needed: A replacement nomination is not possible at this stage. ?][? if parlament_coalition_sovereignty_replacement_needed: [+ parlament_coalition_sovereignty_munte_reasons +]?]
+on-arrival: {!
+    Q.independence_trust -= 5;
+    Q.parlament_coalition_sovereignty_nominee = "Neus Munté";
+!}
+go-to: nominate
+
+@romeva
+title: Can Raül Romeva be the compromise candidate
+choose-if: parlament_coalition_sovereignty_replacement_needed and parlament_coalition_sovereignty_romeva_available
+subtitle: Spend one party resource. Requires prior brokerage, sufficient ERC-CUP electoral weight and working relations with the partners.
+unavailable-subtitle: [? if not parlament_coalition_sovereignty_replacement_needed: A replacement nomination is not possible at this stage. ?][? if parlament_coalition_sovereignty_replacement_needed: [+ parlament_coalition_sovereignty_romeva_reasons +]?]
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_nominee = "Raül Romeva";
+!}
+go-to: nominate
+
+@check
+on-arrival: {!
+    function n(value) { return Number(value) || 0; }
+    function clamp(value, lo, hi) { return Math.max(lo, Math.min(hi, value)); }
+    function cupContinuityReasons() {
+      var reasons = [];
+      if (Q.rubicon) reasons.push('TODO: do we even need this for rubcion?');
+      if (Q.parlament_coalition_sovereignty_assembly_result !== 'tie') reasons.push('The results of the CUP\'s assembly rule out a candidate so similar to Artur Mas.');
+      if (n(Q[Q.parlament_current_ciu + '_relations']) < 65) reasons.push('We don\'t have good enough relations with ' + Q.parlament_current_ciu + ".");
+      if (n(Q.erc_relations) < 65) reasons.push('We don\'t have good enough relations with ERC.');
+      if (n(Q.cup_poblelliure_strength) <= n(Q.cup_endavant_strength) + 20) reasons.push('Poble Lliure does not have enough strength to push for this option.');
+      if (n(Q.cup_poblelliure_dissent) > 20) reasons.push('Poble Lliure\'s dissent is too high to reach such an agreement.');
+      if (n(Q.cup_thirdsector_dissent) > 20) reasons.push('The Third Sector\'s dissent is too high to reach such an agreement.');
+      return reasons;
+    }
+    function candidateApproval(Q, candidate) {
+    if (Q.rubicon) return false;
+    var result = Q.parlament_coalition_sovereignty_assembly_result;
+    var ciuRelations = n(Q[Q.parlament_current_ciu + '_relations']);
+    if (Q.player_party === 'cup') {
+      if (candidate === 'Artur Mas') return result === 'approve' && ciuRelations >= 60 && n(Q.erc_relations) >= 55;
+      return cupContinuityReasons().length === 0;
+    }
+    var repeat = Math.min(15, n(Q.parlament_coalition_mas_veto_failures) * 5);
+    var margin = candidate === 'Artur Mas' ? 10 + (Q.president === 'Artur Mas' ? 5 : 0) : 20;
+    return Q.cup_faction === 'Poble Lliure' && n(Q.cup_poblelliure_strength) > n(Q.cup_endavant_strength) + margin + repeat &&
+      n(Q.cup_relations) >= (candidate === 'Artur Mas' ? 60 : 65) &&
+      (candidate !== 'Artur Mas' || n(Q.parlament_coalition_sovereignty_mas_pressure) >= 2) &&
+      (!result || (candidate === 'Artur Mas' ? result === 'approve' : result !== 'veto'));
+    }
+    var list = Q.parlament_coalition_sovereignty_kind;
+    var erc = n(Q.erc_parlament_s), ciu = n(Q[Q.parlament_current_ciu + '_parlament_s']);
+    if (list === 'jxsi' || list === 'jxcat') {
+      var share = clamp(n(Q[list + '_formation_num']) || 50, 0, 100) / 100;
+      erc = n(Q[list + '_parlament_s']) * share;
+      ciu = n(Q[list + '_parlament_s']) * (1 - share);
+    }
+    var relations = n(Q[Q.parlament_current_ciu + '_relations']);
+    var pressureEnough = n(Q.parlament_coalition_sovereignty_ciu_pressure) >= (relations >= 60 ? 2 : 3);
+    var mandateVeto = Q.player_party === 'cup' && ['veto', 'tie'].indexOf(Q.parlament_coalition_sovereignty_assembly_result) >= 0;
+    Q.parlament_coalition_sovereignty_replacement_needed = !Q.rubicon && Q.parlament_coalition_sovereignty_phase === 3 && Q.parlament_coalition_proposal_president_name === 'Artur Mas' && !candidateApproval(Q, 'Artur Mas') && (Q.player_party != 'cup' || Q.parlament_coalition_sovereignty_assembly_result != 'approve') && (pressureEnough || mandateVeto);
+    var munteReasons = Q.player_party === 'erc' ? (pressureEnough ? [] : [Q.parlament_current_ciu + ' is.']) : cupContinuityReasons();
+    Q.parlament_coalition_sovereignty_munte_reasons = munteReasons.join(' ');
+    Q.parlament_coalition_sovereignty_munte_available = munteReasons.length === 0;
+    var romevaReasons = [];
+    if (list === 'jxsi' || list === 'jxcat') {
+      if (erc + n(Q.cup_parlament_s) < ciu) romevaReasons.push('ERC and the CUP lack the political support to push ' + Q.parlament_current_ciu + ' towards this option.');
+      if (relations < 55) romevaReasons.push('We don\'t have good enough relations with ' + Q.parlament_current_ciu + ' .');
+      if (Q.player_party === 'cup' && n(Q.erc_relations) < 60) romevaReasons.push('We don\'t have good enough relations with ERC.');
+    } else {
+      if (erc + n(Q.cup_parlament_s) <= ciu) romevaReasons.push('ERC and the CUP lack the political support to push ' + Q.parlament_current_ciu + ' towards this option.');
+      if (relations <= 65) romevaReasons.push('We don\'t have good enough relations with ' + Q.parlament_current_ciu + '.');
+      if (Q.player_party === 'cup' && n(Q.erc_relations) <= 65) romevaReasons.push('We don\'t have good enough relations with ERC.');
+      if (Q.player_party === 'erc' && n(Q.cup_relations) <= 65) romevaReasons.push('We don\'t have good enough relations with the CUP.');
+    }
+    if (!Q.parlament_coalition_sovereignty_brokerage) romevaReasons.push('We have not built enough support for such an option to take off.');
+    if (n(Q.party_resources) < 1) romevaReasons.push('Not enough resources.');
+    Q.parlament_coalition_sovereignty_romeva_reasons = romevaReasons.join(' ');
+    Q.parlament_coalition_sovereignty_romeva_available = romevaReasons.length === 0;
+    var policies = ["education", "health", "pay", "tax", "cap"];
+    Q.parlament_coalition_sovereignty_candidate_reason = (function () {
+    var name = Q.parlament_coalition_proposal_president_name;
+    if (['Artur Mas', 'Neus Munté'].indexOf(name) < 0) return '';
+    if (!candidateApproval(Q, name)) return 'The CUP\'s assembly has voted against the investiture of ' + name + '.';
+    var count = policies.filter(function (p) { return Q['parlament_coalition_policy_' + p]; }).length;
+    var deadline = n(Q.parlament_coalition_sovereignty_deadline) || n(Q.roadmap_year);
+    if (!Q.parlament_coalition_concessions_indy || count < (name === 'Neus Munté' ? 3 : 2) || deadline <= n(Q.year) || deadline > n(Q.year) + 2) return 'The CUP is still unconvinced by the rest of the agreements reached.';
+    if (Q.parlament_coalition_sovereignty_assembly_result) {
+      var weakened = (Q.parlament_coalition_sovereignty_assembly_terms || []).some(function (term) {
+        return !Q['parlament_coalition_policy_' + term.policy] || n(Q['parlament_coalition_policy_' + term.policy + '_target']) < n(term.target);
+      });
+      if (weakened || deadline > n(Q.parlament_coalition_sovereignty_assembly_deadline)) return 'The CUP is still unconvinced by the agreements reached.';
+    }
+    return '';
+    })();
+
+!}
+
+@nominate
+call: parlament_coalition_sovereignty_replacement.check
+go-to: commit
+
+@commit
+on-arrival: {!
+    var name = Q.parlament_coalition_sovereignty_nominee;
+    if (Q.parlament_coalition_proposal_president_name !== "Artur Mas" || !Q.parlament_coalition_sovereignty_replacement_needed || (name === 'Neus Munté' && !Q.parlament_coalition_sovereignty_munte_available) || (name === 'Raül Romeva' && !Q.parlament_coalition_sovereignty_romeva_available) || ['Neus Munté', 'Raül Romeva', 'Carles Puigdemont'].indexOf(name) < 0) return false;
+    if (name === 'Raül Romeva') Q.party_resources -= 1;
+    Q.parlament_coalition_proposal_president_name = name;
+    Q.parlament_coalition_proposal_president_gender = name === 'Neus Munté' ? 'f' : 'm';
+    Q.parlament_coalition_mas_retired = true;
+    if (Q.player_party == "cup" && !Q.cup_in_jxsi && !Q.player_in_jxsi) {
+      this.achieve("paperera_de_la_historia");
+    }
+    var leader = name === 'Raül Romeva' ? 'Carles Puigdemont' : name;
+    ['ciu', 'cdc', 'dl', 'pdcat', 'junts'].forEach(function (party) {
+      if (Q[party + '_leader'] === 'Artur Mas' || party === Q.parlament_current_ciu) {
+        Q[party + '_leader'] = leader;
+        Q[party + '_leader_gender'] = leader === 'Neus Munté' ? 'f' : 'm';
+      }
+    });
+    if (Q.parlament_coalition_sovereignty_kind === 'jxsi' || Q.parlament_coalition_sovereignty_kind === 'jxcat') {
+      Q[Q.parlament_coalition_sovereignty_kind + '_leader'] = name;
+      Q[Q.parlament_coalition_sovereignty_kind + '_leader_gender'] = Q.parlament_coalition_proposal_president_gender;
+    }
+    Q.parlament_current_ciu_leader = Q[Q.parlament_current_ciu + '_leader'];
+    Q.parlament_coalition_sovereignty_replacement_needed = false;
+    return true;
+!}
+go-to: jumpScene
+
+@evaluate
+on-arrival: {!
+    var reason = Q.parlament_coalition_sovereignty_candidate_reason;
+    if (reason) {
+        Q.parlament_coalition_proposal_accept = false;
+        Q.parlament_coalition_sovereignty_reject_reasons += (Q.parlament_coalition_sovereignty_reject_reasons ? " " : "") + reason;
+    }
+!}
+call: parlament_coalition_fiscal_policies.evaluate
+go-to: parlament_coalition_sovereignty.accepted if parlament_coalition_proposal_accept; parlament_coalition_sovereignty.next_round if not parlament_coalition_proposal_accept

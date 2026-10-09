@@ -457,6 +457,11 @@ if (has_time_passed || Q.coalition_rupture_recheck) {
 }
 
 // 4. Achievement check
+if (Q.president_gender == "f" && Q.president != "Neus Munté") {
+    Q.woman_generalitat_presidenta_ever = true;
+} else if (Q.president == "Neus Munté" && !Q.woman_generalitat_presidenta_ever) {
+    this.achieve("moneda_de_canvi");
+}
 if (Q.territory_rail2_countdown <= 0 && Q.territory_metro2_countdown <= 0) {
     this.achieve("frikitrens");
 }

@@ -1,0 +1,106 @@
+title: Extraordinary CUP National Assembly
+tags: event
+role: event
+new-page: true
+view-if: player_party = "cup" and not rubicon and parlament_coalition_sovereignty_phase > 0 and coalition_phase_timer > 0 and parlament_coalition_sovereignty_dispute_round = parlament_coalition_sovereignty_phase and not parlament_coalition_sovereignty_assembly_result and (parlament_coalition_proposal_president_name = "Artur Mas" or parlament_coalition_proposal_president_name = "Neus Munté") and (parlament_coalition_sovereignty_assembly_round < parlament_coalition_sovereignty_phase or not parlament_coalition_sovereignty_assembly_round)
+face-image: img/events/cup_assemblea.jpg
+
+= ​CUP membership, to decide on investiture
+
+Supporting such an exceptional investiture, where we'd support the bourgeois-right, austerity enabler, and allegedly-corruption-adjacent Artur Mas cannot be done without giving the party's membership a chance to voice their concern. An exceptional National Assembly is expected to be called at some point before an agreement is signed, 
+
+- @campaign
+- @defer
+- @vote
+
+@campaign
+title: Campaign among members for an agreement
+choose-if: parlament_coalition_sovereignty_phase < 3 and parlament_coalition_sovereignty_assembly_round < parlament_coalition_sovereignty_phase and party_resources >= 1
+subtitle: \[-1 resources\]
+unavailable-subtitle: [? if parlament_coalition_sovereignty_phase >= 3: The membership must vote before the final round. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: {!
+    if (Q.parlament_coalition_sovereignty_phase >= 3 || Q.parlament_coalition_sovereignty_assembly_result || (Q.parlament_coalition_sovereignty_assembly_round || 0) >= Q.parlament_coalition_sovereignty_phase || Q.party_resources < 1) return;
+    Q.party_resources -= 1;
+    Q.parlament_coalition_sovereignty_assembly_campaign = (Q.parlament_coalition_sovereignty_assembly_campaign || 0) + 1;
+    Q.parlament_coalition_sovereignty_assembly_round = Q.parlament_coalition_sovereignty_phase;
+!}
+
+We've tried to sway as many party organizations as possible towards the idea of supporting [+ parlament_coalition_proposal_president_name +] as an extraordinary common candidate. Let's see if that's enough to change the party's stance.
+
+@defer
+title: Defer the vote
+subtitle: The there's still time before the deadline after all.
+choose-if: parlament_coalition_sovereignty_phase < 3
+unavailable-subtitle: The next one will be the final round of negotiations, and the party has to have decided by then.
+on-arrival: {!
+    if (Q.parlament_coalition_sovereignty_phase < 3) Q.parlament_coalition_sovereignty_assembly_round = Q.parlament_coalition_sovereignty_phase;
+!}
+
+With negotiation rounds still left before the automatic dissolution of the Parlament, we can try to push ERC and [+ parlament_current_ciu +] a bit more before deciding.
+
+
+@vote
+title: The membership must vote on the agreement!
+on-arrival: {!
+    function n(value) { return Number(value) || 0; }
+    function clamp(value, lo, hi) { return Math.max(lo, Math.min(hi, value)); }
+    function contested(Q) { return ["Artur Mas", "Neus Munté"].indexOf(Q.parlament_coalition_proposal_president_name) >= 0; }
+
+    function draw() { return G.random(Q); }
+    if (Q.parlament_coalition_sovereignty_assembly_result || Q.rubicon || !contested(Q) || n(Q.parlament_coalition_sovereignty_phase) < 1 || Q.coalition_phase_timer <= 0) return false;
+    var pl = Math.max(0, n(Q.cup_poblelliure_strength));
+    var en = Math.max(0, n(Q.cup_endavant_strength));
+    var third = Math.max(0, n(Q.cup_thirdsector_strength));
+    var total = Math.max(1, pl + en + third);
+    // NPC CUP depends on faction strength and a bounded turnout swing, not hidden dissent.
+    var share = (pl * 0.85 + en * 0.1 + third * 0.4) / total;
+    if (Q.player_party === 'cup') {
+      var terms = Q.parlament_coalition_sovereignty_last_terms || [];
+      share += Math.min(3, terms.length) * 0.015 + n(Q.parlament_coalition_sovereignty_assembly_campaign) * 0.025;
+      share += clamp((n(Q.erc_relations) + n(Q[Q.parlament_current_ciu + '_relations']) - 120) / 1000, -0.04, 0.04);
+      share += (en * n(Q.cup_endavant_dissent) * 0.003 - pl * n(Q.cup_poblelliure_dissent) * 0.003) / total;
+    }
+    share = clamp(share + (draw() - 0.5) * 0.08, 0, 1);
+    // A narrowly divided assembly can produce a real 1515-1515 tie.
+    var yes = Math.abs(share - 0.5) <= 0.003 ? 1515 : Math.round(3030 * share);
+    Q.parlament_coalition_sovereignty_assembly_yes = yes;
+    Q.parlament_coalition_sovereignty_assembly_yes_pc = Math.round(Q.parlament_coalition_sovereignty_assembly_yes * 1000 / 3030) / 10;
+    Q.parlament_coalition_sovereignty_assembly_result = yes === 1515 ? 'tie' : yes > 1515 ? 'approve' : 'veto';
+    Q.parlament_coalition_sovereignty_assembly_terms = JSON.parse(JSON.stringify(Q.parlament_coalition_sovereignty_last_terms || []));
+    Q.parlament_coalition_sovereignty_assembly_deadline = n(Q.year) + 2;
+    if (Q.parlament_coalition_sovereignty_assembly_result == "tie") {
+        this.achieve("tie_1515");
+    }
+    // Departure follows the political impasse rather than another random draw.
+    if (yes <= 1515 && (Q.cup_leader === 'Antonio Baños' || (Q.player_party === 'cup' && Q.antonio_banos_advisor === 1))) Q.parlament_coalition_sovereignty_banos_departure = true;
+    return true;
+!}
+face-image: img/events/cup_assemblea_big.jpg
+
+The CUP membership meets in Manresa, with more than 3000 local representatives with voting rights debating for hours on the investiture proposal. Three voting rounds pass with no option crossing the required 50% mark. A fourth and last round is then announced, with no abstentions, no blank votes, and no open questions for further debate a vote to 
+
+    > *"Reject [a government lead] by Artur Mas and thus, the proposed political agreement. Pass the responsibility to find parliamentary support beyond [the CUP] to [? if jxsi_formed and not jxcat_formed: jxsi?][? if jxcat_formed: jxcat?][? if jxsi_dissolved or not jxsi_formed or jxcat_dissolved or not jxcat_formed: [+ parlament_current_ciu +] and ERC?][, ... assuming that] new elections will be held."*
+
+- @results: The assembly votes once more...
+
+@results
+# Careful: it's misleading, the variables are flipped regarding how the original question was asked.
+
+{!<table style='border-spacing: 0px; margin-right: 1em; width:95%; table-layout: fixed;'>!}
+{!<tr><td style='width: 4.5em'> YES </td><td style='height: 2em; background-color: #008000; border-radius: 0 3px 3px 0; color: white; text-align: center; width: !}[+ 100 - parlament_coalition_sovereignty_assembly_yes_pc +]{!%'>!}[?if consultation_yes_pc > 12 :[+ consultation_yes +] ?]{!</td><td style="padding-left:0.5em;">!}[? if 100 - parlament_coalition_sovereignty_assembly_yes_pc < 12 : <span style="font-size:0.9em">[+ 3030 - parlament_coalition_sovereignty_assembly_yes +]</span> | ?][+ 100 - parlament_coalition_sovereignty_assembly_yes_pc +]{!%</td></tr>!}
+{!</table>!}
+{!<table style='border-spacing: 0px; margin-right: 1em; width:95%; table-layout: fixed;'>!}
+{!<tr><td style='width: 4.5em'> NO </td><td style='height: 2em; background-color: #c30000; border-radius: 0 3px 3px 0; color: white; text-align: center; width: !}[+ parlament_coalition_sovereignty_assembly_yes_pc +]{!%'>!}[?if parlament_coalition_sovereignty_assembly_yes_pc > 12 :[+ parlament_coalition_sovereignty_assembly_yes_pc +]?]{!</td><td style="padding-left:0.5em;">!}[?if parlament_coalition_sovereignty_assembly_yes_pc < 12 : <span style="font-size:0.9em">[+ parlament_coalition_sovereignty_assembly_yes +]</span> | ?] [+ parlament_coalition_sovereignty_assembly_yes_pc +]{!%</td></tr>!}
+{!</table>!}
+
+[? if player_party = "cup" and parlament_coalition_sovereignty_assembly_result = "approve": With this final result, the party's membership has clearly decided to give an exceptional chance to Artur Mas. There's little more left to do than return to negotiations and strike the best possible deal.?]
+[? if player_party = "cup" and parlament_coalition_sovereignty_assembly_result = "veto": With this final result, it is now clear that the party needs to uphold its promised veto to Artur Mas and push things, if needed, to new elections. The ball is clearly on their side now. ?]
+
+[? if player_party = "erc" and parlament_coalition_sovereignty_assembly_result = "approve": With this final result, the party's membership has clearly decided to give an exceptional chance to Artur Mas. There's little more left to do than return to negotiations and finally get this done. ?]
+[? if player_party = "erc" and parlament_coalition_sovereignty_assembly_result = "veto": The CUP membership has unquestionably decided to hold on to their veto to Artur Mas. The decision is now only on [+ parlament_current_ciu +]'s side now. We may very well have new elections after all. ?]
+
+[? if parlament_coalition_sovereignty_assembly_result = "tie": A ridiculous tie. 1,515 to 1,515. With no authorization for Artur Mas nor a reinforcement of the veto policy, the question of the investiture is more open than it has ever been. What is even going to happen now??]
+
+
+- @post_event
+

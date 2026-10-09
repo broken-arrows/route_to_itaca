@@ -88,32 +88,27 @@ on-arrival: {!
     Q.parlament_coalition_pdcat_support_s = 0;
     Q.parlament_coalition_pdcat_support_resolved = false;
 
+    // Joint lists hold the seats, but their convergent constituent remains
+    // the current CiU identity for relations and party leadership.
+    var ciuFamily = ["ciu", "cdc", "dl", "pdcat", "junts"];
+    var ciuJointList = ["jxsi", "jxcat"].find(function (list) {
+        return Q[list + "_parlament_s"] > 0 && (list == "jxsi" || Q.erc_in_jxcat);
+    });
+    var jointCiu = ciuJointList && ciuFamily.find(function (party) {
+        return Q[party + "_in_" + ciuJointList];
+    });
+    var seatedCiu = ["ciu", "cdc", "dl", "jxcat", "pdcat", "junts"].find(function (party) {
+        return Q[party + "_parlament_s"] > 0 &&
+            (party != "jxcat" || !Q.erc_in_jxcat) &&
+            (party != "pdcat" || !Q.pdcat_split);
+    });
+    Q.parlament_current_ciu = jointCiu || seatedCiu ||
+        (ciuFamily.concat("jxcat").includes(Q.parlament_current_ciu) ? Q.parlament_current_ciu : "ciu");
+    // Keep standalone seats here; joint-list seats are counted separately.
+    Q.parlament_current_ciu_s = Q[Q.parlament_current_ciu + "_parlament_s"] || 0;
+    Q.parlament_current_ciu_leader = Q[Q.parlament_current_ciu + "_leader"];
+
     // set changing party names
-    if (Q.ciu_parlament_s > 0) {
-        Q.parlament_current_ciu = "ciu";
-        Q.parlament_current_ciu_s = Q.ciu_parlament_s;
-        Q.parlament_current_ciu_leader = Q.ciu_leader;
-    } else if (Q.cdc_parlament_s > 0) {
-        Q.parlament_current_ciu = "cdc";
-        Q.parlament_current_ciu_s = Q.cdc_parlament_s;
-        Q.parlament_current_ciu_leader = Q.cdc_leader;
-    } else if (Q.dl_parlament_s > 0) {
-        Q.parlament_current_ciu = "dl";
-        Q.parlament_current_ciu_s = Q.dl_parlament_s;
-        Q.parlament_current_ciu_leader = Q.dl_leader;
-    } else if (Q.jxcat_parlament_s > 0 && !Q.erc_in_jxcat) {
-        Q.parlament_current_ciu = "jxcat";
-        Q.parlament_current_ciu_s = Q.jxcat_parlament_s;
-        Q.parlament_current_ciu_leader = Q.jxcat_leader;
-    } else if (Q.pdcat_parlament_s > 0 && !Q.pdcat_split) {
-        Q.parlament_current_ciu = "pdcat";
-        Q.parlament_current_ciu_s = Q.pdcat_parlament_s;
-        Q.parlament_current_ciu_leader = Q.pdcat_leader;
-    } else {
-        Q.parlament_current_ciu = "junts";
-        Q.parlament_current_ciu_s = Q.junts_parlament_s;
-        Q.parlament_current_ciu_leader = Q.junts_leader;
-    }
     if (Q.icv_parlament_s > 0) {
         Q.parlament_current_icv = "icv";
         Q.parlament_current_icv_s = Q.icv_parlament_s;

@@ -1,0 +1,56 @@
+title: Antonio Baños steps down
+subtitle: CUP's internal cohesion in question
+tags: event
+role: event
+new-page: true
+max-visits: 1
+view-if: not rubicon and parlament_coalition_sovereignty_phase > 1 and coalition_phase_timer > 0 and parlament_coalition_sovereignty_banos_departure and (player_party != "cup" or cup_poblelliure_dissent > 15)
+on-arrival: {!
+    if (Q.player_party == "cup" && Q.antonio_banos_advisor == 1) {
+        Q.antonio_banos_advisor_available = 0;
+        Q.antonio_banos_advisor = 0;
+        Q.n_advisors = Math.max(0, Q.n_advisors - 1);
+    }
+    if (Q.cup_leader == "Antonio Baños") {
+        Q.cup_leader = "Anna Gabriel";
+        Q.cup_leader_gender = "f";
+    }
+    Q.cup_poblelliure_dissent += 5;
+!}
+face-image: img/events/banos_adeu.jpg
+
+= ​Antonio Baños steps down
+
+After the failure to reach an agreement for a renewed pro-independence government under Artur Mas, Antonio Baños, prominent member of the CUP and close to Poble Lliure's positions, is stepping down. He'll be leaving his seat at the Parlament, as he has been loudly voicing his dissent with the current direction of making such a pro-independence pact impossible.
+
+[? if player_party = "cup": The party has definitely lost a voice for institutional agreement.?]
+[? if player_party = "erc": This departure removes one of the CUP's figures most willing to seek an agreement. This is not going to make further negotiations any easier. ?]
+
+- @cup_rebuild
+- @cup_hold
+- @erc_continue
+
+@cup_rebuild
+title: We may want to re-think our stance
+subtitle: It is still possible to negotiate towards a compromise after all.
+view-if: player_party = "cup"
+on-arrival: {!
+    Q.cup_poblelliure_dissent = Math.max(0, Q.cup_poblelliure_dissent - 3);
+    Q.erc_relations += 2;
+!}
+
+Internally and quietly, we're starting to open the door for a compromise agreement. We'll have to see where this ends, though.
+
+@cup_hold
+title: Double down on the party's veto
+view-if: player_party = "cup"
+on-arrival: {!
+    Q.cup_endavant_dissent = Math.max(0, Q.cup_endavant_dissent - 3);
+    Q.cup_poblelliure_dissent += 3;
+!}
+
+Antonio Baños' resignation means little to the collective decision of vetoing such a corrupt figure. 
+
+@erc_continue
+title: Continue...
+go-to: post_event

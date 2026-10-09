@@ -1,0 +1,84 @@
+title: Between Artur Mas and the CUP
+subtitle: Widespread #PressingCUP campaign sets social media on fire.
+tags: event
+role: event
+new-page: true
+view-if: not rubicon and parlament_coalition_sovereignty_phase > 0 and coalition_phase_timer > 0 and parlament_coalition_sovereignty_dispute_round < parlament_coalition_sovereignty_phase and (parlament_coalition_proposal_president_name = "Artur Mas") and player_party = "erc"
+face-image: img/events/pressing_cup.jpg
+
+= Between ​Artur Mas and the ​CUP
+
+Between negotiations recesses and pauses, it's hard not to look at social media, where the #PressingCUP campaign only grows further and louder. Arguing that the elections had a clear candidate winning, they demand the CUP reconsiders their veto.
+
+- @defend
+- @press
+- @private
+- @public
+
+@defend
+title: Defend [+ parlament_coalition_proposal_president_name +] unquestionably
+subtitle: [? if parlament_coalition_sovereignty_kind = "jxsi" or parlament_coalition_sovereignty_kind = "jxcat": We must preserve unity around the agreed list.?][? if parlament_coalition_sovereignty_kind != "jxsi" and parlament_coalition_sovereignty_kind != "jxcat": We must preserve the chance of an agreement with [+ parlament_current_ciu +].?]
+on-arrival: {!
+    if (Q.rubicon || Q.parlament_coalition_sovereignty_phase < 1 || Q.coalition_phase_timer <= 0 || (Q.parlament_coalition_sovereignty_dispute_round || 0) >= Q.parlament_coalition_sovereignty_phase) return;
+    if (Q.parlament_coalition_proposal_president_name != "Artur Mas" && Q.parlament_coalition_proposal_president_name != "Neus Munté") return;
+    Q.parlament_coalition_sovereignty_dispute_round = Q.parlament_coalition_sovereignty_phase;
+    Q.parlament_coalition_sovereignty_ciu_pressure = Q.parlament_coalition_sovereignty_ciu_pressure || 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = Q.parlament_coalition_sovereignty_mas_pressure || 0;
+    Q.parlament_coalition_sovereignty_mas_pressure += 1;
+    Q.cup_relations -= 2;
+!}
+
+We have keep the line and have rallied around [+ parlament_coalition_proposal_president_name +]. It's unclear how much will the CUP's position change only by doing this, but we are at least keeping or stance.
+
+@press
+title: Further press CUP to accept an "exceptional" agreement
+subtitle: The CUP may not look kindly upon us, but we do have momentum on our side after all.
+on-arrival: {!
+    if (Q.rubicon || Q.parlament_coalition_sovereignty_phase < 1 || Q.coalition_phase_timer <= 0 || (Q.parlament_coalition_sovereignty_dispute_round || 0) >= Q.parlament_coalition_sovereignty_phase) return;
+    if (Q.parlament_coalition_proposal_president_name != "Artur Mas" && Q.parlament_coalition_proposal_president_name != "Neus Munté") return;
+    Q.parlament_coalition_sovereignty_dispute_round = Q.parlament_coalition_sovereignty_phase;
+    Q.parlament_coalition_sovereignty_ciu_pressure = Q.parlament_coalition_sovereignty_ciu_pressure || 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = Q.parlament_coalition_sovereignty_mas_pressure || 0;
+    Q.parlament_coalition_sovereignty_mas_pressure += 2;
+    Q.cup_relations -= 5;
+!}
+
+While keeping the line and rallying around [+ parlament_coalition_proposal_president_name +], we have fully joined into the discourse against the anticapitalist formation, pushing them further into public dilapidation. It's unclear how much will the CUP's position change only by doing this, though.
+
+@private
+title: Privately propose alternative formulas to [+ parlament_current_ciu +]
+subtitle: [? if parlament_coalition_sovereignty_kind = "jxsi" or parlament_coalition_sovereignty_kind = "jxcat": This would go against the agreements that made possible a unity list in the first place, but the chance is there.?][? if parlament_coalition_sovereignty_kind != "jxsi" and parlament_coalition_sovereignty_kind != "jxcat": We could ask [+ parlament_current_ciu +] to reconsider their candidate, if that's what it takes to reach an agreement.?]
+on-arrival: {!
+    if (Q.rubicon || Q.parlament_coalition_sovereignty_phase < 1 || Q.coalition_phase_timer <= 0 || (Q.parlament_coalition_sovereignty_dispute_round || 0) >= Q.parlament_coalition_sovereignty_phase) return;
+    if (Q.parlament_coalition_proposal_president_name != "Artur Mas" && Q.parlament_coalition_proposal_president_name != "Neus Munté") return;
+    Q.parlament_coalition_sovereignty_dispute_round = Q.parlament_coalition_sovereignty_phase;
+    Q.parlament_coalition_sovereignty_ciu_pressure = Q.parlament_coalition_sovereignty_ciu_pressure || 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = Q.parlament_coalition_sovereignty_mas_pressure || 0;
+    Q.parlament_coalition_sovereignty_ciu_pressure += 1;
+    Q.parlament_coalition_sovereignty_brokerage = true;
+    Q[Q.parlament_current_ciu + "_relations"] -= 2;
+!}
+
+While publicly we are keeping the line and rallying around [+ parlament_coalition_proposal_president_name +], we have been trying to at least raise some ideas on thinking about different candidates. We'll have to see if this is enough to sway the current [+ parlament_current_ciu +] leadership.
+
+@public
+title: Publicly side with the CUP and demand a different candidate!
+subtitle: This will surely upset [+ parlament_current_ciu +].
+on-arrival: {!
+    if (Q.rubicon || Q.parlament_coalition_sovereignty_phase < 1 || Q.coalition_phase_timer <= 0 || (Q.parlament_coalition_sovereignty_dispute_round || 0) >= Q.parlament_coalition_sovereignty_phase) return;
+    if (Q.parlament_coalition_proposal_president_name != "Artur Mas" && Q.parlament_coalition_proposal_president_name != "Neus Munté") return;
+    Q.parlament_coalition_sovereignty_dispute_round = Q.parlament_coalition_sovereignty_phase;
+    Q.parlament_coalition_sovereignty_ciu_pressure = Q.parlament_coalition_sovereignty_ciu_pressure || 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = Q.parlament_coalition_sovereignty_mas_pressure || 0;
+    Q.parlament_coalition_sovereignty_ciu_pressure += 2;
+    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
+        Q.independence_trust -= 8;
+        Q[Q.parlament_current_ciu + "_relations"] -= 9;
+    } else {
+        Q.independence_trust -= 4;
+        Q[Q.parlament_current_ciu + "_relations"] -= 6;
+    }
+    Q.parlament_coalition_sovereignty_feud += 1;
+!}
+
+[? if parlament_coalition_sovereignty_kind = "jxsi" or parlament_coalition_sovereignty_kind = "jxcat": Against all the agreements that we signed on when forming [+ parlament_coalition_sovereignty_kind +], we are publicly breaking the coalition's line and demanding a leadership change.?][? if parlament_coalition_sovereignty_kind != "jxsi" and parlament_coalition_sovereignty_kind != "jxcat": We are now publicly siding with the CUP and demanding that [+ parlament_current_ciu +] proposes a different candidate. Predictably, their leadership is not taking this kindly.?] We'll have to see if this is really worth it.

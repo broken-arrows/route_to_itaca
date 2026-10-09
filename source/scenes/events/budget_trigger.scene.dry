@@ -69,7 +69,7 @@ on-arrival: {!
         var minimumTax = tax;
         for (var candidate = Math.max(-2, Q.tax_policy_level - 2); candidate <= Math.min(2, Q.tax_policy_level + 2); candidate++) {
             if (candidate < minimumTax || party == "ciu" && candidate >= 2 && !taxPromised) continue;
-            var margin = 1 + Q.generalitat_surplus + yields[candidate + 2] - yields[Q.tax_policy_level + 2] -
+            var margin = Q.generalitat_surplus + yields[candidate + 2] - yields[Q.tax_policy_level + 2] -
                 2 * (cap - Q.social_spending_cap) - costs;
             if (margin > bestMargin) { tax = candidate; bestMargin = margin; }
             if (margin >= 0) break;

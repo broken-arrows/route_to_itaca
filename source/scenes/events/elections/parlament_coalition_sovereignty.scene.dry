@@ -13,11 +13,15 @@ go-to: failed if parlament_coalition_sovereignty_phase >= 3; wait if parlament_c
 
 @wait
 on-arrival: {!
+    var policies = ["education", "health", "pay", "tax", "cap"];
+    Q.parlament_coalition_sovereignty_last_terms = policies.filter(function (p) { return Q['parlament_coalition_policy_' + p]; }).map(function (p) {
+      return { policy: p, target: Q['parlament_coalition_policy_' + p + '_target'] };
+    });
     Q.parlament_coalition_sovereignty_phase += 1;
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
     Q.independence_trust -= 4;
-    
+
     // TODO: Author Rubicon-specific stuffs
     // TODO: Add programme-credibility events separately from the candidate dispute.
 !}
@@ -66,7 +70,7 @@ go-to: names if parlament_coalition_sovereignty_can_form; post_event if not parl
 go-to: parlament_coalition_setnames
 set-jump: formed
 
-Pro-independence parties have agreed to form a [+ cat_coalition_disp +]! 
+Pro-independence parties have agreed to form a [+ cat_coalition_disp +]!
 
 @formed
 
@@ -75,6 +79,14 @@ Pro-independence parties have agreed to form a [+ cat_coalition_disp +]!
 @failed
 on-arrival: {!
     if (Q.parlament_coalition_sovereignty_phase > 0) {
+        if (Q.player_party == "erc" && Q.parlament_coalition_sovereignty_kind == "jxsi" &&
+            (Q.player_in_jxsi || Q.erc_in_jxsi) && Q.parlament_coalition_sovereignty_phase >= 3 &&
+            Q.parlament_coalition_proposal_president_name == "Artur Mas" &&
+            Q.parlament_coalition_sovereignty_mas_pressure > 0 &&
+            !(Q.parlament_coalition_sovereignty_ciu_pressure > 0) &&
+            (Q.parlament_coalition_sovereignty_assembly_result == "veto" || Q.parlament_coalition_sovereignty_assembly_result == "tie")) {
+            this.achieve("mas_o_marc");
+        }
         if (Q.parlament_coalition_proposal_president_name == "Artur Mas" || Q.parlament_coalition_proposal_president_name == "Neus Munté") {
             Q.parlament_coalition_mas_veto_failures = (Q.parlament_coalition_mas_veto_failures || 0) + 1;
         }
@@ -94,3 +106,26 @@ call: snap_election
 Negotiations have collapsed. [+ parlament_coalition_sovereignty_reject_reasons +] Now there's only one answer: for the people to vote again.
 
 - @post_event: This is highly disheartening...
+
+@initialize
+on-arrival: {!
+    Q.parlament_coalition_sovereignty_ciu_pressure = 0;
+    Q.parlament_coalition_sovereignty_brokerage = false;
+    Q.parlament_coalition_sovereignty_assembly_result = '';
+    Q.parlament_coalition_sovereignty_assembly_yes = 0;
+    Q.parlament_coalition_sovereignty_assembly_round = 0;
+    Q.parlament_coalition_sovereignty_assembly_campaign = 0;
+    Q.parlament_coalition_sovereignty_assembly_terms = [];
+    Q.parlament_coalition_sovereignty_last_terms = [];
+    Q.parlament_coalition_sovereignty_replacement_needed = false;
+    Q.parlament_coalition_sovereignty_dispute_round = 0;
+    Q.parlament_coalition_sovereignty_mas_pressure = 0;
+    Q.parlament_coalition_sovereignty_feud = 0;
+    Q.parlament_coalition_sovereignty_mediation_round = 0;
+    Q.parlament_coalition_sovereignty_banos_departure = false;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_sovereignty_reject_reasons = "";
+    Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_sovereignty_assembly_deadline = 0;
+    Q.parlament_coalition_sovereignty_nominee = "";
+!}

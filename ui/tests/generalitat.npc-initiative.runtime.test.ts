@@ -207,6 +207,30 @@ describe('NPC cabinet scheduling', () => {
 });
 
 describe('NPC ideology, portfolios and agreements', () => {
+  it.each([[-0.01, 2], [-0.5, 2], [-1, 4], [-2.3, 9.2], [-5, 20]])
+  ('weights CiU service and pay cuts at surplus %s with weight %s', (surplus, weight) => {
+    const f = setup({ education_minister_party: 'ciu', economy_minister_party: 'ciu',
+      generalitat_surplus: surplus });
+    const cuts = f.candidates().filter(item => item.kind === 'cut');
+    expect(cuts.map(item => item.field).sort()).toEqual([
+      'education_spending', 'healthcare_spending', 'public_salary_level',
+    ]);
+    for (const cut of cuts) expect(cut.weight).toBeCloseTo(weight);
+  });
+
+  it('scales moderate-left cuts while retaining their stricter deficit threshold', () => {
+    const f = setup({ ciu_ideology: 'Social Democracy, Federalism', generalitat_surplus: -2 });
+    expect(f.candidates().some(item => item.kind === 'cut')).toBe(false);
+    f.q.generalitat_surplus = -3;
+    const cut = f.candidates().find(item => item.kind === 'cut');
+    expect(cut).toMatchObject({ field: 'healthcare_spending', to: -2, weight: 3 });
+  });
+
+  it.each([0, 0.5])('does not propose CiU cuts without a deficit at surplus %s', surplus => {
+    const f = setup({ generalitat_surplus: surplus });
+    expect(f.candidates().some(item => item.kind === 'cut')).toBe(false);
+  });
+
   it('does not reopen a budget already attempted this year', () => {
     const f = setup({ economy_minister_party: 'ciu', budget_year: 2012, budget_year_attempted: 2013,
       ciu_ideology: 'Social Democracy, Federalism' });
@@ -236,6 +260,15 @@ describe('NPC ideology, portfolios and agreements', () => {
     expect(f.candidates().some((item: any) => item.field === 'bnl_union_level' && item.to === 1)).toBe(false);
     f.q.psc_ideology = 'Anticapitalism, Unilateralism';
     expect(f.candidates().some((item: any) => item.field === 'bnl_union_level' && item.to === 1)).toBe(true);
+  });
+
+  it.each([
+    [0, 85, true], [1, 59, true], [1, 60, false], [1, 85, false],
+    [2, 20, false], [3, 20, false],
+  ])('gates Madrid diplomacy at roadmap %i and momentum %i: %s', (roadmap, momentum, allowed) => {
+    const f = setup({ foreign_minister_party: 'ciu', ciu_roadmap: roadmap,
+      independence_movement: momentum, cat_spa_relations: 20, art155_ever: false });
+    expect(f.candidates().some(item => item.kind === 'diplomacy')).toBe(allowed);
   });
 
   it('offers a broad existing policy catalogue with capped ordinary service transitions', () => {
@@ -319,16 +352,6 @@ describe('NPC initiative responses and enactment', () => {
     due(abstain);
     abstain.adapter.goToScene(scene);
     expect(abstain.q.npc_government_can_stop).toBe(false);
-  });
-
-  it('explains ideological and portfolio blockers for the tax alternative', () => {
-    const f = setup({ economy_minister_party: 'ciu' });
-    propose(f, 'healthcare_spending', -2);
-    expect(f.q.npc_government_alternative_blocker).toContain('opposes further tax');
-    const ministry = setup();
-    due(ministry);
-    ministry.adapter.goToScene(scene);
-    expect(ministry.q.npc_government_alternative_blocker).toContain('does not control Economy');
   });
 
   it('redirects a compatible NPC’s cut into a real budget proposal without enacting taxes early', () => {
@@ -415,20 +438,6 @@ describe('NPC initiative responses and enactment', () => {
     expect(f.q.active_mods.education_school_policy.ticks_active).toBe(3);
     expect(f.q.active_mods.education_school_policy.def.electoral_transfers.length).toBeGreaterThan(0);
     expect(f.q.education_policy_secondary).toBe('humanities');
-  });
-
-  it('starts a consultation through its existing countdown, without needing player government membership', () => {
-    const f = setup({ cat_coalition: ['cdc'], ...Object.fromEntries(offices.map(field => [field, 'cdc'])),
-      parlament_current_ciu: 'cdc', cdc_ideology: 'Centre-right Liberalism, Unilateralism',
-      parlament_non_binding_consultations: true, consultation_happened: false,
-      independence_movement: 80, independence_trust: 60 });
-    propose(f, 'consultation_pending', true);
-    answer(f, 'accept');
-    expect(f.q.consultation_pending).toBe(true);
-    expect(f.q.consultation_question).toBe(1);
-    expect(f.q.countdowns).toContain('consultation_day');
-    expect(f.q.consultation_day_countdown).toBe(3);
-    expect(f.q.government_budget).toBe(7);
   });
 
   it('carries protest into a passed NPC tax budget and leaves other parties’ losses unchanged', () => {

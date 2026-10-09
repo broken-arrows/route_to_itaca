@@ -25,20 +25,8 @@ on-arrival: {!
     Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
     Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
     Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
-    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
-    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
-        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
-    }
-    Q.parlament_coalition_sovereignty_dispute_round = 0;
-    Q.parlament_coalition_sovereignty_mas_pressure = 0;
-    Q.parlament_coalition_sovereignty_candidate_exception = false;
-    Q.parlament_coalition_sovereignty_feud = 0;
-    Q.parlament_coalition_sovereignty_mediation_done = false;
-    Q.parlament_coalition_sovereignty_banos_seen = false;
-    Q.parlament_coalition_sovereignty_banos_departure = false;
-    Q.parlament_coalition_sovereignty_deadline = 0;
-    Q.parlament_coalition_sovereignty_reject_reasons = "";
-    Q.parlament_coalition_push = 0;
+
+
     if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
         Q.cup_endavant_strength = 35;
         Q.cup_poblelliure_strength = 35;
@@ -50,6 +38,7 @@ on-arrival: {!
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
+call: parlament_coalition_sovereignty.initialize
 
 Before negotiations can properly begin, the Parlament needs to convene, and a Speaker of the House needs to be chosen. Given the results, it is expected to be a JxSí one, but we can always offer it to the CUP as a gesture of good will.
 
@@ -73,20 +62,8 @@ on-arrival: {!
     Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
     Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
     Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
-    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
-    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
-        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
-    }
-    Q.parlament_coalition_sovereignty_dispute_round = 0;
-    Q.parlament_coalition_sovereignty_mas_pressure = 0;
-    Q.parlament_coalition_sovereignty_candidate_exception = false;
-    Q.parlament_coalition_sovereignty_feud = 0;
-    Q.parlament_coalition_sovereignty_mediation_done = false;
-    Q.parlament_coalition_sovereignty_banos_seen = false;
-    Q.parlament_coalition_sovereignty_banos_departure = false;
-    Q.parlament_coalition_sovereignty_deadline = 0;
-    Q.parlament_coalition_sovereignty_reject_reasons = "";
-    Q.parlament_coalition_push = 0;
+
+
     if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
         Q.cup_endavant_strength = 35;
         Q.cup_poblelliure_strength = 35;
@@ -98,6 +75,7 @@ on-arrival: {!
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
+call: parlament_coalition_sovereignty.initialize
 
 Before negotiations can properly begin, the Parlament needs to convene, and a Speaker of the House needs to be chosen. Given the results, it is expected to be a JxSí one, but we can always try to push for us to have it instead, probably.
 
@@ -121,20 +99,8 @@ on-arrival: {!
     Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
     Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
     Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
-    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
-    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
-        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
-    }
-    Q.parlament_coalition_sovereignty_dispute_round = 0;
-    Q.parlament_coalition_sovereignty_mas_pressure = 0;
-    Q.parlament_coalition_sovereignty_candidate_exception = false;
-    Q.parlament_coalition_sovereignty_feud = 0;
-    Q.parlament_coalition_sovereignty_mediation_done = false;
-    Q.parlament_coalition_sovereignty_banos_seen = false;
-    Q.parlament_coalition_sovereignty_banos_departure = false;
-    Q.parlament_coalition_sovereignty_deadline = 0;
-    Q.parlament_coalition_sovereignty_reject_reasons = "";
-    Q.parlament_coalition_push = 0;
+
+
     if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
         Q.cup_endavant_strength = 35;
         Q.cup_poblelliure_strength = 35;
@@ -146,6 +112,7 @@ on-arrival: {!
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
+call: parlament_coalition_sovereignty.initialize
 
 Before negotiations can properly begin, the Parlament needs to convene, and a Speaker of the House needs to be chosen. Given the results, it is expected to be a JxCat one, but we can always offer it to the CUP as a gesture of good will.
 
@@ -169,20 +136,8 @@ on-arrival: {!
     Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
     Q.parlament_coalition_proposal_president_name = Q[Q.parlament_coalition_proposal_president + "_leader"];
     Q.parlament_coalition_proposal_president_gender = Q[Q.parlament_coalition_proposal_president + "_leader_gender"];
-    Q.parlament_coalition_sovereignty_ciu_party = Q.parlament_current_ciu;
-    if (Q.parlament_coalition_sovereignty_kind == "jxsi" || Q.parlament_coalition_sovereignty_kind == "jxcat") {
-        Q.parlament_coalition_sovereignty_ciu_party = ["ciu", "cdc", "dl", "pdcat", "junts"].find(function (p) { return Q[p + "_in_" + Q.parlament_coalition_sovereignty_kind]; }) || "cdc";
-    }
-    Q.parlament_coalition_sovereignty_dispute_round = 0;
-    Q.parlament_coalition_sovereignty_mas_pressure = 0;
-    Q.parlament_coalition_sovereignty_candidate_exception = false;
-    Q.parlament_coalition_sovereignty_feud = 0;
-    Q.parlament_coalition_sovereignty_mediation_done = false;
-    Q.parlament_coalition_sovereignty_banos_seen = false;
-    Q.parlament_coalition_sovereignty_banos_departure = false;
-    Q.parlament_coalition_sovereignty_deadline = 0;
-    Q.parlament_coalition_sovereignty_reject_reasons = "";
-    Q.parlament_coalition_push = 0;
+
+
     if (!(Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength > 0)) {
         Q.cup_endavant_strength = 35;
         Q.cup_poblelliure_strength = 35;
@@ -194,6 +149,7 @@ on-arrival: {!
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
 !}
+call: parlament_coalition_sovereignty.initialize
 
 Before negotiations can properly begin, the Parlament needs to convene, and a Speaker of the House needs to be chosen. Given the results, it is expected to be a JxCat one, but we can always try to push for us to have it instead, probably.
 
@@ -230,6 +186,6 @@ go-to: post_speaker
 
 @post_speaker
 
-[+ speaker +] ([+ speaker_party +]) will be the Speaker of the House for this legislature. Officially the second authority of the country, [+ speaker_party +] will now have a decisive role in the legislative agenda moving forwards. 
+[+ speaker +] ([+ speaker_party +]) will be the Speaker of the House for this legislature. Officially the second authority of the country, [+ speaker_party +] will now have a decisive role in the legislative agenda moving forwards.
 
 - @post_event: And so, time passes...

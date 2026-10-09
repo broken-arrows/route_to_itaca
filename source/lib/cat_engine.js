@@ -1774,22 +1774,6 @@
           );
         }
 
-        // ── ICR SATURATION ───────────────────────────────────────────────
-        // Above indymov=82, further rises no longer convert to icr
-        const ICR_SATURATION_THRESHOLD = 82.0;
-        const ICR_SATURATION_COEFF = 0.045;
-        if (
-          d_vars[0] > 0 &&
-          Q.independence_movement > ICR_SATURATION_THRESHOLD
-        ) {
-          const saturation =
-            (Q.independence_movement - ICR_SATURATION_THRESHOLD) /
-            (100.0 - ICR_SATURATION_THRESHOLD);
-          const offset = ICR_SATURATION_COEFF * d_vars[0] * saturation;
-          addFamilyDelta("nonlinear.icr_saturation", "icr", offset);
-          addFamilyDelta("nonlinear.icr_saturation", "abs", -offset);
-        }
-
         // ── CUP TRUST EXTRA
         // Below indytrust=30, falling trust amplifies CUP gains at icr's expense
         const CUP_TRUST_THRESHOLD = 30.0;

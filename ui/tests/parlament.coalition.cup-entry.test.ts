@@ -57,8 +57,19 @@ describe('CUP National Concentration entry', () => {
         expect(adapter.qualities.parlament_coalition_sovereignty_kind).toBe('government');
         const postSpeaker = adapter.choose(speakerFrame.choices.findIndex(choice => choice.canChoose));
         expect(adapter.qualities.party_resources).toBe(2);
-        const newspaper = adapter.choose(postSpeaker.choices.findIndex(choice => choice.canChoose));
+        let newspaper = adapter.choose(postSpeaker.choices.findIndex(choice => choice.canChoose));
         expect(adapter.qualities.party_resources).toBe(2);
+        const pressureId = `parlament_coalition_sovereignty_candidate_${player}`;
+        const pressureIndex = newspaper.choices.findIndex(choice => choice.id === pressureId);
+        if (pressureIndex >= 0) {
+          const pressure = adapter.choose(pressureIndex);
+          newspaper = adapter.choose(pressure.choices.findIndex(choice => choice.id === `${pressureId}.${player === 'erc' ? 'private' : 'hold'}`));
+          const assemblyIndex = newspaper.choices.findIndex(choice => choice.id === 'parlament_coalition_sovereignty_assembly');
+          if (assemblyIndex >= 0) {
+            const assembly = adapter.choose(assemblyIndex);
+            newspaper = adapter.choose(assembly.choices.findIndex(choice => choice.id.endsWith('.defer')));
+          }
+        }
         const phaseId = `parlament_coalition_ciu_erc_cup_phase_${player}_player_${leader}_led_government`;
         const phaseIndex = newspaper.choices.findIndex(choice => choice.id === phaseId);
         expect(phaseIndex).toBeGreaterThanOrEqual(0);

@@ -1,0 +1,10 @@
+title: CUP membership, to decide on investiture
+subtitle: The anti-capitalist formation meets to decide on the proposed investiture
+tags: event
+role: event
+new-page: true
+view-if: player_party = "erc" and not rubicon and parlament_coalition_sovereignty_phase > 0 and coalition_phase_timer > 0 and parlament_coalition_sovereignty_dispute_round = parlament_coalition_sovereignty_phase and not parlament_coalition_sovereignty_assembly_result and (parlament_coalition_proposal_president_name = "Artur Mas" or parlament_coalition_proposal_president_name = "Neus Munté") and parlament_coalition_sovereignty_phase = 3
+go-to: parlament_coalition_sovereignty_assembly.vote
+
+= ​CUP membership, to decide on investiture
+

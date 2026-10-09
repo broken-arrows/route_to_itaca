@@ -23,6 +23,48 @@ function selectableIds(frame: ReturnType<DendryAdapter['goToScene']>) {
 }
 
 describe('Parlament coalition availability regressions', () => {
+  it.each(['jxsi', 'jxcat'].flatMap(list =>
+    ['ciu', 'cdc', 'dl', 'pdcat', 'junts'].map(party => [list, party]),
+  ))('keeps %s constituent %s as the current CiU identity with zero standalone seats', (list, party) => {
+    const membershipReset = Object.fromEntries(['jxsi', 'jxcat'].flatMap(name =>
+      ['ciu', 'cdc', 'dl', 'pdcat', 'junts'].map(member => [`${member}_in_${name}`, false]),
+    ));
+    const { adapter } = enterCoalitionMenu({
+      ...membershipReset,
+      parlament_current_ciu: 'junts',
+      [`${list}_parlament_s`]: 62, [`${party}_in_${list}`]: true,
+      erc_in_jxcat: list === 'jxcat', erc_in_jxsi: list === 'jxsi',
+      [`${party}_leader`]: 'Constituent leader', [`${list}_leader`]: 'Common nominee',
+      cup_parlament_s: 10,
+    });
+    expect(adapter.qualities.parlament_current_ciu).toBe(party);
+    expect(adapter.qualities.parlament_current_ciu_s).toBe(0);
+    expect(adapter.qualities.parlament_current_ciu_leader).toBe('Constituent leader');
+    adapter.goToScene('parlament_coalition');
+    expect(adapter.qualities.parlament_current_ciu).toBe(party);
+  });
+
+  it.each(['ciu', 'cdc', 'dl', 'pdcat', 'jxcat', 'junts'])(
+    'uses seated standalone %s despite stale joint-list membership', party => {
+      const { adapter } = enterCoalitionMenu({
+        parlament_current_ciu: 'ciu', [`${party}_parlament_s`]: 35,
+        cdc_in_jxsi: true, pdcat_in_jxcat: true, erc_in_jxcat: false,
+        [`${party}_leader`]: 'Standalone leader',
+      });
+      expect(adapter.qualities.parlament_current_ciu).toBe(party);
+      expect(adapter.qualities.parlament_current_ciu_s).toBe(35);
+      expect(adapter.qualities.parlament_current_ciu_leader).toBe('Standalone leader');
+    },
+  );
+
+  it.each(['ciu', 'cdc', 'dl', 'pdcat', 'jxcat', 'junts'])(
+    'preserves current %s when no CiU-family carrier has seats', party => {
+      const { adapter } = enterCoalitionMenu({ parlament_current_ciu: party });
+      expect(adapter.qualities.parlament_current_ciu).toBe(party);
+      expect(adapter.qualities.parlament_current_ciu_s).toBe(0);
+    },
+  );
+
   it.each(['erc', 'cup'].flatMap(player =>
     [[16, 23, 'erc'], [23, 16, 'ciu'], [20, 20, 'ciu']].map(
       ([ciu, erc, leader]) => [player, ciu, erc, leader] as const,

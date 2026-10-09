@@ -194,8 +194,12 @@
       ];
     },
     antonio_banos: function (Q) {
-      if (Q.jxsi_formed && Q.pressing_cup_happened) {
-        return [{ colour: "indp", label: "indp." }];
+      if (Q.parlament_coalition_sovereignty_banos_departure) {
+        return [
+          { colour: "#c11d4e", label: "Poble Lliure", note: "former" },
+          { colour: "#b8a12b", label: "CUP", note: "former" },
+          { colour: "indp", label: "indp." },
+        ];
       }
       return [
         { colour: "#c11d4e", label: "Poble Lliure" },

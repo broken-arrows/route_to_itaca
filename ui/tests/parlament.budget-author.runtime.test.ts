@@ -70,7 +70,7 @@ describe('NPC budget authors and fiscal conversion', () => {
     expect(q.parlament_budget_projection.brokenCabinet).toEqual([]);
     expect(q.parlament_budget_positions).toMatchObject({ ciu: 'yes', erc: 'yes' });
     expect(q.parlament_budget_can_pass).toBe(true);
-    expect(q.parlament_budget_shortfall).toBeCloseTo(1.3);
+    expect(q.parlament_budget_shortfall).toBeCloseTo(2.3);
     adapter.goToScene('parlament_budget.pass');
     expect(q.budget_year).toBe(2013);
     expect(q.education_spending).toBe(0);
@@ -98,12 +98,20 @@ describe('NPC budget authors and fiscal conversion', () => {
     expect(q.parlament_budget_positions[party]).toBe('no');
   });
 
-  it.each([[-5, 4], [-2.3, 1.3], [-1, 0], [0, 0], [0.5, 0]])
+  it.each([[-5, 5], [-2.3, 2.3], [-1, 1], [0, 0], [0.5, 0]])
   ('uses one funding point per surplus percentage point at %s', (surplus, gap) => {
     const { adapter, q } = setup('ciu', { generalitat_surplus: surplus });
     propose(adapter);
-    expect(q.parlament_budget_margin).toBeCloseTo(1 + surplus);
+    expect(q.parlament_budget_margin).toBeCloseTo(surplus);
     expect(q.parlament_budget_shortfall).toBeCloseTo(gap);
+  });
+
+  it('seeks revenue for an inherited deficit without a flat fiscal allowance', () => {
+    const { adapter, q } = setup('ciu', { generalitat_surplus: -1, tax_policy_level: 0 });
+    propose(adapter);
+    expect(q.budget_draft.tax_policy_level).toBe(1);
+    expect(q.parlament_budget_margin).toBeCloseTo(0);
+    expect(q.parlament_budget_shortfall).toBe(0);
   });
 
   it('keeps a separate CiU cabinet partner opposed to the gap in an ERC proposal', () => {
@@ -129,10 +137,10 @@ describe('NPC budget authors and fiscal conversion', () => {
     const { adapter, q } = setup('ciu');
     propose(adapter);
     adapter.goToScene('parlament_budget.tax_lower');
-    expect(q.parlament_budget_shortfall).toBeCloseTo(2.3);
+    expect(q.parlament_budget_shortfall).toBeCloseTo(3.3);
     expect(q.parlament_budget_positions.ciu).toBe('no');
     adapter.goToScene('parlament_budget.tax_higher');
-    expect(q.parlament_budget_shortfall).toBeCloseTo(1.3);
+    expect(q.parlament_budget_shortfall).toBeCloseTo(2.3);
     expect(q.parlament_budget_positions.ciu).toBe('yes');
     expect(q.budget_draft_origin.tax_policy_level).toBe(1);
   });
@@ -141,7 +149,7 @@ describe('NPC budget authors and fiscal conversion', () => {
     const { adapter, q } = setup('ciu');
     propose(adapter);
     adapter.goToScene('parlament_budget.tax_higher');
-    expect(q.parlament_budget_shortfall).toBeCloseTo(0.3);
+    expect(q.parlament_budget_shortfall).toBeCloseTo(1.3);
     expect(q.parlament_budget_positions.ciu).toBe('no');
   });
 
@@ -151,9 +159,9 @@ describe('NPC budget authors and fiscal conversion', () => {
     });
     propose(adapter);
     expect(q.budget_draft.projects.county).toBe(true);
-    expect(q.parlament_budget_shortfall).toBeCloseTo(2.3);
+    expect(q.parlament_budget_shortfall).toBeCloseTo(3.3);
     adapter.goToScene('parlament_budget.county');
-    expect(q.parlament_budget_shortfall).toBeCloseTo(1.3);
+    expect(q.parlament_budget_shortfall).toBeCloseTo(2.3);
     expect(q.parlament_budget_positions.ciu).toBe('yes');
   });
 
@@ -195,6 +203,41 @@ describe('NPC budget authors and fiscal conversion', () => {
     adapter.goToScene('parlament_budget.vote_no');
     expect(q.parlament_budget_positions.jxsi).toBe('no');
     expect(q.parlament_budget_yes + q.parlament_budget_no + q.parlament_budget_abstain).toBe(70);
+  });
+});
+
+describe('Budget passage executive reward', () => {
+  it.each([-1, 0, 1].flatMap((difficulty) =>
+    [[-5, 1, 0, 0], [-2.01, 1, 0, 0], [-2, 1, 1, 0], [-1, 1, 1, 0],
+      [0, 1, 1, 0], [0.01, 1, 1, 0], [1, 1, 1, 0], [1.01, 2, 2, 1],
+      [2, 2, 2, 1], [2.01, 3, 3, 2], [3, 3, 3, 2]]
+      .map(([margin, easyReward, normalReward, hardReward]) => ({
+        difficulty, margin, reward: [easyReward, normalReward, hardReward][difficulty + 1],
+      }))))
+  ('adds $reward on passage at fiscal margin $margin and difficulty $difficulty', ({ difficulty, margin, reward }) => {
+    const { adapter, q } = setup('ciu', {
+      cat_coalition: ['ciu', 'erc'], generalitat_surplus: margin, difficulty,
+    });
+    propose(adapter);
+    adapter.goToScene('parlament_budget.vote_yes');
+    expect(q.parlament_budget_margin).toBeCloseTo(margin);
+    expect(q.parlament_budget_player_governs).toBe(true);
+    expect(q.parlament_budget_can_pass).toBe(true);
+    const before = q.government_budget;
+    adapter.goToScene('parlament_budget.pass');
+    expect(q.budget_year).toBe(q.year);
+    expect(q.government_budget - before).toBe(reward);
+  });
+
+  it.each([-5, 3])('gives no executive reward outside government at margin %s', (margin) => {
+    const { adapter, q } = setup('ciu', { generalitat_surplus: margin });
+    propose(adapter);
+    expect(q.parlament_budget_player_governs).toBe(false);
+    expect(q.parlament_budget_executive_grant).toBe(0);
+    const before = q.government_budget;
+    adapter.goToScene('parlament_budget.pass');
+    expect(q.budget_year).toBe(q.year);
+    expect(q.government_budget).toBe(before);
   });
 });
 

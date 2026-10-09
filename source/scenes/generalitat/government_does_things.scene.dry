@@ -1,8 +1,9 @@
 title: A new government initiative
-subtitle: Ministers of the [+ cat_coalition_disp +] beyond [+ player_party +] present their newest agenda
+subtitle: Ministers of the [+ cat_coalition_disp +] present their newest agenda
 new-page: true
 role: event
 tags: event
+face-image: img/events/generalitat_premsa.jpg
 view-if: {!
     return !Q.cat_caretaker_gov && !(Q.government_does_things_timer > 0) &&
         (Q.cat_coalition || []).some(function (party) {
@@ -15,9 +16,9 @@ go-to: fallback if npc_government_initiative == null
 
 = A new government initiative
 
-[+ npc_government_party +] intends to **[+ npc_government_title +]** through the [+ npc_government_office +]. [+ npc_government_reason +]
+[+ npc_government_party +] intends to **[+ npc_government_title +]**. [+ npc_government_reason +]
 
-[? if npc_government_can_influence: We do have a unique chance here to influence our allies, though. ?]
+[? if npc_government_can_influence: We do have a unique chance here to influence our coalition partners, though. ?]
 
 - @accept
 - @protest
@@ -123,6 +124,7 @@ on-arrival: {!
             territory_minister_party:"Ministry of Territory", foreign_minister_party:"Ministry of Foreign Affairs"};
         function add(holder, field, to, title, reason, weight, profile, kind, extra) {
             if (owners[holder] != actor || !(weight > 0)) return;
+            if (kind == "cut") weight *= Math.max(0.5, -Q.generalitat_surplus);
             var from = Q[field];
             if (from === undefined && kind != "curriculum") return;
             if (from == to && kind != "curriculum") return;
@@ -224,7 +226,9 @@ on-arrival: {!
         if (!sovereign && Q.institutional_alignment > -10 && (central || Q.institutional_alignment > 0))
             add(alignmentOffice, "institutional_alignment", Q.institutional_alignment - 1, "prioritize institutional accommodation",
                 "The current executive seems to be cleaning house, appointing directors and high-secretaries highly aligned with the ideas of further centralization.", 1, "sovereignty", "alignment");
-        if (!Q.art155_ever && Q.cat_spa_relations < 95) {
+        var roadmap = Q[actor + "_roadmap"] || 0;
+        if (!Q.art155_ever && Q.cat_spa_relations < 95 &&
+            (roadmap == 0 || (roadmap == 1 && Q.independence_movement < 60))) {
             var diplomaticGain = ["podemos", "iu", "up"].includes(Q.spanish_pm_party) ? 12 : Q.spanish_pm_party == "psoe" ? 8 :
                 ["vox", "cs"].includes(Q.spanish_pm_party) ? 2 : 5;
             add("foreign_minister_party", "cat_spa_relations", Math.min(100, Q.cat_spa_relations + diplomaticGain), "seek improved relations with Madrid",
@@ -505,7 +509,6 @@ call: government_does_things.prepare
 go-to: outcome
 
 @outcome
-new-page: true
 call: generalitat_setpolicy
 
 [+ npc_government_outcome +]
@@ -514,7 +517,6 @@ call: generalitat_setpolicy
 - @continue
 
 @fallback
-new-page: true
 on-arrival: {! 
     Q.government_does_things_timer = 8 + Math.floor(G.random(Q) * 3);
 !}

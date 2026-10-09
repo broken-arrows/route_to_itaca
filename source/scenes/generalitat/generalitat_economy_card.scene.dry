@@ -788,10 +788,10 @@ new-page: true
 on-arrival: {!
     var proposal = Q.economy_budget_proposal;
     var taxNames = ["Very low", "Low", "Moderate", "High", "Very high"];
-    var capNames = ["Further austerity", "Maintain reduced services and pay",
-        "Restore ordinary services and pay", "Authorize expanded services and improved pay",
-        "Authorize modernized services and broader pay improvements",
-        "Full spending authorization, effectively a removal of spending caps."];
+    var capNames = ["Further austerity", "Maintain reduced services",
+        "Restored, ordinary services", "Expanded services and improved pay",
+        "Further service expansion and broader improvements",
+        "Full authorization, effectively a removal of spending caps."];
     Q.economy_budget_tax_name = taxNames[proposal.tax_policy_level + 2];
     Q.economy_budget_cap_name = capNames[proposal.social_spending_cap + 2];
     Q.economy_budget_tax_lower = proposal.tax_policy_level > Math.max(-2, Q.tax_policy_level - 2);

@@ -287,4 +287,4 @@ set-jump: policy_concessions
 
 - @indy
 - #fiscal_concessions
-- @phase_text: Finish proposing policies
+- @phase_text: Move to other matters

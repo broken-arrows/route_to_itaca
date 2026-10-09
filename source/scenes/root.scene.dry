@@ -358,7 +358,7 @@ on-arrival: {!
 
   Q.gbai_leader = "Uxue Barkos";
   Q.gbai_leader_gender = "f";
-  Q.gbai_ideology = "Centre Social Democracy, Basque Independence";
+  Q.gbai_ideology = "Centrist Social Democracy, Basque Independence";
   Q.upn_leader = "Yolanda Barcina";
   Q.upn_ideology = "Conservatism, Navarrese Regionalism";
   Q.upn_leader_gender = "f";
@@ -851,6 +851,7 @@ unavailable-subtitle: Route to Ítaca is currently in its early development stag
 on-arrival: {!
   // Achievement variables
   Q.psoe_sanchez_president_ever = false;
+  Q.woman_generalitat_presidenta_ever = false;
 
   // Global stuff
   Q.started = 1;

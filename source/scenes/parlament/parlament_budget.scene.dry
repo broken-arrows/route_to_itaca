@@ -28,10 +28,10 @@ on-arrival: {!
         {name:"High", revenue:0},
         {name:"Very high", revenue:1}
     ];
-    var capNames = ["Further austerity", "Maintain reduced services and pay",
-        "Restore ordinary services and pay", "Authorize expanded services and improved pay",
-        "Authorize modernized services and broader pay improvements",
-        "Full spending authorization, including exceptional service laws"];
+    var capNames = ["Further austerity", "Maintain reduced services",
+        "Restored, ordinary services", "Expanded services and improved pay",
+        "Further service expansion and broader improvements",
+        "Full authorization, effectively a removal of spending caps."];
     var projectIds = {county:"territory_county_roads", b40:"territory_b40", metro1:"territory_metro1", metro2:"territory_metro2", water2:"territory_water2", water3:"territory_water3", tmobilitat2:"territory_tmobilitat2", rail1:"territory_rail1", rail2:"territory_rail2", icf:"bnl_icf_proposal", digital:"vp_digital3_proposal", universal:"healthcare_universal_proposal"};
     var projectCosts = {county:1, b40:2, metro1:2, metro2:1, water2:1, water3:2, tmobilitat2:2, rail1:1, rail2:2, icf:2, digital:1, universal:1};
     var available = {};
@@ -113,7 +113,7 @@ on-arrival: {!
             cost += projectCosts[key];
         }
         var profile = taxProfiles[tax + 2];
-        var margin = 1 + origin.surplus_at_draft + profile.revenue -
+        var margin = origin.surplus_at_draft + profile.revenue -
             taxProfiles[origin.enacted_tax_policy_level + 2].revenue -
             2 * (cap - origin.enacted_social_spending_cap) - cost;
         var result = {valid:valid, tax:tax, cap:cap, levels:levels, cuts:cuts,
@@ -145,7 +145,7 @@ on-arrival: {!
         else if (record.status == "pending_budget" && spending.includes(record.kind) && record.target > projection.cap)
             outcome = "remains conditional on future funding on a social spending cap increase";
         else outcome = record.status == "pending_budget" ? "would be fulfilled" : "would be maintained";
-        return commitmentNames[record.kind] + " (" + (record.scope == "cabinet" ? "cabinet agreement" : "agreed") + "): " + outcome + ".";
+        return commitmentNames[record.kind] + " (" + (record.scope == "cabinet" ? "coalition agreement" : "agreed") + "): " + outcome + ".";
     }).join(" ");
     Q.parlament_budget_cabinet_breach_text = projection.brokenCabinet.map(function (record) { return commitmentNames[record.kind]; }).join(", ");
     Q.parlament_budget_external_breach_text = projection.brokenExternal.map(function (record) { return commitmentNames[record.kind]; }).join(", ");
@@ -162,8 +162,10 @@ on-arrival: {!
     Q.parlament_budget_cap_lower = draft.social_spending_cap > capMin && project(lowerCap).valid;
     Q.parlament_budget_cap_higher = draft.social_spending_cap < capMax;
     Q.parlament_budget_player_governs = !!Q.player_party && !Q.cat_caretaker_gov && belongs(Q.player_party, cabinet);
+    var executiveGrant = projection.margin > 2 ? 3 : projection.margin > 1 ? 2 :
+        projection.margin >= -2 || Q.difficulty == -1 ? 1 : 0;
     Q.parlament_budget_executive_grant = Q.parlament_budget_player_governs ?
-        projection.margin >= 2 ? 2 : projection.margin >= -1 ? 1 : 0 : 0;
+        Math.max(0, executiveGrant - (Q.difficulty == 1 ? 1 : 0)) : 0;
 
     var roadmap = 0;
     for (var party of cabinet) {
@@ -409,7 +411,7 @@ on-arrival: {!
 
 [? if parlament_budget_commitment_summary: **Agreed policy commitments:** [+ parlament_budget_commitment_summary +]?]
 
-[? if parlament_budget_cabinet_breach_text: **Cabinet agreement breached:** [+ parlament_budget_cabinet_breach_text +].?]
+[? if parlament_budget_cabinet_breach_text: **Coalition agreement breached:** [+ parlament_budget_cabinet_breach_text +].?]
 
 [? if parlament_budget_external_breach_text: **Outside investiture agreement breached:** [+ parlament_budget_external_breach_text +].?]
 

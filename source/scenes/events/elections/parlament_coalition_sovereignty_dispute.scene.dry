@@ -1,0 +1,56 @@
+title: The delegations respond
+
+You should not be here??! Report a bug if you see this 🙏🙏
+
+please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
+
+@resolve
+on-arrival: {!
+    var approach = Q.parlament_coalition_sovereignty_dispute_action;
+    if (approach != "mediate" && approach != "escalate") return;
+    if (Q.parlament_coalition_sovereignty_phase <= 1 || Q.coalition_phase_timer <= 0 || (Q.parlament_coalition_sovereignty_mediation_round || 0) >= Q.parlament_coalition_sovereignty_phase) return;
+    Q.parlament_coalition_sovereignty_mediation_round = Q.parlament_coalition_sovereignty_phase;
+    Q.parlament_coalition_sovereignty_dispute_failed = false;
+    Q.parlament_coalition_sovereignty_dispute_dissolve = "";
+    Q.parlament_coalition_sovereignty_dispute_result = "";
+    var total = Math.max(1, Q.cup_endavant_strength + Q.cup_poblelliure_strength + Q.cup_thirdsector_strength);
+    var resistance = (Q.cup_endavant_strength * (1 + Q.cup_endavant_dissent / 100) + Q.cup_thirdsector_strength * (0.4 + Q.cup_thirdsector_dissent / 100) - Q.cup_poblelliure_strength * (1 - Q.cup_poblelliure_dissent / 100)) / total;
+    var risk = Math.max(0.12, Math.min(0.38, 0.18 + Q.parlament_coalition_sovereignty_feud * 0.05 + resistance * 0.12));
+    if (approach == "mediate") risk = 0.08;
+    // TODO: Rubicon-specific consequences instead of ordinary election risks.
+    if (G.random(Q) < risk) {
+        Q.parlament_coalition_sovereignty_dispute_failed = true;
+        Q.parlament_coalition_sovereignty_dispute_result = "Tensions have reached a tipping point. It seems like no investiture agreement is even possible at this point.";
+        if (Q.parlament_coalition_sovereignty_feud >= 2 && G.random(Q) < 0.4) {
+            if (Q.parlament_coalition_sovereignty_kind == "jxsi" && Q.jxsi_formed && !Q.jxsi_dissolved) Q.parlament_coalition_sovereignty_dispute_dissolve = "jxsi";
+            if (Q.parlament_coalition_sovereignty_kind == "jxcat" && Q.jxcat_formed && !Q.jxcat_dissolved && Q.erc_in_jxcat) Q.parlament_coalition_sovereignty_dispute_dissolve = "jxcat";
+        }
+    } else if ((approach == "mediate" || approach == "escalate")) {
+        Q.parlament_coalition_sovereignty_dispute_result = approach == "mediate"
+            ? "Compromising seems to have eased the tensions, at least for now."
+            : "It seems like the parties may be able to return to the talks after all. Yet the confrontation has clearly left their relationship more fragile than ever.";
+    }
+    if (Q.parlament_coalition_sovereignty_dispute_failed) Q.parlament_coalition_sovereignty_reject_reasons = Q.parlament_coalition_sovereignty_dispute_result;
+!}
+
+[+ parlament_coalition_sovereignty_dispute_result +]
+
+- @collapse
+- @resume
+
+@collapse
+title: Continue...
+view-if: parlament_coalition_sovereignty_dispute_failed
+on-arrival: {!
+    if (Q.parlament_coalition_sovereignty_dispute_dissolve) Q[Q.parlament_coalition_sovereignty_dispute_dissolve + "_dissolution_trigger"] = true;
+!}
+go-to: parlament_coalition_sovereignty.failed
+
+@resume
+title: We can now return to the talks
+view-if: not parlament_coalition_sovereignty_dispute_failed
+go-to: post_event
