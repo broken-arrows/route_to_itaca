@@ -95,7 +95,7 @@ title: [? if parlament_coalition_changes: Revisit our counter-proposal?][? if no
 - @claim_foreign: Demand the Foreign Affairs Ministry
 - @claim_territory: Demand the Territory Ministry
 - @claim_bnl: Demand the Business & Labour Ministry
-- @push_from_counterproposal We've promised to fulfill our roadmap to independence within this legislature. Let's hope we did not overpromise...
+- @push_from_counterproposal
 - @choices: Move to other matters
 
 @claim_health

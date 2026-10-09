@@ -2,7 +2,7 @@ title: parlament coalition
 new-page: true
 on-arrival: {!
     // Post-election happenings
-    const clean_boost_parties = ["pxc", "fnc", "vox", "pdcat", "cup", "si", "unio"];
+    const clean_boost_parties = ["pxc", "vox", "pdcat", "si", "unio"];
     for (var p of clean_boost_parties) {
         if (Q[p + "_parlament_s"] > 0 && Q[p + "_parlament_s"] < 5 && !Q[p + "_parlament_boosted_postelection"]) {
             for (var c of Q.parlament_constituencies) {

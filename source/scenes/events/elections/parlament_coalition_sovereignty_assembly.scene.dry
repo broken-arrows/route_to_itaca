@@ -72,7 +72,7 @@ on-arrival: {!
         this.achieve("tie_1515");
     }
     // Departure follows the political impasse rather than another random draw.
-    if (yes <= 1515 && (Q.cup_leader === 'Antonio Baños' || (Q.player_party === 'cup' && Q.antonio_banos_advisor === 1))) Q.parlament_coalition_sovereignty_banos_departure = true;
+    if (yes <= 1515) Q.parlament_coalition_sovereignty_banos_departure = true;
     return true;
 !}
 face-image: img/events/cup_assemblea_big.jpg

@@ -3,7 +3,7 @@ subtitle: Widespread #PressingCUP campaign sets social media on fire.
 tags: event
 role: event
 new-page: true
-view-if: not rubicon and parlament_coalition_sovereignty_phase > 0 and coalition_phase_timer > 0 and parlament_coalition_sovereignty_dispute_round < parlament_coalition_sovereignty_phase and (parlament_coalition_proposal_president_name = "Artur Mas") and player_party = "cup"
+view-if: not rubicon and parlament_coalition_sovereignty_phase > 1 and coalition_phase_timer > 0 and parlament_coalition_sovereignty_dispute_round < parlament_coalition_sovereignty_phase and (parlament_coalition_proposal_president_name = "Artur Mas") and player_party = "cup"
 face-image: img/events/pressing_cup.jpg
 
 = Between ​Artur Mas and the ​CUP
