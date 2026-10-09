@@ -729,6 +729,11 @@ on-arrival: {!
         Q.parlament_current_ciu_s > 0 && sP("erc") > 0 && sP("cup") > 0 &&
         Q.parlament_current_ciu_s + sP("erc") + sP("cup") >= majP && !Q.parlament_coalition_sovereignty_triple_trust_reasons;
     var cupCabinetReasons = [];
+    if (Q.parlament_current_ciu_s + sP("erc") >= majP &&
+        !(Q.rubicon && liveCiuRelations > 65 &&
+          (Q.player_party == "erc" ? Q.cup_faction != "Endavant" : Q.cup_endavant_strength < 30))) {
+        cupCabinetReasons.push(Q.parlament_current_ciu + " would rather avoid giving any government positions to the CUP.");
+    }
     Q.parlament_coalition_sovereignty_cup_cabinet_cost = 0;
     if (Q.player_party == "cup") {
         if (!(liveCiuRelations > 55)) cupCabinetReasons.push("We don't have good enough relations with " + Q.parlament_current_ciu + ".");

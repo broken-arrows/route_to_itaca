@@ -111,6 +111,13 @@ on-arrival: {!
       var result = Q.parlament_coalition_sovereignty_assembly_result;
       var continuity = name === 'Neus Munté';
       if (Q.rubicon) return 'The CUP will not support an exceptional investiture of ' + name + ' under the current proposal.';
+      if (Q.player_party === 'cup' && name === 'Artur Mas') {
+        var partner = {jxsi: 'JxSí', jxcat: 'JxCat', ciu: 'CiU', cdc: 'CDC', dl: 'DL', pdcat: 'PDeCAT', junts: 'Junts'}[list === 'jxsi' || list === 'jxcat' ? list : Q.parlament_current_ciu] || Q.parlament_current_ciu;
+        var mandate = result === 'veto' ? "The CUP's National Assembly has voted against the investiture of Artur Mas. "
+          : result === 'tie' ? "The CUP's National Assembly tie can hardly be read as an endorsemet of Artur Mas, much less under these conditions. "
+          : "Until the party membershipe votes on wether to authorize such an exceptional investiture, our veto to Artur Mas remains in place.";
+        return mandate + partner + " is unwilling to withdraw Artur Mas as the presidential candidate.";
+      }
       if (result === 'veto') return continuity
         ? 'The CUP\'s assembly has rejected Artur Mas, and the party will not accept Neus Munté as an exchange token, citing she is just more of the same CDC.'
         : 'The CUP\'s assembly has voted against the investiture of Artur Mas.';
@@ -131,15 +138,15 @@ on-arrival: {!
     if (count < (name === 'Neus Munté' ? 3 : 2)) reasons.push('The CUP expects a broader set of social commitments before making an exception for ' + name + '.');
     if (deadline <= n(Q.year)) reasons.push('The CUP needs a future roadmap deadline to make an exception for ' + name + '.');
     if (deadline > n(Q.year) + 2) reasons.push('The CUP expects the agreed roadmap to be fulfilled within the next two years before making an exception for ' + name + '.');
-    if (reasons.length) return reasons.join(' ');
+    if (reasons.length) return (Q.player_party === 'cup' ? (Q.parlament_coalition_sovereignty_assembly_result === 'approve' ? "This proposal does not satisfy the party-assembly voted conditions for an exceptional investiture. " : "This proposal does not satisfy our conditions for an exceptional investiture. ") : '') + reasons.join(' ');
     if (Q.parlament_coalition_sovereignty_assembly_result) {
       var weakened = (Q.parlament_coalition_sovereignty_assembly_terms || []).some(function (term) {
         return !Q['parlament_coalition_policy_' + term.policy] || n(Q['parlament_coalition_policy_' + term.policy + '_target']) < n(term.target);
       });
-      if (weakened) reasons.push('The new proposal withdraws or weakens social commitments put to the CUP\'s assembly.');
-      if (deadline > n(Q.parlament_coalition_sovereignty_assembly_deadline)) reasons.push('The new proposal pushes the roadmap deadline beyond the terms put to the CUP\'s assembly.');
+      if (weakened) reasons.push('The new proposal weakens social commitments previously offered and voted by the CUP\'s assembly.');
+      if (deadline > n(Q.parlament_coalition_sovereignty_assembly_deadline)) reasons.push('The new proposal pushes the roadmap deadline past what was promised and voted by the CUP\'s assembly.');
     }
-    return reasons.join(' ');
+    return (reasons.length && Q.player_party === 'cup' ? "This proposal goes against what the party's National Assembly agreed." : '') + reasons.join(' ');
     })();
 
 !}

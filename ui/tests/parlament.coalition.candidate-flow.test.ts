@@ -54,6 +54,55 @@ beforeEach(() => {
 afterEach(() => { vi.restoreAllMocks(); expect(errors).toEqual([]); });
 
 describe('presidential pressure, assembly and nomination', () => {
+  it.each(['jxsi', 'jxcat', 'support'])('names the party retaining Mas in CUP %s negotiations', kind => {
+    const q = qbase({ player_party: 'cup', [P + 'kind']: kind, [P + 'phase']: 2, [P + 'assembly_result']: 'veto' });
+    evaluate(q);
+    const partner = kind === 'jxsi' ? 'JxSí' : kind === 'jxcat' ? 'JxCat' : 'CDC';
+    expect(q[P + 'candidate_reason']).toContain(partner + ' is unwilling to withdraw Artur Mas');
+    expect(q[P + 'candidate_reason']).toContain('assembly has voted against');
+  });
+
+  it.each([false, true])('submits a selectable excessive CUP demand, with withdrawal %s', withdraw => {
+    const a = DendryAdapter.fromJSONText(gameText);
+    a.beginGame([1, 2, 3, 4]); a.goToScene('root.start_menu'); a.goToScene('root.start');
+    const phase = 'parlament_coalition_joint_cup_phase_cup_player_jxsi_led';
+    Object.assign(a.qualities, qbase({ player_party: 'cup', coalition_phase_timer: 0, [P + 'phase']: 1,
+      [P + 'cabinet']: ['jxsi'], parlament_coalition_leader: 'jxsi', parlament_coalition_follower: 'cup',
+      parlament_coalition_support_seats: 72, parlament_coalition_cabinet_seats: 62,
+      jxsi_leader: 'Carles Puigdemont', cdc_leader: 'Carles Puigdemont',
+      parlament_coalition_proposal_president_name: 'Carles Puigdemont', healthcare_spending: -1,
+      generalitat_surplus: 0, social_spending_cap: 0,
+    }));
+    a.goToScene(phase);
+    a.qualities.parlament_coalition_leverage = 0;
+    const menu = a.goToScene(phase + '.policies');
+    const index = menu.choices.findIndex(c => c.id === 'parlament_coalition_fiscal_policies.health_policy');
+    expect(index).toBeGreaterThanOrEqual(0);
+    a.choose(index);
+    expect(a.qualities.parlament_coalition_leverage).toBe(-5);
+    if (withdraw) {
+      const revised = a.goToScene(phase + '.policies');
+      a.choose(revised.choices.findIndex(c => c.id === 'parlament_coalition_fiscal_policies.health_policy'));
+      expect(a.qualities.parlament_coalition_leverage).toBe(0);
+    }
+    a.goToScene(phase + '.submit');
+    if (withdraw) {
+      expect(a.qualities.parlament_coalition_proposal_accept).toBe(true);
+      expect(a.qualities[P + 'phase']).toBe(0);
+      expect(a.qualities.cat_coalition_support).toEqual(['cup']);
+      return;
+    }
+    expect(a.qualities.parlament_coalition_proposal_accept).toBe(false);
+    expect(a.qualities[P + 'phase']).toBe(2);
+    expect(a.qualities[P + 'reject_reasons']).toContain('JxSí is unwilling');
+    expect(a.qualities.parlament_coalition_policy_reject_reasons).toBe('');
+    a.qualities.coalition_phase_timer = 0;
+    const next = a.goToScene(phase);
+    expect(next.html).toContain('The previous round ended without agreement');
+    expect(next.html).toContain('JxSí is unwilling');
+    expect(next.html).not.toContain('has rejected our previous');
+  });
+
   it.each(['jxsi', 'jxcat', 'government', 'support'])('matches public pressure and event copy to the current %s talks', kind => {
     const joint = kind === 'jxsi' || kind === 'jxcat';
     const q = qbase({ [P + 'kind']: kind, independence_trust: 80, [P + 'feud']: 0 });

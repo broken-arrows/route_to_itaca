@@ -1,0 +1,125 @@
+title: JxSí <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxsi_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxsi); font-style: italic;">minority Government</span></span> with CUP support negotiations
+subtitle: [? if parlament_coalition_sovereignty_phase = 1: The first round of negotiations begins in earnest.?][? if parlament_coalition_sovereignty_phase = 2: The parties return for the second round of negotiations.?][? if parlament_coalition_sovereignty_phase = 3: The third and final round of negotiations begins.?]
+tags: event
+role: event
+new-page: true
+view-if: parlament_coalition_sovereignty_phase > 0 and parlament_coalition_sovereignty_kind = "jxsi" and player_party = "erc" and parlament_coalition_leader = "jxsi" and coalition_phase_timer <= 0
+call: parlament_coalition_sovereignty_replacement.check
+set-jump: prepare
+go-to: parlament_coalition_sovereignty_replacement if parlament_coalition_sovereignty_replacement_needed; prepare if not parlament_coalition_sovereignty_replacement_needed
+
+@prepare
+on-arrival: {!
+    Q.parlament_coalition_changes = false;
+    Q.parlament_coalition_concessions_indy = 0;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    Q.parlament_coalition_proposal_president = Q.parlament_coalition_leader;
+    var offices = ["vp", "interior", "economy", "foreign", "health", "education", "territory", "bnl"];
+    for (var office of offices) Q["parlament_coalition_proposal_" + office] = Q.parlament_coalition_leader;
+
+
+    for (var office of offices) {
+        Q["parlament_coalition_proposal_" + office + "_name"] = null;
+        Q["parlament_coalition_proposal_" + office + "_gender"] = null;
+    }
+    Q.parlament_coalition_leverage = 30 + (Q.parlament_coalition_sovereignty_phase - 1) * 4 - (Q.speaker_party == Q.parlament_coalition_leader ? 5 : 0);
+    Q.parlament_coalition_leverage += Q.parlament_coalition_sovereignty_mas_pressure * 2;
+!}
+call: parlament_coalition_fiscal_policies.initialize
+go-to: phase_text
+
+@phase_text
+new-page: true
+go-to: parlament_coalition_setnames
+set-jump: choices
+
+[? if parlament_coalition_sovereignty_phase = 1: Negotiations with the CUP for the formation of a JxSí <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]; with CUP external support - [+ jxsi_parlament_s + cup_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxsi); font-style: italic;">minority Government</span></span> are about to start. We are expected to prepare an initial proposal, and we'll see to what extent the CUP can be swayed. ?]
+[? if parlament_coalition_sovereignty_phase != 1: [? if parlament_coalition_sovereignty_reject_reasons: The CUP has rejected our previous investiture proposal. ?][? if parlament_coalition_sovereignty_reject_reasons: [+ parlament_coalition_sovereignty_reject_reasons +] ?]The ball is on our side now to prepare a new proposal.?]
+
+@choices
+go-to: parlament_coalition_fiscal_policies.summary
+set-jump: choices_menu
+
+@choices_menu
+
+[? if parlament_coalition_sovereignty_deadline: **Roadmap deadline:** We are to fulfill the agreed Roadmap by [+ parlament_coalition_sovereignty_deadline +].?]
+
+[? if parlament_coalition_concessions_indy: **Independence commitment:** A more ambitious path towards independence will be pursued by this new government.?]
+
+- @policies
+- @push
+- @submit
+
+@policies
+title: Negotiate policy commitments
+call: parlament_coalition_fiscal_policies
+set-jump: policies
+
+- @deadline
+- @roadmap
+- #fiscal_concessions
+- @phase_text: Move to other matters
+
+@deadline
+title: [? if parlament_coalition_sovereignty_deadline: Withdraw the shorter roadmap deadline?][? if not parlament_coalition_sovereignty_deadline: Commit to fulfilling the roadmap by [+ year + 2 +]?]
+view-if: parlament_coalition_sovereignty_deadline > 0 or roadmap_year > year + 2
+choose-if: parlament_coalition_sovereignty_deadline > 0 or (roadmap_year > year + 2 and parlament_coalition_leverage >= 5)
+unavailable-subtitle: We lack the leverage to bring the deadline forward.
+on-arrival: {!
+    if (Q.parlament_coalition_sovereignty_deadline) {
+        Q.parlament_coalition_sovereignty_deadline = 0;
+        Q.parlament_coalition_leverage += 5;
+    } else if (Q.roadmap_year > Q.year + 2 && Q.parlament_coalition_leverage >= 5) {
+        Q.parlament_coalition_sovereignty_deadline = Q.year + 2;
+        Q.parlament_coalition_leverage -= 5;
+    }
+    Q.parlament_coalition_changes = true;
+!}
+go-to: policies
+
+@roadmap
+title: Include a stronger independence roadmap
+choose-if: not parlament_coalition_concessions_indy and parlament_coalition_leverage >= 5
+unavailable-subtitle: [? if parlament_coalition_concessions_indy: We have already committed to this. ?][? if parlament_coalition_leverage < 5: We lack the leverage to push for this. ?]
+on-arrival: {!
+    Q.parlament_coalition_concessions_indy = 1;
+    Q.parlament_coalition_policy_indy_demanded = true;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_leverage -= 5;
+!}
+go-to: policies
+
+@push
+title: Push for more leverage
+choose-if: parlament_coalition_sovereignty_phase < 3 and parlament_coalition_push < parlament_coalition_sovereignty_phase
+unavailable-subtitle: [? if parlament_coalition_sovereignty_phase >= 3: This is the final round; there is no further room to push. ?][? if parlament_coalition_push >= parlament_coalition_sovereignty_phase: We have already pushed for more leverage in this round. ?]
+on-arrival: {!
+    Q.parlament_coalition_push += 1;
+    Q.parlament_coalition_leverage += 4;
+    Q[Q.player_party == "erc" ? "cup_relations" : "erc_relations"] -= 3;
+!}
+go-to: phase_text
+
+@submit
+title: Send this [? if parlament_coalition_sovereignty_phase > 1: counter-?]proposal
+on-arrival: {!
+    var reasons = [];
+    var ministries = ["interior", "economy", "foreign", "health", "education", "territory", "bnl"];
+    var counts = {};
+    for (var office of ["vp"].concat(ministries)) {
+        var holder = Q["parlament_coalition_proposal_" + office];
+        if (Q.parlament_coalition_sovereignty_cabinet.indexOf(holder) < 0) reasons.push("The cabinet allocation is incomplete or includes an external supporter ????");
+        if (office != "vp") counts[holder] = (counts[holder] || 0) + 1;
+    }
+
+    if (Q.coalition_phase_timer > 0) reasons.push("How is this even possible???");
+    if (Q.parlament_coalition_leverage < 0) reasons.push("The proposed concessions exceed our negotiating leverage ?????");
+
+    var policies = ["education", "health", "pay", "tax", "cap"].filter(function (p) { return Q["parlament_coalition_policy_" + p]; }).length;
+    if (!Q.parlament_coalition_concessions_indy) reasons.push("The CUP is demanding that we take independence more seriously. Without such an agreement in writing, they will hardly support our coalition proposal.");
+    if (!(policies > 0)) reasons.push("The CUP expects a higher level of social commitment from the new government.");
+    Q.parlament_coalition_sovereignty_reject_reasons = reasons.filter(function (r, i) { return reasons.indexOf(r) == i; }).join(" ");
+    Q.parlament_coalition_proposal_accept = reasons.length == 0;
+!}
+call: parlament_coalition_sovereignty_replacement.check
+go-to: parlament_coalition_sovereignty_replacement.evaluate

@@ -121,12 +121,42 @@ describe('sovereignty pact requirements', () => {
     expect(q.parlament_coalition_proposal_accept).toBe(true);
   });
 
-  it.each(files.filter(file => file.includes('joint_cup') || file.includes('_support')))('does not substitute the Speaker for a national commitment: %s', file => {
+  it.each(files.filter(file => file.includes('_erc_player_') && (file.includes('joint_cup') || file.includes('_support'))))('does not substitute the Speaker for a national commitment: %s', file => {
     const q = fixture(file);
     q.parlament_coalition_concessions_indy = 0;
     q.parlament_coalition_sovereignty_deadline = 0;
     run(file, q, 'submit');
     expect(q.parlament_coalition_proposal_accept).toBe(false);
+  });
+
+  it.each(files.filter(file => file.includes('_cup_player_')))('lets CUP choose its demands and attributes excessive concessions to the partner: %s', file => {
+    const q = fixture(file);
+    q.parlament_coalition_concessions_indy = 0;
+    q.parlament_coalition_sovereignty_deadline = 0;
+    q.parlament_coalition_policy_health = false;
+    run(file, q, 'submit');
+    expect(q.parlament_coalition_proposal_accept).toBe(true);
+    q.parlament_coalition_leverage = -1;
+    run(file, q, 'submit');
+    expect(q.parlament_coalition_proposal_accept).toBe(false);
+    const names: Record<string, string> = { jxsi: 'JxSí', jxcat: 'JxCat', erc: 'ERC', ciu: 'CiU' };
+    const partner = names[q.parlament_coalition_leader];
+    expect(q.parlament_coalition_sovereignty_reject_reasons).toContain(partner);
+    expect(q.parlament_coalition_sovereignty_reject_reasons).toContain('concessions');
+  });
+
+  it.each(['spending_cap', 'education_policy', 'health_policy', 'pay_policy', 'regional_tax'])('allows an excessive %s demand only during CUP sovereignty talks and refunds its withdrawal', marker => {
+    for (const [player, phase, allowed] of [['cup', 1, true], ['erc', 1, false], ['cup', 0, false]] as const) {
+      const q = fixture(files[0]);
+      Object.assign(q, { player_party: player, parlament_coalition_sovereignty_phase: phase,
+        parlament_coalition_leverage: 0, generalitat_surplus: 0,
+        social_spending_cap: 0, education_spending: 0, healthcare_spending: 0, public_salary_level: 0, tax_policy_level: 0 });
+      const file = 'parlament_coalition_fiscal_policies.scene.dry';
+      run(file, q, 'initialize');
+      run(file, q, marker);
+      expect(q.parlament_coalition_leverage).toBe(allowed ? -5 : 0);
+      if (allowed) { run(file, q, marker); expect(q.parlament_coalition_leverage).toBe(0); }
+    }
   });
 
   it.each(files)('charges the Speaker recipient once per proposal, across all rounds: %s', file => {

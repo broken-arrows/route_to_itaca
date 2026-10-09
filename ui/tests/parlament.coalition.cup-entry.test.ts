@@ -43,6 +43,55 @@ function enter(player: string, leader: string, overrides: Record<string, unknown
 }
 
 describe('CUP National Concentration entry', () => {
+  it.each(['erc', 'cup'].flatMap(player => ['ciu', 'erc'].flatMap(leader =>
+    [67, 68, 69].flatMap(seats => [false, true].flatMap(rubicon =>
+      [65, 66].flatMap(relations => [29, 30].map(strength =>
+        [player, leader, seats, rubicon, relations, strength] as const)))))))
+    ('checks the majority exception: %s/%s seats %s Rubicon %s relations %s Endavant %s',
+      (player, leader, seats, rubicon, relations, strength) => {
+        const { frame, id } = enter(player, leader, {
+          ciu_parlament_s: leader === 'ciu' ? seats - 30 : 30,
+          erc_parlament_s: leader === 'erc' ? seats - 30 : 30,
+          rubicon, ciu_relations: relations, erc_relations: 80, cup_relations: 80,
+          cup_endavant_strength: strength,
+        });
+        const choice = frame.choices.find(c => c.id === id);
+        const allowed = seats < 68 || (rubicon && relations > 65 && (player === 'erc' || strength < 30));
+        expect(choice?.canChoose).toBe(allowed);
+        if (!allowed) {
+          expect(choice?.subtitle).toContain('would rather avoid giving any government positions');
+          expect(choice?.subtitle).not.toMatch(/\b0\b/);
+        }
+        expect(frame.choices.some(c => c.id === id.replace('_government', '_support'))).toBe(seats < 68);
+      });
+
+  it.each(['Poble Lliure', 'Third Sector', 'Endavant'])('retains NPC leadership rules in Rubicon: %s', faction => {
+    const { frame, id } = enter('erc', 'ciu', {
+      ciu_parlament_s: 38, erc_parlament_s: 30, rubicon: true,
+      ciu_relations: 80, cup_relations: 80, cup_faction: faction,
+    });
+    expect(frame.choices.find(c => c.id === id)?.canChoose).toBe(faction !== 'Endavant');
+  });
+
+  it('uses the current successor relations for the majority exception', () => {
+    const { frame, id } = enter('erc', 'ciu', {
+      ciu_parlament_s: 0, junts_parlament_s: 38, erc_parlament_s: 30,
+      rubicon: true, ciu_relations: 80, junts_relations: 65, cup_relations: 80,
+    });
+    expect(frame.choices.find(c => c.id === id)).toMatchObject({ canChoose: false });
+    expect(frame.choices.find(c => c.id === id)?.subtitle).toContain('junts');
+  });
+
+  it('renders empty reasons without zeros on insufficient-seat options', () => {
+    const { frame, id } = enter('erc', 'ciu', { ciu_parlament_s: 30, erc_parlament_s: 29, cup_parlament_s: 5 });
+    for (const choiceId of [id, id.replace('_government', '_support')]) {
+      const choice = frame.choices.find(c => c.id === choiceId);
+      expect(choice?.canChoose).toBe(false);
+      expect(choice?.subtitle).toContain('Not enough parliamentary support');
+      expect(choice?.subtitle).not.toMatch(/\b0\b/);
+    }
+  });
+
   it.each(['cup', 'erc'].flatMap(player => ['ciu', 'erc'].map(leader => [player, leader])))
     ('deducts the advertised entry resource for player %s in a %s-led cabinet', (player, leader) => {
       const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
