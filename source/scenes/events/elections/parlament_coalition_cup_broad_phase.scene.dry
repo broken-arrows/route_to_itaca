@@ -83,7 +83,6 @@ set-jump: choices_menu
 
 - @ministries
 - @policy_concessions
-- @push
 - @send
 - @accept
 
@@ -98,6 +97,7 @@ view-if: player_party = "erc" or (player_party = "cup" and cup_broad_kind = "pop
 - @health
 - @economy
 - @foreign
+- @push_from_ministries
 - @phase_text: Move to other matters
 
 @interior
@@ -193,9 +193,11 @@ go-to: policy_concessions
 @push
 title: Press for further concessions
 view-if: cup_broad_coalition_phase < 3
-choose-if: parlament_coalition_push < cup_broad_coalition_phase and cup_broad_coalition_phase < 3
+choose-if: (parlament_coalition_push < cup_broad_coalition_phase and parlament_coalition_push_round < cup_broad_coalition_phase) and cup_broad_coalition_phase < 3
 unavailable-subtitle: We cannot push any further this round.
 on-arrival: {!
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_push_round = Q.cup_broad_coalition_phase;
     Q.parlament_coalition_push += 1;
     Q.parlament_coalition_leverage += 4;
     Q.cup_relations -= Q.cup_broad_coalition_phase == 1 ? 4 : 2;
@@ -210,7 +212,7 @@ on-arrival: {!
     var playerInCabinet = Q.player_party == "erc" || (Q.player_party == "cup" && Q.cup_broad_kind == "popular_unity");
     var earlyRound = Q.cup_broad_coalition_phase <= 2;
 
-    Q.cup_broad_reject_pressure = Q.parlament_coalition_push >= Q.cup_broad_coalition_phase;
+    Q.cup_broad_reject_pressure = (Q.parlament_coalition_push >= Q.cup_broad_coalition_phase || Q.parlament_coalition_push_round >= Q.cup_broad_coalition_phase);
     Q.cup_broad_reject_erc_positions = false;
     Q.cup_broad_reject_psc_positions = false;
     Q.cup_broad_reject_psc_cup_power = false;
@@ -363,4 +365,21 @@ set-jump: policy_concessions
 
 - @indy
 - #fiscal_concessions
+- @push_from_policy_concessions
 - @phase_text: Move to other matters
+
+@push_from_policy_concessions
+title: Push for more concessions
+view-if: cup_broad_coalition_phase < 3
+choose-if: (parlament_coalition_push < cup_broad_coalition_phase and parlament_coalition_push_round < cup_broad_coalition_phase) and cup_broad_coalition_phase < 3
+unavailable-subtitle: We cannot push any further this round.
+call: parlament_coalition_cup_broad_phase.push
+go-to: policy_concessions
+
+@push_from_ministries
+title: Push for more concessions
+view-if: cup_broad_coalition_phase < 3
+choose-if: (parlament_coalition_push < cup_broad_coalition_phase and parlament_coalition_push_round < cup_broad_coalition_phase) and cup_broad_coalition_phase < 3
+unavailable-subtitle: We cannot push any further this round.
+call: parlament_coalition_cup_broad_phase.push
+go-to: ministries

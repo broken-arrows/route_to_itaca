@@ -41,6 +41,7 @@ on-arrival: {!
         psc_claim -= 7;
     }
 
+    Q.parlament_coalition_leverage += 4 * Q.parlament_coalition_push;
     var erc_claim = Q.parlament_coalition_leverage;
     if (Q.alternative_tripartite_expected_vp == "erc") {
         erc_claim -= 20;
@@ -94,7 +95,7 @@ title: [? if parlament_coalition_changes: Revisit our counter-proposal?][? if no
 - @claim_foreign: Demand the Foreign Affairs Ministry
 - @claim_territory: Demand the Territory Ministry
 - @claim_bnl: Demand the Business & Labour Ministry
-- @send: Send the counter-proposal
+- @push_from_counterproposal We've promised to fulfill our roadmap to independence within this legislature. Let's hope we did not overpromise...
 - @choices: Move to other matters
 
 @claim_health
@@ -176,7 +177,7 @@ on-arrival: {!
     Q.alternative_tripartite_reject_psc_interior = Q.alternative_tripartite_coalition_phase < 3 && Q.alternative_tripartite_psc_interior_protected && Q.parlament_coalition_proposal_interior != "psc";
     Q.alternative_tripartite_reject_comuns_bnl = Q.alternative_tripartite_coalition_phase < 3 && Q.alternative_tripartite_comuns_bnl_protected && Q.parlament_coalition_proposal_bnl != Q.parlament_current_icv;
     Q.alternative_tripartite_reject_comuns_health = Q.alternative_tripartite_coalition_phase < 3 && Q.alternative_tripartite_comuns_health_protected && Q.parlament_coalition_proposal_health != Q.parlament_current_icv;
-    Q.parlament_coalition_proposal_accept = !Q.alternative_tripartite_reject_vp && !Q.alternative_tripartite_reject_psc_economy && !Q.alternative_tripartite_reject_psc_interior && !Q.alternative_tripartite_reject_comuns_bnl && !Q.alternative_tripartite_reject_comuns_health;
+    Q.parlament_coalition_proposal_accept = (Q.parlament_coalition_push < Q.alternative_tripartite_coalition_phase && !(Q.parlament_coalition_push_round >= Q.alternative_tripartite_coalition_phase)) && !Q.alternative_tripartite_reject_vp && !Q.alternative_tripartite_reject_psc_economy && !Q.alternative_tripartite_reject_psc_interior && !Q.alternative_tripartite_reject_comuns_bnl && !Q.alternative_tripartite_reject_comuns_health;
 !}
 call: parlament_coalition_fiscal_policies.evaluate
 go-to: accept if parlament_coalition_proposal_accept; next_phase
@@ -248,4 +249,36 @@ set-jump: policy_concessions
 [? if parlament_coalition_policy_surplus < 0: The current Generalitat deficit makes spending commitments harder to secure, though.?]
 
 - #fiscal_concessions
+- @push_from_policy_concessions
 - @choices: Finish proposing policies
+
+@push
+title: Push for more concessions
+view-if: parlament_coalition_leverage < 10 and alternative_tripartite_coalition_phase < 3
+choose-if: (parlament_coalition_push < alternative_tripartite_coalition_phase and parlament_coalition_push_round < alternative_tripartite_coalition_phase) and alternative_tripartite_coalition_phase < 3
+unavailable-subtitle: We cannot push any further in this round.
+on-arrival: {!
+    Q.parlament_coalition_leverage += 4;
+    Q[Q.parlament_current_icv + "_relations"] -= Q.alternative_tripartite_coalition_phase == 1 ? 5 : 3;
+    Q.psc_relations -= Q.alternative_tripartite_coalition_phase == 1 ? 3 : 2;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_push_round = Q.alternative_tripartite_coalition_phase;
+    Q.parlament_coalition_push += 1;
+!}
+go-to: counterproposal
+
+@push_from_policy_concessions
+title: Push for more concessions
+view-if: parlament_coalition_leverage < 10 and alternative_tripartite_coalition_phase < 3
+choose-if: (parlament_coalition_push < alternative_tripartite_coalition_phase and parlament_coalition_push_round < alternative_tripartite_coalition_phase) and alternative_tripartite_coalition_phase < 3
+unavailable-subtitle: We cannot push any further in this round.
+call: parlament_coalition_alternative_tripartite_phase.push
+go-to: policy_concessions
+
+@push_from_counterproposal
+title: Push for more concessions
+view-if: parlament_coalition_leverage < 10 and alternative_tripartite_coalition_phase < 3
+choose-if: (parlament_coalition_push < alternative_tripartite_coalition_phase and parlament_coalition_push_round < alternative_tripartite_coalition_phase) and alternative_tripartite_coalition_phase < 3
+unavailable-subtitle: We cannot push any further in this round.
+call: parlament_coalition_alternative_tripartite_phase.push
+go-to: counterproposal

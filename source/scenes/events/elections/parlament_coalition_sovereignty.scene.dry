@@ -129,6 +129,7 @@ on-arrival: {!
     Q.parlament_coalition_sovereignty_deadline = 0;
     Q.parlament_coalition_sovereignty_reject_reasons = "";
     Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_push_round = 0;
     Q.parlament_coalition_sovereignty_assembly_deadline = 0;
     Q.parlament_coalition_sovereignty_nominee = "";
 !}

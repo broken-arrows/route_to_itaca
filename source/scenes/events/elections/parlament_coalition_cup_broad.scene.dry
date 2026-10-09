@@ -48,6 +48,7 @@ on-arrival: {!
     Q.coalition_phase_timer = 1;
     Q.month_actions += 1;
     Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_push_round = 0;
     Q.parlament_coalition_cabinet_seats = Q.erc_parlament_s + Q.parlament_current_icv_s;
     if (Q.cup_broad_kind == "new_popular_front" || Q.cup_broad_kind == "minority_left_tripartite") {
         Q.parlament_coalition_cabinet_seats += Q.psc_parlament_s;

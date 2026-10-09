@@ -19,6 +19,7 @@ on-arrival: {!
     Q.month_actions += 1;
     Q.alternative_tripartite_coalition_phase = 1;
     Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_push_round = 0;
     Q.parlament_coalition_leverage = Math.max(5, (Q.erc_parlament_s / Q.parlament_coalition_icv_psc_erc_s) * 55);
 !}
 

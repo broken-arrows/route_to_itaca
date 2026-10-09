@@ -101,10 +101,11 @@ go-to: policies
 
 @push
 title: Push for more leverage
-choose-if: parlament_coalition_sovereignty_phase < 3 and parlament_coalition_push < parlament_coalition_sovereignty_phase
-unavailable-subtitle: [? if parlament_coalition_sovereignty_phase >= 3: This is the final round; there is no further room to push. ?][? if parlament_coalition_push >= parlament_coalition_sovereignty_phase: We have already pushed for more leverage in this round. ?]
+choose-if: parlament_coalition_sovereignty_phase < 3 and (parlament_coalition_push < parlament_coalition_sovereignty_phase and parlament_coalition_push_round < parlament_coalition_sovereignty_phase)
+unavailable-subtitle: [? if parlament_coalition_sovereignty_phase >= 3: This is the final round; there is no further room to push. ?][? if (parlament_coalition_push >= parlament_coalition_sovereignty_phase or parlament_coalition_push_round >= parlament_coalition_sovereignty_phase): We have already pushed for more leverage in this round. ?]
 on-arrival: {!
     Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_push_round = Q.parlament_coalition_sovereignty_phase;
     Q.parlament_coalition_push += 1;
     Q.parlament_coalition_leverage += 4;
     Q[Q.player_party == "erc" ? "cup_relations" : "erc_relations"] -= 3;
@@ -155,7 +156,7 @@ go-to: parlament_coalition_sovereignty.next_round
 
 @push_policies
 title: Push for more concessions
-choose-if: parlament_coalition_sovereignty_phase < 3 and parlament_coalition_push < parlament_coalition_sovereignty_phase
-unavailable-subtitle: [? if parlament_coalition_sovereignty_phase >= 3: This is the final round; there is no further room to push. ?][? if parlament_coalition_push >= parlament_coalition_sovereignty_phase: We have already pushed for more leverage in this round. ?]
+choose-if: parlament_coalition_sovereignty_phase < 3 and (parlament_coalition_push < parlament_coalition_sovereignty_phase and parlament_coalition_push_round < parlament_coalition_sovereignty_phase)
+unavailable-subtitle: [? if parlament_coalition_sovereignty_phase >= 3: This is the final round; there is no further room to push. ?][? if (parlament_coalition_push >= parlament_coalition_sovereignty_phase or parlament_coalition_push_round >= parlament_coalition_sovereignty_phase): We have already pushed for more leverage in this round. ?]
 call: parlament_coalition_ciu_erc_cup_phase_cup_player_erc_led_support.push
 go-to: policies

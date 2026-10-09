@@ -344,7 +344,7 @@ go-to: changes
 @push_leverage_positions
 title: Push for more concessions
 view-if: parlament_coalition_leverage < 10 and psc_tripartite_coalition_phase < 3
-choose-if: parlament_coalition_push < psc_tripartite_coalition_phase and psc_tripartite_coalition_phase < 3
+choose-if: (parlament_coalition_push < psc_tripartite_coalition_phase and parlament_coalition_push_round < psc_tripartite_coalition_phase) and psc_tripartite_coalition_phase < 3
 unavailable-subtitle: We've already pushed for more. [? if psc_tripartite_coalition_phase < 3: We'll have to wait for the next round of negotiations to try again. ?]
 on-arrival: {!
     if (Q.psc_tripartite_coalition_phase == 1) {
@@ -355,6 +355,8 @@ on-arrival: {!
         Q[Q.parlament_current_icv + "_relations"] -= 2;
     }
     Q.parlament_coalition_leverage += 4;
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_push_round = Q.psc_tripartite_coalition_phase;
     Q.parlament_coalition_push += 1;
 !}
 go-to: changes
@@ -362,9 +364,9 @@ go-to: changes
 @send_back
 title: Send this counter-proposal
 view-if: parlament_coalition_changes or parlament_coalition_concessions
-subtitle: [? if parlament_coalition_push >= psc_tripartite_coalition_phase: Back-and-forth will take time but may give us a better position. ?]
+subtitle: [? if (parlament_coalition_push >= psc_tripartite_coalition_phase or parlament_coalition_push_round >= psc_tripartite_coalition_phase): Back-and-forth will take time but may give us a better position. ?]
 on-arrival: {!
-    Q.psc_tripartite_reject_push = Q.parlament_coalition_push >= Q.psc_tripartite_coalition_phase;
+    Q.psc_tripartite_reject_push = (Q.parlament_coalition_push >= Q.psc_tripartite_coalition_phase || Q.parlament_coalition_push_round >= Q.psc_tripartite_coalition_phase);
     var expectedVP = Q.erc_parlament_s >= Q.parlament_current_icv_s ? "erc" : Q.parlament_current_icv;
     Q.psc_tripartite_reject_vp = Q.psc_tripartite_coalition_phase < 3 && expectedVP != "erc" && Q.parlament_coalition_proposal_vp != expectedVP;
     Q.psc_tripartite_reject_psc_economy = Q.psc_tripartite_coalition_phase == 1 && Q.psc_tripartite_psc_economy_protected && Q.parlament_coalition_proposal_economy != "psc";
@@ -457,4 +459,13 @@ set-jump: policy_concessions
 [? if parlament_coalition_policy_surplus < 0: The current Generalitat deficit makes spending commitments harder to secure, though.?]
 
 - #fiscal_concessions
+- @push_from_policy_concessions
 - @phase_text: Move to other matters
+
+@push_from_policy_concessions
+title: Push for more concessions
+view-if: parlament_coalition_leverage < 10 and psc_tripartite_coalition_phase < 3
+choose-if: (parlament_coalition_push < psc_tripartite_coalition_phase and parlament_coalition_push_round < psc_tripartite_coalition_phase) and psc_tripartite_coalition_phase < 3
+unavailable-subtitle: We've already pushed for more. [? if psc_tripartite_coalition_phase < 3: We'll have to wait for the next round of negotiations to try again. ?]
+call: parlament_coalition_psc_tripartite_phase.push_leverage_positions
+go-to: policy_concessions

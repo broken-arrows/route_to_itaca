@@ -6,6 +6,7 @@ view-if: ciu_min_coalition_phase != 0 and player_party == "erc" and coalition_ph
 on-arrival: {!
     Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_concessions = false;
+    Q.parlament_coalition_changes = false;
 
     Q.parlament_coalition_leverage = Math.max(10, (Q.parlament_s_majority - Q.parlament_current_ciu_s));
     if (Q.parlament_coalition_push == 1) {
@@ -133,7 +134,7 @@ on-arrival: {!
 @push_leverage_concessions
 title: Push for more concessions
 view-if: parlament_coalition_leverage < 10 and ciu_min_coalition_phase < 3
-choose-if: parlament_coalition_push < ciu_min_coalition_phase and ciu_min_coalition_phase < 3
+choose-if: (parlament_coalition_push < ciu_min_coalition_phase and parlament_coalition_push_round < ciu_min_coalition_phase) and ciu_min_coalition_phase < 3
 unavailable-subtitle: We've already pushed for more demands. [? if ciu_min_coalition_phase < 3: We'll have to wait for the next round of negotiations to try again. ?]
 on-arrival: {!
     if (Q.ciu_min_coalition_phase == 1) {
@@ -143,17 +144,19 @@ on-arrival: {!
         Q.parlament_coalition_leverage += 4;
         Q[Q.parlament_current_ciu + "_relations"] -= 3;
     }
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_push_round = Q.ciu_min_coalition_phase;
     Q.parlament_coalition_push += 1;
 !}
 go-to: policy_concessions
 
 @send_back
 title: Send this counter-proposal
-view-if: parlament_coalition_concessions
-subtitle: [?if parlament_coalition_push >= ciu_min_coalition_phase: Back-and-forth negotiations will take some time, but may give us the extra edge needed for a better deal. ?]
+view-if: parlament_coalition_changes or parlament_coalition_concessions
+subtitle: [?if (parlament_coalition_push >= ciu_min_coalition_phase or parlament_coalition_push_round >= ciu_min_coalition_phase): Back-and-forth negotiations will take some time, but may give us the extra edge needed for a better deal. ?]
 on-arrival: {!
     Q.parlament_coalition_proposal_accept = true;
-    if (Q.parlament_coalition_push >= Q.ciu_min_coalition_phase) {
+    if ((Q.parlament_coalition_push >= Q.ciu_min_coalition_phase || Q.parlament_coalition_push_round >= Q.ciu_min_coalition_phase)) {
         Q.parlament_coalition_proposal_accept = false;
     } else if (Q.parlament_current_ciu_s > 40) {
         Q[Q.parlament_current_ciu + "_relations"] -= 2;
@@ -187,7 +190,7 @@ on-arrival: {!
 
 @accept
 title: Accept proposal
-choose-if: not parlament_coalition_concessions
+choose-if: not parlament_coalition_changes and not parlament_coalition_concessions
 unavailable-subtitle: We have proposed changes, which will require approval by [+ parlament_current_ciu +].
 on-arrival: {!
     Q.parlament_coalition_policy_accepted = true;

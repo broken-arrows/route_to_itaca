@@ -96,7 +96,8 @@ describe('CUP National Concentration entry', () => {
     ('deducts the advertised entry resource for player %s in a %s-led cabinet', (player, leader) => {
       const errors = vi.spyOn(console, 'error').mockImplementation(() => {});
       try {
-        const { adapter, frame, id } = enter(player, leader);
+        // This case tests entry costs, not the unrelated missing-roadmap event.
+        const { adapter, frame, id } = enter(player, leader, { roadmap_year: 2015 });
         errors.mockClear();
         const index = frame.choices.findIndex(choice => choice.id === id);
         expect(index).toBeGreaterThanOrEqual(0);
@@ -109,19 +110,26 @@ describe('CUP National Concentration entry', () => {
         let newspaper = adapter.choose(postSpeaker.choices.findIndex(choice => choice.canChoose));
         expect(adapter.qualities.party_resources).toBe(2);
         const pressureId = `parlament_coalition_sovereignty_candidate_${player}`;
-        const pressureIndex = newspaper.choices.findIndex(choice => choice.id === pressureId);
-        if (pressureIndex >= 0) {
-          const pressure = adapter.choose(pressureIndex);
-          newspaper = adapter.choose(pressure.choices.findIndex(choice => choice.id === `${pressureId}.${player === 'erc' ? 'private' : 'hold'}`));
-          const assemblyIndex = newspaper.choices.findIndex(choice => choice.id === 'parlament_coalition_sovereignty_assembly');
-          if (assemblyIndex >= 0) {
-            const assembly = adapter.choose(assemblyIndex);
-            newspaper = adapter.choose(assembly.choices.findIndex(choice => choice.id.endsWith('.defer')));
-          }
-        }
         const phaseId = `parlament_coalition_ciu_erc_cup_phase_${player}_player_${leader}_led_government`;
+        const continuations = [
+          'root', 'post_event', pressureId,
+          `${pressureId}.${player === 'erc' ? 'private' : 'hold'}`,
+          'parlament_coalition_sovereignty_assembly',
+          'parlament_coalition_sovereignty_assembly.defer',
+        ];
+        // Pressure and assembly scenes finish on a separate Continue screen.
+        // Follow only the expected choices, without bypassing the event queue.
+        for (let step = 0; step < 12 && !newspaper.choices.some(choice => choice.id === phaseId); step++) {
+          const next = newspaper.choices.findIndex(choice => choice.canChoose && continuations.includes(choice.id));
+          expect(next, JSON.stringify(newspaper.choices.map(choice => choice.id))).toBeGreaterThanOrEqual(0);
+          newspaper = adapter.choose(next);
+          expect(adapter.qualities.party_resources).toBe(2);
+        }
         const phaseIndex = newspaper.choices.findIndex(choice => choice.id === phaseId);
         expect(phaseIndex).toBeGreaterThanOrEqual(0);
+        expect(newspaper.choices[phaseIndex].canChoose).toBe(true);
+        expect(adapter.qualities.month).toBe(3);
+        expect(adapter.qualities.coalition_phase_timer).toBe(0);
         adapter.choose(phaseIndex);
         expect(adapter.qualities.party_resources).toBe(2);
         expect(errors.mock.calls).toEqual([]);

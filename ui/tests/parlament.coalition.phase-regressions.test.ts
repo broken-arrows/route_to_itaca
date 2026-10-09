@@ -12,7 +12,7 @@ function arrival(source: string, marker = '') {
   expect(start, `missing scene marker ${marker}`).toBeGreaterThanOrEqual(0);
   const block = source.slice(start).match(/on-arrival:\s*\{!([\s\S]*?)!\}/)?.[1];
   expect(block, `missing on-arrival after ${marker || 'scene start'}`).toBeTruthy();
-  return (Q: Record<string, any>) => new Function('Q', block!)(Q);
+  return (Q: Record<string, any>) => new Function('Q', 'G', block!)(Q, { random: () => 0.5 });
 }
 
 describe('Parlament coalition phase regressions', () => {

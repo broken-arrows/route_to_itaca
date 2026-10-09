@@ -191,7 +191,7 @@ describe('sovereignty pact requirements', () => {
     a.qualities.parlament_coalition_sovereignty_phase = 3;
     a.qualities.coalition_phase_timer = 0;
     frame = a.goToScene(scene + '.choices');
-    expect(frame.choices.find(c => c.id === scene + '.candidate_impasse')?.title).toContain('End negotiations');
+    expect(frame.choices.find(c => c.id === scene + '.candidate_impasse')?.title).toContain('without an agreement');
     frame = a.goToScene(scene + '.policies');
     expect(frame.choices.find(c => c.id === scene + '.push_policies')?.canChoose).toBe(false);
   });

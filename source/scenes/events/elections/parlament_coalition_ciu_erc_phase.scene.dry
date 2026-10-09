@@ -170,7 +170,7 @@ on-arrival: {!
 @push_leverage_concessions
 title: Push for more concessions
 view-if: parlament_coalition_leverage < 10 and ciu_erc_coalition_phase < 3
-choose-if: parlament_coalition_push < ciu_erc_coalition_phase and ciu_erc_coalition_phase < 3
+choose-if: (parlament_coalition_push < ciu_erc_coalition_phase and parlament_coalition_push_round < ciu_erc_coalition_phase) and ciu_erc_coalition_phase < 3
 unavailable-subtitle: We've already pushed for more demands. [? if ciu_erc_coalition_phase < 3: We'll have to wait for the next round of negotiations to try again. ?]
 on-arrival: {!
     if (Q.ciu_erc_coalition_phase == 1) {
@@ -180,6 +180,8 @@ on-arrival: {!
         Q.parlament_coalition_leverage += 4;
         Q[Q.parlament_current_ciu + "_relations"] -= 3;
     }
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_push_round = Q.ciu_erc_coalition_phase;
     Q.parlament_coalition_push += 1;
 !}
 go-to: policy_concessions
@@ -347,7 +349,7 @@ go-to: changes
 @push_leverage_positions
 title: Push for more concessions
 view-if: parlament_coalition_leverage < 10 and ciu_erc_coalition_phase < 3
-choose-if: parlament_coalition_push < ciu_erc_coalition_phase and ciu_erc_coalition_phase < 3
+choose-if: (parlament_coalition_push < ciu_erc_coalition_phase and parlament_coalition_push_round < ciu_erc_coalition_phase) and ciu_erc_coalition_phase < 3
 unavailable-subtitle: We've already pushed for more demands. [? if ciu_erc_coalition_phase < 3: We'll have to wait for the next round of negotiations to try again. ?]
 on-arrival: {!
     if (Q.ciu_erc_coalition_phase == 1) {
@@ -357,6 +359,8 @@ on-arrival: {!
         Q.parlament_coalition_leverage += 4;
         Q[Q.parlament_current_ciu + "_relations"] -= 3;
     }
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_push_round = Q.ciu_erc_coalition_phase;
     Q.parlament_coalition_push += 1;
 !}
 go-to: changes
@@ -364,10 +368,10 @@ go-to: changes
 @send_back
 title: Send this counter-proposal
 view-if: parlament_coalition_changes or parlament_coalition_concessions
-subtitle: [?if parlament_coalition_push >= ciu_erc_coalition_phase: Back-and-forth negotiations will take some time, but may give us the extra edge needed for a better deal. ?]
+subtitle: [?if (parlament_coalition_push >= ciu_erc_coalition_phase or parlament_coalition_push_round >= ciu_erc_coalition_phase): Back-and-forth negotiations will take some time, but may give us the extra edge needed for a better deal. ?]
 on-arrival: {!
     Q.parlament_coalition_proposal_accept = true;
-    if (Q.parlament_coalition_push >= Q.ciu_erc_coalition_phase) {
+    if ((Q.parlament_coalition_push >= Q.ciu_erc_coalition_phase || Q.parlament_coalition_push_round >= Q.ciu_erc_coalition_phase)) {
         Q.parlament_coalition_proposal_accept = false;
     } else {
         if (Q.parlament_current_ciu_s > 40) {

@@ -537,6 +537,8 @@ describe('presidential pressure, assembly and nomination', () => {
     a.beginGame([1, 2, 3, 4]); a.goToScene('root.start_menu'); a.goToScene('root.start');
     Object.assign(a.qualities, qbase({
       year: 2013, month: 2, time: 6, month_actions: 1, countdowns: [],
+      // Keep the unrelated missing-roadmap event out of this queue fixture.
+      roadmap_year: 2015,
       next_election_time: 100, next_spanish_election_time: 100,
       cup_leader: 'David Fernàndez', cup_poblelliure_strength: 20, cup_endavant_strength: 60,
       [P + 'dispute_round']: 2, [P + 'mediation_round']: 3,

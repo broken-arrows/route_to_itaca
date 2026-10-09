@@ -16,6 +16,7 @@ unavailable-subtitle: [? if parlament_route_erc_cup_block_seats: ERC and the CUP
 on-arrival: {!
     Q.erc_cup_coalition_phase = 1;
     Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_push_round = 0;
     Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_erc_cup_s;
     Q.parlament_coalition_support_seats = Q.parlament_coalition_erc_cup_s;
     Q.parlament_coalition_leader = "erc";
@@ -53,6 +54,7 @@ unavailable-subtitle: [? if parlament_route_erc_cup_block_seats: ERC and the CUP
 on-arrival: {!
     Q.erc_cup_coalition_phase = 1;
     Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_push_round = 0;
     Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_erc_cup_s;
     Q.parlament_coalition_support_seats = Q.parlament_coalition_erc_cup_s;
     Q.parlament_coalition_leader = "cup";
@@ -76,6 +78,7 @@ unavailable-subtitle: [? if parlament_route_erc_cup_block_seats: ERC and the CUP
 on-arrival: {!
     Q.erc_cup_coalition_phase = 1;
     Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_push_round = 0;
     Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_erc_cup_s;
     Q.parlament_coalition_support_seats = Q.parlament_coalition_erc_cup_s;
     Q.parlament_coalition_leader = "erc";
@@ -99,6 +102,7 @@ unavailable-subtitle: [? if parlament_route_erc_cup_block_seats: ERC and the CUP
 on-arrival: {!
     Q.erc_cup_coalition_phase = 1;
     Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_push_round = 0;
     Q.parlament_coalition_cabinet_seats = Q.parlament_coalition_erc_cup_s;
     Q.parlament_coalition_support_seats = Q.parlament_coalition_erc_cup_s;
     Q.parlament_coalition_leader = "cup";

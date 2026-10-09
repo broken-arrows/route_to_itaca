@@ -36,6 +36,7 @@ on-arrival: {!
     Q.parlament_coalition_changes = false;
     Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_push = 0;
+    Q.parlament_coalition_push_round = 0;
 
     Q.ciu_erc_coalition_phase = 0;
     Q.ciu_min_coalition_phase = 0;

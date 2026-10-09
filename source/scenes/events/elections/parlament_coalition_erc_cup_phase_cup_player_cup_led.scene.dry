@@ -46,7 +46,6 @@ set-jump: choices_menu
 
 - @changes
 - @policy_concessions
-- @push
 - @send
 - @accept
 
@@ -61,6 +60,7 @@ title: [? if erc_cup_coalition_phase = 1: Propose a government composition?][? i
 - @foreign
 - @territory
 - @bnl
+- @push_from_changes
 - @finish_changes: Move to other matters
 
 @finish_changes
@@ -185,9 +185,11 @@ go-to: policy_concessions
 @push
 title: Push for more leverage
 view-if: erc_cup_coalition_phase < 3
-choose-if: parlament_coalition_push < erc_cup_coalition_phase and erc_cup_coalition_phase < 3
+choose-if: (parlament_coalition_push < erc_cup_coalition_phase and parlament_coalition_push_round < erc_cup_coalition_phase) and erc_cup_coalition_phase < 3
 unavailable-subtitle: We cannot push any further in this round.
 on-arrival: {!
+    Q.parlament_coalition_changes = true;
+    Q.parlament_coalition_push_round = Q.erc_cup_coalition_phase;
     Q.parlament_coalition_push += 1;
     Q.parlament_coalition_leverage += 4;
     if (Q.player_party == "erc") Q.cup_relations -= Q.erc_cup_coalition_phase == 1 ? 5 : 3;
@@ -202,7 +204,7 @@ on-arrival: {!
     var ministries = ["interior", "economy", "foreign", "health", "education", "territory", "bnl"];
     var cupMinistries = 0;
     for (var ministry of ministries) if (Q["parlament_coalition_proposal_" + ministry] == "cup") cupMinistries += 1;
-    Q.erc_cup_reject_pressure = Q.parlament_coalition_push >= Q.erc_cup_coalition_phase;
+    Q.erc_cup_reject_pressure = (Q.parlament_coalition_push >= Q.erc_cup_coalition_phase || Q.parlament_coalition_push_round >= Q.erc_cup_coalition_phase);
     Q.erc_cup_reject_vp = Q.erc_cup_coalition_phase < 3 && Q.parlament_coalition_proposal_vp != Q.parlament_coalition_follower;
     Q.erc_cup_reject_economy = Q.player_party == "cup" && Q.erc_cup_coalition_phase < 3 && Q.parlament_coalition_proposal_economy != "erc";
     Q.erc_cup_reject_interior = Q.player_party == "cup" && Q.erc_cup_coalition_phase < 2 && Q.parlament_coalition_proposal_interior != "erc";
@@ -287,4 +289,21 @@ set-jump: policy_concessions
 
 - @indy
 - #fiscal_concessions
+- @push_from_policy_concessions
 - @phase_text: Move to other matters
+
+@push_from_policy_concessions
+title: Push for more concessions
+view-if: erc_cup_coalition_phase < 3
+choose-if: (parlament_coalition_push < erc_cup_coalition_phase and parlament_coalition_push_round < erc_cup_coalition_phase) and erc_cup_coalition_phase < 3
+unavailable-subtitle: We cannot push any further in this round.
+call: parlament_coalition_erc_cup_phase_cup_player_cup_led.push
+go-to: policy_concessions
+
+@push_from_changes
+title: Push for more concessions
+view-if: erc_cup_coalition_phase < 3
+choose-if: (parlament_coalition_push < erc_cup_coalition_phase and parlament_coalition_push_round < erc_cup_coalition_phase) and erc_cup_coalition_phase < 3
+unavailable-subtitle: We cannot push any further in this round.
+call: parlament_coalition_erc_cup_phase_cup_player_cup_led.push
+go-to: changes
