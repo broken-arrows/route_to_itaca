@@ -240,10 +240,76 @@ describe('presidential pressure, assembly and nomination', () => {
     expect(q.parlament_coalition_proposal_accept).toBe(false);
   });
 
+  it.each(['erc', 'cup'].flatMap(player => ['Artur Mas', 'Neus Munté'].flatMap(name =>
+    ['', 'veto', 'tie', 'approve'].map(result => ({ player, name, result }))
+  )))('explains candidate feedback for $player, $name and assembly "$result"', ({ player, name, result }) => {
+    const q = qbase({
+      player_party: player, parlament_coalition_proposal_president_name: name,
+      cup_faction: 'Endavant', cdc_relations: 59,
+      [P + 'assembly_result']: result, [P + 'assembly_deadline']: 2017,
+      parlament_coalition_proposal_accept: false,
+      [P + 'reject_reasons']: 'The proposed cabinet is incomplete.',
+    });
+    evaluate(q);
+    expect(q.parlament_coalition_proposal_accept).toBe(false);
+    const explanation = q[P + 'candidate_reason'];
+    if (result === 'approve' && name === 'Artur Mas') {
+      expect(explanation).toBe('');
+      expect(q[P + 'reject_reasons']).toBe('The proposed cabinet is incomplete.');
+      return;
+    }
+    expect(explanation).toContain(name);
+    expect(q[P + 'reject_reasons']).toBe('The proposed cabinet is incomplete. ' + explanation);
+    if (!result) {
+      expect(explanation).not.toMatch(/has voted|ended in a tie|assembly.*(?:rejected|authorized)/);
+    } else if (result === 'veto') {
+      expect(explanation).toMatch(/assembly.*(?:voted against|rejected)/);
+    } else if (result === 'tie') {
+      expect(explanation).toMatch(/\btie\b/);
+      expect(explanation).not.toContain('voted against');
+    } else {
+      expect(explanation).not.toMatch(/voted against|assembly.*rejected/);
+    }
+    if (name === 'Neus Munté') {
+      expect(explanation).toMatch(/Artur Mas|CDC/);
+      expect(explanation).not.toContain('voted against the investiture of Neus Munté');
+    }
+  });
+
+  it('explains outstanding exceptional-investiture terms together without inventing an assembly vote', () => {
+    const q = qbase({
+      [P + 'assembly_result']: '', parlament_coalition_proposal_accept: true,
+      [P + 'reject_reasons']: '', parlament_coalition_concessions_indy: 0,
+      parlament_coalition_policy_education: false, parlament_coalition_policy_health: false,
+      [P + 'deadline']: 2019,
+    });
+    evaluate(q);
+    expect(q.parlament_coalition_proposal_accept).toBe(false);
+    expect(q[P + 'reject_reasons']).toContain('independence');
+    expect(q[P + 'reject_reasons']).toContain('social commitments');
+    expect(q[P + 'reject_reasons']).toContain('next two years');
+    expect(q[P + 'reject_reasons']).not.toContain('assembly');
+  });
+
+  it.each(['approve', 'tie'])('explains weakening the programme put to an assembly with result %s', result => {
+    const q = qbase({
+      parlament_coalition_proposal_president_name: result === 'tie' ? 'Neus Munté' : 'Artur Mas',
+      cup_poblelliure_strength: 60, parlament_coalition_policy_tax: true,
+      [P + 'assembly_result']: result, [P + 'assembly_deadline']: 2016,
+      [P + 'assembly_terms']: [{ policy: 'health', target: 1 }],
+      parlament_coalition_proposal_accept: true, [P + 'reject_reasons']: '',
+    });
+    evaluate(q);
+    expect(q.parlament_coalition_proposal_accept).toBe(false);
+    expect(q[P + 'reject_reasons']).toContain('weakens social commitments');
+    expect(q[P + 'reject_reasons']).toContain('pushes the roadmap deadline');
+    expect(q[P + 'reject_reasons']).not.toContain('voted against');
+  });
+
   it.each([
-    ['Artur Mas', 45, 60, 2, false],
+    ['Artur Mas', 45, 60, 2, true],
     ['Artur Mas', 46, 60, 2, true],
-    ['Artur Mas', 46, 59, 2, false],
+    ['Artur Mas', 46, 59, 2, true],
     ['Artur Mas', 46, 60, 1, false],
     ['Neus Munté', 50, 65, 3, false],
     ['Neus Munté', 51, 65, 3, true],
@@ -282,6 +348,40 @@ describe('presidential pressure, assembly and nomination', () => {
     expect(q[P + 'replacement_needed']).toBe(false);
   });
 
+  it.each(['erc', 'cup'])('honours the assembly approval of Mas for %s despite political resistance', player => {
+    const q = qbase({
+      player_party: player, [P + 'assembly_result']: 'approve', [P + 'assembly_deadline']: 2017,
+      [P + 'mas_pressure']: 0, [P + 'ciu_pressure']: 5,
+      cup_faction: 'Endavant', cup_poblelliure_strength: 0, cup_endavant_strength: 100,
+      cdc_relations: 0, erc_relations: 0, cup_relations: 0,
+      parlament_coalition_mas_veto_failures: 5,
+      parlament_coalition_proposal_accept: true, [P + 'reject_reasons']: '',
+    });
+    evaluate(q);
+    expect(q[P + 'replacement_needed']).toBe(false);
+    expect(q[P + 'candidate_reason']).toBe('');
+    expect(q.parlament_coalition_proposal_accept).toBe(true);
+    expect(q.parlament_coalition_proposal_president_name).toBe('Artur Mas');
+    q.parlament_coalition_concessions_indy = 0;
+    evaluate(q);
+    expect(q.parlament_coalition_proposal_accept).toBe(false);
+    expect(q[P + 'candidate_reason']).toContain('independence');
+    expect(q[P + 'replacement_needed']).toBe(false);
+  });
+
+  it.each(['tie', 'veto'].flatMap(result => [
+    ['erc', result, 60, 1, false], ['erc', result, 60, 2, true],
+    ['erc', result, 59, 2, false], ['erc', result, 59, 3, true],
+    ['cup', result, 60, 0, true], ['cup', result, 59, 0, true],
+  ]))('preserves the replacement decision for %s, %s, CiU relations %s and pressure %s', (player, result, relations, pressure, expected) => {
+    const q = qbase({
+      player_party: player, [P + 'assembly_result']: result,
+      cdc_relations: relations, [P + 'ciu_pressure']: pressure,
+    });
+    action('parlament_coalition_sovereignty_replacement', 'check', q);
+    expect(q[P + 'replacement_needed']).toBe(expected);
+  });
+
   it('charges Romeva once and uses constituent influence inside a joint list', () => {
     const q = qbase({ [P + 'assembly_result']: 'veto', [P + 'nominee']: 'Raül Romeva' });
     nominate(q);
@@ -304,6 +404,9 @@ describe('presidential pressure, assembly and nomination', () => {
       [P + 'cabinet']: ['jxsi'], parlament_coalition_cabinet_seats: 62,
       parlament_coalition_leader: 'jxsi', parlament_coalition_follower: 'cup',
       education_spending: -1, healthcare_spending: -1,
+      ...(mandate === 'approve' ? {
+        cup_faction: 'Endavant', cup_poblelliure_strength: 0, cup_relations: 0, [P + 'mas_pressure']: 0,
+      } : {}),
     }));
     const frame = a.goToScene(phase);
     Object.assign(a.qualities, {
@@ -317,7 +420,7 @@ describe('presidential pressure, assembly and nomination', () => {
       expect(a.qualities.cat_coalition).toEqual(['jxsi']);
       expect(a.qualities[P + 'phase']).toBe(0);
     } else if (mandate === 'veto') {
-      expect(a.qualities[P + 'reject_reasons']).toContain('not authorized');
+      expect(a.qualities[P + 'reject_reasons']).toContain('assembly has voted against the investiture of Artur Mas');
     } else {
       expect(a.qualities.parlament_coalition_policy_reject_reasons).toContain('healthcare funding');
     }
@@ -328,11 +431,17 @@ describe('presidential pressure, assembly and nomination', () => {
     [`parlament_coalition_joint_cup_phase_${player}_player_jxcat_led`, player, 'jxcat', 'jxcat'],
     [`parlament_coalition_ciu_erc_cup_phase_${player}_player_ciu_led_support`, player, 'support', 'cdc'],
     [`parlament_coalition_ciu_erc_cup_phase_${player}_player_ciu_led_government`, player, 'government', 'cdc'],
-  ]))('inserts nomination before the final offer: %s', (phase, player, kind, leader) => {
+  ]).flatMap(route => ['approve', 'tie', 'veto'].map(result => [...route, result])))('routes the final offer for %s (%s player, %s kind, %s leader, %s assembly)', (phase, player, kind, leader, result) => {
     const a = DendryAdapter.fromJSONText(gameText);
     a.beginGame([1, 2, 3, 4]); a.goToScene('root.start_menu'); a.goToScene('root.start');
-    Object.assign(a.qualities, qbase({ player_party: player, coalition_phase_timer: 0, [P + 'kind']: kind, [P + 'assembly_result']: 'veto', parlament_coalition_leader: leader, parlament_coalition_follower: 'erc', parlament_coalition_policy_health: true }));
+    Object.assign(a.qualities, qbase({ player_party: player, coalition_phase_timer: 0, [P + 'kind']: kind, [P + 'assembly_result']: result, parlament_coalition_leader: leader, parlament_coalition_follower: 'erc', parlament_coalition_policy_health: true, [P + 'mas_pressure']: 0 }));
     const frame = a.goToScene(phase);
+    if (result === 'approve') {
+      expect(frame.choices.some(c => c.id.startsWith('parlament_coalition_sovereignty_replacement.'))).toBe(false);
+      expect(frame.choices.some(c => c.id === phase + '.submit')).toBe(true);
+      expect(a.qualities.parlament_coalition_proposal_president_name).toBe('Artur Mas');
+      return;
+    }
     expect(frame.choices.some(c => c.id === 'parlament_coalition_sovereignty_replacement.puigdemont')).toBe(true);
     expect(a.qualities.parlament_coalition_policy_health).toBe(true);
     const after = a.choose(frame.choices.findIndex(c => c.id.endsWith('.puigdemont')));

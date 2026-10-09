@@ -57,6 +57,18 @@ role: ending
 
 Truly, how did you manage to approve the Law on the Referendum but NOT the one on transition? Please drop a message on reddit, discord, or raise a GitHub issue. You deserve a medal nonetheless!
 
+# TBD: wish-making allowed here too?
+
+@denmark_of_the_south
+title: The "Denmark of the South"
+view-if: parlament_climate_change_passed and parlament_inheritance_tax_passed and education_spending >= 2 and healthcare_spending >= 2 and public_salary_level >= 2 and not end_denmark_of_the_south
+on-arrival: end_denmark_of_the_south = 1
+tags: endings
+go-to: eg_menu
+role: ending
+
+Public services and the social safety net have been widely expanded in Catalonia, supported by heavy yet progressive taxes.
+
 @end_temp
 title: WIP ending cards
 view-if: not end_temp_seen

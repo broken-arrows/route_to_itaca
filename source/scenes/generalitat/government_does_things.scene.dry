@@ -139,16 +139,17 @@ on-arrival: {!
                 title:title, reason:reason, office:offices[holder], weight:weight, profile:profile || "neutral", kind:kind || "policy",
                 policyParty:policyParty}, extra || {}));
         }
-        for (var service of [["education_minister_party", "education_spending", "education"], ["health_minister_party", "healthcare_spending", "healthcare"]]) {
+        for (var service of [["education_minister_party", "education_spending", "education", "education"], ["health_minister_party", "healthcare_spending", "healthcare", "health"]]) {
             var level = Q[service[1]];
+            var consellerName = (Q[service[3] + "_minister_gender"] = "m" ? "Conseller" : "Consellera") + " of " + (service[3] == "health" ? "Health " : "Education ") + Q[service[3] + "_minister"];
             if (Number.isInteger(level) && level >= -2 && level < 2 && level < Q.social_spending_cap && Q.generalitat_surplus > -3 &&
                 Q[service[1] == "education_spending" ? "education_prepared_level" : "healthcare_prepared_level"] == null)
-                add(service[0], service[1], level + 1, level < 0 ? "restore " + service[2] + " cuts" : "expand " + service[2] + " funding",
-                    distress ? "The ministry argues that it about time crisis-era cuts are reverted." : "The ministry is pushing forward a reform for better funding and expanded resources.",
+                add(service[0], service[1], level + 1, level < 0 ? "restore " + service[2] + " cuts" : "expand " + service[2] + " funding",  consellerName,
+                    distress ? "argues that it about time crisis-era cuts are reverted." : " is pushing forward a reform for better funding and expanded resources.",
                     left ? (distress ? 5 : 3) : !deficit ? 1 : 0, "services");
             if (Number.isInteger(level) && level > -2 && level <= 2)
-                add(service[0], service[1], level - 1, "reduce " + service[2] + " funding",
-                    "The ministry is pushing for further cuts to curve down the current deficit of the Generalitat.",
+                add(service[0], service[1], level - 1, "reduce " + service[2] + " funding" ,consellerName,
+                    "is pushing for further cuts to curve down the current deficit of the Generalitat.",
                     market && deficit ? 4 : left && !radical && Q.generalitat_surplus < -2 ? 1 : 0, "services", "cut");
         }
         if (Number.isInteger(Q.public_salary_level) && Q.public_salary_level >= -2 && Q.public_salary_level < 2 && Q.economy_cuts <= 0 &&

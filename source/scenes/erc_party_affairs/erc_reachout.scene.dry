@@ -313,7 +313,7 @@ choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 on-arrival: party_resources -= 1
 
-compromis is a relatively new coalition of broadly regionalist, federalist, republican, social-democratic, left parties in Valencia. While not explicitly pro-independece, the shared language, struggle against Spanish centralization and nationalism, and a long etc does bring us close together. What should we focus on in our reaching out?
+compromis is a relatively new coalition of broadly regionalist, federalist, republican, social-democratic, left parties in Valencia. While not explicitly pro-independece, the shared language, struggle against Spanish centralization and nationalism, and a long etc does bring us close together. [? if podemos_surged: What should we focus on in our reaching out? ?]
 
 -@campaign_compromis
 -@push_compromis

@@ -337,7 +337,7 @@ on-arrival: {!
             if (available.icf && Q.bnl_icf_prepared_branch == "cooperative") proposed.projects.icf = true;
         }
         if (proposed.tax_policy_level != draft.tax_policy_level) terms.push("Autonomic Taxes: " + taxProfiles[proposed.tax_policy_level + 2].name + ".");
-        if (proposed.social_spending_cap != draft.social_spending_cap) terms.push("Spending authorization: " + capNames[proposed.social_spending_cap + 2] + ".");
+        if (proposed.social_spending_cap != draft.social_spending_cap) terms.push("Social Spending authorization: " + capNames[proposed.social_spending_cap + 2] + ".");
         var projectNames = {county:"county roads", b40:"the B-40", metro1:"the L9/L10", metro2:"the L1/L3 expansion", water2:"public water facilities", water3:"public water supply and management", tmobilitat2: "Catalonia-wide T-mobilitat", rail1:"the Lleida-La Pobla railway", rail2:"the Tarragona and Girona train-trams", icf:Q.parlament_budget_icf_name, digital:"fully-digital administration", universal:"truly universal healthcare access"};
         for (var key of Object.keys(projectIds)) if (proposed.projects[key] != draft.projects[key]) terms.push((proposed.projects[key] ? "Fund " : "Remove ") + projectNames[key] + ".");
         var p = project(proposed);
@@ -391,7 +391,7 @@ on-arrival: {!
 
 · Autonomic Taxes: **[+ parlament_budget_tax_name +]**.
 
-· Spending authorization: **[+ parlament_budget_cap_name +]**.
+· Social Spending authorization: **[+ parlament_budget_cap_name +]**.
 
 [? if parlament_budget_education_cut: · Education spending will be reduced to fit the proposed ceiling.?]
 [? if parlament_budget_health_cut: · Health spending will be reduced to fit the proposed ceiling.?]

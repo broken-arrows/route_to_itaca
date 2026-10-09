@@ -43,6 +43,18 @@ function fixture(file: string): Record<string, any> {
 }
 
 describe('sovereignty pact requirements', () => {
+  it.each(files)('preserves previous rejection feedback until submission or refusal: %s', file => {
+    const q = fixture(file);
+    q.parlament_coalition_sovereignty_reject_reasons = 'The partners rejected our proposed commitments.';
+    run(file, q, 'prepare');
+    expect(q.parlament_coalition_sovereignty_reject_reasons).toBe('The partners rejected our proposed commitments.');
+    run(file, q, 'submit');
+    expect(q.parlament_coalition_sovereignty_reject_reasons).not.toContain('The partners rejected our proposed commitments.');
+    q.parlament_coalition_sovereignty_reject_reasons = 'The partners rejected our proposed commitments.';
+    run(file, q, 'reject');
+    expect(q.parlament_coalition_sovereignty_reject_reasons).toBe('');
+  });
+
   it('resolves both dispute types independently without repeating either', () => {
     const q = fixture(files[0]);
     Object.assign(q, {
@@ -102,7 +114,7 @@ describe('sovereignty pact requirements', () => {
     q.parlament_coalition_concessions_indy = 0;
     run(file, q, 'submit');
     expect(q.parlament_coalition_proposal_accept).toBe(false);
-    expect(q.parlament_coalition_sovereignty_reject_reasons).toContain('explicit independence commitment');
+    expect(q.parlament_coalition_sovereignty_reject_reasons).toContain('Without such an agreement in writing');
     q.parlament_coalition_concessions_indy = 1;
     run(file, q, 'submit');
     expect(q.parlament_coalition_sovereignty_reject_reasons).toBe('');

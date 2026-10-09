@@ -1,4 +1,4 @@
-title: ERC-led <span class="generalitat-coalition" data-parties="erc cup" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">Left-Independence</span> <span style="color: var(--cup); font-style: italic;">Government</span></span> negotiations
+title: ERC-led <span class="generalitat-coalition" data-parties="erc cup" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--erc); font-style: italic;">Left-Independence</span> <span style="color: #b8a12b; font-style: italic;">government</span></span> negotiations
 subtitle: [? if erc_cup_coalition_phase = 1: ERC prepares the opening government proposal.?][? if erc_cup_coalition_phase = 2: ERC and the CUP enter the second round of negotiations.?][? if erc_cup_coalition_phase = 3: The third and final round of negotiations begins.?]
 tags: event
 role: event
@@ -171,7 +171,7 @@ on-arrival: {!
 go-to: changes
 
 @indy
-title: Include the stronger independence roadmap
+title: Include a stronger independence roadmap
 choose-if: parlament_coalition_concessions_indy = 0 and parlament_coalition_leverage >= 5 and erc_roadmap != cup_roadmap
 unavailable-subtitle: [? if erc_roadmap = cup_roadmap: Both parties already share the same roadmap.?][? if parlament_coalition_concessions_indy: The commitment is already included.?][? if parlament_coalition_leverage < 5: We lack enough leverage.?]
 on-arrival: {!

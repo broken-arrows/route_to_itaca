@@ -148,6 +148,13 @@
       "image": "img/achievements/frikitrens.jpg"
     },
     {
+      "id": "dinamarca_del_sud",
+      "name": "Dinamarca del Sud",
+      "description": "Broadly expand public spending in all fronts, while passing new taxes on inheritance and climate change.",
+      "stars": 4,
+      "image": "img/achievements/dinamarca_del_sud.jpg"
+    },
+    {
       "id": "independencia_socialisme_feminisme",
       "name": "Independència, Socialisme, i Feminisme",
       "description": "As an ERC-CUP government, declare independence and keep the new republic alive until the end of the game.",

@@ -465,6 +465,9 @@ if (Q.president_gender == "f" && Q.president != "Neus Munté") {
 if (Q.territory_rail2_countdown <= 0 && Q.territory_metro2_countdown <= 0) {
     this.achieve("frikitrens");
 }
+if (Q.parlament_climate_change_passed && Q.parlament_inheritance_tax_passed && Q.education_spending >= 2 && Q.healthcare_spending >= 2 && Q.public_salary_level >= 2) {
+    this.achieve("dinamarca_del_sud");
+}
 if (Q.spanish_pm == "Pedro Sánchez") {
     Q.psoe_sanchez_president_ever = true;
     if (Q.psoe_barons_revolted ) {
