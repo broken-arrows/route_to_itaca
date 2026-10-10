@@ -723,11 +723,9 @@ blockquote + blockquote.attribution {
 
 #saves_table td {
   padding: 10px;
-  vertical-align: middle;
-  border-radius: 8px;
-  word-break: break-word;
+  word-break: keep-all;
   border: none;
-  width: auto;
+  max-width: 12em;
 }
 .save_info {
   min-width: 15em;

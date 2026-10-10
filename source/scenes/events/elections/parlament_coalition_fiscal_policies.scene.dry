@@ -165,13 +165,13 @@ go-to: jumpScene
 
 [? if parlament_coalition_concessions_indy or parlament_coalition_policy_cap or parlament_coalition_policy_education or parlament_coalition_policy_health or parlament_coalition_policy_pay or parlament_coalition_policy_tax: **Policy Commitments**?]
 
-[? if parlament_coalition_policy_cap: - Commitment to raise the shared social spending cap through the next budget.?]
+[? if parlament_coalition_policy_cap: - Raise the shared social spending cap through the next budget.?]
 
-[? if parlament_coalition_policy_education: - Commitment to increase Education spending. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_education_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
+[? if parlament_coalition_policy_education: - Increase Education spending. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_education_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
 
-[? if parlament_coalition_policy_health: - Commitment to increase Healthcare spending. [? if parlament_coalition_policy_effective_cap >= parlament_coalition_policy_health_target: Takes effect when the government is formed.?][? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_health_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
+[? if parlament_coalition_policy_health: - Increase Healthcare spending. [? if parlament_coalition_policy_effective_cap >= parlament_coalition_policy_health_target: Takes effect when the government is formed.?][? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_health_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
 
-[? if parlament_coalition_policy_pay: - Commitment to raise all public salaries. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_pay_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
+[? if parlament_coalition_policy_pay: - Raise public salaries and working standards. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_pay_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
 
-[? if parlament_coalition_policy_tax: - Commitment to raise Regional Taxes when the next budget is discussed.?]
+[? if parlament_coalition_policy_tax: - Raise Regional Taxes when the next budget is discussed.?]
 

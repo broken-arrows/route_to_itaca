@@ -108,7 +108,7 @@ go-to: phase_text
 title: [? if parlament_coalition_sovereignty_phase = 1: Present our opening proposal?][? if parlament_coalition_sovereignty_phase > 1: Send this counter-proposal?]
 view-if: parlament_coalition_changes or parlament_coalition_sovereignty_candidate_reason or parlament_coalition_sovereignty_phase = 1 or parlament_coalition_sovereignty_withdrawal
 choose-if: not parlament_coalition_sovereignty_withdrawal
-unavailable-subtitle: [+ parlament_current_ciu +] is unwilling to have Artur Mas step down. Remove that demand before sending the proposal.
+unavailable-subtitle: We cannot send a proposal demanding Artur Mas to step down as long as [+ parlament_current_ciu +] is unwilling to do that.
 subtitle: [? if parlament_coalition_sovereignty_phase = 3: This is the final round. If any partner refuses, negotiations will end without an agreement.?]
 on-arrival: {!
     var reasons = [];
