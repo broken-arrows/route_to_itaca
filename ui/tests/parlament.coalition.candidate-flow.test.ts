@@ -16,6 +16,7 @@ function action(name: string, marker: string, q: Record<string, any>, draw = vi.
   return draw;
 }
 function nominate(q: Record<string, any>, achieve = vi.fn()) {
+  action(P + 'assembly', 'withdrawal', q);
   action(P + 'replacement', 'check', q);
   action(P + 'replacement', 'commit', q, vi.fn(() => 0.5), achieve);
 }
@@ -34,13 +35,15 @@ function qbase(overrides: Record<string, any> = {}) {
     cup_poblelliure_dissent: 15, cup_endavant_dissent: 15, cup_thirdsector_dissent: 15,
     erc_parlament_s: 0, cdc_parlament_s: 0, cup_parlament_s: 10,
     jxsi_parlament_s: 62, jxsi_formation_num: 50,
+    parlament_coalition_proposal_president: 'jxsi',
+    ...Object.fromEntries(['vp', 'interior', 'economy', 'foreign', 'health', 'education', 'territory', 'bnl'].map(o => ['parlament_coalition_proposal_' + o, 'jxsi'])),
     parlament_coalition_proposal_president_name: 'Artur Mas',
     parlament_coalition_concessions_indy: 1,
     parlament_coalition_policy_education: true, parlament_coalition_policy_education_target: 0,
     parlament_coalition_policy_health: true, parlament_coalition_policy_health_target: 0,
     [P + 'phase']: 3, [P + 'kind']: 'jxsi',
     [P + 'dispute_round']: 0, [P + 'ciu_pressure']: 3, [P + 'mas_pressure']: 3,
-    [P + 'brokerage']: 1, [P + 'deadline']: 2017, [P + 'last_terms']: [],
+    [P + 'replacement_needed']: false, [P + 'brokerage']: 1, [P + 'deadline']: 2017, [P + 'last_terms']: [],
     ...overrides,
   };
 }
@@ -74,6 +77,7 @@ describe('presidential pressure, assembly and nomination', () => {
       generalitat_surplus: 0, social_spending_cap: 0,
     }));
     a.goToScene(phase);
+    a.qualities.parlament_coalition_policy_health = false;
     a.qualities.parlament_coalition_leverage = 0;
     const menu = a.goToScene(phase + '.policies');
     const index = menu.choices.findIndex(c => c.id === 'parlament_coalition_fiscal_policies.health_policy');
@@ -249,7 +253,7 @@ describe('presidential pressure, assembly and nomination', () => {
 
   it.each([['veto', 20, 60, 0.5], ['approve', 70, 10, 0.5], ['tie', 50, 30, 0.0625]])
     ('NPC ballot produces %s from faction strength and one saved draw', (result, pl, en, roll) => {
-      const q = qbase({ cup_poblelliure_strength: pl, cup_endavant_strength: en });
+      const q = qbase({ cup_poblelliure_strength: pl, cup_endavant_strength: en, cup_relations: 60, parlament_coalition_concessions_indy: 0 });
       const draw = vi.fn(() => Number(roll));
       action('parlament_coalition_sovereignty_assembly', 'vote', q, draw);
       expect(q[P + 'assembly_result']).toBe(result);
@@ -337,7 +341,7 @@ describe('presidential pressure, assembly and nomination', () => {
     });
     evaluate(q);
     expect(q.parlament_coalition_proposal_accept).toBe(false);
-    expect(q[P + 'reject_reasons']).toContain('independence');
+    expect(q[P + 'reject_reasons']).not.toContain('more ambitious');
     expect(q[P + 'reject_reasons']).toContain('social commitments');
     expect(q[P + 'reject_reasons']).toContain('next two years');
     expect(q[P + 'reject_reasons']).not.toContain('assembly');
@@ -384,18 +388,22 @@ describe('presidential pressure, assembly and nomination', () => {
 
   it.each(['approve', 'veto', 'tie'])('CUP Munte nomination respects its %s mandate', result => {
     const q = qbase({ player_party: 'cup', [P + 'assembly_result']: result, cup_poblelliure_strength: 60 });
+    action('parlament_coalition_sovereignty_assembly', 'withdrawal', q);
     action('parlament_coalition_sovereignty_replacement', 'check', q);
     expect(q[P + 'munte_available']).toBe(result === 'tie');
   });
 
   it('does not replace Mas without withdrawal pressure, or after an authorized agreement', () => {
     const q = qbase({ [P + 'assembly_result']: 'veto', [P + 'ciu_pressure']: 0 });
+    action('parlament_coalition_sovereignty_assembly', 'withdrawal', q);
     action('parlament_coalition_sovereignty_replacement', 'check', q);
     expect(q[P + 'replacement_needed']).toBe(false);
     q[P + 'assembly_result'] = 'approve'; q[P + 'ciu_pressure'] = 4;
+    action('parlament_coalition_sovereignty_assembly', 'withdrawal', q);
     action('parlament_coalition_sovereignty_replacement', 'check', q);
     expect(q[P + 'replacement_needed']).toBe(false);
     Object.assign(q, { player_party: 'cup', cdc_relations: 45 });
+    action('parlament_coalition_sovereignty_assembly', 'withdrawal', q);
     action('parlament_coalition_sovereignty_replacement', 'check', q);
     expect(q[P + 'replacement_needed']).toBe(false);
   });
@@ -416,8 +424,11 @@ describe('presidential pressure, assembly and nomination', () => {
     expect(q.parlament_coalition_proposal_president_name).toBe('Artur Mas');
     q.parlament_coalition_concessions_indy = 0;
     evaluate(q);
+    expect(q.parlament_coalition_proposal_accept).toBe(true);
+    q[P + 'assembly_terms'] = [{policy: 'indy', target: 1}];
+    evaluate(q);
     expect(q.parlament_coalition_proposal_accept).toBe(false);
-    expect(q[P + 'candidate_reason']).toContain('independence');
+    expect(q[P + 'candidate_reason']).toContain('independence commitments');
     expect(q[P + 'replacement_needed']).toBe(false);
   });
 
@@ -430,6 +441,7 @@ describe('presidential pressure, assembly and nomination', () => {
       player_party: player, [P + 'assembly_result']: result,
       cdc_relations: relations, [P + 'ciu_pressure']: pressure,
     });
+    action('parlament_coalition_sovereignty_assembly', 'withdrawal', q);
     action('parlament_coalition_sovereignty_replacement', 'check', q);
     expect(q[P + 'replacement_needed']).toBe(expected);
   });
@@ -460,7 +472,10 @@ describe('presidential pressure, assembly and nomination', () => {
         cup_faction: 'Endavant', cup_poblelliure_strength: 0, cup_relations: 0, [P + 'mas_pressure']: 0,
       } : {}),
     }));
-    const frame = a.goToScene(phase);
+    let frame = a.goToScene(phase);
+    if (a.qualities[P + 'withdrawal']) {
+      frame = a.choose(frame.choices.findIndex(c => c.id === phase + '.withdrawal'));
+    }
     Object.assign(a.qualities, {
       parlament_coalition_concessions_indy: 1, [P + 'deadline']: 2017,
       parlament_coalition_policy_education: true, parlament_coalition_policy_education_target: 0,
@@ -486,7 +501,7 @@ describe('presidential pressure, assembly and nomination', () => {
   ]).flatMap(route => ['approve', 'tie', 'veto'].map(result => [...route, result])))('routes the final offer for %s (%s player, %s kind, %s leader, %s assembly)', (phase, player, kind, leader, result) => {
     const a = DendryAdapter.fromJSONText(gameText);
     a.beginGame([1, 2, 3, 4]); a.goToScene('root.start_menu'); a.goToScene('root.start');
-    Object.assign(a.qualities, qbase({ player_party: player, coalition_phase_timer: 0, [P + 'kind']: kind, [P + 'assembly_result']: result, parlament_coalition_leader: leader, parlament_coalition_follower: 'erc', parlament_coalition_policy_health: true, [P + 'mas_pressure']: 0 }));
+    Object.assign(a.qualities, qbase({ player_party: player, coalition_phase_timer: 0, [P + 'kind']: kind, [P + 'assembly_result']: result, parlament_coalition_leader: leader, parlament_coalition_proposal_president: leader, parlament_coalition_follower: 'erc', parlament_coalition_policy_health: true, [P + 'mas_pressure']: 0 }));
     if (result === 'approve') {
       // Approval settles the candidate even when pressure and faction resistance
       // would otherwise force the final-round replacement scene.
@@ -496,11 +511,12 @@ describe('presidential pressure, assembly and nomination', () => {
         cdc_relations: 0, erc_relations: 0, cup_relations: 0,
       });
     }
-    const frame = a.goToScene(phase);
+    a.goToScene(P + 'assembly.withdrawal');
+    const frame = a.goToScene(result === 'approve' ? phase : P + 'replacement');
     if (result === 'approve') {
       expect(a.qualities[P + 'replacement_needed']).toBe(false);
       expect(frame.choices.some(c => c.id.startsWith('parlament_coalition_sovereignty_replacement.'))).toBe(false);
-      expect(frame.choices.some(c => c.id === phase + '.submit')).toBe(true);
+      expect(frame.choices.some(c => c.id === phase + '.accept')).toBe(true);
       expect(a.qualities.parlament_coalition_proposal_president_name).toBe('Artur Mas');
       return;
     }
@@ -508,8 +524,9 @@ describe('presidential pressure, assembly and nomination', () => {
     expect(a.qualities.parlament_coalition_policy_health).toBe(true);
     const after = a.choose(frame.choices.findIndex(c => c.id.endsWith('.puigdemont')));
     expect(a.qualities.parlament_coalition_proposal_president_name).toBe('Carles Puigdemont');
-    expect(a.qualities.parlament_coalition_policy_health).toBe(false);
-    expect(after.choices.some(c => c.id === phase + '.submit')).toBe(true);
+    expect(a.qualities.parlament_coalition_policy_health).toBe(true);
+    const final = a.goToScene(phase);
+    expect(final.choices.some(c => c.id === phase + '.accept')).toBe(true);
     expect(a.qualities.cat_coalition).not.toEqual(['jxsi']);
   });
 
@@ -562,8 +579,16 @@ describe('presidential pressure, assembly and nomination', () => {
     pick('parlament_coalition_sovereignty_assembly.results');
     expect(a.qualities.month).toBe(2);
     pick('post_event');
-    expect(a.qualities.month).toBe(3);
+    pick(P + 'banos');
+    expect(a.qualities.month).toBe(2);
+    expect(a.qualities.coalition_phase_timer).toBe(1);
+    pick(P + 'banos.erc_continue');
+    expect(a.qualities.month, JSON.stringify(frame.choices.map(c => c.id))).toBe(3);
     expect(a.qualities.coalition_phase_timer).toBe(0);
+    pick(P + 'replacement');
+    expect(a.qualities.month).toBe(3);
+    pick(P + 'replacement.puigdemont');
+    expect(a.qualities.month).toBe(3);
     expect(frame.choices.some(c => c.id === 'parlament_coalition_joint_cup_phase_erc_player_jxsi_led')).toBe(true);
   });
 });

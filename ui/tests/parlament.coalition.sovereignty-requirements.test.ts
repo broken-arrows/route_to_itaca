@@ -145,15 +145,17 @@ describe('sovereignty pact requirements', () => {
     expect(q.parlament_coalition_sovereignty_reject_reasons).not.toContain('The partners rejected our proposed commitments.');
   });
 
-  it.each(files)('records the candidate impasse when reconvening: %s', file => {
+  it.each(files)('records candidate objections through the full submission: %s', file => {
     const q = fixture(file);
     q.parlament_coalition_sovereignty_reject_reasons = 'The partners rejected our proposed commitments.';
     q.parlament_coalition_sovereignty_candidate_reason = 'The assembly has vetoed Artur Mas.';
-    run(file, q, 'candidate_impasse');
-    expect(q.parlament_coalition_sovereignty_reject_reasons).toBe(q.parlament_coalition_sovereignty_candidate_reason);
+    run(file, q, 'submit');
+    run('parlament_coalition_sovereignty_replacement.scene.dry', q, 'evaluate');
+    expect(q.parlament_coalition_sovereignty_reject_reasons).toContain(q.parlament_coalition_sovereignty_candidate_reason);
+    expect(q.parlament_coalition_proposal_accept).toBe(false);
   });
 
-  it.each(files)('aligns acceptance, candidate impasses and submenu pushes in the engine: %s', file => {
+  it.each(files)('aligns received-offer acceptance, full submission and submenu pushes in the engine: %s', file => {
     const a = DendryAdapter.fromJSONText(readFileSync(resolve(directory, '../../../../out/game.json'), 'utf8'));
     a.beginGame([1, 2, 3, 4]); a.goToScene('root.start_menu'); a.goToScene('root.start');
     Object.assign(a.qualities, fixture(file), {
@@ -163,7 +165,8 @@ describe('sovereignty pact requirements', () => {
     });
     const scene = file.replace('.scene.dry', '');
     let frame = a.goToScene(scene + '.choices');
-    expect(frame.choices.find(c => c.id === scene + '.accept')?.canChoose).toBe(true);
+    const author = file.includes('_erc_player_') && (file.includes('joint_cup') || file.includes('_erc_led_'));
+    expect(frame.choices.find(c => c.id === scene + '.accept')?.canChoose).toBe(author ? undefined : true);
     expect(frame.choices.some(c => /\.(reject|push|push_policies|push_ministries|candidate_impasse)$/.test(c.id))).toBe(false);
     frame = a.goToScene(scene + '.policies');
     const before = Number(a.qualities.parlament_coalition_leverage);
@@ -175,6 +178,7 @@ describe('sovereignty pact requirements', () => {
       frame = a.goToScene(scene + '.ministries');
       expect(frame.choices.find(c => c.id === scene + '.push_ministries')?.canChoose).toBe(false);
     }
+    a.qualities.parlament_coalition_sovereignty_phase = 2;
     frame = a.goToScene(scene + '.choices');
     expect(frame.choices.find(c => c.id === scene + '.accept')?.canChoose).toBe(false);
     Object.assign(a.qualities, {
@@ -183,15 +187,15 @@ describe('sovereignty pact requirements', () => {
     });
     frame = a.goToScene(scene + '.choices');
     expect(frame.choices.find(c => c.id === scene + '.accept')?.canChoose).toBe(false);
-    expect(frame.choices.find(c => c.id === scene + '.candidate_impasse')?.canChoose).toBe(true);
-    a.choose(frame.choices.findIndex(c => c.id === scene + '.candidate_impasse'));
-    expect(a.qualities.parlament_coalition_sovereignty_phase).toBe(2);
+    expect(frame.choices.some(c => c.id === scene + '.candidate_impasse')).toBe(false);
+    a.choose(frame.choices.findIndex(c => c.id === scene + '.submit'));
+    expect(a.qualities.parlament_coalition_sovereignty_phase).toBe(3);
     expect(a.qualities.coalition_phase_timer).toBe(1);
     expect(a.qualities.parlament_coalition_sovereignty_reject_reasons).toContain('Artur Mas');
     a.qualities.parlament_coalition_sovereignty_phase = 3;
     a.qualities.coalition_phase_timer = 0;
     frame = a.goToScene(scene + '.choices');
-    expect(frame.choices.find(c => c.id === scene + '.candidate_impasse')?.title).toContain('without an agreement');
+    expect(frame.choices.find(c => c.id === scene + '.submit')?.canChoose).toBe(true);
     frame = a.goToScene(scene + '.policies');
     expect(frame.choices.find(c => c.id === scene + '.push_policies')?.canChoose).toBe(false);
   });
@@ -273,24 +277,26 @@ describe('sovereignty pact requirements', () => {
     }
   });
 
-  it.each(files.filter(file => file.includes('_erc_player_')))('requires explicit independence even with a deadline and CUP Speaker: %s', file => {
+  it.each(files.filter(file => file.includes('_erc_player_')))('accepts a social agreement without purchasing a stronger roadmap: %s', file => {
     const q = fixture(file);
     q.parlament_coalition_concessions_indy = 0;
     run(file, q, 'submit');
-    expect(q.parlament_coalition_proposal_accept).toBe(false);
-    expect(q.parlament_coalition_sovereignty_reject_reasons).toContain('Without such an agreement in writing');
+    expect(q.parlament_coalition_proposal_accept).toBe(true);
+    expect(q.parlament_coalition_sovereignty_reject_reasons).toBe('');
     q.parlament_coalition_concessions_indy = 1;
     run(file, q, 'submit');
     expect(q.parlament_coalition_sovereignty_reject_reasons).toBe('');
     expect(q.parlament_coalition_proposal_accept).toBe(true);
   });
 
-  it.each(files.filter(file => file.includes('_erc_player_') && (file.includes('joint_cup') || file.includes('_support'))))('does not substitute the Speaker for a national commitment: %s', file => {
+  it.each(files.filter(file => file.includes('_erc_player_') && (file.includes('joint_cup') || file.includes('_support'))))('still requires social concessions when the roadmap upgrade is omitted: %s', file => {
     const q = fixture(file);
     q.parlament_coalition_concessions_indy = 0;
     q.parlament_coalition_sovereignty_deadline = 0;
+    q.parlament_coalition_policy_health = false;
     run(file, q, 'submit');
     expect(q.parlament_coalition_proposal_accept).toBe(false);
+    expect(q.parlament_coalition_sovereignty_reject_reasons).toContain('social');
   });
 
   it.each(files.filter(file => file.includes('_cup_player_')))('lets CUP choose its demands and attributes excessive concessions to the partner: %s', file => {
@@ -323,18 +329,33 @@ describe('sovereignty pact requirements', () => {
     }
   });
 
-  it.each(files)('charges the Speaker recipient once per proposal, across all rounds: %s', file => {
+  it.each(files)('charges the Speaker once in the total offer allowance: %s', file => {
+    const costs: Record<string, number> = {vp: 20, interior: 10, economy: 10, foreign: 6, health: 7, education: 7, territory: 5, bnl: 5};
+    function total(q: Record<string, any>) {
+      let value = q.parlament_coalition_leverage + (q.parlament_coalition_concessions_indy ? 5 : 0) + (q.parlament_coalition_sovereignty_deadline ? 5 : 0);
+      for (const p of ['health', 'education', 'pay', 'tax', 'cap']) if (q['parlament_coalition_policy_' + p]) value += p === 'tax' ? 5 : q.parlament_coalition_policy_spending_cost;
+      if (!file.includes('joint_cup') && (q.player_party === 'erc' || file.includes('_government'))) for (const [o, cost] of Object.entries(costs)) if (q['parlament_coalition_proposal_' + o] === q.player_party) value += cost;
+      return value;
+    }
     for (const phase of [1, 2, 3]) {
-      const q = fixture(file);
-      q.parlament_coalition_sovereignty_phase = phase;
-      q.speaker_party = 'none';
-      run(file, q);
-      const baseline = q.parlament_coalition_leverage;
-      q.speaker_party = file.includes('joint_cup') && q.player_party === 'erc' ? q.parlament_coalition_leader : q.player_party;
-      run(file, q);
-      expect(q.parlament_coalition_leverage).toBe(baseline - 5);
-      run(file, q);
-      expect(q.parlament_coalition_leverage).toBe(baseline - 5);
+      const original = {...fixture(file), parlament_coalition_sovereignty_phase: phase, generalitat_surplus: 0};
+      const q = {...original, speaker_party: 'none'};
+      run('parlament_coalition_sovereignty_offer.scene.dry', q, 'prepare');
+      const baseline = total(q);
+      const speaker = {...original, speaker_party: file.includes('joint_cup') && original.player_party === 'erc' ? original.parlament_coalition_leader : original.player_party};
+      run('parlament_coalition_sovereignty_offer.scene.dry', speaker, 'prepare');
+      const ordinaryCiuErc = file === 'parlament_coalition_ciu_erc_cup_phase_erc_player_ciu_led_support.scene.dry';
+      // The ordinary CiU-ERC formula already deducts the speakership when
+      // CiU does not hold it; assigning it to ERC must not deduct it twice.
+      expect(total(speaker)).toBeCloseTo(baseline - (ordinaryCiuErc ? 0 : 5));
+      if (ordinaryCiuErc) {
+        const ciuSpeaker = {...original, speaker_party: original.parlament_current_ciu};
+        run('parlament_coalition_sovereignty_offer.scene.dry', ciuSpeaker, 'prepare');
+        expect(total(ciuSpeaker) - total(speaker)).toBeCloseTo(original.parlament_current_ciu_s > 40 ? 13 : 15);
+      }
+      const snapshot = JSON.stringify(speaker);
+      run('parlament_coalition_sovereignty_offer.scene.dry', speaker, 'prepare');
+      expect(JSON.stringify(speaker)).toBe(snapshot);
     }
   });
 });

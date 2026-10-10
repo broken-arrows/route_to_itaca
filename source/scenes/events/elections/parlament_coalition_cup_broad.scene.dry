@@ -13,7 +13,7 @@ on-arrival: {!
 go-to: setup
 
 @popular_unity
-title: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_icv +] cup" data-summary="Majority government"><span style="color: var(--erc); font-style: italic;">Popular</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Unity</span> <span style="color: var(--cup); font-style: italic;">Coalition</span></span>
+title: <span class="generalitat-coalition" data-parties="erc [+ parlament_current_icv +] cup" data-summary="Majority government"><span style="color: var(--erc); font-style: italic;">Popular</span> <span style="color: var(--[+ parlament_current_icv +]); font-style: italic;">Unity</span> <span style="color: #b8a12b; font-style: italic;">Coalition</span></span>
 view-if: parlament_coalition_option_erc_icv_cup_gov_visible
 choose-if: parlament_popular_unity_available
 unavailable-subtitle: [? if parlament_route_cup_broad_block_roadmap: [+ parlament_current_icv +] cannot deal with ERC's current Roadmap. ?][? if parlament_route_cup_broad_block_relations: Relations with [+ parlament_current_icv +] are too poor and we lack the resources to bridge them. ?][? if parlament_route_popular_unity_block_seats: ERC, [+ parlament_current_icv +], and the CUP do not have a combined majority. ?][? if parlament_route_popular_unity_block_cup_cabinet: The CUP seems willing to support an ERC cabinet, but will not join it. ?]

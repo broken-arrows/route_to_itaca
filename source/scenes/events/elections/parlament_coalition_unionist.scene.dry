@@ -20,7 +20,7 @@ on-arrival: {!
 go-to: form
 
 @ppc_cs_psc_abst
-title: PPC-led <span class="generalitat-coalition" data-parties="ppc cs" data-summary="Minority government - [+ ppc_parlament_s + cs_parlament_s +] / [+ parlament_s_majority +]"><span style="color: var(--ppc); font-style: italic;">Unity Pact</span></span> with PSC abstention
+title: PPC-led <span class="generalitat-coalition" data-parties="ppc cs" data-summary="Minority government - [+ ppc_parlament_s + cs_parlament_s +] / [+ parlament_s_majority +]"><span style="color: var(--ppc); font-style: italic;">Unity</span> <span style="color: var(--cs); font-style: italic;">Pact</span></span> with PSC abstention
 view-if: parlament_coalition_option_ppc_cs_psc_abst_visible
 choose-if: parlament_route_unionist_ppc_cs_psc_abst_available
 unavailable-subtitle: PSC abstention is insufficient to elect this government.
@@ -31,7 +31,7 @@ on-arrival: {!
 go-to: form
 
 @ppc_cs_psc_sup
-title: PPC-led <span class="generalitat-coalition" data-parties="ppc cs" data-summary="Minority government - [+ psc_parlament_s + cs_parlament_s +] / [+ parlament_s_majority +]"><span style="color: var(--ppc); font-style: italic;">Grand Unity Pact</span></span> with PSC support
+title: PPC-led <span class="generalitat-coalition" data-parties="ppc cs" data-summary="Minority government - [+ psc_parlament_s + cs_parlament_s +] / [+ parlament_s_majority +]"><span style="color: var(--ppc); font-style: italic;">Grand</span> <span style="color: var(--cs); font-style: italic;">Unity</span> <span style="color: var(--psc); font-style: italic;">Pact</span></span> with PSC support
 view-if: parlament_coalition_option_ppc_cs_psc_sup_visible
 choose-if: parlament_route_unionist_ppc_cs_psc_sup_available
 unavailable-subtitle: PPC, Cs, and PSC cannot elect this government.
@@ -138,7 +138,7 @@ view-if: false
 go-to: cs_ppc
 
 @cs_ppc_psc_abst
-title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s+] / [+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Unity Pact</span></span> with PPC support and PSC abstention
+title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s+] / [+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Unity</span> <span style="color: var(--ppc); font-style: italic;">Pact</span></span> with PPC support and PSC abstention
 view-if: parlament_coalition_option_cs_ppc_psc_abst_visible
 choose-if: parlament_route_unionist_cs_ppc_psc_abst_available
 unavailable-subtitle: PSC abstention is insufficient to elect this government.
@@ -149,7 +149,7 @@ on-arrival: {!
 go-to: form
 
 @cs_psc_ppc
-title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s+] / [+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Grand Unity Pact</span></span> with PSC and PPC support
+title: Cs-led <span class="generalitat-coalition" data-parties="cs" data-summary="Minority government - [+ cs_parlament_s+] / [+ parlament_s_majority +]"><span style="color: var(--cs); font-style: italic;">Grand</span> <span style="color: var(--psc); font-style: italic;">Unity</span> <span style="color: var(--ppc); font-style: italic;">Pact</span></span> with PSC and PPC support
 view-if: parlament_coalition_option_cs_psc_ppc_sup_visible
 choose-if: parlament_route_unionist_cs_psc_ppc_sup_available
 unavailable-subtitle: Cs, the PSC, and the PPC don't have enough seats for this government to be formed.
@@ -160,7 +160,7 @@ on-arrival: {!
 go-to: form
 
 @psc_cs_ppc_abst
-title: PSC-Cs <span class="generalitat-coalition" data-parties="psc cs" data-summary="Minority government - [+ cs_parlament_s + psc_parlament_s +] / [+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Unity Pact</span></span> with PPC abstention
+title: PSC-Cs <span class="generalitat-coalition" data-parties="psc cs" data-summary="Minority government - [+ cs_parlament_s + psc_parlament_s +] / [+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Unity</span> <span style="color: var(--cs); font-style: italic;">Pact</span></span> with PPC abstention
 view-if: parlament_coalition_option_psc_cs_ppc_abst_visible
 choose-if: parlament_route_unionist_psc_cs_ppc_abst_available
 unavailable-subtitle: Even with a PPC abstention there are not enough seats to support this government.
@@ -171,7 +171,7 @@ on-arrival: {!
 go-to: form
 
 @psc_cs_ppc
-title: PSC-Cs <span class="generalitat-coalition" data-parties="psc cs" data-summary="Minority government - [+ psc_parlament_s + cs_parlament_s +] / [+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Grand Unity Pact</span></span> with PPC support
+title: PSC-Cs <span class="generalitat-coalition" data-parties="psc cs" data-summary="Minority government - [+ psc_parlament_s + cs_parlament_s +] / [+ parlament_s_majority +]"><span style="color: var(--psc); font-style: italic;">Grand</span> <span style="color: var(--cs); font-style: italic;">Unity</span> <span style="color: var(--ppc); font-style: italic;">Pact</span></span> with PPC support
 view-if: parlament_coalition_option_psc_cs_ppc_sup_visible
 choose-if: parlament_route_unionist_psc_cs_ppc_sup_available
 unavailable-subtitle: There are not enough PSC, Cs, and PPC seats to elect this government.
@@ -249,7 +249,7 @@ on-arrival: {!
         } else {
             president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; support = ["vox"];
         }
-        displayName = "<span style='color: var(--cs); font-style: italic;'>Right</span>-<span style='color: var(--vox); font-style: italic;'>Union</span> Coalition";
+        displayName = "<span style='color: var(--cs); font-style: italic;'>Right</span>-<span style='color: var(--vox); font-style: italic;'>Union</span> <span style='color: var(--ppc); font-style: italic;'>Coalition</span>";
     } else if (variant == "ppc_cs_psc_abst") {
         president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; abstain = ["psc"]; displayName = "Unity Pact";
     } else if (variant == "ppc_cs_psc_sup") {

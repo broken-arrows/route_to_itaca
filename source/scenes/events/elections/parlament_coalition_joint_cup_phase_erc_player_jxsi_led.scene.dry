@@ -3,13 +3,13 @@ subtitle: [? if parlament_coalition_sovereignty_phase = 1: The first round of ne
 tags: event
 role: event
 new-page: true
-view-if: parlament_coalition_sovereignty_phase > 0 and parlament_coalition_sovereignty_kind = "jxsi" and player_party = "erc" and parlament_coalition_leader = "jxsi" and coalition_phase_timer <= 0
-call: parlament_coalition_sovereignty_replacement.check
-set-jump: prepare
-go-to: parlament_coalition_sovereignty_replacement if parlament_coalition_sovereignty_replacement_needed; prepare if not parlament_coalition_sovereignty_replacement_needed
+view-if: parlament_coalition_sovereignty_phase > 0 and parlament_coalition_sovereignty_kind = "jxsi" and player_party = "erc" and parlament_coalition_leader = "jxsi" and coalition_phase_timer <= 0 and not parlament_coalition_sovereignty_replacement_needed
+go-to: prepare
 
 @prepare
 on-arrival: {!
+    if (Q.parlament_coalition_sovereignty_prepared_round === Q.parlament_coalition_sovereignty_phase) return;
+
     Q.parlament_coalition_changes = false;
     Q.parlament_coalition_concessions_indy = 0;
     Q.parlament_coalition_sovereignty_deadline = 0;
@@ -22,10 +22,8 @@ on-arrival: {!
         Q["parlament_coalition_proposal_" + office + "_name"] = null;
         Q["parlament_coalition_proposal_" + office + "_gender"] = null;
     }
-    Q.parlament_coalition_leverage = 30 + (Q.parlament_coalition_sovereignty_phase - 1) * 4 - (Q.speaker_party == Q.parlament_coalition_leader ? 5 : 0);
-    Q.parlament_coalition_leverage += Q.parlament_coalition_sovereignty_mas_pressure * 2;
 !}
-call: parlament_coalition_fiscal_policies.initialize
+call: parlament_coalition_sovereignty_offer.prepare
 go-to: phase_text
 
 @phase_text
@@ -34,7 +32,7 @@ go-to: parlament_coalition_setnames
 set-jump: choices
 
 [? if parlament_coalition_sovereignty_phase = 1: Negotiations with the CUP for the formation of a JxSí <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]"><span style="color: var(--jxsi); font-style: italic;">minority Government</span></span> are about to start. We are expected to prepare an initial proposal, and we'll see to what extent the CUP can be swayed. ?]
-[? if parlament_coalition_sovereignty_phase != 1: [? if parlament_coalition_sovereignty_reject_reasons: The CUP has rejected our previous investiture proposal. ?][? if parlament_coalition_sovereignty_reject_reasons: [+ parlament_coalition_sovereignty_reject_reasons +] ?]The ball is on our side now to prepare a new proposal.?]
+[? if parlament_coalition_sovereignty_phase != 1: The previous round ended without agreement. [? if parlament_coalition_sovereignty_reject_reasons: [+ parlament_coalition_sovereignty_reject_reasons +] ?]The parties now return to negotiations, as the CUP presents the following demands:?]
 
 @choices
 call: parlament_coalition_sovereignty_replacement.check
@@ -43,14 +41,14 @@ set-jump: choices_menu
 
 @choices_menu
 
-[? if parlament_coalition_sovereignty_deadline: **Roadmap deadline:** We are to fulfill the agreed Roadmap by [+ parlament_coalition_sovereignty_deadline +].?]
+ - The new government will pursue a Roadmap of [? if not parlament_coalition_concessions_indy: [+ jxsi_roadmap : roadmap +]?][? if parlament_coalition_concessions_indy: [? if jxsi_roadmap >= cup_roadmap: [+ jxsi_roadmap : roadmap +]?][? if cup_roadmap > jxsi_roadmap: [+ cup_roadmap : roadmap +]?]?], to be fulfilled by [? if not parlament_coalition_sovereignty_deadline: [+ roadmap_year +]?][? if parlament_coalition_sovereignty_deadline: [+ parlament_coalition_sovereignty_deadline +]?].
 
-[? if parlament_coalition_concessions_indy: **Independence commitment:** A more ambitious path towards independence will be pursued by this new government.?]
+[? if parlament_coalition_sovereignty_withdrawal: - Artur Mas must step down.?]
 
 - @policies
 - @submit
 - @accept
-- @candidate_impasse
+- @withdrawal
 
 @policies
 title: Negotiate policy commitments
@@ -67,7 +65,7 @@ set-jump: policies
 title: [? if parlament_coalition_sovereignty_deadline: Withdraw the shorter roadmap deadline?][? if not parlament_coalition_sovereignty_deadline: Commit to fulfilling the roadmap by [+ year + 2 +]?]
 view-if: parlament_coalition_sovereignty_deadline > 0 or roadmap_year > year + 2
 choose-if: parlament_coalition_sovereignty_deadline > 0 or (roadmap_year > year + 2 and parlament_coalition_leverage >= 5)
-unavailable-subtitle: We lack the leverage to bring the deadline forward.
+unavailable-subtitle: We lack the leverage to bring the roadmap deadline forward.
 on-arrival: {!
     if (Q.parlament_coalition_sovereignty_deadline) {
         Q.parlament_coalition_sovereignty_deadline = 0;
@@ -81,14 +79,15 @@ on-arrival: {!
 go-to: policies
 
 @roadmap
-title: Include a stronger independence roadmap
-choose-if: not parlament_coalition_concessions_indy and parlament_coalition_leverage >= 5
-unavailable-subtitle: [? if parlament_coalition_concessions_indy: We have already committed to this. ?][? if parlament_coalition_leverage < 5: We lack the leverage to push for this. ?]
+title: [? if parlament_coalition_concessions_indy: Withdraw the stronger roadmap commitment?][? if not parlament_coalition_concessions_indy: Commit all signatories to the strongest proposed independence roadmap?]
+choose-if: parlament_coalition_concessions_indy or parlament_coalition_leverage >= 5 or player_party = "cup"
+unavailable-subtitle: We lack the leverage to secure a stronger roadmap.
 on-arrival: {!
-    Q.parlament_coalition_concessions_indy = 1;
-    Q.parlament_coalition_policy_indy_demanded = true;
+    var taking = !Q.parlament_coalition_concessions_indy;
+    Q.parlament_coalition_concessions_indy = taking ? 1 : 0;
+    Q.parlament_coalition_policy_indy_demanded = taking;
     Q.parlament_coalition_changes = true;
-    Q.parlament_coalition_leverage -= 5;
+    Q.parlament_coalition_leverage += taking ? -5 : 5;
 !}
 go-to: policies
 
@@ -106,22 +105,24 @@ on-arrival: {!
 go-to: phase_text
 
 @submit
-title: Send this [? if parlament_coalition_sovereignty_phase > 1: counter-?]proposal
+title: [? if parlament_coalition_sovereignty_phase = 1: Present our opening proposal?][? if parlament_coalition_sovereignty_phase > 1: Send this counter-proposal?]
+view-if: parlament_coalition_changes or parlament_coalition_sovereignty_candidate_reason or parlament_coalition_sovereignty_phase = 1 or parlament_coalition_sovereignty_withdrawal
+choose-if: not parlament_coalition_sovereignty_withdrawal
+unavailable-subtitle: [+ parlament_current_ciu +] is unwilling to have Artur Mas step down. Remove that demand before sending the proposal.
 on-arrival: {!
     var reasons = [];
     var ministries = ["interior", "economy", "foreign", "health", "education", "territory", "bnl"];
     var counts = {};
     for (var office of ["vp"].concat(ministries)) {
         var holder = Q["parlament_coalition_proposal_" + office];
-        if (Q.parlament_coalition_sovereignty_cabinet.indexOf(holder) < 0) reasons.push("The cabinet allocation is incomplete or includes an external supporter ????");
+        if (Q.parlament_coalition_sovereignty_cabinet.indexOf(holder) < 0) reasons.push("Some cabinet posts are unassigned or belong to an external supporter.");
         if (office != "vp") counts[holder] = (counts[holder] || 0) + 1;
     }
 
-    if (Q.coalition_phase_timer > 0) reasons.push("How is this even possible???");
-    if (Q.parlament_coalition_leverage < 0) reasons.push("The proposed concessions exceed our negotiating leverage ?????");
+    if (Q.coalition_phase_timer > 0) reasons.push("We must wait until the next negotiation round.");
+    if (Q.parlament_coalition_leverage < 0) reasons.push("The proposed concessions exceed our negotiating leverage.");
 
     var policies = ["education", "health", "pay", "tax", "cap"].filter(function (p) { return Q["parlament_coalition_policy_" + p]; }).length;
-    if (!Q.parlament_coalition_concessions_indy) reasons.push("The CUP is demanding that we take independence more seriously. Without such an agreement in writing, they will hardly support our coalition proposal.");
     if (!(policies > 0)) reasons.push("The CUP expects a higher level of social commitment from the new government.");
     Q.parlament_coalition_sovereignty_reject_reasons = reasons.filter(function (r, i) { return reasons.indexOf(r) == i; }).join(" ");
     Q.parlament_coalition_proposal_accept = reasons.length == 0;
@@ -131,17 +132,19 @@ go-to: parlament_coalition_sovereignty_replacement.evaluate
 
 @accept
 title: Accept proposal
-choose-if: not parlament_coalition_changes and not parlament_coalition_concessions and not parlament_coalition_sovereignty_candidate_reason
-unavailable-subtitle: [? if parlament_coalition_changes or parlament_coalition_concessions: We have proposed changes which will require our partners' approval. ?][? if parlament_coalition_sovereignty_candidate_reason: [+ parlament_coalition_sovereignty_candidate_reason +]?]
+view-if: parlament_coalition_sovereignty_phase > 1
+choose-if: parlament_coalition_leverage >= 0 and not parlament_coalition_changes and not parlament_coalition_sovereignty_withdrawal and not parlament_coalition_sovereignty_candidate_reason
+unavailable-subtitle: [? if parlament_coalition_leverage < 0: Amend the proposal or negotiate more leverage. ?][? if parlament_coalition_sovereignty_withdrawal: [+ parlament_current_ciu +] is unwilling to have Artur Mas step down. ?][? if parlament_coalition_changes: We have proposed changes which will require the rest of the coalition's approval. ?][? if parlament_coalition_sovereignty_candidate_reason: [+ parlament_coalition_sovereignty_candidate_reason +]?]
 go-to: submit
 
-@candidate_impasse
-title: [? if parlament_coalition_sovereignty_phase < 3: Negotiations will continue regarding the candidate to the Presidency... ?][? if parlament_coalition_sovereignty_phase >= 3: Negotiations end without an agreement...?]
-view-if: parlament_coalition_sovereignty_candidate_reason
+@withdrawal
+title: Remove the demand for Artur Mas to step down
+view-if: parlament_coalition_sovereignty_withdrawal and parlament_coalition_proposal_president_name = "Artur Mas"
 on-arrival: {!
-    Q.parlament_coalition_sovereignty_reject_reasons = Q.parlament_coalition_sovereignty_candidate_reason;
+    Q.parlament_coalition_sovereignty_withdrawal = false;
+    Q.parlament_coalition_changes = true;
 !}
-go-to: parlament_coalition_sovereignty.next_round
+go-to: phase_text
 
 @push_policies
 title: Push for more concessions

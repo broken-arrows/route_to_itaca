@@ -108,10 +108,12 @@ Negotiations have collapsed. [+ parlament_coalition_sovereignty_reject_reasons +
 - @continue: This is highly disheartening...
 
 @continue
-go-to: jxsi_dissolution if jxsi_formed and not jxsi_dissolved; jxcat_dissolution if jxcat_formed and not jxcat_dissolved; post_event
+go-to: post_event
 
 @initialize
 on-arrival: {!
+    Q.parlament_coalition_sovereignty_prepared_round = 0;
+    Q.parlament_coalition_sovereignty_withdrawal = false;
     Q.parlament_coalition_sovereignty_ciu_pressure = 0;
     Q.parlament_coalition_sovereignty_brokerage = false;
     Q.parlament_coalition_sovereignty_assembly_result = '';

@@ -1,4 +1,4 @@
-title: CUP-led <span class="generalitat-coalition" data-parties="cup erc" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--cup); font-style: italic;"> Left-Independence</span> <span style="color: var(--erc); font-style: italic;">Government</span></span> negotiations
+title: CUP-led <span class="generalitat-coalition" data-parties="cup erc" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: #b8a12b; font-style: italic;"> Left-Independence</span> <span style="color: var(--erc); font-style: italic;">Government</span></span> negotiations
 subtitle: [? if erc_cup_coalition_phase = 1: The CUP submits its opening government proposal to ERC.?][? if erc_cup_coalition_phase = 2: ERC and the CUP enter the second round of negotiations.?][? if erc_cup_coalition_phase = 3: The third and final round of negotiations begins.?]
 tags: event
 role: event
@@ -208,7 +208,7 @@ on-arrival: {!
     Q.cat_coalition = [Q.parlament_coalition_leader, Q.parlament_coalition_follower];
     Q.cat_coalition_support = [];
     Q.cat_coalition_abstain = [];
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_erc_cup_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>Left-Independence</span> <span style='color: var(--cup); font-style: italic;'>Government</span>");
+    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_erc_cup_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>Left-Independence</span> <span style='color: #b8a12b; font-style: italic;'>Government</span>");
     Q.cat_coalition_dissent = 0;
     Q.erc_in_gob = true;
     Q.erc_supporting = true;

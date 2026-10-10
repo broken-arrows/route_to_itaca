@@ -14,7 +14,7 @@ you're allowed to make a wish once you do so! ✨
 
 @spending_cap
 tags: fiscal_concessions
-title: [? if parlament_coalition_policy_cap: Withdraw demand to raise the social spending cap?][? if not parlament_coalition_policy_cap: Demand a higher social spending cap?]
+title: [? if parlament_coalition_policy_cap: Withdraw demand to raise the social spending cap?][? if not parlament_coalition_policy_cap: Propose a higher social spending cap?]
 view-if: parlament_coalition_policy_cap or (social_spending_cap >= -2 and social_spending_cap < 3)
 choose-if: parlament_coalition_policy_cap or (parlament_coalition_policy_cap_target = social_spending_cap + 1 and parlament_coalition_policy_cap_target <= 3 and (parlament_coalition_leverage >= parlament_coalition_policy_spending_cost or (player_party = "cup" and parlament_coalition_sovereignty_phase > 0)))
 subtitle: A raise of the social spending cap gives us more options to invest in things like Education, Health and other public investments.
@@ -25,6 +25,7 @@ on-arrival: {!
         && Q.parlament_coalition_policy_cap_target === Q.social_spending_cap + 1
         && (Q.parlament_coalition_leverage >= Q.parlament_coalition_policy_spending_cost || (Q.player_party === "cup" && Q.parlament_coalition_sovereignty_phase > 0));
     if (!taking || canDemand) {
+        if (Q.parlament_coalition_sovereignty_phase > 0) Q.parlament_coalition_changes = true;
         Q.parlament_coalition_policy_cap = taking;
         Q.parlament_coalition_leverage += taking ? -Q.parlament_coalition_policy_spending_cost : Q.parlament_coalition_policy_spending_cost;
     }
@@ -33,7 +34,7 @@ go-to: jumpScene
 
 @education_policy
 tags: fiscal_concessions
-title: [? if parlament_coalition_policy_education: Withdraw our demand for more Education spending?][? if not parlament_coalition_policy_education: Demand more Education spending?]
+title: [? if parlament_coalition_policy_education: Withdraw our demand for more Education spending?][? if not parlament_coalition_policy_education: Propose more Education spending?]
 view-if: parlament_coalition_policy_education or (education_spending >= -2 and education_spending < 2)
 choose-if: parlament_coalition_policy_education or ((parlament_coalition_leverage >= parlament_coalition_policy_spending_cost or (player_party = "cup" and parlament_coalition_sovereignty_phase > 0)) and parlament_coalition_policy_education_target = education_spending + 1 and education_spending >= -2 and education_spending < 2)
 subtitle: [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_education_target: This increase will be conditional on a budget with a higher social spending cap being approved by the Parlament.?]
@@ -44,6 +45,7 @@ on-arrival: {!
         && Q.parlament_coalition_policy_education_target === Q.education_spending + 1
         && (Q.parlament_coalition_leverage >= Q.parlament_coalition_policy_spending_cost || (Q.player_party === "cup" && Q.parlament_coalition_sovereignty_phase > 0));
     if (!taking || canDemand) {
+        if (Q.parlament_coalition_sovereignty_phase > 0) Q.parlament_coalition_changes = true;
         Q.parlament_coalition_policy_education = taking;
         Q.parlament_coalition_leverage += taking ? -Q.parlament_coalition_policy_spending_cost : Q.parlament_coalition_policy_spending_cost;
     }
@@ -52,7 +54,7 @@ go-to: jumpScene
 
 @health_policy
 tags: fiscal_concessions
-title: [? if parlament_coalition_policy_health: Withdraw our demand for more Health spending?][? if not parlament_coalition_policy_health: Demand more Health spending?]
+title: [? if parlament_coalition_policy_health: Withdraw our demand for more Health spending?][? if not parlament_coalition_policy_health: Propose more Health spending?]
 view-if: parlament_coalition_policy_health or (healthcare_spending >= -2 and healthcare_spending < 2)
 choose-if: parlament_coalition_policy_health or ((parlament_coalition_leverage >= parlament_coalition_policy_spending_cost or (player_party = "cup" and parlament_coalition_sovereignty_phase > 0)) and parlament_coalition_policy_health_target = healthcare_spending + 1 and healthcare_spending >= -2 and healthcare_spending < 2)
 subtitle: [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_health_target: This increase will be conditional on a budget with a higher social spending cap being approved by the Parlament. ?]
@@ -63,6 +65,7 @@ on-arrival: {!
         && Q.parlament_coalition_policy_health_target === Q.healthcare_spending + 1
         && (Q.parlament_coalition_leverage >= Q.parlament_coalition_policy_spending_cost || (Q.player_party === "cup" && Q.parlament_coalition_sovereignty_phase > 0));
     if (!taking || canDemand) {
+        if (Q.parlament_coalition_sovereignty_phase > 0) Q.parlament_coalition_changes = true;
         Q.parlament_coalition_policy_health = taking;
         Q.parlament_coalition_leverage += taking ? -Q.parlament_coalition_policy_spending_cost : Q.parlament_coalition_policy_spending_cost;
     }
@@ -71,7 +74,7 @@ go-to: jumpScene
 
 @pay_policy
 tags: fiscal_concessions
-title: [? if parlament_coalition_policy_pay: Withdraw our demand for higher public worker salaries?][? if not parlament_coalition_policy_pay: Demand higher public worker salaries?]
+title: [? if parlament_coalition_policy_pay: Withdraw our demand for higher public worker salaries?][? if not parlament_coalition_policy_pay: Propose higher public worker salaries?]
 view-if: parlament_coalition_policy_pay or (public_salary_level >= -2 and public_salary_level < 2)
 choose-if: parlament_coalition_policy_pay or ((parlament_coalition_leverage >= parlament_coalition_policy_spending_cost or (player_party = "cup" and parlament_coalition_sovereignty_phase > 0)) and parlament_coalition_policy_pay_target = public_salary_level + 1 and public_salary_level >= -2 and public_salary_level < 2)
 subtitle: [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_pay_target: This increase will be conditional on a budget with a higher social spending cap being approved by the Parlament. ?]
@@ -82,6 +85,7 @@ on-arrival: {!
         && Q.parlament_coalition_policy_pay_target === Q.public_salary_level + 1
         && (Q.parlament_coalition_leverage >= Q.parlament_coalition_policy_spending_cost || (Q.player_party === "cup" && Q.parlament_coalition_sovereignty_phase > 0));
     if (!taking || canDemand) {
+        if (Q.parlament_coalition_sovereignty_phase > 0) Q.parlament_coalition_changes = true;
         Q.parlament_coalition_policy_pay = taking;
         Q.parlament_coalition_leverage += taking ? -Q.parlament_coalition_policy_spending_cost : Q.parlament_coalition_policy_spending_cost;
     }
@@ -90,7 +94,7 @@ go-to: jumpScene
 
 @regional_tax
 tags: fiscal_concessions
-title: [? if parlament_coalition_policy_tax: Withdraw our demand for higher Regional Taxes?][? if not parlament_coalition_policy_tax: Demand higher Regional Taxes?]
+title: [? if parlament_coalition_policy_tax: Withdraw our demand for higher Regional Taxes?][? if not parlament_coalition_policy_tax: Propose higher Regional Taxes?]
 view-if: parlament_coalition_policy_tax or (tax_policy_level >= -2 and tax_policy_level < 2)
 choose-if: parlament_coalition_policy_tax or ((parlament_coalition_leverage >= 5 or (player_party = "cup" and parlament_coalition_sovereignty_phase > 0)) and parlament_coalition_policy_tax_target = tax_policy_level + 1 and tax_policy_level >= -2 and tax_policy_level < 2)
 subtitle: This will have to be approved as part of the next budget negotiations.
@@ -101,6 +105,7 @@ on-arrival: {!
         && Q.parlament_coalition_policy_tax_target === Q.tax_policy_level + 1
         && (Q.parlament_coalition_leverage >= 5 || (Q.player_party === "cup" && Q.parlament_coalition_sovereignty_phase > 0));
     if (!taking || canDemand) {
+        if (Q.parlament_coalition_sovereignty_phase > 0) Q.parlament_coalition_changes = true;
         Q.parlament_coalition_policy_tax = taking;
         Q.parlament_coalition_leverage += taking ? -5 : 5;
     }
@@ -158,10 +163,15 @@ on-arrival: {!
 !}
 go-to: jumpScene
 
-[? if parlament_coalition_concessions_indy or parlament_coalition_policy_cap or parlament_coalition_policy_education or parlament_coalition_policy_health or parlament_coalition_policy_pay or parlament_coalition_policy_tax: **Policy Concessions**?]
+[? if parlament_coalition_concessions_indy or parlament_coalition_policy_cap or parlament_coalition_policy_education or parlament_coalition_policy_health or parlament_coalition_policy_pay or parlament_coalition_policy_tax: **Policy Commitments**?]
 
-[? if parlament_coalition_policy_cap: - We've added a commitment to raise the shared social spending cap through the next budget.?]
-[? if parlament_coalition_policy_education: - We've added a commitment to increase Education spending. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_education_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
-[? if parlament_coalition_policy_health: - We've added a commitment to increase Healthcare spending. [? if parlament_coalition_policy_effective_cap >= parlament_coalition_policy_health_target: Takes effect when the government is formed.?][? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_health_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
-[? if parlament_coalition_policy_pay: - We've added a commitment to raise all public salaries. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_pay_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
-[? if parlament_coalition_policy_tax: - We've added a commitment to raise Autonomic Taxes when the next budget is discussed.?]
+[? if parlament_coalition_policy_cap: - Commitment to raise the shared social spending cap through the next budget.?]
+
+[? if parlament_coalition_policy_education: - Commitment to increase Education spending. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_education_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
+
+[? if parlament_coalition_policy_health: - Commitment to increase Healthcare spending. [? if parlament_coalition_policy_effective_cap >= parlament_coalition_policy_health_target: Takes effect when the government is formed.?][? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_health_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
+
+[? if parlament_coalition_policy_pay: - Commitment to raise all public salaries. [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_pay_target: This will, however, require the next budget to include an increase in social spending caps.?]?]
+
+[? if parlament_coalition_policy_tax: - Commitment to raise Regional Taxes when the next budget is discussed.?]
+

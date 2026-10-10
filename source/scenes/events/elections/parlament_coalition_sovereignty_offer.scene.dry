@@ -1,0 +1,134 @@
+title: Sovereignty proposal preparation
+
+@prepare
+on-arrival: {!
+    var prefix = 'parlament_coalition_';
+    var round = Q.parlament_coalition_sovereignty_phase;
+    if (Q.parlament_coalition_sovereignty_prepared_round === round) return;
+    var kind = Q.parlament_coalition_sovereignty_kind;
+    var joint = kind === 'jxsi' || kind === 'jxcat';
+    var author = Q.player_party === 'erc' && (joint || Q.parlament_coalition_leader === 'erc');
+    var received = round > 1 || !author;
+    var policies = ['health', 'education', 'pay', 'tax', 'cap'];
+    var current = {health: 'healthcare_spending', education: 'education_spending', pay: 'public_salary_level', tax: 'tax_policy_level', cap: 'social_spending_cap'};
+    var costs = {vp: 20, interior: 10, economy: 10, foreign: 6, health: 7, education: 7, territory: 5, bnl: 5};
+    var offices = Object.keys(costs);
+    var cabinetPlayer = !joint && (Q.player_party === 'erc' || kind === 'government');
+    var ciuErcCabinet = kind === 'support' && Q.player_party === 'erc' &&
+        Q.parlament_coalition_leader === Q.parlament_current_ciu;
+    function n(value) { return Number(value) || 0; }
+    function selected(p) { return !!Q[prefix + 'policy_' + p]; }
+    // Each round brings a fresh NPC offer. Only voted commitments are binding;
+    // an unaccepted player draft is not the starting allocation for the next round.
+    Q.parlament_coalition_policy_accepted = false;
+    Q.parlament_coalition_policy_surplus = Q.generalitat_surplus;
+    Q.parlament_coalition_policy_effective_cap = Q.social_spending_cap;
+    Q.parlament_coalition_policy_spending_cost = 5 + Math.max(0, -n(Q.generalitat_surplus));
+    for (var p of policies) {
+        Q[prefix + 'policy_' + p] = false;
+        Q[prefix + 'policy_' + p + '_target'] = n(Q[current[p]]) + 1;
+    }
+    var seats = n(Q[Q.player_party + '_parlament_s']);
+    if (joint && Q.player_party === 'erc') seats = n(Q[kind + '_parlament_s']) * (n(Q[kind + '_formation_num']) || 50) / 100;
+    var allowance = Math.max(15, seats * 55 / Math.max(1, n(Q.parlament_coalition_support_seats)));
+    if (ciuErcCabinet) {
+        allowance = Math.max(10, 30 - (n(Q.parlament_current_ciu_s) - seats));
+        allowance += Q.speaker_party === Q.parlament_current_ciu
+            ? (Q.parlament_current_ciu_s > 40 ? 3 : 10)
+            : (Q.parlament_current_ciu_s > 40 ? -10 : -5);
+    }
+    allowance += (round - 1) * 4 + Math.min(2, n(Q.parlament_coalition_push)) * 4;
+    allowance += Math.min(4, Math.max(0, n(Q.parlament_coalition_sovereignty_mas_pressure))) * 2;
+    if (!ciuErcCabinet && (Q.speaker_party === Q.player_party || (joint && Q.player_party === 'erc' && Q.speaker_party === kind))) allowance -= 5;
+    function policyCost(p) { return p === 'tax' ? 5 : n(Q.parlament_coalition_policy_spending_cost); }
+    function spent() {
+        var amount = policies.reduce(function (sum, p) { return sum + (selected(p) ? policyCost(p) : 0); }, 0);
+        if (Q.parlament_coalition_concessions_indy) amount += 5;
+        if (Q.parlament_coalition_sovereignty_deadline) amount += 5;
+        if (cabinetPlayer) for (var office of offices) if (Q[prefix + 'proposal_' + office] === Q.player_party) amount += costs[office];
+        return amount;
+    }
+    var voted = Q.parlament_coalition_sovereignty_assembly_terms || [];
+    Q.parlament_coalition_concessions_indy = voted.some(function (term) { return term.policy === 'indy'; }) ? 1 : 0;
+    Q.parlament_coalition_sovereignty_deadline = 0;
+    for (var term of voted) {
+        if (policies.indexOf(term.policy) < 0) continue;
+        Q[prefix + 'policy_' + term.policy] = true;
+        Q[prefix + 'policy_' + term.policy + '_target'] = term.target;
+    }
+    if (Q.parlament_coalition_sovereignty_assembly_deadline > Q.year && Q.roadmap_year > Q.parlament_coalition_sovereignty_assembly_deadline) {
+        Q.parlament_coalition_sovereignty_deadline = Q.parlament_coalition_sovereignty_assembly_deadline;
+    }
+    var candidate = Q.parlament_coalition_proposal_president_name;
+    if (received) {
+        // CUP asks for its social priorities; government offers expand with the
+        // negotiating allowance, as in the ordinary coalition proposal builders.
+        var minimum = Q.player_party === 'erc'
+            ? (candidate === 'Neus Munté' ? 3 : candidate === 'Artur Mas' ? 2 : 1)
+            : Math.max(1, Math.min(3, Math.floor((allowance - 3 + round) / 10)));
+        var programmeCost = spent() - (cabinetPlayer ? offices.reduce(function (sum, office) {
+            return sum + (Q[prefix + 'proposal_' + office] === Q.player_party ? costs[office] : 0);
+        }, 0) : 0);
+        for (var p of policies) {
+            if (policies.filter(selected).length >= minimum) break;
+            if (!selected(p) && n(Q[current[p]]) < (p === 'cap' ? 3 : 2) &&
+                (Q.player_party === 'erc' || programmeCost + policyCost(p) <= allowance)) {
+                Q[prefix + 'policy_' + p] = true;
+                programmeCost += policyCost(p);
+            }
+        }
+        if (!Q.parlament_coalition_sovereignty_deadline && ['Artur Mas', 'Neus Munté'].indexOf(candidate) >= 0 &&
+            Q.roadmap_year > Q.year + 2 && (Q.player_party === 'erc' || programmeCost + 5 <= allowance)) {
+            Q.parlament_coalition_sovereignty_deadline = Q.year + 2;
+        }
+    }
+    // A received first-round offer comes from the government leader, not CUP.
+    Q.parlament_coalition_sovereignty_withdrawal = round > 1 && Q.player_party === 'erc' &&
+        candidate === 'Artur Mas' && Q.parlament_coalition_sovereignty_assembly_result !== 'approve';
+    if (ciuErcCabinet) {
+        // External support does not dilute ERC's share of the two-party cabinet.
+        // Use the ordinary CiU-ERC offer priorities, securing the VP first.
+        var cabinetBudget = allowance - Math.max(0, 3 - round);
+        for (var office of offices) Q[prefix + 'proposal_' + office] = Q.parlament_current_ciu;
+        if (allowance > 20) {
+            Q.parlament_coalition_proposal_vp = 'erc';
+            cabinetBudget -= costs.vp;
+        }
+        for (var office of ['bnl', 'territory', 'education', 'health', 'foreign']) {
+            if (cabinetBudget > costs[office]) {
+                Q[prefix + 'proposal_' + office] = 'erc';
+                cabinetBudget -= costs[office];
+            }
+        }
+        // NPC programme concessions belong to the opening package. Charge later
+        // amendments normally, without paying for that package out of ERC's posts.
+        allowance += policies.reduce(function (sum, p) { return sum + (selected(p) ? policyCost(p) : 0); }, 0);
+        if (Q.parlament_coalition_concessions_indy) allowance += 5;
+        if (Q.parlament_coalition_sovereignty_deadline) allowance += 5;
+    }
+    // Charge the offered programme and cabinet against one allowance.
+    // The route's existing allocator distributes released posts by partner weight.
+    if (cabinetPlayer) {
+        for (var office of ['vp', 'interior', 'economy', 'territory', 'education', 'health', 'foreign', 'bnl']) {
+            if (spent() <= allowance) break;
+            if (Q[prefix + 'proposal_' + office] === Q.player_party) {
+                Q[prefix + 'proposal_' + office] = null;
+            }
+        }
+        // Leave room for each NPC cabinet partner's minimum, retaining player
+        // claims where possible. The allocator decides who receives these posts.
+        var npcMinimum = Q.player_party === 'erc' && kind === 'government' ? 3 : Q.player_party === 'cup' ? 2 : 1;
+        var ministries = offices.filter(function (o) { return o !== 'vp'; });
+        for (var office of ['territory', 'education', 'health', 'bnl', 'foreign', 'interior', 'economy']) {
+            if (ministries.filter(function (o) { return Q[prefix + 'proposal_' + o] !== Q.player_party; }).length >= npcMinimum) break;
+            if (Q[prefix + 'proposal_' + office] === Q.player_party) {
+                Q[prefix + 'proposal_' + office] = null;
+            }
+        }
+    }
+    Q.parlament_coalition_leverage = allowance - spent();
+    Q.parlament_coalition_changes = false;
+    Q.parlament_coalition_policy_indy_demanded = false;
+    Q.parlament_coalition_policy_reject_reasons = '';
+    Q.parlament_coalition_sovereignty_prepared_round = round;
+!}

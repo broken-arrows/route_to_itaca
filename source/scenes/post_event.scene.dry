@@ -1,6 +1,7 @@
 title: Continue...
 new-page: true
 on-arrival: {!
+var sovereigntyTimerBefore = Q.coalition_phase_timer;
 Q.last_advisor_action = 0;
 Q.last_cabinet_action = 0;
 
@@ -1172,6 +1173,12 @@ if (Q.fac_leader == "Cristina Coto" && Q.year >= 2019) {
 if (Q.mes_leader == "Biel Barceló" && Q.year >= 2019) {
     Q.mes_leader = "Miquel Ensenyat";
     Q.mes_leader_gender = "m";
+}
+
+// Reassess an earlier CUP ballot after all final-recess interludes, before
+// offering either the withdrawal announcement or the final negotiation round.
+if (Q.parlament_coalition_sovereignty_phase === 3 && sovereigntyTimerBefore > 0 && Q.coalition_phase_timer <= 0) {
+    this._runActions(this.game.scenes['parlament_coalition_sovereignty_assembly.withdrawal'].onArrival, 'sovereignty withdrawal');
 }
 
 // Monthly updates may have made new stories or elections available.

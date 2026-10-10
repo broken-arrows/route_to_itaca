@@ -2,7 +2,9 @@ title: Artur Mas steps aside
 subtitle: [+ parlament_coalition_leader +]'s candidate, to leave the political frontline
 new-page: true
 face-image: img/events/pas_al_costat.webp
-max-visits: 1
+tags: event
+role: event
+view-if: parlament_coalition_sovereignty_phase = 3 and coalition_phase_timer <= 0 and parlament_coalition_sovereignty_replacement_needed and parlament_coalition_proposal_president_name = "Artur Mas"
 call: parlament_coalition_sovereignty_replacement.check
 
 = ​Artur Mas steps aside
@@ -83,8 +85,6 @@ on-arrival: {!
     }
     var relations = n(Q[Q.parlament_current_ciu + '_relations']);
     var pressureEnough = n(Q.parlament_coalition_sovereignty_ciu_pressure) >= (relations >= 60 ? 2 : 3);
-    var mandateVeto = Q.player_party === 'cup' && ['veto', 'tie'].indexOf(Q.parlament_coalition_sovereignty_assembly_result) >= 0;
-    Q.parlament_coalition_sovereignty_replacement_needed = !Q.rubicon && Q.parlament_coalition_sovereignty_phase === 3 && Q.parlament_coalition_proposal_president_name === 'Artur Mas' && !candidateApproval(Q, 'Artur Mas') && Q.parlament_coalition_sovereignty_assembly_result != 'approve' && (pressureEnough || mandateVeto);
     var munteReasons = Q.player_party === 'erc' ? (pressureEnough ? [] : [Q.parlament_current_ciu + ' is.']) : cupContinuityReasons();
     Q.parlament_coalition_sovereignty_munte_reasons = munteReasons.join(' ');
     Q.parlament_coalition_sovereignty_munte_available = munteReasons.length === 0;
@@ -106,6 +106,7 @@ on-arrival: {!
     var policies = ["education", "health", "pay", "tax", "cap"];
     Q.parlament_coalition_sovereignty_candidate_reason = (function () {
     var name = Q.parlament_coalition_proposal_president_name;
+    if (name === 'Artur Mas' && Q.parlament_coalition_sovereignty_withdrawal) return '';
     if (['Artur Mas', 'Neus Munté'].indexOf(name) < 0) return '';
     if (!candidateApproval(Q, name)) {
       var result = Q.parlament_coalition_sovereignty_assembly_result;
@@ -127,19 +128,19 @@ on-arrival: {!
       if (Q.player_party === 'cup') return 'We have no assembly mandate to support Neus Munté as an alternative to Artur Mas.';
       return continuity
         ? 'While some within the CUP may see Neus Munté as a viable alternative to Artur Mas, many still see her as more CDC.'
-        : 'The CUP maintains its veto of Artur Mas and is does not look like an exception will be made despite the offered terms.';
+        : 'The CUP maintains its veto of Artur Mas and it does not look like an exception will be made despite the offered terms.';
     }
     var count = policies.filter(function (p) { return Q['parlament_coalition_policy_' + p]; }).length;
     var deadline = n(Q.parlament_coalition_sovereignty_deadline) || n(Q.roadmap_year);
     var reasons = [];
-    if (!Q.parlament_coalition_concessions_indy) reasons.push('The CUP will only make an exception for ' + name + ' if the new government commits to a more ambitious path towards independence.');
     if (count < (name === 'Neus Munté' ? 3 : 2)) reasons.push('The CUP expects a broader set of social commitments before making an exception for ' + name + '.');
     if (deadline <= n(Q.year)) reasons.push('The CUP needs a future roadmap deadline to make an exception for ' + name + '.');
     if (deadline > n(Q.year) + 2) reasons.push('The CUP expects the agreed roadmap to be fulfilled within the next two years before making an exception for ' + name + '.');
     if (reasons.length) return (Q.player_party === 'cup' ? (Q.parlament_coalition_sovereignty_assembly_result === 'approve' ? "This proposal does not satisfy the party-assembly voted conditions for an exceptional investiture. " : "This proposal does not satisfy our conditions for an exceptional investiture. ") : '') + reasons.join(' ');
     if (Q.parlament_coalition_sovereignty_assembly_result) {
+      if ((Q.parlament_coalition_sovereignty_assembly_terms || []).some(function (term) { return term.policy === "indy"; }) && !Q.parlament_coalition_concessions_indy) reasons.push("The new proposal weakens the independence commitments previously offered and voted by the CUP\'s assembly.");
       var weakened = (Q.parlament_coalition_sovereignty_assembly_terms || []).some(function (term) {
-        return !Q['parlament_coalition_policy_' + term.policy] || n(Q['parlament_coalition_policy_' + term.policy + '_target']) < n(term.target);
+        return term.policy !== 'indy' && (!Q['parlament_coalition_policy_' + term.policy] || n(Q['parlament_coalition_policy_' + term.policy + '_target']) < n(term.target));
       });
       if (weakened) reasons.push('The new proposal weakens social commitments previously offered and voted by the CUP\'s assembly.');
       if (deadline > n(Q.parlament_coalition_sovereignty_assembly_deadline)) reasons.push('The new proposal pushes the roadmap deadline past what was promised and voted by the CUP\'s assembly.');
@@ -177,13 +178,18 @@ on-arrival: {!
     }
     Q.parlament_current_ciu_leader = Q[Q.parlament_current_ciu + '_leader'];
     Q.parlament_coalition_sovereignty_replacement_needed = false;
+    Q.parlament_coalition_sovereignty_withdrawal = false;
     return true;
 !}
-go-to: jumpScene
+go-to: post_event
 
 @evaluate
 on-arrival: {!
     var reason = Q.parlament_coalition_sovereignty_candidate_reason;
+    if (Q.parlament_coalition_sovereignty_withdrawal && Q.parlament_coalition_proposal_president_name === "Artur Mas") {
+        Q.parlament_coalition_proposal_accept = false;
+        Q.parlament_coalition_sovereignty_reject_reasons += " " + Q.parlament_current_ciu + " is unwilling to withdraw Artur Mas.";
+    }
     if (reason) {
         Q.parlament_coalition_proposal_accept = false;
         Q.parlament_coalition_sovereignty_reject_reasons += (Q.parlament_coalition_sovereignty_reject_reasons ? " " : "") + reason;

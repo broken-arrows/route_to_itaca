@@ -47,7 +47,7 @@ on-arrival: {!
 go-to: post_event
 
 @erc_player_cup_led
-title: CUP-led <span class="generalitat-coalition" data-parties="cup erc" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--cup); font-style: italic;"> Left-Independence</span> <span style="color: var(--erc); font-style: italic;"><span style="color: #b8a12b; font-style: italic;">government</span></span>
+title: CUP-led <span class="generalitat-coalition" data-parties="cup erc" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: #b8a12b; font-style: italic;"> Left-Independence</span> <span style="color: var(--erc); font-style: italic;"><span style="color: #b8a12b; font-style: italic;">government</span></span>
 view-if: parlament_coalition_option_erc_cup_gov_visible and player_party = "erc" and cup_parlament_s > erc_parlament_s
 choose-if: parlament_erc_cup_government_available
 unavailable-subtitle: [? if parlament_route_erc_cup_block_seats: ERC and the CUP do not have enough seats for a majority. ?][? if parlament_route_erc_cup_block_roadmap: ERC has no active independence roadmap on which to base the coalition. ?][? if parlament_route_erc_cup_block_relations: The CUP does not trust ERC enough to bridge their different independence roadmaps. ?]
@@ -95,7 +95,7 @@ ERC will hold the Presidency and lead the government negotiations. Its opening i
 - @post_event: Accept [+ speaker +] as Speaker
 
 @cup_player_cup_led
-title: CUP-led <span class="generalitat-coalition" data-parties="cup erc" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: var(--cup); font-style: italic;">Left-Independence</span> <span style="color: var(--erc); font-style: italic;">Government</span></span>
+title: CUP-led <span class="generalitat-coalition" data-parties="cup erc" data-summary="Majority government - [+ parlament_coalition_erc_cup_s +]/[+ parlament_s_majority +]"><span style="color: #b8a12b; font-style: italic;">Left-Independence</span> <span style="color: var(--erc); font-style: italic;">Government</span></span>
 view-if: parlament_coalition_option_erc_cup_gov_visible and player_party = "cup" and cup_parlament_s > erc_parlament_s
 choose-if: parlament_erc_cup_government_available
 unavailable-subtitle: [? if parlament_route_erc_cup_block_seats: ERC and the CUP do not have enough seats for a majority. ?][? if parlament_route_erc_cup_block_roadmap: ERC has no active independence roadmap on which to base the coalition. ?]

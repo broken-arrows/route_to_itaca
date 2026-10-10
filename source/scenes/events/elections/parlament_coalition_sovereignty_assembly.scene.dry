@@ -52,11 +52,14 @@ on-arrival: {!
     var en = Math.max(0, n(Q.cup_endavant_strength));
     var third = Math.max(0, n(Q.cup_thirdsector_strength));
     var total = Math.max(1, pl + en + third);
-    // NPC CUP depends on faction strength and a bounded turnout swing, not hidden dissent.
+    // The offered programme matters to members in either player perspective.
     var share = (pl * 0.85 + en * 0.1 + third * 0.4) / total;
+    var terms = Q.parlament_coalition_sovereignty_last_terms || [];
+    share += Math.min(3, terms.length) * 0.015;
+    if (Q.parlament_coalition_concessions_indy) share += 0.015;
+    if (Q.player_party === 'erc') share += clamp((n(Q.cup_relations) - 60) / 500, -0.04, 0.04);
     if (Q.player_party === 'cup') {
-      var terms = Q.parlament_coalition_sovereignty_last_terms || [];
-      share += Math.min(3, terms.length) * 0.015 + n(Q.parlament_coalition_sovereignty_assembly_campaign) * 0.025;
+      share += n(Q.parlament_coalition_sovereignty_assembly_campaign) * 0.025;
       share += clamp((n(Q.erc_relations) + n(Q[Q.parlament_current_ciu + '_relations']) - 120) / 1000, -0.04, 0.04);
       share += (en * n(Q.cup_endavant_dissent) * 0.003 - pl * n(Q.cup_poblelliure_dissent) * 0.003) / total;
     }
@@ -67,7 +70,8 @@ on-arrival: {!
     Q.parlament_coalition_sovereignty_assembly_yes_pc = Math.round(Q.parlament_coalition_sovereignty_assembly_yes * 1000 / 3030) / 10;
     Q.parlament_coalition_sovereignty_assembly_result = yes === 1515 ? 'tie' : yes > 1515 ? 'approve' : 'veto';
     Q.parlament_coalition_sovereignty_assembly_terms = JSON.parse(JSON.stringify(Q.parlament_coalition_sovereignty_last_terms || []));
-    Q.parlament_coalition_sovereignty_assembly_deadline = n(Q.year) + 2;
+    Q.parlament_coalition_sovereignty_assembly_deadline = n(Q.parlament_coalition_sovereignty_deadline) || n(Q.roadmap_year);
+    if (Q.parlament_coalition_concessions_indy) Q.parlament_coalition_sovereignty_assembly_terms.push({ policy: "indy", target: 1 });
     if (Q.parlament_coalition_sovereignty_assembly_result == "tie") {
         this.achieve("tie_1515");
     }
@@ -75,6 +79,7 @@ on-arrival: {!
     if (yes <= 1515) Q.parlament_coalition_sovereignty_banos_departure = true;
     return true;
 !}
+call: parlament_coalition_sovereignty_assembly.withdrawal
 face-image: img/events/cup_assemblea_big.jpg
 
 The CUP membership meets in Manresa, with more than 3000 local representatives with voting rights debating for hours on the investiture proposal. Three voting rounds pass with no option crossing the required 50% mark. A fourth and last round is then announced, with no abstentions, no blank votes, and no open questions for further debate a vote to 
@@ -104,3 +109,14 @@ The CUP membership meets in Manresa, with more than 3000 local representatives w
 
 - @post_event
 
+
+@withdrawal
+on-arrival: {!
+    // Called after the ballot, then once after the final recess has elapsed.
+    function n(value) { return Number(value) || 0; }
+    var result = Q.parlament_coalition_sovereignty_assembly_result;
+    var pressureEnough = n(Q.parlament_coalition_sovereignty_ciu_pressure) >= (n(Q[Q.parlament_current_ciu + '_relations']) >= 60 ? 2 : 3);
+    var mandateVeto = Q.player_party === 'cup' && ['veto', 'tie'].indexOf(result) >= 0;
+    Q.parlament_coalition_sovereignty_replacement_needed = !Q.rubicon && Q.parlament_coalition_sovereignty_phase === 3 &&
+        Q.parlament_coalition_proposal_president_name === 'Artur Mas' && !!result && result !== 'approve' && (pressureEnough || mandateVeto);
+!}
