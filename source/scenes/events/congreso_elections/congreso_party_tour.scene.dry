@@ -1,10 +1,10 @@
 title: Who's running for the Congreso?
 subtitle: The Spanish General Election is just around the corner
-view-if: next_spanish_election_time - time <= 3 and congreso_party_tour_timer <= 0
+view-if: next_spanish_election_time - time <= 2 and congreso_party_tour_timer <= 0
 tags: event
 new-page: true
 on-arrival: {!
-    Q.congreso_party_tour_timer = 5;
+    Q.congreso_party_tour_timer = 4;
 
     Q.party_reaching_out_map = false;
     

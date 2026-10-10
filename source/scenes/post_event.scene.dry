@@ -125,7 +125,8 @@ if (has_time_passed) {
     if (Q.burdens_goal > 0 && Q.burdens_time <= 0) {
         if (Q.burdens_done < Q.burdens_goal) {
             Q.burdens_broken = 1;
-            // TODO: For how long?
+            Q.burdens_restart_countdown = 24;
+            if (!Q.countdowns.includes("burdens_restart")) Q.countdowns.push("burdens_restart");
         } else {
             Q.burdens_done = 0;
             Q.burdens_time = 12;
@@ -1216,7 +1217,7 @@ role: newspaper
 
 @make_a_wish
 title: Yes, of course I will report this!
-subtitle: *"Thanks"*, says the modman.
+subtitle: *"Thanks"*, says the dev.
 on-arrival: {!
     this.achieve("made_a_wish");
     console.error("A wish was granted!");

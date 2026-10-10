@@ -1382,6 +1382,7 @@ on-arrival: {!
   Q.timers = [
     "coalition_phase",
     "congreso_party_tour",
+    "up_formation",
     "advisor_action",
     "parlament",
     "cup_leadership",

@@ -66,7 +66,7 @@
         "Focus is put on negotiating a referendum on independence with the Gobierno.",
     },
     {
-      label: "Hybrid Confrontation",
+      label: "Tactical Confrontation",
       description:
         "A delicate balance between escalating tensions and openness to dialogue, hoping to force the hand of the Gobierno and the EU.",
     },
@@ -86,13 +86,35 @@
       var engine = window.dendryUI && window.dendryUI.dendryEngine;
       if (!engine || !config.rows) return;
       el.replaceChildren();
-      var jointRows = config.rows.filter(function (row) { return (row.isJoint || row.slot === "joint") && !row.hidden; });
-      var hasJoint = jointRows.length > 0;
-      var groups = jointRows.filter(function (row) { return row.seats > 0; }).map(function (row) {
-        return { slot: row.slot, start: row.position || 1, end: Math.max.apply(null, [row.position || 1].concat(
-          config.rows.filter(function (member) { return member.member && (member.group || "joint") === row.slot; })
-            .map(function (member) { return member.position || 1; }))) + 1 };
+      var jointRows = config.rows.filter(function (row) {
+        return (row.isJoint || row.slot === "joint") && !row.hidden;
       });
+      var hasJoint = jointRows.length > 0;
+      var groups = jointRows
+        .filter(function (row) {
+          return row.seats > 0;
+        })
+        .map(function (row) {
+          return {
+            slot: row.slot,
+            start: row.position || 1,
+            end:
+              Math.max.apply(
+                null,
+                [row.position || 1].concat(
+                  config.rows
+                    .filter(function (member) {
+                      return (
+                        member.member && (member.group || "joint") === row.slot
+                      );
+                    })
+                    .map(function (member) {
+                      return member.position || 1;
+                    }),
+                ),
+              ) + 1,
+          };
+        });
       el.classList.add("builder-playground");
       el.classList.toggle("has-joint", hasJoint);
       el.style.cssText = "";
@@ -111,97 +133,159 @@
         engine.displayChoices();
         if (remount) HANDLERS["builder-playground"](el, Q);
       }
-      config.rows.filter(function (row) { return !row.hidden; }).forEach(function (row) {
-        var entry = document.createElement("div");
-        entry.className = "builder-party";
-        var isJoint = row.isJoint || row.slot === "joint";
-        entry.classList.toggle("is-joint", !!isJoint);
-        entry.dataset.party = row.id;
-        entry.style.minWidth = "0";
-        if (row.column !== undefined) {
-          entry.style.gridColumn = row.column + (hasJoint ? (row.column === 0 ? 1 : 2) : 0);
-          var start = row.position || 1;
-          var end = Math.max.apply(null, [start].concat(config.rows.filter(function (member) {
-            return member.member && !member.hidden && (member.group || "joint") === row.slot;
-          }).map(function (member) { return member.position || 1; }))) + 1;
-          entry.style.gridRow = isJoint ? start + " / " + end : row.position;
-        }
-        var content = document.createElement("div");
-        content.className = "builder-content";
-        var label = document.createElement("div");
-        label.className = "builder-name";
-        if (row.canJoin) {
-          var checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.className = "builder-checkbox";
-          checkbox.checked = !!row.member;
-          checkbox.setAttribute("aria-label", "Include " + row.name + " in the joint list");
-          checkbox.onchange = function () { refresh(engine.gameLib.toggleCoalitionBuilderMember(Q, row.slot), true); };
-          label.appendChild(checkbox);
-        }
-        function arrow(direction) {
-          var button = document.createElement("button");
-          button.type = "button";
-          button.textContent = direction < 0 ? "‹" : "›";
-          button.setAttribute("aria-label", (direction < 0 ? "Previous" : "Next") + " party for " + row.name);
-          button.className = direction < 0 ? "builder-previous" : "builder-next";
-          button.onclick = function () { refresh(engine.gameLib.switchCoalitionBuilderParty(Q, row.slot, direction), true); };
-          return button;
-        }
-        var switches = row.variants && row.variants.length > 1;
-        if (switches) label.appendChild(arrow(-1));
-        var name = document.createElement("span");
-        name.className = "builder-label";
-        if (typeof window.applyWholesome === "function") name.innerHTML = window.applyWholesome(row.name);
-        else name.textContent = row.name;
-        label.appendChild(name);
-        if (switches) label.appendChild(arrow(1));
-        var controls = document.createElement("div");
-        controls.className = "builder-controls";
-        var minus = document.createElement("button");
-        var input = document.createElement("input");
-        var plus = document.createElement("button");
-        minus.textContent = "−";
-        plus.textContent = "+";
-        minus.type = plus.type = "button";
-        minus.setAttribute("aria-label", "Remove a seat from " + row.name);
-        plus.setAttribute("aria-label", "Add a seat to " + row.name);
-        input.setAttribute("aria-label", row.name + " seats");
-        input.type = "text";
-        input.inputMode = "numeric";
-        input.pattern = "[0-9]*";
-        function paint() {
-          entry.classList.toggle("is-muted", row.seats === 0 || !!row.member);
-          input.value = row.seats;
-          input.disabled = !!row.member;
-          minus.disabled = row.member || row.seats <= 0;
-          plus.disabled = row.member || row.seats >= Q.playground_coalitions_needed_seats;
-          [minus, input, plus].forEach(function (control) { control.style.opacity = control.disabled ? ".35" : "1"; });
-        }
-        function edit(seats) {
-          refresh(engine.gameLib.editCoalitionBuilder(Q, row.id, seats), row.isJoint || row.slot === "joint");
+      config.rows
+        .filter(function (row) {
+          return !row.hidden;
+        })
+        .forEach(function (row) {
+          var entry = document.createElement("div");
+          entry.className = "builder-party";
+          var isJoint = row.isJoint || row.slot === "joint";
+          entry.classList.toggle("is-joint", !!isJoint);
+          entry.dataset.party = row.id;
+          entry.style.minWidth = "0";
+          if (row.column !== undefined) {
+            entry.style.gridColumn =
+              row.column + (hasJoint ? (row.column === 0 ? 1 : 2) : 0);
+            var start = row.position || 1;
+            var end =
+              Math.max.apply(
+                null,
+                [start].concat(
+                  config.rows
+                    .filter(function (member) {
+                      return (
+                        member.member &&
+                        !member.hidden &&
+                        (member.group || "joint") === row.slot
+                      );
+                    })
+                    .map(function (member) {
+                      return member.position || 1;
+                    }),
+                ),
+              ) + 1;
+            entry.style.gridRow = isJoint ? start + " / " + end : row.position;
+          }
+          var content = document.createElement("div");
+          content.className = "builder-content";
+          var label = document.createElement("div");
+          label.className = "builder-name";
+          if (row.canJoin) {
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.className = "builder-checkbox";
+            checkbox.checked = !!row.member;
+            checkbox.setAttribute(
+              "aria-label",
+              "Include " + row.name + " in the joint list",
+            );
+            checkbox.onchange = function () {
+              refresh(
+                engine.gameLib.toggleCoalitionBuilderMember(Q, row.slot),
+                true,
+              );
+            };
+            label.appendChild(checkbox);
+          }
+          function arrow(direction) {
+            var button = document.createElement("button");
+            button.type = "button";
+            button.textContent = direction < 0 ? "‹" : "›";
+            button.setAttribute(
+              "aria-label",
+              (direction < 0 ? "Previous" : "Next") + " party for " + row.name,
+            );
+            button.className =
+              direction < 0 ? "builder-previous" : "builder-next";
+            button.onclick = function () {
+              refresh(
+                engine.gameLib.switchCoalitionBuilderParty(
+                  Q,
+                  row.slot,
+                  direction,
+                ),
+                true,
+              );
+            };
+            return button;
+          }
+          var switches = row.variants && row.variants.length > 1;
+          if (switches) label.appendChild(arrow(-1));
+          var name = document.createElement("span");
+          name.className = "builder-label";
+          if (typeof window.applyWholesome === "function")
+            name.innerHTML = window.applyWholesome(row.name);
+          else name.textContent = row.name;
+          label.appendChild(name);
+          if (switches) label.appendChild(arrow(1));
+          var controls = document.createElement("div");
+          controls.className = "builder-controls";
+          var minus = document.createElement("button");
+          var input = document.createElement("input");
+          var plus = document.createElement("button");
+          minus.textContent = "−";
+          plus.textContent = "+";
+          minus.type = plus.type = "button";
+          minus.setAttribute("aria-label", "Remove a seat from " + row.name);
+          plus.setAttribute("aria-label", "Add a seat to " + row.name);
+          input.setAttribute("aria-label", row.name + " seats");
+          input.type = "text";
+          input.inputMode = "numeric";
+          input.pattern = "[0-9]*";
+          function paint() {
+            entry.classList.toggle("is-muted", row.seats === 0 || !!row.member);
+            input.value = row.seats;
+            input.disabled = !!row.member;
+            minus.disabled = row.member || row.seats <= 0;
+            plus.disabled =
+              row.member || row.seats >= Q.playground_coalitions_needed_seats;
+            [minus, input, plus].forEach(function (control) {
+              control.style.opacity = control.disabled ? ".35" : "1";
+            });
+          }
+          function edit(seats) {
+            refresh(
+              engine.gameLib.editCoalitionBuilder(Q, row.id, seats),
+              row.isJoint || row.slot === "joint",
+            );
+            paint();
+          }
+          minus.onclick = function () {
+            edit(row.seats - 1);
+          };
+          plus.onclick = function () {
+            edit(row.seats + 1);
+          };
+          input.onchange = function () {
+            edit(input.value === "" ? NaN : Number(input.value));
+          };
           paint();
-        }
-        minus.onclick = function () { edit(row.seats - 1); };
-        plus.onclick = function () { edit(row.seats + 1); };
-        input.onchange = function () { edit(input.value === "" ? NaN : Number(input.value)); };
-        paint();
-        controls.append(minus, input, plus);
-        content.append(label, controls);
-        if (row.isJoint || row.slot === "joint") {
-          var members = document.createElement("div");
-          members.className = "builder-members";
-          config.rows.filter(function (party) { return party.member && party.slot !== "si" && (party.group || "joint") === row.slot; }).forEach(function (party) {
-            var member = document.createElement("div");
-            if (typeof window.applyWholesome === "function") member.innerHTML = window.applyWholesome(party.name);
-            else member.textContent = party.name;
-            members.appendChild(member);
-          });
-          content.appendChild(members);
-        }
-        entry.appendChild(content);
-        el.appendChild(entry);
-      });
+          controls.append(minus, input, plus);
+          content.append(label, controls);
+          if (row.isJoint || row.slot === "joint") {
+            var members = document.createElement("div");
+            members.className = "builder-members";
+            config.rows
+              .filter(function (party) {
+                return (
+                  party.member &&
+                  party.slot !== "si" &&
+                  (party.group || "joint") === row.slot
+                );
+              })
+              .forEach(function (party) {
+                var member = document.createElement("div");
+                if (typeof window.applyWholesome === "function")
+                  member.innerHTML = window.applyWholesome(party.name);
+                else member.textContent = party.name;
+                members.appendChild(member);
+              });
+            content.appendChild(members);
+          }
+          entry.appendChild(content);
+          el.appendChild(entry);
+        });
     },
     hemicycle: function (el, Q) {
       var props = readDataProps(el);
@@ -287,12 +371,14 @@
     "chamber-vote": function (el, Q) {
       var props = resolveProps(el, Q);
       var outcomes = Array.isArray(props.outcomes) ? props.outcomes : [];
-      outcomes = outcomes.filter(function (outcome) {
-        return outcome && Number(outcome.votes) > 0;
-      }).sort(function (a, b) {
-        var order = { yes: 0, abstain: 1, "not-present": 2, no: 3 };
-        return order[a.kind] - order[b.kind];
-      });
+      outcomes = outcomes
+        .filter(function (outcome) {
+          return outcome && Number(outcome.votes) > 0;
+        })
+        .sort(function (a, b) {
+          var order = { yes: 0, abstain: 1, "not-present": 2, no: 3 };
+          return order[a.kind] - order[b.kind];
+        });
 
       el.innerHTML = "";
       if (!outcomes.length) return;
@@ -417,7 +503,10 @@
       grid.className = "law-grid";
 
       visibleLaws.forEach(function (law, index) {
-        var colour = Object.prototype.hasOwnProperty.call(validColours, law.colour)
+        var colour = Object.prototype.hasOwnProperty.call(
+          validColours,
+          law.colour,
+        )
           ? law.colour
           : "gray";
         var description = String(law.description || "");
@@ -545,67 +634,89 @@
       var reg =
         ((window.dendryUI.game.data || {}).achievements || {}).achievements ||
         [];
-      var total = reg.filter(function (a) { return !a.hidden; }).length;
-      var ordinary = reg.filter(function (a) { return !a.hidden && !!Q[prefix + a.id]; }).length;
-      var hidden = reg.filter(function (a) { return a.hidden && !!Q[prefix + a.id]; }).length;
-      var percentage = total ? Math.round(((ordinary + hidden) / total) * 1000) / 10 : null;
+      var total = reg.filter(function (a) {
+        return !a.hidden;
+      }).length;
+      var ordinary = reg.filter(function (a) {
+        return !a.hidden && !!Q[prefix + a.id];
+      }).length;
+      var hidden = reg.filter(function (a) {
+        return a.hidden && !!Q[prefix + a.id];
+      }).length;
+      var percentage = total
+        ? Math.round(((ordinary + hidden) / total) * 1000) / 10
+        : null;
       var percentageLabel = percentage === null ? "—%" : percentage + "%";
       var fill = Math.min(percentage === null ? 0 : percentage, 100);
       var count = ordinary + (hidden ? "+" + hidden : "") + " / " + total;
       var summary =
         '<div class="achievement-completion">' +
-        '<span class="achievement-percentage">' + percentageLabel + '</span>' +
-        '<div class="achievement-progress" role="progressbar" aria-label="' + count +
-        '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + fill +
-        '" aria-valuetext="' + percentageLabel + ' — ' + count + '">' +
-        '<div class="achievement-progress-fill" style="width:' + fill + '%"></div></div>' +
-        '<span class="achievement-count">' + count + '</span></div>';
+        '<span class="achievement-percentage">' +
+        percentageLabel +
+        "</span>" +
+        '<div class="achievement-progress" role="progressbar" aria-label="' +
+        count +
+        '" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' +
+        fill +
+        '" aria-valuetext="' +
+        percentageLabel +
+        " — " +
+        count +
+        '">' +
+        '<div class="achievement-progress-fill" style="width:' +
+        fill +
+        '%"></div></div>' +
+        '<span class="achievement-count">' +
+        count +
+        "</span></div>";
 
-      el.innerHTML = summary + reg
-        .filter(function (a) {
-          return !!Q[prefix + a.id] || (scope !== "playthrough" && !a.hidden);
-        })
-        .map(function (a) {
-          var state = Q[prefix + a.id] ? "unlocked" : "locked";
-          var stars = "";
-          for (var i = 0; i < 5; i++) {
-            stars +=
-              '<span class="' +
-              (i < a.stars ? "star--filled" : "star--empty") +
-              '">★</span>';
-          }
-          return (
-            '<div class="achievement achievement--' +
-            state +
-            '" style="display:flex">' +
-            '<div class="achievement-image achievement-image--' +
-            state +
-            '">' +
-            '<img src="' +
-            a.image +
-            '" style="width:100%;height:100%;object-fit:cover;">' +
-            "</div>" +
-            '<div class="achievement-body">' +
-            '<div class="achievement-title achievement-title--' +
-            state +
-            '">' +
-            "<span> " +
-            a.name +
-            " </span>" +
-            '<div class="achievement-stars">' +
-            stars +
-            "</div>" +
-            "</div>" +
-            '<div class="achievement-description achievement-description--' +
-            state +
-            '">' +
-            a.description +
-            "</div>" +
-            "</div>" +
-            "</div>"
-          );
-        })
-        .join("");
+      el.innerHTML =
+        summary +
+        reg
+          .filter(function (a) {
+            return !!Q[prefix + a.id] || (scope !== "playthrough" && !a.hidden);
+          })
+          .map(function (a) {
+            var state = Q[prefix + a.id] ? "unlocked" : "locked";
+            var stars = "";
+            for (var i = 0; i < 5; i++) {
+              stars +=
+                '<span class="' +
+                (i < a.stars ? "star--filled" : "star--empty") +
+                '">★</span>';
+            }
+            return (
+              '<div class="achievement achievement--' +
+              state +
+              '" style="display:flex">' +
+              '<div class="achievement-image achievement-image--' +
+              state +
+              '">' +
+              '<img src="' +
+              a.image +
+              '" style="width:100%;height:100%;object-fit:cover;">' +
+              "</div>" +
+              '<div class="achievement-body">' +
+              '<div class="achievement-title achievement-title--' +
+              state +
+              '">' +
+              "<span> " +
+              a.name +
+              " </span>" +
+              '<div class="achievement-stars">' +
+              stars +
+              "</div>" +
+              "</div>" +
+              '<div class="achievement-description achievement-description--' +
+              state +
+              '">' +
+              a.description +
+              "</div>" +
+              "</div>" +
+              "</div>"
+            );
+          })
+          .join("");
     },
     coalitions: function (el, Q) {
       var props = readDataProps(el);

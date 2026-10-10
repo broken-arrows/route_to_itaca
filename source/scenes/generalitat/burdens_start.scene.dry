@@ -1,21 +1,23 @@
 title: The burden of governance
 face-image: img/events/manifestacio_st_jaume_cgt.jpg
-view-if: burdens_start_trigger
+view-if: burdens_start_trigger or burdens_restart_trigger
 tags: event
 new-page: true
 on-arrival: {!
-    // TODO: Burden breaking consequences event + Burdens renewal when broken
+    // TBD: Burden breaking consequences event? This is now silent
     // TODO: Dynamic burdens depending on governing coalition 
     Q.burdens_goal = 4;
     Q.burdens_time = 12;
-
+!}
+on-departure: {!
     Q.burdens_start_trigger = false;
+    Q.burdens_restart_trigger = false;
 !}
 role: event
 
 = The burden of governance
 
-After having protested austerity politics for years, us stepping into the Generalitat means our voters and supporters expect decisive action. Fulfilling these expectations can take many different forms, from exercising Catalan sovereignty decisively or by enacting much demanded social policies. But we are expected to do *something*. 
+[? if burdens_start_trigger: After having protested austerity politics for years, us stepping into the Generalitat means our voters and supporters expect decisive action.?][? if burdens_restart_trigger: After having failed to deliver on our promises of reduced austerity and further rights expansion, we have one last chance to prove our governing capacities before new elections come.?] Fulfilling these expectations can take many different forms, from exercising Catalan sovereignty decisively or by enacting much demanded social policies. But we are expected to do *something*. 
 
 These goals, or burdens, for our governance can be achieved by taking at least [+ burdens_goal +] of the following actions durning the coming [+ burdens_time +] months.
 
