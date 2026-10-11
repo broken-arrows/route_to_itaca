@@ -53,14 +53,15 @@
       "pauseTitle": "Desa i carrega"
     },
     "saveManager": {
+      "dntFileRequired": "Trieu un fitxer de partida .dnt.",
       "listLabel": "Partides desades",
-      "autoLatest": "Darrer desament automàtic",
-      "autoPrevious": "Desament automàtic anterior",
-      "manual": "Desament manual {number}",
+      "autoLatest": "Partida desada automàticament",
+      "autoPrevious": "Partida desada automàticament anterior",
+      "manual": "Partida desada {number}",
       "unknownDate": "Data no disponible",
       "gameDate": "Any {year}, mes {month}",
       "resources": "{count} recursos",
-      "empty": "Encara no hi ha cap partida desada. En podeu importar una.",
+      "empty": "Encara no hi ha cap partida desada. Podeu importar-ne una.",
       "actions": {
         "load": "Carrega",
         "export": "Exporta",
@@ -70,6 +71,7 @@
         "overwrite": "Sobreescriu"
       },
       "status": {
+        "achievementsDisabled": "Assoliments desactivats",
         "ready": "Disponible",
         "corrupt": "Corromput",
         "unreadable": "Il·legible",

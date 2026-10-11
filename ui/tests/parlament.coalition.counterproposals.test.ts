@@ -149,7 +149,7 @@ describe('sovereignty counter-proposals', () => {
     });
     let frame = a.goToScene(route + '.phase_text');
     expect(frame.html.replace(/<[^>]*>/g, '')).toMatch(/Roadmap of\s*Unilateralism/);
-    expect(frame.html).not.toContain('Hybrid Confrontation');
+    expect(frame.html).not.toContain('Tactical Confrontation');
     a.qualities.cup_roadmap = 3;
     frame = a.goToScene(route + '.phase_text');
     expect(frame.html.match(/Unilateralism/g)).toHaveLength(1);

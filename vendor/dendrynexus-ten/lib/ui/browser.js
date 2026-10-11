@@ -93,7 +93,8 @@
     var info = this.game.info || this.game;
     this.ifid = info.ifid || this.game.ifid;
     this.game_version = info.version || this.game.version;
-    this.settings_key = persistence.storageNamespace(this.ifid) + ":settings-old";
+    this.settings_key =
+      persistence.storageNamespace(this.ifid) + ":settings-old";
     this.saveStore = persistence.createSaveStore({
       storage: localStorage,
       ifid: this.ifid,
@@ -926,7 +927,11 @@
     }
     this.dendryEngine.setState(result.record.state);
     this.hideSaveSlots();
-    window.alert("Loaded.");
+    window.alert(
+      result.record.state.achievementsEligible === false
+        ? "Loaded (achievements disabled)."
+        : "Loaded.",
+    );
     return true;
   };
 
@@ -986,7 +991,7 @@
       var a = document.createElement("a");
       var file = new Blob([result.data], { type: "application/json" });
       a.href = URL.createObjectURL(file);
-      a.download = "save.txt";
+      a.download = "save.dnt";
       a.click();
     } else {
       this._displaySaveError("Export", result);
@@ -1023,6 +1028,10 @@
     var file = uploader.files[0];
     if (!file) {
       window.alert("Choose a save file to import.");
+      return;
+    }
+    if (!/\.dnt$/i.test(file.name)) {
+      window.alert("Choose a .dnt save file.");
       return;
     }
     reader.onload = onFileLoad;
@@ -1080,6 +1089,9 @@
           timestamp +
           ")";
         save_element.textContent = saveLabel.formatSaveTimestamp(label);
+        if (state && state.achievementsEligible === false) {
+          save_element.textContent += "\n(Achievements disabled)";
+        }
         if (entry.compatibility !== "compatible") {
           save_element.textContent += "\n(Game version warning)";
         }

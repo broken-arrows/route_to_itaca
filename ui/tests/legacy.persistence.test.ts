@@ -37,6 +37,20 @@ function makeUi(gameVersion = '0.1.0') {
 }
 
 describe('old-shell persistence adapter', () => {
+  it('loads an edited save with achievements disabled and explains the restriction', () => {
+    const ui = makeUi();
+    ui.saveSlot(0);
+    const key = 'dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1';
+    const record = JSON.parse(localStorage.getItem(key)!);
+    record.state.qualities.resources = 999;
+    localStorage.setItem(key, JSON.stringify(record));
+    ui.loadSlot(0);
+    expect(ui.dendryEngine.setState).toHaveBeenCalledWith(expect.objectContaining({
+      achievementsEligible: false, qualities: { resources: 999 },
+    }));
+    expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('Achievements disabled'));
+  });
+
   beforeEach(() => {
     localStorage.clear();
     vi.restoreAllMocks();
@@ -110,7 +124,7 @@ describe('old-shell persistence adapter', () => {
 
     vi.mocked(window.confirm).mockReturnValue(true);
     ui.loadSlot(0);
-    expect(ui.dendryEngine.setState).toHaveBeenCalledWith({ sceneId: 'older' });
+    expect(ui.dendryEngine.setState).toHaveBeenCalledWith({ sceneId: 'older', achievementsEligible: false });
   });
 
   it('renders corrupt saves as occupied, deletable, and exportable', () => {

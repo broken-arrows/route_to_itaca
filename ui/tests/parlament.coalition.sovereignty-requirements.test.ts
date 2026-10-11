@@ -338,7 +338,7 @@ describe('sovereignty pact requirements', () => {
       return value;
     }
     for (const phase of [1, 2, 3]) {
-      const original = {...fixture(file), parlament_coalition_sovereignty_phase: phase, generalitat_surplus: 0};
+      const original: Record<string, any> = {...fixture(file), parlament_coalition_sovereignty_phase: phase, generalitat_surplus: 0};
       const q = {...original, speaker_party: 'none'};
       run('parlament_coalition_sovereignty_offer.scene.dry', q, 'prepare');
       const baseline = total(q);

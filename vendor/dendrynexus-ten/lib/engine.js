@@ -863,6 +863,7 @@
       // achievements is a dict of all the current achievements.
       // persist achievements in the browser through localstorage?
       achievements: {},
+      achievementsEligible: true,
       // current background image
       bg: null,
       // sceneStack is used for goSub
@@ -903,6 +904,15 @@
   };
 
   DendryEngine.prototype._loadAchievements = function () {
+    // Global unlocks belong to this browser, not to the imported save's
+    // author. Rebuild them even when no local ledger exists. Keep the
+    // game_achievement_* qualities as the restored playthrough's record.
+    this.state.achievements = {};
+    for (var quality in this.state.qualities) {
+      if (quality.indexOf("achievement_") === 0) {
+        delete this.state.qualities[quality];
+      }
+    }
     if (typeof localStorage !== "undefined") {
       var key = this._achievementStorageKey();
       if (key && localStorage[key]) {
@@ -1472,6 +1482,7 @@
   };
 
   DendryEngine.prototype.achieve = function (achievementName) {
+    if (this.state.achievementsEligible === false) return;
     // The persisted ledger records the real-world time of the first unlock.
     // Preserve any existing entry verbatim: in addition to keeping the first
     // timestamp stable, this leaves legacy numeric records unlocked with an

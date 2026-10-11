@@ -195,7 +195,7 @@ function exportSelected(): void {
   const url = URL.createObjectURL(new Blob([result.data], { type: 'application/json' }));
   const link = document.createElement('a');
   link.href = url;
-  link.download = `route-to-itaca-${slot}.json`;
+  link.download = `route-to-itaca-${slot}.dnt`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -222,6 +222,10 @@ async function onFileSelected(event: Event): Promise<void> {
   const file = input.files?.[0];
   input.value = '';
   if (!file) return;
+  if (!/\.dnt$/i.test(file.name)) {
+    errorCode.value = 'dnt-file-required';
+    return;
+  }
   try {
     await importSerialized(await file.text());
   } catch {
@@ -246,10 +250,12 @@ function formatDate(value?: string): string {
 
 function statusLabel(entry: SaveSlotEntry): string {
   if (entry.status !== 'ready') return t(`shell.saveManager.status.${entry.status}`);
-  if (entry.compatibility && entry.compatibility !== 'compatible') {
-    return t(`shell.saveManager.compatibility.${entry.compatibility}`);
-  }
-  return t('shell.saveManager.status.ready');
+  const status = entry.compatibility && entry.compatibility !== 'compatible'
+    ? t(`shell.saveManager.compatibility.${entry.compatibility}`)
+    : t('shell.saveManager.status.ready');
+  return entry.achievementsEligible === false
+    ? `${status} · ${t('shell.saveManager.achievementsDisabled')}`
+    : status;
 }
 
 defineExpose({
@@ -327,9 +333,9 @@ defineExpose({
         {{ actionReasons }}
       </p>
       <p v-if="errorCode" class="operation-error" role="alert">
-        {{ t('shell.saveManager.error', { code: errorCode }) }}
+        {{ errorCode === 'dnt-file-required' ? t('shell.saveManager.dntFileRequired') : t('shell.saveManager.error', { code: errorCode }) }}
       </p>
-      <input ref="fileInput" class="file-input" type="file" accept="application/json,.json" data-test="save-file-input" @change="onFileSelected">
+      <input ref="fileInput" class="file-input" type="file" accept=".dnt" data-test="save-file-input" @change="onFileSelected">
 
       <div v-if="confirmation" class="confirmation" role="alertdialog" aria-modal="true" :aria-labelledby="'save-confirm-title'">
         <h2 id="save-confirm-title">

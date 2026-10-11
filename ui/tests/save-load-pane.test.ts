@@ -62,6 +62,21 @@ function mountPane(mode: 'title' | 'pause' = 'title') {
 }
 
 describe('SaveLoadPane', () => {
+  it.each(['compatible', 'incompatible'] as const)('combines achievement eligibility with the %s status without preventing loading', async (compatibility) => {
+    const store = setup([{ ...ready('manual-1', '2026-08-15T14:00:00.000Z', compatibility), achievementsEligible: false }]);
+    const wrapper = mountPane();
+    const row = wrapper.get('[data-test="save-row-manual-1"]');
+    const expectedStatus = i18n.global.t(compatibility === 'compatible'
+      ? 'shell.saveManager.status.ready' : 'shell.saveManager.compatibility.incompatible');
+    expect(row.get('.row-heading small').text()).toBe(`${expectedStatus} · Achievements disabled`);
+    expect(row.findAll('.row-facts').some(fact => fact.text().includes('Achievements disabled'))).toBe(false);
+    expect(wrapper.get('[data-test="save-file-input"]').attributes('accept')).toBe('.dnt');
+    await wrapper.get('[data-test="save-row-manual-1"]').trigger('click');
+    await wrapper.get('[data-test="save-load"]').trigger('click');
+    expect(store.loadSlot).toHaveBeenCalledWith('manual-1', false);
+    wrapper.unmount();
+  });
+
   beforeEach(() => {
     setLocale('en');
     document.body.innerHTML = '';

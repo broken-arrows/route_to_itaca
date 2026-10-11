@@ -24,6 +24,8 @@ declare module 'dendrynexus-ten/lib/engine.js' {
       [key: string]: unknown;
     };
     choiceCache: RawChoice[];
+    // Seeded engine RNG, also used to pin branch selection in runtime tests.
+    random: { uint32(): number };
     game: {
       scenes: Record<string, Record<string, unknown>>;
       info?: {
@@ -39,6 +41,7 @@ declare module 'dendrynexus-ten/lib/engine.js' {
     choose(choiceIndex: number): void;
     displayChoices(): void;
     _compileChoices(scene: unknown): RawChoice[];
+    _runActions(actions: unknown, phase?: string): void;
     drawCard(deckId: string): RawCard | { id: null; title: string };
     playCard(cardId: string): void;
     playPinnedCard(cardId: string): void;

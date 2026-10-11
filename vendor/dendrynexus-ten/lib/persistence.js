@@ -55,12 +55,45 @@ function isEnvelope(record) {
 }
 
 function canonicalRecord(record) {
-  return {
+  var result = {
     saveFormatVersion: record.saveFormatVersion,
     gameVersion: hasOwn(record, 'gameVersion') ? record.gameVersion : null,
     meta: Object.assign({}, record.meta),
     state: record.state,
   };
+  if (hasOwn(record, 'checksum')) result.checksum = record.checksum;
+  return result;
+}
+
+// A portable edit detector, not authentication. Hash parsed JSON in sorted-key
+// order so formatting and object-key order do not affect eligibility.
+function checksum(record) {
+  function stable(value) {
+    if (value === null || typeof value !== 'object') return JSON.stringify(value);
+    if (Array.isArray(value)) return '[' + value.map(stable).join(',') + ']';
+    return '{' + Object.keys(value).sort().map(function(key) {
+      return JSON.stringify(key) + ':' + stable(value[key]);
+    }).join(',') + '}';
+  }
+  var content = stable({
+    saveFormatVersion: record.saveFormatVersion,
+    gameVersion: record.gameVersion,
+    meta: record.meta,
+    state: record.state,
+  });
+  var hash = 2166136261;
+  for (var i = 0; i < content.length; i++) {
+    hash = Math.imul(hash ^ content.charCodeAt(i), 16777619);
+  }
+  return 'fnv1a32-v1:' + ('00000000' + (hash >>> 0).toString(16)).slice(-8);
+}
+
+function applyIntegrity(record) {
+  var valid = typeof record.checksum === 'string' && record.checksum === checksum(record);
+  if (!valid && record.state && typeof record.state === 'object') {
+    record.state.achievementsEligible = false;
+  }
+  return valid;
 }
 
 function createSaveStore(options) {
@@ -95,6 +128,10 @@ function createSaveStore(options) {
       if (!isEnvelope(JSON.parse(serialized))) {
         throw new TypeError('save envelope is not JSON-serializable');
       }
+      // Hash the JSON snapshot, after accessors/toJSON/undefined normalization.
+      record = JSON.parse(serialized);
+      record.checksum = checksum(record);
+      serialized = JSON.stringify(record);
     } catch (error) {
       return { ok: false, error: errorResult('serialize-failed', error) };
     }
@@ -153,6 +190,7 @@ function createSaveStore(options) {
         }),
       };
     }
+    applyIntegrity(record);
     return {
       status: 'ready',
       slot: slot,

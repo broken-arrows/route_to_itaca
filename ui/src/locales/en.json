@@ -53,6 +53,8 @@
       "pauseTitle": "Save & Load"
     },
     "saveManager": {
+      "dntFileRequired": "Choose a .dnt save file.",
+      "achievementsDisabled": "Achievements disabled",
       "listLabel": "Saved games",
       "autoLatest": "Latest autosave",
       "autoPrevious": "Previous autosave",

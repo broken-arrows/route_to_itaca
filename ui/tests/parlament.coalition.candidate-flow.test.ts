@@ -25,7 +25,7 @@ function evaluate(q: Record<string, any>) {
   action(P + 'replacement', 'evaluate', q, draw);
   return draw;
 }
-function qbase(overrides: Record<string, any> = {}) {
+function qbase(overrides: Record<string, any> = {}): Record<string, any> {
   return {
     player_party: 'erc', rubicon: false, year: 2015, president: 'Artur Mas',
     coalition_phase_timer: 1, party_resources: 3,

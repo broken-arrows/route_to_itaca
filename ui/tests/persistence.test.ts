@@ -39,6 +39,7 @@ describe('shared save persistence', () => {
       gameVersion: '0.1.0',
       meta: { sceneId: 'root', savedAt: '2026-08-11T10:15:00.000Z' },
       state: { sceneId: 'root' },
+      checksum: expect.stringMatching(/^fnv1a32-v1:[0-9a-f]{8}$/),
     });
     expect(store.read('manual-1')).toMatchObject({
       status: 'ready',

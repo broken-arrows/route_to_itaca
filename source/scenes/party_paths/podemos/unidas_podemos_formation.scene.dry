@@ -1,12 +1,11 @@
 title: Unidas Podemos
-view-if: year = 2016 and month = 5
+view-if: next_spanish_election_time - time <= 3 and up_formation_timer <= 0 
 tags: event
 new-page: true
 max-visits: 1
 on-arrival: {!
-    // TODO: fold this into the podemos event tree
-    // Podemos + IU merge into a single list ("up") for Jun 2016. Fold both component
-    // keys into the carrier in every constituency and zero them (so they don't zombie).
+    Q.up_formation_timer = 6
+
     Q.iu_in_up = true;
     for (var c of Q.congreso_constituencies) {
         var merged = (Q['podemos_congreso_' + c + '_support'] || 0)

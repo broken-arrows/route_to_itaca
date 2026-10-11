@@ -77,6 +77,7 @@ export type SaveCompatibility = 'compatible' | 'incompatible' | 'unknown';
 export type SaveEntryStatus = 'ready' | 'corrupt' | 'unreadable' | 'unsupported';
 
 export interface SaveSlotEntry extends Partial<SaveMeta> {
+  achievementsEligible?: boolean;
   slot: string;
   status: SaveEntryStatus;
   compatibility?: SaveCompatibility;

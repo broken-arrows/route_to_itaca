@@ -10,6 +10,7 @@ declare module 'dendrynexus-ten/lib/persistence.js' {
     [key: string]: unknown;
   }
   export interface SaveRecord {
+    checksum?: string;
     saveFormatVersion: number;
     gameVersion: string | null;
     meta: Record<string, unknown>;

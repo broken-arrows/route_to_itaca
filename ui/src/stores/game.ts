@@ -259,6 +259,7 @@ export const useGameStore = defineStore('game', () => {
           compatibility: entry.compatibility,
           meta: entry.record.meta as unknown as SaveMeta,
           ...(entry.record.meta as unknown as SaveMeta),
+          achievementsEligible: (entry.record.state as { achievementsEligible?: boolean })?.achievementsEligible !== false,
         };
       }
       return { slot: entry.slot, status: entry.status, error: entry.error };
