@@ -520,7 +520,7 @@
   // display content.
   var UserInterface = function () {};
   UserInterface.prototype.beginGame = function () {};
-  UserInterface.prototype.displayContent = function (paragraphs, faceImage) {};
+  UserInterface.prototype.displayContent = function (paragraphs, faceImage, faceImageOffset) {};
   // these are the dendrynexus display functions
   // displays the decks
   UserInterface.prototype.displayDecks = function (decks) {};
@@ -689,17 +689,28 @@
     }
     if (restorePage) {
       this.ui.newPage();
-      this.ui.displayContent(this.state.tempCurrentContent, faceImage);
       this.state.currentContent = this.state.tempCurrentContent.slice();
+      this.state.currentContentFaceImage = this.state.tempCurrentContentFaceImage || null;
+      var restoredImage = this.state.currentContentFaceImage;
+      this.ui.displayContent(this.state.currentContent,
+        restoredImage ? restoredImage.image : faceImage,
+        restoredImage ? restoredImage.offset : undefined);
     } else if (scene.newPage) {
       this.ui.newPage();
       this.state.currentContent = [];
+      this.state.currentContentFaceImage = null;
     }
     this.ui.setStyle(scene.style);
     this.ui.removeChoices();
 
     if (scene.content !== undefined && !restorePage) {
       var displayContent = this._makeDisplayContent(scene.content, true);
+      if (faceImage) {
+        this.state.currentContentFaceImage = {
+          image: faceImage,
+          offset: this.state.currentContent.length,
+        };
+      }
       if (this.state.enableTranscript) {
         this.transcript = this.transcript.concat(displayContent);
       }
@@ -846,10 +857,12 @@
       qualities: {},
       currentRandomState: null,
       currentContent: [],
+      currentContentFaceImage: null,
       // tempCurrentContent is used for when the
       // player visits the stats or settings pages in order to remember
       // where the previous page was?
       tempCurrentContent: [],
+      tempCurrentContentFaceImage: null,
       // prevSpecialSceneId is only set when visiting scene tagged with
       // isSpecial = true, and is the scene before the special scene.
       prevSpecialSceneId: null,
@@ -981,7 +994,10 @@
       //     must be compiled against post-onDisplay state.
       this.ui.newPage();
       this.ui.removeChoices();
-      this.ui.displayContent(this.state.currentContent);
+      var restoredFaceImage = this.state.currentContentFaceImage;
+      this.ui.displayContent(this.state.currentContent,
+        restoredFaceImage ? restoredFaceImage.image : undefined,
+        restoredFaceImage ? restoredFaceImage.offset : undefined);
       this._runActions(scene.onDisplay, "on-display");
       this.choiceCache = this._compileChoices(scene);
       this.displayChoices();
@@ -1264,6 +1280,7 @@
       }
       if (scene.isSpecial && this.state.prevSpecialSceneId === null) {
         this.state.tempCurrentContent = this.state.currentContent.slice();
+        this.state.tempCurrentContentFaceImage = this.state.currentContentFaceImage || null;
         this.state.prevSpecialSceneId = fromId;
       }
       var from = this.getCurrentScene();

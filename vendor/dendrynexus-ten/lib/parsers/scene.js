@@ -103,7 +103,7 @@
         'card', 'card-gov', 'card-party', 'card-parliament',
         'pinned-action', 'pinned-advisor', 'pinned-parliament', 'newspaper', 'event',
         'status', 'info-tab', 'pause-item', 'title-hub', 'main-menu-item', 'library-item',
-        'ending', 'default'
+        'setup', 'intro', 'ending', 'default'
       ])
     },
 

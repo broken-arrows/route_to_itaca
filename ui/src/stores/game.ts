@@ -132,6 +132,7 @@ export const useGameStore = defineStore('game', () => {
   // the same flag the fetch failure uses — both mean "there is no game to
   // play" and both render the boot error state.
   function newGame(): boolean {
+    if (useShellStore().transitioning) return false;
     try {
       apply(adapter.value!.beginGame());
       return true;
@@ -150,9 +151,11 @@ export const useGameStore = defineStore('game', () => {
     if (edit(adapter.value.qualities)) apply(adapter.value.refreshChoices());
   }
   function chooseFromShell(i: number): void {
+    if (useShellStore().transitioning) return;
     apply(adapter.value!.choose(i));
   }
   function goToScene(id: string): void {
+    if (useShellStore().transitioning) return;
     apply(adapter.value!.goToScene(id));
   }
   function roleHub(role: 'title-hub') {

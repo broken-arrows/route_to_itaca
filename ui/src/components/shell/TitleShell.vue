@@ -92,6 +92,7 @@ async function continueGame(allowRisk = false): Promise<void> {
 }
 
 async function select(id: string): Promise<void> {
+  if (shell.transitioning) return;
   lastRibbon.value = id;
   if (id === 'host-continue') return continueGame();
   pendingRiskyContinue.value = false;

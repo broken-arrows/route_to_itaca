@@ -42,7 +42,7 @@ describe('Library live-scene behavior', () => {
     ['Desk', 'main', 'desk'],
     ['dossier', 'debug_card', 'card'],
     ['event', '2012diada', 'event'],
-    ['generic page', 'root.start', 'main-menu-item'],
+    ['setup page', 'root.start', 'setup'],
   ])('closes through backSpecialScene to the exact %s origin', (_label, origin, role) => {
     const game = useGameStore();
     const brief = useBriefStore();

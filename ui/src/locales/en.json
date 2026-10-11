@@ -26,6 +26,7 @@
     "cancel": "Cancel",
     "title": {
       "menuLabel": "Main menu",
+      "return": "Return to Main Menu",
       "continue": "Continue",
       "load": "Load Game",
       "options": "Options",

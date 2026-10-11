@@ -16,10 +16,10 @@ on-arrival: {!
     // "https://broken-arrows.github.io/route_to_itaca",
   ];
 
-  var local_file = window.location.protocol === 'file:' || window.location.hostname === 'localhost';
+  var local_file = window.location.protocol === 'file:' || ['localhost', '127.0.0.1'].includes(window.location.hostname);
   var valid_url = valid_urls.some(url => window.location.href.startsWith(url));
 
-  if (!valid_url) {
+  if (!local_file && !valid_url) {
     console.error("Page loaded from unexpected origin:", window.location.href);
   }
 
@@ -843,8 +843,9 @@ on-arrival: {!
 - @about: About
 
 @start
+title: New Game
 tags: starts-game
-role: main-menu-item
+role: setup
 choose-if: url_valid
 unavailable-subtitle: Route to Ítaca is currently in its early development stages. Check back soon(-ish) for the full experience!
 # unavailable-subtitle: Game loaded from an unrecognized origin, are you sure you're in the right place? TODO: put this as the right unavailable subtitle!
@@ -1520,7 +1521,6 @@ on-arrival: {!
       Q.random_seed_author = "Pasqual Maragall, President de la Generalitat, 2005";
       break;
   }
-  this.achieve("made_a_wish");
 !}
 set-bg: img/3rd_October_2017.jpg
 new-page: true
@@ -1543,6 +1543,7 @@ For more information on the politics, government, and recent history of Cataloni
 # TODO: actually make more variables depend on difficulty
 
 @easy_mode
+role: setup
 subtitle: Extra party resources, more lenient interactions and easier options.
 on-arrival: difficulty = -1; party_resources = 4; max_advisors = 5;
 new-page: true
@@ -1555,6 +1556,7 @@ go-to: party_selection
 = <span style="color: #5B9A8D;font-weight: bold;">Easy</span> difficulty
 
 @normal_mode
+role: setup
 subtitle: Normal party resources, challenging interactions and options.
 new-page: true
 on-arrival: difficulty = 0; party_resources = 3; max_advisors = 4;
@@ -1567,6 +1569,7 @@ go-to: party_selection
 = <span style="color: #C4B156;font-weight: bold;">Normal</span> difficulty
 
 @hard_mode
+role: setup
 subtitle: Little party resources, hard interactions, more limited options.
 new-page: true
 on-arrival: difficulty = 1; party_resources = 2; max_advisors = 3;
@@ -1579,6 +1582,7 @@ go-to: party_selection
 = <span style="color: rgb(148, 27, 6);font-weight: bold;">Hard</span> difficulty
 
 @historical_mode
+role: setup
 subtitle: All the challenges of Hard mode, saving and loading the game is forbidden, and polls are not available.
 new-page: true
 on-arrival: {!
@@ -1597,6 +1601,7 @@ go-to: party_selection
 = <span style="color: rgb(69, 23, 2);font-weight: bold;">Historical</span> difficulty
 
 @party_selection
+role: setup
 
 What party shall you lead? 
 
@@ -1605,6 +1610,7 @@ What party shall you lead?
 - @ciu: Convergence and Union - CiU
 
 @esquerra
+role: setup
 face-image: img/parties/logo_erc.png
 
 **Republican Left of Catalonia - ERC**
@@ -1616,6 +1622,7 @@ The left-wing republican party advocates for Catalan independence, socialism, an
 
 
 @esquerra_2
+role: setup
 subtitle: Start the game as ERC.
 on-arrival: {!
   Q.player_party = "erc";
@@ -1677,6 +1684,7 @@ go-to: intros
 
 
 @ciu
+role: setup
 title: Convergence and Union (CiU)
 face-image: img/parties/logo_ciu.png
 view-if: 1==0
@@ -1691,10 +1699,12 @@ The center-right nationalist federation of the liberal Democratic Convergence of
 
 
 @ciu_2
+role: setup
 on-arrival: player_party = "ciu"; position_disp = "Generalitat";
 go-to: intros
 
 @cup
+role: setup
 face-image: img/parties/logo_cup.svg
 
 **Popular Unity Candidacy - CUP**
@@ -1706,6 +1716,7 @@ The far-left, anti-capitalist, eco-socialist platform demands direct democracy, 
 
 
 @cup_2
+role: setup
 subtitle: Start the game as CUP.
 choose-if: 1==0
 unavailable-subtitle: Too much in WIP for now!
@@ -1764,4 +1775,5 @@ on-arrival: {!
 go-to: intros
 
 @back_to_party_selection
-go-to: historical_mode if historical_mode = 1; easy_mode if difficulty = -1; normal_mode if difficulty = 0; hard_mode if difficulty = 1
+role: setup
+go-to: historical_mode if historical_mode = 1; easy_mode if not historical_mode and difficulty = -1; normal_mode if not historical_mode and difficulty = 0; hard_mode if not historical_mode and difficulty = 1

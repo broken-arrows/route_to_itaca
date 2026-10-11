@@ -72,6 +72,7 @@ const achievementImgSrc = computed(() =>
 
 <style scoped>
 .toast {
+  pointer-events: none;
   position: absolute;
   left: 50%;
   bottom: 40px;
@@ -116,7 +117,10 @@ const achievementImgSrc = computed(() =>
   gap: 12px;
 }
 .toast-achievement-image {
-  flex: 1 0 0;
+  flex: 0 0 64px;
+  width: 64px;
+  height: 44px;
+  min-width: 0;
   background: var(--paper-0);
   aspect-ratio: 3 / 2;
   object-fit: cover;

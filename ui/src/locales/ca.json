@@ -26,10 +26,11 @@
     "cancel": "Cancel·la",
     "title": {
       "menuLabel": "Menú principal",
+      "return": "Torna al menú principal",
       "continue": "Continua",
-      "load": "Carrega",
+      "load": "Parties desades",
       "options": "Opcions",
-      "saveCount": "{count} partides disponibles"
+      "saveCount": "{count} disponibles"
     },
     "pause": {
       "menuLabel": "Menú",

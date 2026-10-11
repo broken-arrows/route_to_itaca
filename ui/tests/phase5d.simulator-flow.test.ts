@@ -73,7 +73,11 @@ describe('Phase 5D title shell navigation', () => {
       return button;
     };
 
-    await ribbon('Election Simulation').trigger('click');
+    await ribbon('Playground').trigger('click');
+    const simulator = game.frame?.choices.findIndex((entry) => entry.id === 'election_simulation') ?? -1;
+    expect(simulator).toBeGreaterThanOrEqual(0);
+    game.chooseFromShell(simulator);
+    await flushPromises();
     expect(shell.mode).toBe('title');
     const preset = game.frame?.choices.findIndex((entry) => entry.id === 'election_simulation.2012_11') ?? -1;
     expect(preset).toBeGreaterThanOrEqual(0);

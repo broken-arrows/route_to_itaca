@@ -1,4 +1,5 @@
 title: Game Over
+role: ending
 new-page: true
 set-bg: img/3rd_October_2017.jpg
 go-to: eg_menu
@@ -22,6 +23,7 @@ on-arrival: {!
 = End
 
 @eg_menu
+role: ending
 
 - #endings
 - @end_game: End game.
@@ -92,6 +94,7 @@ role: ending
 <div data-widget="achievement-gallery" data-props='{"scope":"playthrough"}'></div>
 
 @end_game
+role: ending
 game-over: true
 
 @achievements

@@ -26,15 +26,20 @@ import PauseOverlay from '../components/shell/PauseOverlay.vue';
 import { useShellStore } from '../stores/shell';
 import LibrarySurface from '../components/library/LibrarySurface.vue';
 import { captureLibraryUnderlay } from '../components/library/librarySnapshot';
+import PresentationPage from '../components/desk/PresentationPage.vue';
+import SurfaceFade from '../components/shell/SurfaceFade.vue';
 
 const { t } = useI18n();
 const game = useGameStore();
 const desk = useDeskStore();
 const shell = useShellStore();
+const surfaceFade = ref<InstanceType<typeof SurfaceFade> | null>(null);
 const pauseOverlay = ref<InstanceType<typeof PauseOverlay> | null>(null);
 const pauseButton = ref<HTMLButtonElement | null>(null);
 const playingSurface = ref<HTMLElement | null>(null);
 const pausedSurfaceHtml = ref('');
+const pausedSurface = ref<HTMLElement | null>(null);
+let pausedScroll: Array<{ top: number; left: number }> = [];
 const libraryUnderlyingHtml = ref('');
 let pauseInvoker: HTMLElement | null = null;
 
@@ -50,8 +55,23 @@ function openPause(event?: Event): void {
     ? event.currentTarget
     : document.activeElement instanceof HTMLElement ? document.activeElement : null;
   pausedSurfaceHtml.value = playingSurface.value?.innerHTML ?? '';
+  pausedScroll = Array.from(playingSurface.value?.querySelectorAll<HTMLElement>('*') ?? [])
+    .map((element) => ({ top: element.scrollTop, left: element.scrollLeft }));
   shell.openPause(desk.phase, game.effectiveRole, game.frame?.gameOver ?? false);
 }
+
+function boundary(role: string): string {
+  if (role === 'title-hub' || role === 'main-menu-item') return 'menu';
+  if (role === 'setup' || role === 'intro' || role === 'ending') return role;
+  return 'gameplay';
+}
+
+watch(() => game.frame, (frame, previous) => {
+  if (!frame || !previous || shell.paused) return;
+  if (boundary(frame.effectiveRole) !== boundary(previous.effectiveRole)) {
+    surfaceFade.value?.start();
+  }
+}, { flush: 'sync' });
 
 function restorePauseFocus(): void {
   (pauseInvoker?.isConnected && pauseInvoker !== document.body ? pauseInvoker : pauseButton.value)?.focus();
@@ -59,6 +79,13 @@ function restorePauseFocus(): void {
 }
 
 watch(() => shell.paused, async (paused, wasPaused) => {
+  if (paused) {
+    await nextTick();
+    pausedSurface.value?.querySelectorAll<HTMLElement>('*').forEach((element, index) => {
+      element.scrollTop = pausedScroll[index]?.top ?? 0;
+      element.scrollLeft = pausedScroll[index]?.left ?? 0;
+    });
+  }
   if (!paused && wasPaused && shell.mode === 'playing') {
     pausedSurfaceHtml.value = '';
     await nextTick();
@@ -84,7 +111,7 @@ watch(() => game.frame, async (frame, previous) => {
 }, { flush: 'sync' });
 
 function onKeydown(event: KeyboardEvent): void {
-  if (event.key !== 'Escape' || desk.phase === 'boot') return;
+  if (event.key !== 'Escape' || desk.phase === 'boot' || shell.transitioning) return;
   if (shell.mode === 'title') {
     if (shell.overlay === 'title-pane') {
       event.preventDefault();
@@ -117,6 +144,7 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown));
 const DESK_PHASES = new Set(['idle', 'drawing', 'dossierOpen', 'resolving']);
 const PAUSE_PHASES = new Set(['page', 'idle', 'dossierOpen', 'newspaper', 'eventPage']);
 const showDesk = computed(() => DESK_PHASES.has(desk.phase));
+const showPresentation = computed(() => ['setup', 'intro', 'ending'].includes(game.effectiveRole));
 const showPauseButton = computed(() =>
   shell.mode === 'playing'
   && !(game.frame?.gameOver ?? false)
@@ -130,6 +158,7 @@ const pageVariant = computed<'page' | 'event' | 'ending'>(() => {
 
 <template>
   <ResponsiveViewport>
+    <SurfaceFade ref="surfaceFade">
     <div v-if="desk.phase === 'boot'" class="boot-state" data-test="boot-state">
       <p v-if="game.loadError">{{ t('debug.loadError') }}</p>
       <p v-else>{{ t('debug.loading') }}</p>
@@ -138,6 +167,7 @@ const pageVariant = computed<'page' | 'event' | 'ending'>(() => {
     <template v-else>
       <div
         v-if="shell.paused"
+        ref="pausedSurface"
         class="playing-surface paused-surface-snapshot fogged"
         data-test="paused-surface-snapshot"
         inert
@@ -152,6 +182,7 @@ const pageVariant = computed<'page' | 'event' | 'ending'>(() => {
         <DeskView v-else-if="showDesk" />
         <Newspaper v-else-if="desk.phase === 'newspaper'" />
         <FrontPage v-else-if="desk.phase === 'eventPage'" />
+        <PresentationPage v-else-if="showPresentation" />
         <PaperPage v-else :variant="pageVariant" />
         <button
           v-if="showPauseButton"
@@ -168,6 +199,7 @@ const pageVariant = computed<'page' | 'event' | 'ending'>(() => {
       </div>
       <PauseOverlay v-if="shell.paused" ref="pauseOverlay" />
     </template>
+    </SurfaceFade>
   </ResponsiveViewport>
 </template>
 

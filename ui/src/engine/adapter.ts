@@ -113,6 +113,7 @@ export class DendryAdapter {
     if (!this.engine.state?.sceneId) return null;
 
     const faceImage = this.ui.faceImage;
+    const faceImageOffset = this.ui.faceImageOffset;
     const currentContent = this.engine.state.currentContent ?? [];
     this.ui.resetTransient();
     this.ui.newPage();
@@ -120,6 +121,7 @@ export class DendryAdapter {
     this.ui.displayContent(
       Array.isArray(currentContent) ? currentContent : [],
       faceImage ?? scene.faceImage,
+      faceImageOffset ?? undefined,
     );
     this.engine.choiceCache = this.engine._compileChoices(scene);
     this.engine.displayChoices();
@@ -481,6 +483,10 @@ export class DendryAdapter {
     const scene = (this.engine.game.scenes[sceneId] ?? {}) as Record<string, unknown>;
     const ownRole = this.roleFor(sceneId);
     if (ownRole) this.effective = ownRole; // 'desk' reset is just this assignment
+    const renderContent = (paragraphs: unknown[]) => paragraphsToHTML(
+      localizeStaticContent(paragraphs, this.contentCatalog) as unknown[],
+    );
+    const imageOffset = this.ui.faceImageOffset;
     return {
       sceneId,
       title: convertLine(scene.title ?? sceneId),
@@ -488,9 +494,11 @@ export class DendryAdapter {
       role: ownRole,
       effectiveRole: this.effective,
       info: this.info,
-      html: paragraphsToHTML(
-        localizeStaticContent(this.ui.paragraphs, this.contentCatalog) as unknown[],
-      ),
+      html: renderContent(this.ui.paragraphs),
+      faceImageContent: imageOffset === null ? undefined : {
+        beforeHtml: renderContent(this.ui.paragraphs.slice(0, imageOffset)),
+        afterHtml: renderContent(this.ui.paragraphs.slice(imageOffset)),
+      },
       choices: this.ui.choices.map((c) => ({
         id: c.id,
         title: c.title,

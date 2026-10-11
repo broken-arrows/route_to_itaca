@@ -16,11 +16,12 @@ export const useShellStore = defineStore('shell', () => {
   const titleHubId = ref<string | null>(null);
   const titleChoices = ref<ChoiceView[]>([]);
   const pauseReturnState = ref<string | null>(null);
+  const transitioning = ref(false);
 
   const paused = computed(() =>
     overlay.value === 'pause-menu' || overlay.value === 'pause-pane' || overlay.value === 'exit-confirm',
   );
-  const blocksEngineChoices = computed(() => paused.value || mode.value === 'title');
+  const blocksEngineChoices = computed(() => paused.value || transitioning.value || mode.value === 'title');
 
   function enterTitle(hub: { id: string; choices: ChoiceView[] }): void {
     mode.value = 'title';
@@ -44,7 +45,7 @@ export const useShellStore = defineStore('shell', () => {
   }
 
   function canPause(phase: DeskPhase, role: EffectiveRole, gameOver: boolean): boolean {
-    if (mode.value !== 'playing' || overlay.value !== 'closed' || gameOver) return false;
+    if (mode.value !== 'playing' || overlay.value !== 'closed' || gameOver || transitioning.value) return false;
     return STABLE_PHASES.has(phase) || role === 'library-item';
   }
 
@@ -91,6 +92,7 @@ export const useShellStore = defineStore('shell', () => {
     titleHubId,
     titleChoices,
     pauseReturnState,
+    transitioning,
     paused,
     blocksEngineChoices,
     enterTitle,

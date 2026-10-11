@@ -2,7 +2,8 @@ export type SceneRole =
   | 'desk' | 'deck' | 'deck-gov' | 'deck-party' | 'deck-parliament'
   | 'card' | 'card-gov' | 'card-party' | 'card-parliament'
   | 'pinned-action' | 'pinned-advisor' | 'pinned-parliament' | 'newspaper' | 'event'
-  | 'status' | 'info-tab' | 'pause-item' | 'title-hub' | 'main-menu-item' | 'library-item' | 'ending';
+  | 'status' | 'info-tab' | 'pause-item' | 'title-hub' | 'main-menu-item' | 'library-item'
+  | 'setup' | 'intro' | 'ending';
 export type EffectiveRole = SceneRole | 'page';
 export interface GameInfo {
   title?: string;
@@ -61,6 +62,7 @@ export interface Frame {
   gameOver: boolean;
   bg: string | null;
   faceImage: string | null;
+  faceImageContent?: { beforeHtml: string; afterHtml: string };
   signals: unknown[];
 }
 

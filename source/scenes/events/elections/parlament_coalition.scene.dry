@@ -966,7 +966,7 @@ An ungovernable Catalonia will see another election round in a couple months.
 title: Refuse to negotiate at all
 view-if: parlament_player_can_force_repeat
 choose-if: parlament_player_can_force_repeat
-subtitle: This will be disliked by pretty much everyone, and will most probably result in new elections.
+subtitle: This will be disliked by pretty much everyone, and is set to result in new elections.
 unavailable-subtitle: Sadly, we're not that critical. There are coalition options without our votes.
 on-arrival: {!
     Q.parlament_repeat_election = true;

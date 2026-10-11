@@ -23,7 +23,7 @@ describe('role scene attribute', () => {
     },
   );
 
-  it.each(['title-hub', 'main-menu-item'])(
+  it.each(['title-hub', 'main-menu-item', 'setup', 'intro', 'ending'])(
     'accepts shell presentation role %s and preserves it',
     async (role) => {
       const game = await compile([scene(`title: T\nrole: ${role}\n\nBody.\n`)]);
