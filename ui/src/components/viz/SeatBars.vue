@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { usePartyInk } from './usePartyInk';
 
 defineOptions({ name: 'SeatBars' });
@@ -16,6 +17,7 @@ const props = withDefaults(
   { rows: () => [], q: undefined },
 );
 const partyInk = usePartyInk();
+const { t } = useI18n();
 const total = computed(() => props.rows.reduce((sum, row) => sum + Math.max(0, row.value), 0));
 const majority = computed(() => props.rows[0]?.majority ?? 0);
 const majorityLeft = computed(() =>
@@ -27,7 +29,7 @@ const majorityLeft = computed(() =>
   <div class="seat-bars" data-test="seat-bars">
     <div class="seat-strip-wrap">
       <span class="majority-number" :style="{ left: majorityLeft }">{{ majority }}</span>
-      <div class="seat-strip" role="img" :aria-label="`${total} seats; majority ${majority}`">
+      <div class="seat-strip" role="img" :aria-label="t('widgets.seatStrip', { count: total, majority })">
         <span
           v-for="row in rows"
           :key="row.id"

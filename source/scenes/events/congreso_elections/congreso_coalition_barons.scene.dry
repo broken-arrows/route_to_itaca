@@ -19,7 +19,7 @@ It's no secret that the Barons of the PSOE have now been long time dissatisfied 
 on-arrival: {!
     Q.psoe_leader = "???";
     Q.psoe_leader_gender = "f";
-    Q.psoe_ideology = "Centrist Social Democracy, Autonomism";
+    G.setText(Q, "psoe_ideology", G.text("Centrist Social Democracy, Autonomism"));
     Q.psoe_party_congres_countdown = 12;
     if (!Q.countdowns.includes("psoe_party_congres")) Q.countdowns.push("psoe_party_congres");
 !}

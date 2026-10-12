@@ -40,7 +40,7 @@ on-arrival: {!
     }
     Q.psoe_leader = "Pedro Sánchez";
     Q.psoe_leader_gender = "m";
-    Q.psoe_ideology = "Centrist Social Democracy, Reformist Autonomism";
+    G.setText(Q, "psoe_ideology", G.text("Centrist Social Democracy, Reformist Autonomism"));
 !}
 
 After an unexpected campaign against most of the party leadership's wishes, Pedro Sánchez will take the helm of the PSOE. The young and charismatic candidate will have to face the challenges of the rising new left led by Podemos and the general lack of trust voters have in the PP-PSOE duopoly. 
@@ -58,7 +58,7 @@ on-arrival: {!
     }
     Q.psoe_leader = "Eduardo Madina";
     Q.psoe_leader_gender = "m";
-    Q.psoe_ideology = "Centrist Social Democracy, Republican Autonomism";
+    G.setText(Q, "psoe_ideology", G.text("Centrist Social Democracy, Republican Autonomism"));
 
     // Remove votes
     G.spaSupportInject(Q, 'podemos', 'all', 2, 'psoe');

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { i18n } from '../src/i18n';
 import { createPinia, setActivePinia } from 'pinia';
 import { defineComponent, h, nextTick } from 'vue';
 import WidgetHost from '../src/components/viz/WidgetHost.vue';
@@ -40,7 +41,7 @@ vi.mock('../src/game-bindings', () => ({
 function mountHost(props: { name: string; props?: Record<string, unknown> }) {
   const pinia = createPinia();
   setActivePinia(pinia);
-  return mount(WidgetHost, { props, global: { plugins: [pinia] } });
+  return mount(WidgetHost, { props, global: { plugins: [pinia, i18n] } });
 }
 
 describe('WidgetHost', () => {
@@ -93,7 +94,7 @@ describe('WidgetHost', () => {
       setActivePinia(pinia);
       const w = mount(FreshWidgetHost, {
         props: { name: 'throws', props: {} },
-        global: { plugins: [pinia] },
+        global: { plugins: [pinia, i18n] },
       });
       await nextTick();
 

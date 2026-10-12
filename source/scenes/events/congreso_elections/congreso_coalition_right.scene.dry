@@ -20,7 +20,13 @@ on-arrival: {!
     Q.spanish_pm_party = "pp";
     Q.spanish_coalition = ["pp", "cs"];
     var government_seats = Q.pp_congreso_s + Q.cs_congreso_s;
-    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority, '<span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Right</span> Coalition');
+    G.setText(Q, "spanish_coalition_disp", G.governmentTooltipText("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? G.text("Majority government - {seats}/{majority}", {
+        seats: String(government_seats),
+        majority: String(Q.congreso_s_majority)
+    }) : G.text("Minority government - {seats}/{majority}", {
+        seats: String(government_seats),
+        majority: String(Q.congreso_s_majority)
+    })), G.text('<span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Right</span> Coalition')));
 !}
 
 **A new government is formed!**
@@ -41,7 +47,13 @@ on-arrival: {!
     Q.spanish_pm_party = "cs";
     Q.spanish_coalition = ["cs", "pp"];
     var government_seats = Q.cs_congreso_s + Q.pp_congreso_s;
-    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority, '<span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Coalition</span>');
+    G.setText(Q, "spanish_coalition_disp", G.governmentTooltipText("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? G.text("Majority government - {seats}/{majority}", {
+        seats: String(government_seats),
+        majority: String(Q.congreso_s_majority)
+    }) : G.text("Minority government - {seats}/{majority}", {
+        seats: String(government_seats),
+        majority: String(Q.congreso_s_majority)
+    })), G.text('<span style="color: var(--cs); font-style: italic;">Liberal</span> <span style="color: var(--pp); font-style: italic;">Coalition</span>')));
 !}
 
 **A new government is formed!**
@@ -63,7 +75,13 @@ on-arrival: {!
     Q.spanish_pm_party = "pp";
     Q.spanish_coalition = ["pp", "vox"];
     var government_seats = Q.pp_congreso_s + Q.vox_congreso_s;
-    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority, '<span style="color: var(--pp); font-style: italic;">National</span> <span style="color: var(--vox); font-style: italic;">Right</span> Coalition');
+    G.setText(Q, "spanish_coalition_disp", G.governmentTooltipText("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? G.text("Majority government - {seats}/{majority}", {
+        seats: String(government_seats),
+        majority: String(Q.congreso_s_majority)
+    }) : G.text("Minority government - {seats}/{majority}", {
+        seats: String(government_seats),
+        majority: String(Q.congreso_s_majority)
+    })), G.text('<span style="color: var(--pp); font-style: italic;">National</span> <span style="color: var(--vox); font-style: italic;">Right</span> Coalition')));
 !}
 
 **A new government is formed!**
@@ -83,7 +101,13 @@ on-arrival: {!
     Q.spanish_pm_gender = Q.pp_leader_gender
     Q.spanish_pm_party = "pp";
     Q.spanish_coalition = ["pp"];
-    Q.spanish_coalition_disp = 'PP ' + G.governmentTooltip("gobierno", Q.spanish_coalition, "Minority government - " + Q.pp_congreso_s + "/" + Q.congreso_s_majority, '<span style="color: var(--pp); font-style: italic;">Minority Government</span>');
+    G.setText(Q, "spanish_coalition_disp", G.text("{party} {government}", {
+        party: "PP",
+        government: G.governmentTooltipText("gobierno", Q.spanish_coalition, G.text("Minority government - {seats}/{majority}", {
+            seats: String(Q.pp_congreso_s),
+            majority: String(Q.congreso_s_majority)
+        }), G.text('<span style="color: var(--pp); font-style: italic;">Minority Government</span>'))
+    }));
 !}
 
 **A new government is formed!**

@@ -52,16 +52,16 @@ on-arrival: {!
         switch (Q[Q.parlament_current_ciu + "_roadmap"]) {
             case 1:
                 if (Q.referendum_held) {
-                    Q.parlament_coalition_concessions_indy_text = "The government commits to respect the results of the Independence Referendum and defend its results, even if it goes beyond the limits of possible negotiations with the Spanish government.";
+                    G.setText(Q, "parlament_coalition_concessions_indy_text", G.text("The government commits to respect the results of the Independence Referendum and defend its results, even if it goes beyond the limits of possible negotiations with the Spanish government."));
                 } else {
-                    Q.parlament_coalition_concessions_indy_text = "The government commits to holding an independence consultation within the legislature's mandate.";
+                    G.setText(Q, "parlament_coalition_concessions_indy_text", G.text("The government commits to holding an independence consultation within the legislature's mandate."));
                 }
                 break;
             case 2:
                 if (Q.referendum_held) {
-                    Q.parlament_coalition_concessions_indy_text = "The government commits to respect the results of the Independence Referendum and defend its results, being open to unilateraly declaring independence if there's no other choice.";
+                    G.setText(Q, "parlament_coalition_concessions_indy_text", G.text("The government commits to respect the results of the Independence Referendum and defend its results, being open to unilateraly declaring independence if there's no other choice."));
                 } else {
-                    Q.parlament_coalition_concessions_indy_text = "The government commits to holding a binding independence referendum within the legislature's mandate.";
+                    G.setText(Q, "parlament_coalition_concessions_indy_text", G.text("The government commits to holding a binding independence referendum within the legislature's mandate."));
                 }
                 break;
         }
@@ -143,23 +143,23 @@ on-arrival: {!
     switch (Q[Q.parlament_current_ciu + "_roadmap"]) {
         case 1:
             if (Q.referendum_held) {
-                Q.parlament_coalition_concessions_indy_text = "We've proposed that the government commits to respect the results of the Independence Referendum and defend its results, even if it goes beyond the limits of possible negotiations with the Spanish government.";
+                G.setText(Q, "parlament_coalition_concessions_indy_text", G.text("We've proposed that the government commits to respect the results of the Independence Referendum and defend its results, even if it goes beyond the limits of possible negotiations with the Spanish government."));
             } else {
-                Q.parlament_coalition_concessions_indy_text = "We've proposed that the government commits to holding an independence consultation within the legislature's mandate.";
+                G.setText(Q, "parlament_coalition_concessions_indy_text", G.text("We've proposed that the government commits to holding an independence consultation within the legislature's mandate."));
             }
             break;
         case 2:
             if (Q.referendum_held) {
-                Q.parlament_coalition_concessions_indy_text = "We've proposed that the government commits to respect the results of the Independence Referendum and defend its results, being open to unilateraly declaring independence if there's no other choice.";
+                G.setText(Q, "parlament_coalition_concessions_indy_text", G.text("We've proposed that the government commits to respect the results of the Independence Referendum and defend its results, being open to unilateraly declaring independence if there's no other choice."));
             } else {
-                Q.parlament_coalition_concessions_indy_text = "We've proposed that the government commits to holding a binding independence referendum within the legislature's mandate.";
+                G.setText(Q, "parlament_coalition_concessions_indy_text", G.text("We've proposed that the government commits to holding a binding independence referendum within the legislature's mandate."));
             }
             break;
         case 3:
             if (Q.referendum_held) {
-                Q.parlament_coalition_concessions_indy_text = "We've proposed that the government commits to respect the results of the Independence Referendum and push for an unilateral declaration of independence.";
+                G.setText(Q, "parlament_coalition_concessions_indy_text", G.text("We've proposed that the government commits to respect the results of the Independence Referendum and push for an unilateral declaration of independence."));
             } else {
-                Q.parlament_coalition_concessions_indy_text = "We've proposed that the government commits to holding a binding independence referendum within the legislature's mandate, and to respect its results no matter what.";
+                G.setText(Q, "parlament_coalition_concessions_indy_text", G.text("We've proposed that the government commits to holding a binding independence referendum within the legislature's mandate, and to respect its results no matter what."));
             }
             break;
     }
@@ -428,15 +428,24 @@ on-arrival: {!
     Q.cat_coalition_support = Q.pdcat_external_support ? ["pdcat"] : [];
     Q.cat_coalition_abstain = [];
     var coalitionSeats = Q.parlament_coalition_ciu_erc_s;
-    var coalitionName = Q.pdcat_external_support
-        ? "<span style='color: var(--pdcat); font-style: italic;'>Soft</span>-<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Sovereignty</span> <span style='color: var(--erc); font-style: italic;'>Government</span>"
-        : "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Sovereignty</span> <span style='color: var(--erc); font-style: italic;'>Government</span>";
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (coalitionSeats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + coalitionSeats + "/" + Q.parlament_s_majority, coalitionName);
+    var coalitionName = (Q.pdcat_external_support ? G.text("<span style='color: var(--{pdcat_colour}); font-style: italic;'>Soft</span>-<span style='color: var(--{party}); font-style: italic;'>Sovereignty</span> <span style='color: var(--erc); font-style: italic;'>Government</span>", {
+        party: String(Q.parlament_current_ciu),
+        pdcat_colour: "pdcat"
+    }) : G.text("<span style='color: var(--{party}); font-style: italic;'>Sovereignty</span> <span style='color: var(--erc); font-style: italic;'>Government</span>", {
+        party: String(Q.parlament_current_ciu)
+    }));
+    G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition, (coalitionSeats >= Q.parlament_s_majority ? G.text("Majority government - {seats}/{majority}", {
+        seats: String(coalitionSeats),
+        majority: String(Q.parlament_s_majority)
+    }) : G.text("Minority government - {seats}/{majority}", {
+        seats: String(coalitionSeats),
+        majority: String(Q.parlament_s_majority)
+    })), coalitionName));
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cat_coalition_dissent = 0;
 
-    Q.position_disp = "Generalitat";
+    G.setText(Q, "position_disp", G.text("Generalitat"));
 
     Q.cup_in_gob = false;
     Q.cup_supporting = false;

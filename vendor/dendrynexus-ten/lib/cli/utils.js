@@ -83,7 +83,7 @@
   };
 
   // Checks if the given target (whatever it may be) is at least as recent
-  // as the most recent dry file in the source directory.
+  // as the most recent compiled content file, including JSON registries.
   var isUpToDate = function(sourceDir, targetPath, callback) {
     if (fs.existsSync(targetPath)) {
       // Check its date.
@@ -91,7 +91,7 @@
         if (err) {
           return callback(err);
         }
-        getLatestMTime(sourceDir, function(err, latest) {
+        getLatestMTime(sourceDir, CONTENT_PATTERN, function(err, latest) {
           if (err) {
             return callback(err);
           }
@@ -254,8 +254,8 @@
   // This filter is NOT cosmetic. Before it, fetchContent walked source/ with no
   // pattern at all and `.toString()`d EVERY file into memory — so moving the
   // 101 MB art tree into source/img/ (phase 6) would have made every compile
-  // slurp it as UTF-8. `desk_ui_plan.md` claimed the walk already filtered on
-  // /\.dry$/; that filter is only on getLatestMTime (above).
+  // slurp it as UTF-8. Share this filter with the freshness check so changes
+  // to compiled JSON registries invalidate the game just like .dry changes.
   var CONTENT_PATTERN = /(\.dry|[\\/]data[\\/][^\\/]+\.json)$/;
 
   var fetchContent = function(diry, callback) {

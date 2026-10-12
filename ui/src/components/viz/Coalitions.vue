@@ -50,7 +50,22 @@ function finite(value: unknown): number {
 }
 
 function html(value: unknown): string {
-  return markGlossary(String(value ?? ''), game.glossary);
+  const source = String(value ?? '');
+  return markGlossary(game.adapter?.translate(source) ?? source, game.glossary);
+}
+
+const DEFAULT_LABELS = {
+  support: 'support', abstain: 'abst.', tolerated: 'tolerated',
+  seatCount: '{seats} seats', seatProgress: '{seats} of {majority} seats',
+};
+function label(key: keyof typeof DEFAULT_LABELS, params: Record<string, unknown> = {}): string {
+  void game.frame;
+  const localized = (game.adapter?.data.localization as {
+    widgetText?: { coalitions?: Partial<typeof DEFAULT_LABELS> };
+  } | undefined)?.widgetText?.coalitions;
+  const source = localized?.[key] ?? DEFAULT_LABELS[key];
+  return game.adapter?.translate(source, params)
+    ?? source.replace(/\{(\w+)\}/g, (_, name: string) => String(params[name] ?? ''));
 }
 
 function displayParty(label: string): string {
@@ -133,8 +148,8 @@ const entries = computed(() => {
             <span v-if="index" class="member-join"> + </span>
             <span class="coalition-member">
               <Prose tag="span" :html="member.labelHtml" />
-              <span v-if="member.type === 'support'" class="member-role"> (support)</span>
-              <span v-else-if="member.type === 'abstain'" class="member-role"> (abst.)</span>
+              <span v-if="member.type === 'support'" class="member-role"> ({{ label('support') }})</span>
+              <span v-else-if="member.type === 'abstain'" class="member-role"> ({{ label('abstain') }})</span>
             </span>
           </template>
         </div>
@@ -144,10 +159,10 @@ const entries = computed(() => {
           /
           <strong v-if="!entry.passing">{{ entry.majority }}</strong>
           <span v-else>{{ entry.majority }}</span>
-          <span v-if="entry.tolerated"> (tolerated)</span>
+          <span v-if="entry.tolerated"> ({{ label('tolerated') }})</span>
         </div>
       </div>
-      <div class="coalition-track" :aria-label="`${entry.shownSeats} of ${entry.majority} seats`">
+      <div class="coalition-track" :aria-label="label('seatProgress', { seats: entry.shownSeats, majority: entry.majority })">
         <div class="coalition-fill">
           <div
             v-for="(segment, index) in entry.segments"
@@ -155,7 +170,7 @@ const entries = computed(() => {
             class="coalition-segment"
             :class="[`segment-${segment.type}`]"
             :style="{ width: `${segment.width.toFixed(3)}%`, backgroundColor: segment.color }"
-            :title="`${segment.label}: ${segment.seats} seats`"
+            :title="`${segment.label}: ${label('seatCount', { seats: segment.seats })}`"
           >{{ segment.seats }}</div>
         </div>
         <span class="majority-line" :style="{ left: entry.majorityLeft }" aria-hidden="true" />

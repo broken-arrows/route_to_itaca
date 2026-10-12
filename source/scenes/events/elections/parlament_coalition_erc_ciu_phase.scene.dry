@@ -334,13 +334,22 @@ on-arrival: {!
     Q.cat_coalition_support = Q.pdcat_external_support ? ["pdcat"] : [];
     Q.cat_coalition_abstain = [];
     var coalitionSeats = Q.parlament_coalition_erc_ciu_s;
-    var coalitionName = Q.pdcat_external_support 
-        ? "<span style='color: var(--pdcat); font-style: italic;'>Soft</span>-<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Government</span>"
-        : "<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Government</span>";
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (coalitionSeats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + coalitionSeats + "/" + Q.parlament_s_majority, coalitionName);
+    var coalitionName = (Q.pdcat_external_support ? G.text("<span style='color: var(--{pdcat_colour}); font-style: italic;'>Soft</span>-<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--{party}); font-style: italic;'>Government</span>", {
+        party: String(Q.parlament_current_ciu),
+        pdcat_colour: "pdcat"
+    }) : G.text("<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--{party}); font-style: italic;'>Government</span>", {
+        party: String(Q.parlament_current_ciu)
+    }));
+    G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition, (coalitionSeats >= Q.parlament_s_majority ? G.text("Majority government - {seats}/{majority}", {
+        seats: String(coalitionSeats),
+        majority: String(Q.parlament_s_majority)
+    }) : G.text("Minority government - {seats}/{majority}", {
+        seats: String(coalitionSeats),
+        majority: String(Q.parlament_s_majority)
+    })), coalitionName));
     Q.cat_coalition_dissent = 0;
 
-    Q.position_disp = "Generalitat";
+    G.setText(Q, "position_disp", G.text("Generalitat"));
 
     Q.cup_in_gob = false;
     Q.cup_supporting = false;

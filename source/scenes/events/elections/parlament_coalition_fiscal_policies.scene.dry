@@ -135,13 +135,25 @@ on-arrival: {!
 
 @evaluate
 on-arrival: {!
-    var reasons = [];
+    // Keep native English eligibility/dedup logic and capture each reason once.
+    function reasonList(text) {
+        var values = text.map(function (recipe) {
+            return G.englishText(recipe);
+        });
+        values.text = text;
+        return values;
+    }
+    function addReason(values, recipe) {
+        values.text.push(recipe);
+        return values.push(G.englishText(recipe));
+    }
+    var reasons = reasonList([]);
     var terms = [
-        ["cap", "social_spending_cap", -2, 3, "We're asking for too much of a social spending cap increase."],
-        ["education", "education_spending", -2, 2, "We're asking for too much of a education funding increase."],
-        ["health", "healthcare_spending", -2, 2, "We're asking for too much of a healthcare funding increase."],
-        ["pay", "public_salary_level", -2, 2, "We're asking for too much of a public salaries increase."],
-        ["tax", "tax_policy_level", -2, 2, "We're asking for too much of a radical change in taxes."]
+        ["cap", "social_spending_cap", -2, 3, G.text("We're asking for too much of a social spending cap increase.")],
+        ["education", "education_spending", -2, 2, G.text("We're asking for too much of a education funding increase.")],
+        ["health", "healthcare_spending", -2, 2, G.text("We're asking for too much of a healthcare funding increase.")],
+        ["pay", "public_salary_level", -2, 2, G.text("We're asking for too much of a public salaries increase.")],
+        ["tax", "tax_policy_level", -2, 2, G.text("We're asking for too much of a radical change in taxes.")]
     ];
     var selected = false;
     for (var term of terms) {
@@ -149,11 +161,11 @@ on-arrival: {!
         selected = true;
         var current = Q[term[1]];
         var target = Q["parlament_coalition_policy_" + term[0] + "_target"];
-        if (!Number.isInteger(current) || !Number.isInteger(target) || current < term[2] || current >= term[3] || target !== current + 1) reasons.push(term[4]);
+        if (!Number.isInteger(current) || !Number.isInteger(target) || current < term[2] || current >= term[3] || target !== current + 1) addReason(reasons, term[4]);
     }
-    if (selected && !(Q.player_party === "cup" && Q.parlament_coalition_sovereignty_phase > 0) && !(Q.parlament_coalition_leverage >= 0)) reasons.push("We don't have enough leverage to ask for this much.");
-    if (Q.parlament_coalition_concessions_indy && Q.pdcat_external_support && Q.pdcat_roadmap < Q[Q.parlament_current_ciu + "_roadmap"]) reasons.push("The pdcat is firmly against the proposed independence commitment.");
-    Q.parlament_coalition_policy_reject_reasons = reasons.join(" ");
+    if (selected && !(Q.player_party === "cup" && Q.parlament_coalition_sovereignty_phase > 0) && !(Q.parlament_coalition_leverage >= 0)) addReason(reasons, G.text("We don't have enough leverage to ask for this much."));
+    if (Q.parlament_coalition_concessions_indy && Q.pdcat_external_support && Q.pdcat_roadmap < Q[Q.parlament_current_ciu + "_roadmap"]) addReason(reasons, G.text("The pdcat is firmly against the proposed independence commitment."));
+    G.setText(Q, "parlament_coalition_policy_reject_reasons", G.joinText(reasons.text, " "));
     if (reasons.length) Q.parlament_coalition_proposal_accept = false;
 !}
 

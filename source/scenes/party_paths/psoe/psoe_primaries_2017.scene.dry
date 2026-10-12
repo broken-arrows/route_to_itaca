@@ -25,7 +25,7 @@ choose-if: (up_congreso_s > psoe_congreso_s or podemos_congreso_s > psoe_congres
 on-arrival: {!
     Q.psoe_leader = "Eduardo Madina";
     Q.psoe_leader_gender = "m";
-    Q.psoe_ideology = "Centrist Social Democracy, Republican Autonomism";
+    G.setText(Q, "psoe_ideology", G.text("Centrist Social Democracy, Republican Autonomism"));
     Q.psoe_leadership_mult = 0.7;
 !}
 
@@ -42,7 +42,7 @@ choose-if: (up_congreso_s > psoe_congreso_s or podemos_congreso_s > psoe_congres
 on-arrival: {!
     Q.psoe_leader = "Susana Díaz";
     Q.psoe_leader_gender = "f";
-    Q.psoe_ideology = "Centrist Social Democracy, Autonomism";
+    G.setText(Q, "psoe_ideology", G.text("Centrist Social Democracy, Autonomism"));
     Q.psoe_leadership_mult = 0.8;
 !}
 
@@ -58,7 +58,7 @@ choose-if: (up_congreso_s <= psoe_congreso_s and podemos_congreso_s <= psoe_cong
 on-arrival: {!
     Q.psoe_leader = "Pedro Sánchez";
     Q.psoe_leader_gender = "m";
-    Q.psoe_ideology = "Centrist Social Democracy, Reformist Autonomism";
+    G.setText(Q, "psoe_ideology", G.text("Centrist Social Democracy, Reformist Autonomism"));
     Q.psoe_leadership_mult = 1.0;
 !}
 

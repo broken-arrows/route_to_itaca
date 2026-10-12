@@ -705,12 +705,11 @@
     } else if (tooltip.infoDesc) {
       ledBy = `<br/>${tooltip.infoDesc}`;
     }
-    if (q.ideology) {
-      ideology = `<br/><span class='mytooltip-ideology'>${
-        qualities.hasOwnProperty(q.ideology)
-          ? qualities[q.ideology]
-          : q.ideology
-      }</span>`;
+    const ideologyText = q.ideology && qualities.hasOwnProperty(q.ideology)
+      ? qualities[q.ideology]
+      : tooltip.ideology;
+    if (ideologyText) {
+      ideology = `<br/><span class='mytooltip-ideology'>${ideologyText}</span>`;
     }
     const allegianceMap =
       (window.RTI_GAME_LIB && window.RTI_GAME_LIB.allegiances) || {};

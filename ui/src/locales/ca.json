@@ -55,6 +55,7 @@
     },
     "saveManager": {
       "dntFileRequired": "Trieu un fitxer de partida .dnt.",
+      "achievementsDisabled": "Assoliments desactivats",
       "listLabel": "Partides desades",
       "autoLatest": "Partida desada automàticament",
       "autoPrevious": "Partida desada automàticament anterior",
@@ -72,7 +73,6 @@
         "overwrite": "Sobreescriu"
       },
       "status": {
-        "achievementsDisabled": "Assoliments desactivats",
         "ready": "Disponible",
         "corrupt": "Corromput",
         "unreadable": "Il·legible",
@@ -93,8 +93,8 @@
         "manualOnly": "Només es poden sobreescriure els desaments manuals."
       },
       "confirm": {
-        "overwriteTitle": "Voleu sobreescriure aquest desament?",
-        "overwriteBody": "El desament manual seleccionat se substituirà per l'estat actual de la partida.",
+        "overwriteTitle": "Voleu sobreescriure aquesta partit?",
+        "overwriteBody": "Es perdrà l'anterior versió desada. Aquesta acció no es pot desfer.",
         "loadTitle": "Voleu carregar aquesta partida?",
         "loadBody": "Aquesta partida es va crear amb una versió del joc diferent o desconeguda.",
         "loadAnyway": "Carrega-la igualment"
@@ -121,6 +121,43 @@
       "title": "Voleu sortir al menú principal?",
       "body": "Es perdrà el progrés posterior al darrer desament automàtic.",
       "confirm": "Surt al menú principal"
+    }
+  },
+  "widgets": {
+    "seats": "{count} escó | {count} escons",
+    "partySeats": "{party}: {count} escons",
+    "majoritySeats": "Majoria: {count} escons",
+    "seatStrip": "{count} escons; majoria {majority}",
+    "hemicycle": "Hemicicle: {count} escons, majoria {majority}",
+    "logo": "Logotip de {party}",
+    "you": "tu",
+    "strength": "FOR",
+    "dissent": "DIS",
+    "votes": "{label}: {count} vots",
+    "majorityVotes": "Majoria: {count} vots a favor",
+    "trend": "{label}: gràfic històric, ara {value}{unit}, {direction}",
+    "trendStart": "inici de la partida",
+    "trendNow": "aquest mes",
+    "direction": { "up": "a l'alça", "down": "a la baixa", "flat": "estable" },
+    "builder": {
+      "include": "Inclou {party} a la candidatura conjunta",
+      "previous": "Partit anterior per a {party}",
+      "next": "Partit següent per a {party}",
+      "removeSeat": "Treu un escó a {party}",
+      "seatInput": "Escons de {party}",
+      "addSeat": "Afegeix un escó a {party}"
+    },
+    "map": {
+      "unavailable": "Mapa no disponible",
+      "province": "Província",
+      "potentialVoters": "{count} potencials votants",
+      "demographics": "Per grup demogràfic",
+      "projected": "Projecció d'escons · {province}",
+      "projection": "Projecció d'escons · {province}",
+      "distribution": "Distribució d'escons · {region}",
+      "noResults": "Encara no hi ha resultats.",
+      "selectRegion": "Fes clic en una regió per veure'n la distribució d'escons.",
+      "selectCity": "Fes clic en una ciutat per veure'n els resultats"
     }
   },
   "desk": {

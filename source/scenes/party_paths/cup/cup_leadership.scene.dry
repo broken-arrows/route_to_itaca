@@ -75,7 +75,7 @@ on-arrival: {!
     if (Q.cup_third_sector_points == 2) {
         Q.party_resources -= 1;
     }
-    Q.cup_faction = "Third Sector";
+    G.setText(Q, "cup_faction", "Third Sector");
     var new_candidate = Q.cup_leader;
     var new_candidate_gender = Q.cup_leader_gender;
     var rnd = 0;

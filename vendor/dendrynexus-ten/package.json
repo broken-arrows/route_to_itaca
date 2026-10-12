@@ -15,6 +15,7 @@
   "license": "MIT",
   "main": "lib/engine.js",
   "dependencies": {
+    "acorn": "^8.19.0",
     "argparse": "1.0.x",
     "async": "1.x.x",
     "browserify": "10.x.x",

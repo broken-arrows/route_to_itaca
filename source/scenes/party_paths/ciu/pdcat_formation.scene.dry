@@ -10,7 +10,7 @@ on-arrival: {!
     Q.pdcat_formed = true;
 
     Q.pdcat_roadmap = Q.dl_roadmap
-    Q.pdcat_ideology = Q.dl_ideology
+    G.copyText(Q, "pdcat_ideology", "dl_ideology")
     
     Q.pdcat_leader = Q.dl_leader;
     Q.pdcat_leader_gender = Q.dl_leader_gender;
@@ -95,7 +95,9 @@ on-arrival: {!
 
     if (Q.cat_coalition.includes("dl")) {
         Q.cat_coalition = Q.cat_coalition.map(item => item === "dl" ? "pdcat" : item);
-        Q.cat_coalition_disp = Q.cat_coalition_disp.replaceAll("dl", "pdcat").replaceAll("dl", "pdcat");
+        G.updateText(Q, "cat_coalition_disp", function (recipe) {
+            return G.rebrandGovernmentText(G.rebrandGovernmentText(recipe, "dl", "pdcat", true), "dl", "pdcat", true);
+        });
     }
 
     Q.pdcat_split_countdown = 9;

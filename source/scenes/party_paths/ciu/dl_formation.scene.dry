@@ -10,7 +10,7 @@ on-arrival: {!
     Q.dl_formed = true;
 
     Q.dl_roadmap = Q.cdc_roadmap
-    Q.dl_ideology = Q.cdc_ideology
+    G.copyText(Q, "dl_ideology", "cdc_ideology")
     
     Q.dl_leader = Q.cdc_leader;
     Q.dl_leader_gender = Q.cdc_leader_gender;
@@ -95,7 +95,9 @@ on-arrival: {!
 
     if (Q.cat_coalition.includes("cdc")) {
         Q.cat_coalition = Q.cat_coalition.map(item => item === "cdc" ? "dl" : item);
-        Q.cat_coalition_disp = Q.cat_coalition_disp.replaceAll("CDC", "DL").replaceAll("cdc", "dl");
+        G.updateText(Q, "cat_coalition_disp", function (recipe) {
+            return G.rebrandGovernmentText(recipe, "cdc", "dl");
+        });
     }
 
     Q.pdcat_formation_countdown = 6;

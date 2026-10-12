@@ -115,26 +115,63 @@ title: Send this counter-proposal
 view-if: parlament_coalition_changes or parlament_coalition_sovereignty_candidate_reason
 subtitle: [? if parlament_coalition_sovereignty_phase = 3: This is the final round. If any partner refuses, negotiations will end without an agreement.?]
 on-arrival: {!
-    var reasons = [];
+    // Keep native English eligibility/dedup logic and capture each reason once.
+    function reasonList(text) {
+        var values = text.map(function (recipe) {
+            return G.englishText(recipe);
+        });
+        values.text = text;
+        return values;
+    }
+    function addReason(values, recipe) {
+        values.text.push(recipe);
+        return values.push(G.englishText(recipe));
+    }
+    var reasons = reasonList([]);
     var ministries = ["interior", "economy", "foreign", "health", "education", "territory", "bnl"];
     var counts = {};
     for (var office of ["vp"].concat(ministries)) {
         var holder = Q["parlament_coalition_proposal_" + office];
-        if (Q.parlament_coalition_sovereignty_cabinet.indexOf(holder) < 0) reasons.push("Some cabinet posts are still unassigned or have been given to a party outside the government.");
+        if (Q.parlament_coalition_sovereignty_cabinet.indexOf(holder) < 0) addReason(reasons, G.text("Some cabinet posts are still unassigned or have been given to a party outside the government."));
         if (office != "vp") counts[holder] = (counts[holder] || 0) + 1;
     }
 
-    if (Q.coalition_phase_timer > 0) reasons.push("We must wait for the next round of negotiations before sending another proposal.");
-    if (Q.parlament_coalition_leverage < 0) reasons.push(({ciu: "CiU", cdc: "CDC", dl: "DL", pdcat: "PDeCAT", junts: "Junts", jxcat: "JxCat"}[Q.parlament_current_ciu] || Q.parlament_current_ciu) + " is unwilling to accept the full package of concessions we are demanding.");
-    if (Q.parlament_coalition_proposal_economy == "cup") reasons.push(Q.parlament_current_ciu + " will not accept a government that gives the CUP control of the Economy Ministry.");
-    if (Q.parlament_coalition_proposal_economy != Q.parlament_current_ciu && Q.parlament_coalition_proposal_economy != "erc") reasons.push(Q.parlament_current_ciu + " insists that the Economy Ministry stay with them.");
-    if (Q.parlament_coalition_proposal_interior == "erc" && Q.parlament_coalition_sovereignty_phase < 2) reasons.push(Q.parlament_current_ciu + " seems unwilling to hand the Interior Ministry to ERC.");
-    if (Q.parlament_coalition_proposal_interior == "cup" && Q.parlament_coalition_sovereignty_phase < 3) reasons.push(Q.parlament_current_ciu + " seems unwilling to hand the Interior Ministry to the CUP.");
-    if (!(counts[Q.parlament_current_ciu] >= 1)) reasons.push(Q.parlament_current_ciu + " expects to hold more ministries in this new government to come.");
-    if (Q.player_party != "erc" && !(counts.erc >= 1)) reasons.push("ERC expects to hold at least one ministry in the new government.");
+    if (Q.coalition_phase_timer > 0) addReason(reasons, G.text("We must wait for the next round of negotiations before sending another proposal."));
+    if (Q.parlament_coalition_leverage < 0) addReason(reasons, G.text("{value1} is unwilling to accept the full package of concessions we are demanding.", {
+        value1: String({
+            ciu: "CiU",
+            cdc: "CDC",
+            dl: "DL",
+            pdcat: "PDeCAT",
+            junts: "Junts",
+            jxcat: "JxCat"
+        } [Q.parlament_current_ciu] || Q.parlament_current_ciu)
+    }));
+    if (Q.parlament_coalition_proposal_economy == "cup") addReason(reasons, G.text("{party} will not accept a government that gives the CUP control of the Economy Ministry.", {
+        party: String(Q.parlament_current_ciu)
+    }));
+    if (Q.parlament_coalition_proposal_economy != Q.parlament_current_ciu && Q.parlament_coalition_proposal_economy != "erc") addReason(reasons, G.text("{party} insists that the Economy Ministry stay with them.", {
+        party: String(Q.parlament_current_ciu)
+    }));
+    if (Q.parlament_coalition_proposal_interior == "erc" && Q.parlament_coalition_sovereignty_phase < 2) addReason(reasons, G.text("{party} seems unwilling to hand the Interior Ministry to ERC.", {
+        party: String(Q.parlament_current_ciu)
+    }));
+    if (Q.parlament_coalition_proposal_interior == "cup" && Q.parlament_coalition_sovereignty_phase < 3) addReason(reasons, G.text("{party} seems unwilling to hand the Interior Ministry to the CUP.", {
+        party: String(Q.parlament_current_ciu)
+    }));
+    if (!(counts[Q.parlament_current_ciu] >= 1)) addReason(reasons, G.text("{party} expects to hold more ministries in this new government to come.", {
+        party: String(Q.parlament_current_ciu)
+    }));
+    if (Q.player_party != "erc" && !(counts.erc >= 1)) addReason(reasons, G.text("ERC expects to hold at least one ministry in the new government."));
 
-    if (Q.parlament_coalition_sovereignty_phase < 3 && Q.parlament_coalition_sovereignty_expected_vp != Q.player_party && Q.parlament_coalition_proposal_vp != Q.parlament_coalition_sovereignty_expected_vp) reasons.push(Q.parlament_coalition_sovereignty_expected_vp + " is insisting that they should get the Vice-Presidency.");
-    Q.parlament_coalition_sovereignty_reject_reasons = reasons.filter(function (r, i) { return reasons.indexOf(r) == i; }).join(" ");
+    if (Q.parlament_coalition_sovereignty_phase < 3 && Q.parlament_coalition_sovereignty_expected_vp != Q.player_party && Q.parlament_coalition_proposal_vp != Q.parlament_coalition_sovereignty_expected_vp) addReason(reasons, G.text("{parlament_coalition_sovereignty_expected_vp} is insisting that they should get the Vice-Presidency.", {
+        parlament_coalition_sovereignty_expected_vp: String(Q.parlament_coalition_sovereignty_expected_vp)
+    }));
+    G.setText(Q, "parlament_coalition_sovereignty_reject_reasons", G.joinText(reasons.filter(function (r, i) {
+        return reasons.indexOf(r) == i;
+    }).map(function (reason) {
+        return reasons.text[reasons.indexOf(reason)];
+    }), " "));
     Q.parlament_coalition_proposal_accept = reasons.length == 0;
 !}
 call: parlament_coalition_sovereignty_replacement.check

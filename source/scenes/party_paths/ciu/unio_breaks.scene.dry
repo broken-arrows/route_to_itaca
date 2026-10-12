@@ -11,7 +11,7 @@ on-arrival: {!
 
     Q.cdc_roadmap = Q.ciu_roadmap;
     Q.unio_roadmap = 0;
-    Q.cdc_ideology = "Centre-right Liberalism, Pragmatic Independence"
+    G.setText(Q, "cdc_ideology", G.text("Centre-right Liberalism, Pragmatic Independence"))
 
     Q.cdc_parlament_s = Math.ceil(Q.ciu_parlament_s * 0.75);
     Q.cdc_parlament_pv = 0;
@@ -118,7 +118,9 @@ on-arrival: {!
 
     if (Q.cat_coalition.includes("ciu")) {
         Q.cat_coalition = Q.cat_coalition.map(item => item === "ciu" ? "cdc" : item);
-        Q.cat_coalition_disp = Q.cat_coalition_disp.replaceAll("CiU", "CDC").replaceAll("ciu", "cdc");
+        G.updateText(Q, "cat_coalition_disp", function (recipe) {
+            return G.rebrandGovernmentText(G.rebrandGovernmentText(recipe, "CiU", "CDC", true), "ciu", "cdc", true);
+        });
     }
 
     Q.dl_formation_countdown = 6;

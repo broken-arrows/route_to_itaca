@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
+import { i18n } from '../src/i18n';
 import { createPinia, setActivePinia } from 'pinia';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -23,7 +24,7 @@ beforeEach(() => {
 describe('PollMap widget', () => {
   it('full mode renders the map, province controls, crosstab, and projected columns', async () => {
     const q = useGameStore().q;
-    const wrapper = mount(PollMap, { props: { q } });
+    const wrapper = mount(PollMap, { global: { plugins: [i18n] }, props: { q } });
     await flushPromises();
     expect(wrapper.attributes('data-variant')).toBe('full');
     expect(wrapper.findAll('.map-shell .province')).toHaveLength(4);
@@ -38,13 +39,13 @@ describe('PollMap widget', () => {
 
   it('compact is a painted map only; blank is a neutral map only', async () => {
     const q = useGameStore().q;
-    const compact = mount(PollMap, { props: { q, variant: 'compact' } });
+    const compact = mount(PollMap, { global: { plugins: [i18n] }, props: { q, variant: 'compact' } });
     await flushPromises();
     expect(compact.find('.map-shell').exists()).toBe(true);
     expect(compact.find('.province-tabs').exists()).toBe(false);
     expect(compact.attributes('style')).toContain('--province-barcelona');
 
-    const blank = mount(PollMap, { props: { q, variant: 'blank' } });
+    const blank = mount(PollMap, { global: { plugins: [i18n] }, props: { q, variant: 'blank' } });
     expect(blank.classes()).toContain('poll-map-blank');
     expect(blank.attributes('style')).toContain('--province-barcelona: #a6a6a6');
     expect(blank.find('.crosstab').exists()).toBe(false);

@@ -210,7 +210,7 @@ on-arrival: {!
     Q.cup_in_gob = false;
     Q.cup_supporting = false;
     Q.cat_coalition_dissent = 0;
-    Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
+    G.setText(Q, "position_disp", G.text("<span style='font-style: italic'>Opposition</span>"));
     Q.month_actions += 1;
     Q.independence_movement += 10;
     Q.independence_trust -= 15;
@@ -222,6 +222,7 @@ on-arrival: {!
     var support = [];
     var abstain = [];
     var displayName = "<span style='color: var(--cs); font-style: italic;'>Moderation</span> Government";
+    var displayNameText = G.text("<span style='color: var(--cs); font-style: italic;'>Moderation</span> Government");
 
     if (variant == "psc_cs_mod") {
         president = "psc"; vicePresident = "psc"; cabinet = ["psc"]; support = ["cs"];
@@ -232,56 +233,56 @@ on-arrival: {!
     } else if (variant == "psc_cs_unio_ppc_abst") {
         president = "psc"; vicePresident = "psc"; cabinet = ["psc"]; support = ["cs", "unio"]; abstain = ["ppc"];
     } else if (variant == "cs_ppc") {
-        support = ["ppc"]; displayName = "<span style='color: var(--ppc); font-style: italic;'>Constitutionalist</span> Pact";
+        support = ["ppc"]; (displayNameText = G.text("<span style='color: var(--ppc); font-style: italic;'>Constitutionalist</span> Pact"), displayName = "<span style='color: var(--ppc); font-style: italic;'>Constitutionalist</span> Pact");
     } else if (variant == "cs_ppc_psc_abst") {
-        support = ["ppc"]; abstain = ["psc"]; displayName = "Unity Pact";
+        support = ["ppc"]; abstain = ["psc"]; (displayNameText = G.text("Unity Pact"), displayName = "Unity Pact");
     } else if (variant == "cs_psc_ppc_sup") {
-        support = ["psc", "ppc"]; displayName = "Grand Unity Pact";
+        support = ["psc", "ppc"]; (displayNameText = G.text("Grand Unity Pact"), displayName = "Grand Unity Pact");
     } else if (variant == "psc_cs_ppc_abst") {
-        president = "psc"; vicePresident = "cs"; cabinet = ["psc", "cs"]; abstain = ["ppc"]; displayName = "Unity Pact";
+        president = "psc"; vicePresident = "cs"; cabinet = ["psc", "cs"]; abstain = ["ppc"]; (displayNameText = G.text("Unity Pact"), displayName = "Unity Pact");
     } else if (variant == "psc_cs_ppc_sup") {
-        president = "psc"; vicePresident = "cs"; cabinet = ["psc", "cs"]; support = ["ppc"]; displayName = "Grand Unity Pact";
+        president = "psc"; vicePresident = "cs"; cabinet = ["psc", "cs"]; support = ["ppc"]; (displayNameText = G.text("Grand Unity Pact"), displayName = "Grand Unity Pact");
     } else if (variant == "ppc_cs") {
-        president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; displayName = "<span style='color: var(--ppc); font-style: italic;'>Constitutionalist</span> Government";
+        president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; (displayNameText = G.text("<span style='color: var(--ppc); font-style: italic;'>Constitutionalist</span> Government"), displayName = "<span style='color: var(--ppc); font-style: italic;'>Constitutionalist</span> Government");
     } else if (variant == "cs_ppc_vox") {
         if (Q.cs_parlament_s > Q.ppc_parlament_s) {
             support = ["ppc", "vox"];
         } else {
             president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; support = ["vox"];
         }
-        displayName = "<span style='color: var(--cs); font-style: italic;'>Right</span>-<span style='color: var(--vox); font-style: italic;'>Union</span> <span style='color: var(--ppc); font-style: italic;'>Coalition</span>";
+        (displayNameText = G.text("<span style='color: var(--cs); font-style: italic;'>Right</span>-<span style='color: var(--vox); font-style: italic;'>Union</span> <span style='color: var(--ppc); font-style: italic;'>Coalition</span>"), displayName = "<span style='color: var(--cs); font-style: italic;'>Right</span>-<span style='color: var(--vox); font-style: italic;'>Union</span> <span style='color: var(--ppc); font-style: italic;'>Coalition</span>");
     } else if (variant == "ppc_cs_psc_abst") {
-        president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; abstain = ["psc"]; displayName = "Unity Pact";
+        president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; abstain = ["psc"]; (displayNameText = G.text("Unity Pact"), displayName = "Unity Pact");
     } else if (variant == "ppc_cs_psc_sup") {
-        president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; support = ["psc"]; displayName = "Grand Unity Pact";
+        president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; support = ["psc"]; (displayNameText = G.text("Grand Unity Pact"), displayName = "Grand Unity Pact");
     } else if (variant == "cs_ppc_psc_vox_abst") {
         if (Q.cs_parlament_s > Q.ppc_parlament_s) {
             support = ["ppc", "psc"];
         } else {
             president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; support = ["psc"];
         }
-        abstain = ["vox"]; displayName = "Unthinkably Grand Coalition";
+        abstain = ["vox"]; (displayNameText = G.text("Unthinkably Grand Coalition"), displayName = "Unthinkably Grand Coalition");
     } else if (variant == "cs_ppc_vox_psc_abst") {
         if (Q.cs_parlament_s > Q.ppc_parlament_s) {
             support = ["ppc", "vox"];
         } else {
             president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; support = ["vox"];
         }
-        abstain = ["psc"]; displayName = "Unthinkable Unity Pact";
+        abstain = ["psc"]; (displayNameText = G.text("Unthinkable Unity Pact"), displayName = "Unthinkable Unity Pact");
     } else if (variant == "cs_ppc_vox_psc_sup") {
         if (Q.cs_parlament_s > Q.ppc_parlament_s) {
             support = ["ppc", "vox", "psc"];
         } else {
             president = "ppc"; vicePresident = "cs"; cabinet = ["ppc", "cs"]; support = ["vox", "psc"];
         }
-        displayName = "Salvation Government";
+        (displayNameText = G.text("Salvation Government"), displayName = "Salvation Government");
     } else if (variant == "ciu_unio") {
         president = Q.parlament_current_ciu; vicePresident = "unio";
-        cabinet = [president, "unio"]; displayName = "CiU 2.0 - Back Together";
+        cabinet = [president, "unio"]; (displayNameText = G.text("CiU 2.0 - Back Together"), displayName = "CiU 2.0 - Back Together");
     }
 
     if (displayName.indexOf("<span") < 0) {
-        displayName = "<span style='color: var(--" + president + "); font-style: italic;'>" + displayName + "</span>";
+        (displayNameText = G.text("<span style='color: var(--{party}); font-style: italic;'>{label}</span>", { party: String(president), label: displayNameText }), displayName = "<span style='color: var(--" + president + "); font-style: italic;'>" + displayName + "</span>");
     }
 
     Q.cat_coalition = cabinet;
@@ -289,7 +290,13 @@ on-arrival: {!
     Q.cat_coalition_abstain = abstain;
     var governmentSeats = 0;
     for (var ci = 0; ci < cabinet.length; ci++) governmentSeats += Q[cabinet[ci] + "_parlament_s"] || 0;
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (governmentSeats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + governmentSeats + "/" + Q.parlament_s_majority, displayName);
+    G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition, (governmentSeats >= Q.parlament_s_majority ? G.text("Majority government - {seats}/{majority}", {
+        seats: String(governmentSeats),
+        majority: String(Q.parlament_s_majority)
+    }) : G.text("Minority government - {seats}/{majority}", {
+        seats: String(governmentSeats),
+        majority: String(Q.parlament_s_majority)
+    })), displayNameText));
 
     Q.parlament_coalition_proposal_president = president;
     Q.parlament_coalition_proposal_vp = vicePresident;

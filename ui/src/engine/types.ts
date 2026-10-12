@@ -5,6 +5,16 @@ export type SceneRole =
   | 'status' | 'info-tab' | 'pause-item' | 'title-hub' | 'main-menu-item' | 'library-item'
   | 'setup' | 'intro' | 'ending';
 export type EffectiveRole = SceneRole | 'page';
+/** Game-owned translations select grammar from captured, language-independent context. */
+export type CatalogEntry = string
+  | { select: string; cases: Record<string, CatalogEntry> }
+  | { plural: string; cases: Record<string, CatalogEntry> };
+export type ContentCatalog = Record<string, CatalogEntry>;
+export interface TextRecipe {
+  kind: 'text';
+  key: string;
+  params: Record<string, unknown>;
+}
 export interface GameInfo {
   title?: string;
   author?: string;

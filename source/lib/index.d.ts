@@ -75,6 +75,8 @@ export interface GameLib {
     summary: string,
     labelHtml: string,
   ): string;
+  governmentTooltipText(institution: 'generalitat' | 'gobierno' | 'ajuntament', parties: string[], summary: unknown, labelHtml: unknown): unknown;
+  rebrandGovernmentText(value: unknown, from: string, to: string, exact?: boolean): unknown;
   engineTick(Q: Record<string, unknown>): void;
   /** Bounded, conserved support movement for recurring card effects. Structural
    *  party formation/succession code deliberately uses separate helpers. */

@@ -11,6 +11,15 @@ distributed under this repo as the fork `dendrynexus-ten`.
 
 ## How it's wired
 
+- **Saved localization recipes (2026-10-11):** `lib/localization.js` builds the
+  same authored units for runtime and extraction. English qualities and saved
+  prose retain their original meaning; `state.presentation` carries captured
+  translation recipes. Engine-owned `G` helpers track generated text, and a pure
+  presentation refresh translates existing pages/cards without replaying actions
+  or advancing randomness. `lib/localization-extract.js` and `extract-strings`
+  merge catalogs and report uncertain display paths. See [LOCALIZATION.md](LOCALIZATION.md)
+  for authoring, grammar, compatibility and review instructions.
+
 - **Scene-relative face images (2026-10-11):** `lib/engine.js` retains the most
   recent face image and its paragraph offset in `currentContentFaceImage`, with
   a matching special-scene backup. Save/load and special returns forward the

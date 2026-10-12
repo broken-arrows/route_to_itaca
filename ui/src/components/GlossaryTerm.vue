@@ -9,8 +9,8 @@
 //
 // The DATA composed here is the same set `out/html/game.js`'s
 // renderTipContent builds — title -> subtitle -> img -> "Leader:" (from
-// tooltip.q.ledBy, live Q) -> ideology (tooltip.q.ideology, live Q, or the
-// literal string when it isn't a Q key) -> "Allegiance(s):" (from
+// tooltip.q.ledBy, live Q) -> ideology (tooltip.q.ideology references live Q;
+// tooltip.ideology is a localized literal) -> "Allegiance(s):" (from
 // gameLib.allegiances[termId](Q), source/lib/allegiances.js) — reproduced
 // from that function directly (grepped and read, not guessed), rendered here
 // as the Desk's own paper-styled markup rather than copying its HTML.
@@ -59,17 +59,24 @@ const ledByText = computed<string | undefined>(() => {
 });
 const infoDesc = computed(() => tooltip.value?.infoDesc);
 
-// Ideology: a live Q value when tooltip.q.ideology names one, else the
-// configured string itself IS the display text (e.g. a literal ideology
-// description rather than a Q-key indirection — both shapes are real in
-// source/data/glossary.json).
+// Literal descriptions are already localized by the glossary registry getter.
+// Quality references remain identifiers, even when the quality is absent.
 const ideologyText = computed<string | undefined>(() => {
   const key = tooltip.value?.q?.ideology;
-  if (!key) return undefined;
-  return Object.prototype.hasOwnProperty.call(game.q, key) ? String(game.q[key]) : key;
+  if (key && Object.prototype.hasOwnProperty.call(game.q, key)) {
+    const value = String(game.q[key]);
+    return game.adapter?.translate(value) ?? value;
+  }
+  return tooltip.value?.ideology;
 });
 
-const allegiances = computed(() => allegiancesFor(props.termId));
+const allegiances = computed(() => {
+  void game.frame;
+  return allegiancesFor(props.termId).map((entry) => ({
+    ...entry,
+    note: entry.note ? game.adapter?.translate(entry.note) ?? entry.note : undefined,
+  }));
+});
 const allegianceLabel = computed(() =>
   allegiances.value.length > 1 ? t('desk.glossary.allegiances') : t('desk.glossary.allegiance'),
 );

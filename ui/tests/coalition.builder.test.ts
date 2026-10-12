@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { mount } from '@vue/test-utils';
+import { i18n } from '../src/i18n';
 import { DendryAdapter } from '../src/engine/adapter';
 import { gameLib } from '../src/game-bindings';
 import { useGameStore } from '../src/stores/game';
@@ -464,7 +465,7 @@ describe('Congreso party layout and independent joint lists', () => {
     const store = useGameStore();
     store.initFromText(gameText);
     store.restoreState(a.exportStateJSON());
-    const wrapper = mount(WidgetHost, { props: { name: 'builder-playground', props: { configFrom: 'playground_coalitions' } } });
+    const wrapper = mount(WidgetHost, { global: { plugins: [i18n] }, props: { name: 'builder-playground', props: { configFrom: 'playground_coalitions' } } });
     expect(wrapper.findAll('.builder-checkbox')).toHaveLength(8);
     expect(wrapper.find('[data-party="up"]').exists()).toBe(true);
     expect(wrapper.find('[data-party="jxsi"]').exists()).toBe(true);
@@ -621,7 +622,7 @@ describe.each(['parlament', 'congreso'] as const)('%s coalition builder', chambe
     const store = useGameStore();
     store.initFromText(gameText);
     store.restoreState(a.exportStateJSON());
-    const wrapper = mount(WidgetHost, { props: { name: 'builder-playground', props: { configFrom: 'playground_coalitions' } } });
+    const wrapper = mount(WidgetHost, { global: { plugins: [i18n] }, props: { name: 'builder-playground', props: { configFrom: 'playground_coalitions' } } });
     expect(wrapper.find('input[type="number"]').exists()).toBe(false);
     expect(wrapper.find(`[data-party="${first}"] [data-term]`).exists()).toBe(true);
     const initial = Number(store.q[`${first}_${chamber}_s`]);

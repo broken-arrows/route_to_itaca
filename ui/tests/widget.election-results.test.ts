@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
+import { i18n } from '../src/i18n';
 import { createPinia, setActivePinia } from 'pinia';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -33,7 +34,7 @@ describe('generic election result widgets', () => {
       ciu_parlament_barcelona_buss_support: 40,
       parlament_seats: { barcelona: 85 },
     };
-    const wrapper = mount(ParlamentResultsMap, { props: { q } });
+    const wrapper = mount(ParlamentResultsMap, { global: { plugins: [i18n] }, props: { q } });
     await flushPromises();
     expect(wrapper.find('[data-layout="wide"]').exists()).toBe(true);
     expect(wrapper.findAll('.province-tabs button')).toHaveLength(4);
@@ -50,7 +51,7 @@ describe('generic election result widgets', () => {
       erc_congreso_catalunya_support: 40, pp_congreso_catalunya_support: 20,
       congreso_seats: { catalunya: 11 },
     };
-    const wrapper = mount(CongresoResultsMap, { props: { q } });
+    const wrapper = mount(CongresoResultsMap, { global: { plugins: [i18n] }, props: { q } });
     await flushPromises();
     expect(wrapper.find('#catalonia').classes()).toContain('election-region');
     expect(wrapper.find('#catalonia').attributes('data-term')).toBe('erc');
@@ -65,7 +66,7 @@ describe('generic election result widgets', () => {
     const q = { ...useGameStore().q, 'local_barcelones_wp': 'erc', 'local_barcelona_wp': 'cup' };
     const model = gameLib.localResultsMap(q);
     expect(model.cities.find(city => city.id === 'barcelona')?.name).toBe('Barcelona');
-    const wrapper = mount(LocalResultsMap, { props: { q } });
+    const wrapper = mount(LocalResultsMap, { global: { plugins: [i18n] }, props: { q } });
     await flushPromises();
     expect(wrapper.find('#barcelones').exists()).toBe(true);
     expect(wrapper.find('#barcelona').attributes('aria-label')).toContain('Barcelona');
@@ -84,7 +85,7 @@ describe('generic election result widgets', () => {
       congreso_party_tour_viewed_catalonia: true, junts_formed: true,
       congreso_party_tour_highlight: ['catalonia'],
     };
-    const wrapper = mount(CongresoPartyTour, { props: { q } });
+    const wrapper = mount(CongresoPartyTour, { global: { plugins: [i18n] }, props: { q } });
     await flushPromises();
     const cat = wrapper.find('[data-interest-region="catalonia"]');
     expect(cat.exists()).toBe(true);

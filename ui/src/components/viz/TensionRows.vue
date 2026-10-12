@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useBand } from '../brief/useBand';
 
 defineOptions({ name: 'TensionRows' });
@@ -18,6 +19,7 @@ const props = withDefaults(
   { rows: () => [], q: undefined },
 );
 const { band } = useBand();
+const { t } = useI18n();
 const views = computed(() =>
   props.rows.map((row) => ({
     ...row,
@@ -33,11 +35,11 @@ const views = computed(() =>
       <span class="tension-name">{{ row.label }}</span>
       <span class="tension-leader" aria-hidden="true" />
       <span class="metric strength">
-        STR <b :data-band="row.strengthBand.band || undefined">{{ row.strengthBand.label }}</b>
+        {{ t('widgets.strength') }} <b :data-band="row.strengthBand.band || undefined">{{ row.strengthBand.label }}</b>
       </span>
       <span class="metric-dot">·</span>
       <span class="metric dissent">
-        DIS <b :data-band="row.dissentBand.band || undefined">{{ row.dissentBand.label }}</b>
+        {{ t('widgets.dissent') }} <b :data-band="row.dissentBand.band || undefined">{{ row.dissentBand.label }}</b>
       </span>
     </div>
   </div>

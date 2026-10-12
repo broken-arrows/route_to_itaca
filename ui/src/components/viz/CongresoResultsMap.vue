@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { gameLib } from '../../game-bindings';
 import { usePartyInk, usePartyTerm } from './usePartyInk';
 import { useElectionSvg } from './useElectionSvg';
@@ -11,6 +12,7 @@ const hoveredRest = ref(false);
 const { markup, failed } = useElectionSvg('congreso-results.svg');
 const model = computed(() => gameLib.congresoResultsMap(props.q));
 const ink = usePartyInk();
+const { t } = useI18n();
 const partyTerm = usePartyTerm();
 const panel = computed(() => selected.value ? model.value.panels[selected.value] : null);
 const maxSeats = computed(() => Math.max(1, ...(panel.value?.rows ?? []).map(row => row.seats)));
@@ -60,20 +62,20 @@ watch([markup, model, selected, hoveredRest], async () => { await nextTick(); pa
 <template>
   <div ref="root" class="congreso-results-map" data-test="congreso-results-map">
     <div v-if="markup" class="map-svg" v-html="markup" @click="select" @mousemove="hover" @mouseleave="hoveredRest = false" />
-    <p v-else-if="failed" class="map-message">Map unavailable</p>
+    <p v-else-if="failed" class="map-message">{{ t('widgets.map.unavailable') }}</p>
     <div class="result-panel" aria-live="polite">
       <template v-if="panel">
-        <div class="panel-title"><b>{{ panel.name }}</b><small>{{ panel.seats }} seats</small></div>
-        <div v-if="panel.rows.length" class="bars" role="img" :aria-label="`Seat distribution in ${panel.name}`">
+        <div class="panel-title"><b>{{ panel.name }}</b><small>{{ t('widgets.seats', { count: panel.seats }, panel.seats) }}</small></div>
+        <div v-if="panel.rows.length" class="bars" role="img" :aria-label="t('widgets.map.distribution', { region: panel.name })">
           <div v-for="row in panel.rows" :key="row.party" class="bar-column">
             <strong>{{ row.seats }}</strong>
             <span class="bar" :style="{ height: `${Math.max(3, Math.round(row.seats / maxSeats * 70))}%`, background: ink(row.party) }" />
             <small><span :data-term="partyTerm(row.party)?.id" :class="{ 'term-hoverable': !!partyTerm(row.party)?.tooltip }">{{ row.party === 'up' ? 'UP' : row.party === 'te' ? '¡TE!' : row.party === 'mes' ? 'MES' : row.party.toUpperCase() }}</span></small>
           </div>
         </div>
-        <p v-else>No results yet.</p>
+        <p v-else>{{ t('widgets.map.noResults') }}</p>
       </template>
-      <p v-else>Click a region to see its seat distribution.</p>
+      <p v-else>{{ t('widgets.map.selectRegion') }}</p>
     </div>
   </div>
 </template>

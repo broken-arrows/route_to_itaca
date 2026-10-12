@@ -872,16 +872,32 @@ on-arrival: {!
             Q[party + "_in_gob"] = belongs(party);
             Q[party + "_supporting"] = Q[party + "_in_gob"];
         }
-        Q.position_disp = "Generalitat";
+        G.setText(Q, "position_disp", G.text("Generalitat"));
         Q.player_parlament_s = Q[playerVehicle + "_parlament_s"] || 0;
         var strength = Q.player_parlament_s >= Q.parlament_s_majority ? "Majority government" : "Minority government";
-        Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, strength + " - " + Q.player_parlament_s + "/" + Q.parlament_s_majority, strength.toLowerCase());
+        G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition, (strength === "Majority government" ? G.text("Majority government - {seats}/{majority}", {
+            seats: String(Q.player_parlament_s),
+            majority: String(Q.parlament_s_majority)
+        }) : G.text("Minority government - {seats}/{majority}", {
+            seats: String(Q.player_parlament_s),
+            majority: String(Q.parlament_s_majority)
+        })), (strength === "Majority government" ? G.text("majority government") : G.text("minority government"))));
         Q.cat_coalition_dissent = 0;
         Q.coalition_rupture_trigger = false;
         Q.coalition_rupture_target = "";
         Q.coalition_rupture_recheck = true;
         var offices = {president: "president", vp: "vicepresident", economy: "economy_minister", interior: "interior_minister", health: "health_minister", education: "education_minister", territory: "territory_minister", foreign: "foreign_minister", bnl: "bnl_minister"};
-        var labels = {president: "Presidency", vp: "Vicepresidency", economy: "Economy", interior: "Interior", health: "Health", education: "Education", territory: "Territory", foreign: "Foreign Affairs", bnl: "Business & Labour"};
+        var labels = {
+            president: G.text("Presidency"),
+            vp: G.text("Vicepresidency"),
+            economy: G.text("Economy"),
+            interior: G.text("Interior"),
+            health: G.text("Health"),
+            education: G.text("Education"),
+            territory: G.text("Territory"),
+            foreign: G.text("Foreign Affairs"),
+            bnl: G.text("Business & Labour")
+        };
         Q.coalition_expulsion_cabinet_disp = "";
         for (var key in offices) {
             var office = offices[key];
@@ -892,9 +908,24 @@ on-arrival: {!
             Q["parlament_coalition_proposal_" + key] = Q[office + "_party"];
             Q["parlament_coalition_proposal_" + key + "_name"] = Q[office];
             Q["parlament_coalition_proposal_" + key + "_gender"] = Q[office + "_gender"];
-            Q.coalition_expulsion_cabinet_disp += "<div><strong>" + labels[key] + "</strong>: " + Q[office] + " (" + Q[office + "_party"] + ")</div>";
+            G.setText(Q, "coalition_expulsion_cabinet_disp", G.joinText([G.getText(Q, "coalition_expulsion_cabinet_disp"), G.text("<div><strong>{office}</strong>: {holder} ({party})</div>", {
+                office: labels[key],
+                holder: String(Q[office]),
+                holder_gender: Q[office + "_gender"],
+                party: String(Q[office + "_party"])
+            })]));
         }
-        Q.historical_event = (Q.president_gender == "m" ? "President " : "Presidenta ") + Q.president + " has expelled " + Q.coalition_expulsion_removed.join(", ") + " from the Generalitat, leaving only " + playerVehicle + " governing.";
+        G.setText(Q, "historical_event", (Q.president_gender == "m" ? G.text("President {president} has expelled {removed_parties} from the Generalitat, leaving only {player_party} governing.", {
+            president: String(Q.president),
+            president_gender: Q.president_gender,
+            removed_parties: String(Q.coalition_expulsion_removed.join(", ")),
+            player_party: String(playerVehicle)
+        }) : G.text("Presidenta {president} has expelled {removed_parties} from the Generalitat, leaving only {player_party} governing.", {
+            president: String(Q.president),
+            president_gender: Q.president_gender,
+            removed_parties: String(Q.coalition_expulsion_removed.join(", ")),
+            player_party: String(playerVehicle)
+        })));
         Q.coalition_expulsion_allowed = false;
         Q.coalition_expulsion_available = false;
     }
@@ -919,9 +950,15 @@ on-arrival: {!
     var cabinet = Q.cat_coalition || [];
     var partners = cabinet.filter(function(p) { return p != playerVehicle; });
     Q.coalition_expulsion_available = !Q.cat_caretaker_gov && cabinet.includes(playerVehicle) && partners.length > 0;
-    Q.coalition_expulsion_partners_disp = G.governmentTooltip("generalitat", partners, "Parties to be expelled", partners.join(", "));
+    G.setText(Q, "coalition_expulsion_partners_disp", G.governmentTooltipText("generalitat", partners, G.text("Parties to be expelled"), G.literalText(partners.join(", "))));
     var strength = Q.player_parlament_s >= Q.parlament_s_majority ? "Majority government" : "Minority government";
-    Q.coalition_expulsion_government_disp = G.governmentTooltip("generalitat", [playerVehicle], strength + " - " + Q.player_parlament_s + "/" + Q.parlament_s_majority, strength.toLowerCase());
+    G.setText(Q, "coalition_expulsion_government_disp", G.governmentTooltipText("generalitat", [playerVehicle], (strength === "Majority government" ? G.text("Majority government - {seats}/{majority}", {
+        seats: String(Q.player_parlament_s),
+        majority: String(Q.parlament_s_majority)
+    }) : G.text("Minority government - {seats}/{majority}", {
+        seats: String(Q.player_parlament_s),
+        majority: String(Q.parlament_s_majority)
+    })), (strength === "Majority government" ? G.text("majority government") : G.text("minority government"))));
 
     Q.parlament_current_ciu_relations = Q[Q.parlament_current_ciu + "_relations"];
     Q.coalition_affairs_includes_ciu = Q.cat_coalition.includes(Q.parlament_current_ciu) && Q.parlament_current_ciu != "jxsi" && Q.parlament_current_ciu != "jxcat";

@@ -138,7 +138,7 @@ on-arrival: {!
         Q[party + "_in_gob"] = belongs(party, Q.cat_coalition);
         Q[party + "_supporting"] = Q[party + "_in_gob"] || belongs(party, Q.cat_coalition_support);
     }
-    Q.position_disp = belongs(Q.player_party, Q.cat_coalition) ? "Generalitat" : "<span style='font-style: italic'>Opposition</span>";
+    G.setText(Q, "position_disp", (belongs(Q.player_party, Q.cat_coalition) ? G.text("Generalitat") : G.text("<span style='font-style: italic'>Opposition</span>")));
     if (!belongs(Q.player_party, Q.cat_coalition)) {
         Q.burdens_time = 0;
         Q.burdens_goal = 0;
@@ -157,7 +157,16 @@ on-arrival: {!
     }
     var seats = Q.cat_coalition.reduce(function(total, p) { return total + (Q[p + "_parlament_s"] || 0); }, 0);
     var strength = seats >= Q.parlament_s_majority ? "Majority government" : "Minority government";
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, strength + " - " + seats + "/" + Q.parlament_s_majority, Q.cat_coalition.join("–") + " " + strength.toLowerCase());
+    G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition, (strength === "Majority government" ? G.text("Majority government - {seats}/{majority}", {
+        seats: String(seats),
+        majority: String(Q.parlament_s_majority)
+    }) : G.text("Minority government - {seats}/{majority}", {
+        seats: String(seats),
+        majority: String(Q.parlament_s_majority)
+    })), G.text("{parties} {government}", {
+        parties: String(Q.cat_coalition.join("–")),
+        government: (strength === "Majority government" ? G.text("majority government") : G.text("minority government"))
+    })));
     Q.coalition_rupture_preserved_offices = {};
     var offices = {president: "president", vp: "vicepresident", economy: "economy_minister", interior: "interior_minister", health: "health_minister", education: "education_minister", territory: "territory_minister", foreign: "foreign_minister", bnl: "bnl_minister"};
     for (var key in offices) {
@@ -181,7 +190,12 @@ on-arrival: {!
         Q[office] = saved ? saved.name : Q["parlament_coalition_proposal_" + key + "_name"];
         Q[office + "_gender"] = saved ? saved.gender : Q["parlament_coalition_proposal_" + key + "_gender"];
     }
-    Q.historical_event = Q.coalition_rupture_removed + " left the Generalitat government after a coalition rupture. " + Q.president + " continues to lead " + Q.cat_coalition_disp + ".";
+    G.setText(Q, "historical_event", G.text("{coalition_rupture_removed} left the Generalitat government after a coalition rupture. {president} continues to lead {cat_coalition_disp}.", {
+        coalition_rupture_removed: String(Q.coalition_rupture_removed),
+        president: String(Q.president),
+        president_gender: Q.president_gender,
+        cat_coalition_disp: G.getText(Q, "cat_coalition_disp")
+    }));
 !}
 
 With [+ coalition_rupture_removed +] out of the government, the Generalitat is now under a [+ cat_coalition_disp +]. We'll have to see how long this lasts...

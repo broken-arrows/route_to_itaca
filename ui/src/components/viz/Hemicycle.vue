@@ -1,6 +1,6 @@
 <script setup lang="ts">
-
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { arc as d3Arc } from 'd3-shape';
 import { scaleLinear } from 'd3-scale';
 import { range as d3Range, sum as d3Sum } from 'd3-array';
@@ -151,6 +151,7 @@ function colourVar(token: string): string {
 }
 
 const totalSeats = computed(() => seatPoints.value.length);
+const { t } = useI18n();
 
 const activeSeatGroup = computed(() =>
   props.seats.find((party) => party.party === activeParty.value),
@@ -215,7 +216,7 @@ function isFirstPartySeat(index: number): boolean {
       :class="{ 'is-animated': animate }"
       viewBox="0 0 500 250"
       role="img"
-      :aria-label="`Hemicycle: ${totalSeats} seats, majority ${majority}`"
+      :aria-label="t('widgets.hemicycle', { count: totalSeats, majority })"
     >
       <g :transform="`translate(${WIDTH / 2}, ${OUTER_RADIUS})`">
         <g
@@ -245,7 +246,7 @@ function isFirstPartySeat(index: number): boolean {
             cy="0"
             :r="seat.seatRadius * 2"
             :tabindex="isFirstPartySeat(i) ? 0 : -1"
-            :aria-label="`${seat.party.party}: ${seat.party.seats} seats`"
+            :aria-label="t('widgets.partySeats', { party: seat.party.party, count: seat.party.seats })"
             @mouseenter="showParty(seat.party.party, $event)"
             @mousemove="positionTooltip"
             @mouseleave="hideParty"
@@ -256,7 +257,7 @@ function isFirstPartySeat(index: number): boolean {
       </g>
     </svg>
     <div v-if="majority > 0" class="hemicycle-majority">
-      Majority: {{ majority }} seats
+      {{ t('widgets.majoritySeats', { count: majority }) }}
     </div>
     <Teleport to="body">
       <div
@@ -269,7 +270,7 @@ function isFirstPartySeat(index: number): boolean {
         <img v-if="tooltipLogo" :src="tooltipLogo" :alt="tooltipName" />
         <div>
           <strong :style="{ color: colourVar(activeSeatGroup.colour) }">{{ tooltipName }}</strong>
-          <span>{{ activeSeatGroup.seats }} seat{{ activeSeatGroup.seats === 1 ? '' : 's' }}</span>
+          <span>{{ t('widgets.seats', { count: activeSeatGroup.seats }, activeSeatGroup.seats) }}</span>
         </div>
       </div>
     </Teleport>

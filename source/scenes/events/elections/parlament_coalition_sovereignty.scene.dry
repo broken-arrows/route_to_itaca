@@ -42,17 +42,21 @@ on-arrival: {!
         Q.cat_coalition_support = Q.parlament_coalition_sovereignty_kind == "government" ? [] : ["cup"];
         Q.cat_coalition_abstain = [];
         Q.cat_coalition_dissent = 0;
-        Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition,
-            (Q.parlament_coalition_cabinet_seats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + Q.parlament_coalition_cabinet_seats + "/" + Q.parlament_s_majority,
-            Q.parlament_coalition_sovereignty_kind == "government" ? 
-                '<span style="color: var(--erc); font-style: italic;">National</span> <span style="color: var(--' + Q.parlament_current_ciu + '); font-style: italic;">Concentration</span> <span style="color: #b8a12b; font-style: italic;">government</span>' 
-                : Q.jxsi_formed && !Q.jxsi_dissolved ?
-                     "<span style='color: var(--jxsi); font-style: italic;'>Sovereignty government</span>"
-                     : Q.jxcat_formed && !Q.jxcat_dissolved ? 
-                        "<span style='color: var(--jxcat); font-style: italic;'>Sovereignty government</span>"
-                     :  Q.erc_parlament_s > Q[Q.parlament_current_ciu + "_parlament_s"] ?
-                     "<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>government</span>"
-                     : "<span style='color: var(--" + Q.parlament_current_ciu + "); font-style: italic;'>Sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span>");
+        G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition, (Q.parlament_coalition_cabinet_seats >= Q.parlament_s_majority ? G.text("Majority government - {seats}/{majority}", {
+            seats: String(Q.parlament_coalition_cabinet_seats),
+            majority: String(Q.parlament_s_majority)
+        }) : G.text("Minority government - {seats}/{majority}", {
+            seats: String(Q.parlament_coalition_cabinet_seats),
+            majority: String(Q.parlament_s_majority)
+        })), (Q.parlament_coalition_sovereignty_kind == "government" ? G.text("<span style=\"color: var(--erc); font-style: italic;\">National</span> <span style=\"color: var(--{party}); font-style: italic;\">Concentration</span> <span style=\"color: #b8a12b; font-style: italic;\">government</span>", {
+            party: String(Q.parlament_current_ciu)
+        }) : (Q.jxsi_formed && !Q.jxsi_dissolved ? G.text("<span style='color: var(--jxsi); font-style: italic;'>Sovereignty government</span>") : (Q.jxcat_formed && !Q.jxcat_dissolved ? G.text("<span style='color: var(--{jxcat_colour}); font-style: italic;'>Sovereignty government</span>", {
+            jxcat_colour: "jxcat"
+        }) : (Q.erc_parlament_s > Q[Q.parlament_current_ciu + "_parlament_s"] ? G.text("<span style='color: var(--erc); font-style: italic;'>Sovereignty</span> <span style='color: var(--{party}); font-style: italic;'>government</span>", {
+            party: String(Q.parlament_current_ciu)
+        }) : G.text("<span style='color: var(--{party}); font-style: italic;'>Sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span>", {
+            party: String(Q.parlament_current_ciu)
+        })))))));
         if (Q.parlament_coalition_sovereignty_deadline > Q.year && Q.roadmap_year > Q.parlament_coalition_sovereignty_deadline) Q.roadmap_year = Q.parlament_coalition_sovereignty_deadline;
         if (Q.parlament_coalition_concessions_indy) {
             var signatories = Q.cat_coalition.concat(Q.cat_coalition_support);

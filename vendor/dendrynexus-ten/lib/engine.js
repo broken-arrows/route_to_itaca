@@ -8,6 +8,8 @@
   "use strict";
 
   var storageNamespace = require('./persistence').storageNamespace;
+  var localization = require('./localization');
+  var contentHTML = require('./ui/content/html');
 
   // To avoid the need to include any utility libraries when this is
   // used in a browser, define some helper functions we'd normally
@@ -564,6 +566,9 @@
     // Empty (never undefined) so a UI that forgets setGameLib fails as
     // "G.engineTick is not a function" rather than a TypeError on undefined.
     this.gameLib = {};
+    this._hasGameLib = false;
+    this._qualityTargets = new WeakMap();
+    this._installTextHelpers();
     this._warnedNoGameLib = false;
     // i18n: inert unless setLocale installs a catalog. No locale ⇒ English
     // ⇒ old UI unaffected.
@@ -575,7 +580,155 @@
   // exports). Same shape as setLocale: each UI hands the engine the game's
   // stuff, and NEITHER UI knows what is in it.
   DendryEngine.prototype.setGameLib = function (lib) {
-    this.gameLib = lib || {};
+    this.gameLib = Object.assign({}, lib || {});
+    this._hasGameLib = Object.keys(lib || {}).length > 0;
+    this._installTextHelpers();
+    return this;
+  };
+
+  DendryEngine.prototype._presentation = function () {
+    var saved = this.state.presentation;
+    if (!saved || saved.version !== 1) {
+      saved = this.state.presentation = {
+        version: 1, qualities: {}, currentContent: [], tempCurrentContent: [],
+        title: null, outputs: null
+      };
+    }
+    saved.qualities = saved.qualities || {};
+    saved.currentContent = saved.currentContent || [];
+    saved.tempCurrentContent = saved.tempCurrentContent || [];
+    return saved;
+  };
+
+  DendryEngine.prototype._installTextHelpers = function () {
+    var that = this;
+    var checkQ = function (Q) {
+      if (!that.state || Q !== that.state.qualities) throw new Error('Text helper received qualities from another engine/run.');
+    };
+    var getText = function (Q, field) {
+      checkQ(Q);
+      var retained = that._presentation().qualities[field];
+      if (retained && retained.english === Q[field] && !localization.validateRecipe(retained.recipe).length) return localization.clone(retained.recipe);
+      if (retained) delete that._presentation().qualities[field];
+      return localization.literal(Q[field]);
+    };
+    var setText = function (Q, field, keyOrRecipe, params) {
+      checkQ(Q);
+      var recipe = typeof keyOrRecipe === 'string' ? localization.text(keyOrRecipe, params) : localization.clone(keyOrRecipe);
+      var errors = localization.validateRecipe(recipe);
+      if (errors.length) throw new Error(errors.join(' '));
+      var english = localization.render(recipe, 'en', null);
+      Q[field] = english;
+      if (Q[field] === english) that._presentation().qualities[field] = { english: english, recipe: recipe };
+      return Q[field];
+    };
+    Object.assign(this.gameLib, {
+      text: localization.text, literalText: localization.literal, rawText: localization.raw,
+      markupText: localization.markup, joinText: localization.joinText,
+      englishText: function (recipe) { return localization.render(recipe, 'en', null); },
+      setText: setText, getText: getText,
+      copyText: function (Q, to, from) {
+        checkQ(Q);
+        var recipe = getText(Q, from);
+        // Preserve unset/numeric sentinels used by existing history comparisons.
+        var value = Q[from];
+        Q[to] = value;
+        if (recipe.kind !== 'literal' && Q[to] === value) that._presentation().qualities[to] = { english: value, recipe: recipe };
+        return Q[to];
+      },
+      updateText: function (Q, field, patchOrMapper) {
+        var recipe = getText(Q, field);
+        if (typeof patchOrMapper === 'function') recipe = patchOrMapper(recipe);
+        else {
+          if (recipe.kind !== 'text') throw new Error('Parameter update requires a text recipe.');
+          recipe.params = Object.assign({}, recipe.params, localization.clone(patchOrMapper || {}));
+        }
+        return setText(Q, field, recipe);
+      }
+    });
+  };
+
+  DendryEngine.prototype._captureDisplayContent = function (content, useParas) {
+    var that = this;
+    var declarations = this.game.data && this.game.data.localization || {};
+    return localization.captureContent(content, {
+      useParas: useParas, grammarBindings: declarations.grammarBindings || {},
+      captureContext: function (name) { return localization.clone(that.state.qualities[name]); },
+      resolveDependency: function (def) {
+        if (def.type !== 'insert') return that._runPredicate(def.fn);
+        var value = that._runExpression(def.fn);
+        if (def.qdisplay) {
+          value = that._getQDisplay(value, def.qdisplay);
+          if (typeof value === 'string') return localization.text(value);
+        } else if (def.quality) {
+          var retained = that._presentation().qualities[def.quality];
+          if (retained && retained.english === value) return that.gameLib.getText(that.state.qualities, def.quality);
+          if (Array.isArray(declarations.displayQualities) && declarations.displayQualities.indexOf(def.quality) !== -1 && typeof value === 'string') return localization.text(value);
+        }
+        if (value && value.stateDependencies !== undefined) {
+          return { kind: 'content', nodes: that._captureDisplayContent(value, false).nodes };
+        }
+        // Preserve Dendry's ordinary insert coercion for arrays and other
+        // values; only explicitly retained display recipes are structured.
+        return value && typeof value === 'object'
+          ? localization.literal(value.toString())
+          : (typeof value === 'string' ? localization.literal(value) : localization.clone(value));
+      }
+    });
+  };
+
+  DendryEngine.prototype._renderSnapshot = function (snapshot, english) {
+    return localization.renderContent(snapshot, english ? 'en' : this.locale, english ? null : this.catalog);
+  };
+  DendryEngine.prototype.renderContent = function (content, useParas) {
+    return this._renderSnapshot(this._captureDisplayContent(content, useParas !== false));
+  };
+  DendryEngine.prototype.renderLine = function (content) {
+    return contentHTML.convertLine(this.renderContent(content, false));
+  };
+  DendryEngine.prototype.getSceneTitle = function (sceneId) {
+    sceneId = sceneId || this.state.sceneId;
+    var presentation = this._presentation();
+    if (sceneId === this.state.sceneId && presentation.title) return contentHTML.convertLine(this._renderSnapshot(presentation.title));
+    var scene = this.game.scenes[sceneId];
+    return scene ? this.renderLine(scene.title || sceneId) : sceneId;
+  };
+  DendryEngine.prototype.getCurrentTitle = function () { return this.getSceneTitle(); };
+
+  DendryEngine.prototype._renderRecord = function (record) {
+    var rendered = Object.assign({}, record);
+    if (record.presentation) {
+      if (record.presentation.title) rendered.title = this._renderSnapshot(record.presentation.title);
+      if (record.presentation.subtitle) rendered.subtitle = this._renderSnapshot(record.presentation.subtitle);
+    }
+    return rendered;
+  };
+  DendryEngine.prototype._renderRecords = function (records) {
+    var that = this;
+    return (records || []).map(function (record) { return that._renderRecord(record); });
+  };
+  DendryEngine.prototype.renderChoices = function (records) { return this._renderRecords(records); };
+  DendryEngine.prototype._renderPage = function () {
+    var that = this;
+    var segments = this._presentation().currentContent;
+    if (!segments.length) return this.state.currentContent || [];
+    return segments.reduce(function (result, segment) { return result.concat(that._renderSnapshot(segment)); }, []);
+  };
+  DendryEngine.prototype.refreshPresentation = function () {
+    if (!this.state || !this.state.sceneId) return this;
+    var media = this.state.currentContentFaceImage;
+    this.ui.newPage();
+    this.ui.removeChoices();
+    this.ui.displayContent(this._renderPage(), media ? media.image : undefined, media ? media.offset : undefined);
+    var outputs = this._presentation().outputs;
+    if (outputs) {
+      if (outputs.choices) this.ui.displayChoices(this._renderRecords(outputs.choices));
+      if (outputs.decks) this.ui.displayDecks(this._renderRecords(outputs.decks));
+      if (outputs.hand) this.ui.displayHand(this._renderRecords(outputs.hand), outputs.maxCards);
+      if (outputs.pinned) this.ui.displayPinnedCards(this._renderRecords(outputs.pinned));
+    }
+    this.ui.setBg(this.state.bg);
+    this.ui.setSprites(this.state.sprites);
     return this;
   };
 
@@ -592,11 +745,13 @@
   // through _localizePlain because they were never in a content tree. Same
   // English-as-key contract as the content catalog. Identity when no catalog is
   // installed, which is what keeps the old shell (locale === null) English.
-  DendryEngine.prototype.translate = function (s) {
-    if (!this.catalog || typeof s !== "string") {
+  DendryEngine.prototype.translate = function (s, params) {
+    if (typeof s !== "string") {
       return s;
     }
-    return this._localizeString(s);
+    if (params !== undefined) return localization.render(localization.text(s, params), this.locale, this.catalog);
+    if (!this.catalog) return s;
+    return localization.render(localization.text(s), this.locale, this.catalog);
   };
 
   // Public wrapper for _getQDisplay: lets a derived view-model (e.g.
@@ -620,6 +775,7 @@
     var choices = this.getCurrentChoices();
     assert(choices);
     var scene = this.getCurrentScene();
+    var outputs = this._presentation().outputs = {};
     if (scene.isHand) {
       // separate choices into decks and pinned cards
       var decks = [];
@@ -659,14 +815,19 @@
           currentHand.splice(i, 1);
         }
       }
-      this.ui.displayDecks(decks);
-      this.ui.displayHand(currentHand, scene.maxCards);
-      this.ui.displayPinnedCards(pinnedCards);
+      outputs.decks = localization.clone(decks);
+      outputs.hand = localization.clone(currentHand);
+      outputs.pinned = localization.clone(pinnedCards);
+      outputs.maxCards = scene.maxCards;
+      this.ui.displayDecks(this._renderRecords(decks));
+      this.ui.displayHand(this._renderRecords(currentHand), scene.maxCards);
+      this.ui.displayPinnedCards(this._renderRecords(pinnedCards));
     } else {
       if (this.state.enableTranscript) {
         this.transcript.push(choices);
       }
-      this.ui.displayChoices(choices);
+      outputs.choices = localization.clone(choices);
+      this.ui.displayChoices(this._renderRecords(choices));
     }
     return this;
   };
@@ -680,6 +841,7 @@
       faceImage = scene.faceImage;
     }
     var sceneSignal = scene.signal || this.game.sceneSignal;
+    var presentation = this._presentation();
     if (sceneSignal !== undefined) {
       this.ui.signal({
         signal: sceneSignal,
@@ -690,21 +852,35 @@
     if (restorePage) {
       this.ui.newPage();
       this.state.currentContent = this.state.tempCurrentContent.slice();
+      presentation.currentContent = localization.clone(presentation.tempCurrentContent);
+      presentation.title = localization.clone(presentation.tempTitle || null);
       this.state.currentContentFaceImage = this.state.tempCurrentContentFaceImage || null;
       var restoredImage = this.state.currentContentFaceImage;
-      this.ui.displayContent(this.state.currentContent,
+      this.ui.displayContent(this._renderPage(),
         restoredImage ? restoredImage.image : faceImage,
         restoredImage ? restoredImage.offset : undefined);
     } else if (scene.newPage) {
       this.ui.newPage();
       this.state.currentContent = [];
+      presentation.currentContent = [];
       this.state.currentContentFaceImage = null;
     }
     this.ui.setStyle(scene.style);
     this.ui.removeChoices();
 
     if (scene.content !== undefined && !restorePage) {
-      var displayContent = this._makeDisplayContent(scene.content, true);
+      var snapshot = this._captureDisplayContent(scene.content, true);
+      var displayContent = this._renderSnapshot(snapshot, true);
+      // A recipe-less old page may be continued. Capture its stored fallback
+      // as literal nodes before appending newly authored recipe segments.
+      if (!presentation.currentContent.length && this.state.currentContent.length) {
+        presentation.currentContent.push({ kind: 'content', nodes: this.state.currentContent.map(function (node) {
+          var old = Object.assign({}, node);
+          if (old.content !== undefined) old.content = localization.raw(contentHTML.convertLine(old.content));
+          return old;
+        }) });
+      }
+      presentation.currentContent.push(snapshot);
       if (faceImage) {
         this.state.currentContentFaceImage = {
           image: faceImage,
@@ -716,8 +892,9 @@
       }
       this.state.currentContent =
         this.state.currentContent.concat(displayContent);
-      this.ui.displayContent(displayContent, faceImage);
+      this.ui.displayContent(this._renderSnapshot(snapshot), faceImage);
     }
+    if (!restorePage || !presentation.title) presentation.title = this._captureDisplayContent(scene.title || scene.id, false);
     this._runActions(scene.onDisplay, "on-display");
 
     return this;
@@ -792,10 +969,13 @@
 
     // display the hand
     this.ui.displayHand(
-      this.state.currentHands[currentSceneId],
+      this._renderRecords(this.state.currentHands[currentSceneId]),
       scene.maxCards,
     );
-    return card;
+    var outputs = this._presentation().outputs || (this._presentation().outputs = {});
+    outputs.hand = localization.clone(this.state.currentHands[currentSceneId]);
+    outputs.maxCards = scene.maxCards;
+    return this._renderRecord(card);
   };
 
   // dendrynexus - play a card (remove it from the current hand)
@@ -839,7 +1019,7 @@
     // throw, and the game plays on over a dead simulation. The audit guard
     // cannot catch this (it is a UI omission, not a content one), so say it out
     // loud, once.
-    if (!this._warnedNoGameLib && Object.keys(this.gameLib).length === 0) {
+    if (!this._warnedNoGameLib && !this._hasGameLib) {
       this._warnedNoGameLib = true;
       console.warn(
         "dendrynexus: no game lib installed (engine.setGameLib was never called). " +
@@ -863,6 +1043,12 @@
       // where the previous page was?
       tempCurrentContent: [],
       tempCurrentContentFaceImage: null,
+      // Translation recipes are presentation data. Q/currentContent/hands
+      // always retain the ordinary English values consumed by game logic.
+      presentation: {
+        version: 1, qualities: {}, currentContent: [], tempCurrentContent: [],
+        title: null, outputs: null
+      },
       // prevSpecialSceneId is only set when visiting scene tagged with
       // isSpecial = true, and is the scene before the special scene.
       prevSpecialSceneId: null,
@@ -995,7 +1181,7 @@
       this.ui.newPage();
       this.ui.removeChoices();
       var restoredFaceImage = this.state.currentContentFaceImage;
-      this.ui.displayContent(this.state.currentContent,
+      this.ui.displayContent(this._renderPage(),
         restoredFaceImage ? restoredFaceImage.image : undefined,
         restoredFaceImage ? restoredFaceImage.offset : undefined);
       this._runActions(scene.onDisplay, "on-display");
@@ -1136,39 +1322,41 @@
   };
 
   DendryEngine.prototype._makeDisplayContent = function (content, useParas) {
-    // Raw content can just be returned.
-    if (content.content === undefined) {
-      if (Array.isArray(content)) {
-        return this._localizePlain(content);
-      } else if (useParas) {
-        return [{ type: "paragraph", content: this._localizePlain(content) }];
-      } else {
-        return [this._localizePlain(content)];
-      }
-    } else if (
-      content.stateDependencies === undefined &&
-      content.type !== undefined
-    ) {
-      return [content];
+    // Legacy callers pass useParas=true even for compiled inline titles.
+    // Historically a content wrapper without paragraph nodes stayed inline.
+    var inline = Array.isArray(content);
+    if (content && typeof content === 'object' && !content.type && content.content !== undefined) {
+      var nodes = Array.isArray(content.content) ? content.content : [content.content];
+      inline = !nodes.some(function (node) {
+        return node && ['paragraph', 'heading', 'quotation', 'attribution', 'hrule'].indexOf(node.type) !== -1;
+      });
     }
-
-    // Merge in dependencies if we have them
-    var stateDepDefs = content.stateDependencies;
-    var displayContent = content.content;
-    if (stateDepDefs && stateDepDefs.length > 0) {
-      var evals = this._evaluateStateDependencies(stateDepDefs);
-      if (!Array.isArray(displayContent)) {
-        displayContent = [displayContent];
-      }
-      displayContent = this._mergeStateEvalsInArray(displayContent, evals);
-    }
-    return displayContent;
+    return this.renderContent(content, inline ? false : useParas);
   };
 
   DendryEngine.prototype._setUpQualities = function () {
     var _Q = (this._qualitiesAccessorsPrivate = {});
-    var Q = this.state.qualities;
+    var Q = this._qualityTargets.get(this.state.qualities) || this.state.qualities;
     var that = this;
+    var presentation = this._presentation();
+    var proxy = new Proxy(Q, {
+      set: function (target, key, value) {
+        // Reflect against the target avoids a second defineProperty trap for
+        // one assignment, while retaining the established quality setters.
+        delete presentation.qualities[key];
+        return Reflect.set(target, key, value, target);
+      },
+      deleteProperty: function (target, key) {
+        delete presentation.qualities[key];
+        return Reflect.deleteProperty(target, key);
+      },
+      defineProperty: function (target, key, descriptor) {
+        delete presentation.qualities[key];
+        return Reflect.defineProperty(target, key, descriptor);
+      }
+    });
+    this._qualityTargets.set(proxy, Q);
+    this.state.qualities = proxy;
     objEach(this.game.qualities, function (id, quality) {
       var min = quality.min;
       var max = quality.max;
@@ -1204,7 +1392,7 @@
 
           // Signal after the change is made.
           if (signal !== undefined && value !== was) {
-            var signalObj = {
+          var signalObj = {
               signal: signal,
               event: "quality-change",
               id: id,
@@ -1281,6 +1469,8 @@
       if (scene.isSpecial && this.state.prevSpecialSceneId === null) {
         this.state.tempCurrentContent = this.state.currentContent.slice();
         this.state.tempCurrentContentFaceImage = this.state.currentContentFaceImage || null;
+        this._presentation().tempCurrentContent = localization.clone(this._presentation().currentContent);
+        this._presentation().tempTitle = localization.clone(this._presentation().title);
         this.state.prevSpecialSceneId = fromId;
       }
       var from = this.getCurrentScene();
@@ -1709,13 +1899,17 @@
         subtitle = choice.subtitle || choiceScene.subtitle;
       }
 
+      var titleSnapshot = this._captureDisplayContent(title, false);
+      var subtitleSnapshot = subtitle ? this._captureDisplayContent(subtitle, false) : null;
       var finalChoice = {
         id: choice.id,
         canChoose: canChoose,
-        title: this._makeDisplayContent(title, false),
+        title: this._renderSnapshot(titleSnapshot, true),
+        presentation: { title: titleSnapshot },
       };
       if (subtitle) {
-        finalChoice.subtitle = this._makeDisplayContent(subtitle, false);
+        finalChoice.subtitle = this._renderSnapshot(subtitleSnapshot, true);
+        finalChoice.presentation.subtitle = subtitleSnapshot;
       }
       // dendrynexus - add success/failure probabilities, and challenges.
       var successProb;

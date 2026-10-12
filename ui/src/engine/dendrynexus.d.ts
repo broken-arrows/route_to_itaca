@@ -25,7 +25,7 @@ declare module 'dendrynexus-ten/lib/engine.js' {
     };
     choiceCache: RawChoice[];
     // Seeded engine RNG, also used to pin branch selection in runtime tests.
-    random: { uint32(): number };
+    random: { uint32(): number; getState(): number[] };
     game: {
       scenes: Record<string, Record<string, unknown>>;
       info?: {
@@ -48,12 +48,19 @@ declare module 'dendrynexus-ten/lib/engine.js' {
     goToScene(id: string): void;
     getCurrentScene(): Record<string, unknown>;
     getCurrentChoices(): RawChoice[] | undefined;
+    renderChoices(records: RawChoice[]): RawChoice[];
     getExportableState(): object;
     setState(state: object): void;
     isGameOver(): boolean;
-    setLocale(locale: string | null, catalog: Record<string, string> | null): this;
+    setLocale(locale: string | null, catalog: import('./types').ContentCatalog | null): this;
     // Public catalog lookup for non-content strings (source/lib row labels).
-    translate(s: string): string;
+    translate(s: string, params?: Record<string, unknown>): string;
+    /** Repaint captured presentation without evaluating gameplay or drawing cards. */
+    refreshPresentation(): this;
+    renderContent(content: unknown, useParas?: boolean): unknown[];
+    renderLine(content: unknown): string;
+    getSceneTitle(sceneId?: string): string;
+    getCurrentTitle(): string;
     // Public wrapper for the engine's private _getQDisplay (engine.js:901).
     // Classifies a raw quality value through one of the built-in displays
     // ('cardinal'/'ordinal'/'number'/'fudge', each returning a word/ordinal
@@ -86,13 +93,42 @@ declare module 'dendrynexus-ten/lib/engine.js' {
     // compiled content as a third `G` parameter alongside `state`/`Q` in
     // on-arrival/on-departure/on-display, predicates, and expression inserts.
     // See vendor/dendrynexus-ten/lib/engine.js DendryEngine.prototype.setGameLib.
-    gameLib: Record<string, unknown>;
+    gameLib: Record<string, unknown> & {
+      /** Materialize captured recipes in English for native comparisons/lists. */
+      englishText(recipe: unknown): string;
+    };
     setGameLib(lib: object): this;
   }
   export function convertJSONToGame(
     json: string,
     cb: (err: Error | null, game?: object) => void,
   ): void;
+}
+
+declare module 'dendrynexus-ten/lib/localization-extract.js' {
+  // CLI discovery records retain source evidence and heterogeneous review fields.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export function extractFiles(files: { name: string; contents: string }[], options?: Record<string, unknown>): Promise<any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export function extractProject(path: string, options?: Record<string, unknown>): Promise<any>;
+}
+
+declare module 'dendrynexus-ten/lib/parsers/content.js' {
+  export function compile(text: string, useParas: boolean, callback: (error: Error | null, content: unknown) => void): void;
+  export function normaliseContent(content: unknown): unknown;
+}
+
+declare module 'dendrynexus-ten/lib/localization.js' {
+  export interface TranslationUnit {
+    key: string;
+    placeholders: string[];
+    params: string[];
+    parameters: string[];
+    context: string[];
+    protectedMarkup: string[];
+  }
+  export function collectUnits(content: unknown, options?: Record<string, unknown>): TranslationUnit[];
+  export const buildUnits: typeof collectUnits;
 }
 
 declare module 'dendrynexus-ten/lib/ui/content/html.js' {

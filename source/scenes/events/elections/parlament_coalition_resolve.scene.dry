@@ -54,11 +54,11 @@ on-arrival: {!
         support.indexOf(playerList) >= 0;
     if (playerInCabinet) {
         Q.burdens_broken = 0;
-        Q.position_disp = "Generalitat";
+        G.setText(Q, "position_disp", G.text("Generalitat"));
     } else if (playerSupports) {
-        Q.position_disp = "<span style='font-style: italic'>Government Support</span>";
+        G.setText(Q, "position_disp", G.text("<span style='font-style: italic'>Government Support</span>"));
     } else {
-        Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
+        G.setText(Q, "position_disp", G.text("<span style='font-style: italic'>Opposition</span>"));
     }
 
     if (cabinet.indexOf(Q.parlament_coalition_proposal_president) < 0) {
@@ -120,7 +120,11 @@ on-arrival: {!
     Q.cat_caretaker_gov = false;
     Q.parlament_repeat_election = false;
 
-    Q.historical_event = "We have a new government in the Generalitat! President " + Q.president + " will lead a " + Q.cat_coalition_disp + " for this legislature.";
+    G.setText(Q, "historical_event", "We have a new government in the Generalitat! President {president} will lead a {government} for this legislature.", {
+        president: Q.president,
+        president_gender: Q.president_gender,
+        government: G.getText(Q, "cat_coalition_disp")
+    });
 
     Q.burdens_done = 0;
     Q.burdens_goal = 0;

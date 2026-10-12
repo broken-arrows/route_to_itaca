@@ -44,6 +44,7 @@ export const useGameStore = defineStore('game', () => {
   const frame = ref<Frame | null>(null);
   const version = ref(0);
   const loadError = ref(false);
+  let contentLanguageRequest = 0;
 
   const ready = computed(() => adapter.value !== null);
   const q = computed<Record<string, unknown>>(() => {
@@ -55,11 +56,17 @@ export const useGameStore = defineStore('game', () => {
   // game.json.data.glossary.terms — static per load, but gated on the
   // adapter existing at all (pre-boot / load-error leaves it empty, never
   // throws). Consumed by Prose.vue/GlossaryTerm.vue via useGlossary().
-  const glossary = computed<GlossaryTerm[]>(() => adapter.value?.glossary ?? []);
+  const glossary = computed<GlossaryTerm[]>(() => {
+    void version.value;
+    return adapter.value?.glossary ?? [];
+  });
   // game.json.data.achievements.achievements — same "static per load, empty
   // pre-boot/on load-error" contract as glossary above. Consumed by the
   // desk store (toast metadata) and AchievementGallery.vue.
-  const achievements = computed<AchievementEntry[]>(() => adapter.value?.achievements ?? []);
+  const achievements = computed<AchievementEntry[]>(() => {
+    void version.value;
+    return adapter.value?.achievements ?? [];
+  });
   const achievementLedger = computed<AchievementLedger>(() => {
     void version.value;
     return adapter.value?.achievementLedger ?? {};
@@ -88,6 +95,7 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function initFromText(text: string): void {
+    contentLanguageRequest++;
     adapter.value = markRaw(DendryAdapter.fromJSONText(text));
     const manifest = adapter.value.info;
     if (manifest.ifid) {
@@ -119,9 +127,12 @@ export const useGameStore = defineStore('game', () => {
   }
 
   async function setContentLanguage(language: AppLocale): Promise<void> {
-    if (!adapter.value) return;
+    const target = adapter.value;
+    if (!target) return;
+    const request = ++contentLanguageRequest;
     const catalog = await loadContentCatalog(language);
-    const refreshed = adapter.value.refreshLocale(language, catalog);
+    if (request !== contentLanguageRequest || adapter.value !== target) return;
+    const refreshed = target.refreshLocale(language, catalog);
     if (refreshed) apply(refreshed);
   }
 
@@ -147,7 +158,12 @@ export const useGameStore = defineStore('game', () => {
     apply(adapter.value!.choose(i));
   }
   function editQualities(edit: (q: Record<string, unknown>) => boolean): void {
-    if (!adapter.value || useShellStore().blocksEngineChoices) return;
+    if (!adapter.value) return;
+    const shell = useShellStore();
+    // Authored title panes host editable Playground drafts. Normal game
+    // choices still use blocksEngineChoices; pauses and transitions block edits.
+    const authoredTitlePane = shell.overlay === 'title-pane' && shell.pane === 'authored';
+    if (shell.paused || shell.transitioning || (shell.mode === 'title' && !authoredTitlePane)) return;
     if (edit(adapter.value.qualities)) apply(adapter.value.refreshChoices());
   }
   function chooseFromShell(i: number): void {

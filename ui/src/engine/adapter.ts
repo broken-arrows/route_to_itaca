@@ -11,32 +11,13 @@ import type {
   AchievementEntry,
   AchievementLedger,
   RoleHubView,
+  ContentCatalog,
 } from './types';
 import type { GlossaryTerm } from '../glossary/mark';
-
-function localizeStaticContent(value: unknown, catalog: Record<string, string>): unknown {
-  if (!value || typeof value !== 'object') return value;
-  if (Array.isArray(value)) return value.map((entry) => localizeStaticContent(entry, catalog));
-
-  const node = value as Record<string, unknown>;
-  if (node.stateDependencies !== undefined || node.content === undefined) return value;
-  const content = node.content;
-  let localized = content;
-  if (typeof content === 'string') localized = catalog[content] ?? content;
-  else if (Array.isArray(content) && content.length === 1 && typeof content[0] === 'string') {
-    localized = [catalog[content[0]] ?? content[0]];
-  } else if (Array.isArray(content)) {
-    localized = content.map((entry) =>
-      typeof entry === 'object' ? localizeStaticContent(entry, catalog) : entry,
-    );
-  }
-  return localized === content ? value : { ...node, content: localized };
-}
 
 export class DendryAdapter {
   readonly engine: DendryEngine;
   private ui: CaptureUI;
-  private contentCatalog: Record<string, string> = {};
   // Runtime "effective role" tracker: a scene's own non-`default` role becomes
   // the new effective role; role-less (or `default`) scenes inherit the current
   // one. The `desk` reset is just this same assignment — no special case.
@@ -83,14 +64,36 @@ export class DendryAdapter {
 
   get glossary(): GlossaryTerm[] {
     const g = this.data.glossary as { terms?: GlossaryTerm[] } | undefined;
-    return g?.terms ?? [];
+    return (this.localizeRegistry('glossary', g) as typeof g)?.terms ?? [];
   }
 
   /** game.json.data.achievements.achievements — see AchievementEntry. Never
    *  throws when source/data/ carries no achievements registry. */
   get achievements(): AchievementEntry[] {
     const a = this.data.achievements as { achievements?: AchievementEntry[] } | undefined;
-    return a?.achievements ?? [];
+    return (this.localizeRegistry('achievements', a) as typeof a)?.achievements ?? [];
+  }
+
+  /** Localize only game-declared display fields; identifiers and match rules stay literal. */
+  private localizeRegistry(registry: string, value: unknown): unknown {
+    const declarations = (this.data.localization as {
+      registryFields?: Array<{ registry: string; paths: string[] }>;
+    } | undefined)?.registryFields ?? [];
+    const mapPath = (node: unknown, path: string[]): unknown => {
+      if (!path.length) return typeof node === 'string' ? this.translate(node) : node;
+      if (!node || typeof node !== 'object') return node;
+      const [head, ...tail] = path;
+      if (Array.isArray(node)) {
+        return head === '*' ? node.map((child) => mapPath(child, tail)) : node;
+      }
+      return Object.fromEntries(Object.entries(node).map(([key, child]) => [
+        key, head === '*' || head === key ? mapPath(child, tail) : child,
+      ]));
+    };
+    return declarations.filter((entry) => entry.registry === registry).reduce(
+      (result, entry) => entry.paths.reduce((node, path) => mapPath(node, path.split('.')), result),
+      value,
+    );
   }
 
   /** The engine-owned cross-playthrough ledger. Components may read this
@@ -99,32 +102,19 @@ export class DendryAdapter {
     return (this.engine.state?.achievements ?? {}) as AchievementLedger;
   }
 
-  setLocale(locale: string | null, catalog: Record<string, string> | null): void {
-    this.contentCatalog = catalog ?? {};
+  setLocale(locale: string | null, catalog: ContentCatalog | null): void {
     this.engine.setLocale(locale, catalog);
   }
 
   /** Install a content catalog and rebuild the visible frame in place.
    * This deliberately bypasses goToScene: locale changes are presentation,
    * so neither on-arrival nor on-display actions may replay. */
-  refreshLocale(locale: string, catalog: Record<string, string>): Frame | null {
-    this.contentCatalog = catalog;
+  refreshLocale(locale: string, catalog: ContentCatalog): Frame | null {
     this.engine.setLocale(locale, catalog);
     if (!this.engine.state?.sceneId) return null;
 
-    const faceImage = this.ui.faceImage;
-    const faceImageOffset = this.ui.faceImageOffset;
-    const currentContent = this.engine.state.currentContent ?? [];
     this.ui.resetTransient();
-    this.ui.newPage();
-    const scene = this.engine.getCurrentScene();
-    this.ui.displayContent(
-      Array.isArray(currentContent) ? currentContent : [],
-      faceImage ?? scene.faceImage,
-      faceImageOffset ?? undefined,
-    );
-    this.engine.choiceCache = this.engine._compileChoices(scene);
-    this.engine.displayChoices();
+    this.engine.refreshPresentation();
     return this.buildFrame();
   }
 
@@ -146,14 +136,13 @@ export class DendryAdapter {
       if (!scene) console.warn(`renderView: no scene "${sceneId}"`);
       return '';
     }
-    const content = this.engine._makeDisplayContent(scene.content, true);
-    return paragraphsToHTML(localizeStaticContent(content, this.contentCatalog) as unknown[]);
+    return paragraphsToHTML(this.engine.renderContent(scene.content, true));
   }
 
   /** Catalog lookup for strings built outside the content tree — see
    *  source/lib/brief.js's LABELS tables. */
-  translate(s: string): string {
-    return this.engine.translate(s);
+  translate(s: string, params?: Record<string, unknown>): string {
+    return this.engine.translate(s, params);
   }
 
   /**
@@ -180,16 +169,7 @@ export class DendryAdapter {
     const id = this.hubSceneId(role);
     if (!id) return null;
     const scene = this.engine.game.scenes[id];
-    const choices = (
-      this.engine as unknown as {
-        _compileChoices(scene: unknown): Array<{
-          id: string;
-          title: unknown;
-          subtitle?: unknown;
-          canChoose: boolean;
-        }> | null;
-      }
-    )._compileChoices(scene) ?? [];
+    const choices = this.engine.renderChoices(this.engine._compileChoices(scene) ?? []);
     return {
       id,
       choices: choices.map((choice) => ({
@@ -242,7 +222,7 @@ export class DendryAdapter {
         | ((state: unknown, q: unknown) => boolean)
         | undefined;
       if (typeof viewIf === 'function' && !this.engine._runPredicate(viewIf, true)) continue;
-      out.push({ id, title: convertLine(target.title ?? id) });
+      out.push({ id, title: this.engine.getSceneTitle(id) });
     }
     return out;
   }
@@ -483,13 +463,11 @@ export class DendryAdapter {
     const scene = (this.engine.game.scenes[sceneId] ?? {}) as Record<string, unknown>;
     const ownRole = this.roleFor(sceneId);
     if (ownRole) this.effective = ownRole; // 'desk' reset is just this assignment
-    const renderContent = (paragraphs: unknown[]) => paragraphsToHTML(
-      localizeStaticContent(paragraphs, this.contentCatalog) as unknown[],
-    );
+    const renderContent = (paragraphs: unknown[]) => paragraphsToHTML(paragraphs);
     const imageOffset = this.ui.faceImageOffset;
     return {
       sceneId,
-      title: convertLine(scene.title ?? sceneId),
+      title: this.engine.getCurrentTitle(),
       sceneTags: (scene.tags as string[] | undefined) ?? [],
       role: ownRole,
       effectiveRole: this.effective,

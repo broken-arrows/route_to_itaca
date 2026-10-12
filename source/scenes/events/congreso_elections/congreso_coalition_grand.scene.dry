@@ -24,9 +24,15 @@ on-arrival: {!
     Q.spanish_pm_party = "psoe";
     Q.spanish_coalition = ["psoe", "pp"];
     var government_seats = Q.psoe_congreso_s + Q.pp_congreso_s;
-    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition,
-        (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority,
-        "<span style='color: var(--psoe); font-style: italic;'>Grand</span> <span style='color: var(--pp); font-style: italic;'>Coalition</span>") + " (PSOE - PP)";
+    G.setText(Q, "spanish_coalition_disp", G.text("{government} (PSOE - PP)", {
+        government: G.governmentTooltipText("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? G.text("Majority government - {seats}/{majority}", {
+            seats: String(government_seats),
+            majority: String(Q.congreso_s_majority)
+        }) : G.text("Minority government - {seats}/{majority}", {
+            seats: String(government_seats),
+            majority: String(Q.congreso_s_majority)
+        })), G.text("<span style='color: var(--psoe); font-style: italic;'>Grand</span> <span style='color: var(--pp); font-style: italic;'>Coalition</span>"))
+    }));
 
     // supporters shed votes
     G.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');
@@ -54,9 +60,15 @@ on-arrival: {!
     Q.spanish_pm_party = "pp";
     Q.spanish_coalition = ["pp", "psoe"];
     var government_seats = Q.pp_congreso_s + Q.psoe_congreso_s;
-    Q.spanish_coalition_disp = G.governmentTooltip("gobierno", Q.spanish_coalition,
-        (government_seats >= Q.congreso_s_majority ? "Majority government - " : "Minority government - ") + government_seats + "/" + Q.congreso_s_majority,
-        "<span style='color: var(--pp); font-style: italic;'>Grand</span> <span style='color: var(--psoe); font-style: italic;'>Coalition</span>") + " (PP - PSOE)";
+    G.setText(Q, "spanish_coalition_disp", G.text("{government} (PP - PSOE)", {
+        government: G.governmentTooltipText("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? G.text("Majority government - {seats}/{majority}", {
+            seats: String(government_seats),
+            majority: String(Q.congreso_s_majority)
+        }) : G.text("Minority government - {seats}/{majority}", {
+            seats: String(government_seats),
+            majority: String(Q.congreso_s_majority)
+        })), G.text("<span style='color: var(--pp); font-style: italic;'>Grand</span> <span style='color: var(--psoe); font-style: italic;'>Coalition</span>"))
+    }));
 
     // supporters shed votes
     G.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');
@@ -82,7 +94,13 @@ on-arrival: {!
     Q.spanish_pm_gender = Q.pp_leader_gender;
     Q.spanish_pm_party = "pp";
     Q.spanish_coalition = ["pp"];
-    Q.spanish_coalition_disp = "PP " + G.governmentTooltip("gobierno", Q.spanish_coalition, "Minority government - " + Q.pp_congreso_s + "/" + Q.congreso_s_majority, "<span style='font-style: italic; color: var(--pp);'>minority government</span>");
+    G.setText(Q, "spanish_coalition_disp", G.text("{party} {government}", {
+        party: "PP",
+        government: G.governmentTooltipText("gobierno", Q.spanish_coalition, G.text("Minority government - {seats}/{majority}", {
+            seats: String(Q.pp_congreso_s),
+            majority: String(Q.congreso_s_majority)
+        }), G.text("<span style='font-style: italic; color: var(--pp);'>minority government</span>"))
+    }));
 
     // supporters shed votes
     G.spaSupportInject(Q, Q.congreso_left_carrier, 'all', 0.5, 'psoe');

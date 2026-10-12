@@ -116,7 +116,7 @@ on-arrival: {!
                 break;
         }
     } else if (Q.parlament_coalition_proposal_vp === null) {
-        Q.parlament_coalition_proposal_vp_name = "<span style='font-style: italics'>To be filled by coalition partners</span>";
+        G.setText(Q, "parlament_coalition_proposal_vp_name", "<span style='font-style: italics'>To be filled by coalition partners</span>");
         Q.parlament_coalition_proposal_vp_gender = "f";
     } else {
         Q.parlament_coalition_proposal_vp_gender = Q[Q.parlament_coalition_proposal_vp + "_leader_gender"];
@@ -125,7 +125,7 @@ on-arrival: {!
 
     switch (Q.parlament_coalition_proposal_economy) {
         case null:
-            Q.parlament_coalition_proposal_economy_name = "<span style='font-style: italics'>To be filled by coalition partners</span>";
+            G.setText(Q, "parlament_coalition_proposal_economy_name", "<span style='font-style: italics'>To be filled by coalition partners</span>");
             Q.parlament_coalition_proposal_economy_gender = "f";
             break;
         case "ciu":
@@ -210,7 +210,7 @@ on-arrival: {!
 
     switch (Q.parlament_coalition_proposal_interior) {
         case null:
-            Q.parlament_coalition_proposal_interior_name = "<span style='font-style: italics'>To be filled by coalition partners</span>";
+            G.setText(Q, "parlament_coalition_proposal_interior_name", "<span style='font-style: italics'>To be filled by coalition partners</span>");
             Q.parlament_coalition_proposal_interior_gender = "f";
             break;
         case "ciu":
@@ -287,7 +287,7 @@ on-arrival: {!
 
     switch (Q.parlament_coalition_proposal_health) {
         case null:
-            Q.parlament_coalition_proposal_health_name = "<span style='font-style: italics'>To be filled by coalition partners</span>";
+            G.setText(Q, "parlament_coalition_proposal_health_name", "<span style='font-style: italics'>To be filled by coalition partners</span>");
             Q.parlament_coalition_proposal_health_gender = "f";
             break;
         case "indp.":
@@ -357,7 +357,7 @@ on-arrival: {!
 
     switch (Q.parlament_coalition_proposal_education) {
         case null:
-            Q.parlament_coalition_proposal_education_name = "<span style='font-style: italics'>To be filled by coalition partners</span>";
+            G.setText(Q, "parlament_coalition_proposal_education_name", "<span style='font-style: italics'>To be filled by coalition partners</span>");
             Q.parlament_coalition_proposal_education_gender = "f";
             break;
         case "ciu":
@@ -429,7 +429,7 @@ on-arrival: {!
 
     switch (Q.parlament_coalition_proposal_bnl) {
         case null:
-            Q.parlament_coalition_proposal_bnl_name = "<span style='font-style: italics'>To be filled by coalition partners</span>";
+            G.setText(Q, "parlament_coalition_proposal_bnl_name", "<span style='font-style: italics'>To be filled by coalition partners</span>");
             Q.parlament_coalition_proposal_bnl_gender = "f";
             break;
         case "ciu":
@@ -492,7 +492,7 @@ on-arrival: {!
 
     switch (Q.parlament_coalition_proposal_foreign) {
         case null:
-            Q.parlament_coalition_proposal_foreign_name = "<span style='font-style: italics'>To be filled by coalition partners</span>";
+            G.setText(Q, "parlament_coalition_proposal_foreign_name", "<span style='font-style: italics'>To be filled by coalition partners</span>");
             Q.parlament_coalition_proposal_foreign_gender = "f";
             break;
         case "jxsi":
@@ -569,7 +569,7 @@ on-arrival: {!
 
     switch (Q.parlament_coalition_proposal_territory) {
         case null:
-            Q.parlament_coalition_proposal_territory_name = "<span style='font-style: italics'>To be filled by coalition partners</span>";
+            G.setText(Q, "parlament_coalition_proposal_territory_name", "<span style='font-style: italics'>To be filled by coalition partners</span>");
             Q.parlament_coalition_proposal_territory_gender = "f";
             break;
         case "ciu":

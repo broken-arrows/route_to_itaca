@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import { DendryAdapter } from '../src/engine/adapter';
+import { bindSceneRuntime } from './helpers/scene-runtime';
 
 const P = 'parlament_coalition_sovereignty_';
 const gameText = readFileSync(resolve(import.meta.dirname, '../../out/game.json'), 'utf8');
@@ -12,7 +13,8 @@ function action(name: string, marker: string, q: Record<string, any>, draw = vi.
   expect(index).toBeGreaterThanOrEqual(0);
   const node = s.slice(index).split(/\r?\n@/)[0];
   const code = node.match(/on-arrival:\s*\{!([\s\S]*?)!\}/)![1];
-  new Function('Q', 'G', code).call({ achieve }, q, { random: draw });
+  const runtime = bindSceneRuntime(q, { random: draw });
+  new Function('Q', 'G', code).call({ achieve }, runtime.Q, runtime.G);
   return draw;
 }
 function nominate(q: Record<string, any>, achieve = vi.fn()) {

@@ -48,17 +48,31 @@ go-to: nominate
 
 @check
 on-arrival: {!
+    // Keep native English eligibility/dedup logic and capture each reason once.
+    function reasonList(text) {
+        var values = text.map(function (recipe) {
+            return G.englishText(recipe);
+        });
+        values.text = text;
+        return values;
+    }
+    function addReason(values, recipe) {
+        values.text.push(recipe);
+        return values.push(G.englishText(recipe));
+    }
     function n(value) { return Number(value) || 0; }
     function clamp(value, lo, hi) { return Math.max(lo, Math.min(hi, value)); }
     function cupContinuityReasons() {
-      var reasons = [];
-      if (Q.rubicon) reasons.push('TODO: do we even need this for rubcion?');
-      if (Q.parlament_coalition_sovereignty_assembly_result !== 'tie') reasons.push('The results of the CUP\'s assembly rule out a candidate so similar to Artur Mas.');
-      if (n(Q[Q.parlament_current_ciu + '_relations']) < 65) reasons.push('We don\'t have good enough relations with ' + Q.parlament_current_ciu + ".");
-      if (n(Q.erc_relations) < 65) reasons.push('We don\'t have good enough relations with ERC.');
-      if (n(Q.cup_poblelliure_strength) <= n(Q.cup_endavant_strength) + 20) reasons.push('Poble Lliure does not have enough strength to push for this option.');
-      if (n(Q.cup_poblelliure_dissent) > 20) reasons.push('Poble Lliure\'s dissent is too high to reach such an agreement.');
-      if (n(Q.cup_thirdsector_dissent) > 20) reasons.push('The Third Sector\'s dissent is too high to reach such an agreement.');
+      var reasons = reasonList([]);
+      if (Q.rubicon) addReason(reasons, G.text('TODO: do we even need this for rubcion?'));
+      if (Q.parlament_coalition_sovereignty_assembly_result !== 'tie') addReason(reasons, G.text('The results of the CUP\'s assembly rule out a candidate so similar to Artur Mas.'));
+      if (n(Q[Q.parlament_current_ciu + '_relations']) < 65) addReason(reasons, G.text("We don't have good enough relations with {party}.", {
+          party: String(Q.parlament_current_ciu)
+      }));
+      if (n(Q.erc_relations) < 65) addReason(reasons, G.text('We don\'t have good enough relations with ERC.'));
+      if (n(Q.cup_poblelliure_strength) <= n(Q.cup_endavant_strength) + 20) addReason(reasons, G.text('Poble Lliure does not have enough strength to push for this option.'));
+      if (n(Q.cup_poblelliure_dissent) > 20) addReason(reasons, G.text('Poble Lliure\'s dissent is too high to reach such an agreement.'));
+      if (n(Q.cup_thirdsector_dissent) > 20) addReason(reasons, G.text('The Third Sector\'s dissent is too high to reach such an agreement.'));
       return reasons;
     }
     function candidateApproval(Q, candidate) {
@@ -85,68 +99,105 @@ on-arrival: {!
     }
     var relations = n(Q[Q.parlament_current_ciu + '_relations']);
     var pressureEnough = n(Q.parlament_coalition_sovereignty_ciu_pressure) >= (relations >= 60 ? 2 : 3);
-    var munteReasons = Q.player_party === 'erc' ? (pressureEnough ? [] : [Q.parlament_current_ciu + ' is.']) : cupContinuityReasons();
-    Q.parlament_coalition_sovereignty_munte_reasons = munteReasons.join(' ');
+    var munteReasons = Q.player_party === 'erc' ? pressureEnough ? reasonList([]) : reasonList([G.text("{party} is.", { party: String(Q.parlament_current_ciu) })]) : cupContinuityReasons();
+    G.setText(Q, "parlament_coalition_sovereignty_munte_reasons", G.joinText(munteReasons.text, ' '));
     Q.parlament_coalition_sovereignty_munte_available = munteReasons.length === 0;
-    var romevaReasons = [];
+    var romevaReasons = reasonList([]);
     if (list === 'jxsi' || list === 'jxcat') {
-      if (erc + n(Q.cup_parlament_s) < ciu) romevaReasons.push('ERC and the CUP lack the political support to push ' + Q.parlament_current_ciu + ' towards this option.');
-      if (relations < 55) romevaReasons.push('We don\'t have good enough relations with ' + Q.parlament_current_ciu + ' .');
-      if (Q.player_party === 'cup' && n(Q.erc_relations) < 60) romevaReasons.push('We don\'t have good enough relations with ERC.');
+      if (erc + n(Q.cup_parlament_s) < ciu) addReason(romevaReasons, G.text("ERC and the CUP lack the political support to push {party} towards this option.", {
+          party: String(Q.parlament_current_ciu)
+      }));
+      if (relations < 55) addReason(romevaReasons, G.text("We don't have good enough relations with {party} .", {
+          party: String(Q.parlament_current_ciu)
+      }));
+      if (Q.player_party === 'cup' && n(Q.erc_relations) < 60) addReason(romevaReasons, G.text('We don\'t have good enough relations with ERC.'));
     } else {
-      if (erc + n(Q.cup_parlament_s) <= ciu) romevaReasons.push('ERC and the CUP lack the political support to push ' + Q.parlament_current_ciu + ' towards this option.');
-      if (relations <= 65) romevaReasons.push('We don\'t have good enough relations with ' + Q.parlament_current_ciu + '.');
-      if (Q.player_party === 'cup' && n(Q.erc_relations) <= 65) romevaReasons.push('We don\'t have good enough relations with ERC.');
-      if (Q.player_party === 'erc' && n(Q.cup_relations) <= 65) romevaReasons.push('We don\'t have good enough relations with the CUP.');
+      if (erc + n(Q.cup_parlament_s) <= ciu) addReason(romevaReasons, G.text("ERC and the CUP lack the political support to push {party} towards this option.", {
+          party: String(Q.parlament_current_ciu)
+      }));
+      if (relations <= 65) addReason(romevaReasons, G.text("We don't have good enough relations with {party}.", {
+          party: String(Q.parlament_current_ciu)
+      }));
+      if (Q.player_party === 'cup' && n(Q.erc_relations) <= 65) addReason(romevaReasons, G.text('We don\'t have good enough relations with ERC.'));
+      if (Q.player_party === 'erc' && n(Q.cup_relations) <= 65) addReason(romevaReasons, G.text('We don\'t have good enough relations with the CUP.'));
     }
-    if (!Q.parlament_coalition_sovereignty_brokerage) romevaReasons.push('We have not built enough support for such an option to take off.');
-    if (n(Q.party_resources) < 1) romevaReasons.push('Not enough resources.');
-    Q.parlament_coalition_sovereignty_romeva_reasons = romevaReasons.join(' ');
+    if (!Q.parlament_coalition_sovereignty_brokerage) addReason(romevaReasons, G.text('We have not built enough support for such an option to take off.'));
+    if (n(Q.party_resources) < 1) addReason(romevaReasons, G.text('Not enough resources.'));
+    G.setText(Q, "parlament_coalition_sovereignty_romeva_reasons", G.joinText(romevaReasons.text, ' '));
     Q.parlament_coalition_sovereignty_romeva_available = romevaReasons.length === 0;
     var policies = ["education", "health", "pay", "tax", "cap"];
-    Q.parlament_coalition_sovereignty_candidate_reason = (function () {
-    var name = Q.parlament_coalition_proposal_president_name;
-    if (name === 'Artur Mas' && Q.parlament_coalition_sovereignty_withdrawal) return '';
-    if (['Artur Mas', 'Neus Munté'].indexOf(name) < 0) return '';
-    if (!candidateApproval(Q, name)) {
-      var result = Q.parlament_coalition_sovereignty_assembly_result;
-      var continuity = name === 'Neus Munté';
-      if (Q.rubicon) return 'The CUP will not support an exceptional investiture of ' + name + ' under the current proposal.';
-      if (Q.player_party === 'cup' && name === 'Artur Mas') {
-        var partner = {jxsi: 'JxSí', jxcat: 'JxCat', ciu: 'CiU', cdc: 'CDC', dl: 'DL', pdcat: 'PDeCAT', junts: 'Junts'}[list === 'jxsi' || list === 'jxcat' ? list : Q.parlament_current_ciu] || Q.parlament_current_ciu;
-        var mandate = result === 'veto' ? "The CUP's National Assembly has voted against the investiture of Artur Mas. "
-          : result === 'tie' ? "The CUP's National Assembly tie can hardly be read as an endorsemet of Artur Mas, much less under these conditions. "
-          : "Until the party membershipe votes on wether to authorize such an exceptional investiture, our veto to Artur Mas remains in place.";
-        return mandate + partner + " is unwilling to withdraw Artur Mas as the presidential candidate.";
-      }
-      if (result === 'veto') return continuity
-        ? 'The CUP\'s assembly has rejected Artur Mas, and the party will not accept Neus Munté as an exchange token, citing she is just more of the same CDC.'
-        : 'The CUP\'s assembly has voted against the investiture of Artur Mas.';
-      if (result === 'tie') return continuity
-        ? 'Despite the exceptional tie in the CUP\'s assembly, the party seems unwilling to endorse Neus Munté as an exchange token, citing she is just more of the same CDC.'
-        : 'The CUP\'s assembly ended in a tie, which hadrly seems to facilitate the investiture of Artur Mas.';
-      if (Q.player_party === 'cup') return 'We have no assembly mandate to support Neus Munté as an alternative to Artur Mas.';
-      return continuity
-        ? 'While some within the CUP may see Neus Munté as a viable alternative to Artur Mas, many still see her as more CDC.'
-        : 'The CUP maintains its veto of Artur Mas and it does not look like an exception will be made despite the offered terms.';
-    }
-    var count = policies.filter(function (p) { return Q['parlament_coalition_policy_' + p]; }).length;
-    var deadline = n(Q.parlament_coalition_sovereignty_deadline) || n(Q.roadmap_year);
-    var reasons = [];
-    if (count < (name === 'Neus Munté' ? 3 : 2)) reasons.push('The CUP expects a broader set of social commitments before making an exception for ' + name + '.');
-    if (deadline <= n(Q.year)) reasons.push('The CUP needs a future roadmap deadline to make an exception for ' + name + '.');
-    if (deadline > n(Q.year) + 2) reasons.push('The CUP expects the agreed roadmap to be fulfilled within the next two years before making an exception for ' + name + '.');
-    if (reasons.length) return (Q.player_party === 'cup' ? (Q.parlament_coalition_sovereignty_assembly_result === 'approve' ? "This proposal does not satisfy the party-assembly voted conditions for an exceptional investiture. " : "This proposal does not satisfy our conditions for an exceptional investiture. ") : '') + reasons.join(' ');
-    if (Q.parlament_coalition_sovereignty_assembly_result) {
-      if ((Q.parlament_coalition_sovereignty_assembly_terms || []).some(function (term) { return term.policy === "indy"; }) && !Q.parlament_coalition_concessions_indy) reasons.push("The new proposal weakens the independence commitments previously offered and voted by the CUP\'s assembly.");
-      var weakened = (Q.parlament_coalition_sovereignty_assembly_terms || []).some(function (term) {
-        return term.policy !== 'indy' && (!Q['parlament_coalition_policy_' + term.policy] || n(Q['parlament_coalition_policy_' + term.policy + '_target']) < n(term.target));
-      });
-      if (weakened) reasons.push('The new proposal weakens social commitments previously offered and voted by the CUP\'s assembly.');
-      if (deadline > n(Q.parlament_coalition_sovereignty_assembly_deadline)) reasons.push('The new proposal pushes the roadmap deadline past what was promised and voted by the CUP\'s assembly.');
-    }
-    return (reasons.length && Q.player_party === 'cup' ? "This proposal goes against what the party's National Assembly agreed." : '') + reasons.join(' ');
-    })();
+    G.setText(Q, "parlament_coalition_sovereignty_candidate_reason", (function () {
+        var name = Q.parlament_coalition_proposal_president_name;
+        if (name === 'Artur Mas' && Q.parlament_coalition_sovereignty_withdrawal) return G.literalText("");
+        if (['Artur Mas', 'Neus Munté'].indexOf(name) < 0) return G.literalText("");
+        if (!candidateApproval(Q, name)) {
+            var result = Q.parlament_coalition_sovereignty_assembly_result;
+            var continuity = name === 'Neus Munté';
+            if (Q.rubicon) return G.text("The CUP will not support an exceptional investiture of {name} under the current proposal.", {
+                name: String(name),
+                candidate_gender: Q.parlament_coalition_proposal_president_gender
+            });
+            if (Q.player_party === 'cup' && name === 'Artur Mas') {
+                var partner = {
+                    jxsi: 'JxSí',
+                    jxcat: 'JxCat',
+                    ciu: 'CiU',
+                    cdc: 'CDC',
+                    dl: 'DL',
+                    pdcat: 'PDeCAT',
+                    junts: 'Junts'
+                } [list === 'jxsi' || list === 'jxcat' ? list : Q.parlament_current_ciu] || Q.parlament_current_ciu;
+                var mandate = (result === 'veto' ? G.text("The CUP's National Assembly has voted against the investiture of Artur Mas. ") : (result === 'tie' ? G.text("The CUP's National Assembly tie can hardly be read as an endorsemet of Artur Mas, much less under these conditions. ") : G.text("Until the party membershipe votes on wether to authorize such an exceptional investiture, our veto to Artur Mas remains in place.")));
+                return G.text("{mandate}{partner} is unwilling to withdraw Artur Mas as the presidential candidate.", {
+                    mandate: mandate,
+                    partner: String(partner)
+                });
+            }
+            if (result === 'veto') return (continuity ? G.text('The CUP\'s assembly has rejected Artur Mas, and the party will not accept Neus Munté as an exchange token, citing she is just more of the same CDC.') : G.text('The CUP\'s assembly has voted against the investiture of Artur Mas.'));
+            if (result === 'tie') return (continuity ? G.text('Despite the exceptional tie in the CUP\'s assembly, the party seems unwilling to endorse Neus Munté as an exchange token, citing she is just more of the same CDC.') : G.text('The CUP\'s assembly ended in a tie, which hadrly seems to facilitate the investiture of Artur Mas.'));
+            if (Q.player_party === 'cup') return G.text('We have no assembly mandate to support Neus Munté as an alternative to Artur Mas.');
+            return (continuity ? G.text('While some within the CUP may see Neus Munté as a viable alternative to Artur Mas, many still see her as more CDC.') : G.text('The CUP maintains its veto of Artur Mas and it does not look like an exception will be made despite the offered terms.'));
+        }
+        var count = policies.filter(function (p) {
+            return Q['parlament_coalition_policy_' + p];
+        }).length;
+        var deadline = n(Q.parlament_coalition_sovereignty_deadline) || n(Q.roadmap_year);
+        var reasons = reasonList([]);
+        if (count < (name === 'Neus Munté' ? 3 : 2))(addReason(reasons, G.text("The CUP expects a broader set of social commitments before making an exception for {name}.", {
+            name: String(name),
+            parlament_coalition_proposal_president_gender: Q.parlament_coalition_proposal_president_gender
+        })));
+        if (deadline <= n(Q.year))(addReason(reasons, G.text("The CUP needs a future roadmap deadline to make an exception for {name}.", {
+            name: String(name),
+            parlament_coalition_proposal_president_gender: Q.parlament_coalition_proposal_president_gender
+        })));
+        if (deadline > n(Q.year) + 2)(addReason(reasons, G.text("The CUP expects the agreed roadmap to be fulfilled within the next two years before making an exception for {name}.", {
+            name: String(name),
+            parlament_coalition_proposal_president_gender: Q.parlament_coalition_proposal_president_gender
+        })));
+        if (reasons.length) return (Q.player_party === 'cup' ? (Q.parlament_coalition_sovereignty_assembly_result === 'approve' ? G.text("This proposal does not satisfy the party-assembly voted conditions for an exceptional investiture. {reasons}", {
+            reasons: G.joinText(reasons.text, ' ')
+        }) : G.text("This proposal does not satisfy our conditions for an exceptional investiture. {reasons}", {
+            reasons: G.joinText(reasons.text, ' ')
+        })) : G.text("{reasons}", {
+            reasons: G.joinText(reasons.text, ' ')
+        }));
+        if (Q.parlament_coalition_sovereignty_assembly_result) {
+            if ((Q.parlament_coalition_sovereignty_assembly_terms || []).some(function (term) {
+                    return term.policy === "indy";
+                }) && !Q.parlament_coalition_concessions_indy)(addReason(reasons, G.text("The new proposal weakens the independence commitments previously offered and voted by the CUP\'s assembly.")));
+            var weakened = (Q.parlament_coalition_sovereignty_assembly_terms || []).some(function (term) {
+                return term.policy !== 'indy' && (!Q['parlament_coalition_policy_' + term.policy] || n(Q['parlament_coalition_policy_' + term.policy + '_target']) < n(term.target));
+            });
+            if (weakened)(addReason(reasons, G.text('The new proposal weakens social commitments previously offered and voted by the CUP\'s assembly.')));
+            if (deadline > n(Q.parlament_coalition_sovereignty_assembly_deadline))(addReason(reasons, G.text('The new proposal pushes the roadmap deadline past what was promised and voted by the CUP\'s assembly.')));
+        }
+        return (reasons.length && Q.player_party === 'cup' ? G.text("This proposal goes against what the party's National Assembly agreed.{reasons}", {
+            reasons: G.joinText(reasons.text, ' ')
+        }) : G.text("{reasons}", {
+            reasons: G.joinText(reasons.text, ' ')
+        }));
+    })());
 
 !}
 
@@ -188,11 +239,16 @@ on-arrival: {!
     var reason = Q.parlament_coalition_sovereignty_candidate_reason;
     if (Q.parlament_coalition_sovereignty_withdrawal && Q.parlament_coalition_proposal_president_name === "Artur Mas") {
         Q.parlament_coalition_proposal_accept = false;
-        Q.parlament_coalition_sovereignty_reject_reasons += " " + Q.parlament_current_ciu + " is unwilling to withdraw Artur Mas.";
+        G.setText(Q, "parlament_coalition_sovereignty_reject_reasons", G.joinText([G.getText(Q, "parlament_coalition_sovereignty_reject_reasons"), G.text(" {party} is unwilling to withdraw Artur Mas.", {
+            party: String(Q.parlament_current_ciu)
+        })]));
     }
     if (reason) {
         Q.parlament_coalition_proposal_accept = false;
-        Q.parlament_coalition_sovereignty_reject_reasons += (Q.parlament_coalition_sovereignty_reject_reasons ? " " : "") + reason;
+        G.setText(Q, "parlament_coalition_sovereignty_reject_reasons", G.joinText([G.getText(Q, "parlament_coalition_sovereignty_reject_reasons"), G.text("{separator}{reason}", {
+            separator: Q.parlament_coalition_sovereignty_reject_reasons ? " " : "",
+            reason: G.getText(Q, "parlament_coalition_sovereignty_candidate_reason")
+        })]));
     }
 !}
 call: parlament_coalition_fiscal_policies.evaluate

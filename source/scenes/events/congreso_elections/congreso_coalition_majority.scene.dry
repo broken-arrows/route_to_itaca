@@ -20,7 +20,15 @@ on-arrival: {!
     Q.spanish_pm_party = Q.congreso_coalition_majority_party;
     Q.spanish_coalition = [Q.congreso_coalition_majority_party];
     var display_party = Q.congreso_coalition_majority_party == "cs" ? "csspa" : Q.congreso_coalition_majority_party;
-    Q.spanish_coalition_disp = display_party + " " + G.governmentTooltip("gobierno", Q.spanish_coalition, "Majority government - " + Q.congreso_coalition_majority_s + "/" + Q.congreso_s_majority, '<span style="color: var(--' + Q.congreso_coalition_majority_party + '); font-style: italic;">Majority Government</span>');
+    G.setText(Q, "spanish_coalition_disp", G.text("{display_party} {government}", {
+        display_party: String(display_party),
+        government: G.governmentTooltipText("gobierno", Q.spanish_coalition, G.text("Majority government - {seats}/{majority}", {
+            seats: String(Q.congreso_coalition_majority_s),
+            majority: String(Q.congreso_s_majority)
+        }), G.text("<span style=\"color: var(--{congreso_coalition_majority_party}); font-style: italic;\">Majority Government</span>", {
+            congreso_coalition_majority_party: String(Q.congreso_coalition_majority_party)
+        }))
+    }));
 !}
 
 **A new government is formed!**

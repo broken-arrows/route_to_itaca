@@ -111,21 +111,37 @@ choose-if: not parlament_coalition_sovereignty_withdrawal
 unavailable-subtitle: We cannot send a proposal demanding Artur Mas to step down as long as [+ parlament_current_ciu +] is unwilling to do that.
 subtitle: [? if parlament_coalition_sovereignty_phase = 3: This is the final round. If any partner refuses, negotiations will end without an agreement.?]
 on-arrival: {!
-    var reasons = [];
+    // Keep native English eligibility/dedup logic and capture each reason once.
+    function reasonList(text) {
+        var values = text.map(function (recipe) {
+            return G.englishText(recipe);
+        });
+        values.text = text;
+        return values;
+    }
+    function addReason(values, recipe) {
+        values.text.push(recipe);
+        return values.push(G.englishText(recipe));
+    }
+    var reasons = reasonList([]);
     var ministries = ["interior", "economy", "foreign", "health", "education", "territory", "bnl"];
     var counts = {};
     for (var office of ["vp"].concat(ministries)) {
         var holder = Q["parlament_coalition_proposal_" + office];
-        if (Q.parlament_coalition_sovereignty_cabinet.indexOf(holder) < 0) reasons.push("Some cabinet posts are still unassigned or have been given to a party outside the government.");
+        if (Q.parlament_coalition_sovereignty_cabinet.indexOf(holder) < 0) addReason(reasons, G.text("Some cabinet posts are still unassigned or have been given to a party outside the government."));
         if (office != "vp") counts[holder] = (counts[holder] || 0) + 1;
     }
 
-    if (Q.coalition_phase_timer > 0) reasons.push("We must wait for the next round of negotiations before sending another proposal.");
-    if (Q.parlament_coalition_leverage < 0) reasons.push("We are asking for more concessions than our negotiating leverage allows.");
+    if (Q.coalition_phase_timer > 0) addReason(reasons, G.text("We must wait for the next round of negotiations before sending another proposal."));
+    if (Q.parlament_coalition_leverage < 0) addReason(reasons, G.text("We are asking for more concessions than our negotiating leverage allows."));
 
     var policies = ["education", "health", "pay", "tax", "cap"].filter(function (p) { return Q["parlament_coalition_policy_" + p]; }).length;
-    if (!(policies > 0)) reasons.push("The CUP expects a higher level of social commitment from the new government.");
-    Q.parlament_coalition_sovereignty_reject_reasons = reasons.filter(function (r, i) { return reasons.indexOf(r) == i; }).join(" ");
+    if (!(policies > 0)) addReason(reasons, G.text("The CUP expects a higher level of social commitment from the new government."));
+    G.setText(Q, "parlament_coalition_sovereignty_reject_reasons", G.joinText(reasons.filter(function (r, i) {
+        return reasons.indexOf(r) == i;
+    }).map(function (reason) {
+        return reasons.text[reasons.indexOf(reason)];
+    }), " "));
     Q.parlament_coalition_proposal_accept = reasons.length == 0;
 !}
 call: parlament_coalition_sovereignty_replacement.check

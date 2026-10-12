@@ -292,27 +292,33 @@ on-arrival: {!
     Q.cat_coalition_support = (Q.cup_broad_kind == "republican" || Q.cup_broad_kind == "new_popular_front") ? ["cup"] : [];
     Q.cat_coalition_abstain = Q.cup_broad_kind == "minority_left_tripartite" ? ["cup"] : [];
     var comunsStyle = "color: var(--" + Q.parlament_current_icv + "); font-style: italic;";
-    var label = "";
+    var label = G.literalText("");
     if (Q.cup_broad_kind == "republican") {
-        label = "<span style='color: var(--erc); font-style: italic;'>Republican</span> <span style='" + comunsStyle + "'>Government</span>";
+        label = G.text("<span style='color: var(--erc); font-style: italic;'>Republican</span> <span style='{comunsStyle}'>Government</span>", { comunsStyle: String(comunsStyle) });
     } else if (Q.cup_broad_kind == "popular_unity") {
-        label = "<span style='color: var(--erc); font-style: italic;'>Popular</span> <span style='" + comunsStyle + "'>Unity</span> <span style='color: #b8a12b; font-style: italic;'>Coalition</span>";
+        label = G.text("<span style='color: var(--erc); font-style: italic;'>Popular</span> <span style='{comunsStyle}'>Unity</span> <span style='color: #b8a12b; font-style: italic;'>Coalition</span>", { comunsStyle: String(comunsStyle) });
     } else if (Q.cup_broad_kind == "new_popular_front") {
-        label = "<span style='color: var(--erc); font-style: italic;'>New</span> <span style='color: var(--psc); font-style: italic;'>Popular</span> <span style='" + comunsStyle + "'>Front</span>";
+        label = G.text("<span style='color: var(--erc); font-style: italic;'>New</span> <span style='color: var(--psc); font-style: italic;'>Popular</span> <span style='{comunsStyle}'>Front</span>", { comunsStyle: String(comunsStyle) });
     } else {
-        label = "<span style='color: var(--erc); font-style: italic;'>Minority Left</span> <span style='" + comunsStyle + "'>Tripartite</span> <span style='color: var(--psc); font-style: italic;'>government</span>";
+        label = G.text("<span style='color: var(--erc); font-style: italic;'>Minority Left</span> <span style='{comunsStyle}'>Tripartite</span> <span style='color: var(--psc); font-style: italic;'>government</span>", { comunsStyle: String(comunsStyle) });
     }
     var governmentSeats = Q.cat_coalition.reduce(function (total, party) {
         return total + (Q[party + "_parlament_s"] || 0);
     }, 0);
-    var summary = (governmentSeats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + governmentSeats + "/" + Q.parlament_s_majority;
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, summary, label);
+    var summary = (governmentSeats >= Q.parlament_s_majority ? G.text("Majority government - {seats}/{majority}", {
+        seats: String(governmentSeats),
+        majority: String(Q.parlament_s_majority)
+    }) : G.text("Minority government - {seats}/{majority}", {
+        seats: String(governmentSeats),
+        majority: String(Q.parlament_s_majority)
+    }));
+    G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition, summary, label));
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cup_in_gob = Q.cup_broad_kind == "popular_unity";
     Q.cup_supporting = Q.cup_broad_kind != "minority_left_tripartite";
     Q.cat_coalition_dissent = 0;
-    Q.position_disp = Q.player_party == "cup" && !Q.cup_in_gob ? (Q.cup_supporting ? "<span style='font-style: italic'>Government Support</span>" : "<span style='font-style: italic'>Opposition</span>") : "Generalitat";
+    G.setText(Q, "position_disp", (Q.player_party == "cup" && !Q.cup_in_gob ? (Q.cup_supporting ? G.text("<span style='font-style: italic'>Government Support</span>") : G.text("<span style='font-style: italic'>Opposition</span>")) : G.text("Generalitat")));
 !}
 
 The parties have reached an agreement to form a [+ cat_coalition_disp +]. [? if cup_broad_kind = "republican" or cup_broad_kind = "new_popular_front": The CUP will support it from outside government.?][? if cup_broad_kind = "minority_left_tripartite": The CUP will abstain and remain in opposition.?]

@@ -550,14 +550,25 @@
         } catch (err) {
           return callback(err);
         }
-        return callback(null, {type:type, fn:fn});
+        return callback(null, {type:type, fn:fn,
+                               source:dependency.source,
+                               language:dependency.language});
       } else {
         assert(dependency.language === 'logic');
         method(dependency.source, function(err, fn) {
           if (err) {
             return callback(err);
           }
-          return callback(null, {type:type, fn:fn});
+          var result = {type:type, fn:fn,
+                        source:dependency.source,
+                        language:dependency.language};
+          // Retain authored provenance rather than recovering it from the
+          // generated function. Only a direct quality insert names a quality;
+          // expressions keep their source but require explicit parameters.
+          if (type === 'insert' && /^[A-Za-z_][\w-]*$/.test(dependency.source.trim())) {
+            result.quality = dependency.source.trim();
+          }
+          return callback(null, result);
         });
       }
     };

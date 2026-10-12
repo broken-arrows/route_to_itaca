@@ -230,13 +230,16 @@ on-arrival: {!
     Q.cat_coalition = [Q.parlament_coalition_leader, Q.parlament_coalition_follower];
     Q.cat_coalition_support = [];
     Q.cat_coalition_abstain = [];
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_erc_cup_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>Left-Independence</span> <span style='color: #b8a12b; font-style: italic;'>Government</span>");
+    G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition, G.text("Majority government - {seats}/{majority}", {
+        seats: String(Q.parlament_coalition_erc_cup_s),
+        majority: String(Q.parlament_s_majority)
+    }), G.text("<span style='color: var(--erc); font-style: italic;'>Left-Independence</span> <span style='color: #b8a12b; font-style: italic;'>Government</span>")));
     Q.cat_coalition_dissent = 0;
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cup_in_gob = true;
     Q.cup_supporting = true;
-    Q.position_disp = "Generalitat";
+    G.setText(Q, "position_disp", G.text("Generalitat"));
     Q.independence_trust += 5;
 !}
 

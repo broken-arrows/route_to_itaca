@@ -50,9 +50,7 @@ on-arrival: {!
         Q[party + "_in_gob"] = inCabinet;
         Q[party + "_supporting"] = inCabinet || belongs(party, Q.cat_coalition_support);
     }
-    Q.position_disp = belongs(Q.player_party, Q.cat_coalition || []) ? "Generalitat" :
-        belongs(Q.player_party, Q.cat_coalition_support) ? "<span style='font-style: italic'>Government Support</span>" :
-        "<span style='font-style: italic'>Opposition</span>";
+    G.setText(Q, "position_disp", (belongs(Q.player_party, Q.cat_coalition || []) ? G.text("Generalitat") : (belongs(Q.player_party, Q.cat_coalition_support) ? G.text("<span style='font-style: italic'>Government Support</span>") : G.text("<span style='font-style: italic'>Opposition</span>"))));
     Q.budget_external_breach = false;
     Q.budget_external_broken_commitments = [];
     Q.budget_external_breach_parties = [];

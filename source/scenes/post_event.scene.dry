@@ -41,9 +41,7 @@ for (var c of Q.parlament_constituencies) {
 }
 
 
-// Older saves predate the shared negotiation timer.
 if (Q.coalition_phase_timer === undefined) Q.coalition_phase_timer = 0;
-if (!Q.timers.includes("coalition_phase")) Q.timers.push("coalition_phase");
 
 function updatePendingEvents(engine) {
     Q.has_event = 0;
@@ -1191,7 +1189,7 @@ on-departure: {!
 if (Q.historical_event == Q.last_historical_event) {
     Q.historical_event = 0;  
 } 
-Q.last_historical_event = Q.historical_event;
+G.copyText(Q, "last_historical_event", "historical_event");
 
 // TODO: remove game over on jxcat_formed!
 !}

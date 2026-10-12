@@ -3,12 +3,18 @@ import { onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { initGameLocale, type AppLocale } from './i18n';
 import { useSettingsStore } from './stores/settings';
+import { useGameStore } from './stores/game';
 import DebugPage from './views/DebugPage.vue';
 import GameView from './views/GameView.vue';
 
 const { t, locale } = useI18n();
 const settings = useSettingsStore();
+const game = useGameStore();
 const locales: AppLocale[] = ['en', 'ca'];
+async function changeLanguage(language: AppLocale): Promise<void> {
+  settings.setLanguage(language);
+  await game.setContentLanguage(language);
+}
 
 // Boot-load the game's locale overrides (source/locales/<loc>/ui.json) once,
 // for both locales, so `setLocale` (called at every settings-store
@@ -39,7 +45,7 @@ const isDebug = new URLSearchParams(window.location.search).has('debug');
         v-for="l in locales"
         :key="l"
         :disabled="locale === l"
-        @click="settings.setLanguage(l)"
+        @click="changeLanguage(l)"
       >
         {{ t(`lang.${l}`) }}
       </button>

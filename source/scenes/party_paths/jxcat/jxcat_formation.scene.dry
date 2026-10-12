@@ -511,11 +511,7 @@ on-arrival: {!
                         Q.cat_coalition_support.includes(p) ||
                         Q.cat_coalition_support.includes(list);
             }
-            Q.position_disp = Q[Q.player_party + "_in_gob"]
-                ? "Generalitat"
-                : Q[Q.player_party + "_supporting"]
-                    ? "<span style='font-style: italic'>Government Support</span>"
-                    : "<span style='font-style: italic'>Opposition</span>";
+            G.setText(Q, "position_disp", (Q[Q.player_party + "_in_gob"] ? G.text("Generalitat") : (Q[Q.player_party + "_supporting"] ? G.text("<span style='font-style: italic'>Government Support</span>") : G.text("<span style='font-style: italic'>Opposition</span>"))));
             if (Q.cat_coalition.length) {
                 const seats = Q.cat_coalition.reduce((sum, p) => sum + num(Q[p + "_parlament_s"]), 0);
                 const majority = num(Q.parlament_s_majority) || 68;
@@ -528,18 +524,14 @@ on-arrival: {!
                 const label = Q.cat_coalition
                     .map((p) => names[p] || p.toUpperCase())
                     .join(" + ");
-                Q.cat_coalition_disp =
-                    '<span class="generalitat-coalition" data-parties="' +
-                        Q.cat_coalition.join(" ") +
-                        '" data-summary="' +
-                        (seats >= majority ? "Majority" : "Minority") +
-                        " government - " +
-                        seats +
-                        "/" +
-                        majority +
-                        '">' +
-                        label +
-                        "</span>";
+                G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition,
+                    (seats >= majority ? G.text("Majority government - {seats}/{majority}", {
+                        seats: String(seats),
+                        majority: String(majority)
+                    }) : G.text("Minority government - {seats}/{majority}", {
+                        seats: String(seats),
+                        majority: String(majority)
+                    })), G.literalText(label)));
             }
         }
         if (!Q.jxcat_formed) {
@@ -630,7 +622,7 @@ on-arrival: {!
                 leader === "neutral"
                     ? num(Q.jxsi_roadmap || Q.erc_roadmap)
                     : Q[(leader === "cdc" ? cdc : leader) + "_roadmap"];
-            Q.jxcat_ideology = "National coalition, Independence";
+            G.setText(Q, "jxcat_ideology", G.text("National coalition, Independence"));
             Q.jxcat_formed = true;
             Q.jxcat_dissolved = false;
             Q.jxcat_formation_trigger = false;
@@ -641,12 +633,13 @@ on-arrival: {!
             Q.jxcat_in_local = local;
             Q.jxcat_in_congreso = congreso;
             mapGovernment(Q, Object.fromEntries(members.map((p) => [p, ["jxcat"]])), "jxcat");
-            Q.historical_event =
-                "JxCat unites " +
-                    (includeCup ? "CDC, ERC and CUP" : "CDC and ERC") +
-                    " behind " +
-                    Q.jxcat_leader +
-                    ".";
+            G.setText(Q, "historical_event", (includeCup ? G.text("JxCat unites CDC, ERC and CUP behind {jxcat_leader}.", {
+                jxcat_leader: String(Q.jxcat_leader),
+                jxcat_leader_gender: Q.jxcat_leader_gender
+            }) : G.text("JxCat unites CDC and ERC behind {jxcat_leader}.", {
+                jxcat_leader: String(Q.jxcat_leader),
+                jxcat_leader_gender: Q.jxcat_leader_gender
+            })));
         }
     }
     this.state.currentHands['main'] = [];
@@ -773,11 +766,7 @@ on-arrival: {!
                         Q.cat_coalition_support.includes(p) ||
                         Q.cat_coalition_support.includes(list);
             }
-            Q.position_disp = Q[Q.player_party + "_in_gob"]
-                ? "Generalitat"
-                : Q[Q.player_party + "_supporting"]
-                    ? "<span style='font-style: italic'>Government Support</span>"
-                    : "<span style='font-style: italic'>Opposition</span>";
+            G.setText(Q, "position_disp", (Q[Q.player_party + "_in_gob"] ? G.text("Generalitat") : (Q[Q.player_party + "_supporting"] ? G.text("<span style='font-style: italic'>Government Support</span>") : G.text("<span style='font-style: italic'>Opposition</span>"))));
             if (Q.cat_coalition.length) {
                 const seats = Q.cat_coalition.reduce((sum, p) => sum + num(Q[p + "_parlament_s"]), 0);
                 const majority = num(Q.parlament_s_majority) || 68;
@@ -790,23 +779,19 @@ on-arrival: {!
                 const label = Q.cat_coalition
                     .map((p) => names[p] || p.toUpperCase())
                     .join(" + ");
-                Q.cat_coalition_disp =
-                    '<span class="generalitat-coalition" data-parties="' +
-                        Q.cat_coalition.join(" ") +
-                        '" data-summary="' +
-                        (seats >= majority ? "Majority" : "Minority") +
-                        " government - " +
-                        seats +
-                        "/" +
-                        majority +
-                        '">' +
-                        label +
-                        "</span>";
+                G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition,
+                    (seats >= majority ? G.text("Majority government - {seats}/{majority}", {
+                        seats: String(seats),
+                        majority: String(majority)
+                    }) : G.text("Minority government - {seats}/{majority}", {
+                        seats: String(seats),
+                        majority: String(majority)
+                    })), G.literalText(label)));
             }
-            Q.historical_event =
-                "The unity proposal has failed. " +
-                    Q.jxcat_leader +
-                    " will lead JxCat without ERC or the CUP.";
+            G.setText(Q, "historical_event", G.text("The unity proposal has failed. {jxcat_leader} will lead JxCat without ERC or the CUP.", {
+                jxcat_leader: String(Q.jxcat_leader),
+                jxcat_leader_gender: Q.jxcat_leader_gender
+            }));
         }
     }
     this.state.currentHands['main'] = [];

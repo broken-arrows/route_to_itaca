@@ -190,11 +190,7 @@ on-arrival: {!
                         Q.cat_coalition_support.includes(p) ||
                         Q.cat_coalition_support.includes(list);
             }
-            Q.position_disp = Q[Q.player_party + "_in_gob"]
-                ? "Generalitat"
-                : Q[Q.player_party + "_supporting"]
-                    ? "<span style='font-style: italic'>Government Support</span>"
-                    : "<span style='font-style: italic'>Opposition</span>";
+            G.setText(Q, "position_disp", (Q[Q.player_party + "_in_gob"] ? G.text("Generalitat") : (Q[Q.player_party + "_supporting"] ? G.text("<span style='font-style: italic'>Government Support</span>") : G.text("<span style='font-style: italic'>Opposition</span>"))));
             if (Q.cat_coalition.length) {
                 const seats = Q.cat_coalition.reduce((sum, p) => sum + num(Q[p + "_parlament_s"]), 0);
                 const majority = num(Q.parlament_s_majority) || 68;
@@ -207,18 +203,14 @@ on-arrival: {!
                 const label = Q.cat_coalition
                     .map((p) => names[p] || p.toUpperCase())
                     .join(" + ");
-                Q.cat_coalition_disp =
-                    '<span class="generalitat-coalition" data-parties="' +
-                        Q.cat_coalition.join(" ") +
-                        '" data-summary="' +
-                        (seats >= majority ? "Majority" : "Minority") +
-                        " government - " +
-                        seats +
-                        "/" +
-                        majority +
-                        '">' +
-                        label +
-                        "</span>";
+                G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition,
+                    (seats >= majority ? G.text("Majority government - {seats}/{majority}", {
+                        seats: String(seats),
+                        majority: String(majority)
+                    }) : G.text("Minority government - {seats}/{majority}", {
+                        seats: String(seats),
+                        majority: String(majority)
+                    })), G.literalText(label)));
             }
         }
     }

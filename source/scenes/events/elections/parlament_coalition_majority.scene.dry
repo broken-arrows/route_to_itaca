@@ -15,7 +15,15 @@ on-arrival: {!
     Q.cat_coalition = [mp];
     Q.cat_coalition_support = [];
     Q.cat_coalition_abstain = [];
-    Q.cat_coalition_disp = mp + " " + G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_majority_s + "/" + Q.parlament_s_majority, "<span style='color: var(--" + mp + "); font-style: italic;'>Majority Government</span>");
+    G.setText(Q, "cat_coalition_disp", "{party} {government}", {
+        party: mp,
+        government: G.governmentTooltipText("generalitat", Q.cat_coalition, G.text("Majority government - {seats}/{majority}", {
+            seats: Q.parlament_coalition_majority_s,
+            majority: Q.parlament_s_majority
+        }), G.text("<span style='color: var(--{party}); font-style: italic;'>Majority Government</span>", {
+            party: mp
+        }))
+    });
 
     Q.parlament_coalition_proposal_president = mp;
     Q.parlament_coalition_proposal_vp = mp;
@@ -92,11 +100,11 @@ on-arrival: {!
     }
 
     if (mp == Q.player_party) {
-        Q.position_disp = "Generalitat";
+        G.setText(Q, "position_disp", G.text("Generalitat"));
         if (mp == "erc") { Q.erc_in_gob = true; Q.erc_supporting = true; }
         else if (mp == "cup") { Q.cup_in_gob = true; Q.cup_supporting = true; }
     } else {
-        Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
+        G.setText(Q, "position_disp", G.text("<span style='font-style: italic'>Opposition</span>"));
     }
 
     // A unionist single-party government inflames the movement and erodes trust in the process

@@ -123,6 +123,43 @@
       "confirm": "Exit to Main Menu"
     }
   },
+  "widgets": {
+    "seats": "{count} seat | {count} seats",
+    "partySeats": "{party}: {count} seats",
+    "majoritySeats": "Majority: {count} seats",
+    "seatStrip": "{count} seats; majority {majority}",
+    "hemicycle": "Hemicycle: {count} seats, majority {majority}",
+    "logo": "{party} logo",
+    "you": "you",
+    "strength": "STR",
+    "dissent": "DIS",
+    "votes": "{label}: {count} votes",
+    "majorityVotes": "Majority: {count} yes votes",
+    "trend": "{label}: full-run trend, now {value}{unit}, {direction}",
+    "trendStart": "start of the run",
+    "trendNow": "this month",
+    "direction": { "up": "rising", "down": "falling", "flat": "flat" },
+    "builder": {
+      "include": "Include {party} in the joint list",
+      "previous": "Previous party for {party}",
+      "next": "Next party for {party}",
+      "removeSeat": "Remove a seat from {party}",
+      "seatInput": "{party} seats",
+      "addSeat": "Add a seat to {party}"
+    },
+    "map": {
+      "unavailable": "Map unavailable",
+      "province": "Province",
+      "potentialVoters": "{count} potential voters",
+      "demographics": "By demographic",
+      "projected": "Seats, projected · {province}",
+      "projection": "Projected seats for {province}",
+      "distribution": "Seat distribution in {region}",
+      "noResults": "No results yet.",
+      "selectRegion": "Click a region to see its seat distribution.",
+      "selectCity": "Click a city to see results"
+    }
+  },
   "desk": {
     "tray": {
       "out": "OUT",

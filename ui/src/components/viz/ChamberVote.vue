@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useGameStore } from '../../stores/game';
 import { markGlossary } from '../../glossary/mark';
 import Prose from '../Prose.vue';
@@ -24,6 +25,7 @@ const props = withDefaults(
 );
 
 const game = useGameStore();
+const { t } = useI18n();
 const outcomeOrder: Record<VoteOutcome['kind'], number> = {
   yes: 0,
   abstain: 1,
@@ -89,7 +91,7 @@ const layoutStyle = computed(() => {
     <div
       class="chamber-vote-bar"
       :data-majority="majority?.votes"
-      :title="majority ? `Majority: ${majority.votes} yes votes` : undefined"
+      :title="majority ? t('widgets.majorityVotes', { count: majority.votes }) : undefined"
       :style="majority ? { '--chamber-vote-majority-left': majority.left } : undefined"
     >
       <div
@@ -98,7 +100,7 @@ const layoutStyle = computed(() => {
         class="chamber-vote-outcome"
         :class="`chamber-vote-outcome--${outcome.kind}`"
         :style="{ flexGrow: outcome.votes }"
-        :aria-label="`${outcome.label}: ${outcome.votes} votes`"
+        :aria-label="t('widgets.votes', { label: outcome.label, count: outcome.votes })"
       >
         {{ outcome.votes }}
       </div>

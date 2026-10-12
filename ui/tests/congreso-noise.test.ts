@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { gameLib } from '../src/game-bindings';
+import { bindSceneRuntime } from './helpers/scene-runtime';
 
 // ---------------------------------------------------------------------------
 // Step 4j's gaussian shock used to be added straight into support, which made it
@@ -31,14 +32,15 @@ function quietGame(): Q {
   console.log = () => {};
   console.info = () => {};
   try {
-    const q: Q = {};
+    const runtime = bindSceneRuntime({} as Q);
+    const q = runtime.Q;
     for (const id of ['root.start_menu', 'root.start']) {
       for (const blk of game.scenes[id].onArrival) {
         new Function('state', 'Q', 'G', blk.$code).call(
           { achieve() {}, game, _compileChoices: () => null },
-          { qualities: q },
+          runtime.state,
           q,
-          gameLib,
+          runtime.G,
         );
       }
     }

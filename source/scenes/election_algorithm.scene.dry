@@ -1008,7 +1008,7 @@ Q[tremp_winner + "_local_interior_holdings"] += 1;
 if ((Q.psc_leader == "Miquel Iceta" || Q.psc_leader == "Pere Navarro") && Q.art155_ever && Q.local_terrassa_wp === "psc") {
     Q.local_terrassa_wp = "txt"; // Jordi Ballart exception
     Q.txt_leader = "Jordi Ballart";
-    Q.txt_ideology = "Centrist Social Democracy, Local focus";
+    G.setText(Q, "txt_ideology", G.text("Centrist Social Democracy, Local focus"));
     Q.psc_local_rb_holdings -= 2;
     Q.erc_local_rb_holdings += 1;
 }

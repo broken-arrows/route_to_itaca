@@ -6,7 +6,8 @@
   "scripts": {
     "dendrynexus-ten": "dendrynexus-ten",
     "build:classic": "dendrynexus-ten make-html --publish-game-lib && dendrynexus-ten audit",
-    "audit:game": "dendrynexus-ten audit"
+    "audit:game": "dendrynexus-ten audit",
+    "extract:strings": "dendrynexus-ten extract-strings"
   },
   "repository": {
     "type": "git",

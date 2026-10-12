@@ -3138,22 +3138,25 @@ on-arrival: {!
     Q.local_barcelona_seats = 41;
     Q.barcelona_s_majority = Math.floor(Q.local_barcelona_seats/2) + 1;
 
-    Q.barcelona_coalition_disp = "What?";
+    G.setText(Q, "barcelona_coalition_disp", G.text("What?"));
     if (Q.bcomu_local_barcelona_s >= 11) {
-        Q.barcelona_coalition_disp = "Ada Colau will lead a bcomu " + G.governmentTooltip(
-            "ajuntament",
-            ["bcomu"],
-            "Minority government - " + Q.bcomu_local_barcelona_s + "/" + Q.barcelona_s_majority,
-            '<span style="color: var(--bcomu); font-style: italic;">minority government</span>'
-        ) + " with the support of ERC, PSC, and the CUP.";
+        G.setText(Q, "barcelona_coalition_disp", G.text("Ada Colau will lead a bcomu {government} with the support of ERC, PSC, and the CUP.", {
+            government: G.governmentTooltipText("ajuntament", ["bcomu"], G.text("Minority government - {bcomu_local_barcelona_s}/{majority}", {
+                bcomu_local_barcelona_s: String(Q.bcomu_local_barcelona_s),
+                majority: String(Q.barcelona_s_majority)
+            }), G.text('<span style="color: var(--bcomu); font-style: italic;">minority government</span>'))
+        }));
     } else if (Q.bcomu_local_barcelona_s <= 10) {
         var barcelona_government_seats = Q.bcomu_local_barcelona_s + Q.psc_local_barcelona_s;
-        Q.barcelona_coalition_disp = "Ada Colau will lead a bcomu-pscbcn " + G.governmentTooltip(
-            "ajuntament",
-            ["bcomu", "psc"],
-            (barcelona_government_seats >= Q.barcelona_s_majority ? "Majority government - " : "Minority government - ") + barcelona_government_seats + "/" + Q.barcelona_s_majority,
-            '<span style="color: var(--bcomu); font-style: italic;">coalition</span> <span style="color: var(--psc); font-style: italic;">government</span>'
-        ) + " with the support of csbcn.";
+        G.setText(Q, "barcelona_coalition_disp", G.text("Ada Colau will lead a bcomu-pscbcn {government} with the support of csbcn.", {
+            government: G.governmentTooltipText("ajuntament", ["bcomu", "psc"], (barcelona_government_seats >= Q.barcelona_s_majority ? G.text("Majority government - {seats}/{majority}", {
+                seats: String(barcelona_government_seats),
+                majority: String(Q.barcelona_s_majority)
+            }) : G.text("Minority government - {seats}/{majority}", {
+                seats: String(barcelona_government_seats),
+                majority: String(Q.barcelona_s_majority)
+            })), G.text('<span style="color: var(--bcomu); font-style: italic;">coalition</span> <span style="color: var(--psc); font-style: italic;">government</span>'))
+        }));
     }
 !}
 on-display: {!

@@ -31,6 +31,21 @@ describe('source/lib', () => {
       .toContain('data-summary="18/21 &amp; &quot;stable&quot;"');
   });
 
+  it('preserves native case-sensitive replacement steps in captured and legacy government text', () => {
+    const recipe = { kind: 'text', key: '{party} government', params: { party: 'DL dl' } };
+    const updated = gameLib.rebrandGovernmentText(recipe, 'dl', 'pdcat', true);
+    expect(updated).toEqual({ kind: 'text', key: '{party} government', params: { party: 'DL pdcat' } });
+    expect(recipe.params.party).toBe('DL dl');
+    const legacy = { kind: 'literal', value: 'JXCAT JxCat jxcat' };
+    const first = gameLib.rebrandGovernmentText(legacy, 'JxCat', 'junts', true);
+    expect(gameLib.rebrandGovernmentText(first, 'jxcat', 'junts', true)).toEqual({
+      kind: 'literal', value: 'JXCAT junts junts',
+    });
+    expect(gameLib.rebrandGovernmentText(recipe, 'dl', 'pdcat')).toEqual({
+      kind: 'text', key: '{party} government', params: { party: 'PDCAT pdcat' },
+    });
+  });
+
   it('derives display-ready law rows and hides flagged laws', () => {
     const rows = gameLib.getLawsForUI({
       active_mods: {

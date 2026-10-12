@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useBand } from '../brief/useBand';
 import { usePartyLogo } from './usePartyLogo';
 
@@ -23,12 +24,13 @@ const props = withDefaults(
 );
 const { band } = useBand();
 const partyLogo = usePartyLogo();
+const { t } = useI18n();
 const humanise = (s: string) => s.replace(/_/g, ' ');
 
 const views = computed(() =>
   props.rows.map((row) => {
     const relation = row.isPlayer
-      ? { band: 'you', label: 'you' }
+      ? { band: 'you', label: t('widgets.you') }
       : band(row.stamp, row.stampDisplay);
     const stance = band(row.value, row.valueDisplay);
     return {
@@ -47,7 +49,7 @@ const views = computed(() =>
   <div class="roster-rows" data-test="roster-rows">
     <div v-for="row in views" :key="row.id" class="roster-row">
       <img v-if="row.flag" class="roster-flag" :src="row.flag" alt="" />
-      <img v-else-if="row.logo" class="roster-logo" :src="row.logo" :alt="`${row.label} logo`" />
+      <img v-else-if="row.logo" class="roster-logo" :src="row.logo" :alt="t('widgets.logo', { party: row.label })" />
       <span v-else class="roster-logo-missing" aria-hidden="true" />
       <span class="roster-copy">
         <span class="roster-main">

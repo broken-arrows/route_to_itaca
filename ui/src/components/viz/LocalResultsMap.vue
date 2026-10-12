@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { gameLib } from '../../game-bindings';
 import { usePartyInk, usePartyTerm } from './usePartyInk';
 import { useElectionSvg } from './useElectionSvg';
@@ -11,6 +12,7 @@ const { markup, failed } = useElectionSvg('local-results.svg');
 const model = computed(() => gameLib.localResultsMap(props.q));
 const winners = computed(() => model.value.winners);
 const ink = usePartyInk();
+const { t } = useI18n();
 const partyTerm = usePartyTerm();
 function labelFor(party: string) {
   const term = partyTerm(party);
@@ -72,10 +74,10 @@ watch([markup, winners], async () => { await nextTick(); paint(); }, { immediate
 <template>
   <div ref="root" class="local-results-map" data-test="local-results-map">
     <div v-if="markup" class="map-svg" v-html="markup" @click="choose" />
-    <p v-else-if="failed" class="map-message">Map unavailable</p>
+    <p v-else-if="failed" class="map-message">{{ t('widgets.map.unavailable') }}</p>
     <div class="legend" aria-live="polite">
       <template v-if="picked"><b>{{ picked.place }}</b><span class="swatch" :style="{ background: ink(picked.party) }" /><span :data-term="partyTerm(picked.party)?.id" :class="{ 'term-hoverable': !!partyTerm(picked.party)?.tooltip }">{{ labelFor(picked.party) }}</span></template>
-      <template v-else>Click a city to see results</template>
+      <template v-else>{{ t('widgets.map.selectCity') }}</template>
     </div>
   </div>
 </template>

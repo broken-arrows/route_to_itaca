@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { mount } from '@vue/test-utils';
+import { i18n } from '../src/i18n';
 import { createPinia, setActivePinia } from 'pinia';
 import Hemicycle from '../src/components/viz/Hemicycle.vue';
 import { useGameStore } from '../src/stores/game';
@@ -32,7 +33,7 @@ function mountHemicycle(props: Record<string, unknown> = {}) {
   useGameStore().initFromText(JSON.stringify(GAME));
   return mount(Hemicycle, {
     props: { seats: SEATS, majority: 68, ...props },
-    global: { plugins: [pinia] },
+    global: { plugins: [pinia, i18n] },
   });
 }
 

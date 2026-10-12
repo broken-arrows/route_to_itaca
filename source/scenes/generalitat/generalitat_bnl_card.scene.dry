@@ -5,7 +5,7 @@ on-arrival: {!
     Q.generalitat_bnl_timer += 4;
     var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
     Q.bnl_controls_economy = controlledParties.includes(Q.economy_minister_party);
-    Q.bnl_tourism_name = ["Strongly restrictive", "Restrictive", "Ordinary", "Permissive", "Strongly permissive"][Q.bnl_tourism_level + 2];
+    (function () { var labels = [G.text("Strongly restrictive"), G.text("Restrictive"), G.text("Ordinary"), G.text("Permissive"), G.text("Strongly permissive")]; var label = labels[Q.bnl_tourism_level + 2]; if (label) G.setText(Q, "bnl_tourism_name", label); else Q.bnl_tourism_name = undefined; })();
 !}
 is-card: true
 new-page: true

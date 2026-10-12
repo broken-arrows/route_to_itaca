@@ -104,13 +104,16 @@ on-arrival: {!
     Q.cat_coalition = ["erc"];
     Q.cat_coalition_support = ["cup"];
     Q.cat_coalition_abstain = [];
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Minority government - " + Q.erc_parlament_s + "/" + Q.parlament_s_majority, "<span style='color: var(--erc); font-style: italic;'>ERC minority Government</span>");
+    G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition, G.text("Minority government - {seats}/{majority}", {
+        seats: String(Q.erc_parlament_s),
+        majority: String(Q.parlament_s_majority)
+    }), G.text("<span style='color: var(--erc); font-style: italic;'>ERC minority Government</span>")));
     Q.cat_coalition_dissent = 0;
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
     Q.cup_in_gob = false;
     Q.cup_supporting = true;
-    Q.position_disp = Q.player_party == "erc" ? "Generalitat" : "<span style='font-style: italic'>External support</span>";
+    G.setText(Q, "position_disp", (Q.player_party == "erc" ? G.text("Generalitat") : G.text("<span style='font-style: italic'>External support</span>")));
     Q.independence_trust += Q.parlament_coalition_concessions_indy ? 5 : 1;
 !}
 

@@ -10,7 +10,10 @@ on-arrival: {!
     
     Q.spanish_pm_coalition = [Q.spanish_pm_party];
     Q.spa_caretaker_gov = true;
-    Q.spanish_coalition_disp = Q.spanish_pm_party + " " + G.governmentTooltip("gobierno", Q.spanish_coalition, "Caretaking capacities only", "<span style=\"font-style:italic;\">caretaker gov.</span>");
+    G.setText(Q, "spanish_coalition_disp", G.text("{spanish_pm_party} {government}", {
+        spanish_pm_party: String(Q.spanish_pm_party),
+        government: G.governmentTooltipText("gobierno", Q.spanish_coalition, G.text("Caretaking capacities only"), G.text("<span style=\"font-style:italic;\">caretaker gov.</span>"))
+    }));
 
     Q.congreso_party_tour_highlight = [];
     Q.congreso_party_tour_viewed_rest = false;

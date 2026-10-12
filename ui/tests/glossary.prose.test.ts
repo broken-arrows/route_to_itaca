@@ -57,7 +57,8 @@ const GAME = {
           colour: 'cdc',
           tooltip: {
             title: 'Artur Mas i Gavarró',
-            q: { ledBy: 'ciu_leader', ideology: 'Center-right Liberalism' },
+            ideology: 'Center-right Liberalism',
+            q: { ledBy: 'ciu_leader' },
           },
         },
       ],

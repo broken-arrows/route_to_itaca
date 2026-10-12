@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { DendryAdapter } from '../src/engine/adapter';
+import { bindSceneRuntime } from './helpers/scene-runtime';
 
 const directory = resolve(import.meta.dirname, '../../source/scenes/events/elections');
 const files = readdirSync(directory).filter(name => /^parlament_coalition_(joint_cup|ciu_erc_cup)_phase_/.test(name));
@@ -14,7 +15,8 @@ function run(file: string, q: Record<string, any>, marker = '') {
     source = source.slice(start);
   }
   const block = source.match(/on-arrival:\s*\{!([\s\S]*?)!\}/)![1];
-  new Function('Q', 'G', block)(q, { random: () => 0.8 });
+  const runtime = bindSceneRuntime(q, {random:() => 0.8});
+  new Function('Q', 'G', block)(runtime.Q, runtime.G);
 }
 function fixture(file: string): Record<string, any> {
   const joint = file.includes('joint_cup');

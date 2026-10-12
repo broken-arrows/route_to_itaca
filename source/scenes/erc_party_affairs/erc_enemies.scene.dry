@@ -24,7 +24,7 @@ In our media and campaign materials, who should we consider as our main opponent
 
 @right_parties
 on-arrival: {!
-    Q.erc_enemies = "all right parties"; 
+    G.setText(Q, "erc_enemies", G.text("all right parties"));
     Q.erc_core_strength += 5;
     Q.erc_left_strength += 10;
     Q.erc_pragmatic_dissent += 10;
@@ -86,7 +86,7 @@ We have Republican and Left in our name, and this is the general approach we hav
 
 @spanish_right
 on-arrival: {!
-    Q.erc_enemies = "the Spanish-right";
+    G.setText(Q, "erc_enemies", G.text("the Spanish-right"));
     Q.erc_core_strength += 5;
     Q.erc_pragmatic_strength += 5;
     Q.erc_civic_strength += 10;
@@ -132,7 +132,7 @@ Focusing on the Spanish right and the "regime of '78" is popular among the entir
 
 @all_spanish
 on-arrival: {!
-    Q.erc_enemies = "parties against reform and self-determination"; 
+    G.setText(Q, "erc_enemies", G.text("parties against reform and self-determination"));
     Q.erc_civic_strength += 10;
     Q.erc_left_dissent += 10;
     Q.erc_core_strength += 5;
@@ -186,7 +186,7 @@ This focus on pure focus on the Spanish parties feels radical, and will alienate
 
 @far_right
 on-arrival: {!
-    Q.erc_enemies = "the far right";
+    G.setText(Q, "erc_enemies", G.text("the far right"));
     Q.erc_civic_dissent += 10;
     Q.erc_left_strength += 5;
     Q.erc_pragmatic_dissent += 5;
@@ -224,7 +224,7 @@ Focusing on the far-right feels like an odd choice at this point. A general anti
 
 @extremes
 on-arrival: {!
-    Q.erc_enemies = "both extremes, left and right";
+    G.setText(Q, "erc_enemies", G.text("both extremes, left and right"));
     Q.erc_civic_dissent += 10;
     Q.erc_pragmatic_dissent += 5;
     Q.erc_core_dissent += 5;

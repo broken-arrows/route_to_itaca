@@ -17,7 +17,7 @@ After achieving the worst electoral results in the party's history and failing t
 subtitle: Miquel Iceta will take the role of party leader undisputed
 on-arrival: {!
     Q.psc_leader = "Miquel Iceta";
-    Q.psc_ideology = "Social Democracy, Autonomism";
+    G.setText(Q, "psc_ideology", G.text("Social Democracy, Autonomism"));
     Q.psc_recovery_mult = 1;
 !}
 

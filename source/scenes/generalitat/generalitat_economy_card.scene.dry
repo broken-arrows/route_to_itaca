@@ -787,13 +787,13 @@ go-to: budget_review
 new-page: true
 on-arrival: {!
     var proposal = Q.economy_budget_proposal;
-    var taxNames = ["Very low", "Low", "Moderate", "High", "Very high"];
-    var capNames = ["Further austerity", "Maintain reduced services",
-        "Restored, ordinary services", "Expanded services and improved pay",
-        "Further service expansion and broader improvements",
-        "Full authorization, effectively a removal of spending caps."];
-    Q.economy_budget_tax_name = taxNames[proposal.tax_policy_level + 2];
-    Q.economy_budget_cap_name = capNames[proposal.social_spending_cap + 2];
+    var taxNames = [G.text("Very low"), G.text("Low"), G.text("Moderate"), G.text("High"), G.text("Very high")];
+    var capNames = [G.text("Further austerity"), G.text("Maintain reduced services"),
+        G.text("Restored, ordinary services"), G.text("Expanded services and improved pay"),
+        G.text("Further service expansion and broader improvements"),
+        G.text("Full authorization, effectively a removal of spending caps.")];
+    (taxNames[proposal.tax_policy_level + 2] ? G.setText(Q, "economy_budget_tax_name", taxNames[proposal.tax_policy_level + 2]) : Q.economy_budget_tax_name = undefined);
+    (capNames[proposal.social_spending_cap + 2] ? G.setText(Q, "economy_budget_cap_name", capNames[proposal.social_spending_cap + 2]) : Q.economy_budget_cap_name = undefined);
     Q.economy_budget_tax_lower = proposal.tax_policy_level > Math.max(-2, Q.tax_policy_level - 2);
     Q.economy_budget_tax_higher = proposal.tax_policy_level < Math.min(2, Q.tax_policy_level + 2);
     Q.economy_budget_cap_lower = proposal.social_spending_cap > -2 &&
@@ -838,7 +838,7 @@ on-arrival: {!
         ["guarantees", "cooperative"].includes(Q.bnl_icf_prepared_branch) && !Q.cat_caretaker_gov &&
         controlledParties.includes(Q.bnl_minister_party) && controlledParties.includes(Q.economy_minister_party);
     Q.economy_budget_icf = !!proposal.projects.icf;
-    Q.economy_budget_icf_name = Q.bnl_icf_prepared_branch == "cooperative" ? "ICF cooperative and social-economy lending" : "expanded ICF public guarantees";
+    G.setText(Q, "economy_budget_icf_name", (Q.bnl_icf_prepared_branch == "cooperative" ? G.text("ICF cooperative and social-economy lending") : G.text("expanded ICF public guarantees")));
     if (proposal.projects.icf && !Q.economy_budget_icf_available) Q.economy_budget_valid = false;
     Q.economy_budget_digital_available = prepared("vp_digital3_proposal") && Q.vp_digital_level == 2 && Q.vp_digital_prepared &&
         !Q.cat_caretaker_gov && controlledParties.includes(Q.vicepresident_party) && Q.parlament_digital_passed && ["generalitat", "catalonia"].includes(Q.cybersecurity_agency_scope) && (Q.active_mods || {}).digital_agency_core && Q.active_mods.digital_agency_core.active;

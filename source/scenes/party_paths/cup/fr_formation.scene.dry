@@ -12,7 +12,7 @@ on-arrival: {!
     
     Q.fr_leader = "Albano Dante Fachin";
     Q.fr_leader_gender = "m";
-    Q.fr_ideology = "Anticapitalism, Unilateralism";
+    G.setText(Q, "fr_ideology", G.text("Anticapitalism, Unilateralism"));
 !}
 
 = A new pro-independence force in the Congreso?

@@ -16,16 +16,22 @@ on-arrival: {!
         Q.next_election_year = Q.year;
     }
     Q.next_election_time = Q.time + 2;
-    Q.cat_coalition_disp_old = Q.cat_coalition_disp;
+    G.copyText(Q, "cat_coalition_disp_old", "cat_coalition_disp");
     var caretakerGovernmentSeats = Q.cat_coalition.reduce(function (total, party) {
         return total + (Q[party + "_parlament_s"] || 0);
     }, 0);
-    Q.cat_coalition_disp = Q.president_party + " " + G.governmentTooltip("generalitat", Q.cat_coalition, (caretakerGovernmentSeats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + caretakerGovernmentSeats + "/" + Q.parlament_s_majority, "<span style=\"font-style:italic;\">caretaker gov.</span>");
+    G.setText(Q, "cat_coalition_disp", "{party} {government}", {
+        party: Q.president_party,
+        government: G.governmentTooltipText("generalitat", Q.cat_coalition, G.text(caretakerGovernmentSeats >= Q.parlament_s_majority ? "Majority government - {seats}/{majority}" : "Minority government - {seats}/{majority}", {
+            seats: caretakerGovernmentSeats,
+            majority: Q.parlament_s_majority
+        }), G.text('<span style="font-style:italic;">caretaker gov.</span>'))
+    });
     Q.cat_caretaker_gov = true;
     Q.cup_leadership_timer = 1;
 
     if (Q[Q.player_party + "_in_gob"] && !(Q.president_party == Q.player_party)) {
-        Q.position_disp = "<span style='font-style: italic'>Government Support</span>";
+        G.setText(Q, "position_disp", "<span style='font-style: italic'>Government Support</span>");
     }
 
     for (var record of Q.coalition_policy_commitments || []) {
@@ -103,8 +109,8 @@ on-departure: snap_budget_distrust = false
 
 = New Parlament elections called!
 
-President [+ president +] seems to have run out of options, and the current [+ cat_coalition_disp_old +] will be no more. [? if snap_budget_distrust: Repeated failures to pass the Generalitat's budget, componded by trust erosion in the other members of the coalition, seem to have been the main reason motivating this decision. ?][? if not snap_budget_distrust and budget_failed_times > 0: Repeated failures to pass the Generalitat's budget seem to have been the main reason motivating this decision. ?]
-The Parlament has now been disolved, and the next elections will be held in two months time, on [+ next_election_month : month +], [+ next_election_year +].
+[? if president_gender = "m": President?][? if president_gender = "f": Presidenta?] [+ president +] seems to have run out of options, and the current [+ cat_coalition_disp_old +] will be no more. [? if snap_budget_distrust: Repeated failures to pass the Generalitat's budget, componded by trust erosion in the other members of the coalition, seem to have been the main reason motivating this decision. ?][? if not snap_budget_distrust and budget_failed_times > 0: Repeated failures to pass the Generalitat's budget seem to have been the main reason motivating this decision. ?]
+The Parlament has now been dissolved, and the next elections will be held in two months time, on [+ next_election_month : month +], [+ next_election_year +].
 
 Until then, the functions of the Generalitat will be limited, and handled by a [+ cat_coalition_disp +].
 

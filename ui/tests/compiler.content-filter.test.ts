@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync, utimesSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 
@@ -14,7 +14,7 @@ import path from 'node:path';
 // callback in run() below is typed explicitly so the rest of the file stays
 // fully checked.
 // @ts-expect-error dendrynexus-ten/lib/cli/utils.js is untyped (see above)
-import { fetchContent } from 'dendrynexus-ten/lib/cli/utils.js';
+import { fetchContent, isUpToDate } from 'dendrynexus-ten/lib/cli/utils.js';
 
 // This exercises the REAL fetchContent -> walkDir -> CONTENT_PATTERN chain
 // against a REAL directory on disk (dendrynexus-ten/lib/cli/utils.js). Every
@@ -98,6 +98,26 @@ describe('fetchContent read-filter (real fs walk, real CONTENT_PATTERN)', () => 
 
     const glossary = files.find((f) => f.name.endsWith('glossary.json'));
     expect(glossary && JSON.parse(glossary.contents)).toEqual({ terms: [{ id: 'ciu' }] });
+  });
+
+  it('invalidates the compiled game when only a glossary registry changes', async () => {
+    const target = path.join(root, 'game.json');
+    writeFileSync(target, '{}');
+    const old = new Date('2020-01-01T00:00:00Z');
+    const built = new Date('2020-01-02T00:00:00Z');
+    const edited = new Date('2020-01-03T00:00:00Z');
+    for (const file of await run()) utimesSync(file.name, old, old);
+    utimesSync(target, built, built);
+    const check = () => new Promise<boolean>((resolve, reject) => {
+      isUpToDate(sourceDir, target, (err: Error | null, value: boolean) =>
+        err ? reject(err) : resolve(value));
+    });
+    // Shipped assets do not change the compiled game.
+    utimesSync(path.join(sourceDir, 'lib', 'index.js'), edited, edited);
+    utimesSync(path.join(sourceDir, 'locales', 'en', 'ui.json'), edited, edited);
+    expect(await check()).toBe(true);
+    utimesSync(path.join(sourceDir, 'data', 'glossary.json'), edited, edited);
+    expect(await check()).toBe(false);
   });
 
   it('skips source/lib/**, source/img/** and source/locales/** entirely', async () => {

@@ -19,7 +19,7 @@ on-arrival: {!
     Q.erc_supporting = false;
     Q.cup_in_gob = false;
     Q.cup_supporting = false;
-    Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
+    G.setText(Q, "position_disp", G.text("<span style='font-style: italic'>Opposition</span>"));
 
     var emergencyCore = Q.parlament_emergency_psc_icv_core;
     Q.cat_coalition = ["psc"];
@@ -39,7 +39,15 @@ on-arrival: {!
     if (emergencyCore == "psc_comuns") emergencyGovernmentSeats += Q.parlament_current_icv_s;
     if (emergencyCore == "psc_cs") emergencyGovernmentSeats += Q.cs_parlament_s;
     var emergencyAccent = emergencyCore == "psc_comuns" ? Q.parlament_current_icv : (emergencyCore == "psc_cs" ? "cs" : "psc");
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, (emergencyGovernmentSeats >= Q.parlament_s_majority ? "Majority government - " : "Minority government - ") + emergencyGovernmentSeats + "/" + Q.parlament_s_majority, "<span style='color: var(--psc); font-style: italic;'>Unthinkably</span> <span style='color: var(--" + emergencyAccent + "); font-style: italic;'>Grand</span> <span style='color: var(--cs); font-style: italic;'>Coalition</span>");
+    G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition, (emergencyGovernmentSeats >= Q.parlament_s_majority ? G.text("Majority government - {seats}/{majority}", {
+        seats: String(emergencyGovernmentSeats),
+        majority: String(Q.parlament_s_majority)
+    }) : G.text("Minority government - {seats}/{majority}", {
+        seats: String(emergencyGovernmentSeats),
+        majority: String(Q.parlament_s_majority)
+    })), G.text("<span style='color: var(--psc); font-style: italic;'>Unthinkably</span> <span style='color: var(--{emergencyAccent}); font-style: italic;'>Grand</span> <span style='color: var(--cs); font-style: italic;'>Coalition</span>", {
+        emergencyAccent: String(emergencyAccent)
+    })));
     Q.cat_coalition_dissent = 0;
 
     // TODO: revisit PSC's unconditional willingness after playtesting + Voting penalties for all parties involved??

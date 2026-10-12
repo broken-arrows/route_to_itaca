@@ -176,7 +176,7 @@ on-arrival: {!
   Q.parlament_s_majority = Math.floor(Q.parlament_size/2) + 1;
 
   Q.parties = ['ciu', 'erc', 'psc', 'ppc', 'icv', 'cs', 'cup', 'si', 'cdc', 'unio', 'dl', 'jxsi', 'junts', 'jxcat', 'pdcat', 'csqp', 'cecp', 'ecp', 'vox', 'fnc', 'pxc'];
-  Q.fnc_relations = 0;
+  
 
   Q.parlament_current_ciu = "ciu";
   Q.parlament_current_icv = "icv";
@@ -233,167 +233,167 @@ on-arrival: {!
 
   // Initial party positions
 
-  Q.ciu_ideology = "Liberal-Conservatism, Pact-Pragmatism";
+  G.setText(Q, "ciu_ideology", G.text("Liberal-Conservatism, Pact-Pragmatism"));
   Q.ciu_leader = "Artur Mas";
   Q.cdc_leader = "Artur Mas";
   Q.cdc_leader_gender = "m";
   Q.ciu_leader_gender = "m";
-  Q.cdc_ideology = "Centre-right Liberalism, Pact-Pragmatism";
+  G.setText(Q, "cdc_ideology", G.text("Centre-right Liberalism, Pact-Pragmatism"));
 
   Q.unio_leader = "Josep Antoni Duran i Lleida";
   Q.unio_leader_gender = "m";
-  Q.unio_ideology = "Christian Democracy, Pact-Pragmatism";
+  G.setText(Q, "unio_ideology", G.text("Christian Democracy, Pact-Pragmatism"));
 
   // TODO: Handle leadership changes (both for player-erc and non-player-erc)
-  Q.erc_ideology = "Social Democracy, Independence";
+  G.setText(Q, "erc_ideology", G.text("Social Democracy, Independence"));
   Q.erc_leader = "Oriol Junqueras";
   Q.erc_leader_gender = "m";
   Q.erc_roadmap = 1;
 
   // TODO: Handle leadership changes (for player-cup)
-  Q.cup_ideology = "Anticapitalism, Unilateralism";
+  G.setText(Q, "cup_ideology", G.text("Anticapitalism, Unilateralism"));
   Q.cup_leader = "David Fernàndez";
   Q.cup_leader_gender = "m";
-  Q.cup_faction = "Third Sector";
+  G.setText(Q, "cup_faction", "Third Sector");
   Q.cup_roadmap = 3
 
   Q.cs_leader = "Albert Rivera";
-  Q.cs_ideology = "Neo-liberalism, Centralism";
+  G.setText(Q, "cs_ideology", G.text("Neo-liberalism, Centralism"));
   Q.cs_leader_gender = "m";
 
   Q.si_leader = "Alfons López Tena";
-  Q.si_ideology = "Transversal single-issue, Unilateralism";
+  G.setText(Q, "si_ideology", G.text("Transversal single-issue, Unilateralism"));
   Q.si_leader_gender = "m";
 
   Q.psc_leader = "Pere Navarro";
   Q.psc_leader_gender = "m";
-  Q.psc_ideology = "Centrist Social Democracy, Federalism";
+  G.setText(Q, "psc_ideology", G.text("Centrist Social Democracy, Federalism"));
 
   Q.ppc_leader = "Alícia Sánchez-Camacho";
   Q.ppc_leader_gender = "f";
-  Q.ppc_ideology = "Conservatism, Centralism";
+  G.setText(Q, "ppc_ideology", G.text("Conservatism, Centralism"));
 
   Q.icv_leader = "Joan Herrera";
   Q.icv_leader_gender = "m";
-  Q.icv_ideology = "Green Left, Plurinationalism";
+  G.setText(Q, "icv_ideology", G.text("Green Left, Plurinationalism"));
 
   // Initial ideologies for all parties, also future ones, just in case
   Q.pdcat_leader = "Artur Mas";
-  Q.pdcat_ideology = "Centre-right Liberalism, Pragmatic Independence";
+  G.setText(Q, "pdcat_ideology", G.text("Centre-right Liberalism, Pragmatic Independence"));
   Q.pdcat_leader_gender = "m";
   Q.dl_leader = "Artur Mas";
   Q.dl_leader_gender = "m";
-  Q.dl_ideology = "Centre-right Liberalism, Pragmatic Independence";
+  G.setText(Q, "dl_ideology", G.text("Centre-right Liberalism, Pragmatic Independence"));
   Q.jxsi_leader = "Artur Mas";
   Q.jxsi_leader_gender = "m";
-  Q.jxsi_ideology = "National coalition, Independence";
+  G.setText(Q, "jxsi_ideology", G.text("National coalition, Independence"));
   Q.jxcat_leader = "Carles Puigdemont";
   Q.jxcat_leader_gender = "m";
-  Q.jxcat_ideology = "Center-right Liberalism, Unilateralism";
+  G.setText(Q, "jxcat_ideology", G.text("Center-right Liberalism, Unilateralism"));
   Q.junts_leader = "Carles Puigdemont";
   Q.junts_leader_gender = "m";
-  Q.junts_ideology = "Center-right Liberalism, Unilateralism";
+  G.setText(Q, "junts_ideology", G.text("Center-right Liberalism, Unilateralism"));
 
   Q.pxc_leader = "Josep Anglada";
-  Q.pxc_ideology = "Far-right Nationalism, Centralism";
+  G.setText(Q, "pxc_ideology", G.text("Far-right Nationalism, Centralism"));
   Q.pxc_leader_gender = "m";
   Q.fnc_leader = "Jordi Casacuberta";
   Q.fnc_leader_gender = "m";
-  Q.fnc_ideology = "Far-right Nationalism, Unilateralism";
+  G.setText(Q, "fnc_ideology", G.text("Far-right Nationalism, Unilateralism"));
 
   Q.csqp_leader = "Lluís Rabell";
   Q.csqp_leader_gender = "m";
-  Q.csqp_ideology = "Anti-austerity left, Plurinationalism";
+  G.setText(Q, "csqp_ideology", G.text("Anti-austerity left, Plurinationalism"));
   Q.cecp_leader = "Xavier Domènech";
   Q.cecp_leader_gender = "m";
-  Q.cecp_ideology = "Left Social Democracy, Federalism";
+  G.setText(Q, "cecp_ideology", G.text("Left Social Democracy, Federalism"));
   Q.ecp_leader = "Jéssica Albiach";
   Q.ecp_leader_gender = "f";
-  Q.ecp_ideology = "Social democracy, Autonomism";
+  G.setText(Q, "ecp_ideology", G.text("Social democracy, Autonomism"));
   Q.fr_leader = "Albano Dante Fachin";
   Q.fr_leader_gender = "m";
-  Q.fr_ideology = "Anticapitalism, Unilateralism";
+  G.setText(Q, "fr_ideology", G.text("Anticapitalism, Unilateralism"));
 
   Q.psoe_leader = "Alfredo Pérez Rubalcaba";
   Q.psoe_leader_gender = "m";
-  Q.psoe_ideology = "Centrist Social Democracy, Autonomism";
+  G.setText(Q, "psoe_ideology", G.text("Centrist Social Democracy, Autonomism"));
   Q.pp_leader = "Mariano Rajoy";
-  Q.pp_ideology = "Conservatism, Centralism";
+  G.setText(Q, "pp_ideology", G.text("Conservatism, Centralism"));
   Q.pp_leader_gender = "m";
   Q.csspa_leader = "Albert Rivera";
   Q.csspa_leader_gender = "m";
   Q.vox_leader = "Santiago Abascal";
-  Q.vos_leader_gender = "m";
-  Q.vox_ideology = "Far-right Nationalism, Hypercentralism";
+  Q.vox_leader_gender = "m";
+  G.setText(Q, "vox_ideology", G.text("Far-right Nationalism, Hypercentralism"));
   Q.upyd_leader = "Rosa Díez";
   Q.upyd_leader_gender = "f";
-  Q.upyd_ideology = "Liberal reformism, Hypercentralism";
+  G.setText(Q, "upyd_ideology", G.text("Liberal reformism, Hypercentralism"));
 
   // TODO: Podemos + IU + UP leaders and party paths
   Q.podemos_leader = "Pablo Iglesias";
-  Q.podemos_ideology = "Anti-austerity left, Plurinationalism";
-  Q.podemod_leader_gender = "m";
+  G.setText(Q, "podemos_ideology", G.text("Anti-austerity left, Plurinationalism"));
+  Q.podemos_leader_gender = "m";
   Q.iu_leader = "Cayo Lara";
   Q.iu_leader_gender = "m";
-  Q.iu_ideology = "Left Social Democracy, Federalism";
+  G.setText(Q, "iu_ideology", G.text("Left Social Democracy, Federalism"));
   Q.mpais_leader = "Íñigo Errejón";
   Q.mpais_leader_gender = "m";
-  Q.mpais_ideology = "Social Democracy, Federalism";
+  G.setText(Q, "mpais_ideology", G.text("Social Democracy, Federalism"));
   Q.sumar_leader = "Yolanda Díaz";
   Q.sumar_leader_gender = "f";
-  Q.sumar_ideology = "Social Democracy, Autonomism";
+  G.setText(Q, "sumar_ideology", G.text("Social Democracy, Autonomism"));
   Q.up_leader = "Pablo Iglesias";
   Q.up_leader_gender = "m";
-  Q.up_ideology = "Anti-austerity left, Plurinationalism";
+  G.setText(Q, "up_ideology", G.text("Anti-austerity left, Plurinationalism"));
 
   Q.pnv_leader = "Íñigo Urkullu";
   Q.pnv_leader_gender = "m";
-  Q.pnv_ideology = "Christian Democracy, Basque Pact-Pragmatism";
+  G.setText(Q, "pnv_ideology", G.text("Christian Democracy, Basque Pact-Pragmatism"));
   Q.ehbildu_leader = "Laura Mintegi";
   Q.ehbildu_leader_gender = "f";
-  Q.ehbildu_ideology = "Left Social Democracy, Basque Independence";
+  G.setText(Q, "ehbildu_ideology", G.text("Left Social Democracy, Basque Independence"));
   Q.amaiur_leader = "Maite Aristegi";
   Q.amaiur_leader_gender = "f";
-  Q.amaiur_ideology = "Left Social Democracy, Basque Independence";
+  G.setText(Q, "amaiur_ideology", G.text("Left Social Democracy, Basque Independence"));
 
   Q.gbai_leader = "Uxue Barkos";
   Q.gbai_leader_gender = "f";
-  Q.gbai_ideology = "Centrist Social Democracy, Basque Independence";
+  G.setText(Q, "gbai_ideology", G.text("Centrist Social Democracy, Basque Independence"));
   Q.upn_leader = "Yolanda Barcina";
-  Q.upn_ideology = "Conservatism, Navarrese Regionalism";
+  G.setText(Q, "upn_ideology", G.text("Conservatism, Navarrese Regionalism"));
   Q.upn_leader_gender = "f";
   Q.nsuma_leader = "Sergio Sayas";
-  Q.nsuma_ideology = "Conservatism, Navarrese Regionalism";
+  G.setText(Q, "nsuma_ideology", G.text("Conservatism, Navarrese Regionalism"));
   Q.nsuma_leader_gender = "m";
 
   Q.ccpnc_leader = "Paulino Rivero";
   Q.ccpnc_leader_gender = "m";
-  Q.ccpnc_ideology = "Centrist Liberalism, Canarian Regionalism";
+  G.setText(Q, "ccpnc_ideology", G.text("Centrist Liberalism, Canarian Regionalism"));
   Q.compromis_leader = "Joan Baldoví";
   Q.compromis_leader_gender = "m";
-  Q.compromis_ideology = "Social Democracy, Valencian Regionalism";
+  G.setText(Q, "compromis_ideology", G.text("Social Democracy, Valencian Regionalism"));
   Q.mes_leader = "Biel Barceló";
   Q.mes_leader_gender = "m";
-  Q.mes_ideology = "Left Social Democracy, Balearic Regionalism";
+  G.setText(Q, "mes_ideology", G.text("Left Social Democracy, Balearic Regionalism"));
   Q.bng_leader = "Francisco Jorquera";
   Q.bng_leader_gender = "m";
-  Q.bng_ideology = "Social Democracy, Galician Independence";
+  G.setText(Q, "bng_ideology", G.text("Social Democracy, Galician Independence"));
   Q.fac_leader = "Francisco Álvarez-Cascos";
   Q.fac_leader_gender = "m";
-  Q.fac_ideology = "Liberal Conservatism, Asturian Regionalism";
+  G.setText(Q, "fac_ideology", G.text("Liberal Conservatism, Asturian Regionalism"));
   Q.prc_leader = "Miguel Ángel Revilla";
   Q.prc_leader_gender = "m";
-  Q.prc_ideology = "Centrism, Cantabrian Regionalism";
+  G.setText(Q, "prc_ideology", G.text("Centrism, Cantabrian Regionalism"));
   Q.te_leader = "Tomás Guitarte"
   Q.te_leader_gender = "m";
-  Q.te_ideology = "Transversal single-issue, Teruel Regionalism";
+  G.setText(Q, "te_ideology", G.text("Transversal single-issue, Teruel Regionalism"));
 
   // Initial values for bcn parties as well
   Q.parties_bcn = ['bcomu', 'cup', 'psc', 'erc', 'ciu', 'cdc', 'dl', 'pdcat', 'jxcat', 'junts', 'jxsi', 'primaries', 'cs', 'pp', "icv"];
 
   // TODO dynamic barcelona leader names!
   Q.bcomu_leader = "Ada Colau";
-  Q.bcomu_ideology = "Anti-austerity left, Plurinationalism";
+  G.setText(Q, "bcomu_ideology", G.text("Anti-austerity left, Plurinationalism"));
   Q.bcomu_leader_gender = "f";
   Q.ppbcn_leader = "Alberto Fernández Díaz";
   Q.ppbcn_leader_gender = "m";
@@ -415,12 +415,12 @@ on-arrival: {!
   Q.jxcatbcn_leader_gender = "m";
   Q.primaries_leader = "Jordi Graupera";
   Q.primaries_leader_gender = "m";
-  Q.primaries_ideology = "Transversal single-issue, Unilateralism";
+  G.setText(Q, "primaries_ideology", G.text("Transversal single-issue, Unilateralism"));
 
   Q.ua_psc_leader = "Francés Boya Alós";
-  Q.ua_psc_ideology = "Social Democracy, Aranese Regionalism";
+  G.setText(Q, "ua_psc_ideology", G.text("Social Democracy, Aranese Regionalism"));
   Q.cda_pna_leader = "Carles Barrera Sánchez";
-  Q.cda_pna_ideology = "Liberal-Conservatism, Aranese Regionalism";
+  G.setText(Q, "cda_pna_ideology", G.text("Liberal-Conservatism, Aranese Regionalism"));
 
   // 2011 local elections results
   for (var p of Q.parties_bcn) {
@@ -802,18 +802,22 @@ on-arrival: {!
   Q.amaiur_congreso_s = 7;
   Q.amaiur_congreso_pv = 1.37;
 
-  Q.cat_coalition_disp = "CiU " + G.governmentTooltip(
-    "generalitat",
-    Q.cat_coalition,
-    "Minority government - " + Q.ciu_parlament_s + "/" + Q.parlament_s_majority,
-    "<span style='color: var(--ciu);'>minority government</span>"
-  );
-  Q.spanish_coalition_disp = "PP " + G.governmentTooltip(
-    "gobierno",
-    Q.spanish_coalition,
-    "Majority government - " + Q.pp_congreso_s + "/" + Q.congreso_s_majority,
-    "<span style='color: var(--pp);'>majority government</span>"
-  );
+  G.setText(Q, "cat_coalition_disp", "{party} {government}", {
+      party: "CiU",
+      government: G.governmentTooltipText("generalitat", Q.cat_coalition, G.text("Minority government - {seats}/{majority}", {
+          seats: Q.ciu_parlament_s,
+          majority: Q.parlament_s_majority
+      }), G.text("<span style='color: var(--{ciu_colour});'>minority government</span>", {
+          ciu_colour: "ciu"
+      }))
+  });
+  G.setText(Q, "spanish_coalition_disp", G.text("{party} {government}", {
+      party: "PP",
+      government: G.governmentTooltipText("gobierno", Q.spanish_coalition, G.text("Majority government - {seats}/{majority}", {
+          seats: String(Q.pp_congreso_s),
+          majority: String(Q.congreso_s_majority)
+      }), G.text("<span style='color: var(--pp);'>majority government</span>"))
+  }));
 
   // Initialize ALL party suppports to zero
   for (var c of Q.parlament_constituencies) {
@@ -1494,31 +1498,58 @@ on-arrival: {!
 
   switch (Q.random_seed) {
     default:
-      Q.random_seed_quote_text = "I like Catalan people because they do \"stuff\".";
-      Q.random_seed_author = "Mariano Rajoy, Presidente del Gobierno, 2017";
+      G.setText(Q, "random_seed_quote_text", G.text("I like Catalan people because they do \"stuff\"."));
+      G.setText(Q, "random_seed_author", G.text("{name}, Presidente del Gobierno, {year}", {
+          name: "Mariano Rajoy",
+          name_gender: "m",
+          year: 2017
+      }));
     case 0:
-      Q.random_seed_quote_text = "We deserve to be stompped by all the sons of Aznar and Don Pelayo if we don't manage to agree with eachother.";
-      Q.random_seed_author = "Gabriel Rufian, ERC MP at the Congreso, 2019";
+      G.setText(Q, "random_seed_quote_text", G.text("We deserve to be stompped by all the sons of Aznar and Don Pelayo if we don't manage to agree with eachother."));
+      G.setText(Q, "random_seed_author", G.text("{name}, ERC MP at the Congreso, {year}", {
+          name: "Gabriel Rufian",
+          name_gender: "m",
+          year: 2019
+      }));
       break;
     case 1:
-      Q.random_seed_quote_text = "We were going slow, because we were going far.";
-      Q.random_seed_author = "CUP's post-election negotiation motto, circa 2015";
+      G.setText(Q, "random_seed_quote_text", G.text("We were going slow, because we were going far."));
+      G.setText(Q, "random_seed_author", G.text("{party}'s post-election negotiation motto, circa {year}", {
+          party: "CUP",
+          year: 2015
+      }));
       break;
     case 2:
-      Q.random_seed_quote_text = "Everything is ready for the desconnection \[independence\]. All that will be needed is to press a button."
-      Q.random_seed_author = "Carles Viver Pi-Sunyer, Parlament's Comissioner for the National Transition, 2015";
+      G.setText(Q, "random_seed_quote_text", G.text("Everything is ready for the desconnection \[independence\]. All that will be needed is to press a button."))
+      G.setText(Q, "random_seed_author", G.text("{name}, Parlament's Comissioner for the National Transition, {year}", {
+          name: "Carles Viver Pi-Sunyer",
+          name_gender: "m",
+          year: 2015
+      }));
       break;
     case 3:
-      Q.random_seed_quote_text = "I am not asking for a single euro, just for an agreement.";
-      Q.random_seed_author = "Artur Mas, President de la Generalitat, 2012";
+      G.setText(Q, "random_seed_quote_text", G.text("I am not asking for a single euro, just for an agreement."));
+      G.setText(Q, "random_seed_author", G.text("{name}, President de la Generalitat, {year}", {
+          name: "Artur Mas",
+          name_gender: "m",
+          year: 2012
+      }));
       break;
     case 4:
-      Q.random_seed_quote_text = "What cannot be, cannot be, on top of that it is impossible.";
-      Q.random_seed_author = "Mariano Rajoy, Presidente del Gobierno, 2017";
+      G.setText(Q, "random_seed_quote_text", G.text("What cannot be, cannot be, on top of that it is impossible."));
+      G.setText(Q, "random_seed_author", G.text("{name}, Presidente del Gobierno, {year}", {
+          name: "Mariano Rajoy",
+          name_gender: "m",
+          year: 2017
+      }));
       break;
     case 5:
-      Q.random_seed_quote_text = "You have a problem, and this problem is about \"the 3%\"";
-      Q.random_seed_author = "Pasqual Maragall, President de la Generalitat, 2005";
+      G.setText(Q, "random_seed_quote_text", G.text("You have a problem, and this problem is about \"the 3%\""));
+      G.setText(Q, "random_seed_author", G.text("{name}, President de la Generalitat, {year}", {
+          name: "Pasqual Maragall",
+          name_gender: "m",
+          year: 2005
+      }));
       break;
   }
 !}
@@ -1626,7 +1657,7 @@ role: setup
 subtitle: Start the game as ERC.
 on-arrival: {!
   Q.player_party = "erc";
-  Q.position_disp = "<span style='font-style: italic;'>Opposition</span>"; 
+  G.setText(Q, "position_disp", G.text("<span style='font-style: italic;'>Opposition</span>"));
 
   Q.ciu_relations = 55;
   Q.cup_relations = 55;
@@ -1637,6 +1668,7 @@ on-arrival: {!
   Q.icv_relations = 50;
   Q.vox_relations = 0;
   Q.pxc_relations = 1;
+  Q.fnc_relations = 2;
 
 
   // ERC Advisors
@@ -1722,7 +1754,7 @@ choose-if: 1==0
 unavailable-subtitle: Too much in WIP for now!
 on-arrival: {!
   Q.player_party = "cup";
-  Q.position_disp = "Non-existence";
+  G.setText(Q, "position_disp", G.text("Non-existence"));
 
   Q.ciu_relations = 15;
   Q.erc_relations = 60;
@@ -1733,6 +1765,7 @@ on-arrival: {!
   Q.icv_relations = 35;
   Q.vox_relations = 0;
   Q.pxc_relations = 0;
+  Q.fnc_relations = 1;
 
   // CUP Advisors
   // Endavant

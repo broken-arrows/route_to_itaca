@@ -15,7 +15,7 @@ on-arrival: {!
     Q.csqp_relations = Q.icv_relations;
     Q.csqp_leader = "???";
     Q.csqp_leader_gender = "f";
-    Q.csqp_ideology = "Anti-austerity left, Plurinationalism";
+    G.setText(Q, "csqp_ideology", G.text("Anti-austerity left, Plurinationalism"));
 
     for(var prov of Q.parlament_constituencies){
         for(var demo of Q.parlament_demographics){
@@ -69,7 +69,9 @@ on-arrival: {!
 
     if (Q.cat_coalition.includes("icv")) {
         Q.cat_coalition = Q.cat_coalition.map(item => item === "icv" ? "csqp" : item);
-        Q.cat_coalition_disp = Q.cat_coalition_disp.replaceAll("ICV-EUiA", "CSQP").replaceAll("icv", "csqp");
+        G.updateText(Q, "cat_coalition_disp", function (recipe) {
+            return G.rebrandGovernmentText(G.rebrandGovernmentText(recipe, "ICV-EUiA", "CSQP", true), "icv", "csqp", true);
+        });
     }
 
     Q.cecp_formation_countdown = 12;
@@ -96,7 +98,7 @@ unavailable-subtitle: [? if podemos_congreso_catalunya_support >= 15 or up_congr
 on-arrival: {!
     Q.csqp_leader = "Arcadi Oliveres";
     Q.csqp_leader_gender = "f";
-    Q.csqp_ideology = "Anticapitalism, Plurinationalism";
+    G.setText(Q, "csqp_ideology", G.text("Anticapitalism, Plurinationalism"));
     
     Q.cup_parlament_barcelona_ind_support -= 1.5;
     Q.csqp_parlament_barcelona_ind_support += 1.5;
@@ -118,7 +120,7 @@ subtitle: Without a unifying figure, no one really has any clue as to who can ev
 on-arrival: {!
     Q.csqp_leader = "Lluís Rabell";
     Q.csqp_leader_gender = "m";
-    Q.csqp_ideology = "Anti-austerity left, Plurinationalism";
+    G.setText(Q, "csqp_ideology", G.text("Anti-austerity left, Plurinationalism"));
     // TODO: CUP option to recruit Oliveres instead?
 !}
 

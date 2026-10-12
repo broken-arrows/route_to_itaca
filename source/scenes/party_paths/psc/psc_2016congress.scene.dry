@@ -62,7 +62,7 @@ on-arrival: {!
     }
     Q.psc_leader = "Núria Parlon";
     Q.psc_leader_gender = "f";
-    Q.psc_ideology = "Centrist Social Democracy, Federalism";
+    G.setText(Q, "psc_ideology", G.text("Centrist Social Democracy, Federalism"));
     Q.psc_recovery_mult = 1.1;
 !}
 

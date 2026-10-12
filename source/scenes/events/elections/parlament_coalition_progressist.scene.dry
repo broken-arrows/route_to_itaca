@@ -22,9 +22,14 @@ on-arrival: {!
     Q.cat_coalition = ["psc", Q.parlament_current_icv];
     Q.cat_coalition_support = [];
     Q.cat_coalition_abstain = [];
-    Q.cat_coalition_disp = G.governmentTooltip("generalitat", Q.cat_coalition, "Majority government - " + Q.parlament_coalition_psc_icv_s + "/" + Q.parlament_s_majority, "<span style='color: var(--psc); font-style: italic;'>Progressist</span> <span style='color: var(--" + Q.parlament_current_icv + "); font-style: italic;'>Government</span>");
+    G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition, G.text("Majority government - {seats}/{majority}", {
+        seats: String(Q.parlament_coalition_psc_icv_s),
+        majority: String(Q.parlament_s_majority)
+    }), G.text("<span style='color: var(--psc); font-style: italic;'>Progressist</span> <span style='color: var(--{party}); font-style: italic;'>Government</span>", {
+        party: String(Q.parlament_current_icv)
+    })));
     Q.cat_coalition_dissent = 0;
-    Q.position_disp = "<span style='font-style: italic'>Opposition</span>";
+    G.setText(Q, "position_disp", G.text("<span style='font-style: italic'>Opposition</span>"));
     Q.month_actions += 1;
     Q.independence_trust -= 10;
 

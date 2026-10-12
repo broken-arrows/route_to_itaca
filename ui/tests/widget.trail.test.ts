@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { i18n } from '../src/i18n';
 import { createPinia, setActivePinia } from 'pinia';
 import Trail from '../src/components/viz/Trail.vue';
 
@@ -43,7 +44,7 @@ function makeRow(over: Partial<TrailRow> = {}): TrailRow {
 
 function mountTrail(rows: TrailRow[]) {
   setActivePinia(createPinia());
-  return mount(Trail, { props: { rows } });
+  return mount(Trail, { global: { plugins: [i18n] }, props: { rows } });
 }
 
 beforeEach(() => {

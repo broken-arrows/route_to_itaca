@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { scaleLinear } from 'd3-scale';
 import { line as d3Line } from 'd3-shape';
 import { max as d3Max, min as d3Min } from 'd3-array';
@@ -52,7 +53,7 @@ const T = PAD_Y;
 const B = H - PAD_Y;
 
 const ARROW: Record<Dir, string> = { up: '▲', down: '▼', flat: '' };
-const DIR_WORD: Record<Dir, string> = { up: 'rising', down: 'falling', flat: 'flat' };
+const { t } = useI18n();
 
 // Colour is decided by `good`, NOT `dir`: a rise can be bad (unemployment) and a
 // fall can be good, so the trend arrow (`dir`) and the ink (`good`) are
@@ -112,7 +113,7 @@ const views = computed<View[]>(() => {
     ...r,
     ink: ink(r),
     arrow: ARROW[r.dir] ?? '',
-    dirWord: DIR_WORD[r.dir] ?? 'flat',
+    dirWord: t(`widgets.direction.${r.dir === 'up' || r.dir === 'down' ? r.dir : 'flat'}`),
     plot: plotFor(r.series),
   }));
 });
@@ -138,7 +139,7 @@ const views = computed<View[]>(() => {
         class="trail-plot"
         :viewBox="`0 0 ${W} ${H}`"
         role="img"
-        :aria-label="`${v.label}: full-run trend, now ${v.value}${v.unit}, ${v.dirWord}`"
+        :aria-label="t('widgets.trend', { label: v.label, value: v.value, unit: v.unit, direction: v.dirWord })"
       >
         <line
           class="trail-zero"
@@ -159,14 +160,14 @@ const views = computed<View[]>(() => {
           :stroke="SURFACE"
         />
       </svg>
-      <p v-else class="trail-empty">start of the run</p>
+      <p v-else class="trail-empty">{{ t('widgets.trendStart') }}</p>
 
       <!-- Axis captions: the design's "nov 2012 · start of the run → this month".
            The row carries no start month, so the invented date is dropped
            (filler-copy rule) and only the neutral structural ends remain. -->
       <div v-if="v.plot.points > 0" class="trail-axis" aria-hidden="true">
-        <span>start of the run</span>
-        <span>this month</span>
+        <span>{{ t('widgets.trendStart') }}</span>
+        <span>{{ t('widgets.trendNow') }}</span>
       </div>
     </div>
   </div>

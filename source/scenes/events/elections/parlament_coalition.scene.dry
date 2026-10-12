@@ -719,13 +719,13 @@ on-arrival: {!
                 ? Q.parties.filter(function (p) { return p != partner && Q[p + "_in_" + partner]; }) : [];
             members = members.concat(constituents.length ? constituents : [partner]);
         }
-        return members.filter(function (p, i) {
+        return G.joinText(members.filter(function (p, i) {
             return p != Q.player_party && members.indexOf(p) == i && !(Q[p + "_relations"] > 40);
-        }).map(function (p) { return p + " does not trust us enough."; }).join(" ");
+        }).map(function (p) { return G.text("{party} does not trust us enough.", { party: p }); }), " ");
     }
-    Q.parlament_coalition_sovereignty_triple_trust_reasons = sovereigntyTrustReasons([Q.parlament_current_ciu, "erc", "cup"]);
-    Q.parlament_coalition_sovereignty_jxsi_trust_reasons = sovereigntyTrustReasons(["jxsi", "cup"]);
-    Q.parlament_coalition_sovereignty_jxcat_trust_reasons = sovereigntyTrustReasons(["jxcat", "cup"]);
+    G.setText(Q, "parlament_coalition_sovereignty_triple_trust_reasons", sovereigntyTrustReasons([Q.parlament_current_ciu, "erc", "cup"]));
+    G.setText(Q, "parlament_coalition_sovereignty_jxsi_trust_reasons", sovereigntyTrustReasons(["jxsi", "cup"]));
+    G.setText(Q, "parlament_coalition_sovereignty_jxcat_trust_reasons", sovereigntyTrustReasons(["jxcat", "cup"]));
     Q.parlament_coalition_sovereignty_triple_available = (Q.parlament_current_ciu != "jxcat" || !Q.erc_in_jxcat) &&
         Q.parlament_current_ciu_s > 0 && sP("erc") > 0 && sP("cup") > 0 &&
         Q.parlament_current_ciu_s + sP("erc") + sP("cup") >= majP && !Q.parlament_coalition_sovereignty_triple_trust_reasons;
@@ -733,33 +733,33 @@ on-arrival: {!
     if (Q.parlament_current_ciu_s + sP("erc") >= majP &&
         !(Q.rubicon && liveCiuRelations > 65 &&
           (Q.player_party == "erc" ? Q.cup_faction != "Endavant" : Q.cup_endavant_strength < 30))) {
-        cupCabinetReasons.push(Q.parlament_current_ciu + " would rather avoid giving any government positions to the CUP.");
+        cupCabinetReasons.push(G.text("{party} would rather avoid giving any government positions to the CUP.", { party: Q.parlament_current_ciu }));
     }
     Q.parlament_coalition_sovereignty_cup_cabinet_cost = 0;
     if (Q.player_party == "cup") {
-        if (!(liveCiuRelations > 55)) cupCabinetReasons.push("We don't have good enough relations with " + Q.parlament_current_ciu + ".");
-        if (!(Q.erc_relations > 55)) cupCabinetReasons.push("We don't have good enough relations with erc.");
+        if (!(liveCiuRelations > 55)) cupCabinetReasons.push(G.text("We don't have good enough relations with {party}.", { party: Q.parlament_current_ciu }));
+        if (!(Q.erc_relations > 55)) cupCabinetReasons.push(G.text("We don't have good enough relations with erc."));
         if (liveCiuRelations > 55 && Q.erc_relations > 55 && !(liveCiuRelations > 65 && Q.erc_relations > 65)) {
             Q.parlament_coalition_sovereignty_cup_cabinet_cost = 1;
         }
-        if (Q.cup_endavant_strength > 30) cupCabinetReasons.push("Endavant currently holds too much influence within the party, and opposes joining such a reactionary governemnt.");
+        if (Q.cup_endavant_strength > 30) cupCabinetReasons.push(G.text("Endavant currently holds too much influence within the party, and opposes joining such a reactionary governemnt."));
         if (Q.parlament_current_ciu_s >= sP("erc") && Q.cup_thirdsector_strength >= 30) {
-            cupCabinetReasons.push("The Third Sector is currently too strong to accept a National Concentration government led by " + Q.parlament_current_ciu + ".");
+            cupCabinetReasons.push(G.text("The Third Sector is currently too strong to accept a National Concentration government led by {party}.", { party: Q.parlament_current_ciu }));
         }
     } else {
         if (Q.cup_faction == "Poble Lliure") {
-            if (!(Q.cup_relations >= 55)) cupCabinetReasons.push("We don't have good enough relations with the CUP.");
+            if (!(Q.cup_relations >= 55)) cupCabinetReasons.push(G.text("We don't have good enough relations with the CUP."));
             if (Q.cup_relations >= 55 && Q.cup_relations < 65) {
                 Q.parlament_coalition_sovereignty_cup_cabinet_cost = 1;
             }
         } else if (Q.cup_faction == "Third Sector") {
-            if (!(Q.cup_relations >= 65)) cupCabinetReasons.push("We don't have good enough relations with the CUP.");
+            if (!(Q.cup_relations >= 65)) cupCabinetReasons.push(G.text("We don't have good enough relations with the CUP."));
         } else {
-            cupCabinetReasons.push("This is unthinkable to the current Endavant-led CUP.");
+            cupCabinetReasons.push(G.text("This is unthinkable to the current Endavant-led CUP."));
         }
     }
-    if (Q.parlament_coalition_sovereignty_cup_cabinet_cost > 0 && !(Q.party_resources >= 1)) cupCabinetReasons.push("Not enough resources.");
-    Q.parlament_coalition_sovereignty_cup_cabinet_reasons = cupCabinetReasons.join(" ");
+    if (Q.parlament_coalition_sovereignty_cup_cabinet_cost > 0 && !(Q.party_resources >= 1)) cupCabinetReasons.push(G.text("Not enough resources."));
+    G.setText(Q, "parlament_coalition_sovereignty_cup_cabinet_reasons", G.joinText(cupCabinetReasons, " "));
     Q.parlament_coalition_sovereignty_triple_government_available = Q.parlament_coalition_sovereignty_triple_available && !Q.parlament_coalition_sovereignty_cup_cabinet_reasons;
     Q.parlament_coalition_sovereignty_jxsi_available = sP("jxsi") > 0 && sP("cup") > 0 && sP("jxsi") + sP("cup") >= majP && !Q.parlament_coalition_sovereignty_jxsi_trust_reasons;
     Q.parlament_coalition_sovereignty_jxcat_available = Q.erc_in_jxcat && sP("jxcat") > 0 && sP("cup") > 0 && sP("jxcat") + sP("cup") >= majP && !Q.parlament_coalition_sovereignty_jxcat_trust_reasons;

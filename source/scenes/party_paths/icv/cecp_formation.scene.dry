@@ -15,7 +15,7 @@ on-arrival: {!
     Q.cecp_relations = Q.csqp_relations;
     Q.cecp_leader = "???";
     Q.cecp_leader_gender = "f";
-    Q.cecp_ideology = "Left Social Democracy, Federalism";
+    G.setText(Q, "cecp_ideology", G.text("Left Social Democracy, Federalism"));
 
     for(var prov of Q.parlament_constituencies){
         for(var demo of Q.parlament_demographics){
@@ -69,7 +69,9 @@ on-arrival: {!
 
     if (Q.cat_coalition.includes("csqp")) {
         Q.cat_coalition = Q.cat_coalition.map(item => item === "csqp" ? "cecp" : item);
-        Q.cat_coalition_disp = Q.cat_coalition_disp.replaceAll("CSQP", "CECP").replaceAll("csqp", "cecp");
+        G.updateText(Q, "cat_coalition_disp", function (recipe) {
+            return G.rebrandGovernmentText(G.rebrandGovernmentText(recipe, "CSQP", "CECP", true), "csqp", "cecp", true);
+        });
     }
 
     Q.ecp_formation_countdown = 12;
@@ -96,7 +98,7 @@ unavailable-subtitle: [? if (podemos_congreso_catalunya_support >= 25 or up_cong
 on-arrival: {!
     Q.cecp_leader = "Arcadi Oliveres";
     Q.cecp_leader_gender = "m";
-    Q.cecp_ideology = "Anticapitalism, Plurinationalism";
+    G.setText(Q, "cecp_ideology", G.text("Anticapitalism, Plurinationalism"));
 !}
 
 Despite somewhat challenging odds, Arcadi Oliveres seems to have managed to renew his leadership, now at the forefront of the new CECP brand. Despite having had to give some concessions to the forming parties, the new coalition looks like it will maintain the spirit of the streets.
@@ -111,7 +113,7 @@ unavailable-subtitle: [? if (podemos_congreso_catalunya_support >= 25 or up_cong
 on-arrival: {!
     Q.cecp_leader = "Xavier Domènech";
     Q.cecp_leader_gender = "m";
-    Q.cecp_ideology = "Anti-austerity Left, Federalism";
+    G.setText(Q, "cecp_ideology", G.text("Anti-austerity Left, Federalism"));
 !}
 
 Not very surprisingly, the hardly controversial figure of Xavier Domènech has been able to secure the support of all groups and parties that make up CECP. While more moderate, at least he seems to conserve a bit o the federalist spirit that CSQP embodied...
@@ -126,7 +128,7 @@ unavailable-subtitle: The most conservative forces in ICV-EUiA and Podemos lack 
 on-arrival: {!
     Q.cecp_leader = "Joan Coscubiela";
     Q.cecp_leader_gender = "m";
-    Q.cecp_ideology = "Social Democracy, Federalism";
+    G.setText(Q, "cecp_ideology", G.text("Social Democracy, Federalism"));
 !}
 
 Somehow, the other forces in the CECP coalition have not been able to stop the most conservative forces in the old ICV-EUiA. Unexpectedly, Joan Coscubiela will take the helm after all...
@@ -141,7 +143,7 @@ unavailable-subtitle: [? if (podemos_congreso_catalunya_support >= 20 or up_cong
 on-arrival: {!
     Q.cecp_leader = "Jaume Asens";
     Q.cecp_leader_gender = "m";
-    Q.cecp_ideology = "Anti-austerity left, Plurinationalism";
+    G.setText(Q, "cecp_ideology", G.text("Anti-austerity left, Plurinationalism"));
 !}
 
 From the street protests of Barcelona, to the town hall with BComu and Ada Colau, now Jaume Asens will take the reigns of a renewed CECP. At least he seems to conserve a bit o the federalist spirit that CSQP embodied...

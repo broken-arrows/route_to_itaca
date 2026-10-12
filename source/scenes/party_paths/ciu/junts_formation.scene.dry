@@ -11,7 +11,7 @@ on-arrival: {!
     Q.junts_formed = true;
 
     Q.junts_roadmap = Q.jxcat_roadmap
-    Q.junts_ideology = Q.jxcat_ideology
+    G.copyText(Q, "junts_ideology", "jxcat_ideology")
     
     Q.junts_leader = Q.jxcat_leader;
     Q.junts_leader_gender = Q.jxcat_leader_gender;
@@ -96,7 +96,9 @@ on-arrival: {!
 
     if (Q.cat_coalition.includes("jxcat")) {
         Q.cat_coalition = Q.cat_coalition.map(item => item === "jxcat" ? "junts" : item);
-        Q.cat_coalition_disp = Q.cat_coalition_disp.replaceAll("JxCat", "junts").replaceAll("jxcat", "junts");
+        G.updateText(Q, "cat_coalition_disp", function (recipe) {
+            return G.rebrandGovernmentText(G.rebrandGovernmentText(recipe, "JxCat", "junts", true), "jxcat", "junts", true);
+        });    
     }
 
     Q.junts_split_countdown = 9;

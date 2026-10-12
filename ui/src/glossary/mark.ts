@@ -26,6 +26,7 @@ export interface GlossaryTerm {
     subtitle?: string;
     img?: string;
     infoDesc?: string;
+    ideology?: string;
     q?: Record<string, string>;
   };
 }

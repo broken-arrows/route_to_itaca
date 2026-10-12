@@ -170,7 +170,10 @@ on-arrival: {!
     Q.unity_disunity_timer = 6;
     this.achieve("jxsi");
 
-    Q.historical_event = "A national unity list, jxsi will work on rallying support and votes to a single, independence-focused candidacy around " + Q.jxsi_leader + ".";
+    G.setText(Q, "historical_event", G.text("A national unity list, jxsi will work on rallying support and votes to a single, independence-focused candidacy around {jxsi_leader}.", {
+        jxsi_leader: String(Q.jxsi_leader),
+        jxsi_leader_gender: Q.jxsi_leader_gender
+    }));
 
     Q.jxsi_formed = true;
     Q.jxsi_roadmap = 2;
@@ -187,7 +190,7 @@ on-arrival: {!
     // block parlament card from appearing
     Q.cat_caretaker_gov = true;
     if (Q.cat_coalition.includes(Q.parlament_current_ciu) || Q.cat_coalition.includes("erc")) {
-        Q.position_disp = "<span style='font-style: italic'>Government Support</span>";
+        G.setText(Q, "position_disp", G.text("<span style='font-style: italic'>Government Support</span>"));
     } 
 
     for (const c of Q.parlament_constituencies) {
@@ -293,7 +296,10 @@ Seems like National Unity will have to do without the CUP for now. Even without 
 on-arrival: {!
     this.achieve("jxsi");
 
-    Q.historical_event = "A national unity list, jxsi will work on rallying support and votes to a single, independence-focused candidacy around " + Q.jxsi_leader + ".";
+    G.setText(Q, "historical_event", G.text("A national unity list, jxsi will work on rallying support and votes to a single, independence-focused candidacy around {jxsi_leader}.", {
+        jxsi_leader: String(Q.jxsi_leader),
+        jxsi_leader_gender: Q.jxsi_leader_gender
+    }));
 
     Q.jxsi_formed = true;
     Q.erc_in_jxsi = true;

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { gameLib } from '../../game-bindings';
 import { usePartyInk, usePartyTerm } from './usePartyInk';
 
@@ -44,6 +45,7 @@ const root = ref<HTMLElement | null>(null);
 const mapSvg = ref('');
 const mapFailed = ref(false);
 const partyInk = usePartyInk();
+const { t } = useI18n();
 const partyTerm = usePartyTerm();
 const builders = gameLib.brief as Record<string, (q: Record<string, unknown>) => unknown[]>;
 const derive = <T>(name: string): T[] => {
@@ -142,11 +144,11 @@ onMounted(async () => {
   >
     <div class="map-shell" :class="{ 'map-failed': mapFailed }" @click="onMapClick">
       <div v-if="mapSvg" class="map-svg" v-html="mapSvg" />
-      <span v-else-if="mapFailed" class="map-error">Map unavailable</span>
+      <span v-else-if="mapFailed" class="map-error">{{ t('widgets.map.unavailable') }}</span>
     </div>
 
     <template v-if="full">
-      <div class="province-tabs" role="tablist" aria-label="Province">
+      <div class="province-tabs" role="tablist" :aria-label="t('widgets.map.province')">
         <button
           v-for="province in provinces"
           :key="province.id"
@@ -159,12 +161,12 @@ onMounted(async () => {
       </div>
 
       <p v-if="selectedProvince" class="province-caption">
-        <b>{{ selectedProvince.label }}</b> · {{ selectedProvince.seats }} seats ·
-        {{ formatPopulation(selectedProvince.population) }} potential voters
+        <b>{{ selectedProvince.label }}</b> · {{ t('widgets.seats', { count: selectedProvince.seats }, selectedProvince.seats) }} ·
+        {{ t('widgets.map.potentialVoters', { count: formatPopulation(selectedProvince.population) }) }}
       </p>
 
       <section class="poll-section">
-        <h3>By demographic</h3>
+        <h3>{{ t('widgets.map.demographics') }}</h3>
         <div class="crosstab-wrap">
           <table class="crosstab">
             <thead>
@@ -194,8 +196,8 @@ onMounted(async () => {
       </section>
 
       <section class="poll-section projection-section">
-        <h3>Seats, projected · {{ selectedProvince?.label }}</h3>
-        <div class="projection" role="img" :aria-label="`Projected seats for ${selectedProvince?.label ?? selected}`">
+        <h3>{{ t('widgets.map.projected', { province: selectedProvince?.label ?? '' }) }}</h3>
+        <div class="projection" role="img" :aria-label="t('widgets.map.projection', { province: selectedProvince?.label ?? selected })">
           <div v-for="row in projections" :key="row.id" class="projection-party">
             <b>{{ row.value }}</b>
             <span

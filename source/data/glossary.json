@@ -8,9 +8,7 @@
       "tooltip": {
         "title": "Àngel Ros i Domingo",
         "img": "img/other_leaders/angel_ros.jpg",
-        "q": {
-          "ideology": "Centrist Social Democracy, Plurinationalism"
-        }
+        "ideology": "Centrist Social Democracy, Plurinationalism"
       }
     },
     {
@@ -36,9 +34,7 @@
       "tooltip": {
         "title": "Ada Colau i Ballano",
         "img": "img/other_leaders/ada_colau.jpg",
-        "q": {
-          "ideology": "Anti-austerity Left, Plurinationalism"
-        }
+        "ideology": "Anti-austerity Left, Plurinationalism"
       }
     },
     {
@@ -48,9 +44,7 @@
       "tooltip": {
         "title": "Jaume Asens i Llodrà",
         "img": "img/other_leaders/jaume_asens.jpg",
-        "q": {
-          "ideology": "Anti-austerity Left, Plurinationalism"
-        }
+        "ideology": "Anti-austerity Left, Plurinationalism"
       }
     },
     {
@@ -60,9 +54,7 @@
       "tooltip": {
         "title": "Alícia Sánchez-Camacho Pérez",
         "img": "img/other_leaders/alicia_sanchezcamacho.jpg",
-        "q": {
-          "ideology": "Conservatism, Centralism"
-        }
+        "ideology": "Conservatism, Centralism"
       }
     },
     {
@@ -72,9 +64,7 @@
       "tooltip": {
         "title": "Xavier García Albiol",
         "img": "img/other_leaders/xavier_garcia_albiol.jpg",
-        "q": {
-          "ideology": "Conservatism, Centralism"
-        }
+        "ideology": "Conservatism, Centralism"
       }
     },
     {
@@ -84,9 +74,7 @@
       "tooltip": {
         "title": "Albert Rivera Díaz",
         "img": "img/other_leaders/albert_rivera.jpg",
-        "q": {
-          "ideology": "Neo-liberalism, Centralism"
-        }
+        "ideology": "Neo-liberalism, Centralism"
       }
     },
     {
@@ -96,9 +84,7 @@
       "tooltip": {
         "title": "Inés Arrimadas García",
         "img": "img/other_leaders/ines_arrimadas.jpg",
-        "q": {
-          "ideology": "Neo-liberalism, Centralism"
-        }
+        "ideology": "Neo-liberalism, Centralism"
       }
     },
     {
@@ -108,9 +94,7 @@
       "tooltip": {
         "title": "Alfons López Tena",
         "img": "img/other_leaders/alfons_lopeztena.jpg",
-        "q": {
-          "ideology": "Centerist regeneration, Unilateralism"
-        }
+        "ideology": "Centerist regeneration, Unilateralism"
       }
     },
     {
@@ -120,9 +104,7 @@
       "tooltip": {
         "title": "Alfredo Pérez Rubalcaba",
         "img": "img/other_leaders/rubalcaba.jpg",
-        "q": {
-          "ideology": "Centrist Social Democracy, Autonomism"
-        }
+        "ideology": "Centrist Social Democracy, Autonomism"
       }
     },
     {
@@ -152,9 +134,7 @@
         "subtitle": "Assemblea Nacional Catalana",
         "img": "img/parties/anc.webp",
         "infoDesc": "NGO, Political Organization",
-        "q": {
-          "ideology": "Big tent single-issue, Independence"
-        }
+        "ideology": "Big tent single-issue, Independence"
       }
     },
     {
@@ -168,9 +148,7 @@
         "subtitle": "Comisiones Obreras",
         "img": "img/parties/logo_ccoo.svg",
         "infoDesc": "Workers' Union",
-        "q": {
-          "ideology": "Social Democracy, Federalism"
-        }
+        "ideology": "Social Democracy, Federalism"
       }
     },
     {
@@ -184,9 +162,7 @@
         "subtitle": "Unión General de Trabajadores",
         "img": "img/parties/logo_ugt.png",
         "infoDesc": "Workers' Union",
-        "q": {
-          "ideology": "Social Democracy, Federalism"
-        }
+        "ideology": "Social Democracy, Federalism"
       }
     },
     {
@@ -196,9 +172,7 @@
       "tooltip": {
         "title": "Artur Mas i Gavarró",
         "img": "img/ciu/arturmas.jpg",
-        "q": {
-          "ideology": "Center-right Liberalism, Pact-Pragmatism"
-        }
+        "ideology": "Center-right Liberalism, Pact-Pragmatism"
       }
     },
     {
@@ -208,9 +182,7 @@
       "tooltip": {
         "title": "Neus Munté i Fernández",
         "img": "img/ciu/neusmunte.jpg",
-        "q": {
-          "ideology": "Center-right Liberalism, Pact-Pragmatism"
-        }
+        "ideology": "Center-right Liberalism, Pact-Pragmatism"
       }
     },
     {
@@ -256,9 +228,7 @@
       "tooltip": {
         "title": "Carles Puigdemont i Casamajó",
         "img": "img/ciu/carlespuigdemont.jpg",
-        "q": {
-          "ideology": "Center-right Liberalism, Unilateralism"
-        }
+        "ideology": "Center-right Liberalism, Unilateralism"
       }
     },
     {
@@ -268,9 +238,7 @@
       "tooltip": {
         "title": "Jordi Sànchez i Picanyol",
         "img": "img/jxsi/jordi_sanchez.jpg",
-        "q": {
-          "ideology": "Centrist Social Democracy, Unilateralism"
-        }
+        "ideology": "Centrist Social Democracy, Unilateralism"
       }
     },
     {
@@ -280,9 +248,7 @@
       "tooltip": {
         "title": "Jordi Cuixart i Navarro",
         "img": "img/jxsi/jordi_cuixart.jpg",
-        "q": {
-          "ideology": "Left Social Democracy, Unilateralism"
-        }
+        "ideology": "Left Social Democracy, Unilateralism"
       }
     },
     {
@@ -520,9 +486,7 @@
         "subtitle": "Endavant - Organització Socialista d'Alliberament Nacional",
         "img": "img/parties/logo_endavant.png",
         "infoDesc": "Political Organization",
-        "q": {
-          "ideology": "Marxism-Comunism, Unilateralism"
-        }
+        "ideology": "Marxism-Comunism, Unilateralism"
       }
     },
     {
@@ -536,9 +500,7 @@
         "subtitle": "Poble Lliure",
         "img": "img/parties/logo_poblelliure.png",
         "infoDesc": "Political Organization",
-        "q": {
-          "ideology": "Marxism-Socialism, Unilateralism"
-        }
+        "ideology": "Marxism-Socialism, Unilateralism"
       }
     },
     {
@@ -548,9 +510,7 @@
       "tooltip": {
         "title": "David Fernàndez i Ramos",
         "img": "img/cup/davidfernandez.jpg",
-        "q": {
-          "ideology": "Anti-capitalism, Unilateralism"
-        }
+        "ideology": "Anti-capitalism, Unilateralism"
       }
     },
     {
@@ -560,9 +520,7 @@
       "tooltip": {
         "title": "Benet Salellas i Vilar",
         "img": "img/cup/benetsalellas.jpg",
-        "q": {
-          "ideology": "Anti-capitalism, Unilateralism"
-        }
+        "ideology": "Anti-capitalism, Unilateralism"
       }
     },
     {
@@ -572,9 +530,7 @@
       "tooltip": {
         "title": "Dolors Sabater i Puig",
         "img": "img/cup/dolorssabater.jpg",
-        "q": {
-          "ideology": "Anti-capitalism, Unilateralism"
-        }
+        "ideology": "Anti-capitalism, Unilateralism"
       }
     },
     {
@@ -584,9 +540,7 @@
       "tooltip": {
         "title": "Gabriela Serra i Frediani",
         "img": "img/cup/gabrielaserra.jpg",
-        "q": {
-          "ideology": "Anti-capitalism, Unilateralism"
-        }
+        "ideology": "Anti-capitalism, Unilateralism"
       }
     },
     {
@@ -596,9 +550,7 @@
       "tooltip": {
         "title": "Carles Riera i Albert",
         "img": "img/cup/carlesriera.jpg",
-        "q": {
-          "ideology": "Anti-capitalism, Unilateralism"
-        }
+        "ideology": "Anti-capitalism, Unilateralism"
       }
     },
     {
@@ -608,9 +560,7 @@
       "tooltip": {
         "title": "Mireia Vehí i Cantenys",
         "img": "img/cup/mireiavehi.jpg",
-        "q": {
-          "ideology": "Anti-capitalism, Unilateralism"
-        }
+        "ideology": "Anti-capitalism, Unilateralism"
       }
     },
     {
@@ -620,9 +570,7 @@
       "tooltip": {
         "title": "Vidal Aragonés i Chicharro",
         "img": "img/cup/vidalaragones.png",
-        "q": {
-          "ideology": "Anti-capitalism, Unilateralism"
-        }
+        "ideology": "Anti-capitalism, Unilateralism"
       }
     },
     {
@@ -632,9 +580,7 @@
       "tooltip": {
         "title": "Eulàlia Reguant i Cura",
         "img": "img/cup/eulaliareguant.png",
-        "q": {
-          "ideology": "Anti-capitalism, Unilateralism"
-        }
+        "ideology": "Anti-capitalism, Unilateralism"
       }
     },
     {
@@ -644,9 +590,7 @@
       "tooltip": {
         "title": "Anna Gabriel i Sabaté",
         "img": "img/cup/annagabriel.jpg",
-        "q": {
-          "ideology": "Anti-capitalism, Unilateralism"
-        }
+        "ideology": "Anti-capitalism, Unilateralism"
       }
     },
     {
@@ -656,9 +600,7 @@
       "tooltip": {
         "title": "Antonio Baños i Boncompain",
         "img": "img/cup/antoniobanos.jpg",
-        "q": {
-          "ideology": "Anti-capitalism, Unilateralism"
-        }
+        "ideology": "Anti-capitalism, Unilateralism"
       }
     },
     {
@@ -668,9 +610,7 @@
       "tooltip": {
         "title": "Albert Botran i Pahissa",
         "img": "img/cup/albertbotran.png",
-        "q": {
-          "ideology": "Anti-capitalism, Unilateralism"
-        }
+        "ideology": "Anti-capitalism, Unilateralism"
       }
     },
     {
@@ -680,9 +620,7 @@
       "tooltip": {
         "title": "Mireia Boya e Busquet",
         "img": "img/cup/mireiaboya.jpg",
-        "q": {
-          "ideology": "Anti-capitalism, Unilateralism"
-        }
+        "ideology": "Anti-capitalism, Unilateralism"
       }
     },
     {
@@ -756,9 +694,7 @@
       "tooltip": {
         "title": "Eduardo Madina Muñoz",
         "img": "img/other_leaders/madina.jpg",
-        "q": {
-          "ideology": "Centrist Social Democracy, Republican Autonomism"
-        }
+        "ideology": "Centrist Social Democracy, Republican Autonomism"
       }
     },
     {
@@ -817,9 +753,7 @@
       "tooltip": {
         "title": "Ernest Maragall i Mira",
         "img": "img/erc/ernestmaragall.jpg",
-        "q": {
-          "ideology": "Social Democracy, Pragmatic Independence"
-        }
+        "ideology": "Social Democracy, Pragmatic Independence"
       }
     },
     {
@@ -833,9 +767,7 @@
         "subtitle": "Euskadi Ta Askatasuna",
         "img": "img/parties/eta.webp",
         "infoDesc": "Paramilitary Clandestine Organization",
-        "q": {
-          "ideology": "Revolutionary Socialism, Basque Independence"
-        }
+        "ideology": "Revolutionary Socialism, Basque Independence"
       }
     },
     {
@@ -861,9 +793,7 @@
       "tooltip": {
         "title": "Felipe González Márquez ",
         "img": "img/other_leaders/fgonzalez.jpg",
-        "q": {
-          "ideology": "Centrist Social Democracy, Autonomism"
-        }
+        "ideology": "Centrist Social Democracy, Autonomism"
       }
     },
     {
@@ -889,9 +819,7 @@
       "tooltip": {
         "title": "Josep Anglada i Rius",
         "img": "img/other_leaders/anglada.jpg",
-        "q": {
-          "ideology": "Far-right Nationalism, Centralism"
-        }
+        "ideology": "Far-right Nationalism, Centralism"
       }
     },
     {
@@ -901,9 +829,7 @@
       "tooltip": {
         "title": "Jordi Casacuberta i Pérez",
         "img": "img/other_leaders/casacuberta.png",
-        "q": {
-          "ideology": "Far-right Nationalism, Unilateralism"
-        }
+        "ideology": "Far-right Nationalism, Unilateralism"
       }
     },
     {
@@ -936,9 +862,7 @@
       "tooltip": {
         "title": "Francisco Franco Bahamonde",
         "img": "img/other_leaders/franco.jpg",
-        "q": {
-          "ideology": "Fascism, National Catholicism"
-        }
+        "ideology": "Fascism, National Catholicism"
       }
     },
     {
@@ -954,9 +878,7 @@
       "tooltip": {
         "title": "Gabriel Rufian i Romero",
         "img": "img/erc/rufian.png",
-        "q": {
-          "ideology": "Left Social Democracy, Independence"
-        }
+        "ideology": "Left Social Democracy, Independence"
       }
     },
     {
@@ -1036,9 +958,7 @@
       "tooltip": {
         "title": "Joan Herrera i Torres",
         "img": "img/other_leaders/joan_herrera.jpg",
-        "q": {
-          "ideology": "Green Left, Plurinationalism"
-        }
+        "ideology": "Green Left, Plurinationalism"
       }
     },
     {
@@ -1048,9 +968,7 @@
       "tooltip": {
         "title": "Elisenda Alamany i Gutiérrez",
         "img": "img/erc/elisendaalamany.jpg",
-        "q": {
-          "ideology": "Left Social Democracy, Independence"
-        }
+        "ideology": "Left Social Democracy, Independence"
       }
     },
     {
@@ -1060,9 +978,7 @@
       "tooltip": {
         "title": "Albano Dante Fachin Pozzi",
         "img": "img/other_leaders/arcadi_oliveres.jpg",
-        "q": {
-          "ideology": "Anticapitalism, Independence"
-        }
+        "ideology": "Anticapitalism, Independence"
       }
     },
     {
@@ -1072,9 +988,7 @@
       "tooltip": {
         "title": "Arcadi Oliveres i Boadella",
         "img": "img/other_leaders/arcadi_oliveres.jpg",
-        "q": {
-          "ideology": "Anticapitalism, Independence"
-        }
+        "ideology": "Anticapitalism, Independence"
       }
     },
     {
@@ -1084,9 +998,7 @@
       "tooltip": {
         "title": "Joan Coscubiela i Conesa",
         "img": "img/other_leaders/joan_coscubiela.jpg",
-        "q": {
-          "ideology": "Social Democracy, Federalism"
-        }
+        "ideology": "Social Democracy, Federalism"
       }
     },
     {
@@ -1096,9 +1008,7 @@
       "tooltip": {
         "title": "Xavier Domènech i Sampere",
         "img": "img/other_leaders/xavier_domenech.jpg",
-        "q": {
-          "ideology": "Anti-austerity Left, Federalism"
-        }
+        "ideology": "Anti-austerity Left, Federalism"
       }
     },
     {
@@ -1108,9 +1018,7 @@
       "tooltip": {
         "title": "Josep Lluís Franco Rabell",
         "img": "img/other_leaders/lluis_rabell.jpg",
-        "q": {
-          "ideology": "Anti-austerity Left, Plurinationalism"
-        }
+        "ideology": "Anti-austerity Left, Plurinationalism"
       }
     },
     {
@@ -1120,9 +1028,7 @@
       "tooltip": {
         "title": "Joan Laporta i Estruch",
         "img": "img/erc/laporta.jpg",
-        "q": {
-          "ideology": "Centerist regeneration, Independence"
-        }
+        "ideology": "Centerist regeneration, Independence"
       }
     },
     {
@@ -1132,9 +1038,7 @@
       "tooltip": {
         "title": "Jordi Pujol i Soley",
         "img": "img/ciu/jordipujol.jpg",
-        "q": {
-          "ideology": "Center-right Liberalism, Catalan Nationalism"
-        }
+        "ideology": "Center-right Liberalism, Catalan Nationalism"
       }
     },
     {
@@ -1144,9 +1048,7 @@
       "tooltip": {
         "title": "Marta Ferrusola i Lladós",
         "img": "img/ciu/ferrusola.jpg",
-        "q": {
-          "ideology": "Center-right Liberalism, Catalan Nationalism"
-        }
+        "ideology": "Center-right Liberalism, Catalan Nationalism"
       }
     },
     {
@@ -1156,9 +1058,7 @@
       "tooltip": {
         "title": "Josep Antoni Duran i Lleida",
         "img": "img/ciu/jaduranilleida.jpg",
-        "q": {
-          "ideology": "Christian Democracy, Pact-Pragmatism"
-        }
+        "ideology": "Christian Democracy, Pact-Pragmatism"
       }
     },
     {
@@ -1264,9 +1164,7 @@
       "tooltip": {
         "title": "Lluís Companys i Jover",
         "img": "img/erc/lluiscompanys.jpg",
-        "q": {
-          "ideology": "Left-wing Republicanism, Catalan Nationalism"
-        }
+        "ideology": "Left-wing Republicanism, Catalan Nationalism"
       }
     },
     {
@@ -1308,9 +1206,7 @@
       "tooltip": {
         "title": "Mariano Rajoy Brey",
         "img": "img/other_leaders/rajoy.jpg",
-        "q": {
-          "ideology": "Conservatism, Centralism"
-        }
+        "ideology": "Conservatism, Centralism"
       }
     },
     {
@@ -1320,9 +1216,7 @@
       "tooltip": {
         "title": "José María Aznar López",
         "img": "img/other_leaders/aznar.jpg",
-        "q": {
-          "ideology": "Conservatism, Centralism"
-        }
+        "ideology": "Conservatism, Centralism"
       }
     },
     {
@@ -1333,9 +1227,7 @@
       "tooltip": {
         "title": "Miquel Iceta i Llorens",
         "img": "img/other_leaders/miquel_iceta.jpg",
-        "q": {
-          "ideology": "Centrist Social Democracy, Autonomism"
-        }
+        "ideology": "Centrist Social Democracy, Autonomism"
       }
     },
     {
@@ -1346,9 +1238,7 @@
       "tooltip": {
         "title": "Montserrat Tura i Camafreita",
         "img": "img/other_leaders/montserrat_tura.jpg",
-        "q": {
-          "ideology": "Social Democracy, Plurinationalism"
-        }
+        "ideology": "Social Democracy, Plurinationalism"
       }
     },
     {
@@ -1359,9 +1249,7 @@
       "tooltip": {
         "title": "Núria Parlon i Gil",
         "img": "img/other_leaders/nuria_parlon.jpg",
-        "q": {
-          "ideology": "Centrist Social Democracy, Federalism"
-        }
+        "ideology": "Centrist Social Democracy, Federalism"
       }
     },
     {
@@ -1391,9 +1279,7 @@
         "subtitle": "Òmnium Cultural",
         "img": "img/parties/logo_omnium.png",
         "infoDesc": "NGO, Cultural Association",
-        "q": {
-          "ideology": "Transversal Catalanism, Independence"
-        }
+        "ideology": "Transversal Catalanism, Independence"
       }
     },
     {
@@ -1407,9 +1293,7 @@
         "subtitle": "Òmnium Cultural",
         "img": "img/parties/logo_omnium.png",
         "infoDesc": "NGO, Cultural Association",
-        "q": {
-          "ideology": "Transversal Catalanism, Independence"
-        }
+        "ideology": "Transversal Catalanism, Independence"
       }
     },
     {
@@ -1419,9 +1303,7 @@
       "tooltip": {
         "title": "Oriol Junqueras i Vies",
         "img": "img/erc/junqueras.jpg",
-        "q": {
-          "ideology": "Left-wing Republicanism, Independence"
-        }
+        "ideology": "Left-wing Republicanism, Independence"
       }
     },
     {
@@ -1431,9 +1313,7 @@
       "tooltip": {
         "title": "Pablo Iglesias Turrión",
         "img": "img/other_leaders/pablo_iglesias.jpg",
-        "q": {
-          "ideology": "Anti-austerity left, Plurinationalism"
-        }
+        "ideology": "Anti-austerity left, Plurinationalism"
       }
     },
     {
@@ -1444,9 +1324,7 @@
       "tooltip": {
         "title": "Pasqual Maragall i Mira",
         "img": "img/other_leaders/pasqual_maragall.jpg",
-        "q": {
-          "ideology": "Social Democracy, Pragmatic Independence"
-        }
+        "ideology": "Social Democracy, Pragmatic Independence"
       }
     },
     {
@@ -1488,9 +1366,7 @@
       "tooltip": {
         "title": "Pedro Sánchez Pérez-Castejón",
         "img": "img/other_leaders/pedro_sanchez.jpg",
-        "q": {
-          "ideology": "Centrist Social Democracy, Reformist Autonomism"
-        }
+        "ideology": "Centrist Social Democracy, Reformist Autonomism"
       }
     },
     {
@@ -1500,9 +1376,7 @@
       "tooltip": {
         "title": "Pere Navarro i Morera",
         "img": "img/other_leaders/pere_navarro.jpg",
-        "q": {
-          "ideology": "Centrist Social Democracy, Federalism"
-        }
+        "ideology": "Centrist Social Democracy, Federalism"
       }
     },
     {
@@ -1685,9 +1559,7 @@
       "tooltip": {
         "title": "Raül Romeva i Rueda",
         "img": "img/erc/romeva.jpg",
-        "q": {
-          "ideology": "Social Democracy, Independence"
-        }
+        "ideology": "Social Democracy, Independence"
       }
     },
     {
@@ -1713,9 +1585,7 @@
       "tooltip": {
         "title": "Soraya Sáenz de Santamaría",
         "img": "img/other_leaders/soraya.jpg",
-        "q": {
-          "ideology": "Conservatism, Centralism"
-        }
+        "ideology": "Conservatism, Centralism"
       }
     },
     {
@@ -1725,9 +1595,7 @@
       "tooltip": {
         "title": "Pablo Casado Blanco",
         "img": "img/other_leaders/pablo_casado.jpg",
-        "q": {
-          "ideology": "Conservatism, Centralism"
-        }
+        "ideology": "Conservatism, Centralism"
       }
     },
     {
@@ -1744,9 +1612,7 @@
       "tooltip": {
         "title": "Susana Díaz Pacheco",
         "img": "img/other_leaders/susanadiaz.jpg",
-        "q": {
-          "ideology": "Centrist Social Democracy, Autonomism"
-        }
+        "ideology": "Centrist Social Democracy, Autonomism"
       }
     },
     {

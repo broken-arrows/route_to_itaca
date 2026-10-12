@@ -18,7 +18,7 @@ on-arrival: {!
     Q.ecp_relations = Q.csqp_relations;
     Q.ecp_leader = "Jéssica Albiach";
     Q.ecp_leader_gender = "f";
-    Q.ecp_ideology = "Social Democracy, Autonomism";
+    G.setText(Q, "ecp_ideology", G.text("Social Democracy, Autonomism"));
 
     for(var prov of Q.parlament_constituencies){
         for(var demo of Q.parlament_demographics){
@@ -72,7 +72,9 @@ on-arrival: {!
 
     if (Q.cat_coalition.includes("cecp")) {
         Q.cat_coalition = Q.cat_coalition.map(item => item === "cecp" ? "ecp" : item);
-        Q.cat_coalition_disp = Q.cat_coalition_disp.replaceAll("CECP", "ECP").replaceAll("cecp", "ecp");
+        G.updateText(Q, "cat_coalition_disp", function (recipe) {
+            return G.rebrandGovernmentText(G.rebrandGovernmentText(recipe, "CECP", "ECP", true), "cecp", "ecp", true);
+        });
     }
 !}
 

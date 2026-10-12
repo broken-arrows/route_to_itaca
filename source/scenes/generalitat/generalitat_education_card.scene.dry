@@ -616,10 +616,10 @@ on-arrival: {!
         science:Q.education_spending >= 1, vocational:Q.education_spending >= 1 && Q.education_policy_controls_bnl,
         segregation:Q.education_spending >= 2};
     for (var focus of Object.keys(available)) Q["education_policy_" + focus + "_available"] = available[focus];
-    var names = {language:"Catalan-language protection", democratic:"Democratic schooling and coeducation", humanities:"Humanities and cultural education",
-        science:"Science and digital skills", vocational:"Vocational training", segregation:"Anti-segregation"};
-    Q.education_policy_main_name = names[Q.education_policy_draft_main] || "Not selected";
-    Q.education_policy_secondary_name = names[Q.education_policy_draft_secondary] || "Not selected";
+    var names = {language:G.text("Catalan-language protection"), democratic:G.text("Democratic schooling and coeducation"), humanities:G.text("Humanities and cultural education"),
+        science:G.text("Science and digital skills"), vocational:G.text("Vocational training"), segregation:G.text("Anti-segregation")};
+    G.setText(Q, "education_policy_main_name", names[Q.education_policy_draft_main] || G.text("Not selected"));
+    G.setText(Q, "education_policy_secondary_name", names[Q.education_policy_draft_secondary] || G.text("Not selected"));
     Q.education_policy_draft_valid = !!available[Q.education_policy_draft_main] && !!available[Q.education_policy_draft_secondary] &&
         Q.education_policy_draft_main != Q.education_policy_draft_secondary;
     Q.education_policy_draft_changed = Q.education_policy_draft_main != Q.education_policy_main || Q.education_policy_draft_secondary != Q.education_policy_secondary;
@@ -954,10 +954,8 @@ on-arrival: {!
             Q.pdcat_relations += relations[8] * (coalitionPartners.includes("pdcat") ? 2 : 1);
         if (Q.vox_active && !controlledParties.includes("vox") && Number.isFinite(Q.vox_relations))
             Q.vox_relations += relations[9] * (coalitionPartners.includes("vox") ? 2 : 1);
-        if (Q.fnc_formed && !controlledParties.includes("fnc")) {
-            // Older saves predate the neutral FNC relations initialization.
-            if (Q.fnc_relations == null) Q.fnc_relations = 0;
-            if (Number.isFinite(Q.fnc_relations)) Q.fnc_relations += relations[10] * (coalitionPartners.includes("fnc") ? 2 : 1);
+        if (Q.fnc_formed && !controlledParties.includes("fnc")) 
+            Q.fnc_relations += relations[10] * (coalitionPartners.includes("fnc") ? 2 : 1);
         }
         if (!Q.pxc_dissolved && !controlledParties.includes("pxc") && Number.isFinite(Q.pxc_relations))
             Q.pxc_relations += relations[11] * (coalitionPartners.includes("pxc") ? 2 : 1);

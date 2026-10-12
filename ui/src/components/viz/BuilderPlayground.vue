@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useGameStore } from '../../stores/game';
 import { gameLib } from '../../game-bindings';
 import { markGlossary } from '../../glossary/mark';
@@ -16,6 +17,7 @@ const props = defineProps<{
   q: Record<string, unknown>;
 }>();
 const game = useGameStore();
+const { t } = useI18n();
 const visibleRows = computed(() => {
   // Engine-owned rows mutate in place; the Q snapshot marks each completed edit.
   void props.q;
@@ -67,15 +69,15 @@ function input(id: string, event: Event, previous: number) {
     <div v-for="row in visibleRows" :key="row.slot ?? row.id" class="builder-party" :class="{ 'is-muted': row.seats === 0 || row.member, 'is-joint': row.isJoint || row.slot === 'joint' }" :data-party="row.id" :style="placement(row)">
       <div class="builder-content">
         <div class="builder-name">
-          <input v-if="row.canJoin" class="builder-checkbox" type="checkbox" :checked="row.member" :aria-label="`Include ${row.name} in the joint list`" @change="join(row.slot!)">
-          <button v-if="(row.variants?.length ?? 0) > 1" class="builder-previous" type="button" :aria-label="`Previous party for ${row.name}`" @click="cycle(row.slot!, -1)">‹</button>
+          <input v-if="row.canJoin" class="builder-checkbox" type="checkbox" :checked="row.member" :aria-label="t('widgets.builder.include', { party: row.name })" @change="join(row.slot!)">
+          <button v-if="(row.variants?.length ?? 0) > 1" class="builder-previous" type="button" :aria-label="t('widgets.builder.previous', { party: row.name })" @click="cycle(row.slot!, -1)">‹</button>
           <span class="builder-label"><Prose :html="markGlossary(row.name, game.glossary)" tag="span" /></span>
-          <button v-if="(row.variants?.length ?? 0) > 1" class="builder-next" type="button" :aria-label="`Next party for ${row.name}`" @click="cycle(row.slot!, 1)">›</button>
+          <button v-if="(row.variants?.length ?? 0) > 1" class="builder-next" type="button" :aria-label="t('widgets.builder.next', { party: row.name })" @click="cycle(row.slot!, 1)">›</button>
         </div>
         <div class="builder-controls">
-          <button type="button" :aria-label="`Remove a seat from ${row.name}`" :disabled="row.member || row.seats <= 0" @click="edit(row.id, row.seats - 1)">−</button>
-          <input type="text" inputmode="numeric" pattern="[0-9]*" :disabled="row.member" :aria-label="`${row.name} seats`" :value="row.seats" @change="input(row.id, $event, row.seats)">
-          <button type="button" :aria-label="`Add a seat to ${row.name}`" :disabled="row.member || row.seats >= Number(q.playground_coalitions_needed_seats)" @click="edit(row.id, row.seats + 1)">+</button>
+          <button type="button" :aria-label="t('widgets.builder.removeSeat', { party: row.name })" :disabled="row.member || row.seats <= 0" @click="edit(row.id, row.seats - 1)">−</button>
+          <input type="text" inputmode="numeric" pattern="[0-9]*" :disabled="row.member" :aria-label="t('widgets.builder.seatInput', { party: row.name })" :value="row.seats" @change="input(row.id, $event, row.seats)">
+          <button type="button" :aria-label="t('widgets.builder.addSeat', { party: row.name })" :disabled="row.member || row.seats >= Number(q.playground_coalitions_needed_seats)" @click="edit(row.id, row.seats + 1)">+</button>
         </div>
         <div v-if="row.isJoint || row.slot === 'joint'" class="builder-members">
           <div v-for="member in members(row.slot!)" :key="member.slot ?? member.id"><Prose :html="markGlossary(member.name, game.glossary)" /></div>

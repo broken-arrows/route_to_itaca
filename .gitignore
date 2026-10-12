@@ -21,6 +21,7 @@ AGENTS.md
 Overview.pdf
 /ui/node_modules
 /ui/dist
+/source/locales/_reports/
 /ui/public/game.*.json
 /out/html/desk/
 /out/html/lib/

@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { i18n } from '../src/i18n';
 import { createPinia, setActivePinia } from 'pinia';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -21,7 +22,7 @@ beforeEach(() => {
 
 describe('Brief row widgets', () => {
   it('level-bars clamps geometry and classifies the displayed word through the qdisplay', () => {
-    const wrapper = mount(LevelBars, {
+    const wrapper = mount(LevelBars, { global: { plugins: [i18n] },
       props: {
         rows: [
           {
@@ -40,7 +41,7 @@ describe('Brief row widgets', () => {
   });
 
   it('tension-rows keeps strength and dissent as two independently banded words', () => {
-    const wrapper = mount(TensionRows, {
+    const wrapper = mount(TensionRows, { global: { plugins: [i18n] },
       props: {
         rows: [
           {
@@ -59,7 +60,7 @@ describe('Brief row widgets', () => {
   });
 
   it('seat-bars sizes segments by the whole chamber and places the majority tick against it', () => {
-    const wrapper = mount(SeatBars, {
+    const wrapper = mount(SeatBars, { global: { plugins: [i18n] },
       props: {
         rows: [
           { id: 'ciu', label: 'CiU', value: 62, majority: 68 },
@@ -75,7 +76,7 @@ describe('Brief row widgets', () => {
   });
 
   it('roster-rows distinguishes the player stamp and international flag/stance rows', () => {
-    const benches = mount(RosterRows, {
+    const benches = mount(RosterRows, { global: { plugins: [i18n] },
       props: {
         rows: [
           {
@@ -108,7 +109,7 @@ describe('Brief row widgets', () => {
     );
     expect(benches.find('.roster-roundel').exists()).toBe(false);
 
-    const world = mount(RosterRows, {
+    const world = mount(RosterRows, { global: { plugins: [i18n] },
       props: {
         rows: [
           {
@@ -127,7 +128,7 @@ describe('Brief row widgets', () => {
   });
 
   it('leader-rows renders party markers for people and label-only state control', () => {
-    const cabinet = mount(LeaderRows, {
+    const cabinet = mount(LeaderRows, { global: { plugins: [i18n] },
       props: {
         rows: [
           { id: 'economy', label: 'Economy', value: 'Andreu Mas-Colell', party: 'ciu' },
@@ -137,7 +138,7 @@ describe('Brief row widgets', () => {
     expect(cabinet.find('.party-square').exists()).toBe(true);
     expect(cabinet.find('.person-value').text()).toContain('Andreu Mas-Colell');
 
-    const control = mount(LeaderRows, {
+    const control = mount(LeaderRows, { global: { plugins: [i18n] },
       props: {
         rows: [
           { id: 'security', label: 'Security', value: 4, valueDisplay: 'control', party: null },

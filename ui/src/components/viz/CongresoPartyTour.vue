@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { gameLib } from '../../game-bindings';
 import { useGameStore } from '../../stores/game';
 import { useElectionSvg } from './useElectionSvg';
@@ -9,6 +10,7 @@ const root = ref<HTMLElement | null>(null);
 const { markup, failed } = useElectionSvg('congreso-results.svg');
 const regions = computed(() => gameLib.congresoPartyTour(props.q));
 const game = useGameStore();
+const { t } = useI18n();
 
 const SELECTORS: Record<string, string[]> = {
   rest: ['andalusia', 'castile_and_leon', 'castile_la_mancha', 'extremadura', 'galicia', 'la_rioja', 'madrid', 'murcia', 'ceuta', 'melilla'],
@@ -136,7 +138,7 @@ watch([markup, regions], async () => { await nextTick(); paint(); }, { immediate
 <template>
   <div ref="root" class="congreso-party-tour" data-test="congreso-party-tour">
     <div v-if="markup" class="map-svg" v-html="markup" />
-    <p v-else-if="failed">Map unavailable</p>
+    <p v-else-if="failed">{{ t('widgets.map.unavailable') }}</p>
   </div>
 </template>
 
