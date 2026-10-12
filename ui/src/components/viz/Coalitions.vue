@@ -75,6 +75,22 @@ function displayParty(label: string): string {
   return label;
 }
 
+function partyHtml(label: string, party: string): string {
+  const display = displayParty(label);
+  if (label.toLowerCase() === party.toLowerCase()) {
+    const key = display.toLowerCase();
+    const exactTerm = game.glossary.find((term) =>
+      term.match.some((match) => match.toLowerCase() === key),
+    );
+    const partyTerm = exactTerm ?? game.glossary.find((term) =>
+      term.bold && term.colour?.toLowerCase() === party.toLowerCase(),
+    );
+    const canonicalMatch = partyTerm?.match[0];
+    if (canonicalMatch) return markGlossary(canonicalMatch, game.glossary);
+  }
+  return html(display);
+}
+
 const entries = computed(() => {
   const q = state.value;
   const majority = Math.max(0, finite(props.majoritySeats));
@@ -125,7 +141,7 @@ const entries = computed(() => {
       labelHtml: html(definition.label),
       members: members.filter((member) => member.seats > 0).map((member) => ({
         ...member,
-        labelHtml: html(displayParty(member.label)),
+        labelHtml: partyHtml(member.label, member.party),
       })),
       segments,
       passing,

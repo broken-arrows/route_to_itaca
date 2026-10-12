@@ -94,6 +94,44 @@
     };
   }
 
+  function renderPartyLabel(label, party, config) {
+    var partyLabel;
+    if (
+      config.seatsKey.includes("congreso") &&
+      (label == "cs" || label == "Cs")
+    ) {
+      partyLabel = "csspa";
+    } else if (config.seatsKey.includes("congreso") && label == "up") {
+      partyLabel = "UP";
+    } else {
+      partyLabel = label;
+    }
+
+    if (String(label).toLowerCase() === String(party).toLowerCase()) {
+      var terms =
+        ((global.dendryUI.game.data || {}).glossary || {}).terms || [];
+      var key = String(partyLabel).toLowerCase();
+      var exactTerm = terms.find(function (term) {
+        return (term.match || []).some(function (match) {
+          return String(match).toLowerCase() === key;
+        });
+      });
+      var partyTerm =
+        exactTerm ||
+        terms.find(function (term) {
+          return (
+            term.bold &&
+            String(term.colour || "").toLowerCase() ===
+              String(party).toLowerCase()
+          );
+        });
+      var canonicalMatch = partyTerm && partyTerm.match && partyTerm.match[0];
+      if (canonicalMatch) return global.applyWholesome(canonicalMatch);
+    }
+
+    return global.applyWholesome(partyLabel);
+  }
+
   // ── styles (injected once) ─────────────────────────────────────────────────
 
   var _stylesInjected = false;
@@ -243,20 +281,9 @@
             : m.type === "abstain"
               ? " <span style='opacity:.6'>(abst.)</span>"
               : "";
-        var partyLabel;
-        if (
-          config.seatsKey.includes("congreso") &&
-          (m.label == "cs" || m.label == "Cs")
-        ) {
-          partyLabel = "csspa";
-        } else if (config.seatsKey.includes("congreso") && m.label == "up") {
-          partyLabel = "UP";
-        } else {
-          partyLabel = m.label;
-        }
         return (
           "<span class='cv-member'>" +
-          window.applyWholesome(partyLabel) +
+          renderPartyLabel(m.label, m.party, config) +
           suffix +
           "</span>"
         );
