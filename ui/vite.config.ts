@@ -5,10 +5,8 @@ import { gameAssets } from './vite-plugin-game-assets';
 
 export default defineConfig({
   base: './',
-  // gameAssets(): the game's art (`img/...` paths inside game.json) lives in the
-  // OLD UI's web root and the Vue app has no `img/` of its own — so every image
-  // 404'd into HandCard's placeholder. Serves/copies it. See the plugin's header
-  // for the phase-6 relocation this defers.
+  // Serve canonical source/img and runtime catalogs in development; validate
+  // and publish them beside the compiled game in a standalone production build.
   plugins: [vue(), gameAssets()],
   server: {
     fs: {

@@ -5,8 +5,9 @@
   "main": "out/html/index.html",
   "scripts": {
     "dendrynexus-ten": "dendrynexus-ten",
-    "build:classic": "dendrynexus-ten make-html --publish-game-lib && dendrynexus-ten audit",
-    "audit:game": "dendrynexus-ten audit",
+    "build:classic": "dendrynexus-ten make-html --publish-game-lib --publish-game-assets && npm run audit",
+    "package": "node scripts/package.cjs",
+    "audit": "node scripts/audit.cjs",
     "extract:strings": "dendrynexus-ten extract-strings"
   },
   "repository": {

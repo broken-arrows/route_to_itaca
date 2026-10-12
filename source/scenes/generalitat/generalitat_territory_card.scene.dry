@@ -1732,7 +1732,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.territory_minister_party) && !Q.cat_caretaker_gov && Q.government_budget >= 1 && Q.territory_rail_approved == 0 && (!(Q.active_mods || {}).territory_rail1 || !Q.active_mods.territory_rail1.active)) {
         Q.territory_rail_approved = 1;
         Q.government_budget -= 1;
-        G.registerLaw(Q, {id:"territory_rail1", title:"Lleida-La Pobla Railway", colour:"gray", icon:"img/rail_icon.svg",
+        G.registerLaw(Q, {id:"territory_rail1", title:"Lleida-La Pobla Railway", colour:"gray", icon:"img/train_icon.svg",
             description:"Pending budget approval: revitalize the FGC Lleida-La Pobla line with new trains and improved services.", targets:{}});
         // Keep ownership with the initiating ministry through funding and completion.
         var voterSnapshot = Q.active_mods["territory_rail1"].def;
@@ -1871,7 +1871,7 @@ on-arrival: {!
     if (controlledParties.includes(Q.territory_minister_party) && !Q.cat_caretaker_gov && Q.government_budget >= 1 && Q.territory_rail_approved == 1 && Q.territory_tmobilitat == 2 && (!(Q.active_mods || {}).territory_rail2 || !Q.active_mods.territory_rail2.active)) {
         Q.territory_rail_approved = 2;
         Q.government_budget -= 1;
-        G.registerLaw(Q, {id:"territory_rail2", title:"Tarragona and Girona Train-Tram", colour:"gray", icon:"img/rail_icon.svg",
+        G.registerLaw(Q, {id:"territory_rail2", title:"Tarragona and Girona Train-Tram", colour:"gray", icon:"img/train_icon.svg",
             description:"Pending budget approval: build-out train-tram networks in the Camp de Tarragona and the Girona counties.", targets:{}});
         // Keep ownership with the initiating ministry through funding and completion.
         var voterSnapshot = Q.active_mods["territory_rail2"].def;

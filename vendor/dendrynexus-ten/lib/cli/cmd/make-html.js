@@ -15,6 +15,7 @@
 
   var utils = require('../utils');
   var cmdCompile = require('./compile').cmd;
+  var gameAssets = require('../game-assets');
 
   var loadGameAndSource = function(data, callback) {
     utils.loadCompiledGame(data.compiledPath, function(err, game, json) {
@@ -122,6 +123,19 @@
     callback(null, data);
   };
 
+  var publishGameAssets = function(data, callback) {
+    if (!data.publishGameAssets) return callback(null, data);
+    try {
+      var checked = gameAssets.validateGameAssets(data.projectDir, { extraSources: [data.destDir] });
+      gameAssets.publishRuntimeAssets(data.projectDir, data.destDir, checked);
+      checked.warnings.forEach(function(warning) { console.warn('Asset warning: ' + warning); });
+      console.log('Published runtime assets: ' + checked.imageCount + ' images; locales ' + checked.locales.join(', '));
+    } catch (err) {
+      return callback(err);
+    }
+    callback(null, data);
+  };
+
   // ----------------------------------------------------------------------
   // Make-HTML: Creates a playable HTML version of the game.
   // ----------------------------------------------------------------------
@@ -158,6 +172,12 @@
       defaultValue: false,
       help: 'Publish source/lib to the HTML output for engine.setGameLib().'
     });
+    parser.addArgument(['--publish-game-assets'], {
+      dest: 'publishGameAssets',
+      action: 'storeTrue',
+      defaultValue: false,
+      help: 'Validate and publish source/img and runtime locale catalogs to the HTML output.'
+    });
     parser.addArgument(['--overwrite'], {
       action: 'storeTrue',
       defaultValue: false,
@@ -177,7 +197,7 @@
     async.waterfall([getData, loadGameAndSource,
                      browserifyUI, prepareBundle,
                      getTemplateDir, getDestDir,
-                     notifyUser, createHTML, publishGameLib], callback);
+                     notifyUser, createHTML, publishGameLib, publishGameAssets], callback);
   };
 
   module.exports = {

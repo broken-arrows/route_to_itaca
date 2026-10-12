@@ -2016,7 +2016,7 @@ on-arrival: {!
         if (creditBurden) Q.burdens_done += 1;
         G.deactivateLaw(Q, "territory_rail1", undefined, true);
         G.registerLaw(Q, {id:"territory_rail1", title:"Lleida-La Pobla Railway", colour:"orange",
-            icon:"img/rail_icon.svg", description:"Under deployment: revitalization the FGC Lleida-La Pobla line with new trains and improved services.",
+            icon:"img/train_icon.svg", description:"Under deployment: revitalization the FGC Lleida-La Pobla line with new trains and improved services.",
             targets:{generalitat_surplus:-0.005, unemployment_recovery:0.005}});
         if (!Q.countdowns.includes("territory_rail1")) Q.countdowns.push("territory_rail1");
         Q.territory_rail1_countdown = 12;
@@ -2101,7 +2101,7 @@ on-arrival: {!
         if (creditBurden) Q.burdens_done += 1;
         G.deactivateLaw(Q, "territory_rail2", undefined, true);
         G.registerLaw(Q, {id:"territory_rail2", title:"Tarragona and Girona Train-Trams", colour:"orange",
-            icon:"img/rail_icon.svg", description:"Under construction: build-out train-tram networks in the Camp de Tarragona and the Girona counties.",
+            icon:"img/train_icon.svg", description:"Under construction: build-out train-tram networks in the Camp de Tarragona and the Girona counties.",
             targets:{generalitat_surplus:-0.01, unemployment_recovery:0.01}});
         if (!Q.countdowns.includes("territory_rail2")) Q.countdowns.push("territory_rail2");
         Q.territory_rail2_countdown = 36;

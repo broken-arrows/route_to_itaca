@@ -11,6 +11,16 @@ distributed under this repo as the fork `dendrynexus-ten`.
 
 ## How it's wired
 
+- **Runtime asset publication (2026-10-12):** `make-html --publish-game-assets`
+  validates literal local image references, required art/library/catalog inputs
+  and exact filename casing, then replaces only generated `img/` and `locales/`
+  directories. Both UIs use `source/img`; only declared locales' `content.json`
+  and `ui.json` files ship. Missing translations warn and retain English fallback.
+  `lib/cli/game-assets.js` is shared by the old UI build, Vite and local packaging;
+  its CommonJS implementation retains the engine's Node 16.7 compatibility.
+  The root `npm run audit` combines this validation with the engine's existing
+  compiled-content audit; `build:classic` and local packaging use that command.
+
 - **Saved localization recipes (2026-10-11):** `lib/localization.js` builds the
   same authored units for runtime and extraction. English qualities and saved
   prose retain their original meaning; `state.presentation` carries captured

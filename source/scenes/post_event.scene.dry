@@ -917,7 +917,7 @@ if (Q.territory_rail1_trigger) {
     Q.climate_transition_points += 1;
     var voterSnapshot = ((Q.active_mods || {})["territory_rail1"] || {}).def || {};
     G.deactivateLaw(Q, "territory_rail1", undefined, true);
-    G.registerLaw(Q, {id:"territory_rail1", title:"Lleida-La Pobla Railway", colour:"green", icon:"img/rail_icon.svg",
+    G.registerLaw(Q, {id:"territory_rail1", title:"Lleida-La Pobla Railway", colour:"green", icon:"img/train_icon.svg",
         description:"FGC has managed to ressurrect the Lleida-La Pobla line with new trains and improved services.",
         targets:{gdp_growth:0.02, welfare_index_growth:0.02, unemployment_recovery:0.005, generalitat_surplus:-0.005}});
     if (voterSnapshot.electoral_origin == "erc" || voterSnapshot.electoral_origin == "cup") {
@@ -996,7 +996,7 @@ if (Q.territory_rail2_trigger) {
     Q.climate_transition_points += 1;
     var voterSnapshot = ((Q.active_mods || {})["territory_rail2"] || {}).def || {};
     G.deactivateLaw(Q, "territory_rail2", undefined, true);
-    G.registerLaw(Q, {id:"territory_rail2", title:"Regional Train-Trams", colour:"green", icon:"img/rail_icon.svg",
+    G.registerLaw(Q, {id:"territory_rail2", title:"Regional Train-Trams", colour:"green", icon:"img/train_icon.svg",
         description:"Train-trams in the Camp de Tarragona and the Girona counties have been built.",
         targets:{gdp_growth:0.035, welfare_index_growth:0.05, unemployment_recovery:0.01, generalitat_surplus:-0.01}});
     if (voterSnapshot.electoral_origin == "erc" || voterSnapshot.electoral_origin == "cup") {

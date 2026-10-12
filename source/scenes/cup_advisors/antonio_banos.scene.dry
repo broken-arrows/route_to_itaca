@@ -1,8 +1,8 @@
 title: Antonio Baños
 is-pinned-card: true
 tags: advisor
-card-image: img/cup/antonio_banos.jpg
-face-image: img/cup/antonio_banos.jpg
+card-image: img/cup/antoniobanos.jpg
+face-image: img/cup/antoniobanos.jpg
 view-if: antonio_banos_advisor = 1
 new-page: true
 role: pinned-advisor
