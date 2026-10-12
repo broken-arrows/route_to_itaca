@@ -1,5 +1,5 @@
 title: New Parlament elections called!
-subtitle: President [+ president +] sets the new election date for two months from now.
+subtitle: [? if president_gender != "f": President?][? if president_gender = "f": Presidenta?] [+ president +] sets the new election date for two months from now.
 face-image: img/events/snapelection.jpg
 new-page: true
 tags: event

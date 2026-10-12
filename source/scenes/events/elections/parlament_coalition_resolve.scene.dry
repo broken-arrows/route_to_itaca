@@ -120,11 +120,16 @@ on-arrival: {!
     Q.cat_caretaker_gov = false;
     Q.parlament_repeat_election = false;
 
-    G.setText(Q, "historical_event", "We have a new government in the Generalitat! President {president} will lead a {government} for this legislature.", {
-        president: Q.president,
-        president_gender: Q.president_gender,
-        government: G.getText(Q, "cat_coalition_disp")
-    });
+    G.setText(Q, "historical_event", Q.president_gender == "f"
+        ? G.text("We have a new government in the Generalitat! Presidenta {president} will lead a {government} for this legislature.", {
+            president: Q.president,
+            president_gender: Q.president_gender,
+            government: G.getText(Q, "cat_coalition_disp")
+        }) : G.text("We have a new government in the Generalitat! President {president} will lead a {government} for this legislature.", {
+            president: Q.president,
+            president_gender: Q.president_gender,
+            government: G.getText(Q, "cat_coalition_disp")
+        }));
 
     Q.burdens_done = 0;
     Q.burdens_goal = 0;

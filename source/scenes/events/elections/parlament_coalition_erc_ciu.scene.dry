@@ -202,6 +202,6 @@ set-jump: cup_resolve
 
 @cup_resolve
 
-[? if erc_parlament_s > 40: The government under President [+ erc_leader +] will be quite unequal, with [+ parlament_current_ciu +] holding the Vice-Presidency and the Speaker of the House.?][? if erc_parlament_s <= 40: The government under President [+ erc_leader +] will be balanced enough, with ERC holding both the Vice-Presidency and the Speaker of the House.?] Some promises on independence commitments have been made, we'll have to monitor them closely as the legislature progresses.
+[? if erc_parlament_s > 40: The government under [? if erc_leader_gender != "f": President?][? if erc_leader_gender = "f": Presidenta?] [+ erc_leader +] will be quite unequal, with [+ parlament_current_ciu +] holding the Vice-Presidency and the Speaker of the House.?][? if erc_parlament_s <= 40: The government under [? if erc_leader_gender != "f": President?][? if erc_leader_gender = "f": Presidenta?] [+ erc_leader +] will be balanced enough, with ERC holding both the Vice-Presidency and the Speaker of the House.?] Some promises on independence commitments have been made, we'll have to monitor them closely as the legislature progresses.
 
 - @parlament_coalition_resolve: New faces in the Generalitat...

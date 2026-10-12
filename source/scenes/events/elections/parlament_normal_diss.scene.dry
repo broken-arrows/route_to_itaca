@@ -1,5 +1,5 @@
 title: Incoming Parlament election
-subtitle: President [+ president +] sets the new election date for two months from now.
+subtitle: [? if president_gender != "f": President?][? if president_gender = "f": Presidenta?] [+ president +] sets the new election date for two months from now.
 face-image: img/events/snapelection.jpg
 new-page: true
 tags: event
@@ -46,7 +46,7 @@ role: event
 
 = New Parlament elections called!
 
-After four years, this term has come to an end. President [+ president +] has dissolved the Parlament, and the next elections will be held in two months time, on [+ next_election_month : month +], [+ next_election_year +].
+After four years, this term has come to an end. [? if president_gender != "f": President?][? if president_gender = "f": Presidenta?] [+ president +] has dissolved the Parlament, and the next elections will be held in two months time, on [+ next_election_month : month +], [+ next_election_year +].
 
 Until then, the functions of the Generalitat will be limited, and handled by a [+ cat_coalition_disp +].
 

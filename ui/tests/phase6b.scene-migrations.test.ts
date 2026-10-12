@@ -16,6 +16,7 @@ beforeAll(async () => {
     ['generalitat/generalitat_coalition_rupture', 'reshuffled'], ['generalitat/government_does_things', 'prepare'],
     ['events/elections/parlament_coalition_ciu_erc_cup_phase_erc_player_ciu_led_support', 'submit'],
     ['events/elections/parlament_coalition_setnames', ''], ['party_paths/ciu/pdcat_formation', ''],
+    ['events/elections/parlament_coalition_resolve', ''],
     ['party_paths/ciu/junts_formation', ''],
   ];
   // Compile the actual authored actions without bringing unrelated navigation branches into these cases.
@@ -52,6 +53,54 @@ function recipe(adapter: DendryAdapter, field: string) {
 }
 
 describe('scene-generated localization recipes', () => {
+  it.each(['m', 'f'])('uses a native presidential title in English history for gender %s', gender => {
+    const adapter = initialized(), q = adapter.qualities as any;
+    Object.assign(q, {cat_coalition:['ciu'], cat_coalition_support:[], cat_coalition_abstain:[],
+      parlament_coalition_proposal_president:'ciu', parlament_coalition_proposal_president_gender:gender,
+      parlament_coalition_proposal_president_name:gender === 'f' ? 'Neus Munté' : 'Artur Mas'});
+    for (const office of ['vp','economy','interior','health','education','territory','foreign','bnl']) {
+      q['parlament_coalition_proposal_' + office] = 'ciu';
+    }
+    arrival(adapter, 'parlament_coalition_resolve');
+    expect(q.parlament_coalition_resolution_errors).toEqual([]);
+    const title = gender === 'f' ? 'Presidenta Neus Munté' : 'President Artur Mas';
+    expect(q.historical_event).toContain(title);
+    const captured = recipe(adapter, 'historical_event');
+    q.president = 'Changed holder'; q.president_gender = gender === 'f' ? 'm' : 'f';
+    expect(localization.render(captured, 'en', null)).toContain(title);
+    expect(localization.render(captured, 'ca', {})).toContain(title);
+  });
+
+  it.each(['m', 'f'])('preserves service genders and uses the right health title for gender %s', gender => {
+    const adapter = initialized(), engine = adapter.engine as any, q = adapter.qualities as any;
+    Object.assign(q, {player_party:'erc', cat_coalition:['ciu','erc'], cat_caretaker_gov:false,
+      npc_government_initiative:null, npc_government_response:null,
+      health_minister:gender === 'f' ? 'Alba Vergés' : 'Boi Ruiz', health_minister_gender:gender,
+      education_minister_gender:gender, healthcare_sexual_level:0, healthcare_spending:-1,
+      ciu_ideology:'Social Democracy, Pact-Pragmatism'});
+    for (const office of ['president','vicepresident','economy_minister','education_minister',
+      'bnl_minister','territory_minister','foreign_minister','interior_minister']) q[office + '_party'] = 'erc';
+    q.health_minister_party = 'ciu';
+    const random = vi.spyOn(engine.gameLib, 'random').mockReturnValue(0);
+    const text = vi.spyOn(engine.gameLib, 'text');
+    try {
+      arrival(adapter, 'government_does_things.prepare');
+      expect(q.health_minister_gender).toBe(gender);
+      expect(q.education_minister_gender).toBe(gender);
+      const title = gender === 'f' ? 'Consellera' : 'Conseller';
+      expect(text.mock.calls.some(([key, params]: any[]) => key === title + ' of {department}{minister}'
+        && params.minister === q.health_minister && params.minister_gender === gender)).toBe(true);
+      expect(q.npc_government_initiative.field).toBe('healthcare_sexual_level');
+      expect(q.npc_government_reason).toContain(title + ' of Health ' + q.health_minister);
+      const captured = recipe(adapter, 'npc_government_reason');
+      q.health_minister = 'Changed holder'; q.health_minister_gender = gender === 'f' ? 'm' : 'f';
+      expect(localization.render(captured, 'en', null)).toContain(title + ' of Health');
+      expect(localization.render(captured, 'ca', {})).toContain(title + ' of Health');
+    } finally {
+      random.mockRestore(); text.mockRestore();
+    }
+  });
+
   it('captures neutral-English historical name/gender and a nested government independently of live Q', () => {
     const adapter = initialized(), engine = adapter.engine as any, q = adapter.qualities as any, G = engine.gameLib;
     const offices = {president:'president', vp:'vicepresident', economy:'economy_minister', interior:'interior_minister',

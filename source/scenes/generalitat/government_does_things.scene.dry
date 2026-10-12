@@ -57,6 +57,8 @@ go-to: resolve
 
 @prepare
 on-arrival: {!
+    // Presentation recipes stay outside persisted initiative objects and weighted selection.
+    var candidateText = {};
     // TODO: Adapt proposals and responses to Rubicon's concrete circumstances and weekly cadence.
     var player = Q.player_party;
     var controlled = [player];
@@ -122,6 +124,16 @@ on-arrival: {!
         var offices = {president_party:"Presidency", vicepresident_party:"Vice-Presidency", economy_minister_party:"Ministry of Economy",
             health_minister_party:"Ministry of Health", education_minister_party:"Ministry of Education", bnl_minister_party:"Ministry of Business and Labour",
             territory_minister_party:"Ministry of Territory", foreign_minister_party:"Ministry of Foreign Affairs"};
+        var officeText = {
+            president_party: G.text("Presidency"),
+            vicepresident_party: G.text("Vice-Presidency"),
+            economy_minister_party: G.text("Ministry of Economy"),
+            health_minister_party: G.text("Ministry of Health"),
+            education_minister_party: G.text("Ministry of Education"),
+            bnl_minister_party: G.text("Ministry of Business and Labour"),
+            territory_minister_party: G.text("Ministry of Territory"),
+            foreign_minister_party: G.text("Ministry of Foreign Affairs")
+        };
         function add(holder, field, to, title, reason, weight, profile, kind, extra) {
             if (owners[holder] != actor || !(weight > 0)) return;
             if (kind == "cut") weight *= Math.max(0.5, -Q.generalitat_surplus);
@@ -135,105 +147,115 @@ on-arrival: {!
             if (field == "institutional_alignment" && to < from && (Q.coalition_indy_commitments || []).some(function (record) {
                 return record.status == "pending" && record.law == "parlament_referendum_law";
             })) return;
-            candidates.push(Object.assign({id:holder + ":" + field + ":" + to, holder:holder, field:field, from:from, to:to,
-                title:title, reason:reason, office:offices[holder], weight:weight, profile:profile || "neutral", kind:kind || "policy",
-                policyParty:policyParty}, extra || {}));
+            var candidate = Object.assign({id:holder + ":" + field + ":" + to, holder:holder, field:field, from:from, to:to,
+                title:G.englishText(title), reason:G.englishText(reason), office:offices[holder], weight:weight, profile:profile || "neutral", kind:kind || "policy",
+                policyParty:policyParty}, extra || {});
+            candidateText[candidate.id] = { title: title, reason: reason, office: officeText[holder] };
+            candidates.push(candidate);
         }
         for (var service of [["education_minister_party", "education_spending", "education", "education"], ["health_minister_party", "healthcare_spending", "healthcare", "health"]]) {
             var level = Q[service[1]];
-            var consellerName = (Q[service[3] + "_minister_gender"] = "m" ? "Conseller" : "Consellera") + " of " + (service[3] == "health" ? "Health " : "Education ") + Q[service[3] + "_minister"];
+            var consellerText = Q[service[3] + "_minister_gender"] == "m" ? G.text("Conseller of {department}{minister}", {
+                department: service[3] == "health" ? G.text("Health ") : G.text("Education "),
+                minister: String(Q[service[3] + "_minister"]),
+                minister_gender: Q[service[3] + "_minister_gender"]
+            }) : G.text("Consellera of {department}{minister}", {
+                department: service[3] == "health" ? G.text("Health ") : G.text("Education "),
+                minister: String(Q[service[3] + "_minister"]),
+                minister_gender: Q[service[3] + "_minister_gender"]
+            });
             if (Number.isInteger(level) && level >= -2 && level < 2 && level < Q.social_spending_cap && Q.generalitat_surplus > -3 &&
                 Q[service[1] == "education_spending" ? "education_prepared_level" : "healthcare_prepared_level"] == null)
-                add(service[0], service[1], level + 1, level < 0 ? "restore " + service[2] + " cuts" : "expand " + service[2] + " funding",  consellerName,
+                add(service[0], service[1], level + 1, (level < 0 ? G.text("restore {service} cuts", { service: service[2] == "education" ? G.text("education") : G.text("healthcare") }) : G.text("expand {service} funding", { service: service[2] == "education" ? G.text("education") : G.text("healthcare") })),  consellerText,
                     distress ? "argues that it about time crisis-era cuts are reverted." : " is pushing forward a reform for better funding and expanded resources.",
                     left ? (distress ? 5 : 3) : !deficit ? 1 : 0, "services");
             if (Number.isInteger(level) && level > -2 && level <= 2)
-                add(service[0], service[1], level - 1, "reduce " + service[2] + " funding" ,consellerName,
+                add(service[0], service[1], level - 1, G.text("reduce {service} funding", { service: service[2] == "education" ? G.text("education") : G.text("healthcare") }) ,consellerText,
                     "is pushing for further cuts to curve down the current deficit of the Generalitat.",
                     market && deficit ? 4 : left && !radical && Q.generalitat_surplus < -2 ? 1 : 0, "services", "cut");
         }
         if (Number.isInteger(Q.public_salary_level) && Q.public_salary_level >= -2 && Q.public_salary_level < 2 && Q.economy_cuts <= 0 &&
             Q.public_salary_level < Q.social_spending_cap && Q.generalitat_surplus > -3 && Q.public_salary_prepared_level == null)
-            add("economy_minister_party", "public_salary_level", Q.public_salary_level + 1, "improve public-sector pay",
-                ((Q.economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + Q.economy_minister + " says it is time public-service working conditions are restored and improved."), left ? 3 : !deficit ? 1 : 0, "services");
+            add("economy_minister_party", "public_salary_level", Q.public_salary_level + 1, G.text("improve public-sector pay"),
+                ((Q.economy_minister_gender == "m" ? G.text("Conseller of the Economy {economy_minister} says it is time public-service working conditions are restored and improved.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender }) : G.text("Consellera of the Economy {economy_minister} says it is time public-service working conditions are restored and improved.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender }))), left ? 3 : !deficit ? 1 : 0, "services");
         if (Number.isInteger(Q.public_salary_level) && Q.public_salary_level > -2 && Q.public_salary_level <= 2)
-            add("economy_minister_party", "public_salary_level", Q.public_salary_level - 1, "reduce public-sector pay",
-                (Q.economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + Q.economy_minister + ", worried about public deficit, says pay restraint is the only solution to address the current financial situation.", market && deficit ? 4 : left && !radical && Q.generalitat_surplus < -2 ? 1 : 0, "services", "cut");
+            add("economy_minister_party", "public_salary_level", Q.public_salary_level - 1, G.text("reduce public-sector pay"),
+                (Q.economy_minister_gender == "m" ? G.text("Conseller of the Economy {economy_minister}, worried about public deficit, says pay restraint is the only solution to address the current financial situation.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender }) : G.text("Consellera of the Economy {economy_minister}, worried about public deficit, says pay restraint is the only solution to address the current financial situation.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender })), market && deficit ? 4 : left && !radical && Q.generalitat_surplus < -2 ? 1 : 0, "services", "cut");
         var acceptsTax = left || market && Q.tax_policy_level < 1 && Q.generalitat_surplus < -1;
         if (canBudget && Q.tax_policy_level < 2)
-            add("economy_minister_party", "tax_policy_level", Q.tax_policy_level + 1, "raise regional taxes",
-                (Q.economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + Q.economy_minister + " is this may be the only acceptable options for the numbers to make sense in the coming budget.", acceptsTax ? (deficit ? 4 : 1) : 0, "taxes", "budget");
+            add("economy_minister_party", "tax_policy_level", Q.tax_policy_level + 1, G.text("raise regional taxes"),
+                (Q.economy_minister_gender == "m" ? G.text("Conseller of the Economy {economy_minister} is this may be the only acceptable options for the numbers to make sense in the coming budget.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender }) : G.text("Consellera of the Economy {economy_minister} is this may be the only acceptable options for the numbers to make sense in the coming budget.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender })), acceptsTax ? (deficit ? 4 : 1) : 0, "taxes", "budget");
         if (canBudget && Q.tax_policy_level > -2 && !deficit)
-            add("economy_minister_party", "tax_policy_level", Q.tax_policy_level - 1, "lower regional taxes",
-                (Q.economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + Q.economy_minister + " argues it is time for lower pressure to business development to allow further investments into the Catalan economy.", market ? 3 : 0, "taxes", "budget");
+            add("economy_minister_party", "tax_policy_level", Q.tax_policy_level - 1, G.text("lower regional taxes"),
+                (Q.economy_minister_gender == "m" ? G.text("Conseller of the Economy {economy_minister} argues it is time for lower pressure to business development to allow further investments into the Catalan economy.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender }) : G.text("Consellera of the Economy {economy_minister} argues it is time for lower pressure to business development to allow further investments into the Catalan economy.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender })), market ? 3 : 0, "taxes", "budget");
         if (Q.economy_cuts > 0)
-            add("economy_minister_party", "economy_cuts", Q.economy_cuts - 1, "reverse extraordinary austerity measures",
-                (Q.economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + Q.economy_minister + " proposes finally withdrawing the extraordinary austerity package that has been burdening the public sector.", left && Q.generalitat_surplus > -2 ? 4 : !deficit ? 1 : 0, "services", "austerity");
+            add("economy_minister_party", "economy_cuts", Q.economy_cuts - 1, G.text("reverse extraordinary austerity measures"),
+                (Q.economy_minister_gender == "m" ? G.text("Conseller of the Economy {economy_minister} proposes finally withdrawing the extraordinary austerity package that has been burdening the public sector.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender }) : G.text("Consellera of the Economy {economy_minister} proposes finally withdrawing the extraordinary austerity package that has been burdening the public sector.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender })), left && Q.generalitat_surplus > -2 ? 4 : !deficit ? 1 : 0, "services", "austerity");
         if (Q.economy_atc_level >= 0 && Q.economy_atc_level < 2)
             add("economy_minister_party", "economy_atc_level", Q.economy_atc_level + 1,
-                Q.economy_atc_level == 0 ? "expand the Catalan Tax Agency" : "develop a state-ready Catalan Tax Agency",
-                (Q.economy_minister_gender == "m" ? "Conseller " : "Consellera ") + "of the Economy " + Q.economy_minister + " argues it is a necessary step towards true sovereignty, and that it should also help in combatting fraud and making the administration more agile.",
+                (Q.economy_atc_level == 0 ? G.text("expand the Catalan Tax Agency") : G.text("develop a state-ready Catalan Tax Agency")),
+                (Q.economy_minister_gender == "m" ? G.text("Conseller of the Economy {economy_minister} argues it is a necessary step towards true sovereignty, and that it should also help in combatting fraud and making the administration more agile.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender }) : G.text("Consellera of the Economy {economy_minister} argues it is a necessary step towards true sovereignty, and that it should also help in combatting fraud and making the administration more agile.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender })),
                 Q.economy_atc_level == 0 ? 2 : sovereign && momentum ? 4 : 0, "institutional", "atc");
         if (Q.bnl_icf_level == 0)
-            add("bnl_minister_party", "bnl_icf_level", 1, "expand public lending to small business",
-                (Q.bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + Q.bnl_minister + " proposes more government-led guarantees to improve credit access for the self-employed and small firms.", unemployment ? 4 : 1, "business", "icf");
+            add("bnl_minister_party", "bnl_icf_level", 1, G.text("expand public lending to small business"),
+                (Q.bnl_minister_gender == "m" ? G.text("Conseller of Business and Labour {bnl_minister} proposes more government-led guarantees to improve credit access for the self-employed and small firms.", { bnl_minister: String(Q.bnl_minister), bnl_minister_gender: Q.bnl_minister_gender }) : G.text("Consellera of Business and Labour {bnl_minister} proposes more government-led guarantees to improve credit access for the self-employed and small firms.", { bnl_minister: String(Q.bnl_minister), bnl_minister_gender: Q.bnl_minister_gender })), unemployment ? 4 : 1, "business", "icf");
         if (Q.bnl_inspection_level >= 0 && Q.bnl_inspection_level < 2)
-            add("bnl_minister_party", "bnl_inspection_level", Q.bnl_inspection_level + 1, "strengthen labour inspection",
-                (Q.bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + Q.bnl_minister + " demands that the Generalitat takes a stronger stance towards the enforcement of workers' rights.", left ? (distress ? 4 : 2) : 0, "labour", "inspection");
+            add("bnl_minister_party", "bnl_inspection_level", Q.bnl_inspection_level + 1, G.text("strengthen labour inspection"),
+                (Q.bnl_minister_gender == "m" ? G.text("Conseller of Business and Labour {bnl_minister} demands that the Generalitat takes a stronger stance towards the enforcement of workers' rights.", { bnl_minister: String(Q.bnl_minister), bnl_minister_gender: Q.bnl_minister_gender }) : G.text("Consellera of Business and Labour {bnl_minister} demands that the Generalitat takes a stronger stance towards the enforcement of workers' rights.", { bnl_minister: String(Q.bnl_minister), bnl_minister_gender: Q.bnl_minister_gender })), left ? (distress ? 4 : 2) : 0, "labour", "inspection");
         if (Q.bnl_tourism_level > -2)
-            add("bnl_minister_party", "bnl_tourism_level", Q.bnl_tourism_level - 1, "tighten tourism regulation",
-                (Q.bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour" + Q.bnl_minister + " is set on tackling the issues related to tourism, hoping to reduce pressure on the housing market and redirect economic development to other, more promising projects.", radical || green ? (distress ? 4 : 2) : left && distress ? 1 : 0, "tourism");
+            add("bnl_minister_party", "bnl_tourism_level", Q.bnl_tourism_level - 1, G.text("tighten tourism regulation"),
+                (Q.bnl_minister_gender == "m" ? G.text("Conseller of Business and Labour{bnl_minister} is set on tackling the issues related to tourism, hoping to reduce pressure on the housing market and redirect economic development to other, more promising projects.", { bnl_minister: String(Q.bnl_minister), bnl_minister_gender: Q.bnl_minister_gender }) : G.text("Consellera of Business and Labour{bnl_minister} is set on tackling the issues related to tourism, hoping to reduce pressure on the housing market and redirect economic development to other, more promising projects.", { bnl_minister: String(Q.bnl_minister), bnl_minister_gender: Q.bnl_minister_gender })), radical || green ? (distress ? 4 : 2) : left && distress ? 1 : 0, "tourism");
         if (Q.bnl_tourism_level < 2)
-            add("bnl_minister_party", "bnl_tourism_level", Q.bnl_tourism_level + 1, "ease tourism regulation",
-                (Q.bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + Q.bnl_minister + " argues tourism investment is now the best way to support employment and growth.", market ? (unemployment ? 4 : 2) : 0, "tourism");
+            add("bnl_minister_party", "bnl_tourism_level", Q.bnl_tourism_level + 1, G.text("ease tourism regulation"),
+                (Q.bnl_minister_gender == "m" ? G.text("Conseller of Business and Labour {bnl_minister} argues tourism investment is now the best way to support employment and growth.", { bnl_minister: String(Q.bnl_minister), bnl_minister_gender: Q.bnl_minister_gender }) : G.text("Consellera of Business and Labour {bnl_minister} argues tourism investment is now the best way to support employment and growth.", { bnl_minister: String(Q.bnl_minister), bnl_minister_gender: Q.bnl_minister_gender })), market ? (unemployment ? 4 : 2) : 0, "tourism");
         if (sovereign && Q.bnl_union_level < 2)
-            add("bnl_minister_party", "bnl_union_level", Q.bnl_union_level + 1, "support pro-sovereignty unions",
-                (Q.bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + Q.bnl_minister + " hopes that better support for labour representation ultimately contributes to Catalan sovereignty.", momentum ? 3 : 1, "sovereignty");
+            add("bnl_minister_party", "bnl_union_level", Q.bnl_union_level + 1, G.text("support pro-sovereignty unions"),
+                (Q.bnl_minister_gender == "m" ? G.text("Conseller of Business and Labour {bnl_minister} hopes that better support for labour representation ultimately contributes to Catalan sovereignty.", { bnl_minister: String(Q.bnl_minister), bnl_minister_gender: Q.bnl_minister_gender }) : G.text("Consellera of Business and Labour {bnl_minister} hopes that better support for labour representation ultimately contributes to Catalan sovereignty.", { bnl_minister: String(Q.bnl_minister), bnl_minister_gender: Q.bnl_minister_gender })), momentum ? 3 : 1, "sovereignty");
         if (!sovereign && Q.bnl_union_level > -2)
-            add("bnl_minister_party", "bnl_union_level", Q.bnl_union_level - 1, "prioritize cooperation with established unions",
-                (Q.bnl_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Business and Labour " + Q.bnl_minister + " hopes that better alignment with labour organizations can quell social dissent and produce better collective agreements.", left ? 3 : 1, "labour");
+            add("bnl_minister_party", "bnl_union_level", Q.bnl_union_level - 1, G.text("prioritize cooperation with established unions"),
+                (Q.bnl_minister_gender == "m" ? G.text("Conseller of Business and Labour {bnl_minister} hopes that better alignment with labour organizations can quell social dissent and produce better collective agreements.", { bnl_minister: String(Q.bnl_minister), bnl_minister_gender: Q.bnl_minister_gender }) : G.text("Consellera of Business and Labour {bnl_minister} hopes that better alignment with labour organizations can quell social dissent and produce better collective agreements.", { bnl_minister: String(Q.bnl_minister), bnl_minister_gender: Q.bnl_minister_gender })), left ? 3 : 1, "labour");
         if (Q.territory_renewables == 0)
-            add("territory_minister_party", "territory_renewables", 1, "facilitate renewable-energy deployment",
-                (Q.territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + Q.territory_minister + " hopes to develop a more comprehensive system for renewable investment and project approvals.", green ? 4 : 1, "environment");
+            add("territory_minister_party", "territory_renewables", 1, G.text("facilitate renewable-energy deployment"),
+                (Q.territory_minister_gender == "m" ? G.text("Conseller of Territory {territory_minister} hopes to develop a more comprehensive system for renewable investment and project approvals.", { territory_minister: String(Q.territory_minister), territory_minister_gender: Q.territory_minister_gender }) : G.text("Consellera of Territory {territory_minister} hopes to develop a more comprehensive system for renewable investment and project approvals.", { territory_minister: String(Q.territory_minister), territory_minister_gender: Q.territory_minister_gender })), green ? 4 : 1, "environment");
         if (Q.territory_livestock > -2)
-            add("territory_minister_party", "territory_livestock", Q.territory_livestock - 1, "diversify agricultural production",
-                (Q.territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + Q.territory_minister + " is proposing a drastic reduction of intensive pig farming practices and a gradual switch to other forms of agricultural development.", green || radical ? 3 : left ? 1 : 0, "agriculture");
+            add("territory_minister_party", "territory_livestock", Q.territory_livestock - 1, G.text("diversify agricultural production"),
+                (Q.territory_minister_gender == "m" ? G.text("Conseller of Territory {territory_minister} is proposing a drastic reduction of intensive pig farming practices and a gradual switch to other forms of agricultural development.", { territory_minister: String(Q.territory_minister), territory_minister_gender: Q.territory_minister_gender }) : G.text("Consellera of Territory {territory_minister} is proposing a drastic reduction of intensive pig farming practices and a gradual switch to other forms of agricultural development.", { territory_minister: String(Q.territory_minister), territory_minister_gender: Q.territory_minister_gender })), green || radical ? 3 : left ? 1 : 0, "agriculture");
         if (Q.territory_livestock < 2)
-            add("territory_minister_party", "territory_livestock", Q.territory_livestock + 1, "increase support for intensive pig farming",
-                (Q.territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + Q.territory_minister + " is pushing for a further expansion of Catalonia's main agricultural export.", market ? 2 : 0, "agriculture");
+            add("territory_minister_party", "territory_livestock", Q.territory_livestock + 1, G.text("increase support for intensive pig farming"),
+                (Q.territory_minister_gender == "m" ? G.text("Conseller of Territory {territory_minister} is pushing for a further expansion of Catalonia's main agricultural export.", { territory_minister: String(Q.territory_minister), territory_minister_gender: Q.territory_minister_gender }) : G.text("Consellera of Territory {territory_minister} is pushing for a further expansion of Catalonia's main agricultural export.", { territory_minister: String(Q.territory_minister), territory_minister_gender: Q.territory_minister_gender })), market ? 2 : 0, "agriculture");
         if (Q.territory_water == 0)
-            add("territory_minister_party", "territory_water", 1, "improve water management and drought preparedness",
-                (Q.territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + Q.territory_minister + " is hoping to improve drought resilience in the face of climate change.", green ? 3 : 1, "environment");
+            add("territory_minister_party", "territory_water", 1, G.text("improve water management and drought preparedness"),
+                (Q.territory_minister_gender == "m" ? G.text("Conseller of Territory {territory_minister} is hoping to improve drought resilience in the face of climate change.", { territory_minister: String(Q.territory_minister), territory_minister_gender: Q.territory_minister_gender }) : G.text("Consellera of Territory {territory_minister} is hoping to improve drought resilience in the face of climate change.", { territory_minister: String(Q.territory_minister), territory_minister_gender: Q.territory_minister_gender })), green ? 3 : 1, "environment");
         if (Q.territory_tmobilitat == 0)
-            add("territory_minister_party", "territory_tmobilitat", 1, "introduce unified public-transport ticketing",
-                (Q.territory_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Territory " + Q.territory_minister + " is pushing for a faster development of the long-awaited contactless, integrated ticketing system for the Barcelona metropolitan area.", left ? 2 : 1, "services");
+            add("territory_minister_party", "territory_tmobilitat", 1, G.text("introduce unified public-transport ticketing"),
+                (Q.territory_minister_gender == "m" ? G.text("Conseller of Territory {territory_minister} is pushing for a faster development of the long-awaited contactless, integrated ticketing system for the Barcelona metropolitan area.", { territory_minister: String(Q.territory_minister), territory_minister_gender: Q.territory_minister_gender }) : G.text("Consellera of Territory {territory_minister} is pushing for a faster development of the long-awaited contactless, integrated ticketing system for the Barcelona metropolitan area.", { territory_minister: String(Q.territory_minister), territory_minister_gender: Q.territory_minister_gender })), left ? 2 : 1, "services");
         if (Q.healthcare_universal_level == 0 && Q.healthcare_spending >= 0)
-            add("health_minister_party", "healthcare_universal_level", 1, "remove barriers to healthcare access",
-                (Q.health_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Health " + Q.health_minister + " proposes new funding serves public health services reach broader geographic reach and do so with fewer administrative barriers.", left ? 3 : 1, "services", "access");
+            add("health_minister_party", "healthcare_universal_level", 1, G.text("remove barriers to healthcare access"),
+                (Q.health_minister_gender == "m" ? G.text("Conseller of Health {health_minister} proposes new funding serves public health services reach broader geographic reach and do so with fewer administrative barriers.", { health_minister: String(Q.health_minister), health_minister_gender: Q.health_minister_gender }) : G.text("Consellera of Health {health_minister} proposes new funding serves public health services reach broader geographic reach and do so with fewer administrative barriers.", { health_minister: String(Q.health_minister), health_minister_gender: Q.health_minister_gender })), left ? 3 : 1, "services", "access");
         if (Q.healthcare_sexual_level == 0)
-            add("health_minister_party", "healthcare_sexual_level", 1, "guarantee reproductive healthcare access",
-                (Q.health_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Health " + Q.health_minister + " hopes to fully protect accessible abortion and reproductive care.", !conservative ? 2 : 0, "rights", "sexual");
+            add("health_minister_party", "healthcare_sexual_level", 1, G.text("guarantee reproductive healthcare access"),
+                (Q.health_minister_gender == "m" ? G.text("Conseller of Health {health_minister} hopes to fully protect accessible abortion and reproductive care.", { health_minister: String(Q.health_minister), health_minister_gender: Q.health_minister_gender }) : G.text("Consellera of Health {health_minister} hopes to fully protect accessible abortion and reproductive care.", { health_minister: String(Q.health_minister), health_minister_gender: Q.health_minister_gender })), !conservative ? 2 : 0, "rights", "sexual");
         if (Q.healthcare_sexual_level == 1 && Q.parlament_lgbt_passed)
-            add("health_minister_party", "healthcare_sexual_level", 2, "extend public healthcare to gender-affirming care",
-                (Q.health_minister_gender == "m" ? "Conseller " : "Consellera ") + "of Health " + Q.health_minister + " is pushing for the recently-approved Catalan LGBTI Law to be fully and coherently deployed in the public health circuit.", !conservative ? 2 : 0, "rights", "sexual");
+            add("health_minister_party", "healthcare_sexual_level", 2, G.text("extend public healthcare to gender-affirming care"),
+                (Q.health_minister_gender == "m" ? G.text("Conseller of Health {health_minister} is pushing for the recently-approved Catalan LGBTI Law to be fully and coherently deployed in the public health circuit.", { health_minister: String(Q.health_minister), health_minister_gender: Q.health_minister_gender }) : G.text("Consellera of Health {health_minister} is pushing for the recently-approved Catalan LGBTI Law to be fully and coherently deployed in the public health circuit.", { health_minister: String(Q.health_minister), health_minister_gender: Q.health_minister_gender })), !conservative ? 2 : 0, "rights", "sexual");
         if (Q.vp_digital_level == 0)
-            add("vicepresident_party", "vp_digital_level", 1, "expand digital administration",
-                (Q.vicepresident_gender == "m" ? "Vicepresident " : "Vicepresidenta ") + Q.vicepresident + " is pushing for broader digitalization of procedures and unifying the administration's systems.", 2, "institutional", "digital");
+            add("vicepresident_party", "vp_digital_level", 1, G.text("expand digital administration"),
+                (Q.vicepresident_gender == "m" ? G.text("Vicepresident {vicepresident} is pushing for broader digitalization of procedures and unifying the administration's systems.", { vicepresident: String(Q.vicepresident), vicepresident_gender: Q.vicepresident_gender }) : G.text("Vicepresidenta {vicepresident} is pushing for broader digitalization of procedures and unifying the administration's systems.", { vicepresident: String(Q.vicepresident), vicepresident_gender: Q.vicepresident_gender })), 2, "institutional", "digital");
         if (Q.vp_digital_level == 1 && Q.parlament_digital_passed && ["generalitat", "catalonia"].includes(Q.cybersecurity_agency_scope) &&
             (Q.active_mods || {}).digital_agency_core && Q.active_mods.digital_agency_core.active)
-            add("vicepresident_party", "vp_digital_level", 2, "integrate and secure digital administration",
-                (Q.vicepresident_gender == "m" ? "Vicepresident " : "Vicepresidenta ") + Q.vicepresident + " hopes to make further use of the newly-established Catalan Cybersecurity Agency to protect the digital administration.", 2, "institutional", "digital");
+            add("vicepresident_party", "vp_digital_level", 2, G.text("integrate and secure digital administration"),
+                (Q.vicepresident_gender == "m" ? G.text("Vicepresident {vicepresident} hopes to make further use of the newly-established Catalan Cybersecurity Agency to protect the digital administration.", { vicepresident: String(Q.vicepresident), vicepresident_gender: Q.vicepresident_gender }) : G.text("Vicepresidenta {vicepresident} hopes to make further use of the newly-established Catalan Cybersecurity Agency to protect the digital administration.", { vicepresident: String(Q.vicepresident), vicepresident_gender: Q.vicepresident_gender })), 2, "institutional", "digital");
         var alignmentOffice = owners.president_party == actor ? "president_party" : "vicepresident_party";
         if (!sovereign && Q.institutional_alignment > -10 && (central || Q.institutional_alignment > 0))
-            add(alignmentOffice, "institutional_alignment", Q.institutional_alignment - 1, "prioritize institutional accommodation",
-                "The current executive seems to be cleaning house, appointing directors and high-secretaries highly aligned with the ideas of further centralization.", 1, "sovereignty", "alignment");
+            add(alignmentOffice, "institutional_alignment", Q.institutional_alignment - 1, G.text("prioritize institutional accommodation"),
+                G.text("The current executive seems to be cleaning house, appointing directors and high-secretaries highly aligned with the ideas of further centralization."), 1, "sovereignty", "alignment");
         var roadmap = Q[actor + "_roadmap"] || 0;
         if (!Q.art155_ever && Q.cat_spa_relations < 95 &&
             (roadmap == 0 || (roadmap == 1 && Q.independence_movement < 60))) {
             var diplomaticGain = ["podemos", "iu", "up"].includes(Q.spanish_pm_party) ? 12 : Q.spanish_pm_party == "psoe" ? 8 :
                 ["vox", "cs"].includes(Q.spanish_pm_party) ? 2 : 5;
-            add("foreign_minister_party", "cat_spa_relations", Math.min(100, Q.cat_spa_relations + diplomaticGain), "seek improved relations with Madrid",
-                (Q.foreign_minister_gender == "m" ? "Conseller " : "Consellera ") + " of Foreign Affairs " + Q.foreign_minister + " is pushing for a renewed effort to mend relations with the Spanish government.", confrontational ? 0 : 2, "neutral", "diplomacy");
+            add("foreign_minister_party", "cat_spa_relations", Math.min(100, Q.cat_spa_relations + diplomaticGain), G.text("seek improved relations with Madrid"),
+                (Q.foreign_minister_gender == "m" ? G.text("Conseller  of Foreign Affairs {foreign_minister} is pushing for a renewed effort to mend relations with the Spanish government.", { foreign_minister: String(Q.foreign_minister), foreign_minister_gender: Q.foreign_minister_gender }) : G.text("Consellera  of Foreign Affairs {foreign_minister} is pushing for a renewed effort to mend relations with the Spanish government.", { foreign_minister: String(Q.foreign_minister), foreign_minister_gender: Q.foreign_minister_gender })), confrontational ? 0 : 2, "neutral", "diplomacy");
         }
         // Curriculum packages use the existing two-focus model and revision interval.
         var month = Q.year * 12 + Q.month;
@@ -245,13 +267,13 @@ on-arrival: {!
             if (Q.education_spending >= 1) focuses.push("science");
             if (Q.education_spending >= 1 && owners.bnl_minister_party == actor) focuses.push("vocational");
             if (Q.education_spending >= 2 && left) focuses.push("segregation");
-            var names = {humanities:"humanities and cultural education", language:"Catalan-language protection", democratic:"coeducation and democratic schooling",
-                science:"science and digital skills", vocational:"vocational training", segregation:"anti-segregation methods"};
+            var names = {humanities:G.text("humanities and cultural education"), language:G.text("Catalan-language protection"), democratic:G.text("coeducation and democratic schooling"),
+                science:G.text("science and digital skills"), vocational:G.text("vocational training"), segregation:G.text("anti-segregation methods")};
             for (var focus of focuses) {
                 var secondary = focus == "humanities" ? (left ? "democratic" : "science") : "humanities";
                 if (!focuses.includes(secondary) || focus == Q.education_policy_main && secondary == Q.education_policy_secondary) continue;
-                add("education_minister_party", "education_policy_main", focus, "revise the education Curriculum, focusing on " + names[focus],
-                    "It seems like "+ names[secondary] + " may also be considered as a goal.",
+                add("education_minister_party", "education_policy_main", focus, G.text("revise the education Curriculum, focusing on {value2}", { value2: names[focus] }),
+                    G.text("It seems like {value2} may also be considered as a goal.", { value2: names[secondary] }),
                     focus == "vocational" && unemployment ? 4 : focus == "language" && momentum ? 3 : 1, "curriculum", "curriculum",
                     {secondary:secondary, previousSecondary:Q.education_policy_secondary || null});
             }
@@ -271,9 +293,15 @@ on-arrival: {!
     }
     if (Q.npc_government_initiative) {
         Q.npc_government_party = Q.npc_government_initiative.party;
-        Q.npc_government_title = Q.npc_government_initiative.title;
-        Q.npc_government_reason = Q.npc_government_initiative.reason;
-        Q.npc_government_office = Q.npc_government_initiative.office;
+        if (candidateText[Q.npc_government_initiative.id]) G.setText(Q, "npc_government_title", candidateText[Q.npc_government_initiative.id].title);
+        else if (Q.npc_government_title === Q.npc_government_initiative.title) G.copyText(Q, "npc_government_title", "npc_government_title");
+        else Q.npc_government_title = Q.npc_government_initiative.title;
+        if (candidateText[Q.npc_government_initiative.id]) G.setText(Q, "npc_government_reason", candidateText[Q.npc_government_initiative.id].reason);
+        else if (Q.npc_government_reason === Q.npc_government_initiative.reason) G.copyText(Q, "npc_government_reason", "npc_government_reason");
+        else Q.npc_government_reason = Q.npc_government_initiative.reason;
+        if (candidateText[Q.npc_government_initiative.id]) G.setText(Q, "npc_government_office", candidateText[Q.npc_government_initiative.id].office);
+        else if (Q.npc_government_office === Q.npc_government_initiative.office) G.copyText(Q, "npc_government_office", "npc_government_office");
+        else Q.npc_government_office = Q.npc_government_initiative.office;
     }
     var initiative = Q.npc_government_initiative;
     var valid = false;
@@ -283,8 +311,8 @@ on-arrival: {!
     Q.npc_government_can_protest = false;
     Q.npc_government_stop_cost = 2;
     Q.npc_government_is_cut = !!initiative && initiative.kind == "cut";
-    Q.npc_government_stop_blocker = "It's not like they are in government because of us, so there's little we can do.";
-    Q.npc_government_alternative_blocker = "It's not like they are in government because of us, so there's little we can do.";
+    G.setText(Q, "npc_government_stop_blocker", G.text("It's not like they are in government because of us, so there's little we can do."));
+    G.setText(Q, "npc_government_alternative_blocker", G.text("It's not like they are in government because of us, so there's little we can do."));
     if (initiative) {
         valid = !Q.cat_caretaker_gov && owners[initiative.holder] == initiative.party &&
             initiative.party != player && Q[initiative.field] == initiative.from;
@@ -318,30 +346,32 @@ on-arrival: {!
         Q.npc_government_can_protest = valid && Number.isFinite(relations);
         Q.npc_government_stop_cost = relations >= 65 ? 1 : 2;
         if (Q.npc_government_can_influence) {
-            Q.npc_government_stop_blocker = !Number.isFinite(relations) || relations < 55 ? "We don't have good enough relations with " + Q.npc_government_party :
-                Q.party_resources < Q.npc_government_stop_cost ? "Not enough resources." : "";
+            G.setText(Q, "npc_government_stop_blocker", (!Number.isFinite(relations) || relations < 55 ? G.text("We don't have good enough relations with {npc_government_party}", {
+                npc_government_party: String(Q.npc_government_party)
+            }) : (Q.party_resources < Q.npc_government_stop_cost ? G.text("Not enough resources.") : G.literalText(""))));
             Q.npc_government_can_stop = valid && Q.npc_government_stop_blocker == "";
-            Q.npc_government_alternative_blocker = owners.economy_minister_party != initiative.party ? "(???)" :
-                !initiative.acceptsTax ? initiative.party + " is against further tax increases." :
-                Q.tax_policy_level >= 2 ? "Regional taxes are already at their maximum level." :
-                !canBudget ? "This year's budget has already been discussed..." : "";
+            G.setText(Q, "npc_government_alternative_blocker", (owners.economy_minister_party != initiative.party ? G.text("(???)") : (!initiative.acceptsTax ? G.text("{party} is against further tax increases.", {
+                party: String(initiative.party)
+            }) : (Q.tax_policy_level >= 2 ? G.text("Regional taxes are already at their maximum level.") : (!canBudget ? G.text("This year's budget has already been discussed...") : G.literalText(""))))));
             Q.npc_government_can_alternative = valid && Q.npc_government_is_cut && Q.npc_government_alternative_blocker == "";
         }
         if (!valid) {
-            Q.npc_government_stop_blocker = "The proposed initiative is no longer feasible (???).";
-            Q.npc_government_alternative_blocker = "The proposed initiative is no longer feasible (???).";
+            G.setText(Q, "npc_government_stop_blocker", G.text("The proposed initiative is no longer feasible (???)."));
+            G.setText(Q, "npc_government_alternative_blocker", G.text("The proposed initiative is no longer feasible (???)."));
         }
     }
     if (!Q.npc_government_response) return;
     var response = Q.npc_government_response;
     Q.npc_government_budget_pending = false;
-    Q.npc_government_outcome = "The initiative could not proceed (???).";
+    G.setText(Q, "npc_government_outcome", G.text("The initiative could not proceed (???)."));
     var authorized = valid && (response == "accept" || response == "protest" && Q.npc_government_can_protest ||
         response == "stop" && Q.npc_government_can_stop || response == "alternative" && Q.npc_government_can_alternative);
     if (authorized) {
         if (response == "stop") {
             Q.party_resources -= Q.npc_government_stop_cost;
-            Q.npc_government_outcome = "We persuaded " + initiative.party + " to abandon the initiative.";
+            G.setText(Q, "npc_government_outcome", G.text("We persuaded {party} to abandon the initiative.", {
+                party: String(initiative.party)
+            }));
         } else {
             if (response == "protest") {
                 Q[initiative.party + "_relations"] -= 5;
@@ -351,7 +381,10 @@ on-arrival: {!
                 from:Q.tax_policy_level, to:Q.tax_policy_level + 1, title:"raise regional taxes", profile:"taxes"});
             var field = initiative.field;
             var next = initiative.to;
-            Q.npc_government_outcome = initiative.party + " has decided to " + initiative.title + ".";
+            G.setText(Q, "npc_government_outcome", G.text("{party} has decided to {title}.", {
+                party: String(initiative.party),
+                title: G.getText(Q, "npc_government_title")
+            }));
             if (initiative.kind == "budget") {
                 var projects = {};
                 for (var key of ["county", "b40", "metro1", "metro2", "water2", "water3", "tmobilitat2", "rail1", "rail2", "icf", "digital", "universal"]) projects[key] = false;
@@ -368,7 +401,9 @@ on-arrival: {!
                     initiative_protest_party:response == "protest" ? Q.player_party : null};
                 Q.budget_draft = {tax_policy_level:tax, social_spending_cap:cap, projects:projects};
                 Q.npc_government_budget_pending = true;
-                Q.npc_government_outcome = "Following our alternative proposal, " + initiative.party + " has submitted a regional-tax proposal for the coming annual budget. We'll have to see if it passes, though.";
+                G.setText(Q, "npc_government_outcome", G.text("Following our alternative proposal, {party} has submitted a regional-tax proposal for the coming annual budget. We'll have to see if it passes, though.", {
+                    party: String(initiative.party)
+                }));
             } else {
                 var packageKey = {bnl_tourism_level:"bnl_tourism_electoral_routes",bnl_union_level:"bnl_union_electoral_routes",
                     territory_livestock:"territory_livestock_electoral_routes"}[field];
@@ -497,7 +532,9 @@ on-arrival: {!
                     Q.active_mods.education_school_policy.def.electoral_cabinet = cabinet.slice();
                 }
             }
-            if (response == "protest") Q.npc_government_outcome += "Much to the dismay of " + Q.npc_government_party + ", we've broken line and openly protested against their new direction. No one is particularly happy about this, and it seems like they won't be abandoning this new agenda any time soon anyway...";
+            if (response == "protest") G.setText(Q, "npc_government_outcome", G.joinText([G.getText(Q, "npc_government_outcome"), G.text("Much to the dismay of {npc_government_party}, we've broken line and openly protested against their new direction. No one is particularly happy about this, and it seems like they won't be abandoning this new agenda any time soon anyway...", {
+                npc_government_party: String(Q.npc_government_party)
+            })]));
         }
     }
     Q.government_does_things_timer = 8 + Math.floor(G.random(Q) * 3);

@@ -5100,5 +5100,24 @@
   "Marxism-Socialism, Unilateralism": null,
   "Revolutionary Socialism, Basque Independence": null,
   "Social Democracy, Pragmatic Independence": null,
-  "Transversal Catalanism, Independence": null
+  "Transversal Catalanism, Independence": null,
+  "{clause1}{clause2} {president} seems to have run out of options, and the current {cat_coalition_disp_old} will be no more. {clause3}{clause4} The Parlament has now been dissolved, and the next elections will be held in two months time, on {next_election_month}, {next_election_year}.": "{clause1}{clause2} {president} sembla haver-se quedat sense opcions, i l’actual {cat_coalition_disp_old} deixarà d’existir. {clause3}{clause4} El Parlament ha estat dissolt i les pròximes eleccions se celebraran d’aquí a dos mesos, el mes de {next_election_month} de {next_election_year}.",
+  "{clause1}{clause2} {president} sets the new election date for two months from now.": "{clause1}{clause2} {president} fixa la data de les noves eleccions per d’aquí a dos mesos.",
+  "After four years, this term has come to an end. {clause1}{clause2} {president} has dissolved the Parlament, and the next elections will be held in two months time, on {next_election_month}, {next_election_year}.": null,
+  "Civic organizations oppose continuing under {clause1}{clause2} {president} and demand a different candidate. ": null,
+  "Consellera of {department}{minister}": null,
+  "Continuing under {clause1}{clause2} {president} would require no leadership negotiation resources, but other candidates remain possible. ": null,
+  "The government under {clause1}{clause2} {erc_leader} will be balanced enough, with ERC holding both the Vice-Presidency and the Speaker of the House.": null,
+  "The government under {clause1}{clause2} {erc_leader} will be quite unequal, with {parlament_current_ciu} holding the Vice-Presidency and the Speaker of the House.": null,
+  "The government under {clause1}{clause2} {parlament_current_ciu_leader} will be balanced enough, with ERC holding both the Vice-Presidency and the Speaker of the House.": null,
+  "The government under {clause1}{clause2} {parlament_current_ciu_leader} will be quite unequal, with {parlament_current_ciu} holding the Vice-Presidency and the Speaker of the House.": null,
+  "We have a new government in the Generalitat! Presidenta {president} will lead a {government} for this legislature.": {
+    "select": "president_gender",
+    "cases": {
+      "m": "Tenim un nou govern a la Generalitat! El president {president} encapçalarà un {government} durant aquesta legislatura.",
+      "f": "Tenim un nou govern a la Generalitat! La presidenta {president} encapçalarà un {government} durant aquesta legislatura.",
+      "other": "Tenim un nou govern a la Generalitat! {president} encapçalarà un {government} durant aquesta legislatura."
+    }
+  },
+  "We've proposed that the government commits to respect the results of the Independence Referendum and defend its results, being open to unilaterally declaring independence if there's no other choice.": null
 }

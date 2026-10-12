@@ -148,6 +148,7 @@ describe('Phase 6B real content and Desk integration', () => {
     const translated = adapter.refreshLocale('ca', catalan)!;
     expect(translated.title).toBe('Es convoquen noves eleccions al Parlament!');
     expect(translated.html).toContain('La presidenta Neus Munté');
+    expect(translated.html).toContain('El Parlament ha estat dissolt');
     expect(translated.html).toContain('febrer');
     expect(translated.html).toContain('2013');
     expect(translated.html).toContain('pèrdua de confiança');

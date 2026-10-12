@@ -216,6 +216,6 @@ set-jump: cup_resolve
 
 @cup_resolve
 
-[? if parlament_current_ciu_s > 40: The government under President [+ parlament_current_ciu_leader +] will be quite unequal, with [+ parlament_current_ciu +] holding the Vice-Presidency and the Speaker of the House.?][? if parlament_current_ciu_s <= 40: The government under President [+ parlament_current_ciu_leader +] will be balanced enough, with ERC holding both the Vice-Presidency and the Speaker of the House.?] Some promises on independence commitments have been made, we'll have to monitor them closely as the legislature progresses.
+[? if parlament_current_ciu_s > 40: The government under [? if parlament_coalition_proposal_president_gender != "f": President?][? if parlament_coalition_proposal_president_gender = "f": Presidenta?] [+ parlament_current_ciu_leader +] will be quite unequal, with [+ parlament_current_ciu +] holding the Vice-Presidency and the Speaker of the House.?][? if parlament_current_ciu_s <= 40: The government under [? if parlament_coalition_proposal_president_gender != "f": President?][? if parlament_coalition_proposal_president_gender = "f": Presidenta?] [+ parlament_current_ciu_leader +] will be balanced enough, with ERC holding both the Vice-Presidency and the Speaker of the House.?] Some promises on independence commitments have been made, we'll have to monitor them closely as the legislature progresses.
 
 - @parlament_coalition_resolve: New faces in the Generalitat...

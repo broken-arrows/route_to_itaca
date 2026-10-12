@@ -956,7 +956,6 @@ on-arrival: {!
             Q.vox_relations += relations[9] * (coalitionPartners.includes("vox") ? 2 : 1);
         if (Q.fnc_formed && !controlledParties.includes("fnc")) 
             Q.fnc_relations += relations[10] * (coalitionPartners.includes("fnc") ? 2 : 1);
-        }
         if (!Q.pxc_dissolved && !controlledParties.includes("pxc") && Number.isFinite(Q.pxc_relations))
             Q.pxc_relations += relations[11] * (coalitionPartners.includes("pxc") ? 2 : 1);
         for (var list of ["jxsi", "jxcat"]) {
