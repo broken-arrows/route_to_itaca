@@ -1317,6 +1317,36 @@
       }
     },
     {
+      "id": "errejon",
+      "match": ["Íñigo Errejón", "inigo errejon"],
+      "colour": "podemos",
+      "tooltip": {
+        "title": "Iñigo Errejón Galván",
+        "img": "img/other_leaders/errejon.jpg",
+        "ideology": "Anti-austerity left, Federalism"
+      }
+    },
+    {
+      "id": "echenique",
+      "match": ["Pablo Echenique", "pablo echenique"],
+      "colour": "podemos",
+      "tooltip": {
+        "title": "Pablo Echenique Robba",
+        "img": "img/other_leaders/echenique.jpg",
+        "ideology": "Anti-austerity left, Federalism"
+      }
+    },
+    {
+      "id": "teresa_rodriguez",
+      "match": ["Teresa Rodríguez", "tersa rodriguez"],
+      "colour": "podemos",
+      "tooltip": {
+        "title": "María Teresa Rodríguez-Rubio Vázquez",
+        "img": "img/other_leaders/teresa_rodriguez.jpg",
+        "ideology": "Anticapitalism, Plurinationalism"
+      }
+    },
+    {
       "id": "pasqual_maragall",
       "match": ["Pasqual Maragall", "pasqual maragall"],
       "display": "Pasqual Maragall",

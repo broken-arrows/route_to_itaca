@@ -390,6 +390,43 @@
         return [{ colour: "podemos", label: "Podemos" }];
       }
     },
+    echenique: function (Q) {
+      if (Q.iu_in_up) {
+        return [
+          { colour: "podemos", label: "Podemos" },
+          { colour: "up", label: "UP" },
+        ];
+      } else {
+        return [{ colour: "podemos", label: "Podemos" }];
+      }
+    },
+    errejon: function (Q) {
+      if (Q.spa_mpais_active) {
+        return [
+          { colour: "podemos", label: "Podemos", note: "former" },
+          { colour: "up", label: "UP", note: "former" },
+          { colour: "mpais", label: "Más País" },
+        ];
+      }
+      if (Q.iu_in_up) {
+        return [
+          { colour: "podemos", label: "Podemos" },
+          { colour: "up", label: "UP" },
+        ];
+      } else {
+        return [{ colour: "podemos", label: "Podemos" }];
+      }
+    },
+    teresa_rodriguez: function (Q) {
+      var list = [
+        { colour: "iu", label: "IU", note: "former" },
+        { colour: "podemos", label: "Podemos" },
+      ];
+      if (Q.iu_in_up) {
+        list.push({ colour: "up", label: "UP" });
+      }
+      return list;
+    },
     jaume_asens: function (Q) {
       var list = [{ colour: "bcomu", label: "BComú" }];
       if (Q.csqp_formed) list.push({ colour: "csqp", label: "CSQP" });

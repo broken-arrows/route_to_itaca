@@ -330,7 +330,6 @@ on-display: {!
     }
 
     const data = [];
-    if (Q.psc_congreso_s) data.push({ id: "psc", seats: Q.psc_congreso_s });
 
     if (Q.cup_congreso_s) {
         data.push({
@@ -443,6 +442,14 @@ on-display: {!
             "legend": "Podemos",
             "name": "Podemos",
             "seats": Q.podemos_congreso_s,
+        });
+    }
+    if (Q.psc_congreso_s) {
+        data.push({ 
+            "id": "psc", 
+            "seats": Q.psc_congreso_s,
+            "name": "PSC",
+            "legend": "PSC"
         });
     }
     if (Q.psoe_congreso_s) {
