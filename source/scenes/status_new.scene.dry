@@ -78,7 +78,7 @@ role: info-tab
 
 
 @chamber
-title: Chamber
+title: Parlament
 role: info-tab
 
 <div data-widget="seat-bars" data-props='{"deriveFrom":"composition"}'></div>

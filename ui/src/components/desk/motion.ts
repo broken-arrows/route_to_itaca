@@ -1,8 +1,5 @@
-// Choreography constants + the sync-when-off timer helper the desk store
-// builds every animated transition on top of. The prototype remains the
-// choreography source; the dossier-open beats were retuned for the responsive
-// desk after browser inspection (2026-07-24), where its edge-on 88° flap was
-// unreadable at large viewports.
+// Shared choreography timings. Folder motion opens around its spine and
+// closes before departure; all durations respect the animations setting.
 export const DELAYS = {
   draw: 880,
   dossierIn: 40,
@@ -11,8 +8,8 @@ export const DELAYS = {
   // consumes them; they live here so OpenDossier's CSS durations route
   // through the same animMs() single source as every other desk duration.
   dossierOpen: 620,
-  coverSwing: 520,
-  coverSwingDelay: 90,
+  coverSwing: 620,
+  coverSwingDelay: 160,
   resolve: 620,
   cancel: 420,
   toast: 1700,

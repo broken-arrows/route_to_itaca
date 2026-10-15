@@ -14,6 +14,7 @@ interface CardScreenOrigin {
 }
 
 const emit = defineEmits<{ play: [card: CardView, origin: CardScreenOrigin] }>();
+const sealSrc = `${import.meta.env.BASE_URL}img/cat_seal.svg`;
 
 // Deterministic +/-2deg jitter table (NOT random — keeps renders stable and
 // the component pure/testable). Six entries cover the two-rows-of-three cap.
@@ -61,7 +62,7 @@ function onClick(event: Event): void {
     <div class="sheet">
       <!-- GOV: ministry letterhead + red double rule -->
       <div v-if="skin.key === 'gov'" class="letterhead" aria-hidden="true">
-        <span class="crest"></span>
+        <img class="crest" :src="sealSrc" alt="" />
         <span class="ministry">GENERALITAT<br />DE CATALUNYA</span>
         <span class="dept">DEPT. DE LA PRESIDÈNCIA</span>
       </div>
@@ -72,13 +73,13 @@ function onClick(event: Event): void {
         <span>DOSSIER DE PARTIT</span><span>EXP.</span>
       </div>
 
-      <!-- Art region: framed poster for party, seal watermark for a gov card
+      <!-- Art region: clipped photograph for party, printed cover art for a gov card
            with no art (ministry stationery is text-first), striped
            placeholder otherwise (plan §9 — never a broken image). -->
       <div class="card-art" :class="{ framed: skin.key === 'party' }">
         <img v-if="imgSrc && !imgBroken" :src="imgSrc" alt="" @error="imgBroken = true" />
         <div v-else-if="skin.key === 'gov'" class="gov-blank" aria-hidden="true">
-          <span class="crest crest-lg"></span>
+          <img class="crest crest-lg" :src="sealSrc" alt="" />
         </div>
         <div v-else class="art-placeholder" aria-hidden="true"></div>
       </div>
@@ -103,6 +104,8 @@ function onClick(event: Event): void {
   width: clamp(150px, 11vw, 210px);
   height: auto;
   aspect-ratio: 31 / 44;
+  min-height: 0;
+  isolation: isolate;
   border-radius: 4px;
   box-shadow: 0 12px 22px rgba(60, 45, 20, 0.28);
   cursor: pointer;
@@ -149,19 +152,20 @@ function onClick(event: Event): void {
 .skin-neutral .peek { background: #efe9da; }
 
 .file-tab {
+  font: var(--type-detail);
+  letter-spacing: var(--type-tracking);
   position: absolute;
-  z-index: 2;
-  top: -11px;
+  z-index: 0;
+  bottom: calc(100% - 2px);
   left: 14px;
+  max-width: calc(100% - 28px);
   padding: 3px 8px 4px;
   background: #f0ebdd;
   border: 1px solid var(--card-bd);
   border-bottom: none;
   border-radius: 3px 3px 0 0;
-  font-family: var(--font-typed);
-  font-size: 7.5px;
-  letter-spacing: 0.1em;
   color: #6b655a;
+  white-space: nowrap;
 }
 
 /* Ministry letterhead */
@@ -177,24 +181,18 @@ function onClick(event: Event): void {
   grid-row: 1 / 3;
   width: 18px;
   height: 22px;
-  background: repeating-linear-gradient(180deg, #f4c318 0 2.5px, #d4232a 2.5px 5px);
-  border: 1px solid #b8901a;
-  border-radius: 3px 3px 8px 8px / 3px 3px 12px 12px;
+  object-fit: contain;
 }
 .ministry {
-  font-family: var(--font-title);
-  font-weight: 800;
-  font-size: 9px;
-  line-height: 1.1;
-  letter-spacing: 0.04em;
+  font: var(--type-detail);
+  letter-spacing: var(--type-tracking);
   color: var(--ink-0);
 }
 .dept {
+  font: var(--type-detail);
+  letter-spacing: var(--type-tracking);
   grid-column: 2;
-  font-family: var(--font-typed);
-  font-size: 6.5px;
-  letter-spacing: 0.06em;
-  color: #8a7a58;
+  color: #655b48;
 }
 /* Ministry red double rule — paper anatomy, the ONE ratified red exception
    (tokens.css --paper-rule-ink). Never inline an off-token red here. */
@@ -204,13 +202,12 @@ function onClick(event: Event): void {
 }
 
 .pty-header {
+  font: var(--type-detail);
+  letter-spacing: var(--type-tracking);
   display: flex;
   justify-content: space-between;
   padding: 10px 12px 6px;
-  font-family: var(--font-typed);
-  font-size: 6.5px;
-  letter-spacing: 0.08em;
-  color: #8a7a58;
+  color: #655b48;
 }
 
 .card-art {
@@ -221,13 +218,30 @@ function onClick(event: Event): void {
   min-height: 0;
   background: transparent;
 }
-/* Party art is a pasted photo: white border + shadow (desk_ui.png). */
+/* A separate photograph clipped to the party folder. */
 .card-art.framed {
-  margin: 6px 12px 0;
+  position: relative;
+  overflow: visible;
+  transform: rotate(-2deg);
+  margin: 12px 14px 4px;
   border: 4px solid #fdfcf8;
   box-shadow: 0 2px 5px rgba(46, 42, 34, 0.28);
   background: var(--paper-3);
 }
+.card-art.framed::after {
+  content: '';
+  position: absolute;
+  top: -14px;
+  right: 16px;
+  width: 10px;
+  height: 29px;
+  border: 2px solid #8c8e89;
+  border-radius: 7px;
+  box-shadow: inset 1px 0 #e9e9e3, 1px 1px 1px #504b4155;
+  transform: rotate(12deg);
+}
+.skin-gov .card-art { border-radius: 0; }
+.skin-gov .card-art > img { mix-blend-mode: multiply; }
 .card-art img {
   width: 100%;
   height: 100%;
@@ -241,11 +255,13 @@ function onClick(event: Event): void {
   align-items: center;
   justify-content: center;
 }
-.crest-lg {
+.gov-blank .crest-lg {
   width: 44px;
   height: 54px;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   opacity: 0.16;
-  border-radius: 5px 5px 18px 18px / 5px 5px 26px 26px;
 }
 .art-placeholder {
   width: 100%;
@@ -272,27 +288,33 @@ function onClick(event: Event): void {
   box-shadow: 0 1px 2px rgba(60, 45, 20, 0.1);
 }
 .card-title {
+  font: var(--type-heading-compact);
+  letter-spacing: var(--type-tracking);
   margin: 0;
-  font-family: var(--font-title);
-  font-size: 12.5px;
-  font-weight: 700;
-  line-height: 1.2;
+
   color: var(--ink-0);
 }
 .assumpte {
+  font: var(--type-detail);
+  letter-spacing: var(--type-tracking);
   display: block;
-  font-family: var(--font-typed);
-  font-weight: 400;
-  font-size: 8px;
-  letter-spacing: 0.08em;
-  opacity: 0.55;
+  color: #6b655a;
 }
 .footer {
+  font: var(--type-detail);
+  letter-spacing: var(--type-tracking);
   margin: 0;
   padding: 0 12px 9px;
-  font-family: var(--font-typed);
-  font-size: 6.5px;
-  letter-spacing: 0.08em;
-  color: #8a7a58;
+  color: #655b48;
+}
+/* Preserve subject and poster space when six dossiers share a short desk.
+   Only decorative stationery is reduced; playable titles retain their size. */
+@media (max-height: 780px) {
+  .footer, .dept { display: none; }
+  .letterhead { padding: 7px 9px 4px; column-gap: 5px; }
+  .ministry { font-size: .5rem; }
+  .pty-header { padding: 7px 9px 4px; }
+  .card-body { margin: 6px 9px 8px; padding: 4px 6px; }
+  .card-art, .card-art.framed { margin-left: 9px; margin-right: 9px; }
 }
 </style>

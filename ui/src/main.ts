@@ -7,6 +7,7 @@ import { i18n, syncDocument } from './i18n';
 // is what actually calls `installGameLib` — see engine/adapter.ts).
 import './game-bindings';
 import './styles/tokens.css';
+import './styles/typography.css';
 import { markGlossary } from './glossary/mark';
 import { useGameStore } from './stores/game';
 

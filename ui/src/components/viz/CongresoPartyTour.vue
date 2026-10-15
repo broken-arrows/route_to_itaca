@@ -84,17 +84,17 @@ function addParties(svg: SVGSVGElement, id: string, parties: string[]) {
       const term = game.glossary.find(entry =>
         entry.match.some(match => match.toLowerCase() === party.toLowerCase()));
       const label = svgNode('foreignObject', {
-        x: String(x - 24), y: String(y + 27), width: '72', height: '18',
+        x: String(x - 30), y: String(y + 27), width: '84', height: '24',
       });
       const text = document.createElementNS(XHTML_NS, 'div');
-      text.style.cssText = 'width:100%;text-align:center;white-space:nowrap;font:10px/1.2 Arial,sans-serif;color:#444;';
+      text.style.cssText = 'width:100%;text-align:center;white-space:nowrap;font:var(--type-compact);color:#444;';
       if (term) {
         const trigger = document.createElementNS(XHTML_NS, 'span');
         trigger.className = `term${term.tooltip ? ' term-hoverable' : ''}`;
         trigger.setAttribute('data-term', term.id);
         trigger.textContent = term.display ?? party.toUpperCase();
         if (term.colour) trigger.style.color = term.colour.startsWith('#') ? term.colour : `var(--${term.colour})`;
-        if (term.bold) trigger.style.fontWeight = 'bold';
+        if (term.bold) trigger.style.fontWeight = '600';
         if (term.tooltip) trigger.style.cursor = 'help';
         text.appendChild(trigger);
       } else {

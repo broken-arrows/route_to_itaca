@@ -37,7 +37,7 @@ function onActivate(card: CardView): void {
 
 <template>
   <div class="actions-tray" :class="{ 'is-disabled': disabled }">
-    <p class="actions-title">{{ t('desk.actions.title') }}</p>
+
     <div v-if="advisors.length" class="advisor-group" data-test="advisor-group">
       <p class="tray-label">
         {{ t('desk.actions.advisors') }}
@@ -81,7 +81,7 @@ function onActivate(card: CardView): void {
       ><Prose tag="span" :html="card.title" /></button>
     </div>
 
-    <div v-if="parliament" class="institution-divider" aria-hidden="true"></div>
+    <div v-if="parliament && (advisors.length || generic.length)" class="institution-divider" aria-hidden="true"></div>
     <div
       v-if="parliament"
       class="parliament-action"
@@ -101,35 +101,17 @@ function onActivate(card: CardView): void {
         <span v-else class="chamber-mark" aria-hidden="true"><i></i><i></i><i></i></span>
       </div>
       <p class="parliament-name"><Prose tag="span" :html="parliament.title" /></p>
-      <p v-if="parliament.canChoose === false && parliament.subtitle" class="blocked-reason">
-        <Prose tag="span" :html="parliament.subtitle" />
-      </p>
     </div>
+    <p v-if="parliament?.canChoose === false && parliament.subtitle" class="blocked-reason">
+      <Prose tag="span" :html="parliament.subtitle" />
+    </p>
   </div>
 </template>
 
 <style scoped>
 /* Card hexes are design-canvas literals (desk-frames.md §3). */
-.actions-tray {
-  display: grid;
-  grid-template-columns: auto auto auto;
-  align-items: center;
-  gap: 6px;
-  background: rgba(250, 249, 245, 0.72);
-  border: 1px solid rgba(90, 70, 40, 0.16);
-  border-radius: 10px;
-  padding: 10px 16px 9px;
-  box-shadow: 0 4px 12px rgba(60, 45, 20, 0.14);
-}
-.actions-title {
-  grid-column: 1 / -1;
-  margin: 0;
-  font-family: var(--font-title);
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  color: #8a7a58;
-}
+.actions-tray { display: flex; flex-direction: column; align-items: stretch; gap: 16px; padding: 8px 0 18px; margin-bottom: 18px; border-bottom: 1px solid #d3cbb8; }
+
 .actions-tray.is-disabled .advisor,
 .actions-tray.is-disabled .parliament-action {
   cursor: not-allowed;
@@ -137,16 +119,16 @@ function onActivate(card: CardView): void {
 }
 /* Header label — desk-frames §3: 800 7.5px letter-spacing .16em #8a7a58. */
 .tray-label {
+  font: var(--type-heading-compact);
+  letter-spacing: var(--type-tracking);
   margin: 0;
-  font-family: var(--font-title);
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: #8a7a58;
 }
 .advisor-group { display: flex; flex-direction: column; gap: 6px; }
 .ready-badge {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   display: inline-grid;
   place-items: center;
   width: 19px;
@@ -156,15 +138,13 @@ function onActivate(card: CardView): void {
   color: #fff;
   background: var(--accent-red);
   box-shadow: 0 1px 4px rgba(90, 20, 20, 0.32);
-  font-family: var(--font-title);
-  font-size: 12px;
-  font-weight: 900;
-  line-height: 1;
+
   vertical-align: middle;
 }
 .rail {
   display: flex;
   align-items: flex-start;
+  flex-wrap: wrap;
   gap: 12px;
 }
 .advisor {
@@ -172,7 +152,7 @@ function onActivate(card: CardView): void {
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  width: 60px;
+  width: 96px;
   cursor: pointer;
 }
 /* 44px circles, 2px idle ring. Readiness belongs to the group badge, never
@@ -212,37 +192,37 @@ function onActivate(card: CardView): void {
   );
 }
 .advisor-name {
+  font: var(--type-control-compact);
+  letter-spacing: var(--type-tracking);
   margin: 0;
-  font-family: var(--font-title);
-  font-size: 9.5px;
-  line-height: 1.15;
+
   text-align: center;
   color: #6b655a;
   overflow-wrap: break-word;
-  max-width: 60px;
+  max-width: 96px;
 }
 .generic-actions {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-width: 116px;
+  width: 100%;
 }
 .generic-action {
+  font: var(--type-control);
+  letter-spacing: var(--type-tracking);
   padding: 5px 8px;
   border: 1px solid #c9c0aa;
   border-radius: 3px;
   color: #6b655a;
   background: var(--paper-0);
-  font-family: var(--font-title);
-  font-size: 9px;
+
   cursor: pointer;
 }
 .generic-action:disabled { cursor: not-allowed; opacity: 0.55; }
 .institution-divider {
   align-self: stretch;
-  width: 1px;
-  min-height: 66px;
-  margin: 0 4px;
+  height: 1px;
+  margin: 0;
   background: #d3cbb8;
 }
 .parliament-action {
@@ -250,7 +230,9 @@ function onActivate(card: CardView): void {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 84px;
+  width: 100%;
+  flex-direction: row;
+  gap: 14px;
   cursor: pointer;
 }
 .parliament-action.blocked { cursor: not-allowed; opacity: 0.62; }
@@ -258,7 +240,7 @@ function onActivate(card: CardView): void {
   position: absolute;
   z-index: 2;
   top: -6px;
-  right: 6px;
+  left: 40px;
   margin: 0;
 }
 .parliament-icon {
@@ -278,22 +260,26 @@ function onActivate(card: CardView): void {
 .chamber-mark i { display: block; width: 7px; height: 19px; background: var(--accent-slate); }
 .chamber-mark i:nth-child(2) { height: 24px; }
 .parliament-name {
+  font: var(--type-control-compact);
+  letter-spacing: var(--type-tracking);
   margin: 4px 0 0;
   color: var(--accent-slate);
-  font-family: var(--font-title);
-  font-size: 9.5px;
-  font-weight: 800;
-  line-height: 1.1;
+
   text-align: center;
   text-transform: uppercase;
 }
 .blocked-reason {
-  max-width: 110px;
-  margin: 3px -13px 0;
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
+  grid-column: 1 / -1;
+  margin: 3px 0 0;
   color: #6b655a;
-  font-family: var(--font-body);
-  font-size: 8px;
-  line-height: 1.15;
-  text-align: center;
+
+  text-align: left;
 }
+@media (max-width: 1400px) {
+  .rail { gap: 8px; }
+  .advisor { width: 76px; }
+}
+
 </style>

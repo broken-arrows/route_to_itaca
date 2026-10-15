@@ -97,24 +97,24 @@ function returnToTitle(): void {
 .presentation-paper { width: min(860px, 100%); min-height: 380px; margin: 0 auto; padding: 34px 48px 42px; background: #faf9f3; border: 1px solid #d7d0be; box-shadow: 0 18px 46px #0006; }
 .presentation-heading { outline: none; }
 .presentation-heading:focus-visible { outline: 2px solid var(--accent-slate); outline-offset: 8px; }
-.presentation-heading h1, .presentation-prose :deep(h1) { font-family: var(--font-news); font-size: 32px; font-weight: 600; line-height: 1.16; }
+.presentation-heading h1, .presentation-prose :deep(h1) { font: var(--type-heading); letter-spacing: var(--type-tracking); }
 .presentation-heading h1 { margin: 0 0 18px; }
 .presentation-rule { display: block; height: 6px; margin-bottom: 24px; border-top: 2px solid #4f4a41; border-bottom: 1px solid #4f4a41; }
-.presentation-prose { font-family: var(--font-body); font-size: 17px; line-height: 1.65; overflow-wrap: anywhere; }
+.presentation-prose { font: var(--type-reading); letter-spacing: var(--type-tracking); overflow-wrap: anywhere; }
 .presentation-prose :deep(h1) { margin: 24px 0 18px; }
 .presentation-prose :deep(p) { margin: 0 0 18px; }
-.presentation-prose :deep(blockquote) { margin: 0 0 22px; padding: 0 20px; border-left: 2px solid #b7ac94; font-family: var(--font-news); font-size: 21px; }
+.presentation-prose :deep(blockquote) { font: var(--type-reading); letter-spacing: var(--type-tracking); margin: 0 0 22px; padding: 0 20px; border-left: 2px solid #b7ac94; }
 .presentation-prose :deep(img) { max-width: 100%; height: auto; }
 .presentation-scene-text { display: flow-root; }
 .presentation-image { float: right; width: 120px; max-height: 120px; object-fit: contain; margin: 0 0 16px 24px; }
 .presentation-choices { margin-top: 28px; border-top: 1px solid #585248; }
 .presentation-choices button { display: block; width: 100%; padding: 16px 8px; border: 0; border-bottom: 1px solid #d9d1bd; background: transparent; color: inherit; text-align: left; cursor: pointer; }
-.choice-title { display: block; font-family: var(--font-news); font-size: 21px; line-height: 1.3; font-weight: 600; }
-.choice-subtitle { display: block; margin-top: 6px; font-family: var(--font-body); font-size: 14px; line-height: 1.5; }
+.choice-title { font: var(--type-control); letter-spacing: var(--type-tracking); display: block; }
+.choice-subtitle { font: var(--type-compact); letter-spacing: var(--type-tracking); display: block; margin-top: 6px; }
 .presentation-choices button:hover:not(:disabled), .presentation-choices button:focus-visible { background: #eee9db; outline: 2px solid var(--accent-slate); outline-offset: -2px; }
 .presentation-choices button:disabled { opacity: .5; cursor: not-allowed; }
-.ended-stamp { display: inline-block; margin-bottom: 18px; padding: 5px 12px; border: 2px solid #4a5b6a; color: #4a5b6a; font: 700 15px var(--font-typed); letter-spacing: .15em; }
-.return-title { margin-top: 24px; padding: 14px 22px; border: 1px solid #585248; background: #eee9db; color: inherit; font: 600 18px var(--font-title); cursor: pointer; }
+.ended-stamp { font: var(--type-compact); letter-spacing: var(--type-tracking); display: inline-block; margin-bottom: 18px; padding: 5px 12px; border: 2px solid #4a5b6a; color: #4a5b6a; }
+.return-title { font: var(--type-control); letter-spacing: var(--type-tracking); margin-top: 24px; padding: 14px 22px; border: 1px solid #585248; background: #eee9db; color: inherit; cursor: pointer; }
 .return-title:focus-visible { outline: 3px solid var(--accent-slate); outline-offset: 3px; }
 @media (max-height: 760px) { .presentation-region { padding: 42px 76px; } .presentation-paper { padding: 28px 40px 34px; } }
 </style>

@@ -362,28 +362,28 @@ defineExpose({
 .save-manager { position: relative; display: flex; flex-direction: column; min-height: 100%; gap: 18px; }
 .policy-note, .operation-error { margin: 0; padding: 11px 14px; border-left: 4px solid var(--accent-red); background: color-mix(in srgb, var(--accent-red) 9%, transparent); }
 .save-list { display: grid; gap: 9px; }
-.save-row { display: grid; grid-template-columns: minmax(140px, 1fr) auto; gap: 5px 18px; width: 100%; padding: 13px 15px; border: 1px solid color-mix(in srgb, var(--ink-0) 32%, transparent); background: color-mix(in srgb, var(--paper-1) 72%, transparent); color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.save-row { font: var(--type-compact); letter-spacing: var(--type-tracking); display: grid; grid-template-columns: minmax(140px, 1fr) auto; gap: 5px 18px; width: 100%; padding: 13px 15px; border: 1px solid color-mix(in srgb, var(--ink-0) 32%, transparent); background: color-mix(in srgb, var(--paper-1) 72%, transparent); color: inherit; text-align: left; cursor: pointer; }
 .save-row:hover { background: var(--paper-1); }
 .save-row.selected { border-color: var(--accent-gold); box-shadow: inset 5px 0 0 var(--accent-gold); }
 .save-row.damaged { border-color: color-mix(in srgb, var(--accent-red) 55%, transparent); }
 .save-row:focus-visible, .manager-actions button:focus-visible, .confirmation button:focus-visible { outline: 3px solid var(--accent-red); outline-offset: 3px; }
 .row-heading { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
-.row-heading strong { font-family: var(--font-title); font-size: 1rem; text-transform: uppercase; }
-.row-heading small { color: var(--accent-red); font-weight: 700; }
-.save-row time, .row-date { font-size: .85rem; text-align: right; }
-.row-facts { color: color-mix(in srgb, var(--ink-0) 72%, transparent); font-size: .82rem; }
-.save-row code { color: color-mix(in srgb, var(--ink-0) 55%, transparent); font-size: .72rem; text-align: right; }
+.row-heading strong { font: var(--type-compact-strong); letter-spacing: var(--type-tracking); text-transform: uppercase; }
+.row-heading small { font: var(--type-compact); letter-spacing: var(--type-tracking); color: var(--accent-red); }
+.save-row time, .row-date { font: var(--type-compact); letter-spacing: var(--type-tracking); text-align: right; }
+.row-facts { font: var(--type-compact); letter-spacing: var(--type-tracking); color: color-mix(in srgb, var(--ink-0) 72%, transparent); }
+.save-row code { font: var(--type-compact); letter-spacing: var(--type-tracking); color: color-mix(in srgb, var(--ink-0) 55%, transparent); text-align: right; }
 .empty-state { margin: auto 0; padding: 48px 20px; border-block: 1px solid color-mix(in srgb, var(--ink-0) 20%, transparent); text-align: center; }
 .manager-actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; border-top: 2px solid var(--ink-0); }
-.manager-actions button, .confirmation-actions button { min-height: 40px; padding: 8px 13px; border: 1px solid var(--ink-0); background: var(--paper-0); color: inherit; font: 700 .78rem/1 var(--font-body); letter-spacing: .05em; text-transform: uppercase; cursor: pointer; }
+.manager-actions button, .confirmation-actions button { font: var(--type-control); letter-spacing: var(--type-tracking); min-height: 40px; padding: 8px 13px; border: 1px solid var(--ink-0); background: var(--paper-0); color: inherit; text-transform: uppercase; cursor: pointer; }
 .manager-actions button:hover:not(:disabled), .confirmation-actions button:hover { background: var(--paper-1); }
 .manager-actions button:disabled { cursor: not-allowed; opacity: .38; }
 .manager-actions .primary { margin-left: auto; background: var(--accent-gold); }
 .manager-actions .danger, .confirmation-actions .danger { color: var(--accent-red); border-color: var(--accent-red); }
-.action-reason { min-height: 1.2em; margin: -9px 0 0; color: color-mix(in srgb, var(--ink-0) 67%, transparent); font-size: .8rem; }
+.action-reason { font: var(--type-compact); letter-spacing: var(--type-tracking); min-height: 1.2em; margin: -9px 0 0; color: color-mix(in srgb, var(--ink-0) 67%, transparent); }
 .file-input { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); }
 .confirmation { position: sticky; bottom: 0; z-index: 2; margin-top: auto; padding: 18px; border: 2px solid var(--accent-red); background: var(--paper-0); box-shadow: 0 -12px 30px rgba(46, 42, 34, .18); }
-.confirmation h2 { margin: 0; font-family: var(--font-title); font-size: 1.15rem; text-transform: uppercase; }
+.confirmation h2 { font: var(--type-section); letter-spacing: var(--type-tracking); margin: 0; text-transform: uppercase; }
 .confirmation p { margin: 8px 0 14px; }
 .confirmation-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 @media (max-width: 560px) {

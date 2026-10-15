@@ -49,20 +49,19 @@ const views = computed(() =>
 <style scoped>
 .level-bars { display: grid; gap: 8px; }
 .level-head {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 10px;
-  font-family: var(--font-title);
-  font-size: 11.5px;
-  font-weight: 600;
+
   color: #3a342c;
 }
 .level-word {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   flex: 0 0 auto;
-  font-size: 10px;
-  font-weight: 750;
-  letter-spacing: .07em;
   text-transform: uppercase;
 }
 .level-track {

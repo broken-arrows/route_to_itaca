@@ -11,6 +11,12 @@ distributed under this repo as the fork `dendrynexus-ten`.
 
 ## How it's wired
 
+- **Formatted qdisplay capture (2026-10-14):** inline node arrays returned by
+  qdisplays are captured as content recipes even when they have no dynamic
+  dependencies. Ordinary expression arrays still use native coercion. This fixes
+  italic text becoming comma-separated `[object Object]` in monthly quotations.
+  Regression: `ui/tests/phase6b.runtime.test.ts`, including locale refresh.
+
 - **Runtime asset publication (2026-10-12):** `make-html --publish-game-assets`
   validates literal local image references, required art/library/catalog inputs
   and exact filename casing, then replaces only generated `img/` and `locales/`

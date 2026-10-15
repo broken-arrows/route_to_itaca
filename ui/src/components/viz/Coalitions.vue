@@ -199,7 +199,7 @@ const entries = computed(() => {
 .coalitions { width: 100%; margin: 14px 0; }
 .coalition-entry { margin: 0 0 16px; }
 .coalition-heading { display: flex; align-items: baseline; gap: 12px; margin-bottom: 5px; }
-.coalition-title { min-width: 0; flex: 1 1 auto; color: var(--ink-1); line-height: 1.45; }
+.coalition-title { font: var(--type-compact); letter-spacing: var(--type-tracking); min-width: 0; flex: 1 1 auto; color: var(--ink-1); }
 .coalition-name { margin-right: 3px; }
 .coalition-member { white-space: nowrap; }
 .member-role { color: var(--ink-3); opacity: .75; }
@@ -208,7 +208,7 @@ const entries = computed(() => {
 .coalition-count.tolerated { color: #286b85; }
 .coalition-track { position: relative; height: 30px; overflow: hidden; border: 1px solid var(--paper-4); border-radius: 3px; background: var(--paper-2); }
 .coalition-fill { position: absolute; inset: 0; display: flex; }
-.coalition-segment { display: flex; min-width: 1px; flex: 0 0 auto; align-items: center; justify-content: center; overflow: hidden; color: #fff; font-size: 12px; font-weight: 800; }
+.coalition-segment { font: var(--type-compact); letter-spacing: var(--type-tracking); display: flex; min-width: 1px; flex: 0 0 auto; align-items: center; justify-content: center; overflow: hidden; color: #fff; }
 .segment-support { opacity: .62; }
 .segment-abstain { background-image: repeating-linear-gradient(-45deg, transparent 0, transparent 3px, rgba(0, 0, 0, .3) 3px, rgba(0, 0, 0, .3) 6px); }
 .majority-line { position: absolute; z-index: 2; top: -2px; bottom: -2px; width: 2px; background: var(--ink-1); opacity: .72; }

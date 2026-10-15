@@ -1,0 +1,73 @@
+/* Shared typography. Font faces, metrics and weights are owned here.
+   Components choose a role and retain their own layout/paper treatment. */
+@font-face {
+  font-family: 'Mazius Display';
+  src: url('../assets/fonts/mazius/MaziusDisplay-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Cooper Hewitt';
+  src: url('../assets/fonts/cooper-hewitt/CooperHewitt-Medium.woff') format('woff');
+  /* The supplied file's internal weight is wrong; register the named Medium cut. */
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Raleway';
+  src: url('../assets/fonts/Raleway-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Raleway';
+  src: url('../assets/fonts/Raleway-Italic-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+:root {
+  --type-face-heading: 'Cooper Hewitt', Arial, sans-serif;
+  --type-face-text: 'Raleway', Arial, sans-serif;
+  --type-face-identity: 'Mazius Display', Georgia, serif;
+  --type-identity: 700 clamp(3.5rem, calc(2.25rem + 5.25vw), 8rem)/1.08 var(--type-face-identity);
+  --type-calendar: 700 clamp(1.5rem, calc(1.25rem + .5vw), 1.875rem)/1.1 var(--type-face-identity);
+  --type-heading: 500 clamp(1.75rem, calc(1.5rem + 1vw), 2.5rem)/1.2 var(--type-face-heading);
+  --type-section: 500 1.375rem/1.3 var(--type-face-heading);
+  --type-heading-compact: 500 .875rem/1.4 var(--type-face-heading);
+  --type-reading: 400 1rem/1.5 var(--type-face-text);
+  --type-compact: 400 .75rem/1.4 var(--type-face-text);
+  --type-compact-strong: 600 .75rem/1.4 var(--type-face-text);
+  --type-detail: 400 .5rem/1.35 var(--type-face-text);
+  --type-control: 600 1rem/1.35 var(--type-face-text);
+  --type-control-compact: 600 .875rem/1.35 var(--type-face-text);
+  --type-tracking: 0;
+  /* Compatibility aliases for authored presentation and remaining integrations. */
+  --font-title: var(--type-face-heading);
+  --font-body: var(--type-face-text);
+  --font-news: var(--type-face-heading);
+  --font-typed: var(--type-face-text);
+}
+body { font: var(--type-reading); font-synthesis: none; }
+button, input, select, textarea { font: var(--type-control); }
+small, table { font: var(--type-compact); }
+[data-widget] { font: var(--type-compact); }
+table { font-variant-numeric: lining-nums tabular-nums; }
+strong, b, th { font-weight: 600; }
+h1 { font: var(--type-heading); }
+h2 { font: var(--type-section); }
+h3, h4, h5, h6 { font: var(--type-heading-compact); }
+.type-reading, .type-prose { font: var(--type-reading); }
+.type-identity { font: var(--type-identity); }
+.type-heading, .type-prose h1 { font: var(--type-heading); }
+.type-section, .type-prose :is(h2,h3,h4) { font: var(--type-section); }
+.type-compact { font: var(--type-compact); }
+.type-detail { font: var(--type-detail); }
+.type-control { font: var(--type-control); }
+:is(.type-reading,.type-prose,.type-identity,.type-heading,.type-section,.type-compact,.type-detail,.type-control) {
+  letter-spacing: var(--type-tracking);
+  font-synthesis: none;
+}

@@ -86,7 +86,7 @@ watch([markup, winners], async () => { await nextTick(); paint(); }, { immediate
 .local-results-map { width: 100%; position: relative; color: #2e2a22; }
 .map-svg :deep(svg) { width: 100%; height: auto; display: block; }
 .map-svg :deep(circle[aria-label]:hover) { stroke-width: 3 !important; }
-.legend { min-height: 24px; display: flex; gap: 6px; align-items: center; font: 10px/1.2 var(--font-title); }
+.legend { font: var(--type-control-compact); letter-spacing: var(--type-tracking); min-height: 24px; display: flex; gap: 6px; align-items: center; }
 .swatch { width: 12px; height: 12px; display: inline-block; }
 .map-message { min-height: 120px; display: grid; place-items: center; }
 </style>

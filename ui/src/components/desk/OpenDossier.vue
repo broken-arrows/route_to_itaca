@@ -30,11 +30,6 @@ const proseHtml = computed(() => {
   return raw.replace(/^(?:\s*<p>\s*<\/p>)+\s*/i, '');
 });
 
-const coverArt = computed(() => {
-  const img = desk.openCard?.image;
-  return img ? `${import.meta.env.BASE_URL}${img}` : null;
-});
-const artBroken = ref(false);
 const faceArtBroken = ref(false);
 
 // Diegetic header labels — constant per skin (document furniture, not i18n).
@@ -79,9 +74,10 @@ function onPick(i: number): void {
     data-test="open-dossier"
   >
     <div class="cover">
+      <div class="cover-content">
       <div v-if="header" class="dossier-header" aria-hidden="true">
         <span class="hd-left">
-          <span v-if="skin.key === 'gov'" class="crest"></span>{{ header.left }}
+          <img v-if="skin.key === 'gov'" class="crest" :src="`${assetBase}img/cat_seal.svg`" alt="" />{{ header.left }}
         </span>
         <span class="hd-right">{{ header.right }}</span>
       </div>
@@ -108,8 +104,6 @@ function onPick(i: number): void {
         <img :src="`${assetBase}${game.frame.faceImage}`" alt="" @error="faceArtBroken = true" />
       </div>
 
-      <div v-if="coverArt && !artBroken" class="cover-art">
-        <img :src="coverArt" alt="" @error="artBroken = true" />
       </div>
     </div>
 
@@ -131,14 +125,13 @@ function onPick(i: number): void {
 <style scoped>
 .open-dossier {
   position: absolute;
-  left: 47%;
+  left: 50%;
   top: 50%;
   width: clamp(760px, 64vw, 1400px);
   max-width: calc(100% - clamp(44px, 6vw, 96px));
   height: min(820px, calc(100% - clamp(56px, 10vh, 120px)));
   display: flex;
   z-index: 50;
-  border: 1px solid var(--card-bd);
   border-radius: 5px;
   filter: drop-shadow(0 24px 40px rgba(60, 40, 20, 0.3));
   transform-origin: center;
@@ -149,10 +142,10 @@ function onPick(i: number): void {
 }
 /* The folder paper — both halves. Lighter than the hand-card manila, to match
    the open-spread reference. */
-.skin-gov { background: #f7f4ec; }
-.skin-party { background: #e9dcae; }
-.skin-parliament { background: #eef0f2; }
-.skin-neutral { background: #f6f4ec; }
+.skin-gov { --folder-paper: #f7f4ec; }
+.skin-party { --folder-paper: #e9dcae; }
+.skin-parliament { --folder-paper: #eef0f2; }
+.skin-neutral { --folder-paper: #f6f4ec; }
 
 @keyframes dossier-open {
   from {
@@ -168,48 +161,68 @@ function onPick(i: number): void {
   animation: dossier-resolve var(--resolve-ms) ease forwards;
 }
 @keyframes dossier-resolve {
-  to { transform: translate(-12%, -8%) scale(0.16) rotate(-4deg); opacity: 0; }
+  0%, 65% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--origin-x)), calc(-50% + var(--origin-y))) scale(.22); opacity: 0; }
 }
 /* Unmount leave (via <Transition name="dossier"> in DeskView). */
 .dossier-leave-active {
   transition: transform var(--cancel-ms) ease, opacity var(--cancel-ms) ease;
 }
 .dossier-leave-to {
-  transform: translate(-85%, -15%) scale(0.2);
+  transform: translate(calc(-50% + var(--origin-x)), calc(-50% + var(--origin-y))) scale(.22);
   opacity: 0;
 }
 
 .cover {
-  flex: 0 0 46%;
-  padding: 26px 26px 22px;
-  display: flex;
-  flex-direction: column;
+  position: relative;
+  z-index: 2;
+  flex: 0 0 50%;
+  min-width: 0;
   transform-origin: right center;
-  backface-visibility: hidden;
   transform-style: preserve-3d;
-  animation: cover-swing var(--swing-ms) cubic-bezier(0.22, 0.72, 0.24, 1) var(--swing-delay) both;
+  animation: cover-swing var(--swing-ms) cubic-bezier(.22,.72,.24,1) var(--swing-delay) both;
+}
+.cover-content, .cover::after {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--card-bd);
+  border-radius: 5px 0 0 5px;
+  background: var(--folder-paper);
+  backface-visibility: hidden;
+}
+.cover-content { padding: 26px 26px 22px; display: flex; flex-direction: column; }
+.cover::after {
+  content: '';
+  transform: rotateY(180deg);
+  background: linear-gradient(90deg, #0000000c, transparent 8%), var(--folder-paper);
 }
 @keyframes cover-swing {
-  from { transform: rotateY(-28deg); }
+  from { transform: rotateY(180deg); }
   to { transform: rotateY(0deg); }
 }
+@keyframes cover-close {
+  0% { transform: rotateY(0deg); }
+  65%, 100% { transform: rotateY(180deg); }
+}
+.resolving { pointer-events: none; }
+.resolving .cover { animation: cover-close var(--resolve-ms) ease-in-out both; }
+.dossier-leave-active:not(.resolving) .cover { animation: cover-close var(--cancel-ms) ease-in-out both; }
+.resolving.dossier-leave-active { transition: none; }
 .dossier-header {
+  font: var(--type-detail);
+  letter-spacing: var(--type-tracking);
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  font-family: var(--font-typed);
-  font-size: 9px;
-  letter-spacing: 0.08em;
-  color: #8a7a58;
+  color: #655b48;
 }
 .hd-left { display: inline-flex; align-items: center; gap: 6px; }
 .crest {
   width: 14px;
   height: 17px;
-  background: repeating-linear-gradient(180deg, #f4c318 0 2px, #d4232a 2px 4px);
-  border: 1px solid #b8901a;
-  border-radius: 2px 2px 6px 6px / 2px 2px 9px 9px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 /* Ministry red double rule — the ratified red exception (--paper-rule-ink). */
 .cover-rule {
@@ -218,16 +231,16 @@ function onPick(i: number): void {
   border-bottom: 3px double var(--paper-rule-ink);
 }
 .cover-title {
-  font-family: var(--font-news);
-  font-size: 27px;
-  font-weight: 700;
+  font: var(--type-heading);
+  letter-spacing: var(--type-tracking);
+
   margin: 10px 0 10px;
   color: var(--ink-0);
 }
 .cover-prose {
-  font-family: var(--font-body);
-  font-size: 13.5px;
-  line-height: 1.5;
+  font: var(--type-reading);
+  letter-spacing: var(--type-tracking);
+
   color: var(--ink-0);
   overflow-y: auto;
   scrollbar-width: thin;
@@ -236,33 +249,22 @@ function onPick(i: number): void {
 /* When the prose leads with its own <h1>, it replaces .cover-title — give it
    the same treatment. :deep() because the h1 arrives via v-html inside Prose. */
 .cover-prose :deep(h1:first-child) {
-  font-family: var(--font-news);
-  font-size: 27px;
-  font-weight: 700;
+  font: var(--type-heading);
+  letter-spacing: var(--type-tracking);
+
   margin: 10px 0 10px;
   color: var(--ink-0);
-}
-/* Framed poster art on the cover — pasted photo, white border + shadow,
-   slight rotation (matches the hand card's framed party art). */
-.cover-art {
-  margin-top: 14px;
-  align-self: flex-start;
-  max-width: 90%;
-  border: 5px solid #fdfcf8;
-  box-shadow: 0 4px 10px rgba(46, 42, 34, 0.28);
-  transform: rotate(-1deg);
-}
-.cover-art img {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: 200px;
-  object-fit: cover;
 }
 .dossier-face-art { margin-top: 14px; max-width: 90%; }
 .dossier-face-art img { display: block; width: 100%; height: auto; max-height: 200px; object-fit: contain; }
 
 .papers {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  background: var(--folder-paper);
+  border: 1px solid var(--card-bd);
+  border-radius: 0 5px 5px 0;
   flex: 1;
   padding: 26px 26px 22px;
   display: flex;

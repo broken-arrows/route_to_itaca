@@ -20,6 +20,7 @@ defineProps<{ title: string; context: string; html: string }>();
       <span class="context">{{ context }}</span>
     </header>
     <div class="sheet-body">
+      <slot name="before" />
       <Prose :html="html" />
       <slot />
     </div>
@@ -62,26 +63,24 @@ defineProps<{ title: string; context: string; html: string }>();
   margin-bottom: 12px;
 }
 .sheet-head h2 {
-  font-family: var(--font-news);
-  font-weight: 800;
-  font-size: 21px;
-  font-variant: small-caps;
+  font: var(--type-section);
+  letter-spacing: var(--type-tracking);
+
   color: #2e2a22;
   margin: 0;
 }
 .context {
-  font-family: var(--font-title);
-  font-weight: 600;
-  font-size: 11.5px;
-  letter-spacing: 0.12em;
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   color: #a89e8c;
   text-align: right;
 }
 .sheet-body {
+  font: var(--type-reading);
+  letter-spacing: var(--type-tracking);
   flex: 1;
   min-height: 0;
-  font-size: 12px;
-  line-height: 1.5;
+
   overflow-x: hidden;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -129,10 +128,8 @@ defineProps<{ title: string; context: string; html: string }>();
 .sheet-body :deep(h1),
 .sheet-body :deep(h2),
 .sheet-body :deep(h3) {
-  font-family: var(--font-title);
-  font-weight: 800;
-  font-size: 11px;
-  letter-spacing: 0.14em;
+  font: var(--type-heading-compact);
+  letter-spacing: var(--type-tracking);
   text-transform: uppercase;
   color: #a89e8c;
   margin: 14px 0 6px;
@@ -146,17 +143,19 @@ defineProps<{ title: string; context: string; html: string }>();
 .sheet-body :deep(.brief-row) {
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
   margin: 0 0 3px;
 }
 .sheet-body :deep(.brief-row > :first-child) {
-  flex: 1 1 auto;
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
+  flex: 1 1 6rem;
   min-width: 0;
   display: flex;
   align-items: baseline;
-  white-space: nowrap;
-  font-family: var(--font-title);
-  font-weight: 600;
-  font-size: 15px;
+  overflow-wrap: normal;
+
   color: #3a342c;
 }
 .sheet-body :deep(.brief-row > :first-child)::after {
@@ -170,11 +169,13 @@ defineProps<{ title: string; context: string; html: string }>();
   border-bottom: 1.5px dotted #c6bda8;
 }
 .sheet-body :deep(.brief-row > :last-child) {
-  flex: 0 0 auto;
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
+  flex: 1 1 9rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
   text-align: right;
-  font-family: var(--font-news);
-  font-weight: 700;
-  font-size: 15px;
+
   color: #2e2a22;
 }
 
@@ -194,8 +195,9 @@ defineProps<{ title: string; context: string; html: string }>();
 }
 .sheet-body :deep(.brief-box) {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
   padding: 9px 12px;
   margin: 0 0 10px;
   background: #f6f2e6;
@@ -203,29 +205,24 @@ defineProps<{ title: string; context: string; html: string }>();
   border-radius: 3px;
 }
 .sheet-body :deep(.brief-box > strong) {
+  font: var(--type-compact-strong);
+  letter-spacing: var(--type-tracking);
   flex: 0 0 auto;
-  font-family: var(--font-news);
-  font-weight: 800;
-  font-size: 19px;
-  line-height: 1.1;
+
   color: #2e2a22;
   white-space: nowrap;
 }
 .sheet-body :deep(.brief-box > span:last-child) {
-  font-family: var(--font-title);
-  font-weight: 700;
-  font-size: 10px;
-  letter-spacing: 0.12em;
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   text-transform: uppercase;
-  line-height: 1.35;
   color: #6b655a;
 }
 .sheet-body :deep(.brief-box em) {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   display: block;
   font-style: normal;
-  font-weight: 400;
-  font-size: 10.5px;
-  letter-spacing: 0.02em;
   text-transform: none;
   color: #a89e8c;
 }
@@ -263,19 +260,14 @@ defineProps<{ title: string; context: string; html: string }>();
   margin-bottom: 5px;
 }
 .sheet-body :deep(.brief-card-head > :first-child) {
-  font-family: var(--font-news);
-  font-variant: small-caps;
-  font-weight: 700;
-  font-size: 14.5px;
-  letter-spacing: 0.02em;
+  font: var(--type-heading-compact);
+  letter-spacing: var(--type-tracking);
   color: #2e2a22;
 }
 .sheet-body :deep(.brief-card-head > :last-child) {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   flex: 0 0 auto;
-  font-family: var(--font-title);
-  font-weight: 600;
-  font-size: 10px;
-  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #a89e8c;
 }
@@ -285,10 +277,9 @@ defineProps<{ title: string; context: string; html: string }>();
  * top of a sheet. The clamp is the rule made mechanical: a third line is
  * newspaper copy, not Brief copy. */
 .sheet-body :deep(.brief-note) {
-  font-family: var(--font-typed);
-  font-weight: 400;
-  font-size: 14.5px;
-  line-height: 1.55;
+  font: var(--type-reading);
+  letter-spacing: var(--type-tracking);
+
   color: #6b655a;
   margin: 0 0 10px;
   display: -webkit-box;
@@ -311,16 +302,13 @@ defineProps<{ title: string; context: string; html: string }>();
  * with no band has no ink to draw itself in. */
 .sheet-body :deep(.brief-stamp[data-band]),
 .sheet-body :deep(.brief-stamp > .q-band) {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   display: inline-block;
   border: 1.5px solid currentColor;
   border-radius: 2px;
   padding: 1px 6px 2px;
   transform: rotate(-3deg);
-  font-family: var(--font-title);
-  font-weight: 700;
-  font-size: 9.5px;
-  line-height: 1.35;
-  letter-spacing: 0.11em;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -333,10 +321,8 @@ defineProps<{ title: string; context: string; html: string }>();
   margin: 8px 0;
 }
 .sheet-body :deep(.brief-stamp-line > span:first-child) {
-  font-family: var(--font-title);
-  font-weight: 600;
-  font-size: 10px;
-  letter-spacing: 0.14em;
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   text-transform: uppercase;
   color: #a89e8c;
 }

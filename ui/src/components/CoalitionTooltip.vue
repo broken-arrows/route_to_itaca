@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/vue';
+import { arrow, autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/vue';
 import { usePartyLogo } from './viz/usePartyLogo';
 import '../styles/tooltips.css';
 
@@ -20,12 +20,13 @@ const TITLES = {
 
 const reference = ref<Element | null>(null);
 const floating = ref<HTMLElement | null>(null);
+const arrowElement = ref<HTMLElement | null>(null);
 watch(() => props.anchor, (el) => { reference.value = el; }, { immediate: true });
 
-const { floatingStyles } = useFloating(reference, floating, {
+const { floatingStyles, middlewareData, placement } = useFloating(reference, floating, {
   placement: 'top',
   whileElementsMounted: autoUpdate,
-  middleware: [offset(10), flip(), shift({ padding: 8 })],
+  middleware: [offset(10), flip(), shift({ padding: 8 }), arrow({ element: arrowElement })],
 });
 
 const partyLogo = usePartyLogo();
@@ -36,8 +37,9 @@ const members = computed(() => props.parties.map((id) => ({ id, logo: partyLogo(
   <Teleport to="body">
     <div
       ref="floating"
-      :style="[floatingStyles, { '--coalition-tooltip-color': accent }]"
+      :style="[floatingStyles, { '--coalition-tooltip-color': accent, '--tooltip-accent': accent }]"
       class="glossary-popover coalition-popover"
+      :data-placement="placement"
       role="tooltip"
       data-test="coalition-popover"
     >
@@ -55,6 +57,8 @@ const members = computed(() => props.parties.map((id) => ({ id, logo: partyLogo(
       </div>
       <div class="popover-title">{{ TITLES[institution] }}</div>
       <div v-if="summary" class="popover-subtitle">{{ summary }}</div>
+      <span ref="arrowElement" class="popover-arrow" aria-hidden="true"
+        :style="{ left: middlewareData.arrow?.x != null ? middlewareData.arrow.x + 'px' : undefined }" />
     </div>
   </Teleport>
 </template>

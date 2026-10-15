@@ -386,8 +386,11 @@ describe('DeskView', () => {
         maxCards: 4,
         role: 'desk',
         content: [{ type: 'paragraph', content: ['Hub.'] }],
-        options: [{ id: '@x.alpha' }, { id: '@x.beta' }, { id: '@x.gamma' }, { id: '@pin1' }],
+        options: [{ id: '@x.alpha' }, { id: '@x.beta' }, { id: '@x.gamma' }, { id: '@pin1' }, { id: '@parliament' }],
       },
+      status: { id: 'status', type: 'scene', role: 'status', title: 'Status', content: [], options: [{ id: '@status.party' }, { id: '@status.chamber' }] },
+      'status.party': { id: 'status.party', type: 'scene', role: 'info-tab', title: 'Party', content: [] },
+      'status.chamber': { id: 'status.chamber', type: 'scene', role: 'info-tab', title: 'Parlament', content: [] },
       // decks fixture used by the DeskView mount — ids are arbitrary (NOT the
       // game's), roles are differentiated to exercise the skin routing:
       // deck-gov / deck-party / plain deck (the neutral-skin fallback
@@ -432,6 +435,11 @@ describe('DeskView', () => {
         role: 'deck',
         content: [],
         options: [],
+      },
+      parliament: {
+        id: 'parliament', type: 'scene', title: 'Parlament', role: 'pinned-parliament',
+        isPinnedCard: true, chooseIf: { $code: 'return false;' },
+        unavailableSubtitle: 'Election campaign.', content: [], options: [{ id: '@hub' }],
       },
       pin1: {
         id: 'pin1',
@@ -499,13 +507,29 @@ describe('DeskView', () => {
     expect(wrapper.find('.tray-kind-label').exists()).toBe(false);
   });
 
-  it('renders the actions tray with the pinned advisor and the month/out tray chrome', () => {
-    const { wrapper } = mountDesk();
-    expect(wrapper.text()).toContain(i18n.global.t('desk.actions.title'));
+  it('opens pinned actions without changing game state and removes the outgoing tray', async () => {
+    const { game, wrapper } = mountDesk();
+    const before = game.captureState();
+    expect(wrapper.find('[data-test="actions-tab"]').exists()).toBe(false);
+    await wrapper.findAll('[data-test="brief-tab"]')[0].trigger('click');
+    expect(game.captureState()).toBe(before);
     expect(wrapper.findAll('[data-test="pinned-card"]')).toHaveLength(1);
     expect(wrapper.text()).toContain(i18n.global.t('desk.month.3'));
     expect(wrapper.text()).toContain('2014');
-    expect(wrapper.text()).toContain(i18n.global.t('desk.out.empty'));
+    expect(wrapper.find('.out-tray').exists()).toBe(false);
+  });
+
+  it('places Parliament only in its own tab and preserves the blocked action guard', async () => {
+    const { game, desk, wrapper } = mountDesk();
+    expect(wrapper.find('[data-test="parliament-action"]').exists()).toBe(false);
+    const before = game.captureState();
+    await wrapper.findAll('[data-test="brief-tab"]')[1].trigger('click');
+    expect(wrapper.findAll('[data-test="pinned-card"]')).toHaveLength(0);
+    const action = wrapper.get('[data-test="parliament-action"]');
+    expect(action.attributes('aria-disabled')).toBe('true');
+    await action.trigger('click');
+    expect(desk.phase).toBe('idle');
+    expect(game.captureState()).toBe(before);
   });
 
   it('clicking a tray dispatches to the desk store (empty deck -> toast, no crash)', async () => {
@@ -522,8 +546,9 @@ describe('DeskView', () => {
   // tray and the right-hand cards sit outside the 850px dossier, so this was
   // plainly visible, not hidden behind it. It also made DeskView's
   // cardDimmed() unreachable dead code.
-  it('keeps the hand, in-trays and actions tray on the desk while a dossier is open', async () => {
+  it('keeps the hand, in-trays and clipboard actions while a dossier is open', async () => {
     const { game, desk, wrapper } = mountDesk();
+    await wrapper.findAll('[data-test="brief-tab"]')[0].trigger('click');
 
     desk.drawFrom('x.beta');
     await nextTick();
@@ -543,7 +568,6 @@ describe('DeskView', () => {
     expect(wrapper.find('[data-test="in-tray-x.beta"]').exists()).toBe(true);
     expect(wrapper.find('[data-test="in-tray-x.gamma"]').exists()).toBe(true);
     expect(wrapper.findAll('[data-test="pinned-card"]')).toHaveLength(1);
-    expect(wrapper.text()).toContain(i18n.global.t('desk.actions.title'));
   });
 
   it('dossier dim covers the desk region only — never the Brief (user rule 2026-07-19)', async () => {

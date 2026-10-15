@@ -36,11 +36,9 @@ const { t } = useI18n();
 }
 /* Label above-left — desk-frames §3: 800 8.5px letter-spacing, #8a7a58. */
 .tray-label {
+  font: var(--type-heading-compact);
+  letter-spacing: var(--type-tracking);
   margin: 0;
-  font-family: var(--font-title);
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #8a7a58;
 }
@@ -57,9 +55,10 @@ const { t } = useI18n();
   justify-content: center;
 }
 .tray-note {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   margin: 0;
-  font-family: var(--font-typed);
-  font-size: 11px;
+
   color: var(--ink-0);
   opacity: 0.55;
   text-align: center;
@@ -82,14 +81,16 @@ const { t } = useI18n();
   overflow: hidden;
 }
 .slip-title {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   margin: 0;
-  font-family: var(--font-title);
-  font-size: 11.5px;
-  font-weight: 700;
+
   text-align: center;
   color: #6b655a;
 }
 .stamp {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   /* Ink, not red: an OUT-tray entry can be a resolved government or party
      dossier too, not only a Parlament/world one — red stays reserved for
      Parlament/world surfaces per the binding style rule. */
@@ -97,9 +98,6 @@ const { t } = useI18n();
   bottom: 5px;
   right: 4px;
   transform: rotate(-8deg);
-  font-family: var(--font-typed);
-  font-size: 9.5px;
-  letter-spacing: 0.08em;
   color: var(--ink-0);
   border: 1.5px solid var(--ink-0);
   border-radius: 3px;

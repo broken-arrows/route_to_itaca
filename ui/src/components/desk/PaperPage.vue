@@ -101,11 +101,10 @@ function onPick(i: number, choice: ChoiceView): void {
   box-shadow: 0 10px 24px rgba(46, 42, 34, 0.18);
 }
 .ended-stamp {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   display: inline-block;
   float: right;
-  font-family: var(--font-typed);
-  font-size: 13px;
-  letter-spacing: 0.12em;
   color: var(--ink-0);
   opacity: 0.6;
   border: 2px solid var(--ink-0);
@@ -114,9 +113,9 @@ function onPick(i: number, choice: ChoiceView): void {
   transform: rotate(4deg);
 }
 .prose {
-  font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.6;
+  font: var(--type-reading);
+  letter-spacing: var(--type-tracking);
+
   color: var(--ink-0);
   clear: both;
 }

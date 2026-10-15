@@ -135,7 +135,7 @@ onMounted(async () => {
 <template>
   <div
     ref="root"
-    class="poll-map"
+    class="poll-map type-compact"
     :class="{ 'poll-map-full': full, 'poll-map-blank': !painted }"
     :data-layout="layout || 'stacked'"
     :style="mapStyle"
@@ -213,7 +213,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.poll-map { color: #2e2a22; }
+.poll-map { color: #2e2a22; container-type: inline-size; min-width: 0; }
 .poll-map[data-layout='wide'] { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 14px; align-items: start; }
 .poll-map[data-layout='wide'] .map-shell { grid-column: 1; grid-row: 1 / 5; height: auto; min-height: 200px; aspect-ratio: 1.25; }
 .poll-map[data-layout='wide'] .province-tabs,
@@ -242,28 +242,38 @@ onMounted(async () => {
 .poll-map-full .map-svg :deep(.province:hover) { opacity: .72; stroke-width: 1; }
 .map-svg :deep(.map-province-label) {
   fill: #2e2a22;
-  font-family: var(--font-title);
-  font-weight: 700;
+  font-family: var(--type-face-text);
+  font-weight: 600;
 }
 .map-error {
   display: grid;
   height: 100%;
   place-items: center;
   color: #8a8273;
-  font: 700 9px/1 var(--font-title);
-  letter-spacing: .1em;
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   text-transform: uppercase;
 }
-.province-tabs { display: flex; gap: 3px; margin-top: 7px; }
+.province-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3px;
+  margin-top: 7px;
+}
+@container (min-width: 410px) {
+  .poll-map[data-layout='stacked'] .province-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@container (min-width: 834px) {
+  .poll-map[data-layout='wide'] .province-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
 .province-tabs button {
-  flex: 1 1 0;
   min-width: 0;
   padding: 5px 2px 4px;
   border: 1px solid #d8cfba;
   background: #f6f2e6;
   color: #6b655a;
-  font: 700 8.5px/1 var(--font-title);
-  letter-spacing: .04em;
+  font: var(--type-control-compact);
+  letter-spacing: var(--type-tracking);
   text-transform: uppercase;
   cursor: pointer;
 }
@@ -275,28 +285,29 @@ onMounted(async () => {
 .province-caption {
   margin: 6px 0 9px;
   color: #8a8273;
-  font: 600 9px/1.3 var(--font-title);
+  font: var(--type-compact);
   text-align: right;
 }
-.poll-section h3 {
+/* Own the widget's typography even inside the Brief's legacy deep h3 rule. */
+.poll-map .poll-section h3 {
   margin: 8px 0 5px;
-  color: #a89e8c;
-  font: 800 9.5px/1 var(--font-title);
-  letter-spacing: .14em;
+  color: #6b655a;
+  font: var(--type-heading-compact);
+  letter-spacing: var(--type-tracking);
   text-transform: uppercase;
 }
 .crosstab-wrap { overflow-x: auto; }
 .crosstab {
   width: 100%;
   border-collapse: collapse;
-  font: 400 8.5px/1.15 var(--font-typed);
+  font: var(--type-compact);
   font-variant-numeric: tabular-nums;
 }
-.crosstab th, .crosstab td { padding: 3px 4px; text-align: right; }
-.crosstab thead th { border-bottom: 1px solid #e3dcc9; font-weight: 700; }
-.crosstab tbody th { color: #6b655a; font-family: var(--font-title); font-weight: 600; text-align: left; }
+.crosstab th, .crosstab td { padding: 5px 6px; text-align: right; white-space: nowrap; }
+.crosstab thead th { font: var(--type-compact-strong); letter-spacing: var(--type-tracking); border-bottom: 1px solid #e3dcc9; }
+.crosstab tbody th { font: var(--type-compact); letter-spacing: var(--type-tracking); color: #6b655a; text-align: left; }
 .crosstab tbody tr { border-bottom: 1px solid #f0ead9; }
-.crosstab .yours { background: #fbf3dc; color: #7c6120 !important; font-weight: 700; }
+.crosstab .yours { font: var(--type-compact-strong); letter-spacing: var(--type-tracking); background: #fbf3dc; color: #7c6120 !important; }
 .projection {
   display: flex;
   align-items: flex-end;
@@ -312,15 +323,17 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   min-width: 0;
-  font-family: var(--font-typed);
+  font: var(--type-compact);
+  font-variant-numeric: tabular-nums;
 }
-.projection-party b { margin-bottom: 2px; font-size: 9px; }
+.projection-party b { margin-bottom: 2px; }
 .projection-column { display: block; width: min(28px, 72%); }
 .projection-party small {
   overflow: hidden;
   width: 100%;
   margin-top: 3px;
-  font: 700 8px/1 var(--font-title);
+  font: var(--type-compact);
+  font-weight: 600;
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;

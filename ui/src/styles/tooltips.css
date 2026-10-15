@@ -1,35 +1,38 @@
 .glossary-popover {
   z-index: 1000;
-  width: 260px;
+  width: max-content;
+  max-width: min(420px, calc(100vw - 16px));
   display: flex;
-  gap: 10px;
+  gap: 15px;
+  align-items: center;
   background: var(--paper-0);
-  border: 1px solid var(--ink-0);
-  border-radius: 3px;
-  padding: 10px 12px;
-  box-shadow: 0 10px 24px rgba(46, 42, 34, 0.3);
-  font-family: var(--font-body);
+  border: 0;
+  border-bottom: 3px solid var(--tooltip-accent, var(--accent-slate));
+  border-radius: 7px;
+  padding: 12px 20px 12px 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .25);
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
+  font-synthesis: none;
   color: var(--ink-0);
   pointer-events: none;
 }
 .popover-img {
   flex: none;
-  width: 44px;
-  height: 44px;
+  width: 80px;
+  height: auto;
+  max-height: 100px;
   object-fit: cover;
-  border: 1px solid var(--ink-0);
-  border-radius: 2px;
+  border-radius: 4px;
 }
 .popover-text {
   flex: 1;
   min-width: 0;
-  font-size: 12px;
-  line-height: 1.45;
+  max-width: 290px;
 }
 .popover-title {
-  font-family: var(--font-news);
-  font-size: 14px;
-  font-weight: bold;
+  color: var(--tooltip-accent, var(--ink-0));
+  font-weight: 600;
 }
 .popover-subtitle {
   font-style: italic;
@@ -58,6 +61,26 @@
   place-items: center;
   border: 1px solid var(--ink-0);
   border-radius: 2px;
-  font: 700 10px/1 var(--font-title);
+  font: var(--type-compact);
+  font-weight: 600;
   text-transform: uppercase;
 }
+
+/* A true triangle keeps the pointer out of the paper face, including when the
+   popover flips below its anchor. Keep a measurable box for Floating UI. */
+.popover-arrow {
+  position: absolute;
+  width: 16px;
+  height: 8px;
+  background: var(--tooltip-accent, var(--accent-slate));
+}
+[data-placement^="top"] > .popover-arrow {
+  bottom: -10px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+[data-placement^="bottom"] > .popover-arrow {
+  top: -8px;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.popover-ledby { color: var(--tooltip-accent, var(--ink-0)); }
+.popover-ideology { font-size: .9em; }

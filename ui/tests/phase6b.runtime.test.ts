@@ -51,6 +51,24 @@ function start(game: any, catalog?: object) {
 function state(engine: any) { return JSON.parse(JSON.stringify(engine.getExportableState())); }
 
 describe('6B shared English-string recipe lifecycle', () => {
+  it('renders formatted qdisplay output as content rather than JavaScript object text', async () => {
+    const { engine, ui } = start(await compiled({
+      root: 'title: Root\n\n[+ 10 : events2012 +]\n',
+    }, {}, {
+      events2012: readFileSync(join(import.meta.dirname, '../../source/qdisplays/events2012.qdisplay.dry'), 'utf8'),
+    }));
+    expect(ui.html).not.toContain('[object Object]');
+    expect(ui.html).toContain("<em>'spanish-ize'</em>");
+    const before = state(engine), rng = engine.random.getState();
+    engine.setLocale('ca', {
+      '"We must <em>{emphasis1}</em> Catalan children." Spanish Minister of Education José Ignacio Wert says.':
+        'Cal <em>{emphasis1}</em> els nens catalans.',
+    });
+    engine.refreshPresentation();
+    expect(ui.html).toContain("Cal <em>'spanish-ize'</em> els nens catalans.");
+    expect(engine.random.getState()).toEqual(rng);
+    expect(engine.state.qualities).toEqual(before.qualities);
+  });
   it('materializes captured English once for native lists regardless of the active locale', async () => {
     const { engine } = start(await compiled({ root: 'title: Root\n\nStart.\n' }), {
       'government': 'govern', '{name} leads the {label}.': '{name} dirigeix el {label}.',

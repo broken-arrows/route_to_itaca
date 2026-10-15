@@ -54,7 +54,8 @@ const views = computed(() =>
   gap: 6px;
 }
 .tension-name {
-  font: 700 13px/1.2 var(--font-news);
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   color: #2e2a22;
 }
 .tension-leader {
@@ -63,9 +64,9 @@ const views = computed(() =>
   border-bottom: 1.5px dotted #c6bda8;
 }
 .metric {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   flex: 0 0 auto;
-  font: 700 9.5px/1 var(--font-title);
-  letter-spacing: .06em;
   color: #8a8273;
 }
 .metric b { text-transform: uppercase; }

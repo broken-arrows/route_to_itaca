@@ -118,6 +118,7 @@
       "confirm": "Continue Anyway"
     },
     "exit": {
+      "secondClick": "Click again to exit",
       "title": "Exit to Main Menu?",
       "body": "Unsaved progress since the latest autosave will be lost.",
       "confirm": "Exit to Main Menu"
@@ -161,6 +162,7 @@
     }
   },
   "desk": {
+    "diary": {"unfold":"Unfold monthly diary","fold":"Fold monthly diary"},
     "tray": {
       "out": "OUT",
       "draw": "DRAW",

@@ -278,7 +278,7 @@ describe('OpenDossier', () => {
     expect(wrapper.html()).toContain('Decide wisely.');
   });
 
-  it('hides face-image when Event Images is off but retains card-image cover artwork', async () => {
+  it('hides face-image when Event Images is off and never repeats card-image inside', async () => {
     const gameJson = {
       ...dossierGame,
       scenes: {
@@ -299,12 +299,12 @@ describe('OpenDossier', () => {
     const settings = useSettingsStore();
     const wrapper = mount(OpenDossier, withPlugins());
     expect(wrapper.find('[data-test="dossier-face-image"]').exists()).toBe(true);
-    expect(wrapper.find('.cover-art img').attributes('src')).toContain('img/cards/cover.jpg');
+    expect(wrapper.find('.cover-art').exists()).toBe(false);
 
     settings.setEventImages(false);
     await nextTick();
     expect(wrapper.find('[data-test="dossier-face-image"]').exists()).toBe(false);
-    expect(wrapper.find('.cover-art img').attributes('src')).toContain('img/cards/cover.jpg');
+    expect(wrapper.find('.cover-art').exists()).toBe(false);
   });
 
   // Task 7 (Wave 2): 110 scene files lead their content with a `=` heading

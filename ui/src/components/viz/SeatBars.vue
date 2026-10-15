@@ -61,18 +61,20 @@ const majorityLeft = computed(() =>
   background: #2e2a22;
 }
 .majority-number {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   position: absolute;
   top: 0;
   transform: translateX(-50%);
-  font: 700 9px/1 var(--font-typed);
   color: #2e2a22;
 }
 .seat-legend {
+  font: var(--type-control-compact);
+  letter-spacing: var(--type-tracking);
   display: flex;
   flex-wrap: wrap;
   gap: 4px 10px;
   margin-top: 7px;
-  font: 600 9px/1.2 var(--font-title);
   color: #6b655a;
 }
 .seat-legend span { white-space: nowrap; }

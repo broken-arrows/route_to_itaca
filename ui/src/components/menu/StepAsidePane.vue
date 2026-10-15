@@ -109,11 +109,9 @@ defineExpose({ focusHeading, focusClose });
   flex: 1 1 auto;
   min-width: 0;
   margin: 0;
-  font-family: var(--font-title);
-  font-size: clamp(1.55rem, 3vw, 2.8rem);
-  font-weight: 800;
-  letter-spacing: 0.015em;
-  line-height: 1;
+  font: var(--type-heading);
+  letter-spacing: var(--type-tracking);
+  font-synthesis: none;
   text-transform: uppercase;
 }
 
@@ -141,8 +139,7 @@ defineExpose({ focusHeading, focusClose });
   max-width: 44ch;
   margin: 0;
   color: color-mix(in srgb, var(--ink-0) 62%, transparent);
-  font-size: clamp(0.72rem, 1vw, 0.9rem);
-  line-height: 1.35;
+  font: var(--type-compact);
   text-align: right;
 }
 
@@ -157,7 +154,7 @@ defineExpose({ focusHeading, focusClose });
   border-radius: 50%;
   background: transparent;
   color: var(--ink-0);
-  font: 400 1.8rem/1 var(--font-body);
+  font: var(--type-control);
   cursor: pointer;
 }
 

@@ -190,20 +190,21 @@ const views = computed<View[]>(() => {
   gap: 8px;
 }
 .trail-key {
-  font-family: var(--font-title);
-  font-weight: 600;
-  font-size: 15px;
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
+
   color: #3a342c;
 }
 .trail-value {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   flex: 0 0 auto;
-  font-family: var(--font-news);
-  font-weight: 700;
-  font-size: 15px;
+
   white-space: nowrap;
 }
 .trail-arrow {
-  font-size: 0.82em;
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
 }
 .trail-plot {
   display: block;
@@ -231,18 +232,14 @@ const views = computed<View[]>(() => {
   margin-top: 3px;
 }
 .trail-axis > span {
-  font-family: var(--font-title);
-  font-weight: 600;
-  font-size: 9px;
-  letter-spacing: 0.1em;
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   text-transform: uppercase;
   color: #a89e8c;
 }
 .trail-empty {
-  font-family: var(--font-title);
-  font-weight: 600;
-  font-size: 9px;
-  letter-spacing: 0.1em;
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   text-transform: uppercase;
   color: #a89e8c;
   margin: 6px 0 0;

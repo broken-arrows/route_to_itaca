@@ -133,7 +133,7 @@ function onDraw(deckId: string) {
 }
 .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .choices, .hand-area { display: grid; gap: 6px; justify-items: start; }
-.inspector table { font-size: 12px; border-collapse: collapse; }
+.inspector table { font: var(--type-compact); letter-spacing: var(--type-tracking); border-collapse: collapse; }
 .inspector td { border-bottom: 1px solid var(--paper-1); padding: 2px 10px 2px 0; }
 button:disabled { opacity: 0.5; }
 </style>

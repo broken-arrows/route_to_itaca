@@ -92,9 +92,10 @@ const drawMs = computed(() => `${desk.animMs('draw')}ms`);
   padding: 10px;
 }
 .card-title {
+  font: var(--type-heading-compact);
+  letter-spacing: var(--type-tracking);
   margin: 0;
-  font-family: var(--font-title);
-  font-size: 13px;
+
   color: var(--ink-0);
 }
 </style>

@@ -18,6 +18,7 @@ import { splitAuthoredPane } from '../menu/authoredPane';
 
 const { t } = useI18n();
 const brief = useBriefStore();
+defineProps<{ readyTabs?: Record<string, boolean> }>();
 
 const tabs = computed(() => briefTabs(brief.tabs, brief.libraryId));
 const libraryPane = computed(() => splitAuthoredPane(brief.libraryIndexHtml));
@@ -38,6 +39,9 @@ const context = computed(() => t(`brief.context.${contextKey.value}`, ''));
       :context="brief.libraryOpen ? '' : context"
       :html="brief.libraryOpen ? libraryPane.bodyHtml : brief.activeHtml"
     >
+      <template #before>
+        <slot v-if="!brief.libraryOpen" :name="contextKey" />
+      </template>
       <div v-if="brief.libraryOpen" class="library-index-options" data-test="library-index">
         <button
           v-for="(choice, index) in brief.libraryIndexChoices"
@@ -62,7 +66,7 @@ const context = computed(() => t(`brief.context.${contextKey.value}`, ''));
         }"
         data-test="brief-tab"
         @click="brief.select(tab.id)"
-      >{{ tab.label }}</button>
+      >{{ tab.label }}<span v-if="readyTabs?.[tab.id.split('.').pop() ?? '']" aria-hidden="true"> &#9679;</span></button>
     </div>
   </div>
 </template>
@@ -79,35 +83,36 @@ const context = computed(() => t(`brief.context.${contextKey.value}`, ''));
   min-height: 0;
   background: var(--paper-3);
   border-right: 1px solid #d9d2c4;
-  padding: clamp(12px, 1.15vw, 22px) clamp(24px, 1.8vw, 34px)
+  padding: clamp(12px, 1.15vw, 22px) clamp(44px, 3vw, 52px)
     clamp(12px, 1.15vw, 22px) clamp(12px, 1.15vw, 22px);
 }
-/* The canvas's `right:-13px` is measured from the SHEET (its right edge sits
-   at 474 - 28px padding = 446), not from the padded column — so the rail's
-   right edge belongs at 446 + 13 = 459, i.e. `right: 15px` of this frame.
-   The old `right: -13px` floated the tabs 15px off the sheet, detached over
-   the column padding (visible in the 2026-07-20 live comparison). */
+/* Anchor the rail to the actual sheet edge: four pixels tuck beneath it.
+   Both offsets use the same responsive right padding as the frame. */
 .tab-rail {
   position: absolute;
-  right: clamp(11px, 0.95vw, 18px);
+  right: calc(clamp(44px, 3vw, 52px) - 32px);
   top: clamp(88px, 12.8vh, 122px);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5px;
+  bottom: 18px;
+  overflow-y: auto;
+  scrollbar-width: thin;
   z-index: 1;
 }
 .tab {
+  font: var(--type-control-compact);
+  letter-spacing: var(--type-tracking);
+  font-size: .75rem;
+  flex-shrink: 0;
   writing-mode: vertical-rl;
-  padding: 9px 4px;
+  width: 36px;
+  padding: 7px 6px 7px 10px;
   background: var(--paper-1);
   color: #6b655a;
   border: 1px solid #d9d2c4;
   border-left: none;
   border-radius: 0 6px 6px 0;
-  font-family: var(--font-title);
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
   user-select: none;
 }
 .tab-gold {
@@ -128,7 +133,7 @@ const context = computed(() => t(`brief.context.${contextKey.value}`, ''));
 .tab { cursor: pointer; }
 .tab-inert { cursor: default; }
 .library-index-options { display: flex; flex-direction: column; gap: 8px; margin-top: 18px; }
-.library-index-options button { border: 0; border-bottom: 1px solid #c6bda8; background: transparent; padding: 9px 3px; color: var(--ink-0); font: 600 12px/1.35 var(--font-title); text-align: left; cursor: pointer; }
+.library-index-options button { font: var(--type-control-compact); letter-spacing: var(--type-tracking); border: 0; border-bottom: 1px solid #c6bda8; background: transparent; padding: 9px 3px; color: var(--ink-0); text-align: left; cursor: pointer; }
 .library-index-options button:last-child { margin-top: 8px; color: #7c6120; }
 .library-index-options button:focus-visible { outline: 3px solid var(--accent-red); outline-offset: 2px; }
 /* The paper is the top layer: tab roots tuck underneath its right edge.

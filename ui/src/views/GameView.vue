@@ -67,11 +67,17 @@ function boundary(role: string): string {
 }
 
 watch(() => game.frame, (frame, previous) => {
-  if (!frame || !previous || shell.paused) return;
+  if (!frame || !previous || shell.paused || shell.mode === 'title') return;
   if (boundary(frame.effectiveRole) !== boundary(previous.effectiveRole)) {
     surfaceFade.value?.start();
   }
 }, { flush: 'sync' });
+
+// A load can replace the engine frame before the title ribbons finish dropping.
+// Start the boundary fade only once the shell has finished that exit animation.
+watch(() => shell.mode, (mode, previous) => {
+  if (previous === 'title' && mode === 'playing') surfaceFade.value?.start();
+});
 
 function restorePauseFocus(): void {
   (pauseInvoker?.isConnected && pauseInvoker !== document.body ? pauseInvoker : pauseButton.value)?.focus();
@@ -213,6 +219,6 @@ const pageVariant = computed<'page' | 'event' | 'ending'>(() => {
 .playing-surface.live-under-pause { visibility: hidden; }
 .playing-surface.fogged { filter: sepia(.22) contrast(.78); }
 .playing-surface.fogged::after { content: ''; position: absolute; inset: 0; z-index: 70; background: rgba(240, 232, 207, .66); backdrop-filter: blur(2px); }
-.pause-button { position: absolute; z-index: 60; top: 20px; right: 20px; width: 44px; height: 44px; border: 1px solid #332d24; border-radius: 50%; background: #f3ecd5; color: #332d24; font: 700 1.2rem/1 sans-serif; }
+.pause-button { font: var(--type-control); letter-spacing: var(--type-tracking); position: absolute; z-index: 60; top: 20px; right: 20px; width: 44px; height: 44px; border: 1px solid #332d24; border-radius: 50%; background: #f3ecd5; color: #332d24; }
 .pause-button:focus-visible { outline: 3px solid #a21f1f; outline-offset: 3px; }
 </style>

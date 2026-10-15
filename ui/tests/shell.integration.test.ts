@@ -195,18 +195,35 @@ describe('Phase 5A shell integration', () => {
     expect(saveRibbon.attributes('title')).toContain('latest recovery autosave');
   });
 
-  it('uses an in-shell exit confirmation and returns through fresh root initialization', async () => {
+  it('confirms exit on the same ribbon and returns through fresh root initialization', async () => {
     const { game, shell, wrapper } = await mountTitle();
     await ribbon(wrapper, 'New Game').trigger('click');
     await wrapper.find('[data-test="pause-button"]').trigger('click');
     await ribbon(wrapper, 'Exit to Main Menu').trigger('click');
     expect(shell.overlay).toBe('exit-confirm');
-    expect(wrapper.find('[data-test="step-aside-pane"]').text()).toContain('Exit to Main Menu?');
-    const confirm = wrapper.findAll('[data-test="step-aside-pane"] button').find((node) => node.text() === 'Exit to Main Menu');
-    expect(confirm).toBeDefined();
-    await confirm!.trigger('click');
+    expect(wrapper.find('[data-test="step-aside-pane"]').exists()).toBe(false);
+    expect(shell.mode).toBe('playing');
+    expect(wrapper.get('[data-test="ribbon-exit"]').text()).toContain('Click again to exit');
+    await wrapper.get('[data-test="ribbon-exit"]').trigger('click');
     expect(shell.mode).toBe('title');
     expect(game.frame?.sceneId).toBe('menu');
     expect(game.q.started).toBeUndefined();
+  });
+
+  it('disarms exit with Escape or another menu selection', async () => {
+    const { shell, wrapper } = await mountTitle();
+    await ribbon(wrapper, 'New Game').trigger('click');
+    await wrapper.get('[data-test="pause-button"]').trigger('click');
+    await wrapper.get('[data-test="ribbon-exit"]').trigger('click');
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    await flushPromises();
+    expect(shell.overlay).toBe('pause-menu');
+    expect(wrapper.get('[data-test="ribbon-exit"]').text()).toBe('Exit to Main Menu');
+    await wrapper.get('[data-test="ribbon-exit"]').trigger('click');
+    await ribbon(wrapper, 'Settings').trigger('click');
+    expect(shell.overlay).toBe('pause-pane');
+    await wrapper.get('[data-test="ribbon-exit"]').trigger('click');
+    expect(shell.overlay).toBe('exit-confirm');
+    expect(shell.mode).toBe('playing');
   });
 });

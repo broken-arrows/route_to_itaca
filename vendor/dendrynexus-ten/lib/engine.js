@@ -660,6 +660,10 @@
         if (def.qdisplay) {
           value = that._getQDisplay(value, def.qdisplay);
           if (typeof value === 'string') return localization.text(value);
+          // Formatted qdisplay cases can be inline node arrays without any
+          // stateDependencies. Capture their markup before ordinary JS-value
+          // coercion below; Array.toString() would emit commas/[object Object].
+          if (Array.isArray(value)) return that._captureDisplayContent(value, false);
         } else if (def.quality) {
           var retained = that._presentation().qualities[def.quality];
           if (retained && retained.english === value) return that.gameLib.getText(that.state.qualities, def.quality);

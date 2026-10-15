@@ -9,6 +9,7 @@ const props = defineProps<{
   disabled?: boolean;
 }>();
 const emit = defineEmits<{ draw: [deckId: string] }>();
+const sealSrc = `${import.meta.env.BASE_URL}img/cat_seal.svg`;
 
 const { t } = useI18n();
 
@@ -45,7 +46,7 @@ function onActivate(): void {
         <span class="peek" aria-hidden="true"></span>
         <div class="folder">
           <span v-if="skin.key === 'gov'" class="folder-clip" aria-hidden="true"></span>
-          <span v-if="skin.key === 'gov'" class="folder-seal" aria-hidden="true"></span>
+          <img v-if="skin.key === 'gov'" class="folder-seal" :src="sealSrc" alt="" />
           <!-- Diegetic stationery text, not UI chrome — intentionally not i18n:
                a Generalitat folder says CONFIDENCIAL whatever the UI language.
                Ink-toned, NOT the canvas's red — red stays reserved for
@@ -81,11 +82,9 @@ function onActivate(): void {
    #6f5f3e. The face behind --font-title is swappable (user, 2026-07-20);
    weight/tracking/case carry to whatever face lands there. */
 .tray-label {
+  font: var(--type-heading-compact);
+  letter-spacing: var(--type-tracking);
   margin: 0;
-  font-family: var(--font-title);
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #6f5f3e;
 }
@@ -150,22 +149,23 @@ function onActivate(): void {
   transform: translateX(-50%);
   width: 44px;
   height: 52px;
-  border-radius: 50%;
-  border: 3px solid var(--ink-0);
+  object-fit: contain;
   opacity: 0.13;
 }
 .folder-stamp {
+  font: var(--type-detail);
+  font-size: clamp(.5rem, .65vw, .6875rem);
+  letter-spacing: var(--type-tracking);
   position: absolute;
   bottom: 18px;
-  left: 10px;
+  left: 7px;
+  right: 7px;
+  text-align: center;
   transform: rotate(-4deg);
   border: 2px solid var(--ink-0);
   border-radius: 3px;
   opacity: 0.22;
-  padding: 2px 6px;
-  font-family: var(--font-typed);
-  font-size: 9.5px;
-  letter-spacing: 0.08em;
+  padding: 2px;
   color: var(--ink-0);
 }
 /* Elastic tie: 14px disc + 54px string at 28°, #a58f56 (desk-frames §3). */
@@ -200,6 +200,8 @@ function onActivate(): void {
   border-radius: 3px 3px 0 0;
 }
 .tray-note {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   position: absolute;
   inset: 0;
   margin: 0;
@@ -208,25 +210,23 @@ function onActivate(): void {
   justify-content: center;
   text-align: center;
   padding: 12px;
-  font-family: var(--font-typed);
-  font-size: 11px;
+
   color: var(--ink-0);
   opacity: 0.55;
 }
 /* DRAW chip: dark, overhanging the tray's bottom-right corner, slight
    rotation (∓2° gov/party) — desk-frames §3. */
 .draw-chip {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   position: absolute;
   right: -8px;
   bottom: -6px;
-  background: #2e2a22;
-  color: var(--paper-1);
+  background: var(--paper-1);
+  color: #2e2a22;
+  border: 1px solid #b4a98d;
   border-radius: 4px;
   padding: 3px 9px;
-  font-family: var(--font-title);
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
   transform: rotate(-2deg);
   box-shadow: 0 3px 6px rgba(46, 42, 34, 0.35);
   transition: background-color 0.15s ease;
@@ -235,12 +235,14 @@ function onActivate(): void {
   transform: rotate(2deg);
 }
 .in-tray:not(.is-disabled):hover .draw-chip {
-  background: var(--accent-slate);
+  background: var(--paper-0);
+  color: var(--accent-slate);
 }
 /* Red stays reserved for Parlament/world surfaces (binding style rule) —
    every other tray's hover uses --accent-slate above; only the Parlament
    tray itself gets the red hover the prototype used for all of them. */
 .in-tray.skin-parliament:not(.is-disabled):hover .draw-chip {
-  background: var(--accent-red);
+  background: var(--paper-0);
+  color: var(--accent-red);
 }
 </style>

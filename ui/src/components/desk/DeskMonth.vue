@@ -1,6 +1,5 @@
 <script setup lang="ts">
-// Month printed on the desk, top-left. Spec: prototype-draw-to-dossier-NOTES.md
-// "Other desk objects" — Newsreader small-caps, rotate(-1deg), underline rule.
+// Tabletop calendar, top-left; Mazius lettering shares the game's identity face.
 //
 // Task 7 (Wave 2): the title is CONTENT now, not a UI-hardcoded Q read.
 // `titleHtml` is DeskView's extraction of the leading <h1> dendry leaves at
@@ -30,49 +29,84 @@ const { t } = useI18n();
 const monthLabel = computed(() =>
   props.month !== null && props.month >= 1 && props.month <= 12 ? t(`desk.month.${props.month}`) : '',
 );
+
+// Style only text nodes; keep authored markup, localized wording and week suffixes.
+// The authored year is authoritative even when the fallback props differ.
+const calendarTitle = computed(() => props.titleHtml?.split(/(<[^>]*>)/g)
+  .map((part) => part.startsWith('<') ? part : part.replace(/\b(\d{4}\b.*)/, '<span class="calendar-year">$1</span>'))
+  .join(''));
 </script>
 
 <template>
   <div class="desk-month">
-    <Prose v-if="titleHtml" tag="span" class="month-title" :html="titleHtml" />
+    <span class="calendar-rings" aria-hidden="true"></span>
+    <div class="calendar-date">
+    <Prose v-if="titleHtml" tag="span" :html="calendarTitle ?? ''" />
     <template v-else>
       <span class="month">{{ monthLabel }}</span>
-      <span v-if="year !== null" class="year">{{ year }}</span>
+      <span v-if="year !== null" class="calendar-year"> {{ year }}</span>
     </template>
+    </div>
   </div>
 </template>
 
 <style scoped>
-/* desk-frames.md §3 "Month": 800 34px small-caps, letter-spacing .1em,
-   rotate(-1deg), fixed 210×2 underline rule below (not a text-width
-   border). Face comes from the swappable --font-news token. */
 .desk-month {
-  display: inline-block;
-  font-family: var(--font-news);
-  font-variant: small-caps;
-  font-weight: 800;
-  font-size: 34px;
-  letter-spacing: 0.1em;
-  color: rgba(78, 62, 36, 0.52);
-  transform: rotate(-1deg);
-  line-height: 1;
+  font: var(--type-calendar);
+  letter-spacing: var(--type-tracking);
+  position: relative;
+  width: clamp(190px, 16vw, 240px);
+  padding: 0;
+  text-align: center;
+  color: #45433d;
+  background: #bdb6a6;
+  border: 1px solid #aaa79e;
+  border-radius: 3px 3px 1px 1px;
+  box-shadow: 0 2px 0 #dedbd2, 0 3px 0 #aaa79e, 0 5px 0 #e8e5dc,
+    0 6px 0 #aaa79e, 0 12px 12px rgba(46, 42, 34, .2);
+  transform: rotate(-2deg);
+  transform-origin: center top;
+  isolation: isolate;
 }
-.desk-month::after {
+.desk-month::before {
   content: '';
+  position: absolute;
+  z-index: 0;
+  inset: 5px -5px -7px 5px;
+  border: 1px solid #aaa79e;
+  border-radius: 2px;
+  background: #ccc9bf;
+  transform: skewX(-3deg);
+}
+.calendar-rings::before, .calendar-rings::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: -7px;
+  width: 8px;
+  height: 19px;
+  border: 2px solid #6c6b65;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #77766f, #e7e5de 50%, #77766f);
+  box-shadow: 0 1px 2px rgba(60, 45, 20, .24);
+}
+.calendar-rings::before { left: 24%; }
+.calendar-rings::after { right: 24%; }
+.calendar-date {
+  position: relative;
+  z-index: 1;
+  padding: 20px 12px 10px;
+  background: linear-gradient(#ded8ca 0 10px, var(--paper-0) 10px);
+  border-radius: 2px;
+  overflow-wrap: anywhere;
+}
+.calendar-date :deep(.calendar-year) {
   display: block;
-  width: 210px;
-  height: 2px;
-  margin-top: 7px;
-  background: rgba(78, 62, 36, 0.3);
-}
-/* Gap only applies on the Q-fallback path (two spans DeskMonth owns) — the
-   titleHtml path is a single Prose span, and being a fragment-root child it
-   would not receive this scoped rule anyway (see the Prose wrapper fix in
-   OpenDossier.vue). */
-.month {
-  margin-right: 8px;
-}
-.year {
-  font-size: 22px;
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid #c8beab;
+  font: var(--type-heading-compact);
+  font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: .18em;
 }
 </style>

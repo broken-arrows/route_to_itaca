@@ -18,6 +18,7 @@ const { t } = useI18n();
 const ribbons = ref<InstanceType<typeof RibbonStack> | null>(null);
 const pane = ref<{ focusHeading: () => Promise<boolean> | boolean | void } | null>(null);
 const pendingRiskyContinue = ref(false);
+const leaving = ref(false);
 const lastRibbon = ref<string | null>(null);
 
 const slots = computed(() => game.listSlots());
@@ -77,11 +78,19 @@ function refreshHub(): void {
   if (hub) shell.refreshTitleHub(hub);
 }
 
+async function beginPlaying(): Promise<void> {
+  if (leaving.value) return;
+  leaving.value = true;
+  const motion = ribbons.value?.dropOut();
+  if (motion) await motion;
+  shell.beginPlaying();
+}
+
 async function continueGame(allowRisk = false): Promise<void> {
   const result = game.loadSlot('auto-1', allowRisk);
   if (result.status === 'loaded') {
     pendingRiskyContinue.value = false;
-    shell.beginPlaying();
+    await beginPlaying();
     return;
   }
   if (result.status === 'confirmation-required') {
@@ -92,7 +101,7 @@ async function continueGame(allowRisk = false): Promise<void> {
 }
 
 async function select(id: string): Promise<void> {
-  if (shell.transitioning) return;
+  if (shell.transitioning || leaving.value) return;
   lastRibbon.value = id;
   if (id === 'host-continue') return continueGame();
   pendingRiskyContinue.value = false;
@@ -107,6 +116,9 @@ async function select(id: string): Promise<void> {
   const target = authored.value.find((choice) => `authored:${choice.id}` === id);
   if (!target?.canChoose) return;
   if (target.tags.includes('starts-game')) {
+    leaving.value = true;
+    const motion = ribbons.value?.dropOut();
+    if (motion) await motion;
     if (!game.newGame()) return;
     const hub = game.roleHub('title-hub');
     const start = hub?.choices.find((choice) => choice.tags.includes('starts-game'));
@@ -148,10 +160,10 @@ onMounted(async () => { await nextTick(); await ribbons.value?.focusFirst(); });
 </script>
 
 <template>
-  <section class="title-shell" :class="{ 'has-pane': shell.overlay === 'title-pane' }" data-test="title-shell">
+  <section class="title-shell type-reading" :class="{ 'has-pane': shell.overlay === 'title-pane' }" :inert="leaving || undefined" data-test="title-shell">
     <div v-if="shell.overlay !== 'title-pane'" class="title-identity">
-      <p v-if="gameTitle.subtitle" class="title-kicker">{{ gameTitle.subtitle }}</p>
-      <h1>{{ gameTitle.name }}</h1>
+      <p v-if="gameTitle.subtitle" class="title-kicker type-compact">{{ gameTitle.subtitle }}</p>
+      <h1 class="type-identity">{{ gameTitle.name }}</h1>
       <span class="title-rule" aria-hidden="true" />
     </div>
     <RibbonStack
@@ -172,7 +184,7 @@ onMounted(async () => { await nextTick(); await ribbons.value?.focusFirst(); });
       :animations="settings.animations"
       :close-label="t('shell.close')"
       @close="closePane"
-      @loaded="shell.beginPlaying()"
+      @loaded="beginPlaying"
     />
     <StepAsidePane
       v-else-if="shell.overlay === 'title-pane'"
@@ -217,14 +229,16 @@ onMounted(async () => { await nextTick(); await ribbons.value?.focusFirst(); });
 .title-shell { position: relative; height: 100%; min-height: 0; display: grid; grid-template-columns: minmax(300px, .9fr) minmax(460px, 1.1fr); grid-template-rows: minmax(0, 1fr); grid-template-areas: 'pane ribbons'; gap: clamp(28px, 5vw, 84px); align-items: center; padding: clamp(24px, 5vw, 72px); overflow: hidden; }
 .title-shell.has-pane { grid-template-columns: minmax(420px, 1.28fr) minmax(260px, .72fr); align-items: stretch; }
 .title-shell :deep(.ribbon-stack) { grid-area: ribbons; align-self: center; }
+.title-shell :deep(.ribbon) { align-self: flex-end; text-align: right; }
+.title-shell :deep(.active-mark) { right: auto; left: 12px; }
 .title-shell :deep(.step-aside-pane), .title-identity { grid-area: pane; }
 .title-identity { align-self: center; min-width: 0; }
-.title-kicker { margin: 0 0 18px; color: color-mix(in srgb, var(--accent-gold) 72%, var(--ink-0)); font-size: clamp(.7rem, .9vw, .92rem); font-weight: 700; letter-spacing: .28em; text-transform: uppercase; }
-.title-identity h1 { max-width: 10ch; margin: 0; font-family: var(--font-title); font-size: clamp(3.5rem, 7.5vw, 8rem); font-weight: 800; letter-spacing: -.045em; line-height: .92; text-transform: uppercase; }
+.title-kicker { font: var(--type-compact); letter-spacing: var(--type-tracking); margin: 0 0 18px; color: color-mix(in srgb, var(--accent-gold) 72%, var(--ink-0)); text-transform: uppercase; }
+.title-identity h1 { max-width: 10ch; margin: 0; overflow-wrap: break-word; }
 .title-rule { display: block; width: min(70%, 460px); margin-top: 44px; border-top: 2px solid var(--accent-red); }
 .authored-choices, .pane-actions { display: grid; gap: 10px; margin-top: 24px; }
-.authored-choices button, .pane-actions button { padding: 12px 16px; border: 1px solid var(--ink, #27231c); background: #f5efd9; color: inherit; text-align: left; font: inherit; }
+.authored-choices button, .pane-actions button { padding: 12px 16px; border: 1px solid var(--ink, #27231c); background: #f5efd9; color: inherit; text-align: left; font: var(--type-control); letter-spacing: var(--type-tracking); }
 .authored-choices button:focus-visible, .pane-actions button:focus-visible { outline: 3px solid #a21f1f; outline-offset: 3px; }
 .authored-choices small { display: block; margin-top: 3px; opacity: .72; }
-@media (max-width: 800px) { .title-shell, .title-shell.has-pane { grid-template-columns: 1fr; grid-template-areas: 'pane' 'ribbons'; grid-template-rows: auto auto; overflow: auto; } .title-identity h1 { font-size: clamp(3rem, 14vw, 5rem); } }
+@media (max-width: 800px) { .title-shell, .title-shell.has-pane { grid-template-columns: 1fr; grid-template-areas: 'pane' 'ribbons'; grid-template-rows: auto auto; overflow: auto; } }
 </style>

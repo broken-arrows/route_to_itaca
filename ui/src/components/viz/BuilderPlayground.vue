@@ -96,7 +96,7 @@ function input(id: string, event: Event, previous: number) {
 .builder-next { grid-column: 3; grid-row: 1; }
 .builder-checkbox { grid-column: 1; grid-row: 1; appearance: none; width: .85rem; height: .85rem; margin: 0; padding: 0; border: 0; border-radius: 3px; cursor: pointer; box-shadow: inset 0 0 0 1px currentColor; display: grid; place-items: center; position: relative; top: .9rem; z-index: 1; }
 .builder-checkbox:checked::after { content: ''; width: .35rem; height: .35rem; border-radius: 50%; background: currentColor; }
-.builder-members { display: flex; flex-direction: column; gap: .15em; font-size: .75em; text-align: center; }
+.builder-members { font: var(--type-compact); letter-spacing: var(--type-tracking); display: flex; flex-direction: column; gap: .15em; text-align: center; }
 .builder-members:empty { display: none; }
 .builder-party { min-width: 0; }
 .builder-content { display: flex; flex-direction: column; gap: .35rem; }
@@ -104,7 +104,7 @@ function input(id: string, event: Event, previous: number) {
 .builder-party.is-joint { position: relative; align-self: stretch; }
 .is-joint .builder-content { position: absolute; inset: 0; justify-content: safe center; }
 .builder-controls { display: flex; justify-content: center; align-items: center; gap: .1rem; }
-button, input { font: inherit; color: inherit; background: transparent; padding: .2rem; }
+button, input { font: var(--type-control-compact); letter-spacing: var(--type-tracking); color: inherit; background: transparent; padding: .2rem; }
 button { border: 0; border-radius: 0; cursor: pointer; padding: .2rem 0; min-width: 1.1rem; box-shadow: none; }
 button:focus-visible, input:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
 button:disabled { opacity: .35; cursor: default; }

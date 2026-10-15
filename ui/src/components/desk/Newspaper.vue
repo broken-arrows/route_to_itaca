@@ -96,23 +96,20 @@ function choose(index: number, choice: ChoiceView): void {
   border-bottom: 1px solid #4f4a41;
 }
 .newspaper-prose {
-  font-family: var(--font-news);
+  font: var(--type-reading);
+  letter-spacing: var(--type-tracking);
   text-align: center;
 }
 .masthead > h1 {
+  font: var(--type-heading);
+  letter-spacing: var(--type-tracking);
   margin: 14px 0 8px;
-  font-family: var(--font-news);
-  font-size: clamp(34px, 4vw, 54px);
-  line-height: 1;
-  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 .newspaper-prose :deep(h1) {
+  font: var(--type-heading-compact);
+  letter-spacing: var(--type-tracking);
   margin: 5px 0;
-  font-family: var(--font-news);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 .newspaper-prose :deep(p) { margin: 6px 0; }
@@ -135,6 +132,8 @@ function choose(index: number, choice: ChoiceView): void {
 }
 .story.locked { cursor: not-allowed; opacity: 0.42; }
 .story-signal {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   display: grid;
   place-items: center;
   width: 24px;
@@ -143,23 +142,21 @@ function choose(index: number, choice: ChoiceView): void {
   border-radius: 50%;
   color: #fff;
   background: var(--accent-red);
-  font-family: var(--font-title);
-  font-size: 14px;
-  font-weight: 800;
+
 }
 .story h2 {
+  font: var(--type-section);
+  letter-spacing: var(--type-tracking);
   margin: 0;
-  font-family: var(--font-news);
-  font-size: clamp(22px, 2vw, 31px);
-  line-height: 1.05;
+
 }
 .story p {
+  font: var(--type-reading);
+  letter-spacing: var(--type-tracking);
   margin: 6px 0 0;
   color: #686156;
-  font-family: var(--font-news);
-  font-size: 15px;
+
   font-style: italic;
-  line-height: 1.35;
 }
 @media (max-width: 920px) {
   .news-desk { grid-template-columns: minmax(330px, 42vw) minmax(0, 1fr); }

@@ -16,7 +16,7 @@
 // as the Desk's own paper-styled markup rather than copying its HTML.
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/vue';
+import { arrow, autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/vue';
 import { useGameStore } from '../stores/game';
 import { useGlossary } from '../glossary/useGlossary';
 import '../styles/tooltips.css';
@@ -32,12 +32,13 @@ const { termFor, colourValue, allegiancesFor } = useGlossary();
 
 const reference = ref<Element | null>(null);
 const floating = ref<HTMLElement | null>(null);
+const arrowElement = ref<HTMLElement | null>(null);
 watch(() => props.anchor, (el) => { reference.value = el; }, { immediate: true });
 
-const { floatingStyles } = useFloating(reference, floating, {
+const { floatingStyles, middlewareData, placement } = useFloating(reference, floating, {
   placement: 'top',
   whileElementsMounted: autoUpdate,
-  middleware: [offset(10), flip(), shift({ padding: 8 })],
+  middleware: [offset(10), flip(), shift({ padding: 8 }), arrow({ element: arrowElement })],
 });
 
 const term = computed(() => termFor(props.termId));
@@ -87,8 +88,9 @@ const allegianceLabel = computed(() =>
     <div
       v-if="tooltip"
       ref="floating"
-      :style="floatingStyles"
+      :style="[floatingStyles, { '--tooltip-accent': colourValue(term?.colour) }]"
       class="glossary-popover"
+      :data-placement="placement"
       role="tooltip"
       data-test="glossary-popover"
     >
@@ -116,6 +118,8 @@ const allegianceLabel = computed(() =>
           </template>
         </div>
       </div>
+      <span ref="arrowElement" class="popover-arrow" aria-hidden="true"
+        :style="{ left: middlewareData.arrow?.x != null ? middlewareData.arrow.x + 'px' : undefined }" />
     </div>
   </Teleport>
 </template>

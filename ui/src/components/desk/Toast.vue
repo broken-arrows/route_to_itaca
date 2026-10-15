@@ -72,6 +72,8 @@ const achievementImgSrc = computed(() =>
 
 <style scoped>
 .toast {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   pointer-events: none;
   position: absolute;
   left: 50%;
@@ -79,37 +81,43 @@ const achievementImgSrc = computed(() =>
   transform: translateX(-50%);
   background: var(--ink-0);
   color: var(--paper-0);
-  font-family: var(--font-typed);
-  font-size: 12px;
-  letter-spacing: 0.03em;
   padding: 8px 16px;
   border-radius: 3px;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
   z-index: 100;
 }
 .toast--achievement {
-  bottom: auto;
-  top: 24px;
+  bottom: 24px;
   left: auto;
   right: 24px;
   transform: none;
   width: 18em;
+  max-width: calc(100% - 48px);
+  background: var(--paper-1);
+  color: var(--ink-0);
+  border-radius: 8px;
   padding: 12px 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   box-shadow:
-    0 0 0 1px rgba(169, 130, 31, 0.4),
-    0 0 14px rgba(169, 130, 31, 0.35),
-    0 6px 16px rgba(0, 0, 0, 0.3);
+    0 0 0 1px rgba(220, 150, 0, .4),
+    0 0 14px rgba(220, 150, 0, .5),
+    0 0 28px rgba(220, 150, 0, .2);
 }
 .toast-achievement-header {
-  font-family: var(--font-typed);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 12px);
+  width: max-content;
+  max-width: 100%;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--paper-1);
+  font: var(--type-compact-strong);
+  letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--accent-gold);
+  color: var(--ink-0);
 }
 .toast-achievement-body {
   display: flex;
@@ -117,30 +125,35 @@ const achievementImgSrc = computed(() =>
   gap: 12px;
 }
 .toast-achievement-image {
-  flex: 0 0 64px;
-  width: 64px;
-  height: 44px;
+  flex: 1 0 0;
+  width: 33.333%;
+  height: auto;
   min-width: 0;
   background: var(--paper-0);
   aspect-ratio: 3 / 2;
   object-fit: cover;
-  border-radius: 2px;
+  border-radius: 8px;
 }
 .toast-achievement-text {
   flex: 2 0 0;
   min-width: 0;
 }
 .toast-achievement-name {
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 4px;
+  font: var(--type-control-compact);
+  letter-spacing: var(--type-tracking);
+
+  margin-bottom: 6px;
+}
+.toast-achievement-stars {
+  display: flex;
+  gap: 3px;
+  line-height: 1;
 }
 .toast-achievement-stars .star--filled {
-  color: var(--accent-gold);
+  color: #dc9600;
 }
 .toast-achievement-stars .star--empty {
-  color: var(--paper-3);
+  color: #2e2e3a;
 }
 .toast-enter-active,
 .toast-leave-active {

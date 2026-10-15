@@ -73,7 +73,7 @@ async function changeLanguage(language: AppLocale): Promise<void> {
 <style scoped>
 .options-pane { display: grid; gap: 14px; max-width: 720px; }
 fieldset { margin: 0; padding: 0 0 18px; border: 0; border-bottom: 1px solid color-mix(in srgb, var(--ink-0) 24%, transparent); }
-legend, strong { font-family: var(--font-title); font-size: 1rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+legend, strong { font: var(--type-control); letter-spacing: var(--type-tracking); text-transform: uppercase; }
 .segmented { display: flex; gap: 8px; margin-top: 12px; }
 .segmented label { position: relative; cursor: pointer; }
 .segmented input { position: absolute; opacity: 0; }
@@ -82,7 +82,7 @@ legend, strong { font-family: var(--font-title); font-size: 1rem; font-weight: 8
 .segmented input:focus-visible + span { outline: 3px solid var(--accent-gold); outline-offset: 3px; }
 .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 14px 0; border-bottom: 1px solid color-mix(in srgb, var(--ink-0) 24%, transparent); cursor: pointer; }
 .setting-row > span { display: grid; gap: 5px; }
-.setting-row small { color: color-mix(in srgb, var(--ink-0) 62%, transparent); line-height: 1.35; }
+.setting-row small { font: var(--type-compact); letter-spacing: var(--type-tracking); color: color-mix(in srgb, var(--ink-0) 62%, transparent); }
 .setting-row input { width: 22px; height: 22px; accent-color: var(--ink-0); }
 .setting-row.disabled { cursor: not-allowed; opacity: .48; }
 </style>

@@ -141,13 +141,12 @@ const layoutStyle = computed(() => {
   flex: 1 1 0;
 }
 .chamber-vote-label {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   min-height: 18px;
   padding: 0 5px 5px;
   color: var(--ink-1);
-  font-family: inherit;
-  font-size: 1em;
-  font-weight: 700;
-  line-height: 1.15;
+
   white-space: nowrap;
 }
 .chamber-vote-label--abstain {
@@ -178,6 +177,8 @@ const layoutStyle = computed(() => {
   pointer-events: none;
 }
 .chamber-vote-bar[data-majority]::before {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   content: attr(data-majority);
   position: absolute;
   z-index: 3;
@@ -185,22 +186,20 @@ const layoutStyle = computed(() => {
   left: var(--chamber-vote-majority-left);
   padding-bottom: 0.5em;
   color: var(--ink-1);
-  font-size: 0.75em;
-  line-height: 1;
+
   transform: translateX(-50%);
   pointer-events: none;
 }
 .chamber-vote-outcome {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   overflow: hidden;
   min-height: 34px;
   min-width: 0;
   flex-basis: 0;
   padding: 8px 4px;
   color: #fff;
-  font-family: inherit;
-  font-size: 1em;
-  font-weight: 800;
-  line-height: 18px;
+
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -226,13 +225,13 @@ const layoutStyle = computed(() => {
   border-radius: 0 3px 3px 0;
 }
 .chamber-vote-parties {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   margin: 0;
   padding: 7px 5px 0;
   list-style: none;
   color: var(--ink-1);
-  font-family: inherit;
-  font-size: 1em;
-  line-height: 1.35;
+
 }
 /* Translated breakdown columns can overlap. Only the named party should
    intercept a hover, so glossary tooltips remain reachable underneath. */

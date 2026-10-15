@@ -30,7 +30,7 @@ describe('Clipboard (live, phase 3b)', () => {
     const tabs = mountClipboard().findAll('[data-test="brief-tab"]');
     expect(tabs).toHaveLength(7);
     expect(tabs.map((t) => t.text())).toEqual([
-      'Overview', 'Party', 'Chamber', 'Economy', 'World', 'Polls', '▤ LIBRARY',
+      'Overview', 'Party', 'Parlament', 'Economy', 'World', 'Polls', '▤ LIBRARY',
     ]);
     expect(tabs[6].classes()).toContain('tab-gold');
   });
@@ -55,7 +55,7 @@ describe('Clipboard (live, phase 3b)', () => {
     await tabs[2].trigger('click'); // Chamber
     expect(tabs[2].classes()).toContain('tab-active');
     expect(tabs[0].classes()).not.toContain('tab-active');
-    expect(w.find('h2').text()).toBe('Chamber');
+    expect(w.find('h2').text()).toBe('Parlament');
     expect(w.text()).toMatch(/Speaker of the House/);
   });
 

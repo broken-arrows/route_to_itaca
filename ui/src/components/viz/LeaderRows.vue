@@ -50,15 +50,15 @@ const views = computed(() =>
 <style scoped>
 .leader-rows { display: grid; gap: 7px; }
 .leader-row { display: flex; align-items: baseline; gap: 7px; }
-.leader-label { flex: 0 0 auto; font: 600 11.5px/1.2 var(--font-title); color: #3a342c; }
+.leader-label { font: var(--type-compact); letter-spacing: var(--type-tracking); flex: 0 0 auto; color: #3a342c; }
 .person-value, .control-value { order: 2; flex: 0 0 auto; }
-.person-value { display: inline-flex; align-items: center; font: 600 11px/1.2 var(--font-title); }
+.person-value { font: var(--type-compact); letter-spacing: var(--type-tracking); display: inline-flex; align-items: center; }
 .party-square { width: 8px; height: 8px; margin-right: 5px; }
 .control-value { display: inline-flex; align-items: center; }
 .control-value b {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   min-width: 54px;
-  font: 750 9.5px/1 var(--font-title);
-  letter-spacing: .07em;
   text-align: right;
   text-transform: uppercase;
 }

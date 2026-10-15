@@ -287,9 +287,10 @@ function isFirstPartySeat(index: number): boolean {
   height: auto;
 }
 .hemicycle-majority {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   margin-top: -22px;
   color: var(--ink-3);
-  font-size: 13px;
   font-style: italic;
   text-align: center;
 }
@@ -324,6 +325,8 @@ function isFirstPartySeat(index: number): boolean {
   stroke-width: 1.5;
 }
 .hemicycle-tooltip {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   position: fixed;
   z-index: 1000;
   display: flex;
@@ -336,7 +339,6 @@ function isFirstPartySeat(index: number): boolean {
   border: 2px solid var(--ink-0);
   border-radius: 3px;
   box-shadow: 0 8px 20px rgba(46, 42, 34, .28);
-  font-family: var(--font-body);
   pointer-events: none;
 }
 .hemicycle-tooltip img {
@@ -350,8 +352,9 @@ function isFirstPartySeat(index: number): boolean {
   display: block;
 }
 .hemicycle-tooltip strong {
-  font-family: var(--font-news);
-  font-size: 14px;
+  font: var(--type-compact-strong);
+  letter-spacing: var(--type-tracking);
+
 }
 @media (prefers-reduced-motion: reduce) {
   .is-animated .seat-position { animation: none; }

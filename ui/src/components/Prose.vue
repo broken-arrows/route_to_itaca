@@ -65,7 +65,7 @@ function decorate(): void {
     if (!term) continue;
     const colour = colourValue(term.colour);
     if (colour) span.style.color = colour;
-    if (term.bold) span.style.fontWeight = 'bold';
+    if (term.bold) span.style.fontWeight = '600';
     if (term.tooltip) span.classList.add('term-hoverable');
   }
 }

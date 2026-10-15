@@ -4,7 +4,7 @@
     "tab": {
       "overview": "OVERVIEW",
       "party": "PARTY",
-      "chamber": "CHAMBER",
+      "chamber": "PARLAMENT",
       "economy": "ECONOMY",
       "world": "WORLD",
       "polls": "POLLS",
@@ -13,7 +13,7 @@
     "context": {
       "overview": "STATE OF PLAY",
       "party": "THE PARTY · YOURS",
-      "chamber": "THE CHAMBER",
+      "chamber": "PARLAMENT",
       "economy": "THE ACCOUNTS",
       "world": "AS READ FROM BARCELONA",
       "polls": "IF HELD TODAY",

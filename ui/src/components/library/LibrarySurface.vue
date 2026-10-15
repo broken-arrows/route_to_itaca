@@ -46,13 +46,13 @@ const articlePane = computed(() => splitAuthoredPane(game.frame?.html ?? ''));
 <style scoped>
 .library-surface { position: absolute; inset: 0; overflow: hidden; }
 .library-underlay { position: absolute; z-index: 0; isolation: isolate; inset: 0; }
-.library-brief { position: absolute; inset: 0 auto 0 0; z-index: 3; width: clamp(340px, 36.5vw, 560px); }
-.library-article { position: absolute; z-index: 2; inset: 0 0 0 clamp(340px, 36.5vw, 560px); display: flex; flex-direction: column; min-width: 0; background: var(--paper-0); border-left: 1px solid #c6bda8; box-shadow: -8px 0 24px rgba(46, 42, 34, .2); }
+.library-brief { position: absolute; inset: 0 auto 0 0; z-index: 3; width: clamp(var(--brief-min), var(--brief-fluid), var(--brief-max)); }
+.library-article { position: absolute; z-index: 2; inset: 0 0 0 clamp(var(--brief-min), var(--brief-fluid), var(--brief-max)); display: flex; flex-direction: column; min-width: 0; background: var(--paper-0); border-left: 1px solid #c6bda8; box-shadow: -8px 0 24px rgba(46, 42, 34, .2); }
 .library-article header { flex: none; border-bottom: 3px double #c6bda8; padding: 28px 40px 16px; }
-.library-article h1 { margin: 0; color: var(--ink-0); font: 800 clamp(24px, 2.2vw, 38px)/1.15 var(--font-news); }
-.library-article-body { flex: 1; min-height: 0; overflow: auto; padding: 26px clamp(32px, 5vw, 80px) 64px; color: var(--ink-0); font: 15px/1.65 var(--font-body); }
+.library-article h1 { font: var(--type-heading); letter-spacing: var(--type-tracking); margin: 0; color: var(--ink-0); }
+.library-article-body { font: var(--type-reading); letter-spacing: var(--type-tracking); flex: 1; min-height: 0; overflow: auto; padding: 26px clamp(32px, 5vw, 80px) 64px; color: var(--ink-0); }
 .library-article-options { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; }
-.library-article-options button { align-self: flex-start; border: 0; border-bottom: 1px solid #a89e8c; background: transparent; padding: 8px 2px; color: var(--ink-0); font: 700 13px/1.3 var(--font-title); cursor: pointer; }
+.library-article-options button { font: var(--type-control); letter-spacing: var(--type-tracking); align-self: flex-start; border: 0; border-bottom: 1px solid #a89e8c; background: transparent; padding: 8px 2px; color: var(--ink-0); cursor: pointer; }
 .library-article-options button:focus-visible { outline: 3px solid var(--accent-red); outline-offset: 3px; }
 @media (max-width: 760px) {
   .library-brief { width: 44%; }

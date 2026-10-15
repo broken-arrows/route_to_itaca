@@ -34,12 +34,6 @@ const desk = useDeskStore();
 
 const locked = computed(() => !props.choice.canChoose);
 
-// Deterministic slight per-option rotation (NOTES "slight per-option
-// rotations") — same seeded-not-random approach as HandCard's jitter, kept
-// small since these are paper slips, not whole cards.
-const ROTATE_DEG = [-1.1, 0.8, -0.6, 1.2, -0.9, 0.7];
-const rotate = computed(() => `${ROTATE_DEG[props.index % ROTATE_DEG.length]}deg`);
-
 // The shake CSS duration mirrors the exact ms the store's own shakeTimer
 // uses to clear shakeIdx (animMs('cancel')), so the visual never gets cut
 // short by, or outlives, the state that triggered it. With animations off
@@ -70,7 +64,7 @@ function onKeyActivate(): void {
     ref="rootEl"
     class="paper-option"
     :class="{ locked, shaking }"
-    :style="{ '--rotate': rotate, '--shake-ms': shakeMs }"
+    :style="{ '--shake-ms': shakeMs }"
     :data-test="`paper-option-${index}`"
     role="button"
     :aria-disabled="locked ? 'true' : 'false'"
@@ -111,11 +105,10 @@ function onKeyActivate(): void {
   padding: 13px 16px;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(60, 45, 20, 0.16);
-  transform: rotate(var(--rotate));
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .paper-option:not(.locked):hover {
-  transform: translateX(7px) rotate(var(--rotate));
+  transform: translateX(7px);
   box-shadow: 0 6px 14px rgba(46, 42, 34, 0.24);
 }
 .paper-option.locked {
@@ -129,39 +122,38 @@ function onKeyActivate(): void {
 }
 @keyframes paper-shake {
   0% {
-    transform: translateX(0) rotate(var(--rotate));
+    transform: translateX(0);
   }
   33% {
-    transform: translateX(-7px) rotate(var(--rotate));
+    transform: translateX(-7px);
   }
   66% {
-    transform: translateX(7px) rotate(var(--rotate));
+    transform: translateX(7px);
   }
   100% {
-    transform: translateX(0) rotate(var(--rotate));
+    transform: translateX(0);
   }
 }
 .option-title {
+  font: var(--type-control);
+  letter-spacing: var(--type-tracking);
   margin: 0;
-  font-family: var(--font-title);
-  font-size: 14.5px;
-  font-weight: 700;
+
   color: var(--ink-0);
 }
 .option-subtitle {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   margin: 4px 0 0;
-  font-family: var(--font-body);
-  font-size: 12px;
-  line-height: 1.35;
+
   color: var(--ink-0);
   opacity: 0.7;
 }
 .lock-chip {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   display: inline-block;
   margin-top: 6px;
-  font-family: var(--font-typed);
-  font-size: 10px;
-  letter-spacing: 0.06em;
   color: var(--ink-0);
   opacity: 0.6;
   border: 1px solid var(--ink-0);

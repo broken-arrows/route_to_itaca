@@ -118,6 +118,7 @@
       "confirm": "Continua de totes maneres"
     },
     "exit": {
+      "secondClick": "Torna a clicar per sortir",
       "title": "Voleu sortir al menú principal?",
       "body": "Es perdrà el progrés posterior al darrer desament automàtic.",
       "confirm": "Surt al menú principal"
@@ -161,6 +162,7 @@
     }
   },
   "desk": {
+    "diary": {"unfold":"Desplega el diari mensual","fold":"Plega el diari mensual"},
     "tray": {
       "out": "FET",
       "draw": "ROBAR",

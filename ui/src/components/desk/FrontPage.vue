@@ -41,7 +41,7 @@ function choose(index: number, choice: ChoiceView): void {
           alt=""
           @error="imageBroken = true"
         />
-        <Prose class="event-prose" :html="game.frame?.html ?? ''" />
+        <Prose class="event-prose type-prose" :html="game.frame?.html ?? ''" />
         <section v-if="choices.length" class="event-options" aria-label="Choices">
           <article
             v-for="(choice, index) in choices"
@@ -56,8 +56,8 @@ function choose(index: number, choice: ChoiceView): void {
             @keydown.enter.prevent="choose(index, choice)"
             @keydown.space.prevent="choose(index, choice)"
           >
-            <h2><Prose tag="span" :html="choice.title" /></h2>
-            <p v-if="choice.subtitle"><Prose tag="span" :html="choice.subtitle" /></p>
+            <h2 class="type-control"><Prose tag="span" :html="choice.title" /></h2>
+            <p v-if="choice.subtitle" class="type-compact"><Prose tag="span" :html="choice.subtitle" /></p>
           </article>
         </section>
       </article>
@@ -100,9 +100,6 @@ function choose(index: number, choice: ChoiceView): void {
 .red-rule { height: 3px; background: var(--accent-red); }
 .event-prose {
   margin-top: 22px;
-  font-family: var(--font-news);
-  font-size: clamp(16px, 1.3vw, 19px);
-  line-height: 1.55;
 }
 .event-image {
   float: right;
@@ -115,15 +112,11 @@ function choose(index: number, choice: ChoiceView): void {
 }
 .event-prose :deep(h1) {
   margin: 8px 0 20px;
-  font-family: var(--font-news);
-  font-size: clamp(34px, 4vw, 54px);
-  line-height: 1.02;
 }
-.event-prose :deep(h2), .event-prose :deep(h3) { font-family: var(--font-news); }
 .event-prose :deep(img) { max-width: 100%; height: auto; }
 .event-options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
   clear: both;
   margin-top: 24px;
@@ -148,17 +141,10 @@ function choose(index: number, choice: ChoiceView): void {
 .event-choice.locked { cursor: not-allowed; opacity: 0.4; }
 .event-choice h2 {
   margin: 0;
-  font-family: var(--font-news);
-  font-size: 22px;
-  line-height: 1.1;
 }
 .event-choice p {
   margin: 9px 0 0;
   color: #686156;
-  font-family: var(--font-news);
-  font-size: 14px;
-  font-style: italic;
-  line-height: 1.4;
 }
 @media (max-width: 920px) {
   .news-desk { grid-template-columns: minmax(330px, 42vw) minmax(0, 1fr); }

@@ -1,13 +1,25 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import { readFileSync } from 'node:fs';
 import { gameAssets } from './vite-plugin-game-assets';
 
 export default defineConfig({
   base: './',
   // Serve canonical source/img and runtime catalogs in development; validate
   // and publish them beside the compiled game in a standalone production build.
-  plugins: [vue(), gameAssets()],
+  plugins: [vue(), gameAssets(), {
+    name: 'ui-font-licenses',
+    generateBundle() {
+      for (const family of ['cooper-hewitt', 'raleway', 'mazius']) {
+        this.emitFile({
+          type: 'asset',
+          fileName: `licenses/${family}.txt`,
+          source: readFileSync(new URL(`./src/assets/fonts/${family}/LICENSE.txt`, import.meta.url), 'utf8'),
+        });
+      }
+    },
+  }],
   server: {
     fs: {
       // `src/game-bindings.ts` imports the game's macro simulation from

@@ -86,13 +86,13 @@ watch([markup, model, selected, hoveredRest], async () => { await nextTick(); pa
 .map-svg :deep(.election-region) { cursor: pointer; stroke: #181713 !important; stroke-width: .4 !important; }
 .map-svg :deep(.election-region:hover), .map-svg :deep(.rest-hover) { opacity: .72; stroke-width: 1.1 !important; }
 .map-svg :deep(.selected) { stroke-width: 1.7 !important; }
-.result-panel { min-height: 70px; margin-top: 6px; font: 11px/1.3 var(--font-title); }
+.result-panel { font: var(--type-compact); letter-spacing: var(--type-tracking); min-height: 70px; margin-top: 6px; }
 .result-panel p { margin: 0; color: #8a8273; text-align: right; }
 .panel-title { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
 .panel-title small { color: #8a8273; }
 .bars { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: end; gap: 3px; height: 100px; border-bottom: 1px solid #c6bda8; }
-.bar-column { min-width: 20px; flex: 1 1 0; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; font: 9px/1 var(--font-title); }
+.bar-column { font: var(--type-compact); letter-spacing: var(--type-tracking); min-width: 20px; flex: 1 1 0; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
 .bar-column .bar { display: block; width: 80%; min-height: 3px; border-radius: 2px 2px 0 0; }
-.bar-column strong { margin-bottom: 3px; }.bar-column small { margin-top: 3px; font-size: 8px; }
+.bar-column strong { margin-bottom: 3px; }.bar-column small { font: var(--type-compact); letter-spacing: var(--type-tracking); margin-top: 3px; }
 .map-message { min-height: 120px; display: grid; place-items: center; }
 </style>

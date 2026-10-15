@@ -80,15 +80,16 @@ const views = computed(() =>
 .roster-flag { width: 26px; height: 18px; object-fit: cover; border: 1px solid #e0d9c8; }
 .roster-copy { min-width: 0; }
 .roster-main { display: flex; align-items: center; gap: 5px; min-width: 0; }
-.roster-main b { font: 700 13px/1.15 var(--font-news); color: #2e2a22; }
-.roster-main > span:not(.roster-stamp) { font: 600 11px/1 var(--font-title); color: #6b655a; }
+.roster-main b { font: var(--type-compact-strong); letter-spacing: var(--type-tracking); color: #2e2a22; }
+.roster-main > span:not(.roster-stamp) { font: var(--type-compact); letter-spacing: var(--type-tracking); color: #6b655a; }
 .roster-stamp { margin-left: auto; }
 .roster-copy > i {
+  font: var(--type-compact);
+  letter-spacing: var(--type-tracking);
   display: block;
   overflow: hidden;
   margin-top: 2px;
   color: #8a8273;
-  font: italic 10.5px/1.25 var(--font-body);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
