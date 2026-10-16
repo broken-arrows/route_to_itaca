@@ -5,6 +5,28 @@ tags: event
 new-page: true
 max-visits: 1
 on-arrival: {!
+    Q.csqp_podemos_confederal = Q.podemos_ideology.includes('Confederalism');
+    var autonomyRatio = Q.csqp_podemos_confederal ? 0.6 : Q.podemos_ideology.includes(', Federalism') ? 0.7 : 0.8;
+    // Compare valid-vote shares before the succession transfers change the electorate.
+    var valid = 0, allied = 0;
+    for (var c of Q.parlament_constituencies) {
+        for (var d of Q.parlament_demographics) {
+            var weight = Q['parlament_' + c + '_' + d + '_pop'] || 0;
+            for (var p of Q.parties) {
+                if (p == 'abstain') continue;
+                var votes = weight * (Q[p + '_parlament_' + c + '_' + d + '_support'] || 0);
+                valid += votes;
+                if (p == 'icv') allied += votes;
+            }
+        }
+    }
+    var congresoValid = Q.congreso_parties_catalunya.reduce((sum, p) => sum + (Q[p + '_congreso_catalunya_support'] || 0), 0);
+    var nationalLeft = (Q.podemos_congreso_catalunya_support || 0) + (Q.up_congreso_catalunya_support || 0);
+    var congresoShare = congresoValid > 0 ? 100 * nationalLeft / congresoValid : 0;
+    var allyShare = valid > 0 ? 100 * allied / valid : 0;
+    Q.csqp_autonomy_credible = allyShare >= Math.max(5, congresoShare * autonomyRatio);
+    Q.csqp_oliveres_cost = Math.max(0, (Q.icv_relations >= 65 ? 1 : 2) - (Q.csqp_podemos_confederal ? 1 : 0));
+
     Q.csqp_formed = true;
     Q.parlament_current_icv = "csqp";
     Q.csqp_parlament_s = Q.icv_parlament_s;
@@ -92,22 +114,26 @@ Despite his popularity, the fact is that Arcadi Oliveres is asking for a level o
 
 @oliveres_lead
 title: Arcadi Oliveres has it his way
-subtitle: With our support, he can gather enough momentum to make this work [? if csqp_relations <65: \[-2 resources\] ?][? if csqp_relations >= 65: \[-1 resources\] ?]
-choose-if: ((csqp_relations >= 65 and party_resources >= 1) or (csqp_relations >= 55 and party_resources >= 2)) and (podemos_congreso_catalunya_support < 15 and up_congreso_catalunya_support < 15)
-unavailable-subtitle: [? if podemos_congreso_catalunya_support >= 15 or up_congreso_catalunya_support >= 15: Podemos has too much influence already, and is not willing to let go of this amount of party powers. ?][? if csqp_relations < 55: Our relations with ICV-EUiA (now CSQP) are not good enough. ?][? if (csqp_relations >= 65 and party_resources < 1) or (csqp_relations >= 55 and csqp_relations < 65 and party_resources < 2): Not enough resources. ?]
+subtitle: With our support, he can gather enough momentum to make this work [? if csqp_oliveres_cost = 2: \[-2 resources\] ?][? if csqp_oliveres_cost = 1: \[-1 resources\] ?]
+choose-if: {! return Q.csqp_autonomy_credible && Q.csqp_relations >= 55 && Q.party_resources >= Q.csqp_oliveres_cost; !}
+unavailable-subtitle: [? if not csqp_autonomy_credible: Podemos has too much influence already, and is not willing to let go of this amount of party powers. ?][? if csqp_relations < 55: Our relations with ICV-EUiA (now CSQP) are not good enough. ?][? if party_resources < csqp_oliveres_cost: Not enough resources. ?]
 on-arrival: {!
-    Q.csqp_leader = "Arcadi Oliveres";
-    Q.csqp_leader_gender = "f";
-    G.setText(Q, "csqp_ideology", G.text("Anticapitalism, Plurinationalism"));
-    
-    Q.cup_parlament_barcelona_ind_support -= 1.5;
-    Q.csqp_parlament_barcelona_ind_support += 1.5;
-    Q.cup_parlament_barcelona_middle_support -= 0.7;
-    Q.csqp_parlament_barcelona_middle_support += 0.7;
-    Q.cup_parlament_barcelona_young_support -= 1;
-    Q.csqp_parlament_barcelona_young_support += 1;
-    Q.cup_parlament_barcelona_unemployed_support -= 0.75;
-    Q.csqp_parlament_barcelona_unemployed_support += 0.75; 
+    if (Q.parlament_current_icv == 'csqp' && Q.csqp_leader == '???'
+        && Q.csqp_autonomy_credible && Q.csqp_relations >= 55 && Q.party_resources >= Q.csqp_oliveres_cost) {
+        Q.party_resources -= Q.csqp_oliveres_cost;
+        Q.csqp_leader = "Arcadi Oliveres";
+        Q.csqp_leader_gender = "m";
+        G.setText(Q, "csqp_ideology", G.text("Anticapitalism, Plurinationalism"));
+
+        Q.cup_parlament_barcelona_ind_support -= 1.5;
+        Q.csqp_parlament_barcelona_ind_support += 1.5;
+        Q.cup_parlament_barcelona_middle_support -= 0.7;
+        Q.csqp_parlament_barcelona_middle_support += 0.7;
+        Q.cup_parlament_barcelona_young_support -= 1;
+        Q.csqp_parlament_barcelona_young_support += 1;
+        Q.cup_parlament_barcelona_unemployed_support -= 0.75;
+        Q.csqp_parlament_barcelona_unemployed_support += 0.75;
+    }
 !}
 
 Thanks to some push from our end, Arcadi Oliveres has managed to secure his position at the top of the ballots for CSQP. 
@@ -118,10 +144,12 @@ Thanks to some push from our end, Arcadi Oliveres has managed to secure his posi
 title: An unclear leadership
 subtitle: Without a unifying figure, no one really has any clue as to who can even lead CSQP
 on-arrival: {!
-    Q.csqp_leader = "Lluís Rabell";
-    Q.csqp_leader_gender = "m";
-    G.setText(Q, "csqp_ideology", G.text("Anti-austerity left, Plurinationalism"));
-    // TODO: CUP option to recruit Oliveres instead?
+    if (Q.parlament_current_icv == 'csqp' && Q.csqp_leader == '???') {
+        Q.csqp_leader = "Lluís Rabell";
+        Q.csqp_leader_gender = "m";
+        G.setText(Q, "csqp_ideology", G.text("Anti-austerity left, Plurinationalism"));
+        // TODO: CUP option to recruit Oliveres instead?
+    }
 !}
 
 The inter-party and organizational fights within the coalition have ended up leaving no room for Arcadi Oliveres and his proposals. Nonetheless, the new coalition of parties does need a figurehead for the elections. Maybe because he's a less-known figure, or maybe just because he's one of the few not vetoed by anyone, Lluís Rabell seems to be the one that will end up filling that role. The long time ecologist activist and translator is now filling quite a big role.

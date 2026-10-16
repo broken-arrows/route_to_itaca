@@ -1,6 +1,19 @@
 title: A single left ballot!
 subtitle: Podemos and IU reach an agreement for the upcoming Spanish general election
-view-if: podemos_surged and not iu_in_up and year > 2015 and next_spanish_election_time - time <= 3 and next_spanish_election_time > time
+view-if: {!
+    var months = Q.next_spanish_election_time - Q.time;
+    if (!Q.podemos_surged || Q.iu_in_up || !(Q.year > 2015) || !(months > 0 && months <= 3)
+        || !(Q.iu_congreso_s < 10)
+        || !((Q.iu_congreso_rest_support || 0) < (Q.podemos_congreso_rest_support || 0) * 0.5)) return false;
+    var iu = 0, podemos = 0, psoe = 0;
+    for (var c of Q.congreso_constituencies) {
+        var weight = Q.congreso_pop[c] || 0;
+        iu += weight * (Q['iu_congreso_' + c + '_support'] || 0);
+        podemos += weight * (Q['podemos_congreso_' + c + '_support'] || 0);
+        psoe += weight * (Q['psoe_congreso_' + c + '_support'] || 0);
+    }
+    return (iu > 0 && podemos >= iu * 2) || (podemos > 0 && podemos + iu >= psoe * 0.9);
+!}
 tags: event
 new-page: true
 max-visits: 1
@@ -11,22 +24,35 @@ on-arrival: {!
         && (Q.player_party == 'erc' || Q.player_party == 'cup')
         && Q[Q.parlament_current_icv + '_relations'] >= (Q.difficulty > 0 ? 65 : 55);
     var months = Q.next_spanish_election_time - Q.time;
-    if (Q.podemos_surged && !Q.iu_in_up && months > 0 && ((Q.year > 2015 && months <= 3) || (early && months <= 6))) {
-    if (early) Q.party_resources -= 1;
-    Q.iu_in_up = true;
-    if (Q.iu_leader == 'Cayo Lara') {
-        Q.iu_leader = 'Alberto Garzón';
-        Q.iu_leader_gender = 'm';
+    var ordinary = false;
+    if (Q.year > 2015 && months > 0 && months <= 3 && Q.iu_congreso_s < 10
+        && (Q.iu_congreso_rest_support || 0) < (Q.podemos_congreso_rest_support || 0) * 0.5) {
+        var iu = 0, podemos = 0, psoe = 0;
+        for (var c of Q.congreso_constituencies) {
+            var weight = Q.congreso_pop[c] || 0;
+            iu += weight * (Q['iu_congreso_' + c + '_support'] || 0);
+            podemos += weight * (Q['podemos_congreso_' + c + '_support'] || 0);
+            psoe += weight * (Q['psoe_congreso_' + c + '_support'] || 0);
+        }
+        ordinary = (iu > 0 && podemos >= iu * 2) || (podemos > 0 && podemos + iu >= psoe * 0.9);
     }
-    for (var c of Q.congreso_constituencies) {
-        var merged = (Q['podemos_congreso_' + c + '_support'] || 0)
-                   + (Q['iu_congreso_' + c + '_support'] || 0);
-        Q['up_congreso_' + c + '_support'] = (Q['up_congreso_' + c + '_support'] || 0) + merged;
-        Q['podemos_congreso_' + c + '_support'] = 0;
-        Q['iu_congreso_' + c + '_support'] = 0;
-    }
-    G.copyText(Q, 'up_ideology', 'podemos_ideology');
-    G.reconcileCongresoLineup(Q);
+    if (Q.podemos_surged && !Q.iu_in_up && months > 0 && (ordinary || (early && months <= 6))) {
+        if (early) Q.party_resources -= 1;
+        Q.iu_in_up = true;
+        if (Q.iu_leader == 'Cayo Lara') {
+            Q.iu_leader = 'Alberto Garzón';
+            Q.iu_leader_gender = 'm';
+        }
+        for (var c of Q.congreso_constituencies) {
+            var merged = (Q['podemos_congreso_' + c + '_support'] || 0)
+                       + (Q['iu_congreso_' + c + '_support'] || 0);
+            Q['up_congreso_' + c + '_support'] = (Q['up_congreso_' + c + '_support'] || 0) + merged;
+            Q['podemos_congreso_' + c + '_support'] = 0;
+            Q['iu_congreso_' + c + '_support'] = 0;
+        }
+        G.copyText(Q, 'up_ideology', 'podemos_ideology');
+        G.reconcileCongresoLineup(Q);
+        Q.podemos_actually_podemos = true;
     }
 !}
 role: event

@@ -16,6 +16,9 @@ on-arrival: {!
     if (!Q.not_financially_responsible){
       this.achieve("financially_responsible");
     }
+    if (!Q.podemos_actually_podemos) {
+      this.achieve("no_podemos");
+    }
 
     // TODO: actual ending cards
 !}

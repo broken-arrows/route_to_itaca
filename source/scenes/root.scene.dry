@@ -857,6 +857,7 @@ on-arrival: {!
   // Achievement variables
   Q.psoe_sanchez_president_ever = false;
   Q.woman_generalitat_presidenta_ever = false;
+  Q.podemos_actually_podemos = false;
 
   // Global stuff
   Q.started = 1;

@@ -64,6 +64,13 @@
       "image": "img/achievements/quebec.svg"
     },
     {
+      "id": "no_podemos",
+      "name": "Podemos No Podemos",
+      "description": "Have Podemos not only fail to ever reach the Gobierno, but also fail to unite the left in any way.",
+      "stars": 2,
+      "image": "img/achievements/nopodemos.jpg"
+    },
+    {
       "id": "psoed",
       "name": "You've been PSOE'd",
       "description": "Make possible a PSOE-led Gobierno, only for any agreements reached to go unfulfilled.",
