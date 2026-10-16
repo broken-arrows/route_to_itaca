@@ -27,6 +27,7 @@
   var main = function (dendryUI) {
     ui = dendryUI;
     game = ui.game;
+    ui.setTextFormatter(formatText);
 
     dendryUI.dendryEngine.setGameLib(window.RTI_GAME_LIB);
 
@@ -173,7 +174,7 @@
 
   // This function allows you to modify the text before it's displayed.
   // E.g. wrapping chat-like messages in spans.
-  window.displayText = function (text) {
+  var formatText = function(text) {
     return applyWholesome(text);
   };
 
@@ -206,7 +207,7 @@
   //   ("Àngel Ros", "JxSí", "BComú", "¡TE!") silently never matched;
   // - longest match word wins when one is a prefix of another;
   // - the compiled regex/word map is cached per glossary terms array (this runs
-  //   on every rendered text run via window.displayText).
+  //   on every rendered text run via the UI renderer).
   function escapeRegex(s) {
     return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
@@ -240,7 +241,7 @@
     return _wholesomeCompiled;
   }
 
-  // Dendry calls displayText once per content fragment, not once per assembled HTML string! We need to work around that for more complex tooltips
+  // Dendry calls the formatter once per content fragment, not once per assembled HTML string! We need to work around that for more complex tooltips
   var _wholesomeInsideTag = false;
   var _wholesomeTagBuffer = "";
   var _wholesomeProtectedDepth = 0;

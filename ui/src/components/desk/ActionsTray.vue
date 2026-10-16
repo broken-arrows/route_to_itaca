@@ -60,7 +60,7 @@ function onActivate(card: CardView): void {
           <img v-if="imgSrc(card) && !broken[card.id]" :src="imgSrc(card)!" alt="" @error="broken[card.id] = true" />
           <div v-else class="portrait-placeholder" aria-hidden="true"></div>
         </div>
-        <!-- card.title reaches this app through convertLine/window.displayText,
+        <!-- card.title reaches this app through the adapter renderer,
              so a title naming a glossary term (4 of the 6 real advisor cards
              do) arrives pre-wrapped in <span data-term=…> — plain {{ }} would
              print the literal markup. Same fix as OpenDossier's cover title. -->

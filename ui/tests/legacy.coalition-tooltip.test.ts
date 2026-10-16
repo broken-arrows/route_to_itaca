@@ -2,6 +2,14 @@ import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { DendryAdapter } from '../src/engine/adapter';
+import { createRenderer } from 'dendrynexus-ten/lib/ui/content/html.js';
+
+function renderClassic(adapter: DendryAdapter, sceneId: string): string {
+  const formatText = (window as unknown as { applyWholesome: (text: string) => string }).applyWholesome;
+  return createRenderer({ formatText }).convert(
+    adapter.engine.renderContent(adapter.engine.game.scenes[sceneId].content, true),
+  );
+}
 
 const gameJs = readFileSync(resolve(import.meta.dirname, '../../out/html/game.js'), 'utf8');
 const gameText = readFileSync(resolve(import.meta.dirname, '../../out/game.json'), 'utf8');
@@ -90,7 +98,7 @@ describe('old-shell coalition tooltip', () => {
     new Function(gameJs)();
 
     const host = document.createElement('div');
-    host.innerHTML = adapter.renderView(sceneId);
+    host.innerHTML = renderClassic(adapter, sceneId);
     const marker = host.querySelector('.generalitat-coalition, .gobierno-coalition');
     expect(marker?.getAttribute('data-parties')).toBe(parties);
     expect(marker?.getAttribute('data-parties')).not.toContain('mytooltip');
@@ -120,7 +128,7 @@ describe('old-shell coalition tooltip', () => {
     new Function(gameJs)();
 
     const host = document.createElement('div');
-    host.innerHTML = adapter.renderView('status.government');
+    host.innerHTML = renderClassic(adapter, 'status.government');
     const seal = host.querySelector('img[src="img/cat_seal.svg"]');
     const officeholders = seal?.parentElement?.parentElement;
     const markedParties = Array.from(

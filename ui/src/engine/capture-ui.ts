@@ -1,5 +1,7 @@
 import type { RawCard, RawChoice } from 'dendrynexus-ten/lib/engine.js';
-import { convertLine } from 'dendrynexus-ten/lib/ui/content/html.js';
+import { createRenderer, type HTMLRenderer } from 'dendrynexus-ten/lib/ui/content/html.js';
+
+const plainRenderer = createRenderer();
 
 /**
  * The engine hands us titles/subtitles as dendry "content" arrays
@@ -11,19 +13,19 @@ import { convertLine } from 'dendrynexus-ten/lib/ui/content/html.js';
  * place untyped engine output enters our type system — and everything
  * downstream (adapter, Frame, views) can trust the declared string types.
  */
-function flatten(value: unknown): string {
-  return convertLine(value);
+function flatten(value: unknown, renderer: HTMLRenderer): string {
+  return renderer.convertLine(value);
 }
-function flattenOptional(value: unknown): string | undefined {
-  return value === undefined ? undefined : convertLine(value);
+function flattenOptional(value: unknown, renderer: HTMLRenderer): string | undefined {
+  return value === undefined ? undefined : renderer.convertLine(value);
 }
 
-function normalizeChoice(choice: RawChoice): RawChoice {
+function normalizeChoice(choice: RawChoice, renderer: HTMLRenderer): RawChoice {
   return {
     ...choice,
-    title: flatten(choice.title),
-    subtitle: flattenOptional(choice.subtitle),
-    unavailableSubtitle: flattenOptional(choice.unavailableSubtitle),
+    title: flatten(choice.title, renderer),
+    subtitle: flattenOptional(choice.subtitle, renderer),
+    unavailableSubtitle: flattenOptional(choice.unavailableSubtitle, renderer),
   };
 }
 
@@ -32,13 +34,14 @@ function normalizeChoice(choice: RawChoice): RawChoice {
  * result bypasses the UI's displayHand callback) can normalize a raw card's
  * title without duplicating the convertLine logic above.
  */
-export function normalizeCard(card: RawCard): RawCard {
-  return { ...card, title: flatten(card.title) };
+export function normalizeCard(card: RawCard, renderer: HTMLRenderer = plainRenderer): RawCard {
+  return { ...card, title: flatten(card.title, renderer) };
 }
 
 /** Records everything the engine "displays". A plain object satisfies the
  *  engine's UI contract (duck typing) — do not subclass UserInterface. */
 export class CaptureUI {
+  constructor(private renderer: HTMLRenderer = plainRenderer) {}
   paragraphs: unknown[] = [];
   choices: RawChoice[] = [];
   decks: RawChoice[] = [];
@@ -72,17 +75,17 @@ export class CaptureUI {
   }
   // -- choices & cards --
   displayChoices(choices: RawChoice[]): void {
-    this.choices = choices.map(normalizeChoice);
+    this.choices = choices.map((choice) => normalizeChoice(choice, this.renderer));
   }
   displayDecks(decks: RawChoice[]): void {
-    this.decks = decks.map(normalizeChoice);
+    this.decks = decks.map((choice) => normalizeChoice(choice, this.renderer));
   }
   displayHand(hand: RawCard[], maxCards?: number): void {
-    this.hand = hand.map(normalizeCard);
+    this.hand = hand.map((card) => normalizeCard(card, this.renderer));
     if (typeof maxCards === 'number') this.maxCards = maxCards;
   }
   displayPinnedCards(cards: RawChoice[]): void {
-    this.pinned = cards.map(normalizeChoice);
+    this.pinned = cards.map((choice) => normalizeChoice(choice, this.renderer));
   }
   removeChoices(): void {
     this.choices = [];

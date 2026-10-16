@@ -1,5 +1,5 @@
 import { DendryEngine, convertJSONToGame } from 'dendrynexus-ten/lib/engine.js';
-import { convert as paragraphsToHTML, convertLine } from 'dendrynexus-ten/lib/ui/content/html.js';
+import { createRenderer, type HTMLRenderer } from 'dendrynexus-ten/lib/ui/content/html.js';
 import { CaptureUI, normalizeCard } from './capture-ui';
 import { installGameLib } from '../game-bindings';
 import type {
@@ -13,18 +13,21 @@ import type {
   RoleHubView,
   ContentCatalog,
 } from './types';
-import type { GlossaryTerm } from '../glossary/mark';
+import { markGlossary, type GlossaryTerm } from '../glossary/mark';
 
 export class DendryAdapter {
   readonly engine: DendryEngine;
   private ui: CaptureUI;
+  private renderer: HTMLRenderer;
+  private glossaryCache: GlossaryTerm[] | undefined;
   // Runtime "effective role" tracker: a scene's own non-`default` role becomes
   // the new effective role; role-less (or `default`) scenes inherit the current
   // one. The `desk` reset is just this same assignment — no special case.
   private effective: EffectiveRole = 'page';
 
   private constructor(game: object) {
-    this.ui = new CaptureUI();
+    this.renderer = createRenderer({ formatText: (text) => markGlossary(text, this.glossary) });
+    this.ui = new CaptureUI(this.renderer);
     this.engine = new DendryEngine(this.ui, game);
     // The game's own code, handed to the engine — see game-bindings.ts. Must
     // happen BEFORE beginGame: content's on-arrival calls G.* on the very first
@@ -63,8 +66,10 @@ export class DendryAdapter {
   }
 
   get glossary(): GlossaryTerm[] {
+    if (this.glossaryCache) return this.glossaryCache;
     const g = this.data.glossary as { terms?: GlossaryTerm[] } | undefined;
-    return (this.localizeRegistry('glossary', g) as typeof g)?.terms ?? [];
+    // Keep the marker's compiled-regex cache effective across text fragments.
+    return this.glossaryCache = (this.localizeRegistry('glossary', g) as typeof g)?.terms ?? [];
   }
 
   /** game.json.data.achievements.achievements — see AchievementEntry. Never
@@ -104,13 +109,14 @@ export class DendryAdapter {
 
   setLocale(locale: string | null, catalog: ContentCatalog | null): void {
     this.engine.setLocale(locale, catalog);
+    this.glossaryCache = undefined;
   }
 
   /** Install a content catalog and rebuild the visible frame in place.
    * This deliberately bypasses goToScene: locale changes are presentation,
    * so neither on-arrival nor on-display actions may replay. */
   refreshLocale(locale: string, catalog: ContentCatalog): Frame | null {
-    this.engine.setLocale(locale, catalog);
+    this.setLocale(locale, catalog);
     if (!this.engine.state?.sceneId) return null;
 
     this.ui.resetTransient();
@@ -136,7 +142,7 @@ export class DendryAdapter {
       if (!scene) console.warn(`renderView: no scene "${sceneId}"`);
       return '';
     }
-    return paragraphsToHTML(this.engine.renderContent(scene.content, true));
+    return this.renderer.convert(this.engine.renderContent(scene.content, true));
   }
 
   /** Catalog lookup for strings built outside the content tree — see
@@ -174,8 +180,8 @@ export class DendryAdapter {
       id,
       choices: choices.map((choice) => ({
         id: choice.id,
-        title: convertLine(choice.title),
-        subtitle: choice.subtitle === undefined ? undefined : convertLine(choice.subtitle),
+        title: this.renderer.convertLine(choice.title),
+        subtitle: choice.subtitle === undefined ? undefined : this.renderer.convertLine(choice.subtitle),
         canChoose: !!choice.canChoose,
         tags: this.tagsFor(choice.id),
         role: this.roleFor(choice.id),
@@ -293,7 +299,7 @@ export class DendryAdapter {
     const result: DrawResult =
       raw.id === null
         ? { id: null, title: raw.title as 'no_space_in_hand' | 'no_card_in_deck' }
-        : { ...normalizeCard(raw), tags: this.tagsFor(raw.id), role: this.roleFor(raw.id) };
+        : { ...normalizeCard(raw, this.renderer), tags: this.tagsFor(raw.id), role: this.roleFor(raw.id) };
     // engine.drawCard() (engine.js:474) only re-displays the hand; rebuild
     // the rest of the frame by asking the engine to re-fire its own
     // deck/hand/pinned display for the current scene. displayChoices() is a
@@ -463,7 +469,7 @@ export class DendryAdapter {
     const scene = (this.engine.game.scenes[sceneId] ?? {}) as Record<string, unknown>;
     const ownRole = this.roleFor(sceneId);
     if (ownRole) this.effective = ownRole; // 'desk' reset is just this assignment
-    const renderContent = (paragraphs: unknown[]) => paragraphsToHTML(paragraphs);
+    const renderContent = (paragraphs: unknown[]) => this.renderer.convert(paragraphs);
     const imageOffset = this.ui.faceImageOffset;
     return {
       sceneId,

@@ -12,6 +12,7 @@
   var main = function(dendryUI) {
     ui = dendryUI;
     game = ui.game;
+    ui.setTextFormatter(formatText);
 
     // Add your custom code here.
   };
@@ -138,7 +139,7 @@
   
   // This function allows you to modify the text before it's displayed.
   // E.g. wrapping chat-like messages in spans.
-  window.displayText = function(text) {
+  var formatText = function(text) {
       return text;
   };
 

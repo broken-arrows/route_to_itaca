@@ -4,9 +4,7 @@
 // terms LIVE: coloured/bold from the compiled registry, and hoverable into a
 // paper-styled popover for any term that carries a `tooltip`.
 //
-// The terms are already marked by the time this HTML arrives — `main.ts`
-// installs `window.displayText`, which dendry calls on every rendered text
-// run (vendor/dendrynexus-ten/lib/ui/content/html.js:14), so `<span
+// The adapter-owned renderer marks terms on each text run, so `<span
 // class="term" data-term="ciu">CiU</span>` is already IN `html` before this
 // component ever sees it. This component's whole job is the LOOK: walk the
 // raw v-html DOM for `[data-term]`, apply the colour/bold from the store's

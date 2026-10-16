@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import DebugPage from '../src/views/DebugPage.vue';
 import { useGameStore } from '../src/stores/game';
 import { i18n } from '../src/i18n';
 import { miniGame, miniGameText } from './fixtures/mini-game';
-import { markGlossary, type GlossaryTerm } from '../src/glossary/mark';
+import { type GlossaryTerm } from '../src/glossary/mark';
 
 describe('DebugPage', () => {
   let pinia: ReturnType<typeof createPinia>;
@@ -76,12 +76,6 @@ describe('DebugPage — a pinned card title the engine itself marked', () => {
     data: { glossary: { terms: TERMS } },
   };
 
-  beforeEach(() => {
-    window.displayText = (text: string) => markGlossary(text, TERMS);
-  });
-  afterEach(() => {
-    delete (window as { displayText?: unknown }).displayText;
-  });
 
   it('renders the marked pinned-card title as an element, not literal tag text', async () => {
     const pinia = createPinia();

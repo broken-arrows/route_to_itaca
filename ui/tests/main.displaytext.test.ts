@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-describe('main.ts wiring: window.displayText', () => {
+describe('main.ts renderer isolation', () => {
   beforeEach(() => {
     vi.resetModules();
     document.body.innerHTML = '<div id="app"></div>';
@@ -15,13 +15,14 @@ describe('main.ts wiring: window.displayText', () => {
     document.body.innerHTML = '';
   });
 
-  it('installs window.displayText at boot', async () => {
+  it('does not install a global formatter at boot', async () => {
     await import('../src/main');
-    expect(typeof window.displayText).toBe('function');
+    expect((window as { displayText?: unknown }).displayText).toBeUndefined();
   });
 
   it('is a safe no-op before any game is loaded — never throws on an empty glossary', async () => {
     await import('../src/main');
-    expect(window.displayText!('CiU governs.')).toBe('CiU governs.');
+    const { createRenderer } = await import('dendrynexus-ten/lib/ui/content/html.js');
+    expect(createRenderer().convertLine('CiU governs.')).toBe('CiU governs.');
   });
 });

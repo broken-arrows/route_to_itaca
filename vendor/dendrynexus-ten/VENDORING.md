@@ -11,6 +11,19 @@ distributed under this repo as the fork `dendrynexus-ten`.
 
 ## How it's wired
 
+- **Explicit HTML renderers (2026-10-16):** `lib/ui/content/html.js` exports
+  `createRenderer({ formatText })`, returning `convert` and `convertLine`.
+  Instances own their callback and work without `window`. The module-level
+  conversion functions now produce unformatted HTML; `window.displayText` is
+  no longer consulted (intentional API break, no fallback). Migrate custom
+  shells by calling `ui.setTextFormatter(formatText)` in `dendryModifyUI`, before
+  rendering. Both project UIs and all four shipped HTML templates are migrated.
+  The new UI owns one renderer per adapter, shared with its capture UI. Text
+  callbacks retain their existing fragment order/lifetime; raw `magic` HTML
+  still bypasses them. This is formatting, not HTML sanitization. Direct widget
+  glossary paths remain separate. Regressions: `html.renderer.test.ts`,
+  `html.templates.test.ts`, and `legacy.coalition-tooltip.test.ts` in `ui/tests`.
+
 - **Formatted qdisplay capture (2026-10-14):** inline node arrays returned by
   qdisplays are captured as content recipes even when they have no dynamic
   dependencies. Ordinary expression arrays still use native coercion. This fixes

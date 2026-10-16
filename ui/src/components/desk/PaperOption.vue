@@ -80,7 +80,7 @@ function onKeyActivate(): void {
          escaped the markup and showed the player literal tags (e.g.
          root.start's `<span style="font-size: 1.1em;">Start game</span>` on
          the very first screen). convertLine also passes through
-         window.displayText per text run (same as the prose paragraphs), so a
+         the adapter formatter per text run (same as the prose paragraphs), so a
          party name in a card title gets the same live colour/tooltip here. -->
     <!-- Caller-owned wrappers, NOT `<Prose class="option-title">`: Prose is
          a multi-root (fragment) component, so this component's scope id

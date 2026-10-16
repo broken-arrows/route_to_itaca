@@ -56,7 +56,7 @@
     this.bg_fade_out_time = 200;
     this.bg_fade_in_time = 1000;
     this.sound_fade_time = 2000;
-    this.contentToHTML = contentToHTML;
+    this.contentToHTML = contentToHTML.createRenderer();
 
     // sprites
     this.spriteLocs = {
@@ -88,6 +88,11 @@
     };
   };
   engine.UserInterface.makeParentOf(BrowserUserInterface);
+
+  // Install once before rendering; stateful formatters retain fragment continuity.
+  BrowserUserInterface.prototype.setTextFormatter = function (formatText) {
+    this.contentToHTML = contentToHTML.createRenderer({ formatText: formatText });
+  };
 
   BrowserUserInterface.prototype._configurePersistence = function () {
     var info = this.game.info || this.game;
@@ -136,7 +141,7 @@
     paragraphs,
     faceImage,
   ) {
-    var $html = $(contentToHTML.convert(paragraphs));
+    var $html = $(this.contentToHTML.convert(paragraphs));
     // TODO: maybe face image visibility should be controlled by a different setting?
     var hasImage = false;
     if (faceImage && this.show_portraits) {
@@ -196,10 +201,10 @@
     for (var i = 0; i < choices.length; ++i) {
       var choice = choices[i];
 
-      var title = contentToHTML.convertLine(choice.title);
+      var title = this.contentToHTML.convertLine(choice.title);
       var subtitle = "";
       if (choice.subtitle !== undefined) {
-        subtitle = contentToHTML.convertLine(choice.subtitle);
+        subtitle = this.contentToHTML.convertLine(choice.subtitle);
       }
 
       var $li = $("<li>");

@@ -132,6 +132,11 @@ declare module 'dendrynexus-ten/lib/localization.js' {
 }
 
 declare module 'dendrynexus-ten/lib/ui/content/html.js' {
+  export interface HTMLRenderer {
+    convert(paragraphs: unknown[]): string;
+    convertLine(content: unknown): string;
+  }
+  export function createRenderer(options?: { formatText?: (text: string) => string }): HTMLRenderer;
   export function convert(paragraphs: unknown[]): string;
   // Verified against vendor/dendrynexus-ten/lib/ui/content/html.js
   // (module.exports.convertLine = _contentToHTML): the engine's compiled

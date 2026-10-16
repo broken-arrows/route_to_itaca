@@ -17,7 +17,7 @@ const { t } = useI18n();
       <div v-else class="slip" data-test="out-entry">
         <!-- entry.title = the resolved card's title (stores/desk.ts's
              outTray, set from openCard.title) — same already-marked
-             convertLine/window.displayText output as OpenDossier's cover
+             adapter renderer output as OpenDossier's cover
              title; same fix, same reason (see the longer comment there). -->
         <p class="slip-title"><Prose tag="span" :html="entry.title" /></p>
         <span class="stamp" aria-hidden="true">{{ t('desk.out.resolved') }}</span>

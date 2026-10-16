@@ -6,8 +6,7 @@
  * LOOK is each UI's (see `ui/src/components/Prose.vue`).
  *
  * It has to be string surgery: engine prose arrives as an HTML string (dendry
- * calls `window.displayText(text)` on every rendered text run — see
- * `main.ts` and vendor/dendrynexus-ten/lib/ui/content/html.js:14 — so
+ * invokes the adapter-owned renderer callback on every text run, so
  * something must find the words in that string). What this version drops
  * relative to the old shell's `applyWholesome` (out/html/game.js) is its
  * habit of deciding what a match should look like: no colour, no bold, no
@@ -38,7 +37,7 @@ const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // to the glossary, while their attributes never do. Only a marker we emitted
 // ourselves is opaque, which keeps repeated marking idempotent without making
 // presentational <span>/<strong> wrappers disable glossary coverage. Dendry
-// can call displayText on a fragment that ends halfway through an opening tag
+// can call the formatter on a fragment that ends halfway through an opening tag
 // (for example before an interpolated data-summary value); that tail is still
 // markup, so it must stay opaque even though it has no closing `>` yet.
 const SEGMENTS = /(<span\b(?=[^>]*\bdata-term\s*=)[^>]*>.*?<\/span>|<[^>]+>|<[A-Za-z/][^>]*$|[^<]+)/gis;
@@ -53,7 +52,7 @@ const SEGMENTS = /(<span\b(?=[^>]*\bdata-term\s*=)[^>]*>.*?<\/span>|<[^>]+>|<[A-
 const NOT_WORD_BEFORE = '(?<![\\p{L}\\p{N}_])';
 const NOT_WORD_AFTER = '(?![\\p{L}\\p{N}_])';
 
-// This runs on EVERY text run the engine renders (window.displayText), so the
+// This runs on EVERY text run the adapter renders, so the
 // term map and the ~200-alternation regex must not be rebuilt per call. The
 // glossary array is static per game load (one JSON.parse in the adapter), so
 // its identity is a correct cache key; a new game load is a new array and a

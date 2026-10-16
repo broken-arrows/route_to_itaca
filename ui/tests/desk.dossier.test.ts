@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import { createPinia, setActivePinia } from 'pinia';
@@ -13,7 +13,7 @@ import { useGameStore } from '../src/stores/game';
 import { useDeskStore, setAnimationsForTest } from '../src/stores/desk';
 import { useSettingsStore } from '../src/stores/settings';
 import { DELAYS } from '../src/components/desk/motion';
-import { markGlossary, type GlossaryTerm } from '../src/glossary/mark';
+import { type GlossaryTerm } from '../src/glossary/mark';
 import type { ChoiceView, CardView } from '../src/engine/types';
 import uiEn from '../../source/locales/en/ui.json';
 
@@ -422,12 +422,6 @@ describe('OpenDossier — a card title the engine itself marked as a glossary te
     data: { glossary: { terms: TERMS } },
   };
 
-  beforeEach(() => {
-    window.displayText = (text: string) => markGlossary(text, TERMS);
-  });
-  afterEach(() => {
-    delete (window as { displayText?: unknown }).displayText;
-  });
 
   it('renders the marked title as a coloured element, never as literal tag text', () => {
     const game = useGameStore();
