@@ -31,6 +31,15 @@
     francisco_franco: function (Q) {
       return [{ colour: "#555555", label: "FET y de las JONS" }];
     },
+    campechano: function (Q) {
+      return [
+        { colour: "#555555", label: "FET y de las JONS", note: "former" },
+        { colour: "#464646", label: "indp." },
+      ];
+    },
+    preparao: function (Q) {
+      return [{ colour: "#464646", label: "indp." }];
+    },
     jordi_pujol: function (Q) {
       return [
         { colour: "cdc", label: "CDC" },
@@ -46,14 +55,14 @@
       }
       return [
         { colour: "pxc", label: "PxC", note: "former" },
-        { colour: "indp", label: "indp." },
+        { colour: "#464646", label: "indp." },
       ];
     },
     jordi_casacuberta: function (Q) {
       if (Q.year >= 2015) {
         return [{ colour: "fnc", label: "FNC" }];
       }
-      return [{ colour: "indp", label: "indp." }];
+      return [{ colour: "#464646", label: "indp." }];
     },
     artur_mas: function (Q) {
       var list = [{ colour: "cdc", label: "CDC" }];
@@ -198,7 +207,7 @@
         return [
           { colour: "#c11d4e", label: "Poble Lliure", note: "former" },
           { colour: "#b8a12b", label: "CUP", note: "former" },
-          { colour: "indp", label: "indp." },
+          { colour: "#464646", label: "indp." },
         ];
       }
       return [
@@ -249,7 +258,7 @@
       if (Q.csqp_formed) {
         return [{ colour: "csqp", label: "CSQP" }];
       } else {
-        return [{ colour: "indp", label: "indp." }];
+        return [{ colour: "#464646", label: "indp." }];
       }
     },
     mariano_rajoy: function (Q) {
@@ -312,7 +321,7 @@
         list.push({ colour: "psc", label: "PSC" });
       } else {
         list.push({ colour: "psc", label: "PSC", note: "former" });
-        list.push({ colour: "indp", label: "indp." });
+        list.push({ colour: "#464646", label: "indp." });
       }
       return list;
     },
@@ -326,7 +335,7 @@
       if (Q.ernest_maragall_advisor_available) {
         list.push({ colour: "erc", label: "ERC" });
       } else {
-        list.push({ colour: "indp", label: "indp." });
+        list.push({ colour: "#464646", label: "indp." });
       }
       return list;
     },
@@ -337,7 +346,7 @@
       if (Q.art155_ever) {
         return [
           { colour: "psc", label: "PSC", note: "former" },
-          { colour: "indp", label: "indp." },
+          { colour: "#464646", label: "indp." },
         ];
       } else {
         return [{ colour: "psc", label: "PSC" }];
@@ -493,14 +502,14 @@
           list.push({ colour: "fr", label: "FR" });
         } else {
           list.push({ colour: "fr", label: "FR", note: "former" });
-          list.push({ colour: "indp", label: "indp." });
+          list.push({ colour: "#464646", label: "indp." });
         }
       }
       return list;
     },
     elisenda_alamany: function (Q) {
       if (!Q.cecp_formed) {
-        return [{ colour: "indp", label: "indp." }];
+        return [{ colour: "#464646", label: "indp." }];
       }
       if (Q.ecp_formed) {
         var list = [{ colour: "cecp", label: "CECP", note: "former" }];
@@ -510,7 +519,7 @@
         if (Q.year > 2019 || (Q.year == 2019 && Q.month >= 5)) {
           list.push({ colour: "erc", label: "ERC" });
         } else {
-          list.push({ colour: "indp", label: "indp." });
+          list.push({ colour: "#464646", label: "indp." });
         }
         return list;
       }

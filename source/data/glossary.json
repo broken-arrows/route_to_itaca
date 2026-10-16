@@ -856,6 +856,36 @@
       }
     },
     {
+      "id": "campechano",
+      "match": ["Juan Carlos I"],
+      "colour": "#3e3e3e",
+      "tooltip": {
+        "title": "Juan Carlos de Borbón y Borbón",
+        "img": "img/other_leaders/juanca.jpg",
+        "ideology": "Monarchism, National Unity"
+      }
+    },
+    {
+      "id": "preparao",
+      "match": ["Felipe VI"],
+      "colour": "#3e3e3e",
+      "tooltip": {
+        "title": "Felipe de Borbón y Grecia",
+        "img": "img/other_leaders/felipe.jpg",
+        "ideology": "Monarchism, National Unity"
+      }
+    },
+    {
+      "id": "cap_per_avall",
+      "match": ["Felipe V"],
+      "colour": "#0035c2",
+      "tooltip": {
+        "title": "Felipe d'Anjou",
+        "img": "img/other_leaders/felipe_v.jpg",
+        "ideology": "Monarchism, Absolutism"
+      }
+    },
+    {
       "id": "francisco_franco",
       "match": ["Francisco Franco", "Franco"],
       "colour": "#3e3e3e",

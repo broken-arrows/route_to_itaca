@@ -1,5 +1,5 @@
 title: King Felipe VI's October 3rd address
-view-if: year = 2017 and month = 10
+view-if: rubicon and 1==0
 tags: event
 new-page: true
 max-visits: 1
@@ -8,9 +8,6 @@ on-arrival: {!
     Q.independence_movement += 4.5; 
     Q.cat_spa_relations     -= 7.5; 
     Q.social_dissent        += 7.5; 
-
-    // TODO: gate on the 1-O / referendum-held flag so this cannot fire in an
-    //       alt-history where no referendum took place (the speech was a response to it).
 !}
 role: event
 

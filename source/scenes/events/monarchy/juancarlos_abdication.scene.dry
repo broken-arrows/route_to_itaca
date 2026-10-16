@@ -1,30 +1,27 @@
-title: Abdication of Juan Carlos I
+title: Juan Carlos I abdicates!
 subtitle: Felipe VI proclaimed king
-view-if: year = 2014 and month = 6
+view-if: 1==1
+# view-if: year = 2014 and month = 6
 tags: event
 new-page: true
+face-image: img/events/juanca_abdicates.jpg
 max-visits: 1
 on-arrival: {!
-    // June 2014: Juan Carlos abdicates; Felipe VI is proclaimed. Sparks republican
-    // rallies ("volem decidir", republic-referendum demands) in Catalonia and Spain.
-    // Effect on Catalan INDEPENDENCE is minor and indirect (republican / anti-
-    // establishment energy that partly overlaps with the indy base). The monarchy's
-    // real electoral footprint was on the SPANISH stage — the "régimen del 78"
-    // delegitimisation — hence the congreso ripple below.
-    // cal: NONE — not modelled in economic_engine.py; deltas are a design judgement.
-    Q.independence_movement += 1.0;   // small republican / anti-monarchy overlap with indy
-    Q.social_dissent        += 2.0;   // republican demonstrations
-    Q.cat_spa_relations     -= 0.5;   // negligible
+    Q.independence_movement += 1.0;
+    Q.social_dissent        += 2.0;
+    Q.cat_spa_relations     -= 0.5;
 
-    // Optional congreso ripple (the "some impact on congreso" idea): the abdication
-    // crystallised the republican-left vs "régimen del 78" divide — PP/PSOE closed
-    // ranks behind Felipe VI; IU/Podemos pushed a republic referendum. Kept SMALL,
-    // and it OVERLAPS the May-2014 Podemos EP surge, so tune or remove.
     G.spaSupportInject(Q, 'podemos', 'all', 1.5, 'psoe');        // anti-casta / republican leak
     G.spaSupportInject(Q, 'erc', 'catalunya', 1.0, 'abstain');  // republican energy in Catalonia
 
-    // TODO: text and potential path for no abdication?
+    // TODO: text and potential path for no abdication? OR chance to push for a republic?
 !}
 role: event
 
-- @post_event: TODO
+= ​Juan Carlos I abdicates!
+
+After quite a few years of hard-to-defend scandals, the image of the monarchy is at a low point in Spain. From pictures of the King hunting down elephants in Botswana during the worst parts of the 2008 financial crisis to diplomatic embarrassments, talks about secret deals with the Saudi monarchy, and endless gossip scandals, there's little redeeming qualities left. Now, in an attempt to clean this image, King Juan Carlos I has communicated his will to abdicate. For that, a law is set to be readied for him in the Congreso to ensure his continued legal protection and borderline immunity.
+
+His successor to the throne: his son, now-King Felipe VI. His name does not bring any good memories to Catalans or Valencians, as he was named after Felipe V, who brutally stomped any resistance in the former Crown of Aragon in his push for centralization and the elimination of historical rights and autonomy. In any case, his reign is set to not be short of challenges, with increased republican sentiment and the very system that puts him on the throne today being put into question, who is to say what history will say about Felipe VI.
+
+- @post_event: Of course we don't even get to vote for him...

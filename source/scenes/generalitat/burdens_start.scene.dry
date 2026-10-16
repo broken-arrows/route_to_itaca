@@ -6,6 +6,7 @@ new-page: true
 on-arrival: {!
     // TBD: Burden breaking consequences event? This is now silent
     // TODO: Dynamic burdens depending on governing coalition 
+    Q.burdens_broken = false;
     Q.burdens_goal = 4;
     Q.burdens_time = 12;
 !}
