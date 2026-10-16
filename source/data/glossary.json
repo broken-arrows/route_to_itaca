@@ -1732,7 +1732,7 @@
     },
     {
       "id": "up",
-      "match": ["UP"],
+      "match": ["UP", "Unidas Podemos"],
       "display": "UP",
       "colour": "up",
       "bold": true,

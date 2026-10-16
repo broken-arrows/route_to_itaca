@@ -1073,6 +1073,23 @@
     </svg>`;
   }
 
+  function correctPartyNameForTooltip(partyId) {
+    if (!partyId || partyId == null) {
+      console.error("could not find null - undefined party");
+      return;
+    }
+    const display =
+      partyId == "up"
+        ? "UP"
+        : partyId == "te"
+          ? "¡TE!"
+          : partyId == "mes"
+            ? "MES"
+            : partyId;
+    console.log("term", display, "party", partyId);
+    return display;
+  }
+
   // ─── PUBLIC API ───────────────────────────────────────────────────────────
 
   /**
@@ -1219,15 +1236,6 @@
   // Per-constituency seat bars (no table) — same bar system as cat_polls. The
   // constituency title is floated to the top-right and lifted ~3em to reclaim
   // vertical space over the map.
-  function congresoGlossaryTerm(party) {
-    const terms = (window.glossary && window.glossary().terms) || [];
-    return (
-      terms.find((t) => (t.match || []).includes(party)) ||
-      terms.find((t) => t.colour === party && t.tooltip && t.display) ||
-      null
-    );
-  }
-
   function renderCongresoBars(panel, constituency, Q) {
     const parties = Q["congreso_parties_" + constituency] || [];
     const rows = [];
@@ -1260,18 +1268,10 @@
       const h = Math.max(3, Math.round((r.seats / maxSeats) * 70));
       const color = getPartyColor(r.party);
 
-      const term = congresoGlossaryTerm(r.party);
-      const display =
-        r.party == "up"
-          ? "UP"
-          : r.party == "te"
-            ? "¡TE!"
-            : r.party == "mes"
-              ? "MES"
-              : r.party;
+      const term = correctPartyNameForTooltip(r.party);
       const label = window.applyWholesome
-        ? window.applyWholesome(display)
-        : display.toUpperCase();
+        ? window.applyWholesome(term)
+        : term.toUpperCase();
       bars +=
         `<div class="cong-col">` +
         `<div class="cong-label">${label}</div>` +
@@ -1852,9 +1852,12 @@
 
       partiesInRegion.forEach((partyId, index) => {
         const src = PARTY_LOGO_SRC[partyId];
+        const correctedPartyName = correctPartyNameForTooltip(partyId);
 
         if (!src) {
-          console.warn(`No PARTY_LOGO_SRC configured for "${partyId}"`);
+          console.warn(
+            `No PARTY_LOGO_SRC configured for "${partyId}" (${correctedPartyName})`,
+          );
           return;
         }
 
@@ -1872,7 +1875,7 @@
         const x = anchor.x + columnStart + (columnWidth - logoSize) / 2;
         const y = anchor.y + row * (itemHeight + rowGap);
 
-        const labelWidth = getLabelWidth(partyId);
+        const labelWidth = getLabelWidth(correctedPartyName);
 
         const clipId =
           `congreso-party-logo-${interestRegion}-${anchor.x}-${anchor.y}-${partyId}-${index}`.replace(
@@ -1934,7 +1937,7 @@
         labelWrap.style.color = "#444";
         labelWrap.style.cursor = "help";
 
-        labelWrap.innerHTML = window.applyWholesome(partyId);
+        labelWrap.innerHTML = window.applyWholesome(correctedPartyName);
 
         labelBox.appendChild(labelWrap);
         group.appendChild(labelBox);

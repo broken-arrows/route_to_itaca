@@ -174,7 +174,7 @@
 
   // This function allows you to modify the text before it's displayed.
   // E.g. wrapping chat-like messages in spans.
-  var formatText = function(text) {
+  var formatText = function (text) {
     return applyWholesome(text);
   };
 
@@ -265,19 +265,17 @@
       while (_wholesomeTagStack.length > matchingIndex) {
         const entry = _wholesomeTagStack.pop();
         if (entry.protects) {
-          _wholesomeProtectedDepth = Math.max(
-            0,
-            _wholesomeProtectedDepth - 1,
-          );
+          _wholesomeProtectedDepth = Math.max(0, _wholesomeProtectedDepth - 1);
         }
       }
       return;
     }
 
     const selfClosing = /\/\s*>$/.test(tagHtml);
-    const voidElement = /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/.test(
-      tagName,
-    );
+    const voidElement =
+      /^(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)$/.test(
+        tagName,
+      );
     if (selfClosing || voidElement) return;
 
     const protects =
@@ -374,7 +372,6 @@
   // This function runs on a new page
   window.onNewPage = function () {
     var scene = window.dendryUI.dendryEngine.state.sceneId;
-    console.log("New page: " + scene);
     // Widget protocol host (out/html/widgets.js): scans for [data-widget]
     // and dispatches to the renderers above by name — replaces what used to
     // be this exact five-call sequence, duplicated across five call sites
@@ -706,9 +703,10 @@
     } else if (tooltip.infoDesc) {
       ledBy = `<br/>${tooltip.infoDesc}`;
     }
-    const ideologyText = q.ideology && qualities.hasOwnProperty(q.ideology)
-      ? qualities[q.ideology]
-      : tooltip.ideology;
+    const ideologyText =
+      q.ideology && qualities.hasOwnProperty(q.ideology)
+        ? qualities[q.ideology]
+        : tooltip.ideology;
     if (ideologyText) {
       ideology = `<br/><span class='mytooltip-ideology'>${ideologyText}</span>`;
     }

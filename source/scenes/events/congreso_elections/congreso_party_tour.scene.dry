@@ -42,7 +42,7 @@ With [? if spanish_pm_gender == "m": Presidente?][? if spanish_pm_gender == "f":
 Across Spain many parties are running in every constituency. We can count on the classics, PP and PSOE[? if psc_split: , though the latter will not be running in Catalonia after the split with the PSC?].
 [? if not iu_in_up or upyd_congreso_s > 0: There's also the traditional minor [? if not iu_in_up and upyd_congreso_s > 0: parties: UPyD and IU.?][? if iu_in_up and upyd_congreso_s > 0: right party of UPyD.?][? if not iu_in_up and upyd_congreso_s < 1: left party of IU. ?]?]
 
-[? if spa_cs_active: The new liberal right, Cs, will also be running with [+ csspa_leader +] at the forefront.?] Meanwhile, the new left[? if not iu_in_up: , Podemos, will also be striving for a spot. ?][?if iu_in_up: will be running as UP: a broad coalition, uniting Podemos and IU among others. ?][? if spa_mpais_active: [+ mpais_leader +], on the flip side, will be running against the odds with mpais. ?]
+[? if spa_cs_active: The new liberal right, Cs, will also be running with [+ csspa_leader +] at the forefront.?] Meanwhile, the new left[? if not iu_in_up: , Podemos, will also be striving for a spot. ?][?if iu_in_up:  will be running as UP: a broad coalition, uniting Podemos and IU among others. ?][? if spa_mpais_active: [+ mpais_leader +], on the flip side, will be running against the odds with mpais. ?]
 
 [? if vox_active: Last but not least, let's not forget about the renewed far-right, VOX.?]
 
@@ -81,7 +81,8 @@ go-to: choices
 
 Here in **Catalonia**, [? if player_party == "erc": [? if not (jxsi_in_congreso and erc_in_jxsi) and not jxcat_in_congreso: we'll of course be in the fight! ?][? if jxsi_in_congreso and erc_in_jxsi: as agreed, we'll be running in the unprecedented joint coalition of JxSí.?][? if jxcat_in_congreso: we'll be standing together as part of our agreed JxCat coalition.?]?][? if player_party == "cup": [? if spa_cup_active: we'll of course be running!?][? if not spa_cup_active: our party will not be running for such a foreign election!?] ERC, on their end, will be [? if jxcat_in_congreso: running as part of the JxCat coalition.?][? if erc_in_jxsi and jxsi_in_congreso: running as part of the JxSí coalition.?][? if not jxcat_in_congreso and not (erc_in_jxsi and jxsi_in_congreso): running as always.?]?] [? if not (jxsi_in_congreso or jxcat_in_congreso): Besides us, [+ parlament_current_ciu +] will also be fighting for their spot. ?]
 
-[? if spa_fr_active: Since [? if player_party == "cup": we're not running,?][? if player_party != "cup": the CUP is not running,?] it looks like FR will be taking their natural spot. ?][? if spa_cup_active: [? if player_party == "cup": We, as recently ratified, ?][? if player_party != "cup": The CUP will be breaking with its historical party line and ?] will be running. ?][+ parlament_current_icv +], on their end, will be running as part of [? if iu_in_up: UP. ?][? if not iu_in_up: Podemos. ?][? if psc_split: The PSC will, after everything, be running independently. ?][? if unio_split and unio_congreso_catalunya_support > 0: Meanwhile, after their split, UDC will also try to retain their spot. ?][? if pdcat_split and pdcat_congreso_catalunya_support > 0: Meanwhile, after their split, the pdcat will also try to retain their spot. ?]
+[? if spa_fr_active: Since [? if player_party == "cup": we're not running,?][? if player_party != "cup": the CUP is not running,?] it looks like the FR will be taking their natural spot. ?][? if spa_cup_active: [? if player_party == "cup": We, as recently ratified, ?][? if player_party != "cup": The CUP will be breaking with its historical party line and ?] will be running. ?][+ parlament_current_icv +], on their end, will be running as part of [? if iu_in_up: UP. ?][? if not iu_in_up: Podemos. ?][? if psc_split: The PSC will, after everything, be running independently. ?][? if unio_split and unio_congreso_catalunya_support > 0: Meanwhile, after their split, UDC will also try to retain their spot. ?][? if pdcat_split and pdcat_congreso_catalunya_support > 0: Meanwhile, after their split, the pdcat will also try to retain their spot. ?]
+
 
 @ppcc
 title: Valencia and the Balearic Islands
@@ -96,9 +97,9 @@ set-jump: ppcc_desc
 @ppcc_desc
 go-to: choices
 
-In **Valencia**, compromis [? if spa_compromis_active: will be also chasing representation to defend the interests of the Valencian people. ?][? if not spa_compromis_active: will be running as a part of the broad left coalition, within [? if iu_in_up: UP. ?][? if not iu_in_up: Podemos. ?]?]
+In **Valencia**, compromis [? if spa_compromis_active: will be also chasing representation to defend the interests of the Valencian people. ?][? if not spa_compromis_active: will be running as a part of the broad left coalition, within [? if iu_in_up: Unidas Podemos. ?][? if not iu_in_up: Podemos. ?]?]
 
-To the east, in the **Balearic Islands**, MES will [? if spa_mes_active: [? if spa_compromis_active: also ?] be running on its own! ?][? if not spa_mes_active: [? if not spa_compromis_active: also?] be running within [? if iu_in_up: UP. ?][? if not iu_in_up: Podemos. ?]?]
+To the east, in the **Balearic Islands**, MES will [? if spa_mes_active: [? if spa_compromis_active: also ?] be running on its own! ?][? if not spa_mes_active: [? if not spa_compromis_active: also?] be running within [? if iu_in_up: Unidas Podemos. ?][? if not iu_in_up: Podemos. ?]?]
 
 @eh
 title: Basque Country and Navarre
@@ -132,7 +133,7 @@ set-jump: galicia_desc
 @galicia_desc
 go-to: choices
 
-In **Galicia**, the BNG will [? if spa_bng_active: be running on their own, to defend their explicitly left-sovereignty stance!?][? if not spa_bng_active: will be joining up efforts with [? if iu_in_up: UP?][? if not iu_in_up: Podemos?].?]
+In **Galicia**, the BNG will [? if spa_bng_active: be running on their own, to defend their explicitly left-sovereignty stance!?][? if not spa_bng_active: will be joining up efforts with [? if iu_in_up: Unidas Podemos?][? if not iu_in_up: Podemos?].?]
 
 @others
 title: Other parties

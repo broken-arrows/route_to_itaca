@@ -22,7 +22,6 @@ for (var p of Q.parties) {
     }
     Q[p+'_parlament_pv_old'] = Q[p+'_parlament_pv'];
     Q[p+'_parlament_s_old'] = Q[p+'_parlament_s'];
-    console.log(`Party ${p} old seats: ${Q[p+'_parlament_s']}`);
 }
 Q.abstain_parlament_pv_old = Q.abstain_parlament_pv;
 
@@ -267,8 +266,6 @@ for (var constituency of Q.congreso_constituencies) {
             Q[p+'_congreso_pv_old_cat'] = Q[p+'_congreso_pv_cat'];
             Q[p+'_congreso_pv_cat'] = 0;
         }
-
-        console.log(`Party ${p} old seats: ${Q[p+'_congreso_s']}`);
     }
 }
 Q.abstain_congreso_pv_old = Q.abstain_congreso_pv;
@@ -389,13 +386,11 @@ for (var constituency of Q.congreso_constituencies) {
                 var max_seats = PROTECTED_MINORS[minor].max_seats;
                 var share = (working_votes[minor] / region_census) * 100;
                 
-                console.log(`Protected minor check for ${minor}: share ${share.toFixed(2)}% threshold ${threshold}% cap ${max_seats}`);
                 while (share >= threshold && (rest_seats[minor] || 0) < max_seats) {
                     total_party_seats[minor] += 1;
                     rest_seats[minor] = (rest_seats[minor] || 0) + 1;
                     protected_seats_awarded++;
                     share -= threshold;
-                    console.log(`  -> Awarded protected seat to ${minor}, total now ${total_party_seats[minor]}, shares left ${share.toFixed(2)}%`);
                     working_votes[minor] = 0; // Remove from main pool
                 }
             }
@@ -588,7 +583,6 @@ for (var p of Q.parties_bcn) {
     }
     Q[p+'_local_barcelona_pv_old'] = Q[p+'_local_barcelona_pv'];
     Q[p+'_local_barcelona_s_old'] = Q[p+'_local_barcelona_s'];
-    console.log(`Party ${p} old seats: ${Q[p+'_local_barcelona_s']}`);
     Q[p+'_local_barcelona_s'] = 0;
     Q[p+'_local_barcelona_pv'] = 0;
 }
