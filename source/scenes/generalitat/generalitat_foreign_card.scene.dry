@@ -2,7 +2,6 @@ title: Ministry of Foreign Affairs
 new-page: true
 view-if: generalitat_foreign_timer <= 0 and (foreign_minister_party == player_party) and not cat_caretaker_gov
 on-arrival: month_actions += 1; generalitat_foreign_timer += 4;
-is-card: true
 card-image: img/generalitat/diplocat.jpg
 face-image: img/generalitat/diplocat.jpg
 frequency: 100

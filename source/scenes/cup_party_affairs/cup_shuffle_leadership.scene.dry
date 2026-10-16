@@ -3,7 +3,6 @@ new-page: true
 view-if: cup_shuffle_leadership_timer <= 0  and player_party = "cup" and difficulty > 0
 on-arrival: cup_shuffle_leadership_timer += 4; month_actions += 1 if difficulty > 0
 frequency: 100
-is-card: true
 card-image: img/cup/congres.jpg
 tags: cup_party
 role: card-party

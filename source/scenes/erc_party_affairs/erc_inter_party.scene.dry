@@ -2,7 +2,6 @@ title: Inter-Party Relationships
 new-page: true
 view-if: erc_inter_party_timer <= 0 and player_party = "erc"
 tags: erc_party jxsi_party jxcat_party
-is-card: true
 on-arrival: month_actions += 1; erc_inter_party_timer = 6;
 card-image: img/parties/frontpopular.jpg
 face-image: img/parties/frontpopular.jpg

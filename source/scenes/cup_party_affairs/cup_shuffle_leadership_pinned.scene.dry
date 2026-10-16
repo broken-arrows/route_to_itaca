@@ -1,8 +1,6 @@
 title: Shuffle Leadership
 view-if: difficulty <= 0 and player_party = "cup"
 new-page: true
-is-card: true
-is-pinned-card: true
 card-image: img/cup/congres.jpg
 go-to: cup_shuffle_leadership
 role: pinned-action

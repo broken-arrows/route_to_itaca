@@ -56,7 +56,7 @@ import type { GameLib } from '../../source/lib/index.js';
 // set before index.js's raw-dev-server branch reads it (see the long note
 // above — this only matters for the un-transformed dev server; vitest and the
 // Rollup build resolve index.js's own `require`s directly). A new lib file adds
-// one line here. The aggregation/typing shape is deferred to phase 6 (§2.5 spec §10.1).
+// one line here. Keep this export/loading contract usable in both shells.
 import '../../source/lib/cat_engine.js';
 import '../../source/lib/allegiances.js';
 import '../../source/lib/brief.js';

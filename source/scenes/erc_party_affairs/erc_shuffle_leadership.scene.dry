@@ -3,7 +3,6 @@ new-page: true
 view-if: erc_shuffle_leadership_timer <= 0 and player_party = "erc" and difficulty > 0
 on-arrival: erc_shuffle_leadership_timer += 4; month_actions += 1 if difficulty > 0
 frequency: 100
-is-card: true
 card-image: img/erc/congres.jepg
 tags: erc_party jxsi_party jxcat_party
 role: card-party

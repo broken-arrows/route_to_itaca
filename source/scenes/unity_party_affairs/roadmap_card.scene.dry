@@ -3,7 +3,6 @@ new-page: true
 view-if: roadmap_card_timer = 0 and year > 2012 and player_roadmap != 0 and not broken_roadmap
 on-arrival: month_actions += 1; roadmap_card_timer = 6
 max-visits: 36
-is-card: true
 card-image: img/events/full_de_ruta_anc.jpg
 frequency: 100
 tags: erc_party cup_party jxsi_party jxcat_party

@@ -1,6 +1,5 @@
 title: Unitary Campaigning
 new-page: true
-is-card: true
 view-if: not rubicon or unity_campaigning <= 0
 on-arrival: month_actions += 1; unity_campaigning = 2 if rubicon
 card-image: img/jxsi/campaign.jpeg

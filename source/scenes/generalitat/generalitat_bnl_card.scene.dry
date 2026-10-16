@@ -7,7 +7,6 @@ on-arrival: {!
     Q.bnl_controls_economy = controlledParties.includes(Q.economy_minister_party);
     (function () { var labels = [G.text("Strongly restrictive"), G.text("Restrictive"), G.text("Ordinary"), G.text("Permissive"), G.text("Strongly permissive")]; var label = labels[Q.bnl_tourism_level + 2]; if (label) G.setText(Q, "bnl_tourism_name", label); else Q.bnl_tourism_name = undefined; })();
 !}
-is-card: true
 new-page: true
 card-image: img/generalitat/treball.jpg
 face-image: img/generalitat/treball.jpg

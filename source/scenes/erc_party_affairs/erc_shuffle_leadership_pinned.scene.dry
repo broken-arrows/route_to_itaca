@@ -1,8 +1,6 @@
 title: Shuffle Leadership
 view-if: difficulty <= 0 and player_party = "erc"
 new-page: true
-is-card: true
-is-pinned-card: true
 card-image: img/erc/congres.png
 go-to: erc_shuffle_leadership
 role: pinned-action

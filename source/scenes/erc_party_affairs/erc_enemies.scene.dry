@@ -3,7 +3,6 @@ new-page: true
 view-if: year <= 2014 and erc_enemies_timer <= 0
 on-arrival: month_actions += 1; erc_enemies_timer = 18
 max-visits: 3
-is-card: true
 card-image: img/erc/nomesfaltestu.jpg
 face-image: img/erc/nomesfaltestu.jpg
 tags: erc_party

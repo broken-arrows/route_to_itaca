@@ -5,11 +5,12 @@ var path = require('path');
 var pathToFileURL = require('url').pathToFileURL;
 var utils = require('../utils');
 var auditCompiledGame = require('../../audit').auditCompiledGame;
+var auditSourceFiles = require('../../audit').auditSourceFiles;
 
 var cmdAudit = new utils.Command('audit');
 cmdAudit.createArgumentParser = function(subparsers) {
   var parser = subparsers.addParser(this.name, {
-    help: 'Audit a compiled game for browser globals and unknown content markers.'
+    help: 'Audit compiled content and configured source authoring rules.'
   });
   parser.addArgument(['project'], {
     nargs: '?',
@@ -38,6 +39,11 @@ cmdAudit.run = function(args, callback) {
         throw new TypeError('Audit config ' + key + ' must be an array');
       }
     });
+    var deprecated = config.deprecatedSceneProperties;
+    if (deprecated !== undefined && (!deprecated || typeof deprecated !== 'object' ||
+        Array.isArray(deprecated) || Object.values(deprecated).some(function(value) { return typeof value !== 'string'; }))) {
+      throw new TypeError('Audit config deprecatedSceneProperties must map property names to replacement guidance');
+    }
     var result = auditCompiledGame(JSON.parse(fs.readFileSync(compiled, 'utf8')), config);
     result.violations.forEach(function(v) {
       console.error('Browser global in ' + v.sceneId + ' (' + v.hit + '): ' + v.source);
@@ -47,9 +53,26 @@ cmdAudit.run = function(args, callback) {
     if (result.violations.length || result.unknownWidgets.length || result.unknownDerives.length) {
       throw new Error('Game audit failed');
     }
-    console.log('Game audit clean (' + result.sceneCount + ' scenes, ' +
-      result.widgetCount + ' widgets, ' + result.deriveCount + ' derivations)');
-    callback(null);
+    function finish() {
+      console.log('Game audit clean (' + result.sceneCount + ' scenes, ' +
+        result.widgetCount + ' widgets, ' + result.deriveCount + ' derivations)');
+      callback(null);
+    }
+    if (!deprecated || !Object.keys(deprecated).length) return finish();
+    // Read current source even when game.json is already up to date. Derived
+    // compiled flags must not hide reintroduced authoring declarations.
+    utils.fetchContent(path.join(project, 'source'), function(err, files) {
+      if (err) return callback(err);
+      auditSourceFiles(files, config, function(err, violations) {
+        if (err) return callback(err);
+        violations.forEach(function(v) {
+          console.error(v.location + ': Deprecated scene property "' + v.property + '" in ' +
+            v.sceneId + '. ' + v.replacement);
+        });
+        if (violations.length) return callback(new Error('Source authoring audit failed'));
+        finish();
+      });
+    });
   }).catch(callback);
 };
 

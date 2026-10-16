@@ -132,8 +132,8 @@ export interface GameLib {
   }>;
   // NB: registerLaw / deactivateLaw are exported too but omitted here — content
   // (compiled .dry, not TS-checked) is their only caller, so a precise type
-  // buys nothing. The `source/lib/` aggregation/typing shape is deferred to
-  // phase 6 (see the §2.5 spec §10.1).
+  // buys nothing. Keep the shared aggregation and browser export usable by
+  // both supported shells.
 }
 declare const gameLib: GameLib;
 export default gameLib;

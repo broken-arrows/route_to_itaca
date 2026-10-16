@@ -7,7 +7,6 @@ on-arrival: {!
     Q.public_salary_raise_pending = Q.public_salary_prepared_level != null &&
         Q.public_salary_prepared_level === Q.public_salary_level + 1;
 !}
-is-card: true
 card-image: img/generalitat/economia.png
 face-image: img/generalitat/economia.png
 frequency: 100

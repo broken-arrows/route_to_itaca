@@ -1,6 +1,5 @@
 title: Next month
 set-bg: img/salodaurat.jpg
-is-hand: true
 on-arrival: {!
 if (Q.advisor_action_timer <= 0) {
     Q.pinnedCardsDescription = 'Advisors - an action is available.';
@@ -46,7 +45,6 @@ role: desk
 - @parlament_card
 
 @main_easy
-is-hand: true
 set-bg: img/salodaurat.jpg
 on-arrival: {!
 if (Q.advisor_action_timer <= 0) {
@@ -94,7 +92,6 @@ role: desk
 
 
 @main_hard
-is-hand: true
 set-bg: img/salodaurat.jpg
 on-arrival: {!
 if (Q.advisor_action_timer <= 0) {
@@ -142,7 +139,6 @@ role: desk
 @party_erc
 title: Party Affairs
 card-image: img/erc/araerc.jpg
-is-deck: true
 view-if: player_party = "erc" and not erc_in_jxsi and not erc_in_jxcat
 role: deck-party
 
@@ -151,7 +147,6 @@ role: deck-party
 @party_cup
 title: Party Affairs
 card-image: img/cup/seunacional.jpg
-is-deck: true
 view-if: player_party = "cup" and not cup_in_jxsi and not cup_in_jxcat
 role: deck-party
 
@@ -160,7 +155,6 @@ role: deck-party
 @party_jxsi
 title: Party Affairs
 card-image: img/jxsi/cartell.jpg
-is-deck: true
 view-if: player_in_jxsi
 role: deck-party
 
@@ -169,7 +163,6 @@ role: deck-party
 @party_jxcat
 title: Party Affairs
 card-image: img/jxsi/cartell.jpg
-is-deck: true
 view-if: player_in_jxcat
 role: deck-party
 
@@ -181,7 +174,6 @@ role: deck-party
 title: Generalitat
 view-if: (player_party = "erc" and erc_in_gob) or (player_party = 'cup' and cup_in_gob)
 card-image: img/generalitat.jpg
-is-deck: true
 role: deck-gov
 
 - #generalitat
@@ -190,7 +182,6 @@ role: deck-gov
 title: DEBUG!
 view-if: debug
 card-image: img/flags/estelada.png
-is-deck: true
 role: deck
 
 - #debug_card

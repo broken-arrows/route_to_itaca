@@ -1,6 +1,5 @@
 title: DEBUG!
 new-page: true
-is-card: true
 tags: debug_card
 view-if: debug
 card-image: img/achievements/perrosanxe.png

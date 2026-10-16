@@ -8,7 +8,6 @@ on-arrival: {!
         Q.education_prepared_level === Q.education_spending + 1;
 !}
 call: generalitat_education_card.policy_prepare
-is-card: true
 card-image: img/generalitat/educacio.jpg
 face-image: img/generalitat/educacio.jpg
 frequency: 100

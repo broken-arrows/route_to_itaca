@@ -7,7 +7,6 @@ on-arrival: {!
     Q.healthcare_raise_pending = Q.healthcare_prepared_level != null &&
         Q.healthcare_prepared_level === Q.healthcare_spending + 1;
 !}
-is-card: true
 card-image: img/generalitat/catsalut.jpg
 face-image: img/generalitat/catsalut.jpg
 frequency: 100

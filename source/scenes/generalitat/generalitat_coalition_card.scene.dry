@@ -1,6 +1,5 @@
 title: Coalition Affairs
 view-if: (((player_party = "erc" and erc_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) or ((player_party = "cup" and cup_in_gob))) and cat_coalition_dissent > 30 and generalitat_coalition_timer <= 0 and not cat_caretaker_gov
-is-card: true
 face-image: img/generalitat/abracada.jpg
 card-image: img/generalitat/abracada.jpg
 frequency: 100

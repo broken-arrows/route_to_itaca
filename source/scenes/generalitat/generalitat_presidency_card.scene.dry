@@ -6,7 +6,6 @@ on-arrival: {!
     Q.generalitat_presidency_timer += 4;
 !}
 call: generalitat_coalition_card.prepare
-is-card: true
 card-image: img/generalitat/office.jpg
 face-image: img/generalitat/office.jpg
 frequency: 100

@@ -2,7 +2,6 @@ title: Fundraising
 new-page: true
 view-if: erc_fundraising_timer <= 0
 on-arrival: erc_fundraising_timer = 12; month_actions += 1
-is-card: true
 card-image: img/erc/executiva.jpg
 face-image: img/erc/executiva.jpg
 tags: erc_party

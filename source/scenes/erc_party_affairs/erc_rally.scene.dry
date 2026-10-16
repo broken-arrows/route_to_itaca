@@ -1,6 +1,5 @@
 title: Political Rally
 new-page: true
-is-card: true
 tags: erc_party
 view-if: erc_rally_timer <= 0 and (year > 2012 or month >= 9)
 on-arrival: month_actions += 1; erc_rally_timer = 6 if next_election_time - time > 6 and not (year == 2012); erc_rally_timer = 2 if (year == 2012) or (next_election_time - time <= 6)

@@ -1,6 +1,5 @@
 title: Coalition Disunity
 new-page: true
-is-card: true
 view-if: (player_in_jxsi and jxsi_dissent >= 30) or (player_in_jxcat and jxcat_dissent >= 30) and unity_disunity_timer = 0
 card-image: img/jxsi/unity.jpg
 face-image: img/jxsi/unity.jpg

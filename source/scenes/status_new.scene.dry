@@ -7,9 +7,9 @@ is-special: true
 # The old shell does not read this file at all: it renders `status.scene.dry`,
 # whose five sub-scenes its five hardcoded tab buttons name directly. The two
 # scenes are deliberate duplicates of the same Q data for as long as both UIs
-# ship — the old shell is frozen and dies with phase 6, taking `status.scene.dry`
-# with it. Drift between them is expected and accepted (user, 2026-07-23); the
-# alternative was writing every Brief widget twice.
+# ship. Classic remains supported with `status.scene.dry`; keep its gameplay
+# information usable alongside this Brief. Presentation may differ between
+# shells without duplicating every Brief widget.
 
 - @status_new.overview
 - @status_new.party

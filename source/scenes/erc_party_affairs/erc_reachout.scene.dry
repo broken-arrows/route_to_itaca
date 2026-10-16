@@ -15,7 +15,6 @@ on-arrival: {!
     Q.congreso_party_tour_highlight = ["galicia", "ppcc", "eh", "catalonia"];
 !}
 max-visits: 36
-is-card: true
 card-image: img/erc/ararepubliques.jpg
 # face-image: img/erc/ararepubliques.jpg
 frequency: 100

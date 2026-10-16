@@ -11,7 +11,8 @@
  *
  * Dual-consumable on purpose: Vite/vitest `require` it; the OLD shell has no
  * bundler and loads it as a plain <script>, so it also publishes
- * `window.RTI_GAME_LIB`. That fallback dies with the old shell at phase 6.
+ * `window.RTI_GAME_LIB`. Keep this path for the supported Classic shell and
+ * the new UI's development-time CommonJS fallback.
  *
  * Everything here must be PURE and DOM-FREE. That is what makes it shareable —
  * `cat_engine.js` has zero `d3`/`document` references, which is the only reason

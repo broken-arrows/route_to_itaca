@@ -1,6 +1,5 @@
 title: International Relations
 new-page: true
-is-card: true
 tags: jxsi_party jxcat_party
 view-if: unity_international_timer <= 0
 on-arrival: month_actions += 1; unity_international_timer += 6;

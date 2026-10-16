@@ -11,6 +11,16 @@ distributed under this repo as the fork `dendrynexus-ten`.
 
 ## How it's wired
 
+- **Role-only project authoring (2026-10-16):** audit config can declare
+  `deprecatedSceneProperties`, mapping source attribute names to replacement
+  guidance. `auditSourceFiles` uses the DRY parser (including subsection headers,
+  property aliases and file/line metadata), separately from compiled-content
+  checks. The CLI checks current source even when compiled content is unchanged.
+  This project forbids authored `is-card`, `is-pinned-card`, `is-hand`, `is-deck`;
+  roles derive the same internal mechanical fields for both UIs. General parser
+  support and explicit overrides remain available to other engine consumers.
+  No runtime/save changes or compiler-wide deprecation mode are introduced.
+
 - **Explicit HTML renderers (2026-10-16):** `lib/ui/content/html.js` exports
   `createRenderer({ formatText })`, returning `convert` and `convertLine`.
   Instances own their callback and work without `window`. The module-level

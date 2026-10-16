@@ -1,6 +1,5 @@
 title: Unitary Rally
 new-page: true
-is-card: true
 view-if: unity_rally_timer <= 0
 on-arrival: unity_rally_timer = 6 if next_election_time - time > 6; unity_rally_timer = 2 if next_election_time - time <= 6; month_actions += 1
 card-image: img/jxsi/rally.jpg
