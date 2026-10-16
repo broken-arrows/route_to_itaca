@@ -380,6 +380,26 @@
         }
       }
     },
+    cayo_lara: function (Q) {
+      return [
+        { colour: "#d70729", label: "PCE" },
+        { colour: "iu", label: "IU" },
+      ];
+    },
+    alberto_garzon: function (Q) {
+      if (Q.iu_in_up) {
+        return [
+          { colour: "#d70729", label: "PCE" },
+          { colour: "iu", label: "IU" },
+          { colour: "up", label: "UP" },
+        ];
+      } else {
+        return [
+          { colour: "#d70729", label: "PCE" },
+          { colour: "iu", label: "IU" },
+        ];
+      }
+    },
     pablo_iglesias: function (Q) {
       if (Q.iu_in_up) {
         return [
@@ -399,6 +419,16 @@
       } else {
         return [{ colour: "podemos", label: "Podemos" }];
       }
+    },
+    carmena: function (Q) {
+      var list = [
+        { colour: "#d70729", label: "PCE", note: "former" },
+        { colour: "--mpais", label: "Ahora Madrid" },
+      ];
+      if (Q.spa_mpais_active) {
+        list.push({ colour: "--mpais", label: "Más País" });
+      }
+      return list;
     },
     errejon: function (Q) {
       if (Q.spa_mpais_active) {

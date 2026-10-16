@@ -1,12 +1,23 @@
-title: Unidas Podemos
-view-if: next_spanish_election_time - time <= 3 and up_formation_timer <= 0 
+title: A single left ballot!
+subtitle: Podemos and IU reach an agreement for the upcoming Spanish general election
+view-if: podemos_surged and not iu_in_up and year > 2015 and next_spanish_election_time - time <= 3 and next_spanish_election_time > time
 tags: event
 new-page: true
 max-visits: 1
+face-image: img/events/unidas_podemos_2.jpg
 on-arrival: {!
-    Q.up_formation_timer = 6
-
+    var early = Q.year <= 2015 && (Q.podemos_ideology || '').includes('Confederalism')
+        && Q.podemos_early_union_credible && Q.party_resources >= 1
+        && (Q.player_party == 'erc' || Q.player_party == 'cup')
+        && Q[Q.parlament_current_icv + '_relations'] >= (Q.difficulty > 0 ? 65 : 55);
+    var months = Q.next_spanish_election_time - Q.time;
+    if (Q.podemos_surged && !Q.iu_in_up && months > 0 && ((Q.year > 2015 && months <= 3) || (early && months <= 6))) {
+    if (early) Q.party_resources -= 1;
     Q.iu_in_up = true;
+    if (Q.iu_leader == 'Cayo Lara') {
+        Q.iu_leader = 'Alberto Garzón';
+        Q.iu_leader_gender = 'm';
+    }
     for (var c of Q.congreso_constituencies) {
         var merged = (Q['podemos_congreso_' + c + '_support'] || 0)
                    + (Q['iu_congreso_' + c + '_support'] || 0);
@@ -14,7 +25,14 @@ on-arrival: {!
         Q['podemos_congreso_' + c + '_support'] = 0;
         Q['iu_congreso_' + c + '_support'] = 0;
     }
+    G.copyText(Q, 'up_ideology', 'podemos_ideology');
+    G.reconcileCongresoLineup(Q);
+    }
 !}
 role: event
 
-- @post_event: TODO
+= A single left ballot!
+
+In a true achievement for left unity, old and new, IU and Podemos, have joined forces and will stand together. The new electoral coalition, Unidas Podemos, will be running in all circumscriptions, with adapted brands to represent some regional and local agreements in places, but generally uniform and, most importantly, centralizing the vote towards a shared platform. While [+ podemos_leader +] will be at the forefront, IU has secured the number two spot [? if year > 2015: for its new leader after Cayo Lara's resignation, Alberto Garzón.?][? if year < 2015: for its new leader, Alberto Garzón, who has taken the reigns after some convoluted weeks that have seen the party oust its leader, Cayo Lara, who questioned the agreement and was hoping to lead a IU, alternative to Podemos, in the upcoming elections.?] We'll have to see if this is enough to push the PSOE aside, though...
+
+- @post_event

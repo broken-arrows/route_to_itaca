@@ -132,7 +132,7 @@ set-jump: galicia_desc
 @galicia_desc
 go-to: choices
 
-In **Galicia**, the BNG will [? if spa_bng_active: be running on their own, to defend their explicitly left-sovereignty stance!?][? if not spa_bng_active: will be joining up efforts with the broad UP coalition.?]
+In **Galicia**, the BNG will [? if spa_bng_active: be running on their own, to defend their explicitly left-sovereignty stance!?][? if not spa_bng_active: will be joining up efforts with [? if iu_in_up: UP?][? if not iu_in_up: Podemos?].?]
 
 @others
 title: Other parties

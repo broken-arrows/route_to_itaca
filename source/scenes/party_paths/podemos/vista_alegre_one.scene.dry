@@ -7,7 +7,37 @@ new-page: true
 max-visits: 1
 face-image: img/events/vistaalegre0.webp
 on-arrival: {!
-
+    // Compare population-weighted valid-vote shares across contests.
+    var ally = Q.parlament_current_icv || 'icv';
+    var valid = 0, allied = 0, cup = 0;
+    for (var c of Q.parlament_constituencies) {
+        for (var d of Q.parlament_demographics) {
+            var weight = Q['parlament_' + c + '_' + d + '_pop'] || 0;
+            for (var p of Q.parties) {
+                if (p == 'abstain') continue;
+                var votes = weight * (Q[p + '_parlament_' + c + '_' + d + '_support'] || 0);
+                valid += votes;
+                if (p == ally) allied += votes;
+                if (p == 'cup') cup += votes;
+            }
+        }
+    }
+    var congresoValid = Q.congreso_parties_catalunya.reduce((sum, p) => sum + (Q[p + '_congreso_catalunya_support'] || 0), 0);
+    var nationalLeft = (Q.podemos_congreso_catalunya_support || 0) + (Q.up_congreso_catalunya_support || 0);
+    var congresoShare = congresoValid > 0 ? 100 * nationalLeft / congresoValid : 0;
+    var allyShare = valid > 0 ? 100 * allied / valid : 0;
+    var cupShare = valid > 0 ? 100 * cup / valid : 0;
+    var localValid = Q.parties_bcn.reduce((sum, p) => sum + (Q[p + '_local_barcelona_support'] || 0), 0);
+    var localLeft = (Q.icv_local_barcelona_support || 0) + (Q.bcomu_local_barcelona_support || 0);
+    var localShare = localValid > 0 ? 100 * localLeft / localValid : 0;
+    // Provisional: autonomous allies retain 60% of the national umbrella's
+    // appeal, or a CUP player demonstrates credible assembly-based strength.
+    Q.podemos_autonomy_credible = allyShare >= Math.max(5, congresoShare * 0.6)
+        || localShare >= Math.max(5, congresoShare * 0.6)
+        || (Q.player_party == 'cup' && cupShare >= Math.max(5, congresoShare * 0.4));
+    Q.podemos_relations_required = Q.difficulty > 0 ? 65 : 55;
+    Q.podemos_player_access = Q.player_party == 'erc' || Q.player_party == 'cup';
+    Q.podemos_relations_ok = Q[ally + '_relations'] >= Q.podemos_relations_required;
 !}
 
 = First-ever ​Podemos party congress
@@ -24,15 +54,47 @@ The party congress in Vistalegre is going to be the final decision moment before
 @one
 title: Podemos becomes a centralized party
 subtitle: Pablo Iglesias will have it his way.
+on-arrival: {!
+    if (Q.podemos_vista_alegre_one_trigger) {
+        Q.podemos_vista_alegre_one_trigger = false;
+        G.setText(Q, 'podemos_ideology', G.text('Anti-austerity Left, Plurinationalism'));
+        for (var c of Q.congreso_constituencies) {
+            if (c == 'rest') G.spaSupportInject(Q, 'podemos', c, 0.75, 'abstain');
+            else G.spaSupportInject(Q, 'abstain', c, 0.75, 'podemos');
+        }
+        Q.podemos_vista_alegre_two_countdown = 28;
+        if (!Q.countdowns.includes('podemos_vista_alegre_two')) Q.countdowns.push('podemos_vista_alegre_two');
+    }
+!}
 
 Unsurprisingly it the remarkable media presence and undoubted leadership of Pablo Iglesias has tipped the scales in his favour. Podemos now begins the process of party formation not so dissimilar to their ancestors.
 
 - @post_event: Another lost opportunity, and more of the same for the Spanish left...
 
 @many
-title: The "circles" remain
-subtitle: The original ideas of intra-party democratization win the debate.
+title: The "circles" remain the main power holders
+subtitle: We'd have to push some social advocacy groups out of their comfort zone to make this even a possibility. \[-1 resources\]
+choose-if: {! return Q.podemos_autonomy_credible && Q.party_resources >= 1 && (Q.player_party == 'erc' || Q.player_party == 'cup') && Q[Q.parlament_current_icv + '_relations'] >= (Q.difficulty > 0 ? 65 : 55); !}
+unavailable-subtitle: [? if not podemos_autonomy_credible: [+ parlament_current_icv +] lacks electoral weight for this challenge to work. ?][? if not podemos_player_access: We don't have any avenue to influence this decision.. ?][? if not podemos_relations_ok: We don't have good enough relations with [+ parlament_current_icv +]. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: {!
+    if (Q.podemos_vista_alegre_one_trigger && Q.podemos_autonomy_credible && Q.party_resources >= 1
+        && (Q.player_party == 'erc' || Q.player_party == 'cup')
+        && Q[Q.parlament_current_icv + '_relations'] >= (Q.difficulty > 0 ? 65 : 55)) {
+        Q.party_resources -= 1;
+        Q.podemos_vista_alegre_one_trigger = false;
+        G.setText(Q, 'podemos_ideology', G.text('Anti-austerity Left, Confederalism'));
+        for (var party of ['bng', 'compromis', 'mes']) {
+            Q['party_reaching_out_' + party] = Math.max(-2, (Q['party_reaching_out_' + party] || 0) - 1);
+        }
+        for (var c of Q.congreso_constituencies) {
+            if (c == 'rest') G.spaSupportInject(Q, 'abstain', c, 0.75, 'podemos');
+            else G.spaSupportInject(Q, 'podemos', c, 0.75, 'abstain');
+        }
+        Q.podemos_vista_alegre_two_countdown = 28;
+        if (!Q.countdowns.includes('podemos_vista_alegre_two')) Q.countdowns.push('podemos_vista_alegre_two');
+    }
+!}
 
-The unpredictable seems to have happened: the factions spearheaded by Teresa Rodríguez and Pablo Echenique have been able to out-vote the centralization proposals, and Podemos will instead start its party structure build-up as a confederal association, with heavy internal weights favouring local assemblies and grassroots participation.
+The unpredictable seems to have happened: the factions spearheaded by Teresa Rodríguez and Pablo Echenique have been able to out-vote the centralization proposals, and Podemos will instead start its party structure build-up as a confederal association, with heavy internal weights favouring local assemblies and grassroots participation. 
 
 - @post_event: We'll have to see if this really is a new chance for the Spanish left...

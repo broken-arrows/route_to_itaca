@@ -1317,12 +1317,42 @@
       }
     },
     {
+      "id": "cayo_lara",
+      "match": ["Cayo Lara", "cayo lara"],
+      "colour": "iu",
+      "tooltip": {
+        "title": "Cayo Lara Moya",
+        "img": "img/other_leaders/alberto_garzon.jpg",
+        "ideology": "Left Social Democracy, Federalism"
+      }
+    },
+    {
+      "id": "alberto_garzon",
+      "match": ["Alberto Garzón", "alberto garzon"],
+      "colour": "iu",
+      "tooltip": {
+        "title": "Alberto Carlos Garzón Espinosa",
+        "img": "img/other_leaders/cayo_lara.jpg",
+        "ideology": "Left Social Democracy, Federalism"
+      }
+    },
+    {
       "id": "errejon",
       "match": ["Íñigo Errejón", "inigo errejon"],
       "colour": "podemos",
       "tooltip": {
         "title": "Iñigo Errejón Galván",
         "img": "img/other_leaders/errejon.jpg",
+        "ideology": "Left Social Democracy, Federalism"
+      }
+    },
+    {
+      "id": "carmena",
+      "match": ["Manuela Carmena", "manuela carmena"],
+      "colour": "mpais",
+      "tooltip": {
+        "title": "Manuela Carmena Castrillo",
+        "img": "img/other_leaders/manuela_carmena.jpg",
         "ideology": "Anti-austerity left, Federalism"
       }
     },

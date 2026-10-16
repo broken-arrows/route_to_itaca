@@ -376,6 +376,9 @@
     "abs",
   ];
 
+  // Relative monthly gains, applied before family rows reach their live lists.
+  const PARLAMENT_GAIN_SCALE = { icr: 0.95, il: 0.95, cup: 0.975, cs: 1.05 };
+
   // Macro Constants
   const STRUCTURAL_GDP_DEFAULT = {
     2012: -0.8,
@@ -1606,6 +1609,13 @@
             (namedDeltas[mechanism][family] || 0) + amount;
         };
 
+        const carriers = parlamentFamilyCarriers(Q, prov, demo, activeParties);
+        const gainScale = (family) =>
+          PARLAMENT_GAIN_SCALE[family] ??
+          (carriers[family] && carriers[family] === carriers.icr
+            ? PARLAMENT_GAIN_SCALE.icr
+            : 1);
+
         // Matrix update
         const T_base = matrices.BASE_T;
         const T_demo = matrices._DELTA_T[demo] || [];
@@ -1617,7 +1627,9 @@
               T_base[i][j] +
               (T_demo[i] ? T_demo[i][j] : 0) +
               (T_prov[i] ? T_prov[i][j] : 0);
-            const contribution = val * d_vars[j];
+            let contribution = val * d_vars[j];
+            if (contribution > 0)
+              contribution *= gainScale(FAMILIES[i]);
             delta_vec[i] += contribution;
             recordParlamentVoteTrace(
               Q,
@@ -1632,7 +1644,6 @@
         const nl_d = parlament_NONLIN_DEMO_SCALE[demo];
         const nl_p = parlament_NONLIN_PROV_SCALE[prov];
 
-        const carriers = parlamentFamilyCarriers(Q, prov, demo, activeParties);
         const support = Object.fromEntries(
           [...(Q.parties || []), "abstain"].map((party) => [
             party,
@@ -1906,6 +1917,12 @@
             }
           }
         }
+        // Scale the actual recipient, including signed requests that reverse
+        // their authored direction. Settlement keeps both sides conserved.
+        for (const request of transfers) {
+          const recipient = request.amount < 0 ? request.from : request.to;
+          request.amount *= gainScale(recipient);
+        }
         applyParlamentTransfers(
           Q,
           prov,
@@ -2114,6 +2131,14 @@
     junts: "ciu",
     amaiur: "ehbildu",
     nos: "bng",
+  };
+
+  const CONGRESO_CATALUNYA_GAIN_SCALE = {
+    psoe: 1.15,
+    psc: 1.15,
+    podemos: 1.15,
+    ciu: 0.85,
+    erc: 0.85,
   };
 
   // Per unit of each driver delta, how much the canonical family shifts.
@@ -2508,6 +2533,15 @@
               P.minor_reversion_rate *
               ((MINOR_REST_TARGETS[p] || 0) - sup(Q, p, c));
           }
+        }
+      }
+
+      // Catalunya-only relative gains; canonical keys include successor lists.
+      // Leave losses and the transient polling deviation at their usual size.
+      if (c === "catalunya") {
+        for (const p of fams) {
+          if (deltas[p] > 0)
+            deltas[p] *= CONGRESO_CATALUNYA_GAIN_SCALE[coeffKey(p)] ?? 1;
         }
       }
 

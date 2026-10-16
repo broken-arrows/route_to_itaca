@@ -1,14 +1,42 @@
-title: Errejón forms Más País
-view-if: year = 2019 and month = 9
+title: Yet another party in the Spanish left
+subtitle: The disputes between Pablo Iglesias and Íñigo Errejón have reached a point of no-return.
+view-if: mas_pais_split_trigger and not spa_mpais_active
 tags: event
 new-page: true
+face-image: img/events/maspais_split.jpg
 max-visits: 1
 on-arrival: {!
-    // TODO: un-hardcode this and maybe fold into podemos event tree?
-    // Errejón breaks from Podemos for Nov 2019; Más País draws from the left carrier.
-    Q.spa_mpais_active = true;
-    G.spaSupportInject(Q, 'mpais', 'all', 1.5, 'podemos');
+    if (Q.mas_pais_split_trigger && !Q.spa_mpais_active) {
+        Q.mas_pais_split_trigger = false;
+        Q.spa_mpais_active = true;
+        // Split a share of the live Podemos/UP electorate, bounded in support points.
+        // Madrid's organizational base sits in "rest"; Navarra has no separate list.
+        for (var profile of [
+            ['rest', 0.15, 1.5],
+            ['balears', 0.10, 1.0],
+            ['galicia', 0.06, 0.6],
+            ['catalunya', 0.04, 0.4],
+            ['euskadi', 0.03, 0.3]
+        ]) {
+            var c = profile[0];
+            var donor = (Q['up_congreso_' + c + '_support'] || 0) > 0 ? 'up' : 'podemos';
+            var support = Q[donor + '_congreso_' + c + '_support'] || 0;
+            G.spaSupportInject(Q, 'mpais', c, Math.min(support * profile[1], profile[2]), 'podemos');
+        }
+        // An independent Compromis carries the alliance; otherwise Mas Pais runs separately.
+        var donor = (Q.up_congreso_valencia_support || 0) > 0 ? 'up' : 'podemos';
+        var support = Q[donor + '_congreso_valencia_support'] || 0;
+        if (Q.spa_compromis_active) {
+            G.spaSupportInject(Q, 'compromis', 'valencia', Math.min(support * 0.08, 1.0), 'podemos');
+        } else {
+            G.spaSupportInject(Q, 'mpais', 'valencia', Math.min(support * 0.05, 0.5), 'podemos');
+        }
+    }
 !}
 role: event
 
-- @post_event: TODO
+= Yet another party in the Spanish left
+
+Podemos left quite a few unresolved at the second Vistalegre congress. Chief among them, the leadership challenge presented by Íñigo Errejón to the incumbent Pablo Iglesias. With the party congress only serving to re-validate the latter's leadership, the tipping point has, no doubt, been reached. Now Íñigo Errejón, hand in hand with Madrid mayor and also formerly in Podemos' orbit Manuela Carmena, present Más País, the newest addition to the constellation of left parties in Spain. Heavily centered around their base in the Madrid metropolitan area, it's hard to bet on their broader appeal beyond the capital. Yet the blow to Podemos' is hard to understate. 
+
+- @post_event: Another party, really?

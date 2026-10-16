@@ -1,0 +1,100 @@
+title: State-wide Podemos party congress of [+ year +]
+subtitle: The party returns to Vistalegre to debate on structure and strategy
+view-if: podemos_vista_alegre_two_trigger and year > 2015 and not spa_caretaker_gov
+tags: event
+face-image: img/events/vistaalegre2.jpg
+role: event
+new-page: true
+max-visits: 1
+on-arrival: {!
+    Q.podemos_relations_required = Q.difficulty > 0 ? 65 : 55;
+    Q.podemos_player_access = Q.player_party == 'erc' || Q.player_party == 'cup';
+    Q.podemos_relations_ok = Q[Q.parlament_current_icv + '_relations'] >= Q.podemos_relations_required;
+    Q.podemos_in_government = (Q.spanish_coalition || []).some(p => p == 'podemos' || p == 'up');
+    // Snapshot the founding settlement before either outcome updates ideology.
+    Q.podemos_confederal = (Q.podemos_ideology || '').includes('Confederalism');
+    var ally = Q.parlament_current_icv || 'icv';
+    var valid = 0, allied = 0;
+    for (var c of Q.parlament_constituencies) {
+        for (var d of Q.parlament_demographics) {
+            var weight = Q['parlament_' + c + '_' + d + '_pop'] || 0;
+            for (var p of Q.parties) {
+                if (p == 'abstain') continue;
+                var votes = weight * (Q[p + '_parlament_' + c + '_' + d + '_support'] || 0);
+                valid += votes;
+                if (p == ally) allied += votes;
+            }
+        }
+    }
+    var congresoValid = Q.congreso_parties_catalunya.reduce((sum, p) => sum + (Q[p + '_congreso_catalunya_support'] || 0), 0);
+    var nationalLeft = (Q.podemos_congreso_catalunya_support || 0) + (Q.up_congreso_catalunya_support || 0);
+    var congresoShare = congresoValid > 0 ? 100 * nationalLeft / congresoValid : 0;
+    var allyShare = valid > 0 ? 100 * allied / valid : 0;
+    var sorpasso = (Q.podemos_congreso_s || 0) + (Q.up_congreso_s || 0) > (Q.psoe_congreso_s || 0);
+    Q.podemos_structure_vindicated = sorpasso || (Q.podemos_confederal && (allyShare >= Math.max(5, congresoShare * 0.6) || Q.local_barcelona_wp == 'bcomu'));
+!}
+
+= State-wide ​Podemos party congress of [+ year +]
+
+The first electoral cycle for the "new" left, which resulted in the current [+ spanish_coalition_disp +], has tested the promises made at Podemos's founding congress. [? if podemos_in_government: It's achievements to push the PP out of office clearly speaks in favour of the agreed strategy, but internal cohesion within the party remains .?][? if not podemos_in_government: Having failed to reach the government, the party now questions its decisions so far. ?]
+
+[? if not podemos_in_government and podemos_confederal: While the unexpected confederal party structure gave local organizations room to grow, there may be some true to the critics' comments about lack of coordination and focus. ?][? if not podemos_in_government and not podemos_confederal: After the failure to implement the idea of the "circles", some territorial organizations are either protesting against the lack of autonomy, or have broken away from the alliance. Meanwhile, Íñigo Errejón has presented an alternative strategy that has failed to secure the leadership's backing which, needless to say, does not do any favours to the party's internal cohesion. ?]
+
+- @default
+- @preserve
+
+@default
+title: [? if podemos_in_government: Podemos doubles down on their existing structure?][? if not podemos_in_government and podemos_confederal: A bet is made on a strengthened common coordination?][? if not podemos_in_government and not podemos_confederal: Minor party de-centralization measures ?]
+subtitle: [? if not podemos_in_government and not podemos_confederal: Pablo Echenique will be welcome to be part of the party's leadership to see this through. ?][? if not podemos_in_government and podemos_confederal: Íñigo Errejón will be welcome to be part of the party's leadership to see this through. ?][? if podemos_in_government: After all, this has worked so far to bring the party to the government.?]
+on-arrival: {!
+    if (Q.podemos_vista_alegre_two_trigger && Q.year > 2015 && !Q.spa_caretaker_gov) {
+        if (!Q.podemos_in_government) {
+            if (Q.podemos_confederal) {
+                G.setText(Q, 'podemos_ideology', G.text('Left Social Democracy, Confederalism'));
+            } else {
+                G.setText(Q, 'podemos_ideology', G.text('Anti-austerity Left, Federalism'));
+            }
+            if (Q.iu_in_up) G.copyText(Q, 'up_ideology', 'podemos_ideology');
+            // Partial changes have a smaller electoral effect than the founding decision.
+            // Existing regional alliances are not automatically reversed.
+            for (var c of Q.congreso_constituencies) {
+                var gains = Q.podemos_confederal ? c == 'rest' : c != 'rest';
+                if (gains) G.spaSupportInject(Q, 'podemos', c, 0.35, 'abstain');
+                else G.spaSupportInject(Q, 'abstain', c, 0.35, 'podemos');
+            }
+            if (!Q.podemos_confederal && !Q.spa_mpais_active) {
+                Q.mas_pais_split_countdown = 6;
+                if (!Q.countdowns.includes('mas_pais_split')) Q.countdowns.push('mas_pais_split');
+            }
+        }
+        Q.podemos_vista_alegre_two_trigger = false;
+    }
+!}
+
+[? if podemos_in_government: Unsurprisingly, the strategy and organization that has brought Podemos to the Spanish government will remain unchanged after all... ?][? if not podemos_in_government and podemos_confederal: While the original Podemos "circles" are promised that their autonomy will remain untouched, the fact is that [+ podemos_leader +], following the reforms introduced by Íñigo Errejón, is set now to enjoy wider powers, specially over electoral strategy. We'll have to see if this is enough to move the needle next time at the ballot boxes...?][? if not podemos_in_government and not podemos_confederal: Territorial organizations are set to win room to decide their own affairs as soon as the reforms introduced by Pablo Echenique take shape. [+ podemos_leader +] is set to enjoy somewhat more limited authority over a softened centralized model, yet this seems to not quite have convinced everyone. We'll have to see who and how strangled the different competing leaderships become over all of this... ?]
+
+- @post_event
+
+@preserve
+title: Can we help defend the founding ideas of [? if podemos_confederal: a confederal Podemos? ?][? if not podemos_confederal: a centrally-organized Podemos? ?]
+view-if: not podemos_in_government
+subtitle: We can try to push some social organizations with ties to both Podemos and our party to try to tip the scales. \[-1 resources\]
+choose-if: {! return Q.podemos_structure_vindicated && Q.party_resources >= 1 && (Q.player_party == 'erc' || Q.player_party == 'cup') && Q[Q.parlament_current_icv + '_relations'] >= (Q.difficulty > 0 ? 65 : 55); !}
+unavailable-subtitle: [? if not podemos_structure_vindicated: Given the electoral prospects, there is no way . ?][? if not podemos_player_access: We don't have any avenue to influence this decision. ?][? if not podemos_relations_ok: We don't have good enough relations with [+ parlament_current_icv +]. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: {!
+    if (Q.podemos_vista_alegre_two_trigger && Q.year > 2015 && !Q.spa_caretaker_gov
+        && !Q.podemos_in_government && Q.podemos_structure_vindicated && Q.party_resources >= 1
+        && (Q.player_party == 'erc' || Q.player_party == 'cup')
+        && Q[Q.parlament_current_icv + '_relations'] >= (Q.difficulty > 0 ? 65 : 55)) {
+        Q.party_resources -= 1;
+        Q.podemos_vista_alegre_two_trigger = false;
+        if (!Q.podemos_confederal && !Q.spa_mpais_active) {
+            Q.mas_pais_split_countdown = 6;
+            if (!Q.countdowns.includes('mas_pais_split')) Q.countdowns.push('mas_pais_split');
+        }
+    }
+!}
+
+With out backstage push and pulls, it seems like the defenders of the original Podemos organizational settlement have assembled enough backing to preserve it. [? if not podemos_confederal: It's unclear to what extent this solves any existing problems and disputes, but now only time will tell. ?]
+
+- @post_event

@@ -1,0 +1,42 @@
+title: A single left ballot?
+subtitle: There may be a chance for IU and Podemos to work out their differences ahead of the upcoming Spanish general election...
+view-if: {! return Q.podemos_surged && !Q.iu_in_up && Q.year <= 2015 && (Q.podemos_ideology || '').includes('Confederalism') && Q.next_spanish_election_time - Q.time <= 6 && Q.next_spanish_election_time > Q.time; !}
+tags: event
+role: event
+new-page: true
+face-image: img/events/unidas_podemos_1.jpg
+max-visits: 1
+on-arrival: {!
+    Q.podemos_player_access = Q.player_party == 'erc' || Q.player_party == 'cup';
+    Q.podemos_relations_ok = Q[Q.parlament_current_icv + '_relations'] >= Q.difficulty > 0 ? 65 : 55;
+    // Either IU risks marginalization, or unity offers a credible challenge to PSOE.
+    var iu = 0, podemos = 0, psoe = 0;
+    for (var c of Q.congreso_constituencies) {
+        var weight = Q.congreso_seats[c] || 0;
+        iu += weight * (Q['iu_congreso_' + c + '_support'] || 0);
+        podemos += weight * (Q['podemos_congreso_' + c + '_support'] || 0);
+        psoe += weight * (Q['psoe_congreso_' + c + '_support'] || 0);
+    }
+    Q.podemos_early_union_credible = (iu > 0 && podemos >= iu * 2) || (podemos > 0 && podemos + iu >= psoe * 0.9);
+!}
+
+= A sinle left ballot?
+
+In the eves of an upcoming Spanish General election that has the potential to radically shift the political landscape of the state, many to the left of the PSOE are hoping and advocating for a united ballot. Old and new left, together, avoiding the pitfalls of the electoral law by uniting all the critical left vote in a single list. Yet it is unclear that IU is willing to risk its political identity, or that Podemos is willing to accommodate them. Yet the a unique window of opportunity does exist thanks to the recent decision for a flatter, local-first Podemos can have enough flexibility to make this a reality.
+
+- @agree
+- @decline
+
+@agree
+title: Can we help mediate between the two?
+subtitle: It may be a stretch and will take some effort, but maybe a bridge can be built. \[-1 resources\]
+choose-if: {! return Q.podemos_early_union_credible && Q.party_resources >= 1 && (Q.player_party == 'erc' || Q.player_party == 'cup') && Q[Q.parlament_current_icv + '_relations'] >= (Q.difficulty > 0 ? 65 : 55); !}
+unavailable-subtitle: [? if not podemos_early_union_credible: IU is unconvinced by the idea given the current electoral prospects. ?][? if not podemos_player_access: We're in no position to influence them... ?][? if not podemos_relations_ok: We don't have good enough relations with [+ parlament_current_icv +]. ?][? if party_resources < 1: We do not have a party resource to spend. ?]
+go-to: unidas_podemos_formation
+
+@decline
+title: Leave the negotiations to them
+
+It seems like a union of the left will remain, for now, a pipe dream. Despite all efforts Podemos and IU will run separately in the upcoming Spanish general election.
+
+- @post_event

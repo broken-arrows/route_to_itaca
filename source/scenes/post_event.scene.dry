@@ -116,6 +116,10 @@ if (has_time_passed) {
     }
 
     // 2.2. Checks
+    if (Q.iu_leader == 'Cayo Lara' && Q.year >= 2015) {
+        Q.iu_leader = 'Alberto Garzón';
+        Q.iu_leader_gender = 'm';
+    }
     if (Q.roadmap_year > 0 && Q.year > Q.roadmap_year && Q.roadmap_year != 0) {
         Q.broken_roadmap = 1;
         Q.broken_roadmap_trigger = true;
@@ -180,55 +184,63 @@ if (has_time_passed) {
     }
     }
 
-    if (Q.time + 5 == Q.next_spanish_election_time || Q.time + 12 == Q.next_spanish_election_time) {
-        // Resolve parties that actually run
-        // It's a double check to allow "last minute" coalitions + allow coalition re-forming on failed elections (e.g 2015-2016 changes)
-        if (Q.party_reaching_out_bng == 2) {
-            Q.spa_bng_active = true;
-        } else if (Q.party_reaching_out_bng == -2) {
-            Q.spa_bng_active = false;
-        } else {
-            if (Q.iu_in_up) {
-                if ((Q.year <= 2016 || Q.constitution_reformed) && Q.party_reaching_out_bng < 1) {
-                    Q.spa_bng_active = false;
-                } else if (Q.party_reaching_out_bng > -1 && !(Q.psoe_congreso_galicia_support <= Q.up_congreso_galicia_support + Q.bng_congreso_galicia_support || Q.congreso_coalition_sorpasso)) {
-                    Q.spa_bng_active = true;
+    if (Q.time + 2 == Q.next_spanish_election_time || Q.time + 5 == Q.next_spanish_election_time || Q.time + 12 == Q.next_spanish_election_time) {
+        // Recheck at the election tour, after any three-month IU agreement.
+        // Extremes remain decisive; intermediate outreach has party-specific weight.
+        for (var entry of [['bng', 'galicia'], ['compromis', 'valencia'], ['mes', 'balears']]) {
+            var party = entry[0], region = entry[1];
+            var alignment = Q['party_reaching_out_' + party] || 0;
+            var left = (Q['podemos_congreso_' + region + '_support'] || 0) + (Q['up_congreso_' + region + '_support'] || 0);
+            var own = Q[party + '_congreso_' + region + '_support'] || 0;
+            // A folded ally still has an organization: do not read zero ballot
+            // support as proof that it has no bargaining power.
+            var strength = own || Q[party + '_congreso_' + region + '_stashed'] || 0;
+            var challenge = left > 0 && left + own >= (Q['psoe_congreso_' + region + '_support'] || 0);
+            var reform = !!Q.constitution_reformed;
+            var sorpasso = !!Q.congreso_coalition_sorpasso;
+            var opportunity = challenge || sorpasso;
+            // Easy makes a single outreach action decisive in either direction.
+            var decisiveAlignment = Q.difficulty < 0 ? 1 : 2;
+            var joins = false;
+            if (Q.podemos_surged && alignment <= -decisiveAlignment) {
+                joins = true;
+            } else if (Q.podemos_surged && alignment < decisiveAlignment) {
+                if (party == 'bng') {
+                    // National success matters to BNG only with favourable outreach.
+                    // Regional weakness alone does not surrender its autonomy.
+                    if (alignment < 0) {
+                        joins = opportunity;
+                    } else if (alignment == 0) {
+                        joins = challenge && (reform || (Q.iu_in_up && Q.year <= 2016));
+                    } else {
+                        joins = challenge && reform;
+                    }
+                } else if (party == 'compromis') {
+                    // Compromís seeks a viable governing alternative, not merely
+                    // shelter under a larger regional Podemos vote.
+                    if (alignment < 0) {
+                        joins = opportunity || Q.year <= 2016;
+                    } else if (alignment == 0) {
+                        joins = opportunity && (Q.year <= 2016 || Q.iu_in_up || reform);
+                    } else {
+                        joins = opportunity && reform;
+                    }
                 } else {
-                    Q.spa_bng_active = false;
+                    // For MÉS, the larger ballot also offers access to representation.
+                    // Its stashed support preserves that comparison while folded.
+                    var representation = left > 0 && left >= strength * 2;
+                    var earlyUnion = Q.iu_in_up && Q.year < 2019;
+                    if (alignment < 0) {
+                        joins = representation || opportunity || earlyUnion;
+                    } else if (alignment == 0) {
+                        joins = (representation && (earlyUnion || opportunity || reform))
+                            || (opportunity && (earlyUnion || reform));
+                    } else {
+                        joins = opportunity && reform;
+                    }
                 }
-            } else {
-                if ((Q.psoe_congreso_galicia_support <= Q.podemos_congreso_galicia_support + Q.bng_congreso_galicia_support || (Q.congreso_coalition_sorpasso && Q.constitution_reformed))) {
-                    Q.spa_bng_active = true;
-                } else {
-                    Q.spa_bng_active = false;
-                }
             }
-        }
-        if (Q.party_reaching_out_compromis == 2) {
-            Q.spa_compromis_active = true;
-        } else if (Q.party_reaching_out_compromis == -2) {
-            Q.spa_compromis_active = false;
-        } else {
-            if ((Q.year <= 2016 || Q.constitution_reformed) && Q.party_reaching_out_compromis < 1) {
-                Q.spa_compromis_active = false;
-            } else if (Q.party_reaching_out_compromis > -1 && !(Q.psoe_congreso_valencia_support <= Q.podemos_congreso_valencia_support + Q.up_congreso_valencia_support + Q.compromis_congreso_valencia_support || Q.congreso_coalition_sorpasso)) {
-                Q.spa_compromis_active = true;
-            } else {
-                Q.spa_compromis_active = false;
-            }
-        }
-        if (Q.party_reaching_out_mes == 2) {
-            Q.spa_mes_active = true;
-        } else if (Q.party_reaching_out_mes == -2) {
-            Q.spa_mes_active = false;
-        } else {
-            if (Q.iu_in_up && Q.party_reaching_out_mes < 1 && (Q.year < 2019 || Q.constitution_reformed)) {
-                Q.spa_mes_active = false;
-            } else if (Q.party_reaching_out_mes > -1 && !(Q.psoe_congreso_balears_support <= Q.podemos_congreso_balears_support + Q.up_congreso_balears_support + Q.mes_congreso_balears_support || (Q.congreso_coalition_sorpasso && Q.constitution_reformed))) {
-                Q.spa_mes_active = true;
-            } else {
-                Q.spa_mes_active = false;
-            }
+            Q['spa_' + party + '_active'] = !joins;
         }
 
         if ((Q.pp_congreso_navarra_support*0.95 <= Q.cs_congreso_navarra_support) || (Q.pp_congreso_navarra_support*0.95 <= Q.podemos_congreso_navarra_support) || (Q.pp_congreso_navarra_support*0.95 <= Q.psoe_congreso_navarra_support) || (Q.pp_congreso_navarra_support*0.95 <= Q.up_congreso_navarra_support)) {
@@ -269,6 +281,7 @@ if (has_time_passed) {
             Q.spa_te_active = true;
             G.spaSupportInject(Q, 'te', 'rest', 0.22, 'abstain');
         }
+        G.reconcileCongresoLineup(Q);
     }
 
 
