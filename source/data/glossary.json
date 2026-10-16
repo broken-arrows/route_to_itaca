@@ -1322,7 +1322,7 @@
       "colour": "iu",
       "tooltip": {
         "title": "Cayo Lara Moya",
-        "img": "img/other_leaders/alberto_garzon.jpg",
+        "img": "img/other_leaders/cayo_lara.jpg",
         "ideology": "Left Social Democracy, Federalism"
       }
     },
@@ -1332,14 +1332,14 @@
       "colour": "iu",
       "tooltip": {
         "title": "Alberto Carlos Garzón Espinosa",
-        "img": "img/other_leaders/cayo_lara.jpg",
+        "img": "img/other_leaders/alberto_garzon.jpg",
         "ideology": "Left Social Democracy, Federalism"
       }
     },
     {
       "id": "errejon",
       "match": ["Íñigo Errejón", "inigo errejon"],
-      "colour": "podemos",
+      "colour": "mpais",
       "tooltip": {
         "title": "Iñigo Errejón Galván",
         "img": "img/other_leaders/errejon.jpg",
@@ -1369,7 +1369,7 @@
     {
       "id": "teresa_rodriguez",
       "match": ["Teresa Rodríguez", "tersa rodriguez"],
-      "colour": "podemos",
+      "colour": "#24c87e",
       "tooltip": {
         "title": "María Teresa Rodríguez-Rubio Vázquez",
         "img": "img/other_leaders/teresa_rodriguez.jpg",

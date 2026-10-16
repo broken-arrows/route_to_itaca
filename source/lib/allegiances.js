@@ -423,10 +423,10 @@
     carmena: function (Q) {
       var list = [
         { colour: "#d70729", label: "PCE", note: "former" },
-        { colour: "--mpais", label: "Ahora Madrid" },
+        { colour: "mpais", label: "Ahora Madrid" },
       ];
       if (Q.spa_mpais_active) {
-        list.push({ colour: "--mpais", label: "Más País" });
+        list.push({ colour: "mpais", label: "Más País" });
       }
       return list;
     },

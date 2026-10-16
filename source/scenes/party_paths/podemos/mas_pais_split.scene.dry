@@ -1,12 +1,13 @@
 title: Yet another party in the Spanish left
 subtitle: The disputes between Pablo Iglesias and Íñigo Errejón have reached a point of no-return.
-view-if: mas_pais_split_trigger and not spa_mpais_active
+view-if: 1==1
+# view-if: mas_pais_split_trigger and not spa_mpais_active
 tags: event
 new-page: true
 face-image: img/events/maspais_split.jpg
 max-visits: 1
 on-arrival: {!
-    if (Q.mas_pais_split_trigger && !Q.spa_mpais_active) {
+    if (!Q.spa_mpais_active) {
         Q.mas_pais_split_trigger = false;
         Q.spa_mpais_active = true;
         // Split a share of the live Podemos/UP electorate, bounded in support points.
@@ -37,6 +38,6 @@ role: event
 
 = Yet another party in the Spanish left
 
-Podemos left quite a few unresolved at the second Vistalegre congress. Chief among them, the leadership challenge presented by Íñigo Errejón to the incumbent Pablo Iglesias. With the party congress only serving to re-validate the latter's leadership, the tipping point has, no doubt, been reached. Now Íñigo Errejón, hand in hand with Madrid mayor and also formerly in Podemos' orbit Manuela Carmena, present Más País, the newest addition to the constellation of left parties in Spain. Heavily centered around their base in the Madrid metropolitan area, it's hard to bet on their broader appeal beyond the capital. Yet the blow to Podemos' is hard to understate. 
+Podemos left quite a few unresolved at the second Vistalegre congress. Chief among them, the leadership challenge presented by Íñigo Errejón to the incumbent Pablo Iglesias. With the party congress only serving to re-validate the latter's leadership, the tipping point has, no doubt, been reached. Now Íñigo Errejón, hand in hand with Madrid mayor and also formerly in Podemos' orbit Manuela Carmena, present Más País, the newest addition to the constellation of left parties in Spain. Heavily centered around their base in the Madrid metropolitan area, it's hard to bet on their broader appeal beyond the capital. Yet the blow to Podemos is hard to understate. 
 
 - @post_event: Another party, really?

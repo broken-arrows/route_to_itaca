@@ -34,11 +34,11 @@ on-arrival: {!
     Q.podemos_structure_vindicated = sorpasso || (Q.podemos_confederal && (allyShare >= Math.max(5, congresoShare * 0.6) || Q.local_barcelona_wp == 'bcomu'));
 !}
 
-= State-wide ​Podemos party congress of [+ year +]
+= State-wide ​Podemos party congress
 
 The first electoral cycle for the "new" left, which resulted in the current [+ spanish_coalition_disp +], has tested the promises made at Podemos's founding congress. [? if podemos_in_government: It's achievements to push the PP out of office clearly speaks in favour of the agreed strategy, but internal cohesion within the party remains .?][? if not podemos_in_government: Having failed to reach the government, the party now questions its decisions so far. ?]
 
-[? if not podemos_in_government and podemos_confederal: While the unexpected confederal party structure gave local organizations room to grow, there may be some true to the critics' comments about lack of coordination and focus. ?][? if not podemos_in_government and not podemos_confederal: After the failure to implement the idea of the "circles", some territorial organizations are either protesting against the lack of autonomy, or have broken away from the alliance. Meanwhile, Íñigo Errejón has presented an alternative strategy that has failed to secure the leadership's backing which, needless to say, does not do any favours to the party's internal cohesion. ?]
+[? if not podemos_in_government and podemos_confederal: While the unexpected confederal party structure gave local organizations room to grow, there may be some true to the critics' comments about lack of coordination and focus. ?][? if not podemos_in_government and not podemos_confederal: After the failure to implement the idea of the "circles", some territorial organizations are either protesting against the lack of autonomy, or have broken away from the alliance. Meanwhile, Íñigo Errejón has presented an alternative strategy that has failed to secure the leadership's backing. Needless to say, all of this does not do any favours to the party's internal cohesion. ?]
 
 - @default
 - @preserve
@@ -80,7 +80,7 @@ title: Can we help defend the founding ideas of [? if podemos_confederal: a conf
 view-if: not podemos_in_government
 subtitle: We can try to push some social organizations with ties to both Podemos and our party to try to tip the scales. \[-1 resources\]
 choose-if: {! return Q.podemos_structure_vindicated && Q.party_resources >= 1 && (Q.player_party == 'erc' || Q.player_party == 'cup') && Q[Q.parlament_current_icv + '_relations'] >= (Q.difficulty > 0 ? 65 : 55); !}
-unavailable-subtitle: [? if not podemos_structure_vindicated: Given the electoral prospects, there is no way . ?][? if not podemos_player_access: We don't have any avenue to influence this decision. ?][? if not podemos_relations_ok: We don't have good enough relations with [+ parlament_current_icv +]. ?][? if party_resources < 1: Not enough resources. ?]
+unavailable-subtitle: [? if not podemos_structure_vindicated: There really is not enough force within the party supporting this direction. ?][? if not podemos_player_access: We don't have any avenue to influence this decision. ?][? if not podemos_relations_ok: We don't have good enough relations with [+ parlament_current_icv +]. ?][? if party_resources < 1: Not enough resources. ?]
 on-arrival: {!
     if (Q.podemos_vista_alegre_two_trigger && Q.year > 2015 && !Q.spa_caretaker_gov
         && !Q.podemos_in_government && Q.podemos_structure_vindicated && Q.party_resources >= 1
