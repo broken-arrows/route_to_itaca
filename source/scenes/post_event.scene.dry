@@ -302,7 +302,7 @@ if (has_time_passed) {
     // Parlament
     if (!Q.historical_mode || (Q.month % 4 == 0 && Q.week == 1) || (Q.year == Q.next_election_year && Q.month == Q.next_election_month && Q.week == Q.next_election_week)) {
         // For historical mode, only record 4 times a year + election times.
-        var party_support_results = {'date': new Date(Q.year, Q.month-1, Q.week*7)};
+        var party_support_results = {'date': new Date(Q.year, Q.month-1, Q.week*7), 'week': Q.rubicon ? Q.week : null};
         for (var p of Q.parties) {
             var p_support = 0;
             var total_pop = 0;
@@ -315,12 +315,12 @@ if (has_time_passed) {
                 }
             }
             party_support_results[p] = p_support/total_pop * 100;
-        }
+        } 
         Q.party_support_records.push(party_support_results);
     }
     // Congreso
     if (!Q.historical_mode || (Q.month % 4 == 0 && Q.week == 1) || (Q.year == Q.next_spanish_election_year && Q.month == Q.next_spanish_election_month && Q.week == Q.next_spanish_election_week)) {
-        var party_spa_support_records = {'date': new Date(Q.year, Q.month-1, Q.week*7)};
+        var party_spa_support_records = {'date': new Date(Q.year, Q.month-1, Q.week*7), 'week': Q.rubicon ? Q.week : null};
         for (var p of Q.congreso_parties) {
             var p_support = 0;
             var total_pop = 0;

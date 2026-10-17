@@ -1762,8 +1762,24 @@
     },
     {
       "id": "up",
-      "match": ["UP", "Unidas Podemos"],
+      "match": ["UP"],
       "display": "UP",
+      "colour": "up",
+      "bold": true,
+      "tooltip": {
+        "title": "United We Can",
+        "subtitle": "Unidas Podemos",
+        "img": "img/parties/logo_up.svg",
+        "q": {
+          "ledBy": "up_leader",
+          "ideology": "up_ideology"
+        }
+      }
+    },
+    {
+      "id": "unidas_podemos",
+      "match": ["Unidas Podemos"],
+      "display": "Unidas Podemos",
       "colour": "up",
       "bold": true,
       "tooltip": {

@@ -1,4 +1,4 @@
-import type { Component } from 'vue';
+import { defineAsyncComponent, type Component } from 'vue';
 import { WIDGET_NAMES } from './widget-names.mjs';
 import Hemicycle from './Hemicycle.vue';
 import BuilderPlayground from './BuilderPlayground.vue';
@@ -41,4 +41,7 @@ export const WIDGETS: Partial<Record<WidgetName, Component>> = {
   'congreso-results-map': CongresoResultsMap,
   'local-results-map': LocalResultsMap,
   'congreso-party-tour': CongresoPartyTour,
+  // History labels use Prose, which imports WidgetHost and this registry.
+  // Defer loading to avoid capturing an uninitialized component in that cycle.
+  'election-history': defineAsyncComponent(() => import('./ElectionHistory.vue')),
 };

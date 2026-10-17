@@ -48,7 +48,7 @@ describe('old-shell persistence adapter', () => {
     expect(ui.dendryEngine.setState).toHaveBeenCalledWith(expect.objectContaining({
       achievementsEligible: false, qualities: { resources: 999 },
     }));
-    expect(window.alert).toHaveBeenCalledWith(expect.stringContaining('Achievements disabled'));
+    expect(window.alert).toHaveBeenCalledWith(expect.stringMatching(/achievements disabled/i));
   });
 
   beforeEach(() => {

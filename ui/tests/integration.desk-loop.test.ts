@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { DendryAdapter } from '../src/engine/adapter';
 import { setActivePinia, createPinia } from 'pinia';
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -36,6 +37,7 @@ function simState(q: Record<string, unknown>): Record<string, number> {
 }
 
 describe('integration: the real game through the desk loop', () => {
+  afterEach(() => vi.restoreAllMocks());
   beforeEach(() => {
     localStorage.clear();
     setActivePinia(createPinia());
@@ -53,13 +55,16 @@ describe('integration: the real game through the desk loop', () => {
     expect(typeof gameLib.spaSupportInject).toBe('function');
   });
 
-  // Not seeded: `newGame()` calls `beginGame()` with no seeds, so the engine
-  // uses `Random.fromUnique()` and the drawn card varies run to run. That is
-  // intentional coverage here — the starting ERC party deck can surface any of
-  // its available cards, and the loop below must hold for whichever one comes
-  // up. Every assertion is therefore about the SHAPE of the loop (it reaches
-  // the desk, it resolves, it stamps a save), never about a specific card.
-  it.skipIf(!HAVE_GAME)('boots, reaches the desk, and resolves a real card end to end', () => {
+  // Exercise several reproducible draws with both RNG streams active. Assertions
+  // cover the complete loop and simulation changes, not a particular card.
+  it.skipIf(!HAVE_GAME).each([1, 2, 3, 4, 5, 6, 7, 8])('boots, reaches the desk, and resolves a real card end to end (seed %i)', (seed) => {
+    const begin = DendryAdapter.prototype.beginGame;
+    vi.spyOn(DendryAdapter.prototype, 'beginGame').mockImplementation(function (this: DendryAdapter) {
+      return begin.call(this, [seed]);
+    });
+    const initRandom = gameLib.initRandom;
+    vi.spyOn(gameLib, 'initRandom').mockImplementation((q, value) => initRandom(q, value ?? seed));
+    const errors = vi.spyOn(console, 'error');
     const game = useGameStore();
     const desk = useDeskStore();
 
@@ -230,6 +235,7 @@ describe('integration: the real game through the desk loop', () => {
     for (const deck of final.decks) expect(deck.role!.startsWith('deck')).toBe(true);
     for (const pin of final.pinned) expect(pin.role!.startsWith('pinned-')).toBe(true);
     for (const card of final.hand) expect(card.role!.startsWith('card')).toBe(true);
+    expect(errors).not.toHaveBeenCalled();
   });
 
   // REGRESSION (2026-07-13): the desk rendered ZERO in-trays against the real

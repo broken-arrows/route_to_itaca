@@ -42,6 +42,7 @@ export const WIDGET_NAMES = [
   "congreso-results-map",
   "local-results-map",
   "congreso-party-tour",
+  "election-history",
 ];
 
 /**

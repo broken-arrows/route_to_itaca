@@ -4,6 +4,7 @@ view-if: year = next_spanish_election_year and month = next_spanish_election_mon
 new-page: true
 set-bg: img/congreso.jpg
 on-arrival: {!
+G.reconcileCongresoLineup(Q);
 var congreso_size = 0;
 for (var constituency of Q.congreso_constituencies) {
     congreso_size += Q.congreso_seats[constituency];
@@ -20,8 +21,15 @@ on-arrival: {!
     Q.next_spanish_election_year += 4;
     Q.next_spanish_election_time += 48;
 
+    // Persist the actual playthrough date for chart annotations, once per event.
+    if (!Array.isArray(Q.election_history_events)) Q.election_history_events = [];
+    var historyDate = new Date(Q.year, Q.month - 1, (Q.week || 1) * 7).toISOString();
+    if (!Q.election_history_events.some(function (event) { return event.type === "congreso-election" && event.date === historyDate; })) {
+        Q.election_history_events.push({ date: historyDate, type: "congreso-election", label: G.englishText(G.text("Congreso Election")) });
+    }
 !}
 on-display: {!
+    G.reconcileCongresoLineup(Q);
     const data = [];
 
     if (Q.cup_congreso_s) {
@@ -320,22 +328,7 @@ on-display: {!
         highlightedParty: (Q.player_in_jxsi && Q.jxsi_in_congreso) ? "jxsi"
             : ((Q.player_in_jxcat && Q.jxcat_in_congreso) ? "jxcat" : Q.player_party),
     };
-    if (typeof window !== "undefined" && typeof d3 !== "undefined") {
-        var width = 500;
-        var screenWidth =  document.getElementById('content').offsetWidth;
-        if (screenWidth < width - 50) {
-            width = screenWidth - 50;
-        }
 
-        console.log(Q.congreso_parties);
-        var lines_spa = d3.linegraph(true, true,
-            Q.congreso_parties,
-            {'ciu': 'var(--ciu)', 'erc': 'var(--erc)', 'cs': 'var(--cs)', 'psc': 'var(--psc)', 'pp': 'var(--pp)', 'vox': 'var(--vox)', 'cup': 'var(--cup)', 'unio': 'var(--unio)', 'jxsi': 'var(--jxsi)', 'jxcat': 'var(--jxcat)', 'junts': 'var(--junts)', 'cdc': 'var(--cdc)', 'dl': 'var(--dl)', 'pdcat': 'var(--pdcat)', 'psoe': 'var(--psoe)', 'iu': 'var(--iu)', 'up': 'var(--up)', 'podemos': 'var(--podemos)', 'sumar': 'var(--sumar)', 'mpais': 'var(--mpais)', 'pnv': 'var(--pnv)', 'ehbildu': 'var(--ehbildu)', 'amaiur': 'var(--amaiur)', 'bng': 'var(--bng)', 'mes': 'var(--mes)', 'gbai': 'var(--gbai)', 'compromis': 'var(--compromis)', 'cc': 'var(--cc)', 'fac': 'var(--fac)', 'prc': 'var(--prc)', 'te': 'var(--te)'},
-            {'ciu': 'CiU', 'erc': 'ERC', 'cs': 'Cs', 'psc': 'PSC', 'pp': 'PP', 'vox': 'Vox', 'cup': 'CUP','unio': 'UDC', 'jxsi': 'JxSí', 'jxcat': 'JxCat', 'junts': 'Junts', 'cdc': 'CDC', 'dl': 'DL', 'pdcat': 'PDeCAT', 'psoe': 'PSOE', 'iu': 'IU', 'up': 'UP', 'podemos': 'Podemos', 'sumar': 'Sumar', 'mpais': 'Más País', 'pnv': 'EAJ-PNV', 'ehbildu': 'EH Bildu', 'amaiur': 'Amaiur', 'bng': 'BNG', 'mes': 'MES', 'gbai': 'GBai', 'compromis': 'Compromís', 'cc': 'CC-PNC', 'fac': 'FAC', 'prc': 'PRC', 'te': '¡TE!'});
-        lines_spa.width(width).height(400);
-        d3.select("#party_support_history").datum(Q.party_spa_support_records).call(lines_spa);
-        console.log("party_spa_support_records", Q.party_spa_support_records);
-    }
 !}
 
 = Election Results
@@ -390,7 +383,7 @@ on-display: {!
 
 **Party support trend**
 
-{!<svg id="party_support_history" style="width: 500px; height: 400px;"> </svg>!}
+{!<div id="party_support_history" data-widget="election-history" data-props='{"eventsFrom":"election_history_events","recordsFrom":"party_spa_support_records","partiesFrom":"congreso_parties","partyNames":{"ciu":"CiU","erc":"ERC","cs":"Cs","psc":"PSC","pp":"PP","vox":"Vox","cup":"CUP","unio":"UDC","jxsi":"JxSí","jxcat":"JxCat","junts":"Junts","cdc":"CDC","dl":"DL","pdcat":"PDeCAT","psoe":"PSOE","iu":"IU","up":"UP","podemos":"Podemos","sumar":"Sumar","mpais":"Más País","pnv":"EAJ-PNV","ehbildu":"EH Bildu","amaiur":"Amaiur","bng":"BNG","mes":"MES","gbai":"GBai","compromis":"Compromís","cc":"CC-PNC","fac":"FAC","prc":"PRC","te":"¡TE!","fr":"FR","upyd":"UPyD","upn":"UPN","nsuma":"NA+"},"partyColours":{"ciu":"var(--ciu)","erc":"var(--erc)","cs":"var(--cs)","psc":"var(--psc)","pp":"var(--pp)","vox":"var(--vox)","cup":"var(--cup)","unio":"var(--unio)","jxsi":"var(--jxsi)","jxcat":"var(--jxcat)","junts":"var(--junts)","cdc":"var(--cdc)","dl":"var(--dl)","pdcat":"var(--pdcat)","psoe":"var(--psoe)","iu":"var(--iu)","up":"var(--up)","podemos":"var(--podemos)","sumar":"var(--sumar)","mpais":"var(--mpais)","pnv":"var(--pnv)","ehbildu":"var(--ehbildu)","amaiur":"var(--amaiur)","bng":"var(--bng)","mes":"var(--mes)","gbai":"var(--gbai)","compromis":"var(--compromis)","cc":"var(--cc)","fac":"var(--fac)","prc":"var(--prc)","te":"var(--te)","fr":"var(--fr)","upyd":"var(--upyd)","upn":"var(--upn)","nsuma":"var(--nsuma)"}}'></div>!}
 
 - @after_election_congreso_cleanup
 

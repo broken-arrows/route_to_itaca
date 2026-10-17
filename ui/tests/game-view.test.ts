@@ -8,6 +8,7 @@ import GameView from '../src/views/GameView.vue';
 import DebugPage from '../src/views/DebugPage.vue';
 import DeskView from '../src/views/DeskView.vue';
 import PaperPage from '../src/components/desk/PaperPage.vue';
+import PresentationPage from '../src/components/desk/PresentationPage.vue';
 import Newspaper from '../src/components/desk/Newspaper.vue';
 import FrontPage from '../src/components/desk/FrontPage.vue';
 import ResponsiveViewport from '../src/components/ResponsiveViewport.vue';
@@ -117,14 +118,13 @@ describe('GameView phase routing', () => {
     expect(page.props('variant')).toBe('page');
   });
 
-  it("routes 'page' with an ending scene to PaperPage variant=ending", async () => {
+  it("routes 'page' with an ending scene to PresentationPage", async () => {
     const { game, desk, wrapper } = mountAtHub();
     game.frame!.effectiveRole = 'ending';
     desk.phase = 'page';
     await nextTick();
-    const page = wrapper.findComponent(PaperPage);
-    expect(page.exists()).toBe(true);
-    expect(page.props('variant')).toBe('ending');
+    expect(wrapper.findComponent(PresentationPage).exists()).toBe(true);
+    expect(wrapper.findComponent(PaperPage).exists()).toBe(false);
   });
 
   it("shows the loading state while 'boot' and not yet loadError", () => {

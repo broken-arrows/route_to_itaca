@@ -24,7 +24,7 @@ describe('brief store', () => {
   it('tab labels come from each sheet scene title', () => {
     const b = useBriefStore();
     expect(b.tabs.map((t) => t.title)).toEqual([
-      'Overview', 'Party', 'Chamber', 'Economy', 'World', 'Polls', 'library',
+      'Overview', 'Party', 'Parlament', 'Economy', 'World', 'Polls', 'library',
     ]);
   });
 

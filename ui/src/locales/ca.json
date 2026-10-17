@@ -125,6 +125,13 @@
     }
   },
   "widgets": {
+    "history": {
+      "weekDate": "{date}\nSetmana {week}",
+      "label": "Evolució del suport electoral",
+      "electorate": "Suport (% de vots vàlids)",
+      "parties": "Tendències: suport per partit",
+      "empty": "Encara no s’ha registrat cap dada."
+    },
     "seats": "{count} escó | {count} escons",
     "partySeats": "{party}: {count} escons",
     "majoritySeats": "Majoria: {count} escons",
@@ -162,7 +169,10 @@
     }
   },
   "desk": {
-    "diary": {"unfold":"Desplega el diari mensual","fold":"Plega el diari mensual"},
+    "diary": {
+      "unfold": "Desplega el diari",
+      "fold": "Plega el diari"
+    },
     "tray": {
       "out": "FET",
       "draw": "ROBAR",

@@ -9,11 +9,9 @@ export default {
     'is-hand': 'Use role: desk.',
     'is-deck': 'Use role: deck, deck-party, deck-gov or deck-parliament.',
   },
-  // Unmigrated authored scenes and root's origin check. Exceptions apply only
+  // Root's origin check. Exceptions apply only
   // to browser-global code; every scene still gets its markers checked.
   allowBrowserGlobals: [
-    'parlament_election',
-    'congreso_election',
     'root',
   ],
 };

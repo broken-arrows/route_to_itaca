@@ -87,11 +87,13 @@ describe('engine.setGameLib', () => {
     warn.mockRestore();
   });
 
-  it('leaves G as an empty object, never undefined', async () => {
+  it('provides engine text helpers even without a project game library', async () => {
     const { engine } = await boot();
     engine.beginGame();
     // G.tick is not a function -> swallowed by runActions; the point is that the
     // failure is a MISSING METHOD, not a TypeError on undefined.
-    expect(engine.gameLib).toEqual({});
+    expect(engine.gameLib.tick).toBeUndefined();
+    expect(engine.gameLib.text('Hello')).toMatchObject({ kind: 'text', key: 'Hello' });
+    expect(typeof engine.gameLib.setText).toBe('function');
   });
 });

@@ -10,19 +10,19 @@ const results = [
     id: 'cat-polls-widget-wide',
     name: 'parlament-results-map',
     renderer: 'initCataloniaPolls',
-    scenes: ['election_simulation.scene.dry', 'events/elections/parlament_election.scene.dry'],
+    scenes: ['playground/election_simulation.scene.dry', 'events/elections/parlament_election.scene.dry'],
   },
   {
     id: 'congreso-map-widget',
     name: 'congreso-results-map',
     renderer: 'initCongresoMap',
-    scenes: ['election_simulation.scene.dry', 'events/congreso_elections/congreso_election.scene.dry'],
+    scenes: ['playground/election_simulation.scene.dry', 'events/congreso_elections/congreso_election.scene.dry'],
   },
   {
     id: 'catalonia-local-map',
     name: 'local-results-map',
     renderer: 'initCatLocalMap',
-    scenes: ['election_simulation.scene.dry', 'events/local_elections/local_elections.scene.dry'],
+    scenes: ['playground/election_simulation.scene.dry', 'events/local_elections/local_elections.scene.dry'],
   },
   {
     id: 'congreso-party-tour-widget',

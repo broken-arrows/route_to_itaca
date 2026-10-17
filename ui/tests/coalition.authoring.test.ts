@@ -257,7 +257,7 @@ describe('authored coalition tooltip metadata', () => {
   });
 
   it('migrates election-simulation government labels too', () => {
-    const source = readFileSync(resolve(root, 'source/scenes/election_simulation.scene.dry'), 'utf8');
+    const source = readFileSync(resolve(root, 'source/scenes/playground/election_simulation.scene.dry'), 'utf8');
     expect(source).toContain('data-parties="jxsi"');
     expect(source).toContain('data-parties="jxcat erc"');
     expect(source).toContain('data-parties="psoe up"');

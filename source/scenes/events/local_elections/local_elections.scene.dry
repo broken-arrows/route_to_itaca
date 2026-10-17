@@ -12,6 +12,12 @@ new-page: true
 on-arrival: {!
     Q.next_local_election_year = Q.year + 4;
     Q.next_local_election_time = Q.time + 48;
+    // Persist the actual playthrough date for chart annotations, once per event.
+    if (!Array.isArray(Q.election_history_events)) Q.election_history_events = [];
+    var historyDate = new Date(Q.year, Q.month - 1, (Q.week || 1) * 7).toISOString();
+    if (!Q.election_history_events.some(function (event) { return event.type === "local-election" && event.date === historyDate; })) {
+        Q.election_history_events.push({ date: historyDate, type: "local-election", label: G.englishText(G.text("Local Election")) });
+    }
 !}
 on-display: {!
     const data = [];

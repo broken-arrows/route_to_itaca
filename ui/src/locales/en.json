@@ -125,6 +125,13 @@
     }
   },
   "widgets": {
+    "history": {
+      "weekDate": "{date}\nWeek {week}",
+      "label": "Party support over time",
+      "electorate": "Support (% of the electorate)",
+      "parties": "Party support trends",
+      "empty": "No support history recorded yet."
+    },
     "seats": "{count} seat | {count} seats",
     "partySeats": "{party}: {count} seats",
     "majoritySeats": "Majority: {count} seats",
@@ -162,7 +169,7 @@
     }
   },
   "desk": {
-    "diary": {"unfold":"Unfold monthly diary","fold":"Fold monthly diary"},
+    "diary": { "unfold": "Unfold monthly diary", "fold": "Fold monthly diary" },
     "tray": {
       "out": "OUT",
       "draw": "DRAW",

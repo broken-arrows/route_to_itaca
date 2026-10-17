@@ -287,6 +287,63 @@
           el.appendChild(entry);
         });
     },
+    "election-history": function (el, Q) {
+      var props = resolveProps(el, Q);
+      var records = Q[props.recordsFrom];
+      var parties = Q[props.partiesFrom];
+      // linegraph appends its axes/paths. Start clean on every shell refresh.
+      el.replaceChildren();
+      if (!Array.isArray(records) || !records.length || !Array.isArray(parties)) return;
+      var valid = records.filter(function (row) {
+        return row && row.date != null && Number.isFinite(+new Date(row.date));
+      });
+      if (!valid.length) return;
+      var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      var width = Math.max(250, Math.min(500, el.clientWidth || 500));
+      svg.setAttribute("viewBox", "0 0 " + width + " 400");
+      svg.style.width = "100%";
+      svg.style.maxWidth = "500px";
+      el.appendChild(svg);
+      var chart = d3.linegraph(true, true, parties, props.partyColours, props.partyNames);
+      var events = [];
+      var firstDate = Math.min.apply(null, valid.map(function (row) { return +new Date(row.date); }));
+      var history = props.eventsFrom && Q[props.eventsFrom];
+      if (Array.isArray(history)) history.forEach(function (event) {
+        if (!event || event.date == null || typeof event.label !== "string") return;
+        var date = +new Date(event.date);
+        if (!Number.isFinite(date) || date < firstDate) return;
+        var group = events.find(function (entry) { return +new Date(entry.date) === date; });
+        if (!group) {
+          group = { date: event.date, labels: [] };
+          events.push(group);
+        }
+        var label = event.label;
+        if (!group.labels.includes(label)) group.labels.push(label);
+      });
+      events.sort(function (a, b) { return +new Date(a.date) - +new Date(b.date); });
+      events.forEach(function (event) { event.label = event.labels.join(" · "); });
+      chart.width(width).height(400).events(events);
+      d3.select(svg).datum(valid).call(chart);
+      // SVG text cannot contain the formatter's HTML spans. Transfer its
+      // canonical term, colour and tooltip trigger onto the SVG legend names.
+      if (typeof window.applyWholesome === "function") svg.querySelectorAll(".party-label").forEach(function (label) {
+        var holder = document.createElement("span");
+        holder.textContent = label.textContent;
+        holder.innerHTML = window.applyWholesome(holder.innerHTML);
+        var term = holder.querySelector("[data-term]");
+        if (!term) return;
+        label.textContent = holder.textContent;
+        var colour = term.style.color || term.style.getPropertyValue("--mytooltip-color");
+        label.setAttribute("data-term", term.getAttribute("data-term"));
+        if (colour) {
+          label.style.color = colour;
+          label.style.setProperty("--mytooltip-color", colour);
+          label.style.fill = colour;
+        }
+        if (term.classList.contains("mytooltip")) label.classList.add("mytooltip");
+        if (term.style.fontWeight) label.style.fontWeight = term.style.fontWeight;
+      });
+    },
     hemicycle: function (el, Q) {
       var props = readDataProps(el);
       var config =

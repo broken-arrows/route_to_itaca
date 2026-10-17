@@ -24,9 +24,9 @@ type Q = Record<string, any>;
 /** Boot a real game state, then hold every macro driver constant so the only
  *  force acting on support is step 4j. Any drift observed is noise, by
  *  construction. */
-function quietGame(): Q {
+function quietGame({ activateTe = true } = {}): Q {
   const prevWindow = (globalThis as any).window;
-  (globalThis as any).window = { location: { protocol: 'https:', hostname: 'test', href: '' } };
+  (globalThis as any).window = { location: { protocol: 'http:', hostname: '127.0.0.1', href: 'http://127.0.0.1/' } };
   const prevLog = console.log;
   const prevInfo = console.info;
   console.log = () => {};
@@ -55,6 +55,12 @@ function quietGame(): Q {
     q.podemos_channeling = 0;
     q.corruption_pp = 0;
     q.corruption_psoe = 0;
+    if (activateTe) {
+      // Noise checks need an eligible minor party, rather than seeding one
+      // whose authored entry gate is still closed.
+      q.spa_te_active = true;
+      (gameLib as any).spaSupportInject(q, 'te', 'rest', 0.06, 'abstain');
+    }
     return q;
   } finally {
     console.log = prevLog;
@@ -90,6 +96,13 @@ const TRIALS = 40;
 const MONTHS = 85; // Aug 2012 -> 2019, the game's full span
 
 describe('congreso noise', () => {
+  it('does not give an inactive Teruel Existe support before its authored entry', () => {
+    const q = quietGame({ activateTe: false });
+    expect(q.spa_te_active).toBe(false);
+    expect(sup(q, 'te', 'rest')).toBe(0);
+    tick(q, MONTHS);
+    expect(sup(q, 'te', 'rest')).toBe(0);
+  });
   // Bands are RELATIVE to each party's own starting support. Absolutes would
   // re-break on every calibration change (they did, when turnout was rescaled
   // and BNG's start moved 5.0 -> 5.50); the property under test is that noise

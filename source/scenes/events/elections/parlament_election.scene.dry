@@ -23,6 +23,12 @@ on-arrival: {!
     if (Q.fnc_parlament_s > 0) {
         this.achieve('josep_maria');
     }
+    // Persist the actual playthrough date for chart annotations, once per event.
+    if (!Array.isArray(Q.election_history_events)) Q.election_history_events = [];
+    var historyDate = new Date(Q.year, Q.month - 1, (Q.week || 1) * 7).toISOString();
+    if (!Q.election_history_events.some(function (event) { return event.type === "parlament-election" && event.date === historyDate; })) {
+        Q.election_history_events.push({ date: historyDate, type: "parlament-election", label: G.englishText(G.text("Parlament Election")) });
+    }
 !}
 on-display: {!
     const data = [];
@@ -223,21 +229,7 @@ on-display: {!
         majority: Q.parlament_s_majority,
         highlightedParty: Q.player_in_jxsi ? "jxsi" : (Q.player_in_jxcat ? "jxcat" : Q.player_party),
     };
-    if (typeof window !== "undefined" && typeof d3 !== "undefined") {
-        var width = 500;
-        var screenWidth =  document.getElementById('content').offsetWidth;
-        if (screenWidth < width - 50) {
-            width = screenWidth - 50;
-        }
 
-        var lines_cat = d3.linegraph(true, true,
-            Q.parties,
-            {'ciu': 'var(--ciu)', 'erc': 'var(--erc)', 'cs': 'var(--cs)', 'psc': 'var(--psc)', 'ppc': 'var(--ppc)', 'vox': 'var(--vox)', 'icv': 'var(--icv)', 'csqp': 'var(--csqp)', 'cecp': 'var(--cecp)', 'ecp': 'var(--ecp)', 'cup': 'var(--cup)', 'si': 'var(--si)', 'unio': 'var(--unio)', 'jxsi': 'var(--jxsi)', 'jxcat': 'var(--jxcat)', 'junts': 'var(--junts)', 'cdc': 'var(--cdc)', 'dl': 'var(--dl)', 'pdcat': 'var(--pdcat)', 'fnc': 'var(--fnc)', 'pxc': 'var(--pxc)'},
-            {'ciu': 'CiU', 'erc': 'ERC', 'cs': 'Cs', 'psc': 'PSC', 'ppc': 'PPC', 'vox': 'Vox', 'icv': 'ICV-EUiA', 'csqp': 'CSQP', 'cecp': 'CECP', 'ecp': 'ECP', 'cup': 'CUP', 'si': 'SI', 'unio': 'UDC', 'jxsi': 'JxSí', 'jxcat': 'JxCat', 'junts': 'Junts', 'cdc': 'CDC', 'dl': 'DL', 'pdcat': 'PDeCAT', 'fnc': "FNC", "pxc": "PxC"});
-        lines_cat.width(width).height(400);
-        d3.select("#party_support_history").datum(Q.party_support_records).call(lines_cat);
-        console.log("party_support_records", Q.party_support_records);
-    }
 !}
 go-to: coalitions if not game_over_trigger; game_lost_on_election if game_over_trigger
 
@@ -292,7 +284,7 @@ go-to: coalitions if not game_over_trigger; game_lost_on_election if game_over_t
 
 **Party support trends**
 
-{!<svg id="party_support_history" style="width: 500px; height: 400px;"> </svg>!}
+{!<div id="party_support_history" data-widget="election-history" data-props='{"eventsFrom":"election_history_events","recordsFrom":"party_support_records","partiesFrom":"parties","partyNames":{"ciu":"CiU","erc":"ERC","cs":"Cs","psc":"PSC","ppc":"PPC","vox":"Vox","icv":"ICV-EUiA","csqp":"CSQP","cecp":"CECP","ecp":"ECP","cup":"CUP","si":"SI","unio":"UDC","jxsi":"JxSí","jxcat":"JxCat","junts":"Junts","cdc":"CDC","dl":"DL","pdcat":"PDeCAT","fnc":"FNC","pxc":"PxC"},"partyColours":{"ciu":"var(--ciu)","erc":"var(--erc)","cs":"var(--cs)","psc":"var(--psc)","ppc":"var(--ppc)","vox":"var(--vox)","icv":"var(--icv)","csqp":"var(--csqp)","cecp":"var(--cecp)","ecp":"var(--ecp)","cup":"var(--cup)","si":"var(--si)","unio":"var(--unio)","jxsi":"var(--jxsi)","jxcat":"var(--jxcat)","junts":"var(--junts)","cdc":"var(--cdc)","dl":"var(--dl)","pdcat":"var(--pdcat)","fnc":"var(--fnc)","pxc":"var(--pxc)"}}'></div>!}
 
 @coalitions
 

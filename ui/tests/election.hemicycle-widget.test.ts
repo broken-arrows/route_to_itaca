@@ -109,7 +109,7 @@ describe.each([
     config: 'election_simulation_local_hemicycle',
   },
 ])('$chamber results', ({ elementId, config }) => {
-  const source = scene('election_simulation.scene.dry');
+  const source = scene('playground/election_simulation.scene.dry');
 
   it('publishes an animated hemicycle through the dual-UI widget protocol', () => {
     expect(source).toContain(`Q.${config} = {`);

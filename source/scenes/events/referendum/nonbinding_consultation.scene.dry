@@ -13,6 +13,12 @@ on-arrival: {!
     Q.consultation_pending = false;
     Q.roadmap_year = 0;
     Q.burdens_done += 1;
+    // Persist the actual playthrough date for chart annotations, once per event.
+    if (!Array.isArray(Q.election_history_events)) Q.election_history_events = [];
+    var historyDate = new Date(Q.year, Q.month - 1, (Q.week || 1) * 7).toISOString();
+    if (!Q.election_history_events.some(function (event) { return event.type === "consultation" && event.date === historyDate; })) {
+        Q.election_history_events.push({ date: historyDate, type: "consultation", label: G.englishText(G.text("Non-binding consultation")) });
+    }
 !}
 role: event
 
