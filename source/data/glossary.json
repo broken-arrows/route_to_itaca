@@ -1637,6 +1637,21 @@
       "bold": true
     },
     {
+      "id": "carme_forcadell",
+      "match": [
+        "Carme Forcadell",
+        "Carme Forcadell i Lluís",
+        "carme forcadell"
+      ],
+      "display": "Carme Forcadell",
+      "colour": "jxsi",
+      "tooltip": {
+        "title": "Carme Forcadell i Lluís",
+        "img": "img/erc/forcadell.jpg",
+        "ideology": "Social Democracy, Independence"
+      }
+    },
+    {
       "id": "ra_l_romeva",
       "match": [
         "Raül Romeva",

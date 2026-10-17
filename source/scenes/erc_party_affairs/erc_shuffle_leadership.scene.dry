@@ -19,18 +19,17 @@ Removing advisors will increase dissent from their faction of the party, while s
 - @easy_discard
 
 @rm_main
-title: Remove advisors.
+title: Remove advisors instead
 tags: erc_social_left, erc_republican_core, erc_institutional_pragmatics, erc_civic_nationalists
 frequency: 1
 
 - #erc_rm_advisor
-- @add_advisors: Add advisors
+- @add_advisors: Add advisors instead
 
 @remove_none
 title: Stop changing advisors
 go-to: root
 tags: erc_rm_advisor
-
 
 @add_advisors
 title: Add advisors
@@ -39,7 +38,7 @@ choose-if: n_advisors < max_advisors
 go-to: erc_advisor_menu
 
 @erc_advisor_menu
-title: Add advisors
+title: Add advisors from other factions
 tags: erc_social_left, erc_republican_core, erc_institutional_pragmatics, erc_civic_nationalists
 frequency: 1
 
@@ -142,7 +141,7 @@ go-to: erc_advisor_menu
 ​Oriol Junqueras has been added as an advisor.
 
 @add_gabriel_rufian
-title: Gabriel Rufián Romero
+title: ​Gabriel Rufián Romero
 subtitle: Of Andalusian descent, has a strong tie to the industrial hinterlands of Barcelona and a strong combative style.
 choose-if: gabriel_rufian_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -178,7 +177,7 @@ go-to: erc_advisor_menu
 Sergi Sabrià has been added as an advisor.
 
 @add_raul_romeva
-title: Raül Romeva i Rueda
+title: ​Raül Romeva i Rueda
 subtitle: Former MEP for ICV-EUiA, he is well versed in international diplomacy.
 choose-if: raul_romeva_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -264,7 +263,7 @@ go-to: erc_advisor_menu
 Carles Mundó has been added as an advisor.
 
 @add_carme_forcadell
-title: Carme Forcadell i Lluís
+title: ​Carme Forcadell i Lluís
 subtitle: Former president of the ANC, she has a strong background in civic activism.
 choose-if: carme_forcadell_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -333,10 +332,10 @@ on-arrival: oriol_junqueras_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
 go-to: rm_main
 
-​Oriol Junqueras is no longer an advisor. The Republican Core is not pleased.
+Oriol Junqueras is no longer an advisor. The Republican Core is not pleased.
 
 @remove_gabriel_rufian
-title: Remove Gabriel Rufián
+title: Remove ​Gabriel Rufián
 view-if: gabriel_rufian_advisor = 1
 on-arrival: gabriel_rufian_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -363,7 +362,7 @@ go-to: rm_main
 Sergi Sabrià is no longer an advisor. The Republican Core is not pleased.
 
 @remove_raul_romeva
-title: Remove Raül Romeva
+title: Remove ​Raül Romeva
 view-if: raul_romeva_advisor = 1
 on-arrival: raul_romeva_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -426,7 +425,7 @@ go-to: rm_main
 Carles Mundó is no longer an advisor. Civic Organizations tied to the party will not be pleased.
 
 @remove_carme_forcadell
-title: Remove Carme Forcadell
+title: Remove ​Carme Forcadell
 view-if: carme_forcadell_advisor = 1
 on-arrival: carme_forcadell_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor

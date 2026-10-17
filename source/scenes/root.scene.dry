@@ -1685,20 +1685,21 @@ on-arrival: {!
   // Republican Core
   Q.oriol_junqueras_advisor = 1;
   Q.oriol_junqueras_advisor_available = 1;
-  Q.gabriel_rufian_advisor = 0; // Only post 2014?
+  Q.gabriel_rufian_advisor = 0; // Post 2014
   Q.joan_tarda_advisor = 1;
   Q.joan_tarda_advisor_available = 1;
   Q.sergi_sabria_advisor_available = 1;
-  Q.raul_romera_advisor = 0;
+  Q.raul_romera_advisor = 0; // jxsi/jxcat locked
   // Institutional Pragmatics
   Q.pere_aragones_advisor_available = 0; // Post referendum?
   Q.roger_torrent_advisor_available = 1;
   Q.alfred_bosch_advisor_available = 1;
   Q.ernest_maragall_advisor_available = 0; // Post PSC implosion
   // Civic Nationalists
-  Q.joan_laporta_advisor_available = 1; // locked post 2012? 2015?
+  Q.joan_laporta_advisor_available = 1;
   Q.carles_mundo_advisor_available = 1;
   Q.elisenda_paluzie_advisor_available = 1;
+  Q.carme_forcadell_advisor_available = 0; // jxsi/jxcat locked
 
 
   // FACTIONS

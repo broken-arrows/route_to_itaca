@@ -299,10 +299,18 @@
       return [{ colour: "psoe", label: "PSOE" }];
     },
     joan_laporta_i_estruch: function (Q) {
-      return [
-        { colour: "si", label: "SI" },
-        { colour: "erc", label: "ERC" },
-      ];
+      if (Q.year >= 2014) {
+        return [
+          { colour: "si", label: "SI", note: "former" },
+          { colour: "erc", label: "ERC" },
+        ];
+      } else {
+        return [
+          { colour: "si", label: "SI", note: "former" },
+          { colour: "erc", label: "ERC", note: "former" },
+          { colour: "#464646", label: "indp." },
+        ];
+      }
     },
     ada_colau: function (Q) {
       var list = [{ colour: "bcomu", label: "BComú" }];
@@ -359,13 +367,33 @@
       return [{ colour: "psc", label: "PSC" }];
     },
     gabriel_rufian: function (Q) {
-      return [{ colour: "erc", label: "ERC" }];
+      return [
+        { colour: "si", label: "Súmate" },
+        { colour: "erc", label: "ERC" },
+      ];
     },
     soraya_s_enz_de_santamar_a: function (Q) {
       return [{ colour: "pp", label: "PP" }];
     },
     pablo_casado: function (Q) {
       return [{ colour: "pp", label: "PP" }];
+    },
+    carme_forcadell: function (Q) {
+      var list = [
+        { colour: "#010202", label: "ANC" },
+        // { colour: "#e97202", label: "Òmnium Cultural" },
+      ];
+
+      if (Q.jxsi_formed) {
+        list.push({ colour: "jxsi", label: "JxSí" });
+      }
+      if (Q.erc_in_jxsi || Q.erc_in_jxcat) {
+        list.push({ colour: "erc", label: "ERC" });
+      }
+      if (Q.jxcat_formed) {
+        list.push({ colour: "jxcat", label: "JxCat" });
+      }
+      return list;
     },
     ra_l_romeva: function (Q) {
       if (!Q.jxsi_formed) {

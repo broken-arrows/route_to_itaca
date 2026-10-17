@@ -1,0 +1,34 @@
+title: New faces in the party
+subtitle: The recent electoral alliance has seen an influx of people to our ranks
+view-if: erc_in_jxsi or erc_in_jxcat and player_party == "erc"
+tags: event
+new-page: true
+max-visits: 1
+face-image: img/erc/forcadell.jpg
+on-arrival: {!
+    Q.carme_forcadell_advisor_available = 1;
+!}
+
+= New faces in the party
+
+Our recent electoral alliance in the form of [? if jxsi_formed and not jxsi_dissolved: jxsi?][?if jxcat_formed: jxcat?] has seen an influx of personalities walking into the party to become part of this huge project. A huge name among them is that of Carme Forcadell, former ANC President and big promoter of the idea of National Unity towards independence.
+
+- @no_romeva: Welcome to the party!
+- @raul_romeva_disp: And not only her!
+
+@no_romeva
+view-if: jxsi_formation_num = 50 or jxcat_formation_num = 50
+go-to: post_event
+
+@raul_romeva_disp
+view-if: not jxsi_formation_num = 50 and not jxcat_formation_num = 50
+on-arrival: {!
+    Q.raul_romeva_advisor_available = 1
+!}
+face-image: img/erc/romeva.jpg
+
+Along with her, Raül Romeva is also joining in. 
+
+He who will be the number one on the united list, without actually being the presidential candidate, leaves ICV-EUiA behind and joins the ranks.
+
+- @post_event: Welcome both!
