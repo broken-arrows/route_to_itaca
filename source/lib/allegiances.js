@@ -40,6 +40,9 @@
     preparao: function (Q) {
       return [{ colour: "#464646", label: "indp." }];
     },
+    cap_per_avall: function (Q) {
+      return [{ colour: "#464646", label: "indp." }];
+    },
     jordi_pujol: function (Q) {
       return [
         { colour: "cdc", label: "CDC" },

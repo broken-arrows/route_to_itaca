@@ -4,7 +4,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { extractFiles, extractProject } from 'dendrynexus-ten/lib/localization-extract.js';
 import { compile } from 'dendrynexus-ten/lib/parsers/content.js';
-import { collectUnits } from 'dendrynexus-ten/lib/localization.js';
+import { collectUnits, captureContent, renderContent } from 'dendrynexus-ten/lib/localization.js';
+import { convertLine } from 'dendrynexus-ten/lib/ui/content/html.js';
 
 const scene = (body: string, arrival = '') => ({
   name: join('source', 'scenes', 'sample.scene.dry'),
@@ -14,6 +15,26 @@ const js = (contents: string) => ({ name: join('source', 'lib', 'sample.js'), co
 const catalogs = { en: {}, ca: { 'An existing key': 'Una traducció que cal conservar' } };
 
 describe('Phase 6B localization extraction and discovery', () => {
+  it.each([
+    ['Our relations with [+ parlament_current_icv +] are not good enough.', 'Our relations with CSQP are not good enough.'],
+    ['Our relations with **CSQP** are not good enough.', 'Our relations with <strong>CSQP</strong> are not good enough.'],
+  ])('preserves spaces before inline content in JavaScript conditions: %s', async (body, expected) => {
+    const authored = `[? if {! return true; !}: ${body} ?]`;
+    const compiled = await new Promise<any>((resolve, reject) =>
+      compile(authored, false, (err: unknown, value: unknown) => err ? reject(err) : resolve(value)),
+    );
+    const snapshot = captureContent(compiled, {
+      resolveDependency: (dependency: any) => dependency.type === 'predicate' ? true : 'CSQP',
+    });
+    expect(convertLine(renderContent(snapshot, 'en', null))).toBe(expected);
+    const result = await extractFiles([{
+      name: join('source', 'scenes', 'spacing.scene.dry'),
+      contents: `title: Sample\nunavailable-subtitle: ${authored}\n\nBody.\n`,
+    }], { catalogs });
+    expect(result.errors).toEqual([]);
+    expect(result.units.some((unit: any) => unit.key.startsWith('Our relations with '))).toBe(true);
+  });
+
   it('validates selector context against every source schema sharing an English key', async () => {
     const result = await extractFiles([js('G.text("Ready", { gender: Q.president_gender }); G.text("Ready");')], {
       catalogs: { ca: { Ready: { select: 'gender', cases: { f: 'Preparada', other: 'Preparat' } } } },

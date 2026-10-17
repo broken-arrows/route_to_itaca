@@ -287,10 +287,10 @@ if (has_time_passed) {
 
     // 2.3. Ripple effects from time passing.
     if (Q.unemployment >= 20) {
-        if (Q.erc_supporting) {
-            Q.erc_left_dissent += 0.25;
-        } else if (Q.erc_in_gob) {
+        if (Q.erc_in_gob) {
             Q.erc_left_dissent += 0.5;
+        } else if (Q.erc_supporting) {
+            Q.erc_left_dissent += 0.25;
         }
     }
     if (Q.broken_roadmap == 1) {

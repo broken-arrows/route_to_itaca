@@ -439,7 +439,8 @@
       assert(range.content[2].trim().substr(0, 1) === ':');
 
       var magic = range.content[1].content.join('; ');
-      range.content.splice(0, 3, range.content[2].substr(1).trim());
+      // Preserve trailing whitespace before the next insert or formatting node.
+      range.content.splice(0, 3, range.content[2].replace(/^\s*:\s*/, ''));
 
       predicate = {type:'predicate', language:'magic', source:magic};
     }

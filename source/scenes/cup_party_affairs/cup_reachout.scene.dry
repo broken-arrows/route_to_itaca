@@ -1,0 +1,41 @@
+title: Building bridges with Compromís
+new-page: true
+view-if: player_party = "cup" and not compromis_reached_out_ever and (not cup_reachout_timer or cup_reachout_timer <= 0)
+on-arrival: {!
+    if (Q.player_party == 'cup' && !Q.compromis_reached_out_ever && !(Q.cup_reachout_timer > 0)) {
+        Q.cup_reachout_timer = 6;
+        Q.month_actions += 1;
+        if (!Q.timers.includes('cup_reachout')) Q.timers.push('cup_reachout');
+    }
+!}
+card-image: img/cup/seunacional.jpg
+frequency: 100
+tags: cup_party jxsi_party jxcat_party
+role: card-party
+
+= Building bridges with Compromís
+
+TODO: PROPER REACHOUT CARD LIKE IN ERC_REACHOUT!
+
+The struggles against austerity and Spanish centralism reach beyond Catalonia. In Valencia, Compromís brings together regionalists and different currents of the left. We have our disagreements, but keeping an open line could give us someone to talk to when the parties in Madrid refuse to talk to each other.
+
+- @contact
+- @root: We have other priorities at the moment
+- @easy_discard
+- @cancel_advisor_action
+
+@contact
+title: Open a line of communication with Compromís
+subtitle: \[-1 resources\]
+choose-if: party_resources >= 1 and not compromis_reached_out_ever
+unavailable-subtitle: [? if party_resources < 1: Not enough resources. ?][? if compromis_reached_out_ever: We have already established these contacts. ?]
+on-arrival: {!
+    if (Q.player_party == 'cup' && !Q.compromis_reached_out_ever && Q.party_resources >= 1) {
+        Q.party_resources -= 1;
+        Q.compromis_reached_out_ever = true;
+    }
+!}
+
+Our representatives have met with Compromís to discuss the struggles we share and the differences between us. Neither party has committed to an electoral alliance, but we now have contacts we can turn to when a conversation might make a difference.
+
+- @post_event: Let's keep in touch

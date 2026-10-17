@@ -5,8 +5,6 @@ tags: event
 new-page: true
 max-visits: 1
 on-arrival: {!
-    // TODO: more conditions for this trigger?
-    // TODO: constituion_reformed is not fired by anything
     Q.ecp_formed = true;
     Q.parlament_current_icv = "ecp";
 

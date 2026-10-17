@@ -1,16 +1,17 @@
-title: The PSOE holds its primary election
-view-if: psoe_party_congres_trigger or (year >= 2017 and month > 1 and next_spanish_election_time >= 6 and not psoe_party_congress_countdown)
+title: [? if psoe_holdout_congress: PSOE's Extraordinary Primary Election ?][? if not psoe_holdout_congress: [+ year +] PSOE's Primary Election ?]
+view-if: psoe_party_congres_trigger or (year >= 2017 and month > 1 and next_spanish_election_time >= 6 and not psoe_party_congres_countdown)
 tags: event
 new-page: true
 face-image: img/events/primarypsoe.jpg
 max-visits: 1
 role: event
+on-arrival: psoe_party_congres_trigger = false
 
-= 2017 ​PSOE Primary Election
+= [? if psoe_holdout_congress: ​PSOE's Extraordinary Primary Election ?][? if not psoe_holdout_congress: [+ year +] ​PSOE's Primary Election ?]
 
-[? if psoe_barons_revolted: After the internal coup against Pedro Sánchez, the PSOE has to reconstruct its leadership. This primary election is set to be the defining moment for it and the party's future. ?][? if not psoe_barons_revolted: The PSOE is holding a primary election to select its candidate for the upcoming general election. ?]From the party establishment, the most supported candidate is [? if psoe_leader == "Eduardo Madina": incumbent Eduardo Madina. Already the winner of the past primary election, he has consolidated his position since and enjoys the favour of the Barons. While not opposed to constitutional reform, his platform is clearly more centrist and, above all, pragmatist and direct. ?][? if psoe_leader != "Eduardo Madina": the Andalusian "baroness" Susana Díaz. Having governed the region for years and with unwavering support from its constituencies, the rest of the Barons, and also historical party figures like Felipe González. Critical with Podemos and the "new left", she prioritizes stability. So far, she has refused to rule out coalition agreements with the PP and is opposed to any substantial constitutional reform. ?]
+[? if psoe_holdout_congress: After resisting the Barons' demand for his resignation, Pedro Sánchez now faces the party membership in an impossibly tense primary election ?][? if psoe_barons_revolted and not psoe_holdout_congress: After the internal coup against Pedro Sánchez, the PSOE has no option but to reconstruct its leadership. This primary election is set to be the defining moment for it and the party's future. ?][? if not psoe_barons_revolted: The PSOE is holding a primary election to select its candidate for the upcoming general election. ?]From the party establishment, the most supported candidate is [? if psoe_leader == "Eduardo Madina": incumbent Eduardo Madina. Already the winner of the past primary election, he has consolidated his position since and enjoys the favour of the Barons. While not opposed to constitutional reform, his platform is clearly more centrist and, above all, pragmatist and direct. ?][? if psoe_leader != "Eduardo Madina": the Andalusian "baroness" Susana Díaz. Having governed the region for years and with unwavering support from its constituencies, the rest of the Barons, and also historical party figures like Felipe González. Critical with Podemos and the "new left", she prioritizes stability. So far, she has refused to rule out coalition agreements with the PP and is opposed to any substantial constitutional reform. ?]
 
-Against it, there's the underdog coming back, Pedro Sánchez. After leaving the party all together and touring Spain in his personal car to meet the party's true grassroots, he's now presenting himself as the true change candidate. With support mostly from the party's left, youth, and urban areas, his cunning and undisputed charisma may end up pushing him above the rest of the options. 
+[? if psoe_holdout_congress: In an almost plebiscite-like vote, Pedro Sánchez represents the PSOE willing to give a chance to agreements with parties to their left if that means ousting out the PP. A position that very directly clashes with the party machinery that has forced him into this position. His chances may very well lie among the party's left, youth and urban branches. ?][? if not psoe_holdout_congress: Against[? if psoe_leader == "Eduardo Madina": him?][? if psoe_leader != "Eduardo Madina": her?], there's the underdog coming back, Pedro Sánchez. After leaving the party all together and touring Spain in his personal car to meet the party's true grassroots, he's now presenting himself as the true change candidate. With support mostly from the party's left, youth, and urban areas, his cunning and undisputed charisma may end up pushing him above the rest of the options. ?]
 
 - @madina_elected
 - @diaz_elected
@@ -31,7 +32,7 @@ on-arrival: {!
 
 After quite a tense primary election, it has been the incumbent, Eduardo Madina, who has won the PSOE's primary election. With the party struggling electorally, the decision to keep within the party line may ultimately be costly at the ballot boxes.
 
-- @post_event: We'll have to see how he fares...
+- @finish: We'll have to see how he fares...
 
 @diaz_elected
 title: Susana Díaz wins the primary
@@ -44,11 +45,12 @@ on-arrival: {!
     Q.psoe_leader_gender = "f";
     G.setText(Q, "psoe_ideology", G.text("Centrist Social Democracy, Autonomism"));
     Q.psoe_leadership_mult = 0.8;
+    if (Q.psoe_holdout_congress) Q.congreso_coalition_grand_ok = true;
 !}
 
 After quite a tense primary election, it has been the baroness, Susana Díaz, who has won the PSOE's primary election. Not much seems to have changed in the party, and the voices calling it unreformable may have been proven right, once again.
 
-- @post_event: We'll have to see how she fares...
+- @finish: We'll have to see how she fares...
 
 @sanchez_elected
 title: Pedro Sánchez wins the primary
@@ -60,8 +62,13 @@ on-arrival: {!
     Q.psoe_leader_gender = "m";
     G.setText(Q, "psoe_ideology", G.text("Centrist Social Democracy, Reformist Autonomism"));
     Q.psoe_leadership_mult = 1.0;
+    if (Q.psoe_holdout_congress) Q.congreso_coalition_grand_ok = false;
 !}
 
-After an extremely tense primary election, and being the protagonist of an unbelievable comeback, Pedro Sánchez has won the PSOE's primary election. A new dawn seems to have arrived for the party.
+[? if psoe_holdout_congress: After an extremely tense primary election, and being the protagonist of an unbelievable comeback, Pedro Sánchez has won the PSOE's primary election. Against unbelievable odds, he seems to, at least for now, have defeated the Barons. ?]
+[? if not psoe_holdout_congress: After an extremely tense primary election, and being the protagonist of an unbelievable comeback, Pedro Sánchez has won the PSOE's primary election. A new dawn seems to have arrived for the party. ?]
 
-- @post_event: We'll have to see how he fares...
+- @finish: We'll have to see how he fares...
+
+@finish
+go-to: congreso_coalition if psoe_holdout_congress; post_event if not psoe_holdout_congress

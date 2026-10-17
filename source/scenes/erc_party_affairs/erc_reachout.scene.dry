@@ -16,7 +16,6 @@ on-arrival: {!
 !}
 max-visits: 36
 card-image: img/erc/ararepubliques.jpg
-# face-image: img/erc/ararepubliques.jpg
 frequency: 100
 tags: erc_party jxsi_party jxcat_party
 role: card-party
@@ -310,7 +309,14 @@ title: Reach out to compromis
 subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
-on-arrival: party_resources -= 1
+on-arrival: {!
+    var outreachVisit = this.state.visits['erc_reachout'] || 0;
+    if (Q.player_party == 'erc' && Q.party_resources >= 1 && Q.compromis_reachout_paid_visit !== outreachVisit) {
+        Q.party_resources -= 1;
+        Q.compromis_reached_out_ever = true;
+        Q.compromis_reachout_paid_visit = outreachVisit;
+    }
+!}
 
 compromis is a relatively new coalition of broadly regionalist, federalist, republican, social-democratic, left parties in Valencia. While not explicitly pro-independece, the shared language, struggle against Spanish centralization and nationalism, and a long etc does bring us close together. [? if podemos_surged: What should we focus on in our reaching out? ?]
 

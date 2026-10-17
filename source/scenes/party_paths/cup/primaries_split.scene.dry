@@ -1,5 +1,6 @@
-title: Primàries to run in local elections!"
-view-if: year = 2019 and month = 3 and independence_trust < 80 and not rubicon and 1==0
+title: Primries to run in local elections!
+view-if: 1==0
+# view-if: year = 2019 and month = 3 and independence_trust < 80 and not rubicon and 1==0
 tags: event
 new-page: true
 max-visits: 1

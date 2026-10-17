@@ -6,6 +6,11 @@ on-arrival: {!
     Q.congreso_coalition_psoe_cs_wtf_s = 0;
     Q.congreso_coalition_barons_flag = 0;
     Q.congreso_coalition_sorpasso = false;
+    Q.congreso_left_offer_pending = false;
+    Q.congreso_left_offer_erc_possible = false;
+    Q.congreso_left_offer_compromis_possible = false;
+    Q.congreso_left_offer_erc_members = [];
+    Q.congreso_left_offer_compromis_members = [];
 
     // ── Helper: live seats ───────────────────────────────────────────────────
     var S = function (p) { return (p && Q[p + "_congreso_s"] > 0) ? Q[p + "_congreso_s"] : 0; };
@@ -271,13 +276,15 @@ on-arrival: {!
     // noEscalate: stop after phase 1, i.e. "does this bloc clear investiture with
     // everyone at their NATURAL stance?" — used by the does-the-right-need-the-PSOE
     // test, where the normal escalating reach is far too optimistic an answer.
-    var fill = function (core, mode, cands, noEscalate) {
+    var fill = function (core, mode, cands, noEscalate, exactSecondBallot) {
         cands = cands || candidates;
         var members = core.slice();
         var yes = 0, abst = 0;
         var addSeats = function (seats, type) { if (type === "abstain") abst += seats; else yes += seats; };
         members.forEach(function (m) { addSeats(seatsOf(m), m.type); });
-        var enough = function () { return Math.floor(yes + abst / 2) >= fillMajority; };
+        var enough = function () {
+            return exactSecondBallot ? yes > congresoTotal - yes - abst : Math.floor(yes + abst / 2) >= fillMajority;
+        };
 
         // One slot per candidate, tracking its base + current rank and live member.
         var slots = [];
@@ -421,6 +428,54 @@ on-arrival: {!
         Q.congreso_coalition_psoe_cs_wtf = true;
         Q.congreso_coalition_psoe_cs_wtf_s = Q.congreso_coalition_psoe_cs;
     }
+    // A completed agreement belongs to its elected chamber, not all future elections.
+    var leftAgreement = Q.congreso_left_agreement;
+    var agreementServing = leftAgreement && leftAgreement.chamber === (this.state.visits['congreso_election.post_election'] || 0)
+        && Q.spanish_pm_party == 'psoe' && Q.spanish_coalition.includes(Q.congreso_left_carrier);
+    if (agreementServing) {
+        Q.congreso_coalition_psoe_cs_wtf = false;
+        Q.congreso_coalition_psoe_cs_wtf_s = 0;
+        progMembers = leftAgreement.members;
+        Q.congreso_coalition_progressive_reach = true;
+        Q.congreso_coalition_progressive_talks = false;
+    }
+
+    // These are concrete alternatives to the failed PSOE-Cs strategy, offered once.
+    // Alignment with Podemos does not prove that the player contacted Compromis.
+    Q.compromis_reached_out_ever = !!(Q.compromis_reached_out_ever
+        || this.state.visits['erc_reachout.compromis_reach'] || this.state.visits['erc_reachout.campaign_compromis']);
+    if (Q.congreso_coalition_psoe_cs_wtf && !Q.congreso_coalition_majority_reach && psoeLeadsLeft && leftSeats > 0
+        && !this.state.visits['congreso_coalition_left_offer']) {
+        var passesOffer = function (members) {
+            var yes = 0, abstain = 0;
+            for (var member of members) {
+                if (member.type == 'abstain') abstain += seatsOf(member);
+                else yes += seatsOf(member);
+            }
+            return yes > congresoTotal - yes - abstain;
+        };
+        var allyRelations = Q[Q.parlament_current_icv + '_relations'] || 0;
+        var excluded = ['erc', 'cup', 'fr', 'ciu', 'cdc', 'dl', 'pdcat', 'junts', 'jxsi', 'jxcat', 'ehbildu', 'amaiur'];
+        var mediationCandidates = candidates.filter(function (candidate) { return !excluded.includes(candidate.party); });
+        Q.congreso_left_offer_compromis_members = fill(progSeed, 'left', mediationCandidates, false, true);
+        Q.congreso_left_offer_compromis_possible = (Q.player_party == 'erc' || Q.player_party == 'cup')
+            && Q.compromis_reached_out_ever && Q.psc_relations >= 65 && allyRelations >= 65 && Q.party_resources >= 1
+            && passesOffer(Q.congreso_left_offer_compromis_members);
+
+        // ERC supplies an explicit YES; the other parties retain their normal postures.
+        var ercCandidates = candidates.filter(function (candidate) { return candidate.party != 'erc'; });
+        Q.congreso_left_offer_erc_members = fill(concat(progSeed, [{ party: 'erc', type: 'support' }]), 'left', ercCandidates, true, true);
+        Q.congreso_left_offer_erc_possible = Q.player_party == 'erc' && S('erc') > 0 && !Q.erc_in_jxsi && !Q.erc_in_jxcat
+            && Q[Q.parlament_current_icv + '_leader'] != 'Arcadi Oliveres'
+            && Q.erc_civic_strength < 15 && Q.erc_roadmap < 2
+            && Q.psc_relations >= 65 && allyRelations >= 65 && Q.party_resources >= 2
+            && passesOffer(Q.congreso_left_offer_erc_members);
+        Q.congreso_left_offer_pending = Q.congreso_left_offer_erc_possible || Q.congreso_left_offer_compromis_possible;
+        if (Q.congreso_left_offer_pending) {
+            Q.congreso_coalition_psoe_cs_wtf = false;
+            Q.congreso_coalition_psoe_cs_wtf_s = 0;
+        }
+    }
     // On-the-table indicators (drive the bar + the option view-if), split by who
     // leads: the bigger of PSOE/Cs takes the presidency. The "close but short" band
     // is owned by the wtf-flop option, so the PSOE-led one excludes it.
@@ -448,7 +503,7 @@ on-arrival: {!
     Q.congreso_coalition_right_alone = rightGovernsAlone;
 
     if ((Q.congreso_coalition_psoe_cs_wtf_happened || !Q.congreso_coalition_psoe_cs_wtf) && Q.psoe_leader == "Pedro Sánchez" && !Q.psoe_barons_revolted
-        && !Q.congreso_coalition_majority_reach && !rightGovernsAlone
+        && !Q.congreso_coalition_majority_reach && !rightGovernsAlone && !Q.congreso_left_offer_pending && !agreementServing
         && (Q.congreso_coalition_grand_s_ppcs >= Q.congreso_s_majority || Q.congreso_coalition_grand_s_pp >= Q.congreso_s_majority)) {
         Q.congreso_coalition_barons_flag = 1;
     }
@@ -474,7 +529,7 @@ on-arrival: {!
         || reachNoPlayer(ppMinSeed,     "right",     S("pp") > 0)
         || reachNoPlayer(psoeCsSeed,    "psoecs",   (S("psoe") > 0 && S("cs") > 0))
         || ((Q.congreso_coalition_grand_s_pp >= maj || Q.congreso_coalition_grand_s_psoe >= maj) && Q.congreso_coalition_grand_ok)
-        || Q.congreso_coalition_grand_s_ppcs >= maj;
+        || (Q.congreso_coalition_grand_s_ppcs >= maj && (!Q.psoe_holdout_congress || Q.congreso_coalition_grand_ok));
     var someGovWithPlayer =
            Q.congreso_coalition_majority_reach
         || Q.congreso_coalition_left_reach        || Q.congreso_coalition_change_reach
@@ -488,6 +543,12 @@ on-arrival: {!
     
     // Pivotal ⇔ a cabinet wants the player's votes, yet none can govern without them.
     Q.congreso_coalition_force_elections = (Q.congreso_player_s > 0) && someGovWithPlayer && !govFormsWithoutPlayer;
+    // A membership mandate against a PP arrangement can leave no viable cabinet.
+    // In that case an election is the remaining exit, even without a player pivot.
+    if (Q.psoe_holdout_congress && this.state.visits['psoe_primaries_2017']
+        && Q.psoe_leader == 'Pedro Sánchez' && !govFormsWithoutPlayer) {
+        Q.congreso_coalition_force_elections = true;
+    }
 
     // ── Widget config ────────────────────────────────────────────────────────
     // A Q object the UI reads (the marker below points at it via configFrom),
@@ -597,7 +658,7 @@ on-arrival: {!
         ]
     };
 !}
-go-to: coalition_list if congreso_coalition_barons_flag != 1; barons_intervene if congreso_coalition_barons_flag = 1
+go-to: congreso_coalition_left_offer if congreso_left_offer_pending; coalition_list if not congreso_left_offer_pending and congreso_coalition_barons_flag != 1; barons_intervene if not congreso_left_offer_pending and congreso_coalition_barons_flag = 1
 
 = Coalitions and Negotiations
 
@@ -631,7 +692,7 @@ go-to: coalition_list if congreso_coalition_barons_flag != 1; barons_intervene i
 
 @new_congreso_elections
 title: Force new elections!
-subtitle: We are the kingmakers with this arithmetics after all
+subtitle: [? if psoe_holdout_congress: After all, there seems to be no agreement we can accept ?][? if not psoe_holdout_congress: We are the kingmakers with this arithmetics after all ?]
 choose-if: congreso_coalition_force_elections
 unavailable-subtitle: This is out of our control.
 on-arrival: {!    

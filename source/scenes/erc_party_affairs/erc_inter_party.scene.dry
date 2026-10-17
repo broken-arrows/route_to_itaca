@@ -11,7 +11,7 @@ role: card-party
 
 = Inter-Party Relationships
 
-ERC is one of many parties in a very fragmented political landscape. If we are to realistically achieve any of our goals, we are bound to need the support of other parties at some point. Up until 2010, we were part of a tripartite coalition with PSC and ICV-EUiA [? if csqp_formed: (now part of CSQP)?][? if cecp_formed: (now part of CECP)?][? if ecp_formed: (now part of ECP)?], but its failures have left us with strained relations, specially with the PSC. The new surge of support for independence also opens new avenues of cooperation through shared national lines, namely with [? if not unio_split: CiU?][? if pdcat_formed and not pdcat_split: pdcat?][? if unio_split: CDC?][? if dl_formed: DL?][?if not erc_in_jxcat and jxcat_formed: JxCat?][? if erc_in_jxcat and jxcat_formed: CDC?][? if junts_formed: Junts ?][? if si_parlament_s> 0: , SI?] and the CUP.
+ERC is one of many parties in a very fragmented political landscape. If we are to realistically achieve any of our goals, we are bound to need the support of other parties at some point. Up until 2010, we were part of a tripartite coalition with PSC and ICV-EUiA [? if csqp_formed: (now part of CSQP)?][? if cecp_formed: (now part of CECP)?][? if ecp_formed: (now part of ECP)?], but its failures have left us with strained relations, specially with the PSC. The new surge of support for independence also opens new avenues of cooperation through shared national lines, namely with [+ parlament_current_ciu +][? if si_parlament_s> 0: , SI?] and the CUP.
 
 - @jxsi_relations: We need to work on national unity within JxSi!
 - @jxcat_relations: We need to work on national unity within JxCat!
@@ -299,19 +299,17 @@ view-if: not cup_in_jxsi and not cup_in_jxcat
 unavailable-subtitle: Not enough resources
 on-arrival: {!
     Q.party_resources -= 1;
-    if (Q.cup_supporting && Q.cat_coalition.includes("erc")) {
-        Q.cup_relations += 5*(1 - Q.erc_dissent/100);
-    } else if (Q.erc_in_gob && Q.cat_coalition.includes("cup")) {
+    if (Q.erc_in_gob && Q.cup_in_gob) {
         Q.cup_relations += 7*(1 - Q.erc_dissent/100);
         Q.cat_coalition_dissent = -5;
+    } else if (Q.erc_in_gob && Q.cup_supporting) {
+        Q.cup_relations += 5*(1 - Q.erc_dissent/100);
     } else {
         Q.cup_relations += 6*(1 - Q.erc_dissent/100);
     }
-    Q.cat_coalition_includes_erc = Q.cat_coalition.includes("erc");
-    Q.cat_coalition_includes_cup = Q.cat_coalition.includes("cup");
 !}
 
-[? if cup_supporting and cat_coalition_includes_erc: The CUP is currently supporting our government, which is already a balancing act. Hopefully this can bring us closer together. ?][? if erc_in_gob and cat_coalition_includes_cup: We are currently governing together with the CUP, which alread demonstrates our commitment to leftist values. Let's hope this formula can hold up for some time. ?][? if (not erc_in_gob and cat_coalition_includes_cup) or (not cup_supporting): Without official institutional obligations to eachother for the moment, building ties with the CUP is always easier. ?]
+[? if erc_in_gob and cup_supporting and not cup_in_gob: The CUP is currently supporting our government, which is already a balancing act. Hopefully this can bring us closer together. ?][? if erc_in_gob and cup_in_gob: We are currently governing together with the CUP, which alread demonstrates our commitment to leftist values. Let's hope this formula can hold up for some time. ?][? if not (erc_in_gob and cup_supporting): Without official institutional obligations to eachother for the moment, building ties with the CUP is always easier. ?]
 
 @icv_relations
 subtitle: \[-1 resources\]

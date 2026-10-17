@@ -1,0 +1,142 @@
+title: The final chance for a different agreement
+subtitle: There may still be a way to bring the PSOE and the left back to the negotiating table.
+new-page: true
+max-visits: 1
+role: event
+face-image: img/events/rivera_sanchez.jpg
+
+= The final chance for a different agreement
+
+Investiture negotiations are running around the clock in Madrid. While [? if iu_in_up: Unidas Podemos?][? if not iu_in_up: Podemos ?] is still hoping and pushing for a <span class="gobierno-coalition" data-parties="psoe [+ congreso_left_carrier +]" data-summary="[? if psoe_congreso_s + congreso_left_carrier_s >= congreso_s_majority: Majority government?][? if psoe_congreso_s + congreso_left_carrier_s < congreso_s_majority: Minority government?] - [+ psoe_congreso_s + congreso_left_carrier_s +]/[+ congreso_s_majority +]"><span style="color: var(--psoe); font-style: italic;">Progressist</span> <span style="color: var(--up); font-style: italic;">Coalition</span></span>, the fact is that [+ psoe_leader +] and the PSOE seem way more fond of the idea of an agreement with csspa instead. A final chance to steer them may very well depend on us now.
+
+- @compromis
+- @erc_votes
+- @failure
+
+@erc_votes
+title: Maybe we could offer our vote without demanding a referendum?
+view-if: player_party = "erc"
+choose-if: congreso_left_offer_pending and congreso_left_offer_erc_possible
+subtitle: Rather understandably, many of our voters will see it as a betrayal. \[-2 resources\]
+unavailable-subtitle: [? if erc_in_jxsi or erc_in_jxcat: We are currently part of a electoral coalition explicitly working towards a referendum. ?][? if erc_roadmap >= 2: Our current roadmap goes even beyond a vote on agreement. ?][? if erc_civic_strength >= 15: Our party's civil organization alliances are too strong at the moment, and are blocking this possibility. ?][? if psc_relations < 65: Our relations with the PSC are not good enough. ?][? if {! return (Q[Q.parlament_current_icv + '_relations'] || 0) < 65; !}: Our relations with [+ parlament_current_icv +] are not good enough. ?][? if {! return Q[Q.parlament_current_icv + '_leader'] == 'Arcadi Oliveres'; !}: This is still a demand by Arcadi Oliveres' [+ parlament_current_icv +] anyway. ?][? if erc_congreso_s <= 0: We have no seats in the Congreso. ?][? if party_resources < 2: Not enough resources. ?]
+on-arrival: {!
+    var yes = 0, abstain = 0, total = 0;
+    for (var c in Q.congreso_seats) total += Q.congreso_seats[c];
+    for (var member of Q.congreso_left_offer_erc_members || []) {
+        var seats = Q[member.party + '_congreso_s'] || 0;
+        if (member.type == 'abstain') abstain += seats; else yes += seats;
+    }
+    if (Q.congreso_left_offer_pending && Q.congreso_left_offer_erc_possible && !Q.congreso_left_agreement
+        && yes > (total || 350) - yes - abstain
+        && Q.player_party == 'erc' && Q.erc_congreso_s > 0 && !Q.erc_in_jxsi && !Q.erc_in_jxcat
+        && Q[Q.parlament_current_icv + '_leader'] != 'Arcadi Oliveres' && !(Q.podemos_ideology || '').includes('Confederalism')
+        && Q.erc_civic_strength < 15 && Q.erc_roadmap < 2 && Q.psc_relations >= 65
+        && Q[Q.parlament_current_icv + '_relations'] >= 65 && Q.party_resources >= 2) {
+        Q.party_resources -= 2;
+        Q.erc_civic_dissent += 20;
+        Q.cup_relations -= 10;
+        Q.congreso_left_agreement = {
+            kind: 'erc', members: Q.congreso_left_offer_erc_members,
+            chamber: this.state.visits['congreso_election.post_election'] || 0
+        };
+        Q.congreso_left_offer_pending = false;
+
+        // Independence-minded voters leave most sharply in the interior and among
+        // younger and more mobilized groups. A moderate CiU loses ground to CUP.
+        var moderateCiu = Q[Q.parlament_current_ciu + '_roadmap'] == 1;
+        var province = { barcelona: 0.9, girona: 1.2, lleida: 1.15, tarragona: 1.05 };
+        var loss = { buss: 0.14, ind: 0.22, middle: 0.18, young: 0.28, retired: 0.16, rural: 0.24, unemployed: 0.22 };
+        var demoCiu = { buss: 0.08, ind: -0.04, middle: 0.02, young: -0.10, retired: 0.06, rural: 0.06, unemployed: -0.06 };
+        var provinceCiu = { barcelona: -0.02, girona: 0.02, lleida: 0.04, tarragona: 0 };
+        var ciuFamily = ['jxsi', 'jxcat', 'junts', 'pdcat', 'dl', 'cdc', 'ciu'];
+        var ciuCarrier = function (contest) {
+            var suffix = contest == 'congreso' ? '_congreso_catalunya_support' : '_local_barcelona_support';
+            var lineup = contest == 'congreso' ? Q.congreso_parties_catalunya : Q.parties_bcn;
+            var eligible = ciuFamily.filter(function (party) {
+                return lineup.includes(party) && (!(party == 'jxsi' || party == 'jxcat')
+                    || Q[party + (contest == 'congreso' ? '_in_congreso' : '_in_local')]);
+            });
+            return eligible.find(function (party) { return Q[party + suffix] > 0; })
+                || (eligible.includes(Q.parlament_current_ciu) ? Q.parlament_current_ciu : null)
+                || eligible.find(function (party) { return Q[party + '_formed']; }) || 'ciu';
+        };
+        for (var c of Q.parlament_constituencies) {
+            for (var d of Q.parlament_demographics) {
+                var amount = (Q['erc_parlament_' + c + '_' + d + '_support'] || 0) * loss[d] * province[c];
+                var ciuShare = Math.max(0.2, Math.min(moderateCiu ? 0.49 : 0.7,
+                    (moderateCiu ? 0.4 : 0.56) + demoCiu[d] + provinceCiu[c]));
+                G.cardSupportTransfer(Q, { contest: 'parlament', from: 'erc', to: Q.parlament_current_ciu, amount: amount * ciuShare,
+                    maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+                G.cardSupportTransfer(Q, { contest: 'parlament', from: 'erc', to: 'cup', amount: amount * (1 - ciuShare),
+                    maxDonorFraction: 0.5, constituencies: [c], demographics: [d] });
+            }
+        }
+        // These electorates have their own stocks; neither transfer projects the
+        // realized Parlament loss into another contest. No new CUP ballot is created.
+        var ciuShare = moderateCiu ? 0.4 : 0.56;
+        var congresoLoss = (Q.erc_congreso_catalunya_support || 0) * 0.20;
+        var radical = Q.spa_cup_active ? 'cup' : Q.spa_fr_active ? 'fr' : 'abstain';
+        G.cardSupportTransfer(Q, { contest: 'congreso', from: 'erc', to: ciuCarrier('congreso'), amount: congresoLoss * ciuShare,
+            maxDonorFraction: 0.5, constituencies: ['catalunya'] });
+        G.cardSupportTransfer(Q, { contest: 'congreso', from: 'erc', to: radical, amount: congresoLoss * (1 - ciuShare),
+            maxDonorFraction: 0.5, constituencies: ['catalunya'] });
+        var localLoss = (Q.erc_local_barcelona_support || 0) * 0.18;
+        var localCiuShare = moderateCiu ? 0.32 : 0.52;
+        G.cardSupportTransfer(Q, { contest: 'barcelona', from: 'erc', to: ciuCarrier('barcelona'), amount: localLoss * localCiuShare, maxDonorFraction: 0.5 });
+        G.cardSupportTransfer(Q, { contest: 'barcelona', from: 'erc', to: 'cup', amount: localLoss * (1 - localCiuShare), maxDonorFraction: 0.5 });
+    }
+!}
+go-to: congreso_coalition if {! return !Q.congreso_left_agreement; !}
+
+In what is seen as a betrayal of the ideals our party stands for, ERC will vote for a PSOE-led government, renouncing to even open negotiations for a referendum on independence. While sure this has pushed the PP and [+ pp_leader +] out of the Gobierno, we can bet many of our voters will not see this as a worth deal.
+
+- @resolve: At least the investiture moves forward!
+
+@compromis
+title: Let's support Compromís's efforts to mediate an agreement
+choose-if: congreso_left_offer_pending and congreso_left_offer_compromis_possible
+subtitle: Maybe with a push from our end, a minimum programme can at least be agreed upon. \[-1 resources\]
+unavailable-subtitle: [? if not compromis_reached_out_ever: We have not built the necessary contacts with Compromís. ?][? if psc_relations < 65: Our relations with the PSC are not good enough. ?][? if {! return (Q[Q.parlament_current_icv + '_relations'] || 0) < 65; !}: Our relations with [+ parlament_current_icv +] are not good enough. ?][? if not congreso_left_offer_compromis_possible: There is not a viable majority without any party demanding a referendum joining in. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: {!
+    var yes = 0, abstain = 0, total = 0;
+    for (var c in Q.congreso_seats) total += Q.congreso_seats[c];
+    for (var member of Q.congreso_left_offer_compromis_members || []) {
+        var seats = Q[member.party + '_congreso_s'] || 0;
+        if (member.type == 'abstain') abstain += seats; else yes += seats;
+    }
+    if (Q.congreso_left_offer_pending && Q.congreso_left_offer_compromis_possible && !Q.congreso_left_agreement
+        && yes > (total || 350) - yes - abstain
+        && (Q.player_party == 'erc' || Q.player_party == 'cup') && Q.compromis_reached_out_ever
+        && Q.psc_relations >= 65 && Q[Q.parlament_current_icv + '_relations'] >= 65 && Q.party_resources >= 1) {
+        Q.party_resources -= 1;
+        Q.congreso_left_agreement = {
+            kind: 'compromis', members: Q.congreso_left_offer_compromis_members,
+            chamber: this.state.visits['congreso_election.post_election'] || 0
+        };
+        Q.congreso_left_offer_pending = false;
+    }
+!}
+go-to: congreso_coalition if {! return !Q.congreso_left_agreement; !}
+
+With a bit of a push from our end, Compromís has managed to bring the PSOE and [? if iu_in_up: Unidas Podemos?][? if not iu_in_up: Podemos ?] back to the same table. While not a thrilling agreement, it seems like at least some points on reversing austerity and opening a dialogue on the territorial structure of Spain have made it in.
+
+- @resolve: And thus, the investiture vote moves forwards...
+
+@failure
+title: The negotiations fall apart
+subtitle: The PSOE and [? if iu_in_up: Unidas Podemos?][? if not iu_in_up: Podemos ?] are, after all, too apart at the moment...
+on-arrival: congreso_left_offer_pending = false
+go-to: congreso_coalition
+
+@resolve
+on-arrival: {!
+    if (Q.congreso_left_agreement) {
+        Q.congreso_coalition_lead_party = 'psoe';
+        Q.congreso_coalition_progressive_talks = false;
+        Q.congreso_coalition_psoe_cs_wtf = false;
+        Q.congreso_coalition_psoe_cs_wtf_s = 0;
+        Q.congreso_coalition_barons_flag = 0;
+        Q.spa_caretaker_gov = false;
+    }
+!}
+go-to: congreso_coalition_progressive.progressive_resolve if {! return !!Q.congreso_left_agreement; !}; congreso_coalition if {! return !Q.congreso_left_agreement; !}

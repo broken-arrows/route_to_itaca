@@ -1308,8 +1308,8 @@ on-arrival: {!
   Q.cc_congreso_rest_support = 0.47;
   Q.upyd_congreso_rest_support = 0.93;
   Q.prc_congreso_rest_support = 0.14;
-  Q.te_congreso_rest_support = 0.06;
-  Q.abstain_congreso_rest_support = 30.25;
+  Q.te_congreso_rest_support = 0;
+  Q.abstain_congreso_rest_support = 30.31;
 
   // ── Spanish (Congreso) engine state ──────────────────────────────────────────
   Q.spa_unemp_offset = 5.0;   // Spain-wide unemployment runs ~5pp above Catalunya
@@ -1325,6 +1325,9 @@ on-arrival: {!
   // Spanish party-system flags (IRL defaults; flipped by formation scenes)
   Q.party_reaching_out_bng = 0;
   Q.party_reaching_out_compromis = 0;
+  Q.compromis_reached_out_ever = false;
+  Q.congreso_left_agreement = null;
+  Q.psoe_holdout_congress = false;
   Q.party_reaching_out_mes = 0;
 
   Q.spa_cs_active = false;
@@ -1392,6 +1395,7 @@ on-arrival: {!
     "advisor_action",
     "parlament",
     "cup_leadership",
+    "cup_reachout",
     "roadmap_card",
     //generalitat
     "generalitat_coalition",
