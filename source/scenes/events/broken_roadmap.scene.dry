@@ -42,8 +42,10 @@ on-arrival: {!
         }
     }
     Q.independence_trust = 0.5*Q.independence_trust;
-    G.spaSupportInject(Q, "abstain", 3, "catalunya", "erc");
-    G.spaSupportInject(Q, "abstain", 3, "catalunya", Q.parlament_current_ciu);
+    G.spaSupportInject(Q, "abstain", "catalunya", 3, "erc");
+    var congresoCiu = Q[Q.parlament_current_ciu + "_congreso_catalunya_support"] > 0
+        ? Q.parlament_current_ciu : "ciu";
+    G.spaSupportInject(Q, "abstain", "catalunya", 3, congresoCiu);
 
     // TODO: Local votes transfer, probably the most hardcore consequence
 !}

@@ -1,0 +1,15 @@
+title: FLA conditions relaxed
+view-if: fla_active and fla_escalated and public_debt <= 32 and generalitat_surplus > -1.5
+tags: event
+new-page: true
+role: event
+face-image: img/events/fla_2.jpeg
+on-arrival: {!
+    Q.fla_escalated = false;
+!}
+
+= FLA conditions relaxed
+
+With the Generalitat's public debt now in a not-so-bad place, the current Gobierno under [? if spanish_pm_gender = "m": Presidente ?][? if spanish_pm_gender = "f": Presidenta ?][+ spanish_pm +] now sees it fit that the extraordinary economic measures imposed on Catalonia are tuned down. Nonetheless, the Generalitat is still set to rely on the FLA for a while longer, until public finances have "properly healed up".
+
+- @post_event: A step forward

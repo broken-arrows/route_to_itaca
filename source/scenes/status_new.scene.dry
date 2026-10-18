@@ -104,6 +104,8 @@ role: info-tab
 
 <div class="brief-row"><span>Debt status</span><span class="brief-stamp">[+ public_debt : public_debt_qualifier +]</span></div>
 
+Financing: [? if not fla_active and not ecb_qe: None?][? if fla_active: FLA?][? if fla_active and fla_escalated:  (stringent conditions)?][? if fla_active and ecb_qe:  + ?][? if ecb_qe: ECB?]
+
 
 @world
 title: World

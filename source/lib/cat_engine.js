@@ -1343,7 +1343,9 @@
       -Math.max(0, (Q.independence_movement - Q.independence_trust) / 100) *
       1.2;
 
-    const qe_strip = !Q.ecb_qe && Q.year >= 2015 ? -0.4 : 0.0;
+    const qe_strip =
+      !Q.ecb_qe && (Q.year > 2015 || (Q.year === 2015 && Q.month >= 3))
+        ? -0.4 : 0.0;
     const law_mod_gdp = mod(Q, "gdp_growth"); // <-- policy hook
     const gdp_target =
       struc +
@@ -1400,7 +1402,12 @@
       Q.generalitat_surplus,
     );
 
-    const deficit_flow = -(Q.generalitat_surplus / 12);
+    // Difficulty changes deficit financing pressure, independent of the player
+    // party's cabinet role. Surplus repayments retain their full value.
+    const debtDifficulty = clamp(Number(Q.difficulty) || 0, -1, 1);
+    const deficit_flow =
+      -(Q.generalitat_surplus / 12) *
+      (Q.generalitat_surplus < 0 ? 1 + 0.2 * debtDifficulty : 1);
     const interest = (Q.public_debt * 0.02) / 12;
     const gdp_debt_effect = -gdp_m * 0.18;
     Q.public_debt = clamp(
@@ -1663,6 +1670,9 @@
           carriers,
           responsibility,
         );
+        transfers.push(...buildBrokenBurdensTransfers(Q, {
+          carriers, support, responsibility,
+        }));
         transfers.push(
           ...parlamentParticipation.buildParlamentParticipationTransfers(Q, {
             province: prov,
@@ -2545,6 +2555,33 @@
         }
       }
 
+      // Generalitat credibility also matters in the Catalan Congreso electorate.
+      // Settle this conserved route after generic positive-gain calibration.
+      if (c === "catalunya") {
+        // A stale joint-list residue must not take the serving successor's
+        // responsibility. Prefer the current identity when live in this contest.
+        const currentCiu = Q.parlament_current_ciu;
+        const ciuCarrier = has(currentCiu) && sup(Q, currentCiu, c) > 0
+          ? currentCiu : convKey(Q, c);
+        const carriers = {
+          icr: ciuCarrier,
+          il: has("erc") && sup(Q, "erc", c) > 0 ? "erc" : ciuCarrier,
+          cup: "cup",
+          fl: podF, psc: psoeF, ppc: ppF, cs: "cs", vox: "vox",
+          unio: "unio", pdcat: "pdcat", fnc: "fnc", abs: ABSTAIN,
+        };
+        for (const family of Object.keys(carriers))
+          if (!has(carriers[family])) carriers[family] = null;
+        const requests = buildBrokenBurdensTransfers(Q, {
+          carriers,
+          support: Object.fromEntries(fams.map(p => [p, sup(Q, p, c)])),
+        });
+        for (const request of requests) {
+          deltas[carriers[request.from]] -= request.amount;
+          deltas[carriers[request.to]] += request.amount;
+        }
+      }
+
       // 4j. Gaussian noise
       for (const p of fams) {
         const share = sup(Q, p, c) / 100;
@@ -2909,6 +2946,36 @@
     pdcat: { abs: 0.35, icr: 0.35, il: 0.2, psc: 0.1 },
     fnc: { abs: 0.45, icr: 0.25, cup: 0.2, ppc: 0.1 },
   };
+
+  // Broken social commitments cost existing support, not just campaign appeal.
+  // At full responsibility the base loss is 0.6% of current support per tick.
+  // Sovereignty credibility can at most double it; each ingredient adds 0.5.
+  // Role weights sum across a joint carrier, so merged ballots are not charged
+  // once at full strength for every constituent party.
+  function buildBrokenBurdensTransfers(Q, context) {
+    if (!Q.burdens_broken) return [];
+    const responsibility = context.responsibility || getParlamentResponsibility(Q);
+    const { carriers, support } = context;
+    const responsible = new Set(Object.keys(responsibility).map(f => carriers[f]).filter(Boolean));
+    const requests = [];
+    for (const [from, weight] of Object.entries(responsibility)) {
+      if (!carriers[from]) continue;
+      const sovereignty = ["icr", "il", "cup", "pdcat", "fnc"].includes(from);
+      const distrust = clamp((40 - (Q.independence_trust ?? 40)) / 25, 0, 1);
+      const amplification = sovereignty
+        ? 1 + (Q.broken_roadmap ? 0.5 : 0) + 0.5 * distrust
+        : 1;
+      const loss = Math.max(0, support[carriers[from]] || 0) * 0.006 * weight * amplification;
+      const alternatives = Object.entries(PARLAMENT_ACCOUNTABILITY_ROUTES[from] || { abs: 1 })
+        .filter(([to]) => carriers[to] && !responsible.has(carriers[to]));
+      const total = alternatives.reduce((sum, [, share]) => sum + share, 0);
+      for (const [to, share] of alternatives) requests.push({
+        mechanism: "nonlinear.broken_burdens", from, to,
+        amount: loss * share / total,
+      });
+    }
+    return requests;
+  }
 
   function buildParlamentResponsibilityTransfers(
     Q,
@@ -3590,6 +3657,7 @@
 
   // source/lib/index.js forwards these helpers to the engine's G object.
   var api = {
+    buildBrokenBurdensTransfers,
     initRandom,
     random,
     buildParlamentCorruptionTransfers,

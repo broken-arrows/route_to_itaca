@@ -1,0 +1,16 @@
+title: FLA conditions get more stringent
+subtitle: With the Generalitat unable to curtail public debt, the Gobierno seems set on intervening
+view-if: fla_active and not fla_escalated and public_debt >= 35
+tags: event
+new-page: true
+role: event
+face-image: img/events/fla_1.webp
+on-arrival: {!
+    Q.fla_escalated = true;
+!}
+
+= FLA conditions get more stringent
+
+With public debt reaching past the 35% of GDP mark, continued financing through the FLA, the central-government-run liquidity fund, comes under "enhanced" fiscal supervision. In plain language, this translates to enforced austerity measures and more supervision over Catalan public spending until the financial situation is reverted back to a more "acceptable" state. Needless to say, this also lowers the Generalitat's credibility in other financial markets, making debt seeking even harder.
+
+- @post_event: This is really not great...

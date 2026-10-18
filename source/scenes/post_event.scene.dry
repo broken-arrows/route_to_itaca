@@ -98,6 +98,12 @@ if (Q.month >= 13) {
     Q.year += 1;
 }
 
+// External monetary support begins in March 2015, including late-loaded saves.
+// Resolve after the calendar advances and before the monthly economic tick.
+if (!Q.ecb_qe && (Q.year > 2015 || (Q.year === 2015 && Q.month >= 3))) {
+    Q.ecb_qe = true;
+}
+
 if (has_time_passed) {
     console.info("Time has passed. Current date: ", Q.year, Q.month, Q.week);
     G.engineTick(Q);
@@ -126,8 +132,11 @@ if (has_time_passed) {
     }
     if (Q.burdens_goal > 0 && Q.burdens_time <= 0) {
         if (Q.burdens_done < Q.burdens_goal) {
+            // Start once per failure
+            if (!Q.burdens_broken || !Number.isFinite(Q.burdens_restart_countdown)) {
+                Q.burdens_restart_countdown = 24;
+            }
             Q.burdens_broken = 1;
-            Q.burdens_restart_countdown = 24;
             if (!Q.countdowns.includes("burdens_restart")) Q.countdowns.push("burdens_restart");
         } else {
             Q.burdens_done = 0;
@@ -157,15 +166,6 @@ if (has_time_passed) {
             (cabinet.includes(Q.player_party) || cabinet.includes(playerList))) {
             var yearlyAllowance = Math.max(0, 1 - (Number(Q.difficulty) || 0));
             Q.government_budget = (Number(Q.government_budget) || 0) + yearlyAllowance;
-            if (Q.generalitat_surplus < 0) {
-                Q.public_debt += 0.5;
-            }
-            if (Q.generalitat_surplus < -2) {
-                Q.public_debt += 0.5;
-            }
-            if (Q.generalitat_surplus < -1 && Q.difficulty > 0) {
-                Q.public_debt += 0.5;
-            }
         }
 
         // PxC sanity check in the rare case that they have seats

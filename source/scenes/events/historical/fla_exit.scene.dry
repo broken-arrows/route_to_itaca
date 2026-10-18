@@ -1,0 +1,16 @@
+title: The Generalitat, to leave FLA financing scheme
+view-if: fla_active and not fla_escalated and public_debt <= 24 and generalitat_surplus >= 0
+tags: event
+new-page: true
+role: event
+face-image: img/events/fla_2.jpeg
+on-arrival: {!
+    Q.fla_active = false;
+    Q.fla_escalated = false;
+!}
+
+= The Generalitat, to leave FLA financing scheme
+
+Improved public finances seem to be bearing its fruits. With lower debt-to-GDP ratio and a positive surplus, the Generalitat is now about to leave the FLA, the Autonomic Liquidity Fund that was the main source of its debt financing until this point. Leaving it means also leaving behind imposed restrictions on government spending and an improvement of the Catalan public debt rating.
+
+- @post_event: Good news!

@@ -1,0 +1,16 @@
+title: The Generalitat to seek FLA financing
+view-if: not fla_active and (public_debt >= 28 or generalitat_surplus <= -2)
+tags: event
+new-page: true
+role: event
+face-image: img/events/fla_1.webp
+on-arrival: {!
+    Q.fla_active = true;
+    Q.fla_escalated = false;
+!}
+
+= The Generalitat to seek FLA financing
+
+With worsening public debt and a generally poor status for its financials, the Generalitat under [? if president_gender = "m": President ?][? if president_gender = "f": Presidenta ?][+ president +] is now left with no options but to seek financing through the FLA, the central-government-run liquidity fund for autonomous communities. This comes with some stringent conditions on public spending, and very defined goals on expected government surplus for the coming years.
+
+- @post_event: Not great news...
