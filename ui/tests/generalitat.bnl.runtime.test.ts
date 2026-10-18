@@ -300,7 +300,7 @@ describe('ICF budget approval', () => {
     adapter.goToScene('budget_trigger');
     expect(q.budget_draft.projects.icf).toBe(true);
     expect(q.parlament_budget_icf_available).toBe(true);
-    expect(q.parlament_budget_margin).toBe(-3); // +1 base, -2 cap expansion, -2 ICF.
+    expect(q.parlament_budget_margin).toBe(-4); // No base allowance: -2 cap expansion, -2 ICF.
   });
 
   it('keeps an unfunded branch inert when parliamentary support is insufficient', () => {

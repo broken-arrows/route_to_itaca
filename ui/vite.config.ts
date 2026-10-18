@@ -82,5 +82,7 @@ export default defineConfig({
   },
   test: {
     environment: 'jsdom',
+    // Simulation-heavy files contend for CPU at the default worker count.
+    maxWorkers: 4,
   },
 });

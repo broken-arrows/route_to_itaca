@@ -166,12 +166,10 @@ on-arrival: {!
             });
             if (Number.isInteger(level) && level >= -2 && level < 2 && level < Q.social_spending_cap && Q.generalitat_surplus > -3 &&
                 Q[service[1] == "education_spending" ? "education_prepared_level" : "healthcare_prepared_level"] == null)
-                add(service[0], service[1], level + 1, (level < 0 ? G.text("restore {service} cuts", { service: service[2] == "education" ? G.text("education") : G.text("healthcare") }) : G.text("expand {service} funding", { service: service[2] == "education" ? G.text("education") : G.text("healthcare") })),  consellerText,
-                    distress ? "argues that it about time crisis-era cuts are reverted." : " is pushing forward a reform for better funding and expanded resources.",
+                add(service[0], service[1], level + 1, (level < 0 ? G.text("restore {service} cuts", { service: service[2] == "education" ? G.text("education") : G.text("healthcare") }) : G.text("expand {service} funding", { service: service[2] == "education" ? G.text("education") : G.text("healthcare") })),  G.text("{minister} {reason}", {minister: consellerText, reason: distress ? G.text("argues that it about time crisis-era cuts are reverted.") : G.text("is pushing forward a reform for better funding and expanded resources.")}),
                     left ? (distress ? 5 : 3) : !deficit ? 1 : 0, "services");
             if (Number.isInteger(level) && level > -2 && level <= 2)
-                add(service[0], service[1], level - 1, G.text("reduce {service} funding", { service: service[2] == "education" ? G.text("education") : G.text("healthcare") }) ,consellerText,
-                    "is pushing for further cuts to curve down the current deficit of the Generalitat.",
+                add(service[0], service[1], level - 1, G.text("reduce {service} funding", { service: service[2] == "education" ? G.text("education") : G.text("healthcare") }) ,G.text("{minister} is pushing for further cuts to curve down the current deficit of the Generalitat.", {minister: consellerText}),
                     market && deficit ? 4 : left && !radical && Q.generalitat_surplus < -2 ? 1 : 0, "services", "cut");
         }
         if (Number.isInteger(Q.public_salary_level) && Q.public_salary_level >= -2 && Q.public_salary_level < 2 && Q.economy_cuts <= 0 &&

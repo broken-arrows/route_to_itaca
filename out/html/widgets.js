@@ -21,6 +21,12 @@
  */
 (function () {
   "use strict";
+  function tr(text, params) {
+    if (window.ClassicI18n) return window.ClassicI18n.text(text, params);
+    return text.replace(/\{(\w+)\}/g, function (m, key) { return params && params[key] !== undefined ? params[key] : m; });
+  }
+  function tc(text) { return window.ClassicI18n ? window.ClassicI18n.content(text) : text; }
+
 
   function readDataProps(el) {
     var raw = el.getAttribute("data-props");
@@ -178,7 +184,7 @@
             checkbox.checked = !!row.member;
             checkbox.setAttribute(
               "aria-label",
-              "Include " + row.name + " in the joint list",
+              tr("Include {party} in the joint list", { party: row.name }),
             );
             checkbox.onchange = function () {
               refresh(
@@ -194,7 +200,7 @@
             button.textContent = direction < 0 ? "‹" : "›";
             button.setAttribute(
               "aria-label",
-              (direction < 0 ? "Previous" : "Next") + " party for " + row.name,
+              tr(direction < 0 ? "Previous party for {party}" : "Next party for {party}", { party: row.name }),
             );
             button.className =
               direction < 0 ? "builder-previous" : "builder-next";
@@ -227,9 +233,9 @@
           minus.textContent = "−";
           plus.textContent = "+";
           minus.type = plus.type = "button";
-          minus.setAttribute("aria-label", "Remove a seat from " + row.name);
-          plus.setAttribute("aria-label", "Add a seat to " + row.name);
-          input.setAttribute("aria-label", row.name + " seats");
+          minus.setAttribute("aria-label", tr("Remove a seat from {party}", { party: row.name }));
+          plus.setAttribute("aria-label", tr("Add a seat to {party}", { party: row.name }));
+          input.setAttribute("aria-label", tr("{party} seats", { party: row.name }));
           input.type = "text";
           input.inputMode = "numeric";
           input.pattern = "[0-9]*";
@@ -317,7 +323,7 @@
           group = { date: event.date, labels: [] };
           events.push(group);
         }
-        var label = event.label;
+        var label = tc(event.label);
         if (!group.labels.includes(label)) group.labels.push(label);
       });
       events.sort(function (a, b) { return +new Date(a.date) - +new Date(b.date); });
@@ -420,7 +426,7 @@
           majorityLabel.className = "hemicycle-majority";
           el.appendChild(majorityLabel);
         }
-        majorityLabel.textContent = "Majority: " + majority + " seats";
+        majorityLabel.textContent = tr("Majority: {count} seats", { count: majority });
       } else if (majorityLabel) {
         majorityLabel.remove();
       }
@@ -470,7 +476,7 @@
           String((majorityVotes / totalVotes) * 100) + "%",
         );
         bar.setAttribute("data-majority", String(majorityVotes));
-        bar.title = "Majority: " + majorityVotes + " yes votes";
+        bar.title = tr("Majority: {count} yes votes", { count: majorityVotes });
       }
       var breakdowns = document.createElement("div");
       breakdowns.className = "chamber-vote__breakdowns";
@@ -487,7 +493,7 @@
         var votes = Math.max(0, Number(outcome.votes) || 0);
         var label = document.createElement("div");
         label.className = "chamber-vote__label chamber-vote__label--" + kind;
-        label.textContent = String(outcome.label || "");
+        label.textContent = tc(String(outcome.label || ""));
         labels.appendChild(label);
 
         var segment = document.createElement("div");
@@ -496,7 +502,7 @@
         segment.style.flexGrow = String(votes);
         segment.setAttribute(
           "aria-label",
-          String(outcome.label || "") + ": " + votes + " votes",
+          tr("{label}: {count} votes", { label: tc(String(outcome.label || "")), count: votes }),
         );
         segment.textContent = String(votes);
         bar.appendChild(segment);
@@ -550,7 +556,7 @@
       if (!visibleLaws.length) {
         var empty = document.createElement("p");
         empty.className = "law-grid__empty";
-        empty.textContent = "No laws passed yet";
+        empty.textContent = tr("No laws passed yet");
         el.appendChild(empty);
         return;
       }
@@ -566,8 +572,8 @@
         )
           ? law.colour
           : "gray";
-        var description = String(law.description || "");
-        var label = String(law.title || law.id || "Law");
+        var description = tc(String(law.description || ""));
+        var label = tc(String(law.title || law.id || "Law"));
         if (description) label += " — " + description;
         var icon = document.createElement("div");
         icon.className = "law-grid__law law-grid__law--" + colour;
@@ -586,7 +592,7 @@
         tooltip.setAttribute("role", "tooltip");
         var tooltipTitle = document.createElement("span");
         tooltipTitle.className = "law-grid__tooltip-title";
-        tooltipTitle.textContent = String(law.title || law.id || "Law");
+        tooltipTitle.textContent = tc(String(law.title || law.id || "Law"));
         var tooltipDescription = document.createElement("span");
         tooltipDescription.className = "law-grid__tooltip-description";
         tooltipDescription.textContent = description;
@@ -618,7 +624,7 @@
       var spectrum = document.createElement("div");
       spectrum.className = "roadmaps-widget__spectrum";
       spectrum.setAttribute("role", "list");
-      spectrum.setAttribute("aria-label", "Party roadmaps to independence");
+      spectrum.setAttribute("aria-label", tr("Party roadmaps to independence"));
 
       [3, 2, 1, 0].forEach(function (level) {
         var position = ROADMAP_LEVELS[level];
@@ -633,7 +639,7 @@
           var item = document.createElement("div");
           item.className = "roadmaps-widget__party";
           item.setAttribute("role", "listitem");
-          item.setAttribute("aria-label", party.label + ": " + position.label);
+          item.setAttribute("aria-label", party.label + ": " + tr(position.label));
 
           var logo = document.createElement("img");
           logo.className = "roadmaps-widget__logo";
@@ -655,9 +661,9 @@
         var levelLabel = document.createElement("div");
         levelLabel.className = "roadmaps-widget__label";
         var levelTitle = document.createElement("strong");
-        levelTitle.textContent = position.label;
+        levelTitle.textContent = tr(position.label);
         var levelDescription = document.createElement("span");
-        levelDescription.textContent = position.description;
+        levelDescription.textContent = tr(position.description);
         levelLabel.appendChild(levelTitle);
         levelLabel.appendChild(levelDescription);
 
@@ -758,7 +764,7 @@
               state +
               '">' +
               "<span> " +
-              a.name +
+              tc(a.name) +
               " </span>" +
               '<div class="achievement-stars">' +
               stars +
@@ -767,7 +773,7 @@
               '<div class="achievement-description achievement-description--' +
               state +
               '">' +
-              a.description +
+              tc(a.description) +
               "</div>" +
               "</div>" +
               "</div>"

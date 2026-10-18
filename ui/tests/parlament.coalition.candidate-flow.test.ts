@@ -105,7 +105,7 @@ describe('presidential pressure, assembly and nomination', () => {
     a.qualities.coalition_phase_timer = 0;
     const next = a.goToScene(phase);
     expect(next.html).toContain('The previous round ended without agreement');
-    expect(next.html).toContain('JxSí is unwilling');
+    expect(new DOMParser().parseFromString(next.html, 'text/html').body.textContent).toContain('JxSí is unwilling');
     expect(next.html).not.toContain('has rejected our previous');
   });
 
@@ -123,7 +123,7 @@ describe('presidential pressure, assembly and nomination', () => {
     Object.assign(a.qualities, qbase({ [P + 'kind']: kind, [P + 'assembly_result']: 'veto', parlament_coalition_leader: joint ? kind : 'cdc', jxsi_formed: true, jxcat_formed: true }));
     const pressure = a.goToScene(P + 'candidate_erc.public');
     expect(pressure.html.includes('breaking the coalition')).toBe(joint);
-    expect(pressure.html.includes('publicly siding with the CUP')).toBe(!joint);
+    expect(new DOMParser().parseFromString(pressure.html, 'text/html').body.textContent!.includes('publicly siding with the CUP')).toBe(!joint);
     const replacement = a.goToScene(P + 'replacement');
     expect(replacement.html.includes('for the good of the unity list')).toBe(joint);
     expect(replacement.html.includes('to make an agreement between')).toBe(!joint);

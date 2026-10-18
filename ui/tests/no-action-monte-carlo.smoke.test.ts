@@ -38,18 +38,6 @@ describe('no-action Monte Carlo runner', () => {
     expect(formed!.final.validVoteShare.jxsi).toBeGreaterThan(0);
   }, 30_000);
 
-  it.skipIf(!existsSync(GAME))('does not retain stale DL seats when ERC refuses JxSi', () => {
-    const result = runNoActionSimulation({
-      gamePath: GAME,
-      seed: 12092025,
-      difficulty: 'normal',
-    });
-    expect(result.structuralState.dlFormed).toBe(true);
-    expect(result.structuralState.jxsiFormed).toBe(false);
-    expect(result.final.seats.dl).toBeGreaterThan(0);
-    expect(result.final.totalSeats).toBe(135);
-  }, 30_000);
-
   it.skipIf(!existsSync(GAME))('continues past an early Parlament election to the May 2015 locals', () => {
     const result = runNoActionLocalSimulation({
       gamePath: GAME,

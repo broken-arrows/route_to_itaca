@@ -306,7 +306,7 @@ d3.parliament = function () {
                 ${imgHtml}
                 <div>
                   <span style="color:${partyColour}; font-weight:bold;">${(colour && colour.display) || partyId}</span><br>
-                  <span>${nSeatsInParty} seat${nSeatsInParty !== 1 ? "s" : ""}</span>
+                  <span>${window.ClassicI18n ? window.ClassicI18n.text(nSeatsInParty === 1 ? "{count} seat" : "{count} seats", { count: nSeatsInParty }) : nSeatsInParty + (nSeatsInParty === 1 ? " seat" : " seats")}</span>
                 </div>
               </div>`,
             )

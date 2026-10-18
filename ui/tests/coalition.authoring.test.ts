@@ -59,6 +59,7 @@ describe('authored coalition tooltip metadata', () => {
     Object.assign(adapter.qualities, {
       player_party: player,
       year: 2013,
+      roadmap_year: 2015,
       month: 2,
       time: 6,
       rubicon: false,
@@ -223,7 +224,7 @@ describe('authored coalition tooltip metadata', () => {
     expect(adapter.qualities.pdcat_external_support).toBe(false);
     expect(frame.html).not.toContain('Thanks to our mediation efforts');
     expect(frame.html).not.toContain('Thanks to our efforts');
-    expect(frame.html).toContain('keep the CUP out of the negotiations');
+    expect(new DOMParser().parseFromString(frame.html, 'text/html').body.textContent).toContain('keep the CUP out of the negotiations');
   });
 
   it('resolves Dendry arithmetic and party ids inside option-title attributes', () => {

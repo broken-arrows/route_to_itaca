@@ -22,7 +22,7 @@ function setup(overrides: Record<string, any> = {}) {
     president_party: 'ciu', health_minister_party: 'ciu', president: 'Artur Mas',
     parlament_current_ciu: 'ciu', parlament_current_icv: 'icv',
     ciu_ideology: 'Liberal-Conservatism, Pact-Pragmatism', ciu_relations: 60,
-    year: 2013, month: 4, week: 1, time: 8, budget_year: 2013, budget_year_attempted: 2013,
+    year: 2013, month: 4, week: 1, time: 8, budget_year: 2013, budget_year_attempted: 2013, roadmap_year: 2015,
     cat_caretaker_gov: false, rubicon: false, party_resources: 4, government_budget: 7,
     generalitat_surplus: -1, social_dissent: 55, welfare_index: 70, unemployment: 14,
     healthcare_spending: -1, education_spending: -1, public_salary_level: 0, social_spending_cap: 0,

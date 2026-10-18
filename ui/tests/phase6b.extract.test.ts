@@ -1,11 +1,16 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { extractFiles, extractProject } from 'dendrynexus-ten/lib/localization-extract.js';
 import { compile } from 'dendrynexus-ten/lib/parsers/content.js';
 import { collectUnits, captureContent, renderContent } from 'dendrynexus-ten/lib/localization.js';
 import { convertLine } from 'dendrynexus-ten/lib/ui/content/html.js';
+
+const require = createRequire(import.meta.url);
+const { confirmPrune } = require('../../vendor/dendrynexus-ten/lib/cli/cmd/extract-strings.js');
 
 const scene = (body: string, arrival = '') => ({
   name: join('source', 'scenes', 'sample.scene.dry'),
@@ -96,6 +101,29 @@ describe('Phase 6B localization extraction and discovery', () => {
     expect(result.catalogReports.ca.orphanedKeys).toEqual(['Retired']);
     expect(result.catalogReports.ca.untranslatedKeys).toContain('A new sentence.');
     expect(result.errors).toEqual([]);
+    const pruned = await extractFiles([scene('President [+ president +].\n\nA new sentence.')], {
+      declarations: { grammarBindings: { president: 'president_gender' } },
+      catalogs: { en: {}, ca: { 'President {president}.': existing, Retired: 'Retirat' } },
+      prune: true,
+    });
+    expect(pruned.catalogs.ca.Retired).toBeUndefined();
+    expect(pruned.catalogs.ca['President {president}.']).toEqual(existing);
+    expect(pruned.catalogReports.ca.orphanedKeys).toEqual(['Retired']);
+  });
+
+  it('requires two distinct confirmations before pruning', async () => {
+    const report = { ca: { orphanedKeys: ['Retired'] } };
+    const warn = vi.fn();
+    const firstRejected = vi.fn(async () => 'no');
+    expect(await confirmPrune(report, firstRejected, warn)).toBe(false);
+    expect(firstRejected).toHaveBeenCalledTimes(1);
+    const secondRejected = vi.fn().mockResolvedValueOnce('PRUNE').mockResolvedValueOnce('no');
+    expect(await confirmPrune(report, secondRejected, warn)).toBe(false);
+    expect(secondRejected).toHaveBeenCalledTimes(2);
+    const accepted = vi.fn().mockResolvedValueOnce('PRUNE').mockResolvedValueOnce('DELETE');
+    expect(await confirmPrune(report, accepted, warn)).toBe(true);
+    expect(accepted).toHaveBeenCalledTimes(2);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('source/locales/ca/content.json'));
   });
 
   it('reports writes, copies, local concatenation, joins and replacements that reach inserts', async () => {
@@ -180,7 +208,7 @@ describe('Phase 6B localization extraction and discovery', () => {
     expect(result.units[0].parameters).toEqual(['seats']);
   });
 
-  it('dry-runs a project without filesystem changes, then writes additive catalogs/report and retains reviews', async () => {
+  it('previews and confirms content-only pruning without changing files on cancellation', async () => {
     const project = mkdtempSync(join(tmpdir(), 'phase6b-extract-'));
     try {
       mkdirSync(join(project, 'source', 'scenes'), { recursive: true });
@@ -189,21 +217,45 @@ describe('Phase 6B localization extraction and discovery', () => {
       writeFileSync(join(project, 'source', 'info.dry'), 'title: Sample\nauthor: Test\nlanguages: en ca\n');
       writeFileSync(join(project, 'source', 'scenes', 'root.scene.dry'), 'title: Root\n\nA sentence.\n');
       const catalogPath = join(project, 'source', 'locales', 'ca', 'content.json');
+      const uiPath = join(project, 'source', 'locales', 'ca', 'ui.json');
       const reportPath = join(project, 'source', 'locales', '_reports', 'extraction.json');
       const reviewPath = join(project, 'source', 'locales', '_reports', 'dispositions.json');
       const before = JSON.stringify({ Retired: 'Retirat' });
+      const uiBefore = JSON.stringify({ classic: { messages: { Retired: 'Retirat' } } });
       const reviewBefore = JSON.stringify({ version: 1, findings: {} });
       writeFileSync(catalogPath, before);
+      writeFileSync(uiPath, uiBefore);
       writeFileSync(reviewPath, reviewBefore);
       const preview = await extractProject(project, { dryRun: true });
       expect(preview.catalogs.ca['A sentence.']).toBeNull();
       expect(readFileSync(catalogPath, 'utf8')).toBe(before);
       expect(readdirSync(join(project, 'source', 'locales', '_reports'))).toEqual(['dispositions.json']);
-      const applied = await extractProject(project);
+      const prunedPreview = await extractProject(project, { dryRun: true, prune: true });
+      expect(prunedPreview.catalogs.ca.Retired).toBeUndefined();
+      expect(prunedPreview.catalogReports.ca.orphanedKeys).toEqual(['Retired']);
+      const cli = spawnSync(process.execPath,
+        [resolve(import.meta.dirname, '../../vendor/dendrynexus-ten/lib/cli/main.js'), 'extract-strings', project, '--prune'],
+        { encoding: 'utf8' });
+      expect(cli.status).toBe(1);
+      expect(cli.stderr).toContain('interactive terminal');
+      expect(readFileSync(catalogPath, 'utf8')).toBe(before);
+      await expect(extractProject(project, { prune: true })).rejects.toThrow('confirmation callback');
+      expect(readFileSync(catalogPath, 'utf8')).toBe(before);
+      const cancelled = await extractProject(project, { prune: true, confirmPrune: async () => false });
+      expect(cancelled.pruneCancelled).toBe(true);
+      expect(readFileSync(catalogPath, 'utf8')).toBe(before);
+      expect(readdirSync(join(project, 'source', 'locales', '_reports'))).toEqual(['dispositions.json']);
+      const applied = await extractProject(project, { prune: true, confirmPrune: async () => true });
       expect(applied.errors).toEqual([]);
-      expect(JSON.parse(readFileSync(catalogPath, 'utf8')).Retired).toBe('Retirat');
+      expect(JSON.parse(readFileSync(catalogPath, 'utf8')).Retired).toBeUndefined();
+      expect(JSON.parse(readFileSync(catalogPath, 'utf8'))['A sentence.']).toBeNull();
+      expect(readFileSync(uiPath, 'utf8')).toBe(uiBefore);
       expect(JSON.parse(readFileSync(reportPath, 'utf8')).catalogs).toBeUndefined();
       expect(readFileSync(reviewPath, 'utf8')).toBe(reviewBefore);
+      const after = readFileSync(catalogPath, 'utf8');
+      const repeated = await extractProject(project, { prune: true, confirmPrune: async () => false });
+      expect(repeated.pruneCancelled).toBe(true);
+      expect(readFileSync(catalogPath, 'utf8')).toBe(after);
     } finally {
       rmSync(project, { recursive: true, force: true });
     }

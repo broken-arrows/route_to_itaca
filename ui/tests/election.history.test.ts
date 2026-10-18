@@ -8,7 +8,7 @@ import { i18n, setLocale } from '../src/i18n';
 import { useGameStore } from '../src/stores/game';
 import ElectionHistory from '../src/components/viz/ElectionHistory.vue';
 import Prose from '../src/components/Prose.vue';
-import caUi from '../src/locales/ca.json';
+import caUi from '../../source/locales/ca/ui.json';
 
 const root = resolve(import.meta.dirname, '../..');
 const read = (file: string) => readFileSync(resolve(root, file), 'utf8');

@@ -12,6 +12,7 @@
     <script src="d3-parliament.js"></script>
     <script src="d3-linegraph.js"></script>
     <script src="core.js"></script>
+    <script src="localization.js"></script>
     <script src="game.js"></script>
     <script src="cat_polls.js"></script>
     <script src="lib/cat_engine.js"></script>
@@ -31,11 +32,11 @@
     <div class="background" id="bg1">
     </div>
 
-    <dialog id="message_dialog" class="message-dialog" aria-label="Message">
+    <dialog id="message_dialog" class="message-dialog" aria-label="Message" data-classic-aria-label="Message">
       <div class="message-dialog__body">
         <p id="message_dialog_text"></p>
         <form method="dialog" class="message-dialog__actions">
-          <button class="b" value="ok" autofocus>OK</button>
+          <button class="b" value="ok" autofocus data-classic-text="OK">OK</button>
         </form>
       </div>
     </dialog>
@@ -44,17 +45,35 @@
         <div class="overlay_top" style="max-width: fit-content;">
             <table>
                 <tr>
-                    <td>
+                    <td><span data-classic-text="Language">Language</span>:</td>
+                    <td style="cursor: pointer">
+                        <label for="classic-language-en">English</label>
+                    </td>
+                    <td style="cursor: pointer">
+                        <input type="radio" id="classic-language-en" name="classic-language" value="en" onchange="ClassicI18n.setLocale(this.value)" checked>
+                    </td>
+                    <td style="cursor: pointer">
+                        <label for="classic-language-ca">Català</label>
+                    </td>
+                    <td style="cursor: pointer">
+                        <input type="radio" id="classic-language-ca" name="classic-language" value="ca" onchange="ClassicI18n.setLocale(this.value)">
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td data-classic-text="Backgrounds:">
                         Backgrounds:
                     </td>
                     <td style="cursor: pointer">
-                        <label for="backgrounds_yes">On</label>
+                        <label for="backgrounds_yes" data-classic-text="On">On</label>
                     </td>
                     <td style="cursor: pointer">
                         <input type="radio" id="backgrounds_yes" name="backgrounds" value="1" onclick="window.enableBg();">
                     </td>
                     <td style="cursor: pointer">
-                        <label for="backgrounds_no">Off</label>
+                        <label for="backgrounds_no" data-classic-text="Off">Off</label>
                     </td>
                     <td style="cursor: pointer">
                         <input type="radio" id="backgrounds_no" name="backgrounds" value="0" onclick="window.disableBg();">
@@ -65,15 +84,15 @@
                 </tr>
                 <tr>
                     <td>
-                        Event images:
+                        <span data-classic-text="Event images:">Event images:</span>
                     <td style="cursor: pointer">
-                        <label for="images_yes">On</label>
+                        <label for="images_yes" data-classic-text="On">On</label>
                     </td>
                     <td style="cursor: pointer">
                         <input type="radio" id="images_yes" name="images" value="1" onclick="window.enableImages();">
                     </td>
                     <td style="cursor: pointer">
-                        <label for="images_no">Off</label>
+                        <label for="images_no" data-classic-text="Off">Off</label>
                     </td>
                     <td style="cursor: pointer">
                         <input type="radio" id="images_no" name="images" value="0" onclick="window.disableImages();">
@@ -84,17 +103,17 @@
                 </tr>
  
                 <tr>
-                    <td>
+                    <td data-classic-text="Animations:">
                         Animations:
                     </td>
                     <td style="cursor: pointer">
-                        <label for="animate_yes">On</label>
+                        <label for="animate_yes" data-classic-text="On">On</label>
                     </td>
                     <td style="cursor: pointer">
                         <input type="radio" id="animate_yes" name="animate" value="1" onclick="window.enableAnimate();">
                     </td>
                     <td style="cursor: pointer">
-                        <label for="animate_no">Off</label>
+                        <label for="animate_no" data-classic-text="Off">Off</label>
                     </td>
                     <td style="cursor: pointer">
                         <input type="radio" id="animate_no" name="animate" value="0" onclick="window.disableAnimate();">
@@ -104,17 +123,17 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td>
+                    <td data-classic-text="Music (WIP):">
                         Music (WIP):
                     </td>
                     <td style="cursor: not-allowed;">
-                        <label for="audio_yes" style="color: grey">On</label>
+                        <label for="audio_yes" style="color: grey" data-classic-text="On">On</label>
                     </td>
                     <td style="cursor: not-allowed;">
                         <input type="radio" id="audio_yes" name="audio" value="1" onclick="window.enableAudio();" disabled>
                     </td>
                     <td style="cursor: pointer">
-                        <label for="audio_no">Off</label>
+                        <label for="audio_no" data-classic-text="Off">Off</label>
                     </td>
                     <td style="cursor: pointer">
                         <input type="radio" id="audio_no" name="audio" value="0" onclick="window.disableAudio();">
@@ -125,17 +144,17 @@
                 </tr>
 
                 <tr>
-                    <td>
+                    <td data-classic-text="Color mode (WIP):">
                         Color mode (WIP):
                     </td>
                     <td style="cursor: pointer">
-                        <label for="light_mode">Light</label>
+                        <label for="light_mode" data-classic-text="Light">Light</label>
                     </td>
                     <td style="cursor: pointer">
                         <input type="radio" id="light_mode" name="ld_mode" value="1" onclick="window.enableLightMode();">
                     </td>
                     <td style="cursor: not-allowed;">
-                        <label for="dark_mode" style="color: grey">Dark</label>
+                        <label for="dark_mode" style="color: grey" data-classic-text="Dark">Dark</label>
                     </td>
                     <td style="cursor: not-allowed;">
                         <input type="radio" id="dark_mode" name="ld_mode" value="0" onclick="window.enableDarkMode();" disabled>
@@ -144,7 +163,7 @@
                 <tr>
                     <td class="td saveclose" colspan="5">
                         <span style="display: inline-block; width: calc(100% - 75px)"></span>
-                        <button class="b saveclose" onclick="window.hideOptions();">Close</button>
+                        <button class="b saveclose" onclick="window.hideOptions();" data-classic-text="Close">Close</button>
                     </td>
                 </tr>
             </table>
@@ -154,146 +173,146 @@
     <div id="save" class="overlay saves" style="display: none;">
         <table id="saves_table" class="overlay_top">
             <tr>
-                <td>Auto A</td>
+                <td data-classic-text="Auto A">Auto A</td>
                 <td>
-                    <button class="b save_button" id="save_button_a0">Save</button>
+                    <button class="b save_button" id="save_button_a0" data-classic-text="Save">Save</button>
                 </td>
                 <td>
-                    <button class="b delete_button" id="delete_button_a0">Delete</button>
+                    <button class="b delete_button" id="delete_button_a0" data-classic-text="Delete">Delete</button>
                 </td>
                 <td class="save_info" id="save_info_a0"></td>
                 <td>
-                    <button class="b export_button" id="export_button_a0">Export</button>
+                    <button class="b export_button" id="export_button_a0" data-classic-text="Export">Export</button>
                 </td>
             </tr>
             <tr>
-                <td>Auto B</td>
+                <td data-classic-text="Auto B">Auto B</td>
                 <td>
-                    <button class="b save_button" id="save_button_a1">Save</button>
+                    <button class="b save_button" id="save_button_a1" data-classic-text="Save">Save</button>
                 </td>
                 <td>
-                    <button class="b delete_button" id="delete_button_a1">Delete</button>
+                    <button class="b delete_button" id="delete_button_a1" data-classic-text="Delete">Delete</button>
                 </td>
                 <td class="save_info" id="save_info_a1"></td>
                 <td>
-                    <button class="b export_button" id="export_button_a1">Export</button>
+                    <button class="b export_button" id="export_button_a1" data-classic-text="Export">Export</button>
                 </td>
             </tr>
             
             <tr>
-                <td>Slot 1</td>
+                <td data-classic-text="Slot 1">Slot 1</td>
                 <td>
-                    <button class="b save_button" id="save_button_0">Save</button>
+                    <button class="b save_button" id="save_button_0" data-classic-text="Save">Save</button>
                 </td>
                 <td>
-                    <button class="b delete_button" id="delete_button_0">Delete</button>
+                    <button class="b delete_button" id="delete_button_0" data-classic-text="Delete">Delete</button>
                 </td>
                 <td class="save_info" id="save_info_0"></td>
                 <td>
-                    <button class="b export_button" id="export_button_0">Export</button>
+                    <button class="b export_button" id="export_button_0" data-classic-text="Export">Export</button>
                 </td>
             </tr>
             <tr>
-                <td>Slot 2</td>
+                <td data-classic-text="Slot 2">Slot 2</td>
                 <td>
-                    <button class="b save_button" id="save_button_1">Save</button>
+                    <button class="b save_button" id="save_button_1" data-classic-text="Save">Save</button>
                 </td>
                 <td>
-                    <button class="b delete_button" id="delete_button_1">Delete</button>
+                    <button class="b delete_button" id="delete_button_1" data-classic-text="Delete">Delete</button>
                 </td>
                 <td class="save_info" id="save_info_1"></td>
                 <td>
-                    <button class="b export_button" id="export_button_1">Export</button>
+                    <button class="b export_button" id="export_button_1" data-classic-text="Export">Export</button>
                 </td>
 
             </tr>
             <tr>
-                <td>Slot 3</td>
+                <td data-classic-text="Slot 3">Slot 3</td>
                 <td>
-                    <button class="b save_button" id="save_button_2">Save</button>
+                    <button class="b save_button" id="save_button_2" data-classic-text="Save">Save</button>
                 </td>
                 <td>
-                    <button class="b delete_button" id="delete_button_2">Delete</button>
+                    <button class="b delete_button" id="delete_button_2" data-classic-text="Delete">Delete</button>
                 </td>
                 <td class="save_info" id="save_info_2"></td>
                 <td>
-                    <button class="b export_button" id="export_button_2">Export</button>
+                    <button class="b export_button" id="export_button_2" data-classic-text="Export">Export</button>
                 </td>
             </tr>
             <tr>
-                <td>Slot 4</td>
+                <td data-classic-text="Slot 4">Slot 4</td>
                 <td>
-                    <button class="b save_button" id="save_button_3">Save</button>
+                    <button class="b save_button" id="save_button_3" data-classic-text="Save">Save</button>
                 </td>
                 <td>
-                    <button class="b delete_button" id="delete_button_3">Delete</button>
+                    <button class="b delete_button" id="delete_button_3" data-classic-text="Delete">Delete</button>
                 </td>
                 <td class="save_info" id="save_info_3"></td>
                 <td>
-                    <button class="b export_button" id="export_button_3">Export</button>
+                    <button class="b export_button" id="export_button_3" data-classic-text="Export">Export</button>
                 </td>
             </tr>
             <tr>
-                <td>Slot 5</td>
+                <td data-classic-text="Slot 5">Slot 5</td>
                 <td>
-                    <button class="b save_button" id="save_button_4">Save</button>
+                    <button class="b save_button" id="save_button_4" data-classic-text="Save">Save</button>
                 </td>
                 <td>
-                    <button class="b delete_button" id="delete_button_4">Delete</button>
+                    <button class="b delete_button" id="delete_button_4" data-classic-text="Delete">Delete</button>
                 </td>
                 <td class="save_info" id="save_info_4"></td>
                 <td>
-                    <button class="b export_button" id="export_button_4">Export</button>
+                    <button class="b export_button" id="export_button_4" data-classic-text="Export">Export</button>
                 </td>
             </tr>
             <tr>
-                <td>Slot 6</td>
+                <td data-classic-text="Slot 6">Slot 6</td>
                 <td>
-                    <button class="b save_button" id="save_button_5">Save</button>
+                    <button class="b save_button" id="save_button_5" data-classic-text="Save">Save</button>
                 </td>
                 <td>
-                    <button class="b delete_button" id="delete_button_5">Delete</button>
+                    <button class="b delete_button" id="delete_button_5" data-classic-text="Delete">Delete</button>
                 </td>
                 <td class="save_info" id="save_info_5"></td>
                 <td>
-                    <button class="b export_button" id="export_button_5">Export</button>
+                    <button class="b export_button" id="export_button_5" data-classic-text="Export">Export</button>
                 </td>
             </tr>
             <tr>
-                <td>Slot 7</td>
+                <td data-classic-text="Slot 7">Slot 7</td>
                 <td>
-                    <button class="b save_button" id="save_button_6">Save</button>
+                    <button class="b save_button" id="save_button_6" data-classic-text="Save">Save</button>
                 </td>
                 <td>
-                    <button class="b delete_button" id="delete_button_6">Delete</button>
+                    <button class="b delete_button" id="delete_button_6" data-classic-text="Delete">Delete</button>
                 </td>
                 <td class="save_info" id="save_info_6"></td>
                 <td>
-                    <button class="b export_button" id="export_button_6">Export</button>
+                    <button class="b export_button" id="export_button_6" data-classic-text="Export">Export</button>
                 </td>
             </tr>
             <tr>
-                <td>Slot 8</td>
+                <td data-classic-text="Slot 8">Slot 8</td>
                 <td>
-                    <button class="b save_button" id="save_button_7">Save</button>
+                    <button class="b save_button" id="save_button_7" data-classic-text="Save">Save</button>
                 </td>
                 <td>
-                    <button class="b delete_button" id="delete_button_7">Delete</button>
+                    <button class="b delete_button" id="delete_button_7" data-classic-text="Delete">Delete</button>
                 </td>
                 <td class="save_info" id="save_info_7"></td>
                 <td>
-                    <button class="b export_button" id="export_button_7">Export</button>
+                    <button class="b export_button" id="export_button_7" data-classic-text="Export">Export</button>
                 </td>
             </tr>
             <tr>
                 <td colspan="5">
-                    <label for="import_save">Import save file:</label> <input type="file" id="import_save" accept=".dnt" onchange="dendryUI.importSave('import_save');"></input>
+                    <label for="import_save" data-classic-text="Import save file:">Import save file:</label> <input type="file" id="import_save" accept=".dnt" onchange="dendryUI.importSave('import_save');"></input>
                 </td>
             </tr>
             <tr class="tr saveclose">
                 <td colspan="4" class="td saveclose"></td>
                 <td class="td saveclose">
-                    <button class="b saveclose" onclick="dendryUI.hideSaveSlots();">Close</button>
+                    <button class="b saveclose" onclick="dendryUI.hideSaveSlots();" data-classic-text="Close">Close</button>
                 </td>
             </tr>
         </table>
@@ -310,23 +329,23 @@
     <div id='page'>
         <div id="mid_panel">
             <header>
-                <h1 id="game-title">Route to Ítaca</h1>
-                <h2 id="game-author">- An Alternate History</h2>
+                <h1 id="game-title" data-classic-text="Route to Ítaca">Route to Ítaca</h1>
+                <h2 id="game-author" data-classic-text="- An Alternate History">- An Alternate History</h2>
 
                 <div id="header-links">
-                    <a id="stats-link" onclick="window.showStats();" href="#">Library</a>
-                    <a id="save_link" data-tooltip="Save/Load" onclick="window.openSaveSlots();" href="#">Save/Load</a>
-                    <a onclick="window.showOptions();" href="#">Options</a>
+                    <a id="stats-link" onclick="window.showStats();" href="#" data-classic-text="Library">Library</a>
+                    <a id="save_link" data-tooltip="Save/Load" data-classic-data-tooltip="Save/Load" onclick="window.openSaveSlots();" href="#" data-classic-text="Save/Load">Save/Load</a>
+                    <a onclick="window.showOptions();" href="#" data-classic-text="Options">Options</a>
                 </div>
             </header>
             <div id="tools_wrapper">
                 <div id='stats_sidebar' class='tools left'>
                     <div class="tab_container">
-                        <button class="tab_button active" id="main_tab" data-tooltip="Main" onclick="window.changeTab('status', 'main_tab');"><img class="status-icon" src="img/home_icon.svg" alt="Main"></button>
-                        <button class="tab_button" id="politics_tab" data-tooltip="Politics" onclick="window.changeTab('status.politics', 'politics_tab');"><img class="status-icon" src="img/politics_icon.svg" alt="Politics"></button>
-                        <button class="tab_button" id="government_tab" data-tooltip="Government" onclick="window.changeTab('status.government', 'government_tab');"><img class="status-icon" src="img/government_icon.svg" alt="Government"></button>
-                        <button class="tab_button" id="international_tab" data-tooltip="International Relations" onclick="window.changeTab('status.international', 'international_tab');"><img class="status-icon" src="img/international_icon.svg" alt="International"></button>
-                        <button class="tab_button" id="polls_tab" data-tooltip="Opinion Polls" onclick="window.changeTab('status.polls', 'polls_tab');initCataloniaPolls('cat-polls-widget', dendryUI.dendryEngine.state.qualities);addTooltipEventListeners();"><img class="status-icon" src="img/poll_icon.svg" alt="Polls"></button>
+                        <button class="tab_button active" id="main_tab" data-tooltip="Main" data-classic-data-tooltip="Main" onclick="window.changeTab('status', 'main_tab');"><img class="status-icon" src="img/home_icon.svg" alt="Main" data-classic-alt="Main"></button>
+                        <button class="tab_button" id="politics_tab" data-tooltip="Politics" data-classic-data-tooltip="Politics" onclick="window.changeTab('status.politics', 'politics_tab');"><img class="status-icon" src="img/politics_icon.svg" alt="Politics" data-classic-alt="Politics"></button>
+                        <button class="tab_button" id="government_tab" data-tooltip="Government" data-classic-data-tooltip="Government" onclick="window.changeTab('status.government', 'government_tab');"><img class="status-icon" src="img/government_icon.svg" alt="Government" data-classic-alt="Government"></button>
+                        <button class="tab_button" id="international_tab" data-tooltip="International Relations" data-classic-data-tooltip="International Relations" onclick="window.changeTab('status.international', 'international_tab');"><img class="status-icon" src="img/international_icon.svg" alt="International" data-classic-alt="International"></button>
+                        <button class="tab_button" id="polls_tab" data-tooltip="Opinion Polls" data-classic-data-tooltip="Opinion Polls" onclick="window.changeTab('status.polls', 'polls_tab');initCataloniaPolls('cat-polls-widget', dendryUI.dendryEngine.state.qualities);addTooltipEventListeners();"><img class="status-icon" src="img/poll_icon.svg" alt="Polls" data-classic-alt="Polls"></button>
                     </div>
                     <div id="qualities">
                     </div>
@@ -337,8 +356,10 @@
 
             </div>
 
-            <footer>
-                <!-- WIP add something? -->
+            <footer id="menu-footer" hidden>
+                <ul class="choices">
+                    <li><button type="button" id="menu-language-switch" value="ca" lang="ca" onclick="ClassicI18n.setLocale(this.value)">També en Català!</button></li>
+                </ul>
             </footer>
         </div>
     </div>

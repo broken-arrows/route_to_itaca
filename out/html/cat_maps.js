@@ -19,6 +19,12 @@
  */
 (function () {
   "use strict";
+  function tr(text, params) {
+    if (window.ClassicI18n) return window.ClassicI18n.text(text, params);
+    return text.replace(/\{(\w+)\}/g, function (m, key) { return params && params[key] !== undefined ? params[key] : m; });
+  }
+  function tc(text) { return window.ClassicI18n ? window.ClassicI18n.content(text) : text; }
+
 
   // ─── VEGUERIES CAPITALS (have a [cityId]-extras label element in the SVG) ──
   const VEGUERIES_CAPITALS = new Set([
@@ -1114,7 +1120,7 @@
     <div style="position: relative; width: 100%">
       ${getSVGContent()}
       <div id="_catmap-legend">
-        <div id="_catmap-legend-placeholder">Click a city to see results</div>
+        <div id="_catmap-legend-placeholder">${tr("Click a city to see results")}</div>
       </div>
       </div>`;
 
@@ -1254,12 +1260,12 @@
       : 1;
     const totalSeats =
       (Q.congreso_seats && Q.congreso_seats[constituency]) || 0;
-    const name = CONGRESO_NAMES[constituency] || constituency;
+    const name = tr(CONGRESO_NAMES[constituency] || constituency);
 
-    const title = `<div class="cong-title">${name}<span class="cong-seats">${totalSeats} seats</span></div>`;
+    const title = `<div class="cong-title">${name}<span class="cong-seats">${tr("{count} seats", { count: totalSeats })}</span></div>`;
 
     if (!rows.length) {
-      panel.innerHTML = title + `<div class="cong-empty">No results yet.</div>`;
+      panel.innerHTML = title + `<div class="cong-empty">${tr("No results yet.")}</div>`;
       return;
     }
 
@@ -1306,7 +1312,7 @@
     }
 
     const panel = container.querySelector("#_congmap-panel");
-    panel.innerHTML = `<div class="cong-empty">Click a region to see its seat distribution.</div>`;
+    panel.innerHTML = `<div class="cong-empty">${tr("Click a region to see its seat distribution.")}</div>`;
 
     const allRegions = [];
     const restEls = [];

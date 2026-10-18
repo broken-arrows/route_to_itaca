@@ -1,4 +1,6 @@
 (function () {
+  var tr = function (text, params) { return window.ClassicI18n ? window.ClassicI18n.text(text, params) : text; };
+  var tc = function (text) { return window.ClassicI18n ? window.ClassicI18n.content(text) : text; };
   var game;
   var ui;
 
@@ -28,9 +30,13 @@
     ui = dendryUI;
     game = ui.game;
     ui.setTextFormatter(formatText);
+    ui.translateUI = tr;
 
     dendryUI.dendryEngine.setGameLib(window.RTI_GAME_LIB);
 
+    if (window.ClassicI18n) {
+      window.classicLocaleReady = window.ClassicI18n.init(ui).then(function () { ui.dendryEngine.beginGame(); });
+    }
     // I want these settings on by default, but the engine does not have a way to set them and I don't fancy touching that sht.
     if (!window.dendryUI.dendryEngine.touchedSettings) {
       window.dendryUI.animate = true;
@@ -38,6 +44,7 @@
       window.dendryUI.dark_mode = false;
       window.dendryUI.saveSettings();
     }
+    return !!window.ClassicI18n;
   };
 
   var TITLE =
@@ -369,8 +376,17 @@
     });
   }
 
+  function syncMenuFooter() {
+    var footer = document.getElementById("menu-footer");
+    if (footer) {
+      footer.hidden = window.dendryUI.dendryEngine.state.sceneId !== "root.start_menu";
+    }
+  }
+
   // This function runs on a new page
   window.onNewPage = function () {
+    syncMenuFooter();
+    if (window.dendryUI.refreshingLocale) return;
     var scene = window.dendryUI.dendryEngine.state.sceneId;
     // Widget protocol host (out/html/widgets.js): scans for [data-widget]
     // and dispatches to the renderers above by name — replaces what used to
@@ -399,25 +415,18 @@
     }
   };
 
-  // tabbed browsing
-  //
-  // This shell renders `source/scenes/status.scene.dry` — its own five-tab
-  // status scene, restored 2026-07-23 when the Brief's sheets moved to
-  // `status_new.scene.dry` for the Desk alone. The `_runActions(scene.onArrival)`
-  // below is load-bearing HERE and only here: this scene's on-arrival computes
-  // `spanish_seal_img` and `unemployment_dataviz`, which its own markup then
-  // substitutes. Rendering-by-mutation is the pattern the Desk migration exists
-  // to kill, and `status_new`'s sheets have no on-arrival at all — but this
-  // shell is frozen and dies at phase 6, so it keeps the mechanism it shipped
-  // with rather than acquiring a divergent one.
+  // Capture sidebar expressions after its normal arrival actions. Locale refresh
+  // reuses that snapshot without rerunning actions or expression evaluation.
+  var sidebarSnapshot = null;
   window.updateSidebar = function () {
     $("#qualities").empty();
     var scene = dendryUI.game.scenes[window.statusTab];
-    dendryUI.dendryEngine._runActions(scene.onArrival);
-    var displayContent = dendryUI.dendryEngine._makeDisplayContent(
-      scene.content,
-      true,
-    );
+    var engine = dendryUI.dendryEngine;
+    if (!dendryUI.refreshingLocale) {
+      engine._runActions(scene.onArrival);
+      sidebarSnapshot = engine._captureDisplayContent(scene.content, true);
+    }
+    var displayContent = sidebarSnapshot ? engine._renderSnapshot(sidebarSnapshot) : [];
     $("#qualities").append(dendryUI.contentToHTML.convert(displayContent));
     // Widget protocol host (out/html/widgets.js): scans for [data-widget]
     // and dispatches to the renderers above by name — replaces what used to
@@ -459,8 +468,8 @@
       polls.setAttribute(
         "data-tooltip",
         pollsLocked
-          ? "Polls are not available in historical mode"
-          : "Opinion Polls",
+          ? tr("Polls are not available in historical mode")
+          : tr("Opinion Polls"),
       );
     }
 
@@ -474,8 +483,8 @@
       save.setAttribute(
         "data-tooltip",
         savesLocked
-          ? "Saving and loading are disabled in historical mode"
-          : "Save/Load",
+          ? tr("Saving and loading are disabled in historical mode")
+          : tr("Save/Load"),
       );
     }
   };
@@ -488,6 +497,7 @@
   };
 
   window.onDisplayContent = function () {
+    syncMenuFooter();
     window.updateSidebar();
     // Widget protocol host (out/html/widgets.js): scans for [data-widget]
     // and dispatches to the renderers above by name — replaces what used to
@@ -511,7 +521,7 @@
     if (!window._achievementLabel) return;
     const n = window._achievementStack.length;
     window._achievementLabel.textContent =
-      n === 1 ? "Achievement Unlocked" : "Achievements Unlocked";
+      n === 1 ? tr("Achievement Unlocked") : tr("Achievements Unlocked");
   }
 
   function getOrCreateLabel() {
@@ -570,6 +580,7 @@
 
     const el = document.createElement("div");
     el.className = "achievement achievement--unlocked";
+    el.dataset.achievementTitle = title;
     el.style.cssText = `
     position: fixed; right: 24px; z-index: 9999;
     flex-direction: column; align-items: stretch;
@@ -591,7 +602,7 @@
         <img src="${img}" style="width:100%;height:100%;object-fit:cover;">
       </div>
       <div class="achievement-body" style="flex: 2 0 0; min-width: 0;">
-        <div class="achievement-title achievement-title--unlocked" style="display: block; margin-bottom: 6px;">${title}</div>
+        <div class="achievement-title achievement-title--unlocked" style="display: block; margin-bottom: 6px;">${tc(title)}</div>
         <div class="achievement-stars">
           ${Array.from(
             { length: 5 },
@@ -651,9 +662,19 @@
   window.justLoaded = true;
   window.statusTab = "status";
   window.dendryModifyUI = main;
+  window.hideClassicTooltip = function () {
+    hideTip();
+    document.querySelectorAll('.parliament-tooltip').forEach(function (tip) { tip.classList.remove('visible'); });
+    document.querySelectorAll('[data-achievement-title]').forEach(function (toast) {
+      var title = toast.querySelector('.achievement-title');
+      if (title) title.textContent = tc(toast.dataset.achievementTitle);
+    });
+    updateLabel();
+  };
   console.log("Modifying stats: see dendryUI.dendryEngine.state.qualities");
 
-  window.onload = function () {
+  window.onload = async function () {
+    if (window.classicLocaleReady) await window.classicLocaleReady;
     window.dendryUI.loadSettings({ show_portraits: false });
     if (window.dendryUI.dark_mode) {
       document.body.classList.add("dark-mode");
@@ -690,25 +711,25 @@
     const tooltip = term.tooltip;
     const q = tooltip.q || {};
     const imgHtml = tooltip.img
-      ? `<img src='${tooltip.img}' alt='${label} image'/>`
+      ? `<img src='${tooltip.img}' alt='${tr("{name} image", { name: label })}'/>`
       : "";
     const subText = tooltip.subtitle
-      ? `<br/><span class='mytooltip-sub-text'>${tooltip.subtitle}</span>`
+      ? `<br/><span class='mytooltip-sub-text'>${tc(tooltip.subtitle)}</span>`
       : "";
     let ledBy = "";
     let ideology = "";
     let allegiances = "";
     if (q.ledBy && qualities.hasOwnProperty(q.ledBy)) {
-      ledBy = `<br/>Leader: <span class='mytooltip-ledby'>${qualities[q.ledBy]}</span>`;
+      ledBy = `<br/>${tr("Leader:")} <span class='mytooltip-ledby'>${qualities[q.ledBy]}</span>`;
     } else if (tooltip.infoDesc) {
-      ledBy = `<br/>${tooltip.infoDesc}`;
+      ledBy = `<br/>${tc(tooltip.infoDesc)}`;
     }
     const ideologyText =
       q.ideology && qualities.hasOwnProperty(q.ideology)
         ? qualities[q.ideology]
         : tooltip.ideology;
     if (ideologyText) {
-      ideology = `<br/><span class='mytooltip-ideology'>${ideologyText}</span>`;
+      ideology = `<br/><span class='mytooltip-ideology'>${tc(ideologyText)}</span>`;
     }
     const allegianceMap =
       (window.RTI_GAME_LIB && window.RTI_GAME_LIB.allegiances) || {};
@@ -717,19 +738,19 @@
       const al = allegiancesFn(qualities);
       if (al && al.length) {
         allegiances = `<br/><span class='mytooltip-allegiances'>`;
-        allegiances += al.length > 1 ? "Allegiances: " : "Allegiance: ";
+        allegiances += al.length > 1 ? tr("Allegiances: ") : tr("Allegiance: ");
         // Entries are presentation-neutral {colour, label, note?}; THIS UI wraps
         // them (colour token -> CSS via cssColour, "(note)" as trailing text).
         allegiances += al
           .map((e) => {
-            const span = `<span style='color: ${cssColour(e.colour)}'>${e.label}</span>`;
-            return e.note ? `${span} (${e.note})` : span;
+            const span = `<span style='color: ${cssColour(e.colour)}'>${tc(e.label)}</span>`;
+            return e.note ? `${span} (${tc(e.note)})` : span;
           })
           .join(", ");
         allegiances += `</span>`;
       }
     }
-    return `<span class='mytooltip-content'>${imgHtml}<span class='mytooltip-text'><span class='mytooltip-main-text'>${tooltip.title}</span>${subText}${ledBy}${ideology}${allegiances}</span></span>`;
+    return `<span class='mytooltip-content'>${imgHtml}<span class='mytooltip-text'><span class='mytooltip-main-text'>${tc(tooltip.title)}</span>${subText}${ledBy}${ideology}${allegiances}</span></span>`;
   }
 
   const COALITION_TITLES = {
@@ -770,7 +791,7 @@
         const term = coalitionTerm(party);
         const src = term && term.tooltip && term.tooltip.img;
         return src
-          ? `<img class='coalition-tooltip-logo' src='${src}' alt='${party} logo' data-party='${party}'/>`
+          ? `<img class='coalition-tooltip-logo' src='${src}' alt='${tr("{party} logo", { party: party })}' data-party='${party}'/>`
           : `<span class='coalition-tooltip-logo-fallback' data-party='${party}'>${party}</span>`;
       })
       .join("");

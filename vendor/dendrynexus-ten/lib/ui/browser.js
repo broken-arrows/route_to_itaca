@@ -12,6 +12,11 @@
   var persistence = require("../persistence");
   var saveLabel = require("./save-label");
 
+  // Optional shell-owned catalog; generic games retain their original labels.
+  var tr = function (text, params) {
+    if (window.ClassicI18n) return window.ClassicI18n.text(text, params);
+    return text.replace(/\{(\w+)\}/g, function (m, key) { return params && params[key] !== undefined ? params[key] : m; });
+  };
   var canonicalSlot = function (slot) {
     if (slot === "a0") {
       return "auto-1";
@@ -308,13 +313,23 @@
   };
 
   // dendrynexus displays
+  BrowserUserInterface.prototype._description = function (field, fallback) {
+    var engine = this.dendryEngine;
+    var value = engine.state.qualities[field];
+    if (!value) return tr(fallback);
+    if (engine.gameLib && engine.gameLib.getText) {
+      var recipe = engine.gameLib.getText(engine.state.qualities, field);
+      if (recipe.kind !== 'literal') return engine._renderSnapshot({ nodes: [recipe] })[0];
+    }
+    return engine.translate(tr(value));
+  };
   // displays the hand.
   BrowserUserInterface.prototype.displayHand = function (hand, maxCards) {
     if (window && window.displayHand) {
       window.displayHand(hand, maxCards);
       return null;
     }
-    var handDescription = "Hand - click a card to play.";
+    var handDescription = tr("Hand - click a card to play.");
     if (window.handDescription) {
       handDescription = window.handDescription;
     }
@@ -327,7 +342,7 @@
       $handEl = $("<ul>").addClass("hand");
       this.$content.append($("<hr>"));
       this.$content.append(
-        $("<p>").addClass("hand-description").text(handDescription),
+        $("<p>").addClass("hand-description").text(this._description("handDescription", handDescription)),
       );
     } else {
       $handEl.empty();
@@ -342,7 +357,7 @@
         var $cardLink = $("<a>")
           .addClass("card")
           .attr({ href: "#", "card-id": card.id, title: card.title });
-        var $title = $("<span>").addClass("card-caption").text(card.title);
+        var $title = $("<span>").addClass("card-caption").html(this.contentToHTML.convertLine(card.title));
         // if there is an image, set the image; otherwise, set image to a gradient?
         if (card.image) {
           var $cardImage = $("<img>")
@@ -354,7 +369,7 @@
         if (card.subtitle) {
           var $cardSubtitle = $("<span>")
             .addClass("card-tooltip")
-            .text(card.subtitle);
+            .html(this.contentToHTML.convertLine(card.subtitle));
           $cardLink.append($cardSubtitle);
         }
         $cardEl.append($cardLink);
@@ -376,7 +391,7 @@
       window.displayDecks(decks);
       return null;
     }
-    var deckDescription = "Decks - click a deck to draw a card.";
+    var deckDescription = tr("Decks - click a deck to draw a card.");
     if (window.deckDescription) {
       deckDescription = window.deckDescription;
     }
@@ -385,7 +400,7 @@
     }
     this.$content.append($("<hr>"));
     this.$content.append(
-      $("<p>").addClass("deck-description").text(deckDescription),
+      $("<p>").addClass("deck-description").text(this._description("deckDescription", deckDescription)),
     );
     var $decksEl = $("<ul>").addClass("decks");
     for (var deck of decks) {
@@ -394,7 +409,7 @@
       var $deckLink = $("<a>")
         .addClass("card")
         .attr({ href: "#", "card-id": deck.id, title: deck.title });
-      var $title = $("<span>").addClass("card-caption").text(deck.title);
+      var $title = $("<span>").addClass("card-caption").html(this.contentToHTML.convertLine(deck.title));
       // if there is an image, set the image; otherwise, set image to a gradient?
       if (deck.image) {
         var $deckImage = $("<img>")
@@ -408,7 +423,7 @@
         // if there's a subtitle, create a tooltip
         var $deckSubtitle = $("<span>")
           .addClass("card-tooltip")
-          .text(deck.subtitle);
+          .html(this.contentToHTML.convertLine(deck.subtitle));
         $deckLink.append($deckSubtitle);
       }
       if (!deck.canChoose) {
@@ -430,7 +445,7 @@
       window.displayPinnedCards(cards);
       return null;
     }
-    var pinnedCardsDescription = "Pinned cards - click a card to play.";
+    var pinnedCardsDescription = tr("Pinned cards - click a card to play.");
     var pinnedParlamentDescription = "";
     if (window.pinnedCardsDescription) {
       pinnedCardsDescription = window.pinnedCardsDescription;
@@ -441,7 +456,7 @@
     }
     this.$content.append($("<hr>"));
     this.$content.append(
-      $("<p>").addClass("pinned-text-description").text(pinnedCardsDescription),
+      $("<p>").addClass("pinned-text-description").text(this._description("pinnedCardsDescription", pinnedCardsDescription)),
     );
     if (this.dendryEngine.state.qualities.pinnedParlamentDescription) {
       pinnedParlamentDescription =
@@ -449,7 +464,7 @@
       this.$content.append(
         $("<p>")
           .addClass("pinned-text-description")
-          .text(pinnedParlamentDescription),
+          .text(this._description("pinnedParlamentDescription", pinnedParlamentDescription)),
       );
     }
     var $cardsEl = $("<ul>").addClass("pinned-cards");
@@ -459,7 +474,7 @@
       var $cardLink = $("<a>")
         .addClass("card")
         .attr({ href: "#", "card-id": card.id, title: card.title });
-      var $title = $("<span>").addClass("card-caption").text(card.title);
+      var $title = $("<span>").addClass("card-caption").html(this.contentToHTML.convertLine(card.title));
       // if there is an image, set the image; otherwise, set image to a gradient?
       if (card.image) {
         var $cardImage = $("<img>")
@@ -471,7 +486,7 @@
       if (card.subtitle) {
         var $cardSubtitle = $("<span>")
           .addClass("card-tooltip")
-          .text(card.subtitle);
+          .html(this.contentToHTML.convertLine(card.subtitle));
         $cardLink.append($cardSubtitle);
       }
       $cardEl.append($cardLink);
@@ -904,28 +919,28 @@
 
   BrowserUserInterface.prototype._displaySaveError = function (action, result) {
     var detail = result && result.error && result.error.message;
-    window.alert(action + " failed." + (detail ? "\n" + detail : ""));
+    window.alert(tr("{action} failed.", { action: tr(action) }) + (detail ? "\n" + detail : ""));
   };
 
   BrowserUserInterface.prototype._loadSaveResult = function (result) {
     if (result.status === "missing") {
-      window.alert("No save available.");
+      window.alert(tr("No save available."));
       return false;
     }
     if (result.status === "unsupported") {
       window.alert(
-        "This save uses an unsupported save format and cannot be loaded.",
+        tr("This save uses an unsupported save format and cannot be loaded."),
       );
       return false;
     }
     if (result.status === "corrupt" || result.status === "unreadable") {
-      window.alert("This save is corrupt or unreadable and cannot be loaded.");
+      window.alert(tr("This save is corrupt or unreadable and cannot be loaded."));
       return false;
     }
     if (
       result.compatibility !== "compatible" &&
       !window.confirm(
-        "This save was created with a different or unknown game version. Load it anyway?",
+        tr("This save was created with a different or unknown game version. Load it anyway?"),
       )
     ) {
       return false;
@@ -934,8 +949,8 @@
     this.hideSaveSlots();
     window.alert(
       result.record.state.achievementsEligible === false
-        ? "Loaded (achievements disabled)."
-        : "Loaded.",
+        ? tr("Loaded (achievements disabled).")
+        : tr("Loaded."),
     );
     return true;
   };
@@ -971,7 +986,7 @@
       this._saveMetadata(),
     );
     if (!result.ok) {
-      this._displaySaveError("Save", result);
+      this._displaySaveError(tr("Save"), result);
     }
     this.populateSaveSlots(this.max_slots, 2);
   };
@@ -985,7 +1000,7 @@
     if (!result.ok) {
       this._displaySaveError("Delete", result);
     } else if (!result.existed) {
-      window.alert("No save available.");
+      window.alert(tr("No save available."));
     }
     this.populateSaveSlots(this.max_slots, 2);
   };
@@ -1016,7 +1031,7 @@
       }
       if (!slot) {
         window.alert(
-          "All save slots are occupied. Delete a save before importing.",
+          tr("All save slots are occupied. Delete a save before importing."),
         );
         return;
       }
@@ -1032,11 +1047,11 @@
     var reader = new FileReader();
     var file = uploader.files[0];
     if (!file) {
-      window.alert("Choose a save file to import.");
+      window.alert(tr("Choose a save file to import."));
       return;
     }
     if (!/\.dnt$/i.test(file.name)) {
-      window.alert("Choose a .dnt save file.");
+      window.alert(tr("Choose a .dnt save file."));
       return;
     }
     reader.onload = onFileLoad;
@@ -1086,39 +1101,41 @@
         var savedAt = new Date(meta.savedAt);
         var timestamp = isNaN(savedAt.getTime())
           ? String(meta.savedAt || "")
-          : savedAt.toLocaleString(undefined, that.DateOptions);
+          : savedAt.toLocaleString((window.ClassicI18n && window.ClassicI18n.locale) || "en", that.DateOptions);
         var state = entry.record.state;
         var label =
-          String(meta.sceneId || (state && state.sceneId) || "Unknown scene") +
+          String(meta.sceneId || (state && state.sceneId) || tr("Unknown scene")) +
           "\n(" +
           timestamp +
           ")";
-        save_element.textContent = saveLabel.formatSaveTimestamp(label);
+        var labelLines = saveLabel.formatSaveTimestamp(label).split("\n");
+        labelLines[0] = tr(labelLines[0]);
+        save_element.textContent = labelLines.join("\n");
         if (state && state.achievementsEligible === false) {
-          save_element.textContent += "\n(Achievements disabled)";
+          save_element.textContent += tr("\n(Achievements disabled)");
         }
         if (entry.compatibility !== "compatible") {
-          save_element.textContent += "\n(Game version warning)";
+          save_element.textContent += tr("\n(Game version warning)");
         }
-        save_button.textContent = "Load";
+        save_button.textContent = tr("Load");
         save_button.onclick = createLoadListener(id);
         delete_button.onclick = createDeleteListener(id);
         export_button.onclick = createExportListener(id);
       } else if (entry.status === "missing") {
-        save_button.textContent = "Save";
-        save_element.textContent = "Empty";
+        save_button.textContent = tr("Save");
+        save_element.textContent = tr("Empty");
         save_button.onclick = createSaveListener(id);
         delete_button.disabled = true;
         export_button.disabled = true;
       } else {
-        save_button.textContent = "Load";
+        save_button.textContent = tr("Load");
         save_button.disabled = true;
         save_element.textContent =
           entry.status === "unsupported"
-            ? "Unsupported save format"
+            ? tr("Unsupported save format")
             : entry.status === "corrupt"
-              ? "Corrupt save"
-              : "Unreadable save";
+              ? tr("Corrupt save")
+              : tr("Unreadable save");
         delete_button.onclick = createDeleteListener(id);
         if (entry.status === "unreadable") {
           export_button.disabled = true;
@@ -1137,7 +1154,7 @@
 
   BrowserUserInterface.prototype.showSaveSlots = function () {
     if (this.dendryEngine.state.disableSaves) {
-      window.alert("Saving and loading is currently disabled.");
+      window.alert(tr("Saving and loading is currently disabled."));
       return;
     }
     var save_element = document.getElementById("save");
@@ -1206,7 +1223,7 @@
   // Additional methods
 
   BrowserUserInterface.prototype.getGameOverMsg = function () {
-    return "Game Over (reload to read again)";
+    return tr("Game Over (reload to read again)");
   };
 
   BrowserUserInterface.prototype._registerEvents = function () {

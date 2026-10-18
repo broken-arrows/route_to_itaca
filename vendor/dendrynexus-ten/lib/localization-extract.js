@@ -387,6 +387,8 @@ async function extractFiles(files, options) {
   Object.keys(options.catalogs || {}).sort().forEach(function(locale) {
     var original = options.catalogs[locale];
     var merged = Object.assign({}, original);
+    var orphaned = Object.keys(original).filter(function(key) { return !confirmed.has(key); }).sort();
+    if (options.prune) orphaned.forEach(function(key) { delete merged[key]; });
     var added = [];
     var untranslated = [];
     units.forEach(function(unit) {
@@ -405,7 +407,7 @@ async function extractFiles(files, options) {
     });
     catalogs[locale] = merged;
     catalogReports[locale] = { newKeys: added, untranslatedKeys: untranslated,
-      orphanedKeys: Object.keys(original).filter(function(key) { return !confirmed.has(key); }).sort() };
+      orphanedKeys: orphaned };
   });
   var reviews = options.dispositions && options.dispositions.findings || {};
   var prior = options.previousReport && options.previousReport.findings || [];
@@ -458,11 +460,19 @@ async function extractProject(project, options) {
   var dispositionPath = path.resolve(project, options.review || 'source/locales/_reports/dispositions.json');
   var result = await extractFiles(files, {
     declarations: options.declarations || readJSON(path.join(source, 'data', 'localization.json'), {}),
-    catalogs: catalogs, dispositions: readJSON(dispositionPath, { findings: {} }), previousReport: readJSON(reportPath, null)
+    catalogs: catalogs, dispositions: readJSON(dispositionPath, { findings: {} }),
+    previousReport: readJSON(reportPath, null), prune: options.prune
   });
   if (!options.dryRun) {
     // Validation failures leave the source catalogs/review/report untouched.
     if (result.errors.length) return result;
+    if (options.prune) {
+      if (typeof options.confirmPrune !== 'function') throw new Error('Pruning requires a confirmation callback.');
+      if (await options.confirmPrune(result.catalogReports) !== true) {
+        result.pruneCancelled = true;
+        return result;
+      }
+    }
     Object.keys(result.catalogs).forEach(function(locale) {
       var file = path.join(localesDir, locale, 'content.json');
       fs.mkdirSync(path.dirname(file), { recursive: true });

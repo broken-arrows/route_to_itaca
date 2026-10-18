@@ -399,6 +399,30 @@ footer {
 footer a {
   padding-right: 1em;
 }
+#menu-footer ul.choices {
+  width: fit-content;
+  margin: 0 0 0 auto;
+  background: var(--content-bg-color);
+  border-radius: 7px;
+  border: 0px;
+  color: var(--link-color);
+}
+#menu-footer[hidden] {
+  display: none;
+}
+#menu-language-switch {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  box-shadow: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}
 header {
   text-align: right;
 }
@@ -1726,7 +1750,7 @@ table {
 .achievement-image {
   flex-shrink: 0;
   /* Keep transparent artwork on light paper, including in dark mode. */
-  background: #f3f3f3;
+  background: var(--content-bg-color);
   width: 90px;
   height: 60px;
   border-radius: 8px;

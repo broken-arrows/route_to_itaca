@@ -47,6 +47,10 @@ d3.linegraph = function (
   var marginBottom = 50;
   var marginLeft = 40;
   var events = [];
+  function formatDate(date) {
+    if (!window.ClassicI18n || window.ClassicI18n.locale === 'en') return d3.utcFormat("%b. %Y")(date);
+    return new Intl.DateTimeFormat(window.ClassicI18n ? window.ClassicI18n.locale : "en", { month: "short", year: "numeric", timeZone: "UTC" }).format(date);
+  }
 
   function linegraph(dataset) {
     dataset.each(function (data) {
@@ -85,13 +89,13 @@ d3.linegraph = function (
 
       var xaxis = d3
         .axisBottom()
-        .tickFormat(d3.utcFormat("%b. %Y"))
+        .tickFormat(formatDate)
         .tickValues(dates)
         .scale(xScale);
       if (noTicks) {
         xaxis = d3
           .axisBottom()
-          .tickFormat(d3.utcFormat("%b. %Y"))
+          .tickFormat(formatDate)
           .ticks(10)
           .scale(xScale);
       }
@@ -142,7 +146,7 @@ d3.linegraph = function (
         var date = new Date(event.date);
         if (+date < +xScale.domain()[0] || +date > +maxDate) return;
         var marker = svg.append("g").attr("class", "history-event");
-        marker.append("title").text(event.label + " · " + d3.utcFormat("%b. %Y")(date));
+        marker.append("title").text(event.label + " · " + formatDate(date));
         marker.append("line")
           .attr("class", "history-event-date")
           .attr("x1", xScale(date)).attr("x2", xScale(date))
@@ -282,7 +286,7 @@ d3.linegraph = function (
         }, null);
         if (!sample) { guide.style("display", "none"); return; }
         var sampleX = xScale(new Date(sample.date));
-        var captions = [d3.utcFormat("%b. %Y")(new Date(sample.date))];
+        var captions = [formatDate(new Date(sample.date))];
         var week = sample.week;
         if (Number.isInteger(week) && week >= 1 && week <= 4) captions.push("Week " + week);
         var captionWidth = Math.min(width - marginRight - marginLeft, d3.max(captions, function (line) { return line.length * 6.5; }));

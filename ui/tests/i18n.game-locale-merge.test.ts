@@ -7,7 +7,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 // FIRST one. vi.resetModules() + a fresh dynamic import per test gives each
 // test its own i18n module instance — fresh bundled defaults, fresh cache —
 // which is what actually lets each scenario drive its own fetch.
-describe('game-locale merge (source/locales/<loc>/ui.json wins over ui/ defaults)', () => {
+describe('game-locale merge (published catalogs refresh bundled source/locales messages)', () => {
   beforeEach(() => {
     localStorage.clear();
     vi.resetModules();
@@ -16,7 +16,7 @@ describe('game-locale merge (source/locales/<loc>/ui.json wins over ui/ defaults
     vi.unstubAllGlobals();
   });
 
-  it('a key the game overrides wins over the ui/ bundled default', async () => {
+  it('a key the game overrides wins over the bundled source catalog', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(() =>
@@ -25,12 +25,12 @@ describe('game-locale merge (source/locales/<loc>/ui.json wins over ui/ defaults
     );
     const { i18n, initGameLocale } = await import('../src/i18n');
 
-    expect(i18n.global.t('app.title')).toBe('Game'); // ui/'s own default, pre-merge
+    expect(i18n.global.t('app.title')).toBe('Route to Ítaca (beta)'); // bundled source message, pre-merge
     await initGameLocale();
     expect(i18n.global.t('app.title')).toBe('GAME WINS'); // the game's override wins
   });
 
-  it('a key the game does NOT mention is untouched — the ui/ default stands', async () => {
+  it('a key the game does NOT mention is untouched — the bundled source message stands', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(() =>
@@ -42,23 +42,23 @@ describe('game-locale merge (source/locales/<loc>/ui.json wins over ui/ defaults
 
     await initGameLocale();
     expect(i18n.global.t('app.title')).toBe('GAME WINS');
-    expect(i18n.global.t('debug.newGame')).toBe('New game'); // ui/'s own default, untouched
+    expect(i18n.global.t('debug.newGame')).toBe('New game'); // bundled source message, untouched
   });
 
-  it('a 404 (no catalog shipped for a locale) is NOT an error — ui/ defaults stand', async () => {
+  it('a 404 (no catalog shipped for a locale) is NOT an error — bundled source messages stand', async () => {
     vi.stubGlobal('fetch', vi.fn(() => Promise.resolve({ ok: false, status: 404 })));
     const { i18n, initGameLocale } = await import('../src/i18n');
 
     await expect(initGameLocale()).resolves.toBeUndefined(); // does not throw/reject
-    expect(i18n.global.t('app.title')).toBe('Game');
+    expect(i18n.global.t('app.title')).toBe('Route to Ítaca (beta)');
   });
 
-  it('a network error fetching the catalog is NOT an error — ui/ defaults stand', async () => {
+  it('a network error fetching the catalog is NOT an error — bundled source messages stand', async () => {
     vi.stubGlobal('fetch', vi.fn(() => Promise.reject(new Error('offline'))));
     const { i18n, initGameLocale } = await import('../src/i18n');
 
     await expect(initGameLocale()).resolves.toBeUndefined(); // does not throw/reject
-    expect(i18n.global.t('app.title')).toBe('Game');
+    expect(i18n.global.t('app.title')).toBe('Route to Ítaca (beta)');
   });
 
   it('deep-merges a nested override without discarding untouched sibling keys', async () => {

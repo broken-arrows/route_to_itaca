@@ -72,7 +72,7 @@ describe('app shell', () => {
     settings.configure('a513a6fa-16c8-4cdf-a385-0e359a976a66');
     expect(settings.language).toBe('en');
 
-    const ca = wrapper.findAll('button').find((b) => b.text() === 'CA');
+    const ca = wrapper.findAll('button').find((b) => b.text() === i18n.global.t('lang.ca'));
     expect(ca).toBeDefined();
     await ca!.trigger('click');
 

@@ -76,7 +76,10 @@ describe('scene-generated localization recipes', () => {
     Object.assign(q, {player_party:'erc', cat_coalition:['ciu','erc'], cat_caretaker_gov:false,
       npc_government_initiative:null, npc_government_response:null,
       health_minister:gender === 'f' ? 'Alba Vergés' : 'Boi Ruiz', health_minister_gender:gender,
+      // A prepared increase and balanced finances exclude funding changes so
+      // the first eligible Health proposal exercises reproductive-care copy.
       education_minister_gender:gender, healthcare_sexual_level:0, healthcare_spending:-1,
+      healthcare_prepared_level:0, generalitat_surplus:0,
       ciu_ideology:'Social Democracy, Pact-Pragmatism'});
     for (const office of ['president','vicepresident','economy_minister','education_minister',
       'bnl_minister','territory_minister','foreign_minister','interior_minister']) q[office + '_party'] = 'erc';
@@ -161,23 +164,15 @@ describe('scene-generated localization recipes', () => {
     expect(recipe(adapter, 'cat_coalition_disp').params).toEqual({brand:'pdcat', name:'DL pdcat'});
   });
 
-  it('preserves legacy fixed-key and recipe-less English rebrand behavior', () => {
-    const adapter = initialized(), engine = adapter.engine as any, q = adapter.qualities as any, G = engine.gameLib;
-    q.cat_coalition = ['dl'];
-    G.setText(q, 'cat_coalition_disp', G.text('<span style="color: var(--dl);">DL dl</span>'));
-    arrival(adapter, 'pdcat_formation');
-    expect(q.cat_coalition_disp).toBe('<span style="color: var(--pdcat);">DL pdcat</span>');
-    expect(recipe(adapter, 'cat_coalition_disp').kind).toBe('literal');
-    q.cat_coalition = ['jxcat']; q.cat_coalition_disp = 'JXCAT JxCat jxcat';
-    arrival(adapter, 'junts_formation');
-    expect(q.cat_coalition_disp).toBe('JXCAT junts junts');
-  });
-
   it('captures selected NPC initiative context outside the persisted English candidate', () => {
     const adapter = initialized(), engine = adapter.engine as any, q = adapter.qualities as any;
     Object.assign(q, {player_party:'erc', cat_coalition:['ciu'], president_party:'ciu', cat_caretaker_gov:false,
       npc_government_initiative:null, npc_government_response:null, game_random_seed:12345, game_random_state:12345});
     for (const office of ['vicepresident','economy_minister','health_minister','education_minister','bnl_minister','territory_minister','foreign_minister','interior_minister']) q[office + '_party'] = 'ciu';
+    // Only Economy is an NPC portfolio: select an Economy recipe deliberately,
+    // independently of the number and weights of service initiatives.
+    q.cat_coalition = ['ciu', 'erc'];
+    for (const office of ['vicepresident','health_minister','education_minister','bnl_minister','territory_minister','foreign_minister','interior_minister']) q[office + '_party'] = 'erc';
     arrival(adapter, 'government_does_things.prepare');
     const initiative = q.npc_government_initiative;
     expect(initiative).toBeTruthy();

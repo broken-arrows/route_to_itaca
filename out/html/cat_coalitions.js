@@ -74,6 +74,12 @@
 
 (function (global) {
   "use strict";
+  function tr(text, params) {
+    if (window.ClassicI18n) return window.ClassicI18n.text(text, params);
+    return text.replace(/\{(\w+)\}/g, function (m, key) { return params && params[key] !== undefined ? params[key] : m; });
+  }
+  function tc(text) { return window.ClassicI18n ? window.ClassicI18n.content(text) : text; }
+
 
   // ── helpers ────────────────────────────────────────────────────────────────
 
@@ -266,7 +272,7 @@
 
     var name = document.createElement("span");
     name.className = "cv-entry-name";
-    name.innerHTML = window.applyWholesome(def.label) + ":" || "";
+    name.innerHTML = window.applyWholesome(tc(def.label)) + ":" || "";
 
     var memberSpan = document.createElement("span");
     memberSpan.className = "cv-entry-members";
@@ -277,9 +283,9 @@
       .map(function (m) {
         var suffix =
           m.type === "support"
-            ? " <span style='opacity:.6'>(support)</span>"
+            ? " <span style='opacity:.6'>(" + tr("support") + ")</span>"
             : m.type === "abstain"
-              ? " <span style='opacity:.6'>(abst.)</span>"
+              ? " <span style='opacity:.6'>(" + tr("abst.") + ")</span>"
               : "";
         return (
           "<span class='cv-member'>" +

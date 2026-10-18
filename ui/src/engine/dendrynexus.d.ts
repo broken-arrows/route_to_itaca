@@ -128,6 +128,8 @@ declare module 'dendrynexus-ten/lib/localization.js' {
     protectedMarkup: string[];
   }
   export function collectUnits(content: unknown, options?: Record<string, unknown>): TranslationUnit[];
+  export function captureContent(content: unknown, options?: Record<string, unknown>): unknown;
+  export function renderContent(snapshot: unknown, locale?: string, catalog?: unknown): unknown[];
   export const buildUnits: typeof collectUnits;
 }
 

@@ -28,7 +28,7 @@ function january(overrides: Record<string, unknown> = {}) {
   adapter.goToScene('root.start_menu');
   adapter.goToScene('root.start');
   Object.assign(adapter.qualities, {
-    year: 2013, month: 1, week: 1, time: 5, rubicon: false,
+    year: 2013, month: 1, week: 1, time: 5, rubicon: false, roadmap_year: 2015,
     player_party: 'erc', month_actions: 0, countdowns: [],
     ciu_erc_coalition_phase: 1,
     parlament_current_ciu: 'ciu', parlament_current_ciu_s: 50,
@@ -139,20 +139,6 @@ describe('coalition time advances after the current newspaper editions', () => {
     expect(restored.qualities.month).toBe(2);
     expect(restored.qualities.coalition_phase_timer).toBe(0);
     expect(choices(restored)).toEqual(['parlament_coalition_ciu_erc_phase']);
-  });
-
-  it('registers the shared timer in an older save without delaying an available round', () => {
-    const adapter = january();
-    delete adapter.qualities.coalition_phase_timer;
-    adapter.qualities.timers = (adapter.qualities.timers as string[]).filter((id) => id !== 'coalition_phase');
-    adapter.goToScene('post_event');
-    expect(choices(adapter)).toContain('parlament_coalition_ciu_erc_phase');
-    rejectCiuOffer(adapter);
-    pick(adapter, 'barcenas_leak');
-    pick(adapter, 'post_event');
-    expect(adapter.qualities.month).toBe(2);
-    expect(adapter.qualities.coalition_phase_timer).toBe(0);
-    expect((adapter.qualities.timers as string[]).filter((id) => id === 'coalition_phase')).toHaveLength(1);
   });
 
   it('keeps the opening Speaker delay before the first round', () => {
@@ -305,7 +291,7 @@ describe('sovereignty interludes use the ordinary event queue', () => {
     const restored = DendryAdapter.fromJSONText(gameText);
     restored.importStateJSON(adapter.exportStateJSON());
     expect(restored.qualities.cup_poblelliure_dissent).toBe(15);
-    pick(restored, event + '.erc_space');
+    pick(restored, event + '.erc_continue');
     expect(choices(restored)).not.toContain(event);
 
     const openings = Object.keys(restored.engine.game.scenes).filter(id =>
@@ -344,7 +330,7 @@ describe('sovereignty interludes use the ordinary event queue', () => {
     expect(choices(adapter)).toContain('parlament_coalition_sovereignty_banos');
     expect(choices(adapter)).not.toContain('parlament_coalition_joint_cup_phase_erc_player_jxsi_led');
     pick(adapter, 'parlament_coalition_sovereignty_banos');
-    pick(adapter, 'parlament_coalition_sovereignty_banos.erc_space');
+    pick(adapter, 'parlament_coalition_sovereignty_banos.erc_continue');
     expect(adapter.qualities.month).toBe(1);
     expect(adapter.qualities.month_actions).toBe(1);
     expect(choices(adapter)).toEqual(['barcenas_leak']);

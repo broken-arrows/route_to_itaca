@@ -1,24 +1,372 @@
 {
-  "app": { "title": "Camí a Ítaca (beta)" },
+  "app": {
+    "title": "Camí a Ítaca (beta)"
+  },
+  "debug": {
+    "newGame": "New game",
+    "choices": "Choices",
+    "decks": "Decks",
+    "hand": "Hand ({n}/{max})",
+    "pinned": "Pinned",
+    "draw": "Draw",
+    "play": "Play",
+    "inspector": "Q inspector",
+    "filter": "Filter qualities…",
+    "save": "Save",
+    "load": "Load",
+    "slotName": "Slot name",
+    "loading": "Loading game data…",
+    "loadError": "Could not load game data. Run `npm run sync-game` and reload.",
+    "gameOver": "Game over",
+    "handFull": "No space in hand",
+    "deckEmpty": "No cards available in this deck"
+  },
+  "lang": {
+    "en": "English",
+    "ca": "Català"
+  },
+  "shell": {
+    "close": "Tanca",
+    "back": "Enrere",
+    "cancel": "Cancel·la",
+    "title": {
+      "menuLabel": "Menú principal",
+      "return": "Torna al menú principal",
+      "continue": "Continua",
+      "load": "Parties desades",
+      "options": "Opcions",
+      "saveCount": "{count} disponibles"
+    },
+    "pause": {
+      "menuLabel": "Menú",
+      "open": "Menú",
+      "paused": "En pausa",
+      "escResumes": "Premeu Esc per continuar",
+      "resume": "Continua",
+      "saveLoad": "Desa i carrega",
+      "settings": "Configuració",
+      "achievements": "Assoliments",
+      "exit": "Menú principal"
+    },
+    "achievements": {
+      "count": "{unlocked} / {total} desbloquejats",
+      "minutesAgo": "fa {count} min.",
+      "hoursAgo": "fa {count} h.",
+      "unknownDate": "Data de desbloqueig desconeguda"
+    },
+    "load": {
+      "title": "Carrega",
+      "pauseTitle": "Desa i carrega"
+    },
+    "saveManager": {
+      "dntFileRequired": "Una partida desada ha de tenir .dnt com a extensió.",
+      "achievementsDisabled": "Assoliments desactivats",
+      "listLabel": "Partides desades",
+      "autoLatest": "Partida desada automàticament",
+      "autoPrevious": "Partida desada automàticament prèvia",
+      "manual": "Partida desada {number}",
+      "unknownDate": "Data no disponible",
+      "gameDate": "Any {year}, mes {month}",
+      "resources": "{count} recursos",
+      "empty": "Encara no hi ha cap partida desada, però sempre podeu importar-ne una :)",
+      "actions": {
+        "load": "Carrega",
+        "export": "Exporta",
+        "delete": "Suprimeix",
+        "import": "Importa",
+        "new": "Desa",
+        "overwrite": "Sobreescriu"
+      },
+      "status": {
+        "ready": "Disponible",
+        "corrupt": "Corromput",
+        "unreadable": "Il·legible",
+        "unsupported": "No compatible"
+      },
+      "compatibility": {
+        "incompatible": "Avís de versió",
+        "unknown": "Versió desconeguda"
+      },
+      "reasons": {
+        "select": "Seleccioneu primer una partida.",
+        "ironmanRun": "Aquesta partida és en mode Històric, i per tant només es pot carregar mitjançant la darrera vegada que es va desar automàticament.",
+        "ironmanLoad": "El mode Històric no permet carregar una partida anterior",
+        "ironmanSave": "El mode Històric no permet guardar partida.",
+        "notLoadable": "Aquesta partida no es pot carregar, però encara es pot exportar o suprimir.",
+        "notExportable": "Alguna cosa no ha anat bé, i no s'ha pogut exportar la teva partida..",
+        "autoProtected": "En aquest moment no pots suprimir una partida desada automàticament.",
+        "manualOnly": "Les parties desades automàticament no es poden sobreescriure."
+      },
+      "confirm": {
+        "overwriteTitle": "Voleu sobreescriure aquesta partit?",
+        "overwriteBody": "Es perdrà l'anterior versió desada. Aquesta acció no es pot desfer.",
+        "loadTitle": "Voleu carregar aquesta partida?",
+        "loadBody": "Aquesta partida es va crear amb una versió del joc diferent o desconeguda.",
+        "loadAnyway": "Carrega-la igualment"
+      },
+      "error": "L'operació ha fallat ({code})."
+    },
+    "options": {
+      "title": "Opcions",
+      "pauseTitle": "Configuració",
+      "language": "Llengua",
+      "animations": "Animacions",
+      "animationsDescription": "La interfície d'usuari farà servir totes les animacions programades.",
+      "eventImages": "Imatges històriques",
+      "eventImagesDescription": "Inclou imatges històriques en els esdeveniments, dossiers, i altres espais.",
+      "music": "Música",
+      "wip": "Encara en desenvolupament..."
+    },
+    "continueWarning": {
+      "title": "Voleu continuar aquesta partida?",
+      "body": "Aquesta partida es va crear amb una versió del joc diferent o desconeguda.",
+      "confirm": "Continua de totes maneres"
+    },
+    "exit": {
+      "secondClick": "Torna a clicar per sortir",
+      "title": "Voleu sortir al menú principal?",
+      "body": "Es perdrà quaslevol progrés fet des de la darrera vegada que s'ha desat la partida.",
+      "confirm": "Surt al menú principal"
+    }
+  },
+  "widgets": {
+    "history": {
+      "weekDate": "{date}\nSetmana {week}",
+      "label": "Evolució del suport electoral",
+      "electorate": "Suport (% de vots vàlids)",
+      "parties": "Tendències: suport per partit",
+      "empty": "Encara no s’ha registrat cap dada."
+    },
+    "seats": "{count} escó | {count} escons",
+    "partySeats": "{party}: {count} escons",
+    "majoritySeats": "Majoria: {count} escons",
+    "seatStrip": "{count} escons; majoria {majority}",
+    "hemicycle": "Hemicicle: {count} escons, majoria {majority}",
+    "logo": "Logotip de {party}",
+    "you": "tu",
+    "strength": "FOR",
+    "dissent": "DIS",
+    "votes": "{label}: {count} vots",
+    "majorityVotes": "Majoria: {count} vots a favor",
+    "trend": "{label}: gràfic històric, ara {value}{unit}, {direction}",
+    "trendStart": "inici de la partida",
+    "trendNow": "aquest mes",
+    "direction": {
+      "up": "a l'alça",
+      "down": "a la baixa",
+      "flat": "estable"
+    },
+    "builder": {
+      "include": "Inclou {party} a la candidatura conjunta",
+      "previous": "Partit anterior per a {party}",
+      "next": "Partit següent per a {party}",
+      "removeSeat": "Treu un escó a {party}",
+      "seatInput": "Escons de {party}",
+      "addSeat": "Afegeix un escó a {party}"
+    },
+    "map": {
+      "unavailable": "Mapa no disponible",
+      "province": "Província",
+      "potentialVoters": "{count} potencials votants",
+      "demographics": "Per grup demogràfic",
+      "projected": "Projecció d'escons · {province}",
+      "projection": "Projecció d'escons · {province}",
+      "distribution": "Distribució d'escons · {region}",
+      "noResults": "Encara no hi ha resultats.",
+      "selectRegion": "Feu clic a qualsevol zona del mapa per veure'n la distribució d'escons.",
+      "selectCity": "Feu clic a qualsevol ciutat per veure'n els resultats"
+    }
+  },
+  "desk": {
+    "diary": {
+      "unfold": "Desplega el diari",
+      "fold": "Plega el diari"
+    },
+    "tray": {
+      "out": "FET",
+      "draw": "ROBAR",
+      "empty": "No hi ha cap carta a robar."
+    },
+    "actions": {
+      "title": "ACCIONS",
+      "advisors": "ASSESSORS"
+    },
+    "out": {
+      "empty": "No s'ha resolt res (encara!).",
+      "resolved": "RESOLT"
+    },
+    "toast": {
+      "handFull": "La mà està plena, juga un dossier.",
+      "deckEmpty": "No hi ha cap carta en aquesta baralla.",
+      "engineError": "Alguna cosa ha anat malament... S'ha cancel·lat l'acció.",
+      "achievementUnlocked": "Assoliment desbloquejat!"
+    },
+    "dossier": {
+      "locked": "Bloquejat"
+    },
+    "glossary": {
+      "leader": "Líder:",
+      "allegiance": "Afiliació:",
+      "allegiances": "Afiliacions:"
+    },
+    "page": {
+      "ended": "Finalitzat"
+    },
+    "month": {
+      "1": "Gener",
+      "2": "Febrer",
+      "3": "Març",
+      "4": "Abril",
+      "5": "Maig",
+      "6": "Juny",
+      "7": "Juliol",
+      "8": "Augost",
+      "9": "Setembre",
+      "10": "Octubre",
+      "11": "Novembre",
+      "12": "Decembre"
+    }
+  },
   "brief": {
     "tab": {
-      "overview": "OVERVIEW",
-      "party": "PARTY",
+      "overview": "GENERAL",
+      "party": "PARTIT",
       "chamber": "PARLAMENT",
-      "economy": "ECONOMY",
-      "world": "WORLD",
-      "polls": "POLLS",
-      "library": "▤ LIBRARY"
+      "economy": "ECONOMIA",
+      "world": "INTERNACIONAL",
+      "polls": "ENQUESTES",
+      "library": "▤ BIBLIOTECA"
     },
     "context": {
-      "overview": "STATE OF PLAY",
-      "party": "THE PARTY · YOURS",
+      "overview": "ESTAT",
+      "party": "EL PARTIT",
       "chamber": "PARLAMENT",
-      "economy": "THE ACCOUNTS",
-      "world": "AS READ FROM BARCELONA",
-      "polls": "IF HELD TODAY",
-      "library": "READING, NOT ACTION"
+      "economy": "FINANCES",
+      "world": "MÓN",
+      "polls": "SI SE CELEBREN AVUI",
+      "library": "BIBLIOTECA"
     },
-    "pollsUnavailable": "Polls are not available in historical mode."
+    "pollsUnavailable": "Les enquestes no estan disponibles en mode Històric."
+  },
+  "classic": {
+    "messages": {
+      "OK": "D'acord",
+      "Backgrounds:": "Fons:",
+      "On": "Sí",
+      "Off": "No",
+      "Animations:": "Animacions:",
+      "Music (WIP):": "Música (encara no disponible):",
+      "Color mode (WIP):": "Mode de Color (encara no disponible):",
+      "Light": "Clar",
+      "Dark": "Fosc",
+      "Close": "Tanca",
+      "Auto A": "Auto A",
+      "Save": "Desa",
+      "Delete": "Elimina",
+      "Export": "Exporta",
+      "Auto B": "Auto B",
+      "Slot 1": "Partida 1",
+      "Slot 2": "Partida 2",
+      "Slot 3": "Partida 3",
+      "Slot 4": "Partida 4",
+      "Slot 5": "Partida 5",
+      "Slot 6": "Partida 6",
+      "Slot 7": "Partida 7",
+      "Slot 8": "Partida 8",
+      "Import save file:": "Importeu una partida desada:",
+      "Route to Ítaca": "Anàvem Lluny...",
+      "- An Alternate History": "- Una història alternativa",
+      "Library": "Biblioteca",
+      "Save/Load": "Desa/Carrega",
+      "Options": "Opcions",
+      "Message": "Missatge",
+      "Main": "Visió General",
+      "Politics": "Política",
+      "Government": "Govern",
+      "International Relations": "Relacions Internacionals",
+      "International": "International",
+      "Opinion Polls": "Enquestes",
+      "Polls": "Enquestes",
+      "Language": "Llengua",
+      "Polls are not available in historical mode": "Les enquestes no estan disponibles en mode Històric.",
+      "Saving and loading are disabled in historical mode": "Desar i carregar partides anteriors no està permès en mode Històric.",
+      "Achievement Unlocked": "Assoliment Desbloquejat",
+      "Achievements Unlocked": "Assoliments Desbloquejats",
+      "Allegiances: ": "Afiliacions: ",
+      "Allegiance: ": "Afiliació: ",
+      "Leader:": "Líder:",
+      "Hand - click a card to play.": "Mà - feu clic a una carta per jugar-la.",
+      "Decks - click a deck to draw a card.": "Baralles - clic a una baralla per robar una carta.",
+      "Pinned cards - click a card to play.": "Cartes permanents - feu clic a una carta per jugar-la.",
+      "No save available.": "No hi ha cap partida desada disponible.",
+      "This save uses an unsupported save format and cannot be loaded.": "Aquesta partida està desada en un format incompatible i no es pot carregar.",
+      "This save is corrupt or unreadable and cannot be loaded.": "Aquesta partida desada està corrompuda i no es pot carregar.",
+      "This save was created with a different or unknown game version. Load it anyway?": "Aquesta partida desda correspon a una versió diferent del joc. Voleu carregar-la de totes maneres?",
+      "Loaded (achievements disabled).": "Partida carregarda correctament (els assoliments estan desactivats).",
+      "Loaded.": "Partida carregarda correctament.",
+      "All save slots are occupied. Delete a save before importing.": "Tot l'espai per partides desades està ocupat. Elimineu una de les partides desades per poder importar-ne una altra.",
+      "Choose a save file to import.": "Trieu una partida desada per importar.",
+      "Choose a .dnt save file.": "Trieu una partida desada en format .dnt.",
+      "Unknown scene": "Escena desconeguda",
+      "\n(Achievements disabled)": "\n(els assoliments estan desactivats)",
+      "\n(Game version warning)": "\n(alerta per versió incorrecta del joc)",
+      "Load": "Carrega",
+      "Empty": "Buit",
+      "Unsupported save format": "Format de partida desada no compatible.",
+      "Corrupt save": "Partida desada corrompuda",
+      "Unreadable save": "Partida desada no llegible",
+      "Saving and loading is currently disabled.": "Desar i carregar partides anteriors no està permès en mode Històric.",
+      "Game Over (reload to read again)": "Final de la partida (refresqueu la pàgina per tornar a començar)",
+      "{action} failed.": "{action} ha fallat.",
+      "Autosave rotation": "Partida deasada automàticament rotada",
+      "Autosave": "Partida desada automàticament",
+      "Import": "Importa",
+      "Advisor cards - actions are only usable once per 6 months.": "Cartes d'Assessors - les seves accions es poden activar una vegada cada 6 mesos.",
+      "Event images:": "Imatges històriques:",
+      "Include {party} in the joint list": "Inclou {party} a la llista",
+      "Remove a seat from {party}": "Treu un escó a {party}",
+      "Add a seat to {party}": "Afegeix un escó per {party}",
+      "{party} seats": "Escons - {party}",
+      "Majority: {count} seats": "Majoria: {count} escons",
+      "Majority: {count} yes votes": "Majoria: {count} vots a favor",
+      "{label}: {count} votes": "{label}: {count} vots",
+      "Previous party for {party}": "Partit anterior per {party}",
+      "Next party for {party}": "Partit següent per {party}",
+      "No laws passed yet": "No s'ha aprovat cap llei, encara",
+      "Party roadmaps to independence": "Full de Ruta cap a l'independència, per partit",
+      "No roadmap": "Sense Full de Ruta",
+      "Vote on agreement": "Referèndum pactat",
+      "Focus is put on negotiating a referendum on independence with the Gobierno.": "Tots els esforços se centren en aconseguir un acord amb Moncloa per a cel·lebrar un referèndum pactat.",
+      "Tactical Confrontation": "Confrontació Tàctica",
+      "A delicate balance between escalating tensions and openness to dialogue, hoping to force the hand of the Gobierno and the EU.": "Sense necessàriament reunciar al diàleg ni a una escala de tensions, el pla recau en un delicat balanç entre ambdues opcions, que serà la manera de forçar la mà del Gobierno i de la UE.",
+      "Unilateralism": "Unilateralisme",
+      "Independence is to be achieved by exercising sovereignty, not asking for permission.": "Els esforços per aconseguir la independència se centren en exercir la sobirania del poble, i no en demanar permís.",
+      "Business": "Emprenedors",
+      "Ind.Work.": "Treb. Industrials",
+      "Mid.Class": "Classe Mitjana",
+      "Retired": "Pensionistes",
+      "Rural": "Població Rural",
+      "Unemp.": "Aturats",
+      "Young": "Joves",
+      "{count} seats": "{count} escons",
+      "{count} potential voters": "{count} censats",
+      "Click a city to see results": "Feu clic a qualsevol ciutat per verue'n els resultats",
+      "No results yet.": "No hi ha cap resultat, encara.",
+      "Click a region to see its seat distribution.": "Feu clic a qualsevol zona del mapa per veure'n la distribució d'escons",
+      "support": "suport",
+      "abst.": "abst.",
+      "{count} seat": "{count} escons",
+      "Route to Ítaca - An Alternate History": "Anàvem lluny... - Ùna història alternativa",
+      "Between events": "Entre esdeveniments",
+      "{name} image": "Imagte de {name}",
+      "{party} logo": "Logo de {party}",
+      "Catalonia": "Catalunya",
+      "Valencia": "País Valencià",
+      "Balearic Islands": "Illes Balears",
+      "Navarre": "Navarra",
+      "Basque Country": "País Basc",
+      "Galicia": "Galícia",
+      "Rest of Spain": "Resta de l'Estat Espanyol"
+    }
   }
 }

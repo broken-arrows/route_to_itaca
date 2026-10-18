@@ -29,7 +29,7 @@ new-page: true
 
 - @pass_all
 - @fail_all
-- @debug_menu: Go Back
+- @debug_menu: Go back
 - @post_event: Done
 
 @pass_all

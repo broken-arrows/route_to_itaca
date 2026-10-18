@@ -6,6 +6,12 @@
 
 (function () {
   "use strict";
+  function tr(text, params) {
+    if (window.ClassicI18n) return window.ClassicI18n.text(text, params);
+    return text.replace(/\{(\w+)\}/g, function (m, key) { return params && params[key] !== undefined ? params[key] : m; });
+  }
+  function tc(text) { return window.ClassicI18n ? window.ClassicI18n.content(text) : text; }
+
 
   let currentProvince = "barcelona";
   let container = null;
@@ -408,7 +414,7 @@
     function formatThousands(num) {
       return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
-    provInfo.innerHTML = `<span style="font-weight:bold;">${currentProvince.toUpperCase()}</span> - ${seatsToAssign} seats <br/>${formatThousands(Math.round(provincePops))} potential voters`;
+    provInfo.innerHTML = `<span style="font-weight:bold;">${currentProvince.toUpperCase()}</span> - ${tr("{count} seats", { count: seatsToAssign })} <br/>${tr("{count} potential voters", { count: formatThousands(Math.round(provincePops)) })}`;
     barsLegend.appendChild(provInfo);
   }
 
@@ -491,7 +497,7 @@
 
     demographics.forEach((demo) => {
       if (dataMap[demo]) {
-        html += "<tr><td>" + demoLabels[demo] + "</td>";
+        html += "<tr><td>" + tr(demoLabels[demo]) + "</td>";
         validParties.forEach((party) => {
           const val = dataMap[demo][party];
           const playerPartyStyle =

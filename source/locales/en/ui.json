@@ -1,5 +1,232 @@
 {
-  "app": { "title": "Route to Ítaca (beta)" },
+  "app": {
+    "title": "Route to Ítaca (beta)"
+  },
+  "debug": {
+    "newGame": "New game",
+    "choices": "Choices",
+    "decks": "Decks",
+    "hand": "Hand ({n}/{max})",
+    "pinned": "Pinned",
+    "draw": "Draw",
+    "play": "Play",
+    "inspector": "Q inspector",
+    "filter": "Filter qualities…",
+    "save": "Save",
+    "load": "Load",
+    "slotName": "Slot name",
+    "loading": "Loading game data…",
+    "loadError": "Could not load game data. Run `npm run sync-game` and reload.",
+    "gameOver": "Game over",
+    "handFull": "No space in hand",
+    "deckEmpty": "No cards available in this deck"
+  },
+  "lang": {
+    "en": "English",
+    "ca": "Català"
+  },
+  "shell": {
+    "close": "Close",
+    "back": "Back",
+    "cancel": "Cancel",
+    "title": {
+      "menuLabel": "Main menu",
+      "return": "Return to Main Menu",
+      "continue": "Continue",
+      "load": "Load Game",
+      "options": "Options",
+      "saveCount": "{count} usable saves"
+    },
+    "pause": {
+      "menuLabel": "Pause menu",
+      "open": "Pause game",
+      "paused": "Paused",
+      "escResumes": "Esc resumes",
+      "resume": "Resume",
+      "saveLoad": "Save & Load",
+      "settings": "Settings",
+      "achievements": "Achievements",
+      "exit": "Exit to Main Menu"
+    },
+    "achievements": {
+      "count": "{unlocked} / {total} unlocked",
+      "minutesAgo": "{count} min. ago",
+      "hoursAgo": "{count} h. ago",
+      "unknownDate": "Unlock date unknown"
+    },
+    "load": {
+      "title": "Load Game",
+      "pauseTitle": "Save & Load"
+    },
+    "saveManager": {
+      "dntFileRequired": "Choose a .dnt save file.",
+      "achievementsDisabled": "Achievements disabled",
+      "listLabel": "Saved games",
+      "autoLatest": "Latest autosave",
+      "autoPrevious": "Previous autosave",
+      "manual": "Manual save {number}",
+      "unknownDate": "Date unavailable",
+      "gameDate": "Year {year}, month {month}",
+      "resources": "{count} resources",
+      "empty": "No saved games yet. You can still import one.",
+      "actions": {
+        "load": "Load",
+        "export": "Export",
+        "delete": "Delete",
+        "import": "Import",
+        "new": "New Save",
+        "overwrite": "Overwrite"
+      },
+      "status": {
+        "ready": "Ready",
+        "corrupt": "Corrupt",
+        "unreadable": "Unreadable",
+        "unsupported": "Unsupported"
+      },
+      "compatibility": {
+        "incompatible": "Version warning",
+        "unknown": "Unknown version"
+      },
+      "reasons": {
+        "select": "Select a save first.",
+        "ironmanRun": "This run permits only its latest recovery autosave.",
+        "ironmanLoad": "Loading another record is disabled during this run.",
+        "ironmanSave": "Manual saving is disabled during this run.",
+        "notLoadable": "This record cannot be loaded, but it can still be exported or deleted.",
+        "notExportable": "The browser could not read this record.",
+        "autoProtected": "Autosaves cannot be deleted here.",
+        "manualOnly": "Only manual saves can be overwritten."
+      },
+      "confirm": {
+        "overwriteTitle": "Overwrite this save?",
+        "overwriteBody": "The selected manual save will be replaced by the current game state.",
+        "loadTitle": "Load this save?",
+        "loadBody": "This save was created by a different or unknown game version.",
+        "loadAnyway": "Load Anyway"
+      },
+      "error": "The operation failed ({code})."
+    },
+    "options": {
+      "title": "Options",
+      "pauseTitle": "Settings",
+      "language": "Language",
+      "animations": "Animations",
+      "animationsDescription": "Animate cards, ribbons, and panes.",
+      "eventImages": "Event Images",
+      "eventImagesDescription": "Show illustrations inside events and opened dossiers.",
+      "music": "Music",
+      "wip": "Work in progress"
+    },
+    "continueWarning": {
+      "title": "Continue this save?",
+      "body": "This save was created by a different or unknown game version.",
+      "confirm": "Continue Anyway"
+    },
+    "exit": {
+      "secondClick": "Click again to exit",
+      "title": "Exit to Main Menu?",
+      "body": "Unsaved progress since the latest autosave will be lost.",
+      "confirm": "Exit to Main Menu"
+    }
+  },
+  "widgets": {
+    "history": {
+      "weekDate": "{date}\nWeek {week}",
+      "label": "Party support over time",
+      "electorate": "Support (% of the electorate)",
+      "parties": "Party support trends",
+      "empty": "No support history recorded yet."
+    },
+    "seats": "{count} seat | {count} seats",
+    "partySeats": "{party}: {count} seats",
+    "majoritySeats": "Majority: {count} seats",
+    "seatStrip": "{count} seats; majority {majority}",
+    "hemicycle": "Hemicycle: {count} seats, majority {majority}",
+    "logo": "{party} logo",
+    "you": "you",
+    "strength": "STR",
+    "dissent": "DIS",
+    "votes": "{label}: {count} votes",
+    "majorityVotes": "Majority: {count} yes votes",
+    "trend": "{label}: full-run trend, now {value}{unit}, {direction}",
+    "trendStart": "start of the run",
+    "trendNow": "this month",
+    "direction": {
+      "up": "rising",
+      "down": "falling",
+      "flat": "flat"
+    },
+    "builder": {
+      "include": "Include {party} in the joint list",
+      "previous": "Previous party for {party}",
+      "next": "Next party for {party}",
+      "removeSeat": "Remove a seat from {party}",
+      "seatInput": "{party} seats",
+      "addSeat": "Add a seat to {party}"
+    },
+    "map": {
+      "unavailable": "Map unavailable",
+      "province": "Province",
+      "potentialVoters": "{count} potential voters",
+      "demographics": "By demographic",
+      "projected": "Seats, projected · {province}",
+      "projection": "Projected seats for {province}",
+      "distribution": "Seat distribution in {region}",
+      "noResults": "No results yet.",
+      "selectRegion": "Click a region to see its seat distribution.",
+      "selectCity": "Click a city to see results"
+    }
+  },
+  "desk": {
+    "diary": {
+      "unfold": "Unfold monthly diary",
+      "fold": "Fold monthly diary"
+    },
+    "tray": {
+      "out": "OUT",
+      "draw": "DRAW",
+      "empty": "Nothing to draw."
+    },
+    "actions": {
+      "title": "ACTIONS",
+      "advisors": "ADVISORS"
+    },
+    "out": {
+      "empty": "Nothing resolved yet.",
+      "resolved": "RESOLVED"
+    },
+    "toast": {
+      "handFull": "Hand is full — play a dossier first",
+      "deckEmpty": "No cards available in this deck",
+      "engineError": "Something went wrong — that action was cancelled",
+      "achievementUnlocked": "Achievement Unlocked"
+    },
+    "dossier": {
+      "locked": "Locked"
+    },
+    "glossary": {
+      "leader": "Leader:",
+      "allegiance": "Allegiance:",
+      "allegiances": "Allegiances:"
+    },
+    "page": {
+      "ended": "ENDED"
+    },
+    "month": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    }
+  },
   "brief": {
     "tab": {
       "overview": "OVERVIEW",
@@ -20,5 +247,126 @@
       "library": "READING, NOT ACTION"
     },
     "pollsUnavailable": "Polls are not available in historical mode."
+  },
+  "classic": {
+    "messages": {
+      "OK": "OK",
+      "Backgrounds:": "Backgrounds:",
+      "On": "On",
+      "Off": "Off",
+      "Animations:": "Animations:",
+      "Music (WIP):": "Music (WIP):",
+      "Color mode (WIP):": "Color mode (WIP):",
+      "Light": "Light",
+      "Dark": "Dark",
+      "Close": "Close",
+      "Auto A": "Auto A",
+      "Save": "Save",
+      "Delete": "Delete",
+      "Export": "Export",
+      "Auto B": "Auto B",
+      "Slot 1": "Slot 1",
+      "Slot 2": "Slot 2",
+      "Slot 3": "Slot 3",
+      "Slot 4": "Slot 4",
+      "Slot 5": "Slot 5",
+      "Slot 6": "Slot 6",
+      "Slot 7": "Slot 7",
+      "Slot 8": "Slot 8",
+      "Import save file:": "Import save file:",
+      "Route to Ítaca": "Route to Ítaca",
+      "- An Alternate History": "- An Alternate History",
+      "Library": "Library",
+      "Save/Load": "Save/Load",
+      "Options": "Options",
+      "Message": "Message",
+      "Main": "Main",
+      "Politics": "Politics",
+      "Government": "Government",
+      "International Relations": "International Relations",
+      "International": "International",
+      "Opinion Polls": "Opinion Polls",
+      "Polls": "Polls",
+      "Language": "Language",
+      "Polls are not available in historical mode": "Polls are not available in historical mode",
+      "Saving and loading are disabled in historical mode": "Saving and loading are disabled in historical mode",
+      "Achievement Unlocked": "Achievement Unlocked",
+      "Achievements Unlocked": "Achievements Unlocked",
+      "Allegiances: ": "Allegiances: ",
+      "Allegiance: ": "Allegiance: ",
+      "Leader:": "Leader:",
+      "Hand - click a card to play.": "Hand - click a card to play.",
+      "Decks - click a deck to draw a card.": "Decks - click a deck to draw a card.",
+      "Pinned cards - click a card to play.": "Pinned cards - click a card to play.",
+      "No save available.": "No save available.",
+      "This save uses an unsupported save format and cannot be loaded.": "This save uses an unsupported save format and cannot be loaded.",
+      "This save is corrupt or unreadable and cannot be loaded.": "This save is corrupt or unreadable and cannot be loaded.",
+      "This save was created with a different or unknown game version. Load it anyway?": "This save was created with a different or unknown game version. Load it anyway?",
+      "Loaded (achievements disabled).": "Loaded (achievements disabled).",
+      "Loaded.": "Loaded.",
+      "All save slots are occupied. Delete a save before importing.": "All save slots are occupied. Delete a save before importing.",
+      "Choose a save file to import.": "Choose a save file to import.",
+      "Choose a .dnt save file.": "Choose a .dnt save file.",
+      "Unknown scene": "Unknown scene",
+      "\n(Achievements disabled)": "\n(Achievements disabled)",
+      "\n(Game version warning)": "\n(Game version warning)",
+      "Load": "Load",
+      "Empty": "Empty",
+      "Unsupported save format": "Unsupported save format",
+      "Corrupt save": "Corrupt save",
+      "Unreadable save": "Unreadable save",
+      "Saving and loading is currently disabled.": "Saving and loading is currently disabled.",
+      "Game Over (reload to read again)": "Game Over (reload to read again)",
+      "{action} failed.": "{action} failed.",
+      "Autosave rotation": "Autosave rotation",
+      "Autosave": "Autosave",
+      "Import": "Import",
+      "Advisor cards - actions are only usable once per 6 months.": "Advisor cards - actions are only usable once per 6 months.",
+      "Include {party} in the joint list": "Include {party} in the joint list",
+      "Remove a seat from {party}": "Remove a seat from {party}",
+      "Add a seat to {party}": "Add a seat to {party}",
+      "{party} seats": "{party} seats",
+      "Majority: {count} seats": "Majority: {count} seats",
+      "Majority: {count} yes votes": "Majority: {count} yes votes",
+      "{label}: {count} votes": "{label}: {count} votes",
+      "Previous party for {party}": "Previous party for {party}",
+      "Next party for {party}": "Next party for {party}",
+      "No laws passed yet": "No laws passed yet",
+      "Party roadmaps to independence": "Party roadmaps to independence",
+      "No roadmap": "No roadmap",
+      "Vote on agreement": "Vote on agreement",
+      "Focus is put on negotiating a referendum on independence with the Gobierno.": "Focus is put on negotiating a referendum on independence with the Gobierno.",
+      "Tactical Confrontation": "Tactical Confrontation",
+      "A delicate balance between escalating tensions and openness to dialogue, hoping to force the hand of the Gobierno and the EU.": "A delicate balance between escalating tensions and openness to dialogue, hoping to force the hand of the Gobierno and the EU.",
+      "Unilateralism": "Unilateralism",
+      "Independence is to be achieved by exercising sovereignty, not asking for permission.": "Independence is to be achieved by exercising sovereignty, not asking for permission.",
+      "Business": "Business",
+      "Ind.Work.": "Ind.Work.",
+      "Mid.Class": "Mid.Class",
+      "Retired": "Retired",
+      "Rural": "Rural",
+      "Unemp.": "Unemp.",
+      "Young": "Young",
+      "{count} seats": "{count} seats",
+      "{count} potential voters": "{count} potential voters",
+      "Click a city to see results": "Click a city to see results",
+      "No results yet.": "No results yet.",
+      "Click a region to see its seat distribution.": "Click a region to see its seat distribution.",
+      "support": "support",
+      "abst.": "abst.",
+      "{count} seat": "{count} seat",
+      "Event images:": "Event images:",
+      "Route to Ítaca - An Alternate History": "Route to Ítaca - An Alternate History",
+      "Between events": "Between events",
+      "{name} image": "{name} image",
+      "{party} logo": "{party} logo",
+      "Catalonia": "Catalonia",
+      "Valencia": "Valencia",
+      "Balearic Islands": "Balearic Islands",
+      "Navarre": "Navarre",
+      "Basque Country": "Basque Country",
+      "Galicia": "Galicia",
+      "Rest of Spain": "Rest of Spain"
+    }
   }
 }

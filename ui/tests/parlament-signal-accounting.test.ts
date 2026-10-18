@@ -21,7 +21,7 @@ beforeAll(() => {
   }
   expect(frame.effectiveRole).toBe('desk');
   adapter.goToScene('election_simulation.2012_11');
-  fixture = structuredClone(adapter.qualities);
+  fixture = JSON.parse(JSON.stringify(adapter.qualities));
   Object.assign(fixture, {
     year: 2012, month: 11, week: 1, time: 4,
     next_election_year: 2015, next_election_month: 9,

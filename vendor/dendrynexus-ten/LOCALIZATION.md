@@ -4,7 +4,8 @@ Localization changes presentation. Q retains English strings; predicates, string
 comparisons and qdisplay bands use the original values. Saved pages and card labels
 also retain English fallback content. Additive `state.presentation` version 1 stores
 JSON recipes with captured values, including names, grammatical context and nested
-display text. Classic renders English and retains this metadata for Desk saves.
+display text. Both shells render those recipes with the selected content catalog.
+English remains the saved fallback and the language of gameplay values.
 
 ## Generated text
 
@@ -80,6 +81,20 @@ uses its original input, then translates the selected wording.
 Catalogs live at `source/locales/<locale>/content.json`. Entries are strings, null
 (untranslated), or recursive selector objects. The English template is the key.
 
+Interface catalogs live at `source/locales/<locale>/ui.json` for both shells.
+The new UI bundles these same files and loads the published copies at startup;
+there is no separate catalog under `ui/src/locales`. Classic loads them through
+`out/html/localization.js`. Its `classic.messages` namespace uses the original
+English interface labels as keys, preserving Classic terminology. Named
+`{parameters}` are supported; missing messages fall back to English. These UI
+entries are maintained explicitly, not discovered by `extract-strings`.
+
+Classic's Options language selector remembers its preference in the game's
+Classic settings namespace. Switching languages refreshes captured scene and
+sidebar output, controls and widgets without scene actions or autosaves. Sidebar
+arrival actions still run during ordinary gameplay rendering. Old saves without
+captured recipes retain English fallback.
+
 ```json
 {
   "{president} leads the {government}.": {
@@ -111,6 +126,8 @@ From the project root:
 ```sh
 npm run extract:strings
 npm run extract:strings -- --dry-run
+npm run extract:strings -- --prune --dry-run
+npm run extract:strings -- --prune
 ```
 
 The CLI also supports `--report <path>` and `--review <path>`. Regeneration adds
@@ -118,6 +135,13 @@ missing keys, preserves existing translations and orphaned keys, and reports
 new/untranslated/orphaned entries. New English entries contain the template;
 other locales receive null. Validation failures leave catalogs/reports untouched.
 The command never executes scene actions to discover text.
+
+`--prune` removes orphaned keys from `content.json` only; `ui.json` is maintained
+separately. Preview the per-locale key list with `--prune --dry-run` (or add `--json`
+for a machine-readable report). A real prune prints the keys and requires an
+interactive terminal: type `PRUNE`, then `DELETE`. Any other answer or input closure
+cancels the entire write. The extractor uses best-effort static analysis, so review
+the list before confirming; older saves can still refer to removed keys.
 
 Default outputs:
 

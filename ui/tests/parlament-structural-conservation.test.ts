@@ -1,13 +1,20 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { gameLib } from '../src/game-bindings';
+import { DendryAdapter } from '../src/engine/adapter';
+
+const gameText = readFileSync(path.join(__dirname, '../../out/game.json'), 'utf8');
 
 function run(file: string, q: Record<string, any>, section?: string) {
   let source = readFileSync(path.join(__dirname, '../../source/scenes', file), 'utf8').replace(/\r\n/g, '\n');
   if (section) source = source.slice(source.indexOf(section));
   const code = source.match(/on-arrival:\s*\{!([\s\S]*?)!\}/)![1];
-  new Function('Q', 'G', code).call({ state: { currentHands: {} } }, q, gameLib);
+  const adapter = DendryAdapter.fromJSONText(gameText);
+  adapter.beginGame([1, 2, 3, 4]);
+  adapter.goToScene('root.start');
+  Object.assign(adapter.qualities, q);
+  new Function('Q', 'G', code).call(adapter.engine, adapter.qualities, adapter.engine.gameLib);
+  Object.assign(q, adapter.qualities);
 }
 const key = (p: string, d: string) => `${p}_parlament_girona_${d}_support`;
 describe('structural-event electorate accounting', () => {
