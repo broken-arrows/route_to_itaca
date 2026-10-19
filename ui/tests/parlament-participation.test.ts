@@ -25,6 +25,25 @@ function check(q: Record<string, any>) {
     expect(s.active>=-1e-10 && s.inactive>=-1e-10).toBe(true);
 }
 describe('level-driven Parlament participation', () => {
+  it('tracks actual demobilized voters as returners without exempting the initial latent pool', () => {
+    const q = state({ independence_movement: 25, cat_spa_relations: 65 });
+    const requests = step(q);
+    const departure = requests.find((r: any) => r.from === 'il');
+    expect(departure.amount).toBeGreaterThan(0);
+    const stock = q.parlament_participation.cells['girona.middle'].il;
+    expect(stock.returning).toBeCloseTo(departure.amount);
+    q.independence_movement = 95; q.cat_spa_relations = 0;
+    const support = Object.fromEntries([...q.parties, 'abstain'].map(p => [p, q[key(p)]]));
+    const incoming = build(q, { province: 'girona', demographic: 'middle', carriers, support });
+    const request = incoming.find((r: any) => r.to === 'il');
+    expect(request.amount).toBeGreaterThan(stock.returning);
+    expect(request.returningAmount).toBeCloseTo(stock.returning);
+    const before = q[key('erc')];
+    gameLib.applyParlamentTransfers(q, 'girona', 'middle', {}, [request], 0, carriers, 0);
+    expect(q[key('erc')] - before).toBeCloseTo(request.returningAmount);
+    expect(stock.returning).toBeCloseTo(0);
+    check(q);
+  });
   it('mobilizes other families under confrontation while Cs needs street momentum', () => {
     const hot=state({independence_movement:25});
     const calm=state({independence_movement:25,cat_spa_relations:65});

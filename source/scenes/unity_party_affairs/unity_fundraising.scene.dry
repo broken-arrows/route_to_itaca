@@ -34,7 +34,7 @@ view-if: player_party = "erc"
 subtitle: [? if party_income = 2: \[-1 resources\]?]
 choose-if: party_income >= 1 and (party_resources > 0 or party_income < 2)
 unavailable-subtitle: [? if party_income < 1: Dues are already as low as they can be. ?][? if party_resources < 1 and party_income == 2: Not enough resources. ?]
-go-to: erc_fundraising.raise_rates
+go-to: erc_fundraising.lower_rates
 
 @donations_campaign
 title: Let's carry out a donations campaign!

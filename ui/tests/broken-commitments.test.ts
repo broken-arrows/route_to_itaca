@@ -13,6 +13,56 @@ function setup() {
 const lib = gameLib as any;
 
 describe('Broken commitments', () => {
+  it('settles the authored burden rate without blanket recipient scaling', () => {
+    const { q } = setup();
+    Object.assign(q, { burdens_broken: true, broken_roadmap: false, independence_trust: 80,
+      cat_coalition: ['erc'], cat_coalition_support: [], cat_coalition_abstain: [], cat_caretaker_gov: false,
+      parlament_vote_trace_enabled: true, parlament_vote_trace: { ticks: 0, mechanisms: {} } });
+    const opening = JSON.parse(JSON.stringify(q));
+    lib.engineTick(q);
+    let stock = 0, population = 0;
+    for (const c of q.parlament_constituencies) for (const d of q.parlament_demographics) {
+      const n = q[`parlament_${c}_${d}_pop`];
+      stock += n * opening[`erc_parlament_${c}_${d}_support`]; population += n;
+    }
+    const flows = q.parlament_vote_trace.mechanisms['nonlinear.broken_burdens'];
+    expect(flows.il).toBeCloseTo(-0.006 * stock / population, 10);
+    expect(Object.values(flows).reduce((s: number, v) => s + Number(v), 0)).toBeCloseTo(0, 10);
+  });
+  it.each([['jxsi', false], ['jxcat', false], ['jxsi', true], ['jxcat', true]] as const)('roadmap failure reaches the live %s Parlament ballot (CUP inside: %s)', (list, cupInside) => {
+    const { a, q } = setup();
+    Object.assign(q, { player_party: 'erc', parlament_current_ciu: list === 'jxsi' ? 'cdc' : 'jxcat',
+      erc_in_jxsi: list === 'jxsi', erc_in_jxcat: list === 'jxcat',
+      cup_in_jxsi: list === 'jxsi' && cupInside, cup_in_jxcat: list === 'jxcat' && cupInside });
+    const c = q.parlament_constituencies[0], d = q.parlament_demographics[0];
+    const key = (p: string) => `${p}_parlament_${c}_${d}_support`;
+    for (const p of ['erc', 'cdc', 'jxsi', 'jxcat', 'cup', 'fnc']) q[key(p)] = 0;
+    q[key(list)] = 40;
+    q[key('abstain')] = 30;
+    a.goToScene('broken_roadmap');
+    expect(q[key(list)]).toBeCloseTo(35.2, 10);
+    expect(q[key('erc')]).toBe(0);
+    expect(q[key('cup')]).toBeCloseTo(cupInside ? 0 : 0.72, 10);
+    expect(q[key('fnc')]).toBeCloseTo(cupInside ? 0.48 : 0.24, 10);
+    expect(q[key('abstain')]).toBeCloseTo(cupInside ? 34.32 : 33.84, 10);
+    expect(['erc', 'cdc', 'jxsi', 'jxcat', 'cup', 'fnc', 'abstain'].reduce((s,p)=>s+q[key(p)],0)).toBeCloseTo(70, 10);
+  });
+
+  it('preserves standalone roadmap rates despite obsolete joint-list membership flags', () => {
+    const { a, q } = setup();
+    Object.assign(q, { player_party: 'erc', parlament_current_ciu: 'cdc',
+      erc_in_jxsi: true, cup_in_jxsi: true, erc_in_jxcat: false, cup_in_jxcat: false });
+    const c = q.parlament_constituencies[0], d = q.parlament_demographics[0];
+    const key = (p: string) => `${p}_parlament_${c}_${d}_support`;
+    for (const p of ['jxsi', 'jxcat', 'cup', 'fnc', 'abstain']) q[key(p)] = 0;
+    q[key('erc')] = 20; q[key('cdc')] = 30;
+    a.goToScene('broken_roadmap');
+    expect(q[key('erc')]).toBeCloseTo(17.6);
+    expect(q[key('cdc')]).toBeCloseTo(27.3);
+    expect(q[key('cup')]).toBeCloseTo(0.765);
+    expect(['erc', 'cdc', 'cup', 'fnc', 'abstain'].reduce((s,p)=>s+q[key(p)],0)).toBeCloseTo(50);
+  });
+
   it('charges the current Congreso successor rather than a stale joint-list residue', () => {
     const { q } = setup();
     Object.assign(q, { cat_coalition: ['dl'], cat_coalition_support: [], cat_coalition_abstain: [],

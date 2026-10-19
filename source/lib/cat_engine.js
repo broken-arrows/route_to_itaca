@@ -339,6 +339,11 @@
           from: mobilizing ? "abs" : family,
           to: mobilizing ? family : "abs",
           amount: Math.abs(amount),
+          // Only voters actually demobilized by this stock are known returners.
+          // Initial latent abstention still counts as new bloc recruitment.
+          returningAmount: mobilizing
+            ? Math.min(amount, stock.returning || 0)
+            : 0,
           // Ephemeral settlement callback, never stored in Q or save data.
           // Only realized transfers change memory; clipped/unavailable requests
           // leave the capacity available for a later tick.
@@ -346,6 +351,9 @@
             var change = mobilizing ? realized : -realized;
             stock.active += change;
             stock.inactive -= change;
+            stock.returning = mobilizing
+              ? Math.max(0, (stock.returning || 0) - realized)
+              : (stock.returning || 0) + realized;
           },
         });
       });
@@ -375,9 +383,6 @@
     "fnc",
     "abs",
   ];
-
-  // Relative monthly gains, applied before family rows reach their live lists.
-  const PARLAMENT_GAIN_SCALE = { icr: 0.95, il: 0.95, cup: 0.975, cs: 1.05 };
 
   // Macro Constants
   const STRUCTURAL_GDP_DEFAULT = {
@@ -529,14 +534,14 @@
 
   const PARLAMENT_MATRICES = {
     BASE_T: [
-      [0.06, 0.04, 0.0, 0.0, 0.0, -0.03, 0.0],
-      [0.22, 0.12, 0.0, 0.0, 0.0, 0.0, 0.0],
-      [0.02, -0.015, 0.0, 0.0, 0.0, 0.0, 0.0],
+      [0.057, 0.038, 0.0, 0.0, 0.0, -0.0285, 0.0],
+      [0.209, 0.114, 0.0, 0.0, 0.0, 0.0, 0.0],
+      [0.0195, -0.014625, 0.0, 0.0, 0.0, 0.0, 0.0],
       [0.008, 0.015, 0.0, 0.0, 0.0, 0.0, 0.0],
       [0.01, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
       [-0.02, 0.0, 0.0, 0.0, 0.0, 0.025, 0.0],
       [-0.004, 0.0, 0.0, 0.0, 0.0, -0.02, 0.0],
-      [-0.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      [-0.021, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       [-0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       [-0.008, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       [0.005, -0.01, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -544,28 +549,28 @@
     ],
     _DELTA_T: {
       buss: [
-        [-0.011999999999999997, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [-0.154, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.0114, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.1463, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0016, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [-0.03, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.0315, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.016, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.1784, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       ],
       ind: [
-        [-0.036, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [-0.11, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.0342, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.1045, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [-0.02, 0.0, 0.0, 0.0, 0.0, 0.0125, 0.0],
         [0.002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [-0.016, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.0168, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -586,9 +591,9 @@
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       ],
       young: [
-        [-0.03, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [0.17600000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [0.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.0285, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.1672, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.039, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -600,8 +605,8 @@
         [-0.18600000000000003, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       ],
       retired: [
-        [0.018000000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [-0.08800000000000001, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0171, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.0836, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -614,28 +619,28 @@
         [0.07200000000000001, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       ],
       rural: [
-        [0.036000000000000004, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [0.17600000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0342, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.1672, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0028, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [0.018000000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0189, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.036000000000000004, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [-0.26880000000000004, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       ],
       unemployed: [
-        [-0.036, 0.0, 0.0, 0.0, 0.0, -0.03, 0.0],
-        [-0.08800000000000001, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.0342, 0.0, 0.0, 0.0, 0.0, -0.0285, 0.0],
+        [-0.0836, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [-0.02, 0.0, 0.0, 0.0, 0.0, 0.0125, 0.0],
         [-0.002, 0.0, 0.0, 0.0, 0.0, -0.01, 0.0],
-        [-0.016, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.0168, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -658,36 +663,36 @@
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       ],
       girona: [
-        [0.023999999999999994, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [0.06600000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0228, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0627, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.010000000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [-0.012000000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.0126, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [-0.09800000000000002, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
       ],
       lleida: [
-        [0.03, 0.0, 0.0, 0.0, 0.0, -0.011999999999999997, 0.0],
-        [-0.04399999999999999, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [-0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0285, 0.0, 0.0, 0.0, 0.0, -0.0114, 0.0],
+        [-0.0418, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.00975, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, -0.0075000000000000015, 0.0],
         [0.0125, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [0.006000000000000001, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0063, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.005499999999999989, 0.0, 0.0, 0.0, 0.0, 0.019499999999999997, 0.0],
       ],
       tarragona: [
-        [-0.011999999999999997, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-        [-0.021999999999999995, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.0114, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [-0.0209, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -696,7 +701,7 @@
           -0.0075000000000000015, 0.0, 0.0, 0.0, 0.0, -0.007999999999999998,
           0.0,
         ],
-        [0.008, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        [0.0084, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -880,6 +885,7 @@
     transfers,
     traceWeight = 0,
     knownCarriers,
+    recruitmentScale = 1,
   ) {
     const parties = [...new Set([...(Q.parties || []), "abstain"])];
     const key = (party) => `${party}_parlament_${prov}_${demo}_support`;
@@ -945,6 +951,10 @@
       );
       // An inactive family has no electoral destination. Retain its donor's voters.
       if (!source || !destination || source === destination) continue;
+      if (isIndependenceRecruitment(source, destination)) {
+        const returning = Math.min(amount, Math.max(0, request.returningAmount || 0));
+        amount = returning + (amount - returning) * recruitmentScale;
+      }
       requests.push({
         from,
         to,
@@ -1327,6 +1337,8 @@
       : prev_indy_trust;
     const prev_dissent = Q.social_dissent;
     const prev_surplus = Q.generalitat_surplus;
+    // Capture old signals first so the monthly reaction is visible to voters.
+    const politicalEffects = advancePoliticalEffects(Q);
 
     const gen_key = getGovKey(Q.cat_coalition, Q.GEN_MAP, "CiU");
     const gob_key = getGovKey(Q.spanish_coalition, Q.GOB_MAP, "PP_min");
@@ -1596,6 +1608,8 @@
       }
     }
 
+    // One opening national snapshot prevents province order from changing damping.
+    const recruitmentScale = independenceRecruitmentScale(cardNationalIndependenceShare(Q));
     for (const prov of PROVINCES) {
       for (const demo of DEMOS) {
         const delta_vec = new Array(FAMILIES.length).fill(0);
@@ -1617,11 +1631,6 @@
         };
 
         const carriers = parlamentFamilyCarriers(Q, prov, demo, activeParties);
-        const gainScale = (family) =>
-          PARLAMENT_GAIN_SCALE[family] ??
-          (carriers[family] && carriers[family] === carriers.icr
-            ? PARLAMENT_GAIN_SCALE.icr
-            : 1);
 
         // Matrix update
         const T_base = matrices.BASE_T;
@@ -1634,9 +1643,7 @@
               T_base[i][j] +
               (T_demo[i] ? T_demo[i][j] : 0) +
               (T_prov[i] ? T_prov[i][j] : 0);
-            let contribution = val * d_vars[j];
-            if (contribution > 0)
-              contribution *= gainScale(FAMILIES[i]);
+            const contribution = val * d_vars[j];
             delta_vec[i] += contribution;
             recordParlamentVoteTrace(
               Q,
@@ -1927,12 +1934,8 @@
             }
           }
         }
-        // Scale the actual recipient, including signed requests that reverse
-        // their authored direction. Settlement keeps both sides conserved.
-        for (const request of transfers) {
-          const recipient = request.amount < 0 ? request.from : request.to;
-          request.amount *= gainScale(recipient);
-        }
+        // Settle explicit routes with bloc recruitment resistance; internal
+        // switching, departures and tracked participation returns remain direct.
         applyParlamentTransfers(
           Q,
           prov,
@@ -1941,6 +1944,7 @@
           transfers,
           traceWeight,
           carriers,
+          recruitmentScale,
         );
       }
     }
@@ -1959,6 +1963,10 @@
 
     // Spanish Congreso evolves off the same freshly-updated Catalan macro.
     monthPassesCongreso(Q);
+    for (const { entry, strength } of politicalEffects) {
+      applyEffectTransfers(Q, entry.def.transfers, strength);
+      if (entry.age >= entry.def.duration) delete Q.political_effects[entry.def.id];
+    }
   }
 
   // --- LOCAL BARCELONA TICK ---
@@ -2143,14 +2151,6 @@
     nos: "bng",
   };
 
-  const CONGRESO_CATALUNYA_GAIN_SCALE = {
-    psoe: 1.15,
-    psc: 1.15,
-    podemos: 1.15,
-    ciu: 0.85,
-    erc: 0.85,
-  };
-
   // Per unit of each driver delta, how much the canonical family shifts.
   // Values carried over verbatim from spa_vote_model.py ECON_BASE_DEFAULT.
   const ECON = {
@@ -2186,6 +2186,14 @@
     upyd: { g: 0.02, u: -0.01, w: 0.01, d: -0.02 },
   };
 
+  // Catalunya economic responses; successor lists use their canonical row.
+  // These coefficients apply symmetrically to improving and worsening drivers.
+  const ECON_CATALUNYA = {
+    psoe: { g: 0.069, u: -0.046, w: 0.046, d: -0.0345 },
+    psc: { g: 0.069, u: -0.046, w: 0.046, d: -0.0345 },
+    podemos: { g: -0.046, u: 0.069, w: -0.046, d: 0.0805 },
+  };
+
   // Minor "rest" regional parties: mean-revert toward a stable base instead of
   // following national trends.
   const MINOR_REST = new Set(["cc", "prc", "te", "fac"]);
@@ -2203,7 +2211,7 @@
     corr_pp_abs: 0.00031,
     corr_psoe_pod: 0.0007,
     corr_psoe_abs: 0.00031,
-    cat_spa_indy: 0.035,
+    cat_spa_indy: 0.02975,
     cat_spa_cs_cat: 0.030,
     cat_spa_pp_psoe: 0.041,
     cat_spa_cs_pod: 0.031,
@@ -2217,6 +2225,17 @@
     psoe_leadership_rate: 0.0123,
     pp_leadership_rate: 0.0155,
     upyd_decay_rate: 0.035, // UPyD bleed/tick → ~0 by 2015
+  };
+
+  // Local transfer rates move the same amount out of the donor and into
+  // the recipient. Other constituencies continue to use the national rates.
+  const CATALUNYA_RATES = {
+    ...P,
+    corr_psoe_pod: 0.000805,
+    dom_momentum: 0.0345,
+    channeling_rate: 0.00276,
+    psoe_recover_rate: 0.003105,
+    psoe_leadership_rate: 0.014145,
   };
 
   // --- UTILS (congreso; gaussianRandom/clamp reused from the Parlament engine above) ---
@@ -2392,6 +2411,7 @@
       const fams = activeParties(Q, c);
       if (fams.length === 0) continue;
       const urban = URBAN_CONSTITUENCIES.includes(c);
+      const rates = c === "catalunya" ? CATALUNYA_RATES : P;
       const has = (p) => fams.includes(p);
 
       const deltas = {};
@@ -2403,7 +2423,8 @@
 
       // 4a. Base economic response + incumbent GDP boost.
       for (const p of fams) {
-        const coeff = ECON[coeffKey(p)];
+        const coeff =
+          (c === "catalunya" && ECON_CATALUNYA[coeffKey(p)]) || ECON[coeffKey(p)];
         if (!coeff) continue;
         let d =
           coeff.g * d_gdp +
@@ -2436,7 +2457,7 @@
 
       // 4c. PSOE corruption bleed → Podemos + abstain.
       if (corr_psoe > 0 && has(psoeF)) {
-        const to_pod = corr_psoe * P.corr_psoe_pod;
+        const to_pod = corr_psoe * rates.corr_psoe_pod;
         const to_abs = corr_psoe * P.corr_psoe_abs;
         deltas[psoeF] -= to_pod + to_abs;
         if (has(podF)) deltas[podF] += to_pod;
@@ -2447,7 +2468,9 @@
       if (d_cat_spa < 0) {
         const mag = Math.abs(d_cat_spa);
         if (c === "catalunya") {
-          const indy_gain = mag * P.cat_spa_indy;
+          const indy_gain = mag * P.cat_spa_indy * independenceRecruitmentScale(
+            cardIndependenceShare(Q, "congreso", c, null, fams),
+          );
           const cs_gain = mag * P.cat_spa_cs_cat;
           const total = indy_gain + cs_gain;
           const ercF = ercKey(Q, c);
@@ -2470,7 +2493,7 @@
       // 4e. Dominance momentum.
       const psoeHold = Q["psoe_hold_" + c] == null ? 1.0 : Q["psoe_hold_" + c];
       if (psoeHold < 1.0 && has(psoeF) && has(podF)) {
-        const m = P.dom_momentum * (1 - psoeHold);
+        const m = rates.dom_momentum * (1 - psoeHold);
         deltas[podF] += m;
         deltas[psoeF] -= m;
       }
@@ -2492,8 +2515,8 @@
       // 4f. Podemos channeling — organic PSOE⇄Podemos flow (cat_engine driven).
       if (has(podF) && has(psoeF)) {
         const net =
-          channeling * P.channeling_rate -
-          (1 - channeling) * P.psoe_recover_rate;
+          channeling * rates.channeling_rate -
+          (1 - channeling) * rates.psoe_recover_rate;
         let actual;
         if (net > 0) {
           actual = Math.min(net * sup(Q, psoeF, c), sup(Q, psoeF, c) - 1.0);
@@ -2509,7 +2532,7 @@
       const psoeLm = Q.psoe_leadership_mult || 0;
       if (psoeLm > 0 && has(psoeF) && has(ABSTAIN)) {
         const pull = Math.min(
-          P.psoe_leadership_rate * psoeLm,
+          rates.psoe_leadership_rate * psoeLm,
           sup(Q, ABSTAIN, c) * 0.02,
         );
         deltas[psoeF] += pull;
@@ -2546,17 +2569,7 @@
         }
       }
 
-      // Catalunya-only relative gains; canonical keys include successor lists.
-      // Leave losses and the transient polling deviation at their usual size.
-      if (c === "catalunya") {
-        for (const p of fams) {
-          if (deltas[p] > 0)
-            deltas[p] *= CONGRESO_CATALUNYA_GAIN_SCALE[coeffKey(p)] ?? 1;
-        }
-      }
-
       // Generalitat credibility also matters in the Catalan Congreso electorate.
-      // Settle this conserved route after generic positive-gain calibration.
       if (c === "catalunya") {
         // A stale joint-list residue must not take the serving successor's
         // responsibility. Prefer the current identity when live in this contest.
@@ -2576,9 +2589,16 @@
           carriers,
           support: Object.fromEntries(fams.map(p => [p, sup(Q, p, c)])),
         });
+        const recruitmentScale = independenceRecruitmentScale(
+          cardIndependenceShare(Q, "congreso", c, null, fams),
+        );
         for (const request of requests) {
-          deltas[carriers[request.from]] -= request.amount;
-          deltas[carriers[request.to]] += request.amount;
+          const source = carriers[request.from];
+          const destination = carriers[request.to];
+          const amount = request.amount *
+            (isIndependenceRecruitment(source, destination) ? recruitmentScale : 1);
+          deltas[source] -= amount;
+          deltas[destination] += amount;
         }
       }
 
@@ -2841,7 +2861,8 @@
   ) {
     let total = 0;
     let independence = 0;
-    for (const party of lineup) {
+    for (const party of new Set(lineup)) {
+      if (party === ABSTAIN) continue;
       const key = cardSupportKey(contest, party, constituency, demographic);
       const support = Q[key];
       if (
@@ -2854,8 +2875,17 @@
       total += support;
       if (CARD_INDEPENDENCE_PARTIES.has(party)) independence += support;
     }
-    if (!(total > 0)) cardTransferError("affected support pool has no support");
+    if (!(total > 0)) return 0;
     return (independence / total) * 100;
+  }
+
+  function isIndependenceRecruitment(from, to) {
+    return CARD_INDEPENDENCE_PARTIES.has(to) && !CARD_INDEPENDENCE_PARTIES.has(from);
+  }
+
+  function independenceRecruitmentScale(validVoteShare) {
+    const pressure = Math.max(0, validVoteShare - 35) / 15;
+    return 1 / (1 + pressure * pressure);
   }
 
   function cardNationalIndependenceShare(Q) {
@@ -3138,10 +3168,7 @@
           );
 
         let effectiveRequest = amount;
-        if (
-          CARD_INDEPENDENCE_PARTIES.has(to) &&
-          !CARD_INDEPENDENCE_PARTIES.has(from)
-        ) {
+        if (isIndependenceRecruitment(from, to)) {
           // One pre-transfer national snapshot applies even to a locally
           // targeted card. Strongholds face no additional local saturation.
           if (
@@ -3159,8 +3186,7 @@
                   demographic,
                   lineup,
                 );
-          const pressure = Math.max(0, independenceShare - 35) / 15;
-          effectiveRequest *= 1 / (1 + pressure * pressure);
+          effectiveRequest *= independenceRecruitmentScale(independenceShare);
         }
 
         const actual = Math.min(
@@ -3190,6 +3216,99 @@
       totalTransferred += transfer.actual;
     }
     return totalTransferred;
+  }
+
+  // Saved, finite-lived public reactions. Funding/policy changes stay authored
+  // in scenes; this owns only the immediate shock and its fading monthly pressure.
+  const EFFECT_TARGETS = new Set([
+    "independence_movement", "independence_trust", "social_dissent", "cat_spa_relations",
+  ]);
+
+  function applyEffectChanges(Q, changes, strength) {
+    for (const [key, amount] of Object.entries(changes))
+      Q[key] = clamp(Q[key] + amount * strength, 0, 100);
+  }
+
+  function applyEffectTransfers(Q, transfers, strength) {
+    if (!strength) return;
+    for (const transfer of transfers) {
+      const constituencies = transfer.contest === "barcelona" ? [null]
+        : cardTransferList(transfer.constituencies,
+          Q[transfer.contest + "_constituencies"], "constituencies");
+      const demographics = transfer.contest === "parlament"
+        ? cardTransferList(transfer.demographics, Q.parlament_demographics, "demographics") : [null];
+      for (const c of constituencies) for (const d of demographics) {
+        const lineup = cardCellParties(Q, transfer.contest, c);
+        const from = resolveCardParty(Q, transfer.contest, c, d, transfer.from);
+        const to = resolveCardParty(Q, transfer.contest, c, d, transfer.to);
+        // A later ballot change can remove a destination. Retain those voters;
+        // do not redirect them or accumulate a debt for a future reappearance.
+        if (!lineup.includes(from) || !lineup.includes(to)) continue;
+        cardSupportTransfer(Q, { ...transfer, amount: transfer.amount * strength,
+          ...(c === null ? {} : { constituencies: [c] }),
+          ...(d === null ? {} : { demographics: [d] }) });
+      }
+    }
+  }
+
+  function applyPoliticalEffect(Q, definition) {
+    const def = { duration: 12, shape: "exponential", halfLife: 3,
+      immediate: 1, monthly: 0.1, noise: 0, changes: {}, transfers: [], ...definition };
+    if (!def.id || typeof def.id !== "string" || ["__proto__", "constructor", "prototype"].includes(def.id))
+      throw new Error("Political effect requires a safe id");
+    if (!Number.isInteger(def.duration) || def.duration < 1 || def.duration > 120 ||
+        !["exponential", "linear", "hump"].includes(def.shape) ||
+        !Number.isFinite(def.halfLife) || def.halfLife <= 0 ||
+        !Number.isFinite(def.immediate) || def.immediate < 0 ||
+        !Number.isFinite(def.monthly) || def.monthly < 0 ||
+        !Number.isFinite(def.noise) || def.noise < 0 || def.noise > 1)
+      throw new Error("Invalid political effect envelope");
+    for (const [key, amount] of Object.entries(def.changes)) {
+      if (!EFFECT_TARGETS.has(key) || !Number.isFinite(amount) || !Number.isFinite(Q[key]))
+        throw new Error("Invalid political effect target: " + key);
+    }
+    if (!Array.isArray(def.transfers)) throw new Error("Political effect transfers must be an array");
+    // Validate all routes without partially changing the actual electorate.
+    const probe = JSON.parse(JSON.stringify(Q));
+    for (const transfer of def.transfers) cardSupportTransfer(probe, transfer);
+    const saved = JSON.parse(JSON.stringify(def));
+    let rng = (Q.game_random_seed || 1) >>> 0;
+    for (const char of def.id + ":" + (Q.time || 0)) rng = Math.imul(rng ^ char.charCodeAt(0), 16777619) >>> 0;
+    Q.political_effects = Q.political_effects || {};
+    // Same-topic reactions replace the remaining tail, preventing farming by
+    // toggling a policy. A new action still has its own immediate consequence.
+    Q.political_effects[def.id] = { def: saved, age: 0, rng: rng || 1, strength: 0 };
+    applyEffectChanges(Q, saved.changes, saved.immediate);
+    applyEffectTransfers(Q, saved.transfers, saved.immediate);
+  }
+
+  function clearPoliticalEffect(Q, id) {
+    if (Q.political_effects) delete Q.political_effects[id];
+  }
+
+  function advancePoliticalEffects(Q) {
+    const active = [];
+    for (const entry of Object.values(Q.political_effects || {})) {
+      const def = entry.def;
+      entry.age += 1;
+      const age = entry.age;
+      let shape = def.shape === "exponential" ? Math.pow(0.5, age / def.halfLife)
+        : def.shape === "linear" ? Math.max(0, 1 - (age - 1) / def.duration)
+        : Math.sin(Math.PI * age / (def.duration + 1));
+      if (def.noise) {
+        // Independent saved stream: optional decay noise cannot reshuffle events
+        // or other gameplay randomness. Bounded jitter never reverses the sign.
+        let x = entry.rng;
+        x ^= x << 13; x ^= x >>> 17; x ^= x << 5;
+        entry.rng = x >>> 0;
+        shape *= 1 + def.noise * (2 * entry.rng / 4294967296 - 1);
+      }
+      const strength = def.monthly * shape;
+      entry.strength = strength;
+      applyEffectChanges(Q, def.changes, strength);
+      active.push({ entry, strength });
+    }
+    return active;
   }
 
   function spaSupportInject(Q, family, c, delta, from) {
@@ -3657,6 +3776,8 @@
 
   // source/lib/index.js forwards these helpers to the engine's G object.
   var api = {
+    applyPoliticalEffect,
+    clearPoliticalEffect,
     buildBrokenBurdensTransfers,
     initRandom,
     random,

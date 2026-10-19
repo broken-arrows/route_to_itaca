@@ -15,6 +15,19 @@ export interface AllegianceEntry {
 }
 
 export interface GameLib {
+  /** Immediate response followed by finite monthly pressure; same id replaces its tail. */
+  applyPoliticalEffect(q: Record<string, unknown>, definition: {
+    id: string;
+    changes?: Partial<Record<'independence_movement' | 'independence_trust' | 'social_dissent' | 'cat_spa_relations', number>>;
+    transfers?: Array<Parameters<GameLib['cardSupportTransfer']>[1]>;
+    duration?: number;
+    shape?: 'exponential' | 'linear' | 'hump';
+    halfLife?: number;
+    immediate?: number;
+    monthly?: number;
+    noise?: number;
+  }): void;
+  clearPoliticalEffect(q: Record<string, unknown>, id: string): void;
   /** Initialize once per game; an explicit uint32 seed permits replay. */
   initRandom(q: Record<string, unknown>, seed?: number): void;
   /** Next gameplay draw in [0, 1), with the stream position saved in q. */
@@ -61,8 +74,10 @@ export interface GameLib {
   applyParlamentTransfers(
     Q: Record<string, unknown>, province: string, demographic: string,
     matrixDeltas: Record<string, number> | number[],
-    transfers: Array<{ mechanism: string; from: string; to: string; amount: number; onSettled?: (realized: number) => void }>,
+    transfers: Array<{ mechanism: string; from: string; to: string; amount: number; returningAmount?: number; onSettled?: (realized: number) => void }>,
     traceWeight?: number,
+    knownCarriers?: Record<string, string | null>,
+    recruitmentScale?: number,
   ): Record<string, number>;
   getParlamentResponsibility(Q: Record<string, unknown>): Record<string, number>;
   buildParlamentResponsibilityTransfers(

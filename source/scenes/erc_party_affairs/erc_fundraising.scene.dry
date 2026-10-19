@@ -24,67 +24,71 @@ title: Lobby for an increase of party subsidies
 choose-if: party_resources_mult <=3 and erc_left_strength < 30
 unavailable-subtitle: [? if party_resources_mult > 3: Party subsidies are already as high as they can reasonably be. ?][? if erc_left_strength >= 30: The Left faction opposes this, and they are too strong at the moment.?]
 on-arrival: {!
-    Q.party_resources += 1;
-    Q.party_resources_mult += 1;
-    Q.independence_trust -= 3;
+    if (Q.party_resources_mult <= 3 && Q.erc_left_strength < 30) {
+        var reactionTransfers = [];
+        Q.party_resources += 1;
+        Q.party_resources_mult += 1;
 
-    Q.erc_left_dissent += 5;
-    Q.erc_core_dissent += 2;
-    Q.erc_pragmatic_strength += 5;
-    Q.erc_pragmatic_dissent -= 2;
 
-    for (var c of Q.parlament_constituencies) {
-        var delta_erc_young_support = Q["erc_parlament_" + c + "_young_support"] * 0.05;
-        var delta_erc_ind_support = Q["erc_parlament_" + c + "_ind_support"] * 0.05;
-        var delta_erc_middle_support = Q["erc_parlament_" + c + "_middle_support"] * 0.02;
-        var delta_erc_unemployed_support = Q["erc_parlament_" + c + "_unemployed_support"] * 0.05;
+        Q.erc_left_dissent += 5;
+        Q.erc_core_dissent += 2;
+        Q.erc_pragmatic_strength += 5;
+        Q.erc_pragmatic_dissent -= 2;
 
-        if (Q.psc_recovery_factor <= 1){
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "erc", amount: 0.5 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: 0.4 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "erc", amount: 0.1 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+        for (var c of Q.parlament_constituencies) {
+            var delta_erc_young_support = Q["erc_parlament_" + c + "_young_support"] * 0.05;
+            var delta_erc_ind_support = Q["erc_parlament_" + c + "_ind_support"] * 0.05;
+            var delta_erc_middle_support = Q["erc_parlament_" + c + "_middle_support"] * 0.02;
+            var delta_erc_unemployed_support = Q["erc_parlament_" + c + "_unemployed_support"] * 0.05;
 
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "erc", amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: 0.1 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "erc", amount: 0.5 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "erc", amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+            if (Q.psc_recovery_factor <= 1){
+                reactionTransfers.push({ contest: "parlament", to: "cup", from: "erc", amount: 0.5 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+                reactionTransfers.push({ contest: "parlament", to: "federal_left", from: "erc", amount: 0.4 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+                reactionTransfers.push({ contest: "parlament", to: "psc", from: "erc", amount: 0.1 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
 
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "erc", amount: 0.2 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: 0.4 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "erc", amount: 0.2 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "erc", amount: 0.2 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+                reactionTransfers.push({ contest: "parlament", to: "cup", from: "erc", amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+                reactionTransfers.push({ contest: "parlament", to: "federal_left", from: "erc", amount: 0.1 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+                reactionTransfers.push({ contest: "parlament", to: "abstain", from: "erc", amount: 0.5 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+                reactionTransfers.push({ contest: "parlament", to: "psc", from: "erc", amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
 
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "erc", amount: 0.3 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: 0.3 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "erc", amount: 0.1 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "erc", amount: 0.3 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
-        } else {
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "erc", amount: 0.5 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: 0.3 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "erc", amount: 0.2 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+                reactionTransfers.push({ contest: "parlament", to: "cup", from: "erc", amount: 0.2 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+                reactionTransfers.push({ contest: "parlament", to: "federal_left", from: "erc", amount: 0.4 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+                reactionTransfers.push({ contest: "parlament", to: "psc", from: "erc", amount: 0.2 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+                reactionTransfers.push({ contest: "parlament", to: "abstain", from: "erc", amount: 0.2 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
 
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "erc", amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: 0.1 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "erc", amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "erc", amount: 0.5 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+                reactionTransfers.push({ contest: "parlament", to: "cup", from: "erc", amount: 0.3 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+                reactionTransfers.push({ contest: "parlament", to: "federal_left", from: "erc", amount: 0.3 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+                reactionTransfers.push({ contest: "parlament", to: "psc", from: "erc", amount: 0.1 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+                reactionTransfers.push({ contest: "parlament", to: "abstain", from: "erc", amount: 0.3 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+            } else {
+                reactionTransfers.push({ contest: "parlament", to: "cup", from: "erc", amount: 0.5 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+                reactionTransfers.push({ contest: "parlament", to: "federal_left", from: "erc", amount: 0.3 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+                reactionTransfers.push({ contest: "parlament", to: "psc", from: "erc", amount: 0.2 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
 
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "erc", amount: 0.2 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: 0.3 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "erc", amount: 0.4 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "erc", amount: 0.1 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+                reactionTransfers.push({ contest: "parlament", to: "cup", from: "erc", amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+                reactionTransfers.push({ contest: "parlament", to: "federal_left", from: "erc", amount: 0.1 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+                reactionTransfers.push({ contest: "parlament", to: "abstain", from: "erc", amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+                reactionTransfers.push({ contest: "parlament", to: "psc", from: "erc", amount: 0.5 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
 
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: "erc", amount: 0.3 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: "erc", amount: 0.2 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: "erc", amount: 0.4 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: "erc", amount: 0.1 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
-        }        
+                reactionTransfers.push({ contest: "parlament", to: "cup", from: "erc", amount: 0.2 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+                reactionTransfers.push({ contest: "parlament", to: "federal_left", from: "erc", amount: 0.3 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+                reactionTransfers.push({ contest: "parlament", to: "psc", from: "erc", amount: 0.4 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+                reactionTransfers.push({ contest: "parlament", to: "abstain", from: "erc", amount: 0.1 * delta_erc_middle_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["middle"] });
+
+                reactionTransfers.push({ contest: "parlament", to: "cup", from: "erc", amount: 0.3 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+                reactionTransfers.push({ contest: "parlament", to: "federal_left", from: "erc", amount: 0.2 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+                reactionTransfers.push({ contest: "parlament", to: "psc", from: "erc", amount: 0.4 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+                reactionTransfers.push({ contest: "parlament", to: "abstain", from: "erc", amount: 0.1 * delta_erc_unemployed_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["unemployed"] });
+            }        
+        }
+        reactionTransfers.push({ contest: "congreso", to: "abstain", from: "erc", amount: 0.3, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+        reactionTransfers.push({ contest: "congreso", to: "federal_left", from: "erc", amount: 0.15, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+        reactionTransfers.push({ contest: "congreso", to: "psoe", from: "erc", amount: 0.15, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+        reactionTransfers.push({ contest: "barcelona", to: "bcomu", from: "erc", amount: 0.2, maxDonorFraction: 0.5 });
+        reactionTransfers.push({ contest: "barcelona", to: "psc", from: "erc", amount: 0.1, maxDonorFraction: 0.5 });
+        reactionTransfers.push({ contest: "barcelona", to: "cup", from: "erc", amount: 0.1, maxDonorFraction: 0.5 });
+        G.applyPoliticalEffect(Q, { id: "party_subsidies", transfers: reactionTransfers, changes: { independence_trust: -3 }, immediate: 1, monthly: 0.1, duration: 12, shape: "exponential", halfLife: 3 });
     }
-    G.cardSupportTransfer(Q, { contest: "congreso", to: "abstain", from: "erc", amount: 0.3, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
-    G.cardSupportTransfer(Q, { contest: "congreso", to: "federal_left", from: "erc", amount: 0.15, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
-    G.cardSupportTransfer(Q, { contest: "congreso", to: "psoe", from: "erc", amount: 0.15, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
-    G.cardSupportTransfer(Q, { contest: "barcelona", to: "bcomu", from: "erc", amount: 0.2, maxDonorFraction: 0.5 });
-    G.cardSupportTransfer(Q, { contest: "barcelona", to: "psc", from: "erc", amount: 0.1, maxDonorFraction: 0.5 });
-    G.cardSupportTransfer(Q, { contest: "barcelona", to: "cup", from: "erc", amount: 0.1, maxDonorFraction: 0.5 });
 !}
 
 In times of economic uncertainty, it's never popular to increase public subsidies to political parties. Somehow, however, it is actually rather easy to have enough votes to have the measure approved.
@@ -96,33 +100,37 @@ subtitle: \[-1 resources\]
 choose-if: party_resources_mult > 0 and erc_pragmatic_strength < 30 and party_resources > 0
 unavailable-subtitle: [? if party_resources_mult <= 0: Party subsidies are already virtually non-existing. ?][? if erc_left_strength >= 30: The Pragmatics oppose this, and they are too strong at the moment. ?][? if party_resources < 1: Not enough resources. ?]
 on-arrival: {!
-    Q.party_resources -= 1;
-    Q.party_resources_mult -= 1;
+    if (Q.party_resources_mult > 0 && Q.erc_pragmatic_strength < 30 && Q.party_resources > 0) {
+        var reactionTransfers = [];
+        Q.party_resources -= 1;
+        Q.party_resources_mult -= 1;
 
-    Q.erc_left_dissent -= 8;
-    Q.erc_core_dissent -= 4;
-    Q.erc_pragmatic_dissent += 2;
-    Q.erc_civic_dissent -= 4;
+        Q.erc_left_dissent -= 8;
+        Q.erc_core_dissent -= 4;
+        Q.erc_pragmatic_dissent += 2;
+        Q.erc_civic_dissent -= 4;
 
-    for (var c of Q.parlament_constituencies) {
-        G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "ciu", amount: 0.6, maxDonorFraction: 0.5, constituencies: [c], demographics: ["buss"] });
-        G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "federal_left", amount: 0.3, maxDonorFraction: 0.5, constituencies: [c], demographics: ["buss"] });
-        G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "psc", amount: 0.4, maxDonorFraction: 0.5, constituencies: [c], demographics: ["buss"] });
-        G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: 0.2, maxDonorFraction: 0.5, constituencies: [c], demographics: ["buss"] });
+        for (var c of Q.parlament_constituencies) {
+            reactionTransfers.push({ contest: "parlament", to: "erc", from: "ciu", amount: 0.6, maxDonorFraction: 0.5, constituencies: [c], demographics: ["buss"] });
+            reactionTransfers.push({ contest: "parlament", to: "erc", from: "federal_left", amount: 0.3, maxDonorFraction: 0.5, constituencies: [c], demographics: ["buss"] });
+            reactionTransfers.push({ contest: "parlament", to: "erc", from: "psc", amount: 0.4, maxDonorFraction: 0.5, constituencies: [c], demographics: ["buss"] });
+            reactionTransfers.push({ contest: "parlament", to: "erc", from: "abstain", amount: 0.2, maxDonorFraction: 0.5, constituencies: [c], demographics: ["buss"] });
 
-        for (var demographic of ["middle", "ind"]) {
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "ciu", amount: 0.4, maxDonorFraction: 0.5, constituencies: [c], demographics: [demographic] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "federal_left", amount: 0.2, maxDonorFraction: 0.5, constituencies: [c], demographics: [demographic] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "psc", amount: 0.2, maxDonorFraction: 0.5, constituencies: [c], demographics: [demographic] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "erc", from: "abstain", amount: 0.2, maxDonorFraction: 0.5, constituencies: [c], demographics: [demographic] });
+            for (var demographic of ["middle", "ind"]) {
+                reactionTransfers.push({ contest: "parlament", to: "erc", from: "ciu", amount: 0.4, maxDonorFraction: 0.5, constituencies: [c], demographics: [demographic] });
+                reactionTransfers.push({ contest: "parlament", to: "erc", from: "federal_left", amount: 0.2, maxDonorFraction: 0.5, constituencies: [c], demographics: [demographic] });
+                reactionTransfers.push({ contest: "parlament", to: "erc", from: "psc", amount: 0.2, maxDonorFraction: 0.5, constituencies: [c], demographics: [demographic] });
+                reactionTransfers.push({ contest: "parlament", to: "erc", from: "abstain", amount: 0.2, maxDonorFraction: 0.5, constituencies: [c], demographics: [demographic] });
+            }
         }
+        reactionTransfers.push({ contest: "congreso", to: "erc", from: "ciu", amount: 0.15, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+        reactionTransfers.push({ contest: "congreso", to: "erc", from: "pp", amount: 0.1, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+        reactionTransfers.push({ contest: "congreso", to: "erc", from: "psoe", amount: 0.15, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+        reactionTransfers.push({ contest: "barcelona", to: "erc", from: "ciu", amount: 0.2, maxDonorFraction: 0.5 });
+        reactionTransfers.push({ contest: "barcelona", to: "erc", from: "pp", amount: 0.1, maxDonorFraction: 0.5 });
+        reactionTransfers.push({ contest: "barcelona", to: "erc", from: "psc", amount: 0.15, maxDonorFraction: 0.5 });
+        G.applyPoliticalEffect(Q, { id: "party_subsidies", transfers: reactionTransfers, immediate: 1, monthly: 0.1, duration: 12, shape: "exponential", halfLife: 3 });
     }
-    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "ciu", amount: 0.15, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
-    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "pp", amount: 0.1, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
-    G.cardSupportTransfer(Q, { contest: "congreso", to: "erc", from: "psoe", amount: 0.15, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
-    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "ciu", amount: 0.2, maxDonorFraction: 0.5 });
-    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "pp", amount: 0.1, maxDonorFraction: 0.5 });
-    G.cardSupportTransfer(Q, { contest: "barcelona", to: "erc", from: "psc", amount: 0.15, maxDonorFraction: 0.5 });
 !}
 
 Adding limits to public resources being given out to political parties is always welcome by most.
@@ -133,69 +141,73 @@ title: Raise party dues
 unavailable-subtitle: Party dues are already as high as they can reasonably be.
 choose-if: party_income < 2
 on-arrival: {!
-    // TODO: Actually add the discounts on actions based on Q.party_income_increased (namely party additions to cards)
+    if (Q.party_income < 2) {
+        var reactionTransfers = [];
+        // TODO: Actually add the discounts on actions based on Q.party_income_increased (namely party additions to cards)
 
-    // Note that this can be reached from unitary fundraising after all
-    var target = "erc";
-    var targetCongreso = "erc";
-    var targetLocal = "erc";
-    if (Q.erc_in_jxsi) {
-        target = "jxsi";
-        if (Q.jxsi_in_congreso) {
-            targetCongreso = "jxsi";
+        // Note that this can be reached from unitary fundraising after all
+        var target = "erc";
+        var targetCongreso = "erc";
+        var targetLocal = "erc";
+        if (Q.erc_in_jxsi) {
+            target = "jxsi";
+            if (Q.jxsi_in_congreso) {
+                targetCongreso = "jxsi";
+            }
+            if (Q.jxsi_in_local) {
+                targetLocal = "jxsi";
+            }
+        } else if (Q.erc_in_jxcat) {
+            target = "jxcat";
+            if (Q.jxcat_in_congreso) {
+                targetCongreso = "jxcat";
+            }
+            if (Q.jxcat_in_local) {
+                targetLocal = "jxcat";
+            }
         }
-        if (Q.jxsi_in_local) {
-            targetLocal = "jxsi";
-        }
-    } else if (Q.erc_in_jxcat) {
-        target = "jxcat";
-        if (Q.jxcat_in_congreso) {
-            targetCongreso = "jxcat";
-        }
-        if (Q.jxcat_in_local) {
-            targetLocal = "jxcat";
-        }
-    }
 
-    Q.party_resources += 1;
-    if (Q.party_income > 0) {
-        if (Q.party_income_increased == 2) {
+        Q.party_resources += 1;
+        if (Q.party_income > 0) {
+            if (Q.party_income_increased == 2) {
+                Q.party_income += 1;
+            } else {
+                Q.party_income_increased = true;
+            }
+        } else {
             Q.party_income += 1;
-        } else {
-            Q.party_income_increased = true;
         }
-    } else {
-        Q.party_income += 1;
-    }
-    Q.erc_left_dissent += 5;
-    Q.erc_core_dissent += 5;
-    Q.erc_pragmatic_strength += 5;
+        Q.erc_left_dissent += 5;
+        Q.erc_core_dissent += 5;
+        Q.erc_pragmatic_strength += 5;
 
-    for (var c of Q.parlament_constituencies) {
-        var delta_erc_young_support = Q["erc_parlament_" + c + "_young_support"] * 0.1;
-        var delta_erc_ind_support = Q["erc_parlament_" + c + "_ind_support"] * 0.05;
-        if (Q.psc_recovery_factor <= 1){
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: target, amount: 0.5 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: target, amount: 0.4 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: target, amount: 0.1 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: target, amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: target, amount: 0.1 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: target, amount: 0.4 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: target, amount: 0.3 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-        } else {
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: target, amount: 0.5 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: target, amount: 0.3 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: target, amount: 0.2 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "cup", from: target, amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "federal_left", from: target, amount: 0.1 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "abstain", from: target, amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-            G.cardSupportTransfer(Q, { contest: "parlament", to: "psc", from: target, amount: 0.5 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
-        }        
+        for (var c of Q.parlament_constituencies) {
+            var delta_erc_young_support = Q[target + "_parlament_" + c + "_young_support"] * 0.1;
+            var delta_erc_ind_support = Q[target + "_parlament_" + c + "_ind_support"] * 0.05;
+            if (Q.psc_recovery_factor <= 1){
+                reactionTransfers.push({ contest: "parlament", to: "cup", from: "erc", amount: 0.5 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+                reactionTransfers.push({ contest: "parlament", to: "federal_left", from: "erc", amount: 0.4 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+                reactionTransfers.push({ contest: "parlament", to: "psc", from: "erc", amount: 0.1 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+                reactionTransfers.push({ contest: "parlament", to: "cup", from: "erc", amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+                reactionTransfers.push({ contest: "parlament", to: "federal_left", from: "erc", amount: 0.1 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+                reactionTransfers.push({ contest: "parlament", to: "abstain", from: "erc", amount: 0.4 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+                reactionTransfers.push({ contest: "parlament", to: "psc", from: "erc", amount: 0.3 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+            } else {
+                reactionTransfers.push({ contest: "parlament", to: "cup", from: "erc", amount: 0.5 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+                reactionTransfers.push({ contest: "parlament", to: "federal_left", from: "erc", amount: 0.3 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+                reactionTransfers.push({ contest: "parlament", to: "psc", from: "erc", amount: 0.2 * delta_erc_young_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["young"] });
+                reactionTransfers.push({ contest: "parlament", to: "cup", from: "erc", amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+                reactionTransfers.push({ contest: "parlament", to: "federal_left", from: "erc", amount: 0.1 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+                reactionTransfers.push({ contest: "parlament", to: "abstain", from: "erc", amount: 0.2 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+                reactionTransfers.push({ contest: "parlament", to: "psc", from: "erc", amount: 0.5 * delta_erc_ind_support, maxDonorFraction: 0.5, constituencies: [c], demographics: ["ind"] });
+            }        
+        }
+        reactionTransfers.push({ contest: "congreso", to: "abstain", from: "erc", amount: 0.2, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+        reactionTransfers.push({ contest: "congreso", to: "federal_left", from: "erc", amount: 0.1, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
+        reactionTransfers.push({ contest: "barcelona", to: "bcomu", from: "erc", amount: 0.15, maxDonorFraction: 0.5 });
+        reactionTransfers.push({ contest: "barcelona", to: "cup", from: "erc", amount: 0.1, maxDonorFraction: 0.5 });
+        G.applyPoliticalEffect(Q, { id: "party_dues", transfers: reactionTransfers, immediate: 1, monthly: 0.1, duration: 12, shape: "exponential", halfLife: 3 });
     }
-    G.cardSupportTransfer(Q, { contest: "congreso", to: "abstain", from: targetCongreso, amount: 0.2, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
-    G.cardSupportTransfer(Q, { contest: "congreso", to: "federal_left", from: targetCongreso, amount: 0.1, maxDonorFraction: 0.5, constituencies: ["catalunya"] });
-    G.cardSupportTransfer(Q, { contest: "barcelona", to: "bcomu", from: targetLocal, amount: 0.15, maxDonorFraction: 0.5 });
-    G.cardSupportTransfer(Q, { contest: "barcelona", to: "cup", from: targetLocal, amount: 0.1, maxDonorFraction: 0.5 });
 !}
 
 Party dues have not really represented an important share of the party's income for a long time, so this is a somewhat unexpected decision. Our members grumble at this, specially the young, and some of the less committed members leave.  [? if party_income != 2: However, with this increased revenue, some actions that would have otherwise required investment will now be available without dedicated party resources. ?][? if party_income == 2: After repeated increases, nonetheless, we'll now enjoy more resources each year. ?]
@@ -206,16 +218,19 @@ subtitle: [? if party_income = 2: \[-1 resources\]?]
 choose-if: party_income >= 1 and (party_resources > 0 or party_income < 2)
 unavailable-subtitle: [? if party_income < 1: Dues are already as low as they can be. ?][? if party_resources < 1 and party_income == 2: Not enough resources. ?]
 on-arrival: {!
-    if (Q.party_income == 2) {
-        Q.party_income -= 1;
-        Q.party_resources -= 1;
-    } else if (Q.party_income > 0) {
-        Q.party_income_increased = false;
+    if (Q.party_income >= 1 && (Q.party_resources > 0 || Q.party_income < 2)) {
+        G.clearPoliticalEffect(Q, "party_dues");
+        if (Q.party_income == 2) {
+            Q.party_income -= 1;
+            Q.party_resources -= 1;
+        } else if (Q.party_income > 0) {
+            Q.party_income_increased = false;
+        }
+        Q.erc_left_dissent -= 7;
+        Q.erc_core_dissent -= 7;
+        Q.erc_pragmatic_dissent -= 4;
+        Q.erc_civic_dissent -=5;
     }
-    Q.erc_left_dissent -= 7;
-    Q.erc_core_dissent -= 7;
-    Q.erc_pragmatic_dissent -= 4;
-    Q.erc_civic_dissent -=5;
 !}
 
 While our current members appreciate this, but no one decides to join a party because of the low dues.

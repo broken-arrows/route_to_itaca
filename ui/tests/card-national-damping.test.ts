@@ -32,6 +32,22 @@ function transfer(q: Q, overrides: Q = {}) {
 }
 
 describe('Parlament card national diminishing returns', () => {
+  it.each(['congreso', 'barcelona'])('excludes abstention from %s recruitment pressure', contest => {
+    const q: Q = contest === 'congreso'
+      ? { congreso_constituencies: ['catalunya'], congreso_parties_catalunya: ['erc', 'psoe'] }
+      : { parties_bcn: ['erc', 'psc', 'abstain'] };
+    const donor = contest === 'congreso' ? 'psoe' : 'psc';
+    const key = (party: string) => contest === 'congreso'
+      ? `${party}_congreso_catalunya_support` : `${party}_local_barcelona_support`;
+    q[key('erc')] = 40; q[key(donor)] = 40; q[key('abstain')] = 20;
+    expect(cardSupportTransfer(q, {
+      contest, from: donor, to: 'erc', amount: 2, maxDonorFraction: 0.5,
+      ...(contest === 'congreso' ? { constituencies: 'all' } : {}),
+    })).toBeCloseTo(1);
+    expect(q[key('erc')]).toBe(41);
+    expect(q[key(donor)]).toBe(39);
+    expect(q[key('abstain')]).toBe(20);
+  });
   it('lets rural Girona exceed 65% without local damping when national support is modest', () => {
     const q = electorate();
     transfer(q, { constituencies: 'girona', demographics: 'rural' });

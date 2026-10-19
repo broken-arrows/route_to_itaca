@@ -1411,6 +1411,7 @@ on-arrival: {!
     "government_does_things",
     //erc_party
     'erc_media',
+    'erc_fundraising',
     'erc_shuffle_leadership',
     'erc_inter_party',
     'erc_international',

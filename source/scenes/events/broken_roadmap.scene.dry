@@ -27,13 +27,22 @@ on-arrival: {!
 
     for (var c of Q.parlament_constituencies) {
         for (var d of Q.parlament_demographics) {
-            var amount = 0.12*Q["erc_parlament_" + c + "_" + d + "_support"] + 0.09*Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"];
-            Q["erc_parlament_" + c + "_" + d + "_support"] -= 0.12*Q["erc_parlament_" + c + "_" + d + "_support"];
-            Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"] -= 0.09*Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"];
+            var suffix = "_parlament_" + c + "_" + d + "_support";
+            var ercCarrier = "erc";
+            for (var list of ["jxsi", "jxcat"]) {
+                if (Q["erc_in_" + list] && Q[list + suffix] > 0) ercCarrier = list;
+            }
+            var ciuCarrier = ercCarrier != "erc" ? ercCarrier : Q.parlament_current_ciu;
+            // A shared roadmap costs the joint ballot 12% once, not two penalties.
+            var ercLoss = 0.12 * (Q[ercCarrier + suffix] || 0);
+            var ciuLoss = ciuCarrier == ercCarrier ? 0 : 0.09 * (Q[ciuCarrier + suffix] || 0);
+            var amount = ercLoss + ciuLoss;
+            Q[ercCarrier + suffix] = (Q[ercCarrier + suffix] || 0) - ercLoss;
+            Q[ciuCarrier + suffix] = (Q[ciuCarrier + suffix] || 0) - ciuLoss;
 
             Q["abstain_parlament_" + c + "_" + d + "_support"] += 0.8*amount;
             Q["fnc_parlament_" + c + "_" + d + "_support"] += 0.05*amount;
-            if (!Q.cup_in_jxsi && !Q.cup_in_jxcat) {
+            if (!((ciuCarrier == "jxsi" || ciuCarrier == "jxcat") && Q["cup_in_" + ciuCarrier])) {
                 Q["cup_parlament_" + c + "_" + d + "_support"] += 0.15*amount;
             } else {
                 Q["fnc_parlament_" + c + "_" + d + "_support"] += 0.05*amount;

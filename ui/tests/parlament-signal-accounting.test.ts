@@ -49,6 +49,22 @@ function coefficient(q: Record<string, any>, signal: string) {
   return c.parlament_vote_trace.mechanisms[`matrix.${signal}`].abs / (c[signal] - previous);
 }
 describe('Parlament political signal observation', () => {
+  it('uses the opening national valid-vote share to damp monthly external mobilization', () => {
+    const q = ready();
+    for (const p of q.parties) q[`${p}_parlament_girona_rural_support`] = 0;
+    Object.assign(q, {
+      erc_parlament_girona_rural_support: 40,
+      psc_parlament_girona_rural_support: 40,
+      abstain_parlament_girona_rural_support: 20,
+      independence_movement: 95, cat_spa_relations: 0,
+    });
+    delete q.parlament_participation;
+    tick(q);
+    const traces = q.parlament_vote_trace.mechanisms;
+    const requested = traces['requested.nonlinear.participation_mobilization'].il;
+    expect(requested).toBeGreaterThan(0);
+    expect(traces['nonlinear.participation_mobilization'].il).toBeCloseTo(requested * 0.5, 10);
+  });
   it.each([40, 10])('reinforces active-movement CUP disappointment while preserving recovery (previous trust %s)', previousTrust => {
     const q = ready();
     q.independence_movement = 95;

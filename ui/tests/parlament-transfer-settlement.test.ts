@@ -14,6 +14,24 @@ const settle = (q: Record<string, any>, matrix: Record<string, number>, transfer
 const total = (q: Record<string, any>) => [...q.parties, 'abstain'].reduce((n, p) => n + (q[supportKey(p)] || 0), 0);
 
 describe('monthly Parlament transfer settlement', () => {
+  it('damps external recruitment, preserves internal switching and tracked returners, and conserves voters', () => {
+    const q = state({ erc: 30, cup: 10, psc: 40, abstain: 20 });
+    const realized: number[] = [];
+    gameLib.applyParlamentTransfers(q, 'girona', 'rural', {}, [
+      { mechanism: 'recruit', from: 'psc', to: 'il', amount: 4 },
+      { mechanism: 'internal', from: 'il', to: 'cup', amount: 4 },
+      { mechanism: 'exit', from: 'cup', to: 'psc', amount: 2 },
+      { mechanism: 'return', from: 'abs', to: 'il', amount: 4, returningAmount: 2,
+        onSettled: amount => realized.push(amount) },
+      { mechanism: 'reversed', from: 'il', to: 'psc', amount: -2 },
+    ], 1, undefined, 0.5);
+    expect(q[supportKey('erc')]).toBe(32);
+    expect(q[supportKey('cup')]).toBe(12);
+    expect(q[supportKey('psc')]).toBe(39);
+    expect(q[supportKey('abstain')]).toBe(17);
+    expect(realized).toEqual([3]);
+    expect(total(q)).toBe(100);
+  });
   it('shares opening donor support proportionally and cannot spend incoming voters', () => {
     const requests = [
       { mechanism: 'first', from: 'ppc', to: 'cs', amount: 8 },
