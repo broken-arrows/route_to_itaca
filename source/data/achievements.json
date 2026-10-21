@@ -120,6 +120,13 @@
       "image": "img/achievements/barones.webp"
     },
     {
+      "id": "hopium",
+      "name": "Molta esperança",
+      "description": "Secure the promise of an agreed-upon referendum with the soon-to-be governing coalition in Spain.",
+      "stars": 4,
+      "image": "img/achievements/hopium.jpg"
+    },
+    {
       "id": "moneda_de_canvi",
       "name": "Moneda de Canvi",
       "description": "Despite not really seeking it, have Neus Munté become the first ever Presidenta de la Generalitat.",

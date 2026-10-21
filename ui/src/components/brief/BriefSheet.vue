@@ -376,12 +376,14 @@ defineProps<{ title: string; context: string; html: string }>();
 .sheet-body :deep([data-band='blindly_trusting']) { color: #3f8f3f; }
 
 /* control's ladder — §2 frame 15 names these outright: NONE red / LIMITED
-   gold / PARTIAL slate / FULL (= complete) green. `disputed` is a fifth rung
+   gold / PARTIAL slate / FULL (= complete) green. Substantial sits between
+   partial and complete. `disputed` is the sixth rung
    the design's four-notch caption does not cover; it takes the darker
    `--accent-red` so it reads as a harder failure than plain NONE. */
 .sheet-body :deep([data-band='none']) { color: #b03030; }
 .sheet-body :deep([data-band='limited']) { color: var(--accent-gold); }
 .sheet-body :deep([data-band='partial']) { color: var(--accent-slate); }
+.sheet-body :deep([data-band='substantial']) { color: #628b34; }
 .sheet-body :deep([data-band='complete']) { color: #3f8f3f; }
 .sheet-body :deep([data-band='disputed']) { color: var(--accent-red); }
 

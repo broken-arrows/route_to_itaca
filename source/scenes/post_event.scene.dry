@@ -1208,9 +1208,20 @@ if (Q.historical_event == Q.last_historical_event) {
 G.copyText(Q, "last_historical_event", "historical_event");
 
 // TODO: Replace the temporary constitutional reform ending with a playable reform process.
+// TODO: Replace the temporary agreed-referendum ending with authorization, court and voting scenes.
+if (Q.constitution_reformed) {
+    var supersededPromises = ["negotiated_cash", "negotiated_funding", "negotiated_funding_psoe",
+        "negotiated_renfe", "negotiated_renfe_psoe", "negotiated_ports", "negotiated_ports_psoe",
+        "negotiated_education", "negotiated_police", "negotiated_police_psoe", "negotiated_borders", "negotiated_borders_psoe"];
+    Q.countdowns = Q.countdowns.filter(function (name) { return !supersededPromises.includes(name); });
+    for (var name of supersededPromises) {
+        Q[name + "_countdown"] = -1;
+        Q[name + "_trigger"] = false;
+    }
+}
 // TODO: remove game over on jxcat_formed!
 !}
-go-to: game_over if negotiated_reform_trigger or (jxcat_formed and player_in_jxcat); events_choice if has_event = 1 and not negotiated_reform_trigger; elections_choice if has_election = 1 and not negotiated_reform_trigger; main if has_event = 0 and has_election = 0 and difficulty = 0 and not negotiated_reform_trigger; main.main_easy if has_event = 0 and has_election = 0 and difficulty < 0 and not negotiated_reform_trigger; main.main_hard if has_event = 0 and has_election = 0 and difficulty > 0 and not negotiated_reform_trigger
+go-to: game_over if negotiated_reform_trigger or negotiated_referendum_trigger or (jxcat_formed and player_in_jxcat); events_choice if has_event = 1 and not negotiated_reform_trigger and not negotiated_referendum_trigger; elections_choice if has_election = 1 and not negotiated_reform_trigger and not negotiated_referendum_trigger; main if has_event = 0 and has_election = 0 and difficulty = 0 and not negotiated_reform_trigger and not negotiated_referendum_trigger; main.main_easy if has_event = 0 and has_election = 0 and difficulty < 0 and not negotiated_reform_trigger and not negotiated_referendum_trigger; main.main_hard if has_event = 0 and has_election = 0 and difficulty > 0 and not negotiated_reform_trigger and not negotiated_referendum_trigger
 
 = [+ month : month +] [+ year +][? if rubicon:, Week [+ week +]?]
 

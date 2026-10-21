@@ -2,6 +2,7 @@ title: congreso coalition negotiation
 on-arrival: {!
     Q.congreso_coalition_leverage = 2
     Q.congreso_coalition_negotiated_reform = 0;
+    Q.congreso_coalition_negotiated_referendum = 0;
     Q.congreso_coalition_negotiated_amnesty = 0;
     Q.congreso_coalition_negotiated_funding = 0;
     Q.congreso_coalition_negotiated_cash = 0;
@@ -10,6 +11,9 @@ on-arrival: {!
     Q.congreso_coalition_negotiated_education = 0;
     Q.congreso_coalition_negotiated_police = 0;
     Q.congreso_coalition_negotiated_borders = 0;
+    Q.congreso_erc_referendum_waived = Q.player_party == "erc" && Q.congreso_left_agreement
+        && Q.congreso_left_agreement.kind == "erc"
+        && Q.congreso_left_agreement.chamber === (this.state.visits['congreso_election.post_election'] || 0);
 !}
 go-to: choices
 # TODO: dynamic leverage?
@@ -19,7 +23,7 @@ go-to: choices
 new-page: true
 on-arrival: {!
     Q.congreso_coalition_negotiated_any = 0;
-    if (Q.congreso_coalition_negotiated_reform || Q.congreso_coalition_negotiated_amnesty || Q.congreso_coalition_negotiated_funding || Q.congreso_coalition_negotiated_cash || Q.congreso_coalition_negotiated_renfe || Q.congreso_coalition_negotiated_ports || Q.congreso_coalition_negotiated_education || Q.congreso_coalition_negotiated_police || Q.congreso_coalition_negotiated_borders) {
+    if (Q.congreso_coalition_negotiated_reform || Q.congreso_coalition_negotiated_referendum || Q.congreso_coalition_negotiated_amnesty || Q.congreso_coalition_negotiated_funding || Q.congreso_coalition_negotiated_cash || Q.congreso_coalition_negotiated_renfe || Q.congreso_coalition_negotiated_ports || Q.congreso_coalition_negotiated_education || Q.congreso_coalition_negotiated_police || Q.congreso_coalition_negotiated_borders) {
         Q.congreso_coalition_negotiated_any = 1;
     }
 !}
@@ -34,6 +38,8 @@ A potential [+ congreso_coalition_lead_party +]-led Gobierno requires our suppor
 [? if congreso_coalition_negotiated_funding: - [? if congreso_left_carrier == congreso_coalition_lead_party: A revision of the Catalan economic regime, as a part of the planned Consitutional reform.?][? if congreso_coalition_lead_party = "psoe": A negotiation for a new "singular" economic regime for Catalonia, as a part of a revision of the autonomic financing system. ?]?]
 
 [? if congreso_coalition_negotiated_reform: - That the planned reform of the Constitution includes provisions for further decentralization. ?]
+
+[? if congreso_coalition_negotiated_referendum: - An agreement to start negotiations regarding the devolution of the powers to organize a referendum on independence to Catalonia and other "historical regions". The results of one such referendum would then trigger continued negotiations, and not necessarily change any political regime automatically.?]
 
 [? if congreso_coalition_negotiated_renfe: - For Catalonia to fully control its railway network. ?]
 
@@ -54,11 +60,13 @@ A potential [+ congreso_coalition_lead_party +]-led Gobierno requires our suppor
 - @cash
 - @devolution
 - @const_reform
+- @referendum
 - @amnesty
 - @funding_dump
 - @cash_dump
 - @devolution_dump
 - @const_reform_dump
+- @referendum_dump
 - @amnesty_dump
 - @resolve
 
@@ -66,7 +74,7 @@ A potential [+ congreso_coalition_lead_party +]-led Gobierno requires our suppor
 @funding
 title: Demand a reform of the economic regime of Catalonia. 
 subtitle: Catalonia has been systemically underfunded. [? if congreso_left_carrier == congreso_coalition_lead_party: A reform by [+ congreso_left_carrier +] may be folded into their broader plans for Constitutional reform. ?][? if congreso_coalition_lead_party = "psoe": The PSOE seems open to talk about a "singular" regime and a revision of that system. ?]
-choose-if: (congreso_left_carrier == congreso_coalition_lead_party or congreso_coalition_lead_party == "psoe") and congreso_coalition_leverage > 0 and not congreso_coalition_negotiated_funding
+choose-if: (congreso_left_carrier == congreso_coalition_lead_party or congreso_coalition_lead_party == "psoe") and congreso_coalition_leverage > 0 and not congreso_coalition_negotiated_funding and tax_control < 3
 unavailable-subtitle: [? if congreso_left_carrier != congreso_coalition_lead_party and congreso_coalition_lead_party != "psoe": The [+ congreso_left_carrier +] has no intention of touching the autonomic financing system. ?][? if congreso_coalition_negotiated_funding: This is already in our demands list. ?][? if congreso_coalition_leverage < 1 and not congreso_coalition_negotiated_funding: We lack leverage to demand this, on top of the rest we've already asked for. ?]
 on-arrival: congreso_coalition_negotiated_funding = 1; congreso_coalition_leverage -= 1;
 go-to: choices
@@ -90,7 +98,7 @@ go-to: choices
 title: Maybe we don't the Gobierno to assist in Catalan finances
 view-if: congreso_coalition_negotiated_cash
 choose-if: congreso_coalition_negotiated_cash
-on-arrival: congreso_coalition_negotiated_cash = 0; congreso_coalition_negotiated_cash += 1;
+on-arrival: congreso_coalition_negotiated_cash = 0; congreso_coalition_leverage += 1;
 go-to: choices
 
 @devolution
@@ -139,7 +147,7 @@ go-to: choices
 title: Demand all Spanish police forces to move out of Catalonia, and reduce the number of military bases there.
 subtitle: The Mossos d'Esquadra should be the only police force in Catalonia.
 view-if: not competence_police
-choose-if: (congreso_left_carrier == congreso_coalition_lead_party or congreso_coalition_lead_party == "psoe") and congreso_coalition_leverage > 0 and not congreso_coalition_negotiated_police
+choose-if: (congreso_left_carrier == congreso_coalition_lead_party or congreso_coalition_lead_party == "psoe") and congreso_coalition_leverage > 0 and not congreso_coalition_negotiated_police and not competence_police
 unavailable-subtitle: [? if congreso_left_carrier != congreso_coalition_lead_party and congreso_coalition_lead_party != "psoe": The [+ congreso_coalition_lead_party +] has already ruled this out. ?][? if congreso_coalition_negotiated_police: This is already in our demands list. ?][? if congreso_coalition_leverage < 1 and not congreso_coalition_negotiated_police: We lack leverage to demand this, on top of the rest we've already asked for. ?]
 on-arrival: congreso_coalition_negotiated_police = 1; congreso_coalition_leverage -= 1;
 go-to: choices
@@ -148,7 +156,7 @@ go-to: choices
 title: Demand powers in Immigration and Border control policies
 subtitle: This is unprecedented.
 view-if: not competence_borders
-choose-if: (congreso_left_carrier == congreso_coalition_lead_party or congreso_coalition_lead_party == "psoe") and congreso_coalition_leverage > 0 and not congreso_coalition_negotiated_borders
+choose-if: (congreso_left_carrier == congreso_coalition_lead_party or congreso_coalition_lead_party == "psoe") and congreso_coalition_leverage > 0 and not congreso_coalition_negotiated_borders and not competence_borders
 unavailable-subtitle: [? if congreso_left_carrier != congreso_coalition_lead_party and congreso_coalition_lead_party != "psoe": The [+ congreso_coalition_lead_party +] has already ruled this out. ?][? if congreso_coalition_negotiated_borders: This is already in our demands list. ?][? if congreso_coalition_leverage < 1 and not congreso_coalition_negotiated_borders: We lack leverage to demand this, on top of the rest we've already asked for. ?]
 on-arrival: congreso_coalition_negotiated_borders = 1; congreso_coalition_leverage -= 1;
 go-to: choices
@@ -186,6 +194,21 @@ choose-if: congreso_coalition_negotiated_reform
 on-arrival: congreso_coalition_negotiated_reform = 0; congreso_coalition_leverage += 1;
 go-to: choices
 
+@referendum
+title: Demand an agreed-upon referendum on independence for Catalonia
+subtitle: The Gobierno would have to find out a legal route for Catalonia to hold the vote, and seek pass the proposal through the Congreso, at the very least.
+choose-if: congreso_left_carrier == congreso_coalition_lead_party and congreso_coalition_leverage > 0 and not congreso_coalition_negotiated_referendum and not congreso_erc_referendum_waived
+unavailable-subtitle: [? if congreso_left_carrier != congreso_coalition_lead_party: The [+ congreso_coalition_lead_party +] is against such an idea. ?][? if congreso_erc_referendum_waived: We have already renounced this demand to facilitate coalition negotiations. ?][? if congreso_coalition_negotiated_referendum: This is already in our demands list. ?][? if congreso_coalition_leverage < 1 and not congreso_coalition_negotiated_referendum: We lack leverage to demand this, on top of the rest we've already asked for. ?]
+on-arrival: congreso_coalition_negotiated_referendum = 1; congreso_coalition_leverage -= 1;
+go-to: choices
+
+@referendum_dump
+title: Drop the demand for an agreed referendum
+view-if: congreso_coalition_negotiated_referendum
+choose-if: congreso_coalition_negotiated_referendum
+on-arrival: congreso_coalition_negotiated_referendum = 0; congreso_coalition_leverage += 1;
+go-to: choices
+
 @amnesty
 title: Demand a General Amnesty Law for all political prisoners
 subtitle: A potential way to justify a participation in such a investiture agreement.
@@ -209,10 +232,16 @@ TODO! what happens here + party consequences for not choosing this
 @resolve
 title: Finalize negotiations
 on-arrival: {!
+    Q.congreso_delivery_stalls = 0;
     // Set timers
     if (Q.congreso_coalition_negotiated_reform) {
         if (!Q.countdowns.includes("negotiated_reform")) Q.countdowns.push("negotiated_reform");
         Q.negotiated_reform_countdown = 12;
+    }
+    if (Q.congreso_coalition_negotiated_referendum) {
+        if (!Q.countdowns.includes("negotiated_referendum")) Q.countdowns.push("negotiated_referendum");
+        Q.negotiated_referendum_countdown = 12;
+        this.achieve("hopium");
     }
     if (Q.congreso_coalition_negotiated_funding && Q.congreso_coalition_lead_party != "psoe") {
         if (!Q.countdowns.includes("negotiated_funding")) Q.countdowns.push("negotiated_funding");
@@ -258,10 +287,12 @@ on-arrival: {!
         Q.negotiated_borders_psoe_countdown = 12;
     }
     if (Q.congreso_coalition_negotiated_amnesty) {
+        // TODO: Design the amnesty delivery and failure event separately.
         if (!Q.countdowns.includes("negotiated_amnesty")) Q.countdowns.push("negotiated_amnesty");
         Q.negotiated_amnesty_countdown = 12;
     }
-    // TODO: Actual events triggered by these!
+    Q.congreso_agreement_lead_party = Q.congreso_coalition_lead_party;
+    // TODO: Amnesty needs its own delivery and failure event.
 !}
 go-to: jumpScene
 

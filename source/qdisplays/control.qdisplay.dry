@@ -2,5 +2,6 @@
 (0..0) <span class="q-band" data-scale="control" data-band="none">None</span>
 (1..1) <span class="q-band" data-scale="control" data-band="limited">Limited</span>
 (2..2) <span class="q-band" data-scale="control" data-band="partial">Partial</span>
-(3..3) <span class="q-band" data-scale="control" data-band="complete">Complete</span>
-(4..4) <span class="q-band" data-scale="control" data-band="disputed">Disputed</span>
+(3..3) <span class="q-band" data-scale="control" data-band="substantial">Substantial</span>
+(4..4) <span class="q-band" data-scale="control" data-band="complete">Complete</span>
+(5..5) <span class="q-band" data-scale="control" data-band="disputed">Disputed</span>

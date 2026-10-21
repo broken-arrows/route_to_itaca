@@ -61,6 +61,16 @@ role: ending
 
 The investiture agreement has opened a constitutional reform process. What it will change, and whether it can win enough support in the Congreso and on a popular referendum, remains to be seen.
 
+@negotiated_referendum
+title: The promise of an agreed referendum
+view-if: negotiated_referendum_trigger and not end_negotiated_referendum_seen
+on-arrival: end_negotiated_referendum_seen = 1
+tags: endings
+go-to: eg_menu
+role: ending
+
+To reach the Gobierno, the current [+ spanish_coalition_disp +] has secured the votes of pro-independence parties, who have demanded an agreement where Catalonia would get the legal powers and recognition to hold a referendum on independence. It is yet to be seen if such a promise can be delivered and, even if that is the case, if it can survive both the Congreso and the Constitutional Court. Yet hope is on the horizon...
+
 @not_possible_parlament_stuck
 title: Separated twins
 subtitle: You managed something I did not think even possible

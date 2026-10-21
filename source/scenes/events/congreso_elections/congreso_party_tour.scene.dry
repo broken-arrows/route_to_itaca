@@ -9,6 +9,24 @@ on-arrival: {!
     Q.party_reaching_out_map = false;
     
     Q.spanish_pm_coalition = [Q.spanish_pm_party];
+    // Dissolution ends the outgoing Gobierno agreement before the election.
+    var agreementCountdowns = [
+        "negotiated_reform", "negotiated_referendum", "negotiated_funding", "negotiated_funding_psoe",
+        "negotiated_cash", "negotiated_renfe", "negotiated_renfe_psoe",
+        "negotiated_ports", "negotiated_ports_psoe", "negotiated_education",
+        "negotiated_police", "negotiated_police_psoe", "negotiated_borders",
+        "negotiated_borders_psoe", "negotiated_amnesty"
+    ];
+    var hasOutstandingAgreement = agreementCountdowns.some(function (name) { return Q.countdowns.includes(name); });
+    var agreementLead = Q.congreso_agreement_lead_party || Q.congreso_coalition_lead_party;
+    if (hasOutstandingAgreement && agreementLead == "psoe") this.achieve("psoed");
+    Q.countdowns = Q.countdowns.filter(function (name) { return !agreementCountdowns.includes(name); });
+    for (var name of agreementCountdowns) {
+        Q[name + "_countdown"] = -1;
+        Q[name + "_trigger"] = false;
+    }
+    Q.congreso_agreement_lead_party = null;
+
     Q.spa_caretaker_gov = true;
     G.setText(Q, "spanish_coalition_disp", G.text("{spanish_pm_party} {government}", {
         spanish_pm_party: String(Q.spanish_pm_party),

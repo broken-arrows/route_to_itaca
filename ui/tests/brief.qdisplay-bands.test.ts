@@ -38,10 +38,10 @@ describe('qdisplay band tokens', () => {
     }
   });
 
-  it('control declares its five rungs in ladder order', () => {
+  it('control declares its six rungs in ladder order', () => {
     const src = readFileSync(join(DIR, 'control.qdisplay.dry'), 'utf8');
     const bands = [...src.matchAll(/data-band="([a-z_]+)"/g)].map((m) => m[1]);
-    expect(bands).toEqual(['none', 'limited', 'partial', 'complete', 'disputed']);
+    expect(bands).toEqual(['none', 'limited', 'partial', 'substantial', 'complete', 'disputed']);
   });
 
   it('every banded qdisplay declares data-scale naming itself', () => {

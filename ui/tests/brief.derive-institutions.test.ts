@@ -25,7 +25,7 @@ describe('G.brief institution derivations', () => {
     for (const r of rows) expect(typeof r.value).toBe('string');
   });
 
-  it('control returns seven rungs carrying the raw 0..4 value, not a band', () => {
+  it('control returns seven rows carrying raw 0..5 values', () => {
     const rows = brief().control(Q);
     expect(rows).toHaveLength(7);
     // Strengthened vs. the brief's sample: also pin the ids, in order, so a
@@ -38,7 +38,7 @@ describe('G.brief institution derivations', () => {
     for (const r of rows) {
       expect(typeof r.value).toBe('number');
       expect(r.value).toBeGreaterThanOrEqual(0);
-      expect(r.value).toBeLessThanOrEqual(4);
+      expect(r.value).toBeLessThanOrEqual(5);
       expect(r.valueDisplay).toBe('control');
     }
   });
@@ -47,7 +47,7 @@ describe('G.brief institution derivations', () => {
   // banded.length > 0` passes for ANY string a broken classifier might
   // return (e.g. String(value) itself), which would not prove brief.js is
   // naming a real classifying qdisplay. Assert the actual band words from
-  // source/qdisplays/control.qdisplay.dry at both boundaries of the 0..4
+  // source/qdisplays/control.qdisplay.dry at both boundaries of the 0..5
   // range, through the real engine — not a second table in this test.
   // NB: qdisplay output is the compiled content HTML (verified by running
   // a.qdisplay(0,'control') directly — it returns
@@ -62,8 +62,9 @@ describe('G.brief institution derivations', () => {
     expect(a.qdisplay(0, 'control')).toContain('None');
     expect(a.qdisplay(1, 'control')).toContain('Limited');
     expect(a.qdisplay(2, 'control')).toContain('Partial');
-    expect(a.qdisplay(3, 'control')).toContain('Complete');
-    expect(a.qdisplay(4, 'control')).toContain('Disputed');
+    expect(a.qdisplay(3, 'control')).toContain('Substantial');
+    expect(a.qdisplay(4, 'control')).toContain('Complete');
+    expect(a.qdisplay(5, 'control')).toContain('Disputed');
   });
 
   it('chancelleries returns the four capitals with flags and a qdisplay id, in designed order', () => {

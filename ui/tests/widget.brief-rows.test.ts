@@ -141,7 +141,7 @@ describe('Brief row widgets', () => {
     const control = mount(LeaderRows, { global: { plugins: [i18n] },
       props: {
         rows: [
-          { id: 'security', label: 'Security', value: 4, valueDisplay: 'control', party: null },
+          { id: 'security', label: 'Security', value: 5, valueDisplay: 'control', party: null },
         ],
       },
     });
