@@ -11,7 +11,7 @@ var qdParser = require('./parsers/qdcontent');
 var codec = require('./localization');
 
 var TEXT_FIELDS = ['title', 'subtitle', 'unavailableSubtitle', 'content'];
-var HELPERS = ['text', 'setText', 'getText', 'copyText', 'updateText', 'joinText', 'markupText', 'literalText', 'rawText'];
+var HELPERS = ['text', 'setText', 'getText', 'copyText', 'updateText', 'joinText', 'markupText', 'literalText', 'rawText', 'nameText'];
 var REVIEW_STATUSES = ['non-translatable', 'migration-pending', 'analysis-deferred'];
 var normalizePath = function(value) { return value.replace(/\\/g, '/'); };
 var hash = function(value) {
@@ -119,7 +119,8 @@ async function extractFiles(files, options) {
   var addUnit = function(unit, location, kind) {
     if (!unit || typeof unit.key !== 'string' || !unit.key.trim()) return;
     var parameters = unique((unit.parameters || unit.params || []).concat(unit.context || []));
-    var validation = codec.validateTemplate(unit.key, parameters);
+    var named = unit.nameParameters || {};
+    var validation = codec.validateTemplate(unit.key, parameters, named);
     validation.forEach(function(message) { addError(location, message); });
     var current = confirmed.get(unit.key);
     if (!current) {
@@ -131,8 +132,8 @@ async function extractFiles(files, options) {
       current.context = unique(current.context.concat(unit.context || []));
     }
     var reference = Object.assign({ kind: kind }, location);
-    if (!current.schemas.some(function(schema) { return JSON.stringify(schema.parameters) === JSON.stringify(parameters); })) {
-      current.schemas.push({ parameters: parameters, source: reference });
+    if (!current.schemas.some(function(schema) { return JSON.stringify(schema.parameters) === JSON.stringify(parameters) && JSON.stringify(schema.nameParameters) === JSON.stringify(named); })) {
+      current.schemas.push({ parameters: parameters, nameParameters: named, source: reference });
     }
     if (!current.sources.some(function(source) { return JSON.stringify(source) === JSON.stringify(reference); })) current.sources.push(reference);
   };
@@ -140,7 +141,7 @@ async function extractFiles(files, options) {
     if (typeof text !== 'string' || !text.trim()) return;
     try {
       var compiled = await parse(contentParser.compile, [text, paragraphs]);
-      codec.collectUnits(compiled, { grammarBindings: grammarBindings }).forEach(function(unit) { addUnit(unit, location, 'authored'); });
+      codec.collectUnits(compiled, { grammarBindings: grammarBindings, nameBindings: declarations.nameBindings || {} }).forEach(function(unit) { addUnit(unit, location, 'authored'); });
       var deps = compiled && compiled.stateDependencies || [];
       deps.forEach(function(dep) {
         if (dep.type !== 'insert') return;
@@ -201,7 +202,7 @@ async function extractFiles(files, options) {
           if (parsed.type === 'qdisplay' && field === 'content') {
             try {
               var ranges = await parse(qdParser.compile, [section[field]]);
-              for (var range of ranges) if (range.output) codec.collectUnits(range.output, { grammarBindings: grammarBindings }).forEach(function(unit) {
+              for (var range of ranges) if (range.output) codec.collectUnits(range.output, { grammarBindings: grammarBindings, nameBindings: declarations.nameBindings || {} }).forEach(function(unit) {
                 addUnit(unit, location, 'qdisplay');
               });
             } catch (error) { addError(location, 'Qdisplay extraction failed: ' + error.message); }
@@ -316,15 +317,18 @@ async function extractFiles(files, options) {
           var key = stringValue(node.arguments[keyIndex]);
           if (key !== null) {
             var params = node.arguments[keyIndex + 1];
-            var names = [];
+            var names = [], named = {};
             if (params && params.type === 'ObjectExpression') params.properties.forEach(function(prop) {
               if (prop.type === 'SpreadElement') { limit(locationOf(prop), source.slice(prop.start, prop.end), 'Template parameter spread requires manual schema review.'); return; }
               var propName = prop.computed ? stringValue(prop.key) : prop.key.name || stringValue(prop.key);
-              if (propName) names.push(propName);
+              if (propName) {
+                names.push(propName);
+                if (isTextHelper(prop.value) && callName(prop.value) === "nameText") named[propName] = stringValue(prop.value.arguments[0]);
+              }
             });
             else if (params) limit(locationOf(params), source.slice(params.start, params.end), 'Template parameter names are not a literal object; review the schema.');
             // The codec validates author templates and all catalog selector entries.
-            var unit = { key: key, parameters: names, context: [], placeholders: names };
+            var unit = { key: key, parameters: names, nameParameters: named, context: [], placeholders: names };
             addUnit(unit, locationOf(node), 'javascript-template');
           } else if (!node.arguments[keyIndex] || !isTextHelper(node.arguments[keyIndex])) {
             limit(locationOf(node), source.slice(node.start, node.end), 'Explicit text recipe uses a dynamic template; possible keys require manual review.');
@@ -399,7 +403,7 @@ async function extractFiles(files, options) {
       var entry = merged[unit.key];
       if (entry === null || (locale !== 'en' && entry === unit.key)) untranslated.push(unit.key);
       else (unit.schemas || [{ parameters: unit.parameters }]).forEach(function(schema) {
-        codec.validateEntry(unit.key, entry, schema.parameters).forEach(function(message) {
+        codec.validateEntry(unit.key, entry, schema.parameters, schema.nameParameters || {}).concat(codec.validateNameForms(entry, schema.nameParameters, declarations.nameForms)).forEach(function(message) {
           addError(sourceLocation('source/locales/' + locale + '/content.json', locale, unit.key),
             message + (schema.source ? ' (source: ' + schema.source.file + ':' + schema.source.line + ')' : ''));
         });

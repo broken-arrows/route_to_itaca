@@ -888,7 +888,7 @@ on-arrival: {!
         var offices = {president: "president", vp: "vicepresident", economy: "economy_minister", interior: "interior_minister", health: "health_minister", education: "education_minister", territory: "territory_minister", foreign: "foreign_minister", bnl: "bnl_minister"};
         var labels = {
             president: G.text("Presidency"),
-            vp: G.text("Vicepresidency"),
+            vp: G.text("Vice-Presidency"),
             economy: G.text("Economy"),
             interior: G.text("Interior"),
             health: G.text("Health"),

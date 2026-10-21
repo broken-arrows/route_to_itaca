@@ -107,6 +107,19 @@ describe('Classic localization', () => {
     expect(w.ClassicI18n.locale).toBe('ca');
   });
 
+  it('loads party forms and captures a real authored party insert', async () => {
+    const ui = await boot(), engine = ui.dendryEngine;
+    await w.ClassicI18n.setLocale('ca');
+    engine.state.qualities.parlament_current_ciu = 'pdcat';
+    const scene = engine.game.scenes['parlament_climate_change.climate_change_approach_convergence'];
+    expect(scene).toBeDefined();
+    const snapshot = engine._captureDisplayContent(scene.unavailableSubtitle, false);
+    engine.state.qualities.parlament_current_ciu = 'junts';
+    const html = require('dendrynexus-ten/lib/ui/content/html.js');
+    expect(html.convertLine(engine._renderSnapshot(snapshot, false))).toBe('No tenim prou bones relacions amb el PDeCAT.');
+    expect(html.convertLine(engine._renderSnapshot(snapshot, true))).toBe("We don't have good enough relations with pdcat");
+  });
+
   it.each([false, true])('localizes captured cooldown captions without changing native Q (weekly=%s)', async (weekly) => {
     const ui = await boot(), engine = ui.dendryEngine;
     Object.assign(engine.state.qualities, { year: 2013, rubicon: weekly, advisor_action_timer: 3, parlament_timer: 3 });

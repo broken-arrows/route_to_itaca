@@ -1,5 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { join, resolve } from 'node:path';
+import { extractFiles } from 'dendrynexus-ten/lib/localization-extract.js';
 import { describe, expect, it } from 'vitest';
 import { convertLine } from 'dendrynexus-ten/lib/ui/content/html.js';
 import { DendryAdapter } from '../src/engine/adapter';
@@ -16,6 +17,25 @@ function renderTitle(sceneId: string, qualities: Record<string, unknown>) {
 }
 
 describe('authored coalition tooltip metadata', () => {
+  it.each([
+    ['parlament_coalition_unthinkably_grand.any', { parlament_emergency_psc_icv_core: 'psc_solo' }, '30/68'],
+    ['parlament_coalition_unthinkably_grand.any', { parlament_emergency_psc_icv_core: 'psc_comuns' }, '55/68'],
+    ['parlament_coalition_unthinkably_grand.any', { parlament_emergency_psc_icv_core: 'psc_cs' }, '70/68'],
+    ['parlament_coalition_unionist.cs_ppc_psc_vox_abst', { cs_parlament_s: 45, ppc_parlament_s: 25 }, '45/68'],
+    ['parlament_coalition_unionist.cs_ppc_psc_vox_abst', { cs_parlament_s: 25, ppc_parlament_s: 45 }, '70/68'],
+  ])('renders a complete numeric summary in %s', (sceneId, branch, seats) => {
+    const html = renderTitle(sceneId, {
+      parlament_s_majority: 68, psc_parlament_s: 30,
+      parlament_current_icv: 'icv', parlament_current_icv_s: 25,
+      cs_parlament_s: 40, ppc_parlament_s: 25,
+      ...branch,
+    });
+    const host = document.createElement('div');
+    host.innerHTML = html;
+    expect(host.querySelector('.generalitat-coalition')?.getAttribute('data-summary'))
+      .toMatch(new RegExp(`^Minority government -\\s*${seats.replace('/', '\\s*/\\s*')}$`));
+  });
+
   it('compiles all four ERC-CUP player/leader phase combinations', () => {
     const adapter = DendryAdapter.fromJSONText(gameText);
     const ids = [
@@ -257,11 +277,14 @@ describe('authored coalition tooltip metadata', () => {
     }
   });
 
-  it('migrates election-simulation government labels too', () => {
-    const source = readFileSync(resolve(root, 'source/scenes/playground/election_simulation.scene.dry'), 'utf8');
-    expect(source).toContain('data-parties="jxsi"');
-    expect(source).toContain('data-parties="jxcat erc"');
-    expect(source).toContain('data-parties="psoe up"');
+  it('extracts the structured election-simulation government labels', async () => {
+    const name = join('source', 'scenes', 'playground', 'election_simulation.scene.dry');
+    const result = await extractFiles([{ name, contents: readFileSync(resolve(root, name), 'utf8') }]);
+    expect(result.errors).toEqual([]);
+    const keys = result.units.map((unit: { key: string }) => unit.key);
+    expect(keys).toContain("<span style='color: var(--jxsi); font-style: italic;'>Sovereignty government</span>");
+    expect(keys).toContain("<span style='color: var(--jxcat); font-style: italic;'>sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span>");
+    expect(keys).toContain("<span style='color: #da291c; font-weight: bold;'>progressist</span> <span style='color: #5a205a; font-weight: bold;'>government</span>");
   });
 
   it('authors concise summaries instead of cleaning them up in the renderer', () => {
@@ -299,7 +322,7 @@ describe('authored coalition tooltip metadata', () => {
     adapter.beginGame([1, 2, 3, 4]);
     Object.assign(adapter.qualities, q);
     const host = document.createElement('div');
-    host.innerHTML = adapter.renderView(sceneId);
+    host.innerHTML = adapter.goToScene(sceneId).html;
     const marker = host.querySelector('.generalitat-coalition, .gobierno-coalition');
     expect(marker?.getAttribute('data-parties')).toBe(parties);
     expect(marker?.getAttribute('data-summary')).toBe(summary);

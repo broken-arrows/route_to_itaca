@@ -751,6 +751,9 @@ blockquote + blockquote.attribution {
   border: none;
   max-width: 12em;
 }
+#saves_table td:first-child:not([colspan]) {
+  white-space: nowrap;
+}
 .save_info {
   min-width: 15em;
   font-size: 0.8em;

@@ -2,13 +2,13 @@
   'use strict';
   var catalogs = {}, pending = {}, generation = 0, locale = 'en';
   function load(language) {
-    if (!pending[language]) pending[language] = Promise.all(['ui', 'content'].map(function (kind) {
+    if (!pending[language]) pending[language] = Promise.all(['ui', 'content', 'parties'].map(function (kind) {
       return fetch('locales/' + language + '/' + kind + '.json').then(function (response) {
         if (!response.ok) throw new Error('Missing ' + language + ' ' + kind + ' catalog');
         return response.json();
       });
     })).then(function (values) {
-      return catalogs[language] = { ui: values[0], content: values[1] };
+      return catalogs[language] = { ui: values[0], content: values[1], parties: values[2] };
     }).catch(function (error) { delete pending[language]; throw error; });
     return pending[language];
   }
@@ -69,7 +69,7 @@
     if (request !== generation) return false;
     locale = language;
     var ui = window.dendryUI, engine = ui.dendryEngine;
-    engine.setLocale(language, catalogs[language].content);
+    engine.setLocale(language, catalogs[language].content, { party: catalogs[language].parties });
     document.documentElement.lang = language;
     document.title = text('Route to Ítaca - An Alternate History');
     try { localStorage.setItem(ui.settings_key + ':language', language); } catch (_) {}

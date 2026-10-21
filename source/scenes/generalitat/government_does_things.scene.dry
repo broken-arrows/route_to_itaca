@@ -345,11 +345,11 @@ on-arrival: {!
         Q.npc_government_stop_cost = relations >= 65 ? 1 : 2;
         if (Q.npc_government_can_influence) {
             G.setText(Q, "npc_government_stop_blocker", (!Number.isFinite(relations) || relations < 55 ? G.text("We don't have good enough relations with {npc_government_party}", {
-                npc_government_party: String(Q.npc_government_party)
+                npc_government_party: G.nameText("party", Q.npc_government_party)
             }) : (Q.party_resources < Q.npc_government_stop_cost ? G.text("Not enough resources.") : G.literalText(""))));
             Q.npc_government_can_stop = valid && Q.npc_government_stop_blocker == "";
             G.setText(Q, "npc_government_alternative_blocker", (owners.economy_minister_party != initiative.party ? G.text("(???)") : (!initiative.acceptsTax ? G.text("{party} is against further tax increases.", {
-                party: String(initiative.party)
+                party: G.nameText("party", initiative.party)
             }) : (Q.tax_policy_level >= 2 ? G.text("Regional taxes are already at their maximum level.") : (!canBudget ? G.text("This year's budget has already been discussed...") : G.literalText(""))))));
             Q.npc_government_can_alternative = valid && Q.npc_government_is_cut && Q.npc_government_alternative_blocker == "";
         }
@@ -380,7 +380,7 @@ on-arrival: {!
             var field = initiative.field;
             var next = initiative.to;
             G.setText(Q, "npc_government_outcome", G.text("{party} has decided to {title}.", {
-                party: String(initiative.party),
+                party: G.nameText("party", initiative.party),
                 title: G.getText(Q, "npc_government_title")
             }));
             if (initiative.kind == "budget") {

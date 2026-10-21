@@ -17,6 +17,8 @@ interface CoalitionMember {
 }
 
 interface CoalitionDefinition {
+  labelKey?: string;
+  labelParams?: Record<string, unknown>;
   label: string;
   seatsVar: string;
   members?: CoalitionMember[];
@@ -49,9 +51,10 @@ function finite(value: unknown): number {
   return Number.isFinite(number) ? number : 0;
 }
 
-function html(value: unknown): string {
+function html(value: unknown, params?: Record<string, unknown>): string {
+  void game.frame;
   const source = String(value ?? '');
-  return markGlossary(game.adapter?.translate(source) ?? source, game.glossary);
+  return markGlossary(game.adapter?.translate(source, params) ?? source, game.glossary);
 }
 
 const DEFAULT_LABELS = {
@@ -138,7 +141,7 @@ const entries = computed(() => {
 
     return [{
       id: `${definition.seatsVar}-${definitionIndex}`,
-      labelHtml: html(definition.label),
+      labelHtml: html(definition.labelKey ?? definition.label, definition.labelParams),
       members: members.filter((member) => member.seats > 0).map((member) => ({
         ...member,
         labelHtml: partyHtml(member.label, member.party),

@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { DendryAdapter } from '../src/engine/adapter';
 import { createRenderer } from 'dendrynexus-ten/lib/ui/content/html.js';
+import { gameLib } from '../src/game-bindings';
 
 function renderClassic(adapter: DendryAdapter, sceneId: string): string {
   const formatText = (window as unknown as { applyWholesome: (text: string) => string }).applyWholesome;
@@ -36,7 +37,8 @@ describe('old-shell coalition tooltip', () => {
       },
       mountWidgets: vi.fn(),
       syncTabLocks: vi.fn(),
-      RTI_GAME_LIB: { allegiances: {} },
+      RTI_GAME_LIB: gameLib,
+      ClassicI18n: undefined,
     });
 
     new Function(gameJs)();
@@ -60,6 +62,19 @@ describe('old-shell coalition tooltip', () => {
     expect(tip.querySelector('.coalition-tooltip-logos')?.nextElementSibling)
       .toBe(tip.querySelector('.mytooltip-main-text'));
     expect(trigger.style.getPropertyValue('--mytooltip-color')).toBe('var(--erc)');
+
+    const catalog = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../source/locales/ca/content.json'), 'utf8'));
+    const translated = catalog['Majority government - {seats}/{majority}']
+      .replace('{seats}', '74').replace('{majority}', '68');
+    Object.assign(window, { ClassicI18n: { text: (key: string) => key, content: (key: string, params?: Record<string, string>) => {
+      const template = catalog[key] ?? key;
+      return template.replace(/\{(\w+)\}/g, (_: string, name: string) => params?.[name] ?? '');
+    } } });
+    trigger.dispatchEvent(new MouseEvent('mouseout', { bubbles: true }));
+    trigger.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+    expect(tip.textContent).toContain(translated);
+    expect(trigger.dataset.summary).toBe('Majority government - 74/68');
+    Object.assign(window, { ClassicI18n: undefined });
   });
 
   it.each([
@@ -84,6 +99,8 @@ describe('old-shell coalition tooltip', () => {
     const adapter = DendryAdapter.fromJSONText(gameText);
     adapter.beginGame([1, 2, 3, 4]);
     Object.assign(adapter.qualities, q);
+    // Simulator result prose is captured on arrival, like other generated text.
+    adapter.goToScene(sceneId);
     Object.assign(window, {
       dendryUI: {
         game: adapter.engine.game,

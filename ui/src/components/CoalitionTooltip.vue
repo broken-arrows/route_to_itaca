@@ -2,6 +2,8 @@
 import { computed, ref, watch } from 'vue';
 import { arrow, autoUpdate, flip, offset, shift, useFloating } from '@floating-ui/vue';
 import { usePartyLogo } from './viz/usePartyLogo';
+import { gameLib } from '../game-bindings';
+import { useGameStore } from '../stores/game';
 import '../styles/tooltips.css';
 
 const props = defineProps<{
@@ -30,7 +32,13 @@ const { floatingStyles, middlewareData, placement } = useFloating(reference, flo
 });
 
 const partyLogo = usePartyLogo();
+const game = useGameStore();
 const members = computed(() => props.parties.map((id) => ({ id, logo: partyLogo(id) })));
+const localizedSummary = computed(() => {
+  void game.frame;
+  return gameLib.localizeGovernmentSummary(props.summary,
+    (key, params) => game.adapter?.translate(key, params) ?? key);
+});
 </script>
 
 <template>
@@ -56,7 +64,7 @@ const members = computed(() => props.parties.map((id) => ({ id, logo: partyLogo(
         </template>
       </div>
       <div class="popover-title">{{ TITLES[institution] }}</div>
-      <div v-if="summary" class="popover-subtitle">{{ summary }}</div>
+      <div v-if="localizedSummary" class="popover-subtitle">{{ localizedSummary }}</div>
       <span ref="arrowElement" class="popover-arrow" aria-hidden="true"
         :style="{ left: middlewareData.arrow?.x != null ? middlewareData.arrow.x + 'px' : undefined }" />
     </div>

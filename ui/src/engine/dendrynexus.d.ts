@@ -52,7 +52,7 @@ declare module 'dendrynexus-ten/lib/engine.js' {
     getExportableState(): object;
     setState(state: object): void;
     isGameOver(): boolean;
-    setLocale(locale: string | null, catalog: import('./types').ContentCatalog | null): this;
+    setLocale(locale: string | null, catalog: import('./types').ContentCatalog | null, names?: Record<string, Record<string, Record<string, string>>>): this;
     // Public catalog lookup for non-content strings (source/lib row labels).
     translate(s: string, params?: Record<string, unknown>): string;
     /** Repaint captured presentation without evaluating gameplay or drawing cards. */
@@ -119,6 +119,7 @@ declare module 'dendrynexus-ten/lib/parsers/content.js' {
 }
 
 declare module 'dendrynexus-ten/lib/localization.js' {
+  export function mergeNames(catalog: unknown, namespaces: unknown): Record<string, string>;
   export interface TranslationUnit {
     key: string;
     placeholders: string[];

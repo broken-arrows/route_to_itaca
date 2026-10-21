@@ -91,6 +91,7 @@ export interface GameLib {
     labelHtml: string,
   ): string;
   governmentTooltipText(institution: 'generalitat' | 'gobierno' | 'ajuntament', parties: string[], summary: unknown, labelHtml: unknown): unknown;
+  localizeGovernmentSummary(summary: string, translate: (key: string, params?: Record<string, string>) => string): string;
   rebrandGovernmentText(value: unknown, from: string, to: string, exact?: boolean): unknown;
   engineTick(Q: Record<string, unknown>): void;
   /** Bounded, conserved support movement for recurring card effects. Structural

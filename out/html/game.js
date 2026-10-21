@@ -1,6 +1,6 @@
 (function () {
   var tr = function (text, params) { return window.ClassicI18n ? window.ClassicI18n.text(text, params) : text; };
-  var tc = function (text) { return window.ClassicI18n ? window.ClassicI18n.content(text) : text; };
+  var tc = function (text, params) { return window.ClassicI18n ? window.ClassicI18n.content(text, params) : text; };
   var game;
   var ui;
 
@@ -783,8 +783,11 @@
   }
 
   function renderCoalitionTipContent(details) {
-    const summary = details.summary
-      ? `<span class='mytooltip-sub-text'>${details.summary}</span>`
+    const summaryText = window.RTI_GAME_LIB && window.RTI_GAME_LIB.localizeGovernmentSummary
+      ? window.RTI_GAME_LIB.localizeGovernmentSummary(details.summary, tc)
+      : details.summary;
+    const summary = summaryText
+      ? `<span class='mytooltip-sub-text'>${summaryText}</span>`
       : "";
     const logos = details.parties
       .map((party) => {

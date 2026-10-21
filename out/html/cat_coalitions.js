@@ -78,7 +78,7 @@
     if (window.ClassicI18n) return window.ClassicI18n.text(text, params);
     return text.replace(/\{(\w+)\}/g, function (m, key) { return params && params[key] !== undefined ? params[key] : m; });
   }
-  function tc(text) { return window.ClassicI18n ? window.ClassicI18n.content(text) : text; }
+  function tc(text, params) { return window.ClassicI18n ? window.ClassicI18n.content(text, params) : text.replace(/\{(\w+)\}/g, function (match, key) { return params && params[key] != null ? params[key] : match; }); }
 
 
   // ── helpers ────────────────────────────────────────────────────────────────
@@ -272,7 +272,7 @@
 
     var name = document.createElement("span");
     name.className = "cv-entry-name";
-    name.innerHTML = window.applyWholesome(tc(def.label)) + ":" || "";
+    name.innerHTML = window.applyWholesome(tc(def.labelKey || def.label, def.labelParams)) + ":" || "";
 
     var memberSpan = document.createElement("span");
     memberSpan.className = "cv-entry-members";

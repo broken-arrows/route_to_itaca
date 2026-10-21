@@ -49,6 +49,25 @@
     };
   }
 
+  // Older authored coalition spans carry a rendered English summary in an HTML
+  // attribute. Translate its two sentence shapes at the tooltip boundary; this
+  // needs no saved qualities and leaves the party/seat arithmetic in the scene.
+  function localizeGovernmentSummary(summary, translate) {
+    if (typeof summary !== 'string' || typeof translate !== 'function') return summary || '';
+    var match = /^\s*(Majority|Minority) government\s*-\s*(\d+)\s*\/\s*(\d+)\s*$/.exec(summary);
+    if (match) {
+      var key = match[1] + ' government - {seats}/{majority}';
+      var params = { seats: match[2], majority: match[3] };
+      var translated = translate(key, params);
+      return translated === key || translated === match[1] + ' government - ' + match[2] + '/' + match[3]
+        ? summary : translated;
+    }
+    if (summary.trim() === 'Majority government') {
+      return translate('Majority government') || summary;
+    }
+    return summary;
+  }
+
   /** Rebrand captured display parameters without changing translation keys. */
   function rebrandGovernmentText(value, from, to, exact) {
     if (typeof value === 'string') {
@@ -68,6 +87,7 @@
   var api = {
     governmentTooltip: governmentTooltip,
     governmentTooltipText: governmentTooltipText,
+    localizeGovernmentSummary: localizeGovernmentSummary,
     rebrandGovernmentText: rebrandGovernmentText
   };
 

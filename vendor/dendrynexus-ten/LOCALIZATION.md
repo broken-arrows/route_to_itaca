@@ -7,6 +7,66 @@ JSON recipes with captured values, including names, grammatical context and nest
 display text. Both shells render those recipes with the selected content catalog.
 English remains the saved fallback and the language of gameplay values.
 
+## Named references and party forms
+
+Game-owned naming catalogs provide explicit plain-text forms; the engine does not
+infer articles, gender, pronunciation or political identity. This project's
+`source/locales/{en,ca}/parties.json` uses party IDs as keys and the forms `bare`,
+`definite`, `de`, `a`, and `per`. For example, PDeCAT has the Catalan forms
+`PDeCAT`, `el PDeCAT`, `del PDeCAT`, `al PDeCAT`, and `pel PDeCAT`.
+
+Declare scalar party qualities in `source/data/localization.json`:
+
+```json
+{
+  "nameCatalogs": { "party": "parties.json" },
+  "nameForms": { "party": ["bare", "definite", "de", "a", "per"] },
+  "nameBindings": { "parlament_current_ciu": "party" }
+}
+```
+
+`[+ parlament_current_ciu +]` keeps its authored syntax and native value. Capture
+stores a separate named reference to the identity at that moment. Qdisplay inserts
+are excluded from these bindings. Do not declare mixed prose or lists as names.
+In JavaScript, supply the reference explicitly:
+
+```js
+G.setText(Q, "announcement", "{party} has decided to {title}.", {
+  party: G.nameText("party", initiative.party),
+  title: G.getText(Q, "npc_government_title")
+});
+```
+
+The Catalan translation can be `{party:definite:cap} ha decidit {title}.`.
+`{party:de}` requests the entire prepositional phrase, so do not also write `de`
+before it. Append `:cap` to capitalize its first character; grammatical role alone
+does not determine capitalization. Multiple occurrences can request different
+forms. `{party:bare}` explicitly requests canonical display spelling. Plain
+`{party}` retains the exact captured source spelling, preserving existing labels,
+fallbacks, and technical identifiers in attributes.
+
+Forms belong in translations, not English source keys. Extraction records named
+parameter schemas and rejects forms on ordinary parameters and undeclared forms.
+Every source sharing a translation key must support its formatted parameters.
+`G.nameText(namespace, id, fallback?)` optionally supplies a separate native English
+fallback; otherwise it preserves the supplied ID exactly (lookup is lowercase).
+
+Shells load naming data alongside content. `mergeNames(catalog, namespaces)` creates
+a runtime overlay; `engine.setLocale(locale, catalog, namespaces)` also accepts it
+directly. Namespaces map to naming catalogs, e.g. `{party: parties}`. Publishing
+copies the declared catalog files and validates their required forms. The new UI
+bundles the same canonical naming files; Classic fetches their published copies.
+
+Recipes are additive JSON in presentation version 1. Historical named references
+retain their captured identity across rebrands, save/load and language switches.
+Old plain-string recipes are not guessed into names. Missing names/forms or a
+translation requiring a name where an old recipe has a string fall back safely to
+the English source sentence. New saves containing named recipes require this
+runtime; compatibility with older engine builds is not promised.
+
+This facility does not implement qdisplay agreement or grammatical propagation
+into arbitrary nested recipes. Coalition labels remain ordinary translated text.
+
 ## Generated text
 
 The engine adds these helpers to each instance's game library. Scene actions receive

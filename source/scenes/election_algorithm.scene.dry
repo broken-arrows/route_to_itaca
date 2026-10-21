@@ -128,8 +128,8 @@ for (var p of Q.parties) {
         Q[p+'_parlament_spc'] = 0;
     }
     if (Q[p+'_parlament_s_old'] == 0 || !Q[p+'_parlament_s_old']) {
-        Q[p+'_parlament_s_delta'] = '<div style="font-style: italic;">New!</div>';
-        Q[p+'_parlament_pv_delta'] = '<div style="font-style: italic;">New!</div>';
+        G.setText(Q, p+'_parlament_s_delta', G.markupText('div', {style: 'font-style: italic;'}, G.text('New!')));
+        G.setText(Q, p+'_parlament_pv_delta', G.markupText('div', {style: 'font-style: italic;'}, G.text('New!')));
     } else {
         Q[p+'_parlament_s_delta'] = Q[p+'_parlament_s'] - Q[p+'_parlament_s_old'];
         var sign1 = Q[p+'_parlament_s_delta'] > 0 ?
@@ -539,8 +539,8 @@ for (var p of CONGRESO_PARTIES) {
         Q[p+'_congreso_spc'] = 0;
     }
     if (Q[p+'_congreso_s_old'] == 0 || !Q[p+'_congreso_s_old']) {
-        Q[p+'_congreso_s_delta'] = '<div style="font-style: italic;">New!</div>';
-        Q[p+'_congreso_pv_delta'] = '<div style="font-style: italic;">New!</div>';
+        G.setText(Q, p+'_congreso_s_delta', G.markupText('div', {style: 'font-style: italic;'}, G.text('New!')));
+        G.setText(Q, p+'_congreso_pv_delta', G.markupText('div', {style: 'font-style: italic;'}, G.text('New!')));
     } else {
         Q[p+'_congreso_s_delta'] = Q[p+'_congreso_s'] - Q[p+'_congreso_s_old'];
         var sign1 = Q[p+'_congreso_s_delta'] > 0 ?
@@ -707,8 +707,8 @@ for (var p of Q.parties_bcn) {
         Q[p+'_local_barcelona_spc'] = 0;
     }
     if (Q[p+'_local_barcelona_s_old'] == 0 || !Q[p+'_local_barcelona_s_old']) {
-        Q[p+'_local_barcelona_s_delta'] = '<div style="font-style: italic;">New!</div>';
-        Q[p+'_local_barcelona_pv_delta'] = '<div style="font-style: italic;">New!</div>';
+        G.setText(Q, p+'_local_barcelona_s_delta', G.markupText('div', {style: 'font-style: italic;'}, G.text('New!')));
+        G.setText(Q, p+'_local_barcelona_pv_delta', G.markupText('div', {style: 'font-style: italic;'}, G.text('New!')));
     } else {
         Q[p+'_local_barcelona_s_delta'] = Q[p+'_local_barcelona_s'] - Q[p+'_local_barcelona_s_old'];
         var sign1 = Q[p+'_local_barcelona_s_delta'] > 0 ?

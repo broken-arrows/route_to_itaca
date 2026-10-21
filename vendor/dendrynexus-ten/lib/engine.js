@@ -623,7 +623,7 @@
       return Q[field];
     };
     Object.assign(this.gameLib, {
-      text: localization.text, literalText: localization.literal, rawText: localization.raw,
+      nameText: localization.nameText, text: localization.text, literalText: localization.literal, rawText: localization.raw,
       markupText: localization.markup, joinText: localization.joinText,
       englishText: function (recipe) { return localization.render(recipe, 'en', null); },
       setText: setText, getText: getText,
@@ -652,7 +652,7 @@
     var that = this;
     var declarations = this.game.data && this.game.data.localization || {};
     return localization.captureContent(content, {
-      useParas: useParas, grammarBindings: declarations.grammarBindings || {},
+      useParas: useParas, nameBindings: declarations.nameBindings || {}, grammarBindings: declarations.grammarBindings || {},
       captureContext: function (name) { return localization.clone(that.state.qualities[name]); },
       resolveDependency: function (def) {
         if (def.type !== 'insert') return that._runPredicate(def.fn);
@@ -738,9 +738,9 @@
 
   // Installs a runtime translation overlay. `catalog` maps an English
   // source string (the key) to its translation. Passing null clears it.
-  DendryEngine.prototype.setLocale = function (locale, catalog) {
+  DendryEngine.prototype.setLocale = function (locale, catalog, names) {
     this.locale = locale || null;
-    this.catalog = catalog || null;
+    this.catalog = names ? localization.mergeNames(catalog, names) : (catalog || null);
     return this;
   };
 

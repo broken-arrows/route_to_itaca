@@ -1,3 +1,6 @@
+import { mergeNames } from 'dendrynexus-ten/lib/localization.js';
+import enParties from '../../../source/locales/en/parties.json';
+import caParties from '../../../source/locales/ca/parties.json';
 import type { AppLocale } from '../i18n';
 import type { CatalogEntry, ContentCatalog } from '../engine/types';
 
@@ -29,7 +32,7 @@ export function loadContentCatalog(locale: AppLocale): Promise<ContentCatalog> {
     .then(async (response) => {
       if (!response.ok) return {};
       const value = await response.json() as unknown;
-      return parseContentCatalog(value);
+      return mergeNames(parseContentCatalog(value), { party: locale === 'ca' ? caParties : enParties }) as ContentCatalog;
     })
     .catch(() => ({}));
   catalogs.set(locale, request);

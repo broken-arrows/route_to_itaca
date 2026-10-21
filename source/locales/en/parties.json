@@ -1,0 +1,240 @@
+{
+  "ciu": {
+    "bare": "CiU",
+    "definite": "CiU",
+    "de": "of CiU",
+    "a": "to CiU",
+    "per": "by CiU"
+  },
+  "cdc": {
+    "bare": "CDC",
+    "definite": "CDC",
+    "de": "of CDC",
+    "a": "to CDC",
+    "per": "by CDC"
+  },
+  "pdcat": {
+    "bare": "PDeCAT",
+    "definite": "the PDeCAT",
+    "de": "of the PDeCAT",
+    "a": "to the PDeCAT",
+    "per": "by the PDeCAT"
+  },
+  "cup": {
+    "bare": "CUP",
+    "definite": "the CUP",
+    "de": "of the CUP",
+    "a": "to the CUP",
+    "per": "by the CUP"
+  },
+  "erc": {
+    "bare": "ERC",
+    "definite": "ERC",
+    "de": "of ERC",
+    "a": "to ERC",
+    "per": "by ERC"
+  },
+  "psc": {
+    "bare": "PSC",
+    "definite": "the PSC",
+    "de": "of the PSC",
+    "a": "to the PSC",
+    "per": "by the PSC"
+  },
+  "ppc": {
+    "bare": "PPC",
+    "definite": "the PPC",
+    "de": "of the PPC",
+    "a": "to the PPC",
+    "per": "by the PPC"
+  },
+  "pp": {
+    "bare": "PP",
+    "definite": "the PP",
+    "de": "of the PP",
+    "a": "to the PP",
+    "per": "by the PP"
+  },
+  "psoe": {
+    "bare": "PSOE",
+    "definite": "the PSOE",
+    "de": "of the PSOE",
+    "a": "to the PSOE",
+    "per": "by the PSOE"
+  },
+  "icv": {
+    "bare": "ICV",
+    "definite": "ICV",
+    "de": "of ICV",
+    "a": "to ICV",
+    "per": "by ICV"
+  },
+  "csqp": {
+    "bare": "CSQP",
+    "definite": "CSQP",
+    "de": "of CSQP",
+    "a": "to CSQP",
+    "per": "by CSQP"
+  },
+  "cecp": {
+    "bare": "CECP",
+    "definite": "CECP",
+    "de": "of CECP",
+    "a": "to CECP",
+    "per": "by CECP"
+  },
+  "ecp": {
+    "bare": "ECP",
+    "definite": "ECP",
+    "de": "of ECP",
+    "a": "to ECP",
+    "per": "by ECP"
+  },
+  "jxsi": {
+    "bare": "JxSí",
+    "definite": "JxSí",
+    "de": "of JxSí",
+    "a": "to JxSí",
+    "per": "by JxSí"
+  },
+  "jxcat": {
+    "bare": "JxCat",
+    "definite": "JxCat",
+    "de": "of JxCat",
+    "a": "to JxCat",
+    "per": "by JxCat"
+  },
+  "junts": {
+    "bare": "Junts",
+    "definite": "Junts",
+    "de": "of Junts",
+    "a": "to Junts",
+    "per": "by Junts"
+  },
+  "dl": {
+    "bare": "DL",
+    "definite": "DL",
+    "de": "of DL",
+    "a": "to DL",
+    "per": "by DL"
+  },
+  "cs": {
+    "bare": "Cs",
+    "definite": "Cs",
+    "de": "of Cs",
+    "a": "to Cs",
+    "per": "by Cs"
+  },
+  "csspa": {
+    "bare": "Cs",
+    "definite": "Cs",
+    "de": "of Cs",
+    "a": "to Cs",
+    "per": "by Cs"
+  },
+  "podemos": {
+    "bare": "Podemos",
+    "definite": "Podemos",
+    "de": "of Podemos",
+    "a": "to Podemos",
+    "per": "by Podemos"
+  },
+  "iu": {
+    "bare": "IU",
+    "definite": "IU",
+    "de": "of IU",
+    "a": "to IU",
+    "per": "by IU"
+  },
+  "up": {
+    "bare": "UP",
+    "definite": "UP",
+    "de": "of UP",
+    "a": "to UP",
+    "per": "by UP"
+  },
+  "unio": {
+    "bare": "Unió",
+    "definite": "Unió",
+    "de": "of Unió",
+    "a": "to Unió",
+    "per": "by Unió"
+  },
+  "bcomu": {
+    "bare": "BComú",
+    "definite": "BComú",
+    "de": "of BComú",
+    "a": "to BComú",
+    "per": "by BComú"
+  },
+  "ciubcn": {
+    "bare": "CiU",
+    "definite": "CiU",
+    "de": "of CiU",
+    "a": "to CiU",
+    "per": "by CiU"
+  },
+  "cdcbcn": {
+    "bare": "CDC",
+    "definite": "CDC",
+    "de": "of CDC",
+    "a": "to CDC",
+    "per": "by CDC"
+  },
+  "pdcatbcn": {
+    "bare": "PDeCAT",
+    "definite": "the PDeCAT",
+    "de": "of the PDeCAT",
+    "a": "to the PDeCAT",
+    "per": "by the PDeCAT"
+  },
+  "cupbcn": {
+    "bare": "CUP",
+    "definite": "the CUP",
+    "de": "of the CUP",
+    "a": "to the CUP",
+    "per": "by the CUP"
+  },
+  "ercbcn": {
+    "bare": "ERC",
+    "definite": "ERC",
+    "de": "of ERC",
+    "a": "to ERC",
+    "per": "by ERC"
+  },
+  "pscbcn": {
+    "bare": "PSC",
+    "definite": "the PSC",
+    "de": "of the PSC",
+    "a": "to the PSC",
+    "per": "by the PSC"
+  },
+  "ppbcn": {
+    "bare": "PP",
+    "definite": "the PP",
+    "de": "of the PP",
+    "a": "to the PP",
+    "per": "by the PP"
+  },
+  "csbcn": {
+    "bare": "Cs",
+    "definite": "Cs",
+    "de": "of Cs",
+    "a": "to Cs",
+    "per": "by Cs"
+  },
+  "dlbcn": {
+    "bare": "DL",
+    "definite": "DL",
+    "de": "of DL",
+    "a": "to DL",
+    "per": "by DL"
+  },
+  "jxcatbcn": {
+    "bare": "JxCat",
+    "definite": "JxCat",
+    "de": "of JxCat",
+    "a": "to JxCat",
+    "per": "by JxCat"
+  }
+}

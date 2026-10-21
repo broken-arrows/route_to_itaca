@@ -1,0 +1,19 @@
+{
+  "New Parlament elections called!": "Es convoquen noves eleccions al Parlament!",
+  "President": "El president",
+  "Presidenta": "La presidenta",
+  "{clause1}{clause2} {president} seems to have run out of options, and the current {cat_coalition_disp_old} will be no more. {clause3}{clause4} The Parlament has now been dissolved, and the next elections will be held in two months time, on {next_election_month}, {next_election_year}.": "{clause1}{clause2} {president} es queda sense opcions; {cat_coalition_disp_old}. {clause3}{clause4} El Parlament ha estat dissolt. Eleccions: {next_election_month}, {next_election_year}.",
+  "Repeated failures to pass the Generalitat's budget, componded by trust erosion in the other members of the coalition, seem to have been the main reason motivating this decision. ": "Pressupostos fallits i pèrdua de confiança. ",
+  "Repeated failures to pass the Generalitat's budget seem to have been the main reason motivating this decision. ": "Pressupostos fallits. ",
+  "February": "febrer",
+  "{party} {government}": "{party} {government}",
+  "Minority government - {seats}/{majority}": "Govern en minoria - {seats}/{majority}",
+  "Majority government - {seats}/{majority}": "Govern majoritari - {seats}/{majority}",
+  "<span style=\"font-style:italic;\">caretaker gov.</span>": "<span style=\"font-style:italic;\">govern en funcions</span>",
+  "Until then, the functions of the Generalitat will be limited, and handled by a {cat_coalition_disp}.": "Mentrestant, {cat_coalition_disp}.",
+  "May this be our chance!": "Que aquesta sigui la nostra oportunitat!",
+  "Finish the game.": "Acaba la partida.",
+  "support": "suport",
+  "{seats} seats": { "plural": "seats", "cases": { "=0": "Cap escó ({seats})", "one": "{seats} escó", "other": "{seats} escons" } },
+  "{seats} of {majority} seats": "{seats} de {majority} escons"
+}

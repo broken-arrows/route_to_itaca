@@ -564,53 +564,53 @@ on-arrival: {!
         },
         coalitions: [
             {
-                label: "Single-Party Majority Government",
+                label: G.englishText(G.text("Single-Party Majority Government")),
                 seatsVar: "congreso_coalition_majority_s",
                 members: [
                     { party: "majority_alias", type: "government" }
                 ]
             },
             {
-                label: "Left Front Government",
+                label: G.englishText(G.text("Left Front Government")),
                 seatsVar: "congreso_coalition_left_s",
                 members: leftFrontMembers
             },
             {
-                label: "Change Coalition",
+                label: G.englishText(G.text("Change Coalition")),
                 seatsVar: "congreso_coalition_change_s",
                 members: changeCoalitionMembers
             },
             {
-                label: "Progressist Government",
+                label: G.englishText(G.text("Progressist Government")),
                 seatsVar: "congreso_coalition_progressive_s",
                 members: progMembers
             },
             {
-                label: "PSOE Minority Government",
+                label: G.englishText(G.text("PSOE Minority Government")),
                 seatsVar: "congreso_coalition_psoe_min_s",
                 members: psoeMinMembers
             },
             {
-                label: "Social-Centrist Coalition",
+                label: G.englishText(G.text("Social-Centrist Coalition")),
                 // PSOE+Cs centre cabinet, WTF case so we actually show it
                 seatsVar: "congreso_coalition_psoe_cs_wtf_s",
                 members: psoeCsGovMembers
             },
             {
-                label: "Social-Centrist Coalition",
+                label: G.englishText(G.text("Social-Centrist Coalition")),
                 // PSOE+Cs centre cabinet, propped up by the few non-nationalist
                 // regionalists that would ever deal with it (cc/prc/te/upyd/upn/fac).
                 seatsVar: "congreso_coalition_psoe_cs_gov_s",
                 members: psoeCsGovMembers
             },
             {
-                label: "Social-Centrist Coalition",
+                label: G.englishText(G.text("Social-Centrist Coalition")),
                 // Same centre cabinet with Cs in the lead (Cs out-seats the PSOE).
                 seatsVar: "congreso_coalition_cs_psoe_gov_s",
                 members: csCentreMembers
             },
             {
-                label: "PSOE-led Grand Coalition",
+                label: G.englishText(G.text("PSOE-led Grand Coalition")),
                 seatsVar: "congreso_coalition_grand_s_psoe",
                 members: [
                     { party: "psoe", type: "government" },
@@ -618,7 +618,7 @@ on-arrival: {!
                 ]
             },
             {
-                label: "PP-led Grand Coalition",
+                label: G.englishText(G.text("PP-led Grand Coalition")),
                 seatsVar: "congreso_coalition_grand_s_pp",
                 members: [
                     { party: "pp",   type: "government" },
@@ -626,7 +626,7 @@ on-arrival: {!
                 ]
             },
             {
-                label: "Grand Toleration",
+                label: G.englishText(G.text("Grand Toleration")),
                 // 2015–16 special: PP governs, Cs supports, PSOE abstains.
                 seatsVar: "congreso_coalition_grand_s_ppcs",
                 members: concat(
@@ -636,22 +636,22 @@ on-arrival: {!
                 )
             },
             {
-                label: "Liberal Right Coalition",
+                label: G.englishText(G.text("Liberal Right Coalition")),
                 seatsVar: "congreso_coalition_pp_cs_s",
                 members: rightMembers
             },
             {
-                label: "Liberal Right Coalition",
+                label: G.englishText(G.text("Liberal Right Coalition")),
                 seatsVar: "congreso_coalition_cs_pp_s",
                 members: csRightMembers
             },
             {
-                label: "PP Minority Government",
+                label: G.englishText(G.text("PP Minority Government")),
                 seatsVar: "congreso_coalition_pp_min_s",
                 members: ppMinMembers
             },
             {
-                label: "National Right Coalition",
+                label: G.englishText(G.text("National Right Coalition")),
                 seatsVar: "congreso_coalition_pp_vox_s",
                 members: natRightMembers
             }

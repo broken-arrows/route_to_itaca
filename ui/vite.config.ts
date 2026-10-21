@@ -62,6 +62,7 @@ export default defineConfig({
     // relative path here again; it doesn't do anything.
     include: [
       'dendrynexus-ten/lib/engine.js',
+      'dendrynexus-ten/lib/localization.js',
       'dendrynexus-ten/lib/ui/content/html.js',
       'dendrynexus-ten/lib/persistence.js',
     ],

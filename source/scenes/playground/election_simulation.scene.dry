@@ -2512,6 +2512,36 @@ for (var constituency of Q.parlament_constituencies) {
 Q.parlament_s_majority = Math.floor(parlament_size/2) + 1;
 
 console.log("Total seats: " + parlament_size + ", majority: " + Q.parlament_s_majority);
+
+if (Q.ciu_parlament_showviz) {
+    G.setText(Q, "election_simulation_ciu_formation", "CiU will be able to form a {government} with ERC's support. ", {
+        government: G.governmentTooltipText("generalitat", ["ciu"],
+            G.text("Minority government - {seats}/{majority}", {
+                seats: Q.ciu_parlament_s, majority: Q.parlament_s_majority
+            }),
+            G.text("<span style='color: var(--ciu); font-style: italic;'>minority government</span>"))
+    });
+}
+
+if (Q.jxsi_parlament_showviz) {
+    G.setText(Q, "election_simulation_jxsi_formation", "jxsi will need CUP's support to form a {government}. ", {
+        government: G.governmentTooltipText("generalitat", ["jxsi"],
+            G.text("Minority government - {seats}/{majority}", {
+                seats: Q.jxsi_parlament_s, majority: Q.parlament_s_majority
+            }),
+            G.text("<span style='color: var(--jxsi); font-style: italic;'>Sovereignty government</span>"))
+    });
+}
+
+if (Q.jxcat_parlament_showviz) {
+    G.setText(Q, "election_simulation_jxcat_formation", "JxCat and ERC will form a {government} with CUP's support. ", {
+        government: G.governmentTooltipText("generalitat", ["jxcat","erc"],
+            G.text("Minority government - {seats}/{majority}", {
+                seats: Q.jxcat_parlament_s + Q.erc_parlament_s, majority: Q.parlament_s_majority
+            }),
+            G.text("<span style='color: var(--jxcat); font-style: italic;'>sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span>"))
+    });
+}
 !}
 on-display: {!
 const data = [];
@@ -2710,7 +2740,7 @@ Q.election_simulation_parlament_hemicycle = {
 {!<div id="parlament" data-widget="hemicycle" data-props='{"configFrom":"election_simulation_parlament_hemicycle","animate":true}'></div>!}
 
 {!<table style='margin-left: 0.5em; display:table; width: 95%;'>!}
-{!<tr><td style='min-width: 6em; font-weight: bold;'>Party</td><td style='width: 7em; text-align: center; font-weight: bold;'>Popular Vote</td><td style='width: 7em; font-weight: bold;'>Change</td><td style='width: 3em; text-align: center; font-weight: bold;'>Seats</td><td style='width: 3em; font-weight: bold;'>Change</td></tr>!}
+{!<tr><td style='min-width: 6em; font-weight: bold;'>Party</td><td style='width: 7em; text-align: right; font-weight: bold;'>Popular Vote</td><td style='width: 7em; font-weight: bold;'>Change</td><td style='width: 3em; text-align: center; font-weight: bold;'>Seats</td><td style='width: 3em; font-weight: bold;'>Change</td></tr>!}
 [? if jxsi_parlament_showviz: {!<tr><td><div class="box" style='background-color: #3ab6a5;'> </div> !} jxsi {!</td><td style='text-align: right;'>!}[+ jxsi_parlament_pv +]% {!</td><td>!} [+ jxsi_parlament_pv_delta +] {!</td><td style='text-align: right;'>!} [+ jxsi_parlament_s +] {!</td><td>!} [+ jxsi_parlament_s_delta +] {!</td>!}?]
 [? if ciu_parlament_showviz: {!<tr><td><div class="box" style='background-color: #002782'> </div> !} CiU {!</td><td style='text-align: right;'>!}[+ ciu_parlament_pv +]% {!</td><td>!} [+ ciu_parlament_pv_delta +] {!</td><td style='text-align: right;'>!} [+ ciu_parlament_s +] {!</td><td>!} [+ ciu_parlament_s_delta +] {!</td>!}?]
 [? if jxcat_parlament_showviz: {!<tr><td><div class="box" style='background-color: #ed5975; font-weight:bold;'> </div> !} JxCat {!</td><td style='text-align: right;'>!}[+ jxcat_parlament_pv +]% {!</td><td>!} [+ jxcat_parlament_pv_delta +] {!</td><td style='text-align: right;'>!} [+ jxcat_parlament_s +] {!</td><td>!} [+ jxcat_parlament_s_delta +] {!</td>!}?]
@@ -2755,11 +2785,11 @@ Q.election_simulation_parlament_hemicycle = {
 
 **Government Formation**
 
-[? if ciu_parlament_showviz: CiU will be able to form a <span class="generalitat-coalition" data-parties="ciu" data-summary="Minority government - [+ ciu_parlament_s +]/[+ parlament_s_majority +]"><span style='color: var(--ciu); font-style: italic;'>minority government</span></span> with ERC's support. ?]
+[? if ciu_parlament_showviz: [+ election_simulation_ciu_formation +]?]
 
-[? if jxsi_parlament_showviz: jxsi will need CUP's support to form a <span class="generalitat-coalition" data-parties="jxsi" data-summary="Minority government - [+ jxsi_parlament_s +]/[+ parlament_s_majority +]"><span style='color: var(--jxsi); font-style: italic;'>Sovereignty government</span></span>. ?]
+[? if jxsi_parlament_showviz: [+ election_simulation_jxsi_formation +]?]
 
-[? if jxcat_parlament_showviz: JxCat and ERC will form a <span class="generalitat-coalition" data-parties="jxcat erc" data-summary="Minority government - [+ jxcat_parlament_s + erc_parlament_s +]/[+ parlament_s_majority +]"><span style='color: var(--jxcat); font-style: italic;'>sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span></span> with CUP's support. ?]
+[? if jxcat_parlament_showviz: [+ election_simulation_jxcat_formation +]?]
 [? if not (ciu_parlament_showviz or jxsi_parlament_showviz or jxcat_parlament_showviz): How did we get here??? ?]
 
 - @election_simulation: Reset simulation
@@ -2774,6 +2804,26 @@ for (var constituency of Q.congreso_constituencies) {
 Q.congreso_s_majority = Math.floor(congreso_size/2) + 1;
 
 console.log("Total seats: " + congreso_size + ", majority: " + Q.congreso_s_majority);
+
+if (Q.pdcat_congreso_showviz) {
+    G.setText(Q, "election_simulation_pp_formation", "Mariano Rajoy will lead a PP {government} with the support of csspa, CC-PNC, and the toleration of a broken PSOE.", {
+        government: G.governmentTooltipText("gobierno", ["pp"],
+            G.text("Minority government - {seats}/{majority}", {
+                seats: Q.pp_congreso_s, majority: Q.congreso_s_majority
+            }),
+            G.text("<span style='color: #1d84ce;'>minority government</span>"))
+    });
+}
+
+if (Q.jxcat_congreso_showviz && !Q.fr_congreso_showviz) {
+    G.setText(Q, "election_simulation_psoe_up_formation", "Pedro Sánchez will lead a {government} (PSOE-UP) with the support of EAJ-PNV, Más País, BNG, CC-PNC, texiste and the toleration of ERC and EH Bildu. ", {
+        government: G.governmentTooltipText("gobierno", ["psoe","up"],
+            G.text("Minority government - {seats}/{majority}", {
+                seats: Q.psoe_congreso_s + Q.up_congreso_s, majority: Q.congreso_s_majority
+            }),
+            G.text("<span style='color: #da291c; font-weight: bold;'>progressist</span> <span style='color: #5a205a; font-weight: bold;'>government</span>"))
+    });
+}
 !}
 on-display: {!
 const data = [];
@@ -3075,7 +3125,7 @@ Q.election_simulation_congreso_hemicycle = {
 {!<div id="congreso" data-widget="hemicycle" data-props='{"configFrom":"election_simulation_congreso_hemicycle","animate":true}'></div>!}
 
 {!<table style='margin-left: 0.5em; display:table; width: 95%;'>!}
-{!<tr><td style='min-width: 5em; font-weight: bold;'>Party</td><td style='width: 9em; text-align:center; font-weight: bold;'>Popular Vote (Cat.)</td><td style='width: 5em; font-weight: bold;'>Change</td><td style='width: 3em; text-align: right; font-weight: bold;'>Seats</td><td style='width: 3em; font-weight: bold;'>Change</td></tr>!}
+{!<tr><td style='min-width: 5em; font-weight: bold;'>Party</td><td style='width: 9em; text-align:right; font-weight: bold;'>Popular Vote (Cat.)</td><td style='width: 5em; font-weight: bold;'>Change</td><td style='width: 3em; text-align: right; font-weight: bold;'>Seats</td><td style='width: 3em; font-weight: bold;'>Change</td></tr>!}
 [? if psoe_congreso_showviz: {!<tr><td><div class="box" style='background-color: #da291c'> </div> !} PSOE {!</td><td style='text-align: right;'>!}[+ psoe_congreso_pv +]% ([+ psoe_congreso_pv_cat +]%) {!</td><td>!} [+ psoe_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ psoe_congreso_s +] {!</td><td>!} [+ psoe_congreso_s_delta +] {!</td>!}?]
 [? if pp_congreso_showviz: {!<tr><td><div class="box" style='background-color: #1d84ce'> </div> !} PP {!</td><td style='text-align: right;'>!}[+ pp_congreso_pv +]% ([+ pp_congreso_pv_cat +]%) {!</td><td>!} [+ pp_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ pp_congreso_s +] {!</td><td>!} [+ pp_congreso_s_delta +] {!</td>!}?]
 [? if up_congreso_showviz: {!<tr><td><div class="box" style='background-color: #5a205a'> </div> !} UP {!</td><td style='text-align: right;'>!}[+ up_congreso_pv +]% ([+ up_congreso_pv_cat +]%) {!</td><td>!} [+ up_congreso_pv_delta +] {!</td><td style='text-align: right;'>!} [+ up_congreso_s +] {!</td><td>!} [+ up_congreso_s_delta +] {!</td>!}?]
@@ -3123,9 +3173,9 @@ Author's note: Congreso election simulations are more imperfect than Parlament o
 **Government Formation**
 
 [? if dl_congreso_showviz: No candidacy has been able to secure enough support to form a new government. New elections will happen in **June 2016**. ?]
-[? if pdcat_congreso_showviz: Mariano Rajoy will lead a PP <span class="gobierno-coalition" data-parties="pp" data-summary="Minority government - [+ pp_congreso_s +]/[+ congreso_s_majority +]"><span style='color: #1d84ce;'>minority government</span></span> with the support of Cs, CC-PNC, and the toleration of a broken PSOE.?]
+[? if pdcat_congreso_showviz: [+ election_simulation_pp_formation +]?]
 [? if jxcat_congreso_showviz and fr_congreso_showviz: No candidacy has been able to secure enough support to form a new government. New elections will happen in **November 2019**. ?]
-[? if jxcat_congreso_showviz and not fr_congreso_showviz: Pedro Sánchez will lead a <span class="gobierno-coalition" data-parties="psoe up" data-summary="Minority government - [+ psoe_congreso_s + up_congreso_s +]/[+ congreso_s_majority +]"><span style='color: #da291c; font-weight: bold;'>progressist</span> <span style='color: #5a205a; font-weight: bold;'>government</span></span> (PSOE-UP) with the support of EAJ-PNV, Más País, BNG, CC-PNC, texiste and the toleration of ERC and EH Bildu. ?]
+[? if jxcat_congreso_showviz and not fr_congreso_showviz: [+ election_simulation_psoe_up_formation +]?]
 
 [? if not (dl_congreso_showviz or pdcat_congreso_showviz or jxcat_congreso_showviz): How did we get here??? ?]
 
@@ -3330,7 +3380,7 @@ on-display: {!
 
 
 {!<table style='margin-left: 0.5em; display:table; width: 95%;'>!}
-{!<tr><td style='min-width: 6em; font-weight: bold;'>Party</td><td style='width: 7em; text-align: center; font-weight: bold;'>Popular Vote</td><td style='width: 7em; font-weight: bold;'>Change</td><td style='width: 3em; text-align: center; font-weight: bold;'>Seats</td><td style='width: 3em; font-weight: bold;'>Change</td></tr>!}
+{!<tr><td style='min-width: 6em; font-weight: bold;'>Party</td><td style='width: 7em; text-align: right; font-weight: bold;'>Popular Vote</td><td style='width: 7em; font-weight: bold;'>Change</td><td style='width: 3em; text-align: center; font-weight: bold;'>Seats</td><td style='width: 3em; font-weight: bold;'>Change</td></tr>!}
 [? if bcomu_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: var(--bcomu);'> </div> !} bcomu {!</td><td style='text-align: right;'>!}[+ bcomu_local_barcelona_pv +]% {!</td><td>!} [+ bcomu_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ bcomu_local_barcelona_s +] {!</td><td>!} [+ bcomu_local_barcelona_s_delta +] {!</td>!}?]
 [? if jxsi_bacelona_local_showviz: {!<tr><td><div class="box" style='background-color: #3ab6a5;'> </div> !} jxsibcn {!</td><td style='text-align: right;'>!}[+ jxsi_local_barcelona_pv +]% {!</td><td>!} [+ jxsi_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ jxsi_local_barcelona_s +] {!</td><td>!} [+ jxsi_local_barcelona_s_delta +] {!</td>!}?]
 [? if ciu_local_barcelona_showviz: {!<tr><td><div class="box" style='background-color: #002782'> </div> !} ciubcn {!</td><td style='text-align: right;'>!}[+ ciu_local_barcelona_pv +]% {!</td><td>!} [+ ciu_local_barcelona_pv_delta +] {!</td><td style='text-align: right;'>!} [+ ciu_local_barcelona_s +] {!</td><td>!} [+ ciu_local_barcelona_s_delta +] {!</td>!}?]

@@ -51,6 +51,16 @@ role: ending
 
 The jxcat electoral coalition was formed as a continuation of a national-unity list! Congrats! (this path is still wip and will make more sense once rubicon is available)
 
+@negotiated_reform
+title: The question of Constitutional Reform
+view-if: negotiated_reform_trigger and not end_negotiated_reform_seen
+on-arrival: end_negotiated_reform_seen = 1
+tags: endings
+go-to: eg_menu
+role: ending
+
+The investiture agreement has opened a constitutional reform process. What it will change, and whether it can win enough support in the Congreso and on a popular referendum, remains to be seen.
+
 @not_possible_parlament_stuck
 title: Separated twins
 subtitle: You managed something I did not think even possible

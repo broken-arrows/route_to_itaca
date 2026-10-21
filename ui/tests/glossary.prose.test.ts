@@ -4,6 +4,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import Prose from '../src/components/Prose.vue';
 import { useGameStore } from '../src/stores/game';
 import { i18n } from '../src/i18n';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 // No @pinia/testing in this repo (per the task's own ambiguity-resolution
 // note: fall back to a real pinia + a seeded store). The store is seeded
@@ -183,6 +185,28 @@ describe('Prose', () => {
       .toContain('--coalition-tooltip-color: var(--erc)');
     expect((popover as HTMLElement).style.getPropertyValue('--coalition-tooltip-color'))
       .toBe('var(--erc)');
+  });
+
+  it('translates an inline coalition summary when the locale changes without changing its authored attributes', async () => {
+    const wrapper = mountProse(
+      '<span class="generalitat-coalition" data-parties="erc psc" ' +
+      'data-summary="Majority government - 74 / 68">coalition government</span>',
+    );
+    const store = useGameStore();
+    const catalog = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../source/locales/ca/content.json'), 'utf8'));
+    const translated = catalog['Majority government - {seats}/{majority}']
+      .replace('{seats}', '74').replace('{majority}', '68');
+    await wrapper.get('.generalitat-coalition').trigger('mouseover');
+    store.adapter!.setLocale('ca', catalog);
+    store.frame = { ...store.frame! };
+    await wrapper.vm.$nextTick();
+    const popover = document.querySelector('[data-test="coalition-popover"]')!;
+    expect(popover.textContent).toContain(translated);
+    expect(wrapper.get('.generalitat-coalition').attributes('data-summary')).toBe('Majority government - 74 / 68');
+    store.adapter!.setLocale('en', {});
+    store.frame = { ...store.frame! };
+    await wrapper.vm.$nextTick();
+    expect(popover.textContent).toContain('Majority government - 74 / 68');
   });
 
   it('uses the pinned Gobierno and Ajuntament titles and supports caretaker copy', async () => {

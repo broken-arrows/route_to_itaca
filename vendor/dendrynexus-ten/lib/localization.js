@@ -6,31 +6,60 @@ var clone = function (value) {
   if (value === undefined) return undefined;
   return JSON.parse(JSON.stringify(value));
 };
+var placeholder = /\{([A-Za-z_][\w]*)(?::([a-z][a-z_]*)(?::(cap))?)?\}/g;
+var nameKey = function(namespace, id, form) { return '@name/' + namespace + '/' + id + '/' + form; };
+var nameText = function(namespace, id, fallback) {
+  return { kind: 'name', namespace: String(namespace), id: String(id).toLowerCase(), value: String(fallback === undefined ? id : fallback) };
+};
+// Names are plain text. Formatting and glossary markup belong to the renderer.
+var mergeNames = function(catalog, namespaces) {
+  var result = Object.assign({}, catalog || {});
+  Object.keys(namespaces || {}).forEach(function(namespace) {
+    Object.keys(namespaces[namespace] || {}).forEach(function(id) {
+      var forms = namespaces[namespace][id];
+      if (!forms || typeof forms !== 'object' || typeof forms.bare !== 'string') throw new Error('Name requires a bare form: ' + id);
+      Object.keys(forms).forEach(function(form) {
+        if (!/^[a-z][a-z_]*$/.test(form) || typeof forms[form] !== 'string' || /[<>{}]/.test(forms[form])) throw new Error('Invalid name form: ' + id + '/' + form);
+        result[nameKey(namespace, id, form)] = forms[form];
+      });
+    });
+  });
+  return result;
+};
+var nameParameters = function(params) {
+  var result = {};
+  Object.keys(params || {}).forEach(function(key) { if (params[key] && params[key].kind === 'name') result[key] = params[key].namespace; });
+  return result;
+};
 var namesIn = function (key) {
   var names = [];
-  String(key).replace(/\{([A-Za-z_][\w]*)\}/g, function (_, name) {
+  String(key).replace(placeholder, function (_, name) {
     if (names.indexOf(name) === -1) names.push(name);
     return _;
   });
   return names;
 };
 var markupIn = function (key) { return String(key).match(/<[^>]*>/g) || []; };
-var validateTemplate = function (key, parameters) {
+var validateTemplate = function (key, parameters, named) {
   var errors = [];
   if (typeof key !== 'string') return ['Template must be a string.'];
   var allowed = Array.isArray(parameters) ? parameters : Object.keys(parameters || {});
   namesIn(key).forEach(function (name) {
     if (allowed.indexOf(name) === -1) errors.push('Unknown placeholder {' + name + '}.');
   });
+  String(key).replace(placeholder, function(_, name, form) {
+    if (form && named && !own(named, name)) errors.push('Formatted placeholder requires a named reference: ' + name + '.');
+    return _;
+  });
   // JSON widget attributes and CSS inside protected HTML are literal structure.
   // Their braces are not translation-placeholder syntax.
   var visible = key.replace(/<[^>]*>/g, '');
-  if (/[{}]/.test(visible.replace(/\{([A-Za-z_][\w]*)\}/g, ''))) errors.push('Malformed placeholder.');
+  if (/[{}]/.test(visible.replace(placeholder, ''))) errors.push('Malformed placeholder.');
   return errors;
 };
-var validateTranslation = function (entry, parameters) {
+var validateTranslation = function (entry, parameters, named) {
   var allowed = Array.isArray(parameters) ? parameters : Object.keys(parameters || {});
-  if (typeof entry === 'string') return validateTemplate(entry, allowed);
+  if (typeof entry === 'string') return validateTemplate(entry, allowed, named);
   if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return ['Catalog entry must be a string or select/plural entry.'];
   var selector = entry.select || entry.plural;
   var errors = [];
@@ -39,12 +68,22 @@ var validateTranslation = function (entry, parameters) {
   if (!entry.cases || typeof entry.cases !== 'object' || !own(entry.cases, 'other')) errors.push('Selector requires an other case.');
   else Object.keys(entry.cases).forEach(function (name) {
     if (entry.plural && !/^(?:=\d+(?:\.\d+)?|zero|one|two|few|many|other)$/.test(name)) errors.push('Unknown plural case ' + name + '.');
-    errors = errors.concat(validateTranslation(entry.cases[name], allowed));
+    errors = errors.concat(validateTranslation(entry.cases[name], allowed, named));
   });
   return errors;
 };
-var validateEntry = function (key, entry, parameters) {
-  var errors = validateTranslation(entry, parameters);
+var validateNameForms = function(entry, named, forms) {
+  var errors = [];
+  if (typeof entry === 'string') entry.replace(placeholder, function(_, name, form) {
+    var supported = forms && forms[(named || {})[name]];
+    if (form && supported && supported.indexOf(form) === -1) errors.push('Unknown name form ' + form + ' for ' + name + '.');
+    return _;
+  });
+  else if (entry && entry.cases) Object.keys(entry.cases).forEach(function(key) { errors = errors.concat(validateNameForms(entry.cases[key], named, forms)); });
+  return errors;
+};
+var validateEntry = function (key, entry, parameters, named) {
+  var errors = validateTranslation(entry, parameters, named);
   var required = namesIn(key);
   var protectedMarkup = markupIn(key).slice().sort();
   var visit = function (value, selected) {
@@ -65,7 +104,8 @@ var literal = function (value) { return { kind: 'literal', value: value == null 
 var raw = function (html) { return { kind: 'raw', html: String(html == null ? '' : html) }; };
 var text = function (key, params) {
   params = clone(params || {});
-  var errors = validateTemplate(key, Object.keys(params));
+  var errors = validateTemplate(key, Object.keys(params), nameParameters(params));
+  if (/\{\w+:/.test(key.replace(/<[^>]*>/g, ''))) errors.push('Grammatical forms belong in translations, not source keys.');
   if (errors.length) throw new Error(errors.join(' '));
   return { kind: 'text', key: key, params: params };
 };
@@ -100,6 +140,9 @@ var render = function (recipe, locale, catalog) {
   if (recipe == null) return '';
   if (typeof recipe !== 'object') return String(recipe);
   switch (recipe.kind) {
+    // Unformatted inserts retain their exact source value, including IDs used
+    // in CSS/data attributes. Canonical display spelling is explicit (:bare).
+    case 'name': return recipe.value;
     case 'literal': return recipe.value;
     case 'raw': return recipe.html;
     case 'join': return recipe.parts.map(function (part) { return render(part, locale, catalog); }).join(render(recipe.separator, locale, catalog));
@@ -112,19 +155,31 @@ var render = function (recipe, locale, catalog) {
     case 'text':
       var entry = catalog && own(catalog, recipe.key) ? catalog[recipe.key] : recipe.key;
       // A malformed external catalog must never execute code or break gameplay.
-      if (entry == null || validateEntry(recipe.key, entry, Object.keys(recipe.params || {})).length) entry = recipe.key;
+      if (entry == null || validateEntry(recipe.key, entry, Object.keys(recipe.params || {}), nameParameters(recipe.params)).length) entry = recipe.key;
       var template = selectEntry(entry, recipe.params || {}, locale);
-      return String(template).replace(/\{([A-Za-z_][\w]*)\}/g, function (_, name) {
-        return render(recipe.params[name], locale, catalog);
+      var missingForm = false;
+      var output = String(template).replace(placeholder, function (_, name, form, capital) {
+        var param = recipe.params[name];
+        if (!form) return render(param, locale, catalog);
+        var key = param && param.kind === 'name' ? nameKey(param.namespace, param.id, form) : '';
+        if (!catalog || !own(catalog, key) || typeof catalog[key] !== 'string') { missingForm = true; return ''; }
+        var value = catalog[key];
+        return capital ? value.charAt(0).toLocaleUpperCase(locale) + value.slice(1) : value;
       });
+      // Older saves/plain parameters and unknown names retain the exact English
+      // sentence instead of silently dropping a required article/preposition.
+      return missingForm ? render(text(recipe.key, recipe.params), 'en', null) : output;
     default: throw new Error('Unknown text recipe kind: ' + recipe.kind);
   }
 };
 var validateRecipe = function (recipe) {
   var errors = [];
   if (!recipe || typeof recipe !== 'object') return ['Recipe must be an object.'];
-  if (recipe.kind === 'text') {
-    errors = validateTemplate(recipe.key, Object.keys(recipe.params || {}));
+  if (recipe.kind === 'name') {
+    if (typeof recipe.namespace !== 'string' || typeof recipe.id !== 'string' || typeof recipe.value !== 'string') errors.push('Invalid named reference.');
+  } else if (recipe.kind === 'text') {
+    errors = validateTemplate(recipe.key, Object.keys(recipe.params || {}), nameParameters(recipe.params));
+    if (typeof recipe.key === 'string' && /\{\w+:/.test(recipe.key.replace(/<[^>]*>/g, ''))) errors.push('Grammatical forms belong in translations, not source keys.');
     Object.keys(recipe.params || {}).forEach(function (name) {
       if (recipe.params[name] && typeof recipe.params[name] === 'object') errors = errors.concat(validateRecipe(recipe.params[name]));
     });
@@ -171,7 +226,7 @@ var build = function (content, options) {
   var addUnit = function (key, params) {
     // Pure formatting/widget placeholders are technical structure, not prose.
     if (key.replace(/\{[\w]+\}/g, '').replace(/<[^>]*>/g, '').trim()) {
-      units.push({ key: key, placeholders: namesIn(key), params: Object.keys(params), parameters: Object.keys(params), context: contextNames.slice(), protectedMarkup: markupIn(key) });
+      units.push({ key: key, placeholders: namesIn(key), params: Object.keys(params), parameters: Object.keys(params), context: contextNames.slice(), nameParameters: nameParameters(params), protectedMarkup: markupIn(key) });
     }
     return text(key, params);
   };
@@ -198,7 +253,9 @@ var build = function (content, options) {
       if (part.type === 'insert') {
         name = nameFor(parameterName(dependencies[part.insert], part.insert));
         value = values[part.insert];
-        params[name] = value === undefined ? literal('') : clone(value);
+        var dependency = dependencies[part.insert];
+        var namespace = dependency && !dependency.qdisplay && (options.nameBindings || {})[dependency.quality];
+        params[name] = namespace ? nameText(namespace, value && value.kind === 'literal' ? value.value : (value === undefined ? '' : value)) : (value === undefined ? literal('') : clone(value));
         return '{' + name + '}';
       }
       if (part.type === 'conditional') {
@@ -258,6 +315,7 @@ var renderContent = function (snapshot, locale, catalog) {
 };
 
 module.exports = {
+  validateNameForms: validateNameForms, nameText: nameText, mergeNames: mergeNames, nameParameters: nameParameters,
   clone: clone, text: text, literal: literal, raw: raw, markup: markup,
   joinText: joinText, render: render, collectUnits: collectUnits, buildUnits: collectUnits,
   captureContent: captureContent, renderContent: renderContent,

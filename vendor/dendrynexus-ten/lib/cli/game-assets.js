@@ -101,8 +101,18 @@ function validateGameAssets(projectDir, options = {}) {
   if (!locales.length || locales.some(locale => !/^[a-zA-Z][\w-]*$/.test(locale))) {
     throw new Error('Invalid required languages in out/game.json');
   }
+  const declarations = game.data && game.data.localization || {};
+  const nameCatalogs = declarations.nameCatalogs || {};
+  for (const file of Object.values(nameCatalogs)) if (!/^[a-z][a-z_-]*\.json$/.test(file)) throw new Error('Invalid naming catalog path: ' + file);
   const catalogs = locales.map(locale => {
     const dir = path.join(root, 'source', 'locales', locale);
+    for (const [namespace, file] of Object.entries(nameCatalogs)) {
+      const names = readJSON(path.join(dir, file));
+      require('../localization').mergeNames({}, { [namespace]: names });
+      for (const [id, forms] of Object.entries(names)) for (const form of (declarations.nameForms || {})[namespace] || []) {
+        if (typeof forms[form] !== 'string') throw new Error(locale + ': missing name form ' + id + '/' + form);
+      }
+    }
     return { locale, content: readJSON(path.join(dir, 'content.json')), ui: readJSON(path.join(dir, 'ui.json')) };
   });
   const english = catalogs.find(catalog => catalog.locale === 'en');
@@ -149,7 +159,7 @@ function publishRuntimeAssets(projectDir, destDir, validation) {
   fs.rmSync(localesDir, { recursive: true, force: true });
   for (const locale of checked.locales) {
     fs.mkdirSync(path.join(localesDir, locale), { recursive: true });
-    for (const name of ['content.json', 'ui.json']) {
+    for (const name of ['content.json', 'ui.json'].concat(Object.values(checked.game.data && checked.game.data.localization && checked.game.data.localization.nameCatalogs || {}))) {
       fs.copyFileSync(path.join(root, 'source', 'locales', locale, name), path.join(localesDir, locale, name));
     }
   }

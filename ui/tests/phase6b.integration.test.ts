@@ -15,7 +15,10 @@ import { extractFiles } from 'dendrynexus-ten/lib/localization-extract.js';
 const rootDir = resolve(__dirname, '../..');
 const source = (path: string) => readFileSync(join(rootDir, 'source', path), 'utf8');
 const declarations = JSON.parse(source('data/localization.json'));
-const catalan = parseContentCatalog(JSON.parse(source('locales/ca/content.json')));
+// Test the localization contract with stable wording; editorial catalogs change independently.
+const catalan = parseContentCatalog(JSON.parse(readFileSync(
+  join(import.meta.dirname, 'fixtures/localization-contract.ca.json'), 'utf8',
+)));
 const root = `title: Test start
 role: setup
 new-page: true
