@@ -1,0 +1,15 @@
+title: Earthquake in ERC, Republicans walk out!
+view-if: player_party = "erc" and erc_core_dissent >= 55 and not erc_core_resign
+tags: event
+role: event
+new-page: true
+max-visits: 1
+face-image: img/erc/disunity.jpeg
+on-arrival: erc_split_faction = "core"
+call: erc_faction_split_effect
+
+= The Republican Core walks out
+
+After months of voicing out their disagreements, lately so even publicly, the very heart of our party, the Republican core, has resigned en masse. The faction representing a strive for democratization, public accountability, a new way of doing things, the very "R" of ERC has, now definitely, given up on us and the direction the party has taken. 
+
+- @post_event: We must carry on

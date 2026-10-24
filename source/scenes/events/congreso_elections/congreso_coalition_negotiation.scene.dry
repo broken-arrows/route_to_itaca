@@ -232,7 +232,13 @@ TODO! what happens here + party consequences for not choosing this
 @resolve
 title: Finalize negotiations
 on-arrival: {!
-    Q.congreso_delivery_stalls = 0;
+    Q.congreso_delivery_cash_stalls = 0;
+    Q.congreso_delivery_funding_stalls = 0;
+    Q.congreso_delivery_renfe_stalls = 0;
+    Q.congreso_delivery_ports_stalls = 0;
+    Q.congreso_delivery_education_stalls = 0;
+    Q.congreso_delivery_police_stalls = 0;
+    Q.congreso_delivery_borders_stalls = 0;
     // Set timers
     if (Q.congreso_coalition_negotiated_reform) {
         if (!Q.countdowns.includes("negotiated_reform")) Q.countdowns.push("negotiated_reform");

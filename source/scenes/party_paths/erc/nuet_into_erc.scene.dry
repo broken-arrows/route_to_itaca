@@ -1,0 +1,17 @@
+title: New faces in the party
+subtitle: Disgruntled with the direction taken by [+ parlament_current_icv +], some big names are switching parties
+view-if: player_party = "erc" and cecp_formed and (cecp_leader = "Xavier Domènech" or cecp_leader = "Joan Coscubiela") and not erc_left_resign and not joan_josep_nuet_departed
+tags: event
+role: event
+new-page: true
+max-visits: 1
+face-image: img/erc/joanjosepnuet.jpg
+on-arrival: {!
+    Q.joan_josep_nuet_advisor_available = 1;
+!}
+
+= New faces in the party
+
+The establishment of CECP as a new political space with its long-term structuring and ideological foundation has, shockingly, not settled every disagreement within the Catalan federal left. Leaders of factions and subgroups have jumped ship, ranging from former communists to more centre-left positions. Among them, a win for ERC in Joan Josep Nuet, [? if cecp_leader = "Joan Coscubiela": who sees the coalition's new direction as a retreat from the social and national transformation he hoped it would pursue. ?][? if cecp_leader = "Xavier Domènech": who, despite shared social commitments, disagrees with the priority the new leadership new national positions. ?]
+
+- @post_event: Welcome to the party!

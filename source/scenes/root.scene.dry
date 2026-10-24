@@ -1692,7 +1692,7 @@ on-arrival: {!
   Q.sergi_sabria_advisor_available = 1;
   Q.raul_romera_advisor = 0; // jxsi/jxcat locked
   // Institutional Pragmatics
-  Q.pere_aragones_advisor_available = 0; // Post referendum?
+  Q.pere_aragones_advisor_available = 0; // TODO: post referendum?
   Q.roger_torrent_advisor_available = 1;
   Q.alfred_bosch_advisor_available = 1;
   Q.ernest_maragall_advisor_available = 0; // Post PSC implosion

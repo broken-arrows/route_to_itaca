@@ -1,0 +1,15 @@
+title: The Pragmatic section walks out
+view-if: player_party = "erc" and erc_pragmatic_dissent >= 55 and not erc_pragmatic_resign
+tags: event
+role: event
+new-page: true
+max-visits: 1
+face-image: img/erc/disunity.jpeg
+on-arrival: erc_split_faction = "pragmatic"
+call: erc_faction_split_effect
+
+= The Pragmatic section walks out
+
+After months of voicing out their disagreements, lately so even publicly, the Pragmatics amongst the party have resigned en masse. The faction representing cool headed-ness and measurable results seems to have given up on us and the direction taken by ERC. 
+
+- @post_event: We must carry on...

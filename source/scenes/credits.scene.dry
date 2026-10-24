@@ -12,6 +12,7 @@ Added to that, the acclaimed mod to that game by originn0, <a target="_blank" cl
 
 Check out, fork, and play around with the code from <a target="_blank" class="link" href="https://github.com/broken-arrows/route_to_itaca">GitHub</a>. Just as in the originals, many works were referenced in the making of this game.
 
+- @licensing: Project Licensing
 - @articles: Articles
 - @images: Images
 - @assets: Assets
@@ -19,6 +20,17 @@ Check out, fork, and play around with the code from <a target="_blank" class="li
 # - @music: Music
 - @about: Back
 
+@licensing
+
+= Licenses
+
+Original code contributions by Broken Arrows are licensed under <a target="_blank" class="link" href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm Noncommercial 1.0.0</a>, which permits use, modification, and redistribution for its permitted noncommercial purposes.
+
+Original game text, documentation, and artwork by Broken Arrows are licensed under <a target="_blank" class="link" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>: credit the author, indicate changes, use the material noncommercially, and share adaptations under the same license.
+
+These do not affect inherited MIT-licensed code and third-party material, which retain their existing licenses and notices. See the <a target="_blank" class="link" href="https://github.com/broken-arrows/route_to_itaca/blob/main/LICENSE.md">project license notice</a> for scope and full terms.
+
+- @credits: Back
 
 @on_ai
 
@@ -371,6 +383,8 @@ diada/2019.jpg: By ​Òmnium Cultural, CC BY-SA 2.0, <a target="_blank" class="
 events/2012nofiscalagreement.webp: By EFE, via Diari Ara, used under Fair Use, <a target="_blank" class="link" href="https://www.ara.cat/politica/pacte-fiscal-mas-rajoy_1_2416743.html">ara.cat/politica/pacte-fiscal-mas-rajoy_1_2416743.html</a> (2012)
 
 events/9n.jpg: By Kippelboy - own work, CC BY 4.0, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=36688801">commons.wikimedia.org/w/index.php?curid=36688801</a> (2014)
+
+events/aragones_sanchez.jpg: By Generalitat de Catalunya, Attribution, <a target="_blank" class="link" href="https://commons.wikimedia.org/w/index.php?curid=120654611">commons.wikimedia.org/w/index.php?curid=120654611</a> (2022)
 
 events/banos_adeu.jpg: By La República, used under Fair Use <a target="_blank" class="link" href="https://www.larepublica.cat/directe-cat/el-no-a-mas-trenca-la-cup-antonio-banos-dimiteix"/>larepublica.cat/directe-cat/el-no-a-mas-trenca-la-cup-antonio-banos-dimiteix/</a> (2015)
 

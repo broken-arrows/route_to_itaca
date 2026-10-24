@@ -1,0 +1,15 @@
+title: The Left wing of ERC breaks off!
+view-if: player_party = "erc" and erc_left_dissent >= 55 and not erc_left_resign
+tags: event
+role: event
+new-page: true
+max-visits: 1
+face-image: img/erc/disunity.jpeg
+on-arrival: erc_split_faction = "left"
+call: erc_faction_split_effect
+
+= The Left wing of ​ERC breaks off!
+
+After months of voicing out their disagreements, lately so even publicly, the Left wing of the party has resigned en masse. The faction representing social progress, economic and territorial redistribution, the very "E" of ERC has, now definitely, given up on us and the direction the party has taken. 
+
+- @post_event: We must carry on

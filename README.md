@@ -6,6 +6,16 @@ A fork from the original [Petrograd 1917](https://github.com/aucchen/petrograd_1
 
 Play it (not yet)! [broken-arrows.github.io/route_to_itaca/](https://broken-arrows.github.io/route_to_itaca/)
 
+## License
+
+Original code contributions by Broken Arrows are licensed under
+[PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0).
+Original game text, documentation, and artwork are licensed under
+[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+(attribution, noncommercial use, and share-alike).
+Inherited MIT-licensed material and other third-party material retain their
+existing licenses and notices. See [LICENSE.md](LICENSE.md) for scope and terms.
+
 ## Dev info
 
 This repo is quite heavy compared to other mods or dendry games since I include a lot of the data used for fine-tuning. Feel free to only focus on the `out` and `source` folders if you're only interested in the coding itself, regardless of parameter tuning.

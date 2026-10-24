@@ -1,6 +1,7 @@
 {
   "name": "route-to-itaca-ui",
   "private": true,
+  "license": "SEE LICENSE IN ../LICENSE.md",
   "version": "0.0.1",
   "type": "module",
   "engines": {

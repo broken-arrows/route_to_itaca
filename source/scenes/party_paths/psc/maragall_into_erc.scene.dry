@@ -1,6 +1,6 @@
 title: New faces in the party
 subtitle: Major PSC names are jumping ship, and some are even joining us
-view-if: ernest_maragall_erc_trigger and (player_party = "erc" or player_was = "erc")
+view-if: ernest_maragall_erc_trigger and not ernest_maragall_departed and (player_party = "erc" or player_was = "erc")
 face-image: img/erc/ernestmaragall.jpg
 new-page: true
 max-visits: 1

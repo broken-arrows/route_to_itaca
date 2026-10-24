@@ -1,6 +1,6 @@
 title: New faces in the party
 subtitle: The recent electoral alliance has seen an influx of people to our ranks
-view-if: erc_in_jxsi or erc_in_jxcat and player_party == "erc"
+view-if: player_party = "erc" and (erc_in_jxsi or erc_in_jxcat) and not erc_civic_resign
 tags: event
 new-page: true
 max-visits: 1
@@ -17,13 +17,13 @@ Our recent electoral alliance in the form of [? if jxsi_formed and not jxsi_diss
 - @raul_romeva_disp: And not only her!
 
 @no_romeva
-view-if: jxsi_formation_num = 50 or jxcat_formation_num = 50
+view-if: erc_core_resign or (erc_in_jxsi and jxsi_formation_num = 50) or (erc_in_jxcat and jxcat_formation_num = 50)
 go-to: post_event
 
 @raul_romeva_disp
-view-if: not jxsi_formation_num = 50 and not jxcat_formation_num = 50
+view-if: not erc_core_resign and not erc_civic_resign and ((erc_in_jxsi and jxsi_formation_num != 50) or (erc_in_jxcat and jxcat_formation_num != 50))
 on-arrival: {!
-    Q.raul_romeva_advisor_available = 1
+    Q.raul_romeva_advisor_available = 1;
 !}
 face-image: img/erc/romeva.jpg
 

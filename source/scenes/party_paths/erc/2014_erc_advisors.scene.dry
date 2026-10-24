@@ -5,8 +5,9 @@ new-page: true
 max-visits: 1
 face-image: img/erc/rufian.png
 on-arrival: {!
-    Q.gabriel_rufian_advisor_available = 1;
+    if (!Q.erc_core_resign && !Q.gabriel_rufian_departed) Q.gabriel_rufian_advisor_available = 1;
     Q.joan_laporta_advisor_available = 0;
+    if (Q.joan_laporta_advisor) Q.n_advisors = Math.max(0, Q.n_advisors - 1);
     Q.joan_laporta_advisor = 0;
 !}
 
@@ -14,6 +15,6 @@ on-arrival: {!
 
 With the growth of the party, its only natural to see some shifts and additions to the party's most-well-known names. What is somewhat rarer is to see people leaving, but so is the case for Joan Laporta. After leaving SI and coming to ERC, he seems to also have grown critical and apathetic towards our party too. Who knows what's his future from now onwards. Maybe back to sports?
 
-In more uplifting news, the profile who is up and coming, and surpassing expectations every time is that of Gabriel Rufián. The young man originally form Analusia has built quite the profile in advocating for independence among Spanish-speaking Catalans. Now also a member of the ANC, he seems to have a special knack for building support among the industrial zones of Catalonia.
+[? if not erc_core_resign: In more uplifting news, the profile who is up and coming, and surpassing expectations every time is that of Gabriel Rufián. The young man originally form Analusia has built quite the profile in advocating for independence among Spanish-speaking Catalans. Now also a member of the ANC, he seems to have a special knack for building support among the industrial zones of Catalonia. ?]
 
-- @post_event: A welcome addition!
+- @post_event: The party is changing...

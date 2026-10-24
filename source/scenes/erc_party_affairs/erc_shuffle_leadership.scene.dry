@@ -83,7 +83,7 @@ subtitle: Secretary General of the UGT in Girona, has a strong link with many pr
 choose-if: dolors_bassa_advisor = 0
 unavailable-subtitle: Already an advisor
 view-if: n_advisors < max_advisors and dolors_bassa_advisor_available = 1
-on-arrival: dolors_bassa_advisor = 1; n_advisors += 1; 
+on-arrival: dolors_bassa_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_social_left
 go-to: erc_advisor_menu
 
@@ -95,7 +95,7 @@ subtitle: Former member of ICV-EUiA, he left the CSQP during its crisis.
 choose-if: joan_josep_nuet_advisor = 0
 unavailable-subtitle: Already an advisor
 view-if: n_advisors < max_advisors and joan_josep_nuet_advisor_available = 1
-on-arrival: joan_josep_nuet_advisor = 1; n_advisors += 1; 
+on-arrival: joan_josep_nuet_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_social_left
 go-to: erc_advisor_menu
 
@@ -107,7 +107,7 @@ subtitle: A lawyer by profession, she has been ERC's secretary general since 201
 choose-if: marta_rovira_advisor = 0
 unavailable-subtitle: Already an advisor
 view-if: n_advisors < max_advisors and  marta_rovira_advisor_available = 1
-on-arrival: marta_rovira_advisor = 1; n_advisors += 1; 
+on-arrival: marta_rovira_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_social_left
 go-to: erc_advisor_menu
 
@@ -120,7 +120,7 @@ subtitle: Former Mayor of Ripoll, she has the strongest background in agricultur
 choose-if: teresa_jorda_advisor = 0
 unavailable-subtitle: Already an advisor
 view-if: n_advisors < max_advisors and teresa_jorda_advisor_available = 1
-on-arrival: teresa_jorda_advisor = 1; n_advisors += 1; 
+on-arrival: teresa_jorda_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_social_left
 go-to: erc_advisor_menu
 

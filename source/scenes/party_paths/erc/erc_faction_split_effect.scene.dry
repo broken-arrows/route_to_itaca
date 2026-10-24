@@ -1,0 +1,85 @@
+title: Resolve an ERC faction rupture
+on-arrival: {!
+    var faction = Q.erc_split_faction;
+    var departures = {
+        left: ['dolors_bassa', 'teresa_jorda', 'joan_josep_nuet'],
+        core: ['joan_tarda', 'gabriel_rufian', 'raul_romeva'],
+        pragmatic: ['alfred_bosch', 'ernest_maragall'],
+        civic: ['joan_laporta', 'carme_forcadell', 'elisenda_paluzie']
+    };
+    if (Q.player_party == 'erc' && departures[faction] && !Q['erc_' + faction + '_resign'] && Q['erc_' + faction + '_dissent'] >= 55) {
+        var total = Q.erc_factions.reduce(function (sum, f) { return sum + Math.max(0, Number(Q['erc_' + f + '_strength']) || 0); }, 0);
+        var share = total > 0 ? Math.max(0, Q['erc_' + faction + '_strength']) / total : 0;
+        var rate = 0.05 + 0.10 * share;
+        // The joint-list allocation is an attribution proxy, not voter ownership.
+        function carrier(contest) {
+            for (var list of ['jxsi', 'jxcat']) {
+                if (Q['erc_in_' + list] && (contest == 'parlament' || Q[list + (contest == 'congreso' ? '_in_congreso' : '_in_local')])) return list;
+            }
+            return 'erc';
+        }
+        function ercShare(list) {
+            if (list == 'erc') return 1;
+            var remainder = Q['cup_in_' + list] ? 1 - (Number(Q[list + '_cup_formation_num']) || 0) / 100 : 1;
+            return Math.max(0, Math.min(1, remainder * (Number(Q[list + '_formation_num']) || 50) / 100));
+        }
+        function transferCell(contest, c, d) {
+            var from = carrier(contest);
+            var parties = contest == 'parlament' ? Q.parties.concat(['abstain']) : contest == 'congreso' ? Q['congreso_parties_' + c].concat(['abstain']) : Q.parties_bcn;
+            function key(p) { return contest == 'parlament' ? p + '_parlament_' + c + '_' + d + '_support' : contest == 'congreso' ? p + '_congreso_' + c + '_support' : p + '_local_barcelona_support'; }
+            function live(p) {
+                if (!p || p == from || !parties.includes(p)) return false;
+                if (p == 'abstain') return contest != 'barcelona';
+                if (p == 'fnc') return !!(Q.fnc_formed && Q.pxc_dissolved);
+                if (p == 'cup' && from != 'erc' && Q['cup_in_' + from]) return false;
+                if (from != 'erc' && (Q[p + '_in_' + from] || ['ciu','cdc','dl'].includes(p))) return false;
+                if ((p == 'jxsi' || p == 'jxcat') && (contest == 'congreso' ? !Q[p + '_in_congreso'] : contest == 'barcelona' ? !Q[p + '_in_local'] : Q[p + '_dissolved'])) return false;
+                // An active party can receive defectors even in a cell where it has no voters yet.
+                if (contest == 'parlament') return Q.parlament_constituencies.some(function (province) {
+                    return Q.parlament_demographics.some(function (demo) { return Number(Q[p + '_parlament_' + province + '_' + demo + '_support']) > 0; });
+                });
+                return Number(Q[key(p)]) > 0;
+            }
+            var federal = (contest == 'parlament' ? [Q.parlament_current_icv] : contest == 'congreso' ? ['up','podemos','iu'] : ['bcomu','icv']).find(live);
+            var moderate = [Q.parlament_current_ciu, 'junts','pdcat','dl','cdc','ciu'].find(live);
+            var socialist = (contest == 'congreso' ? ['psc','psoe'] : ['psc']).find(live);
+            var routes = faction == 'left' ? [['cup',0.35],[federal,0.40],['abstain',0.25]]
+                : faction == 'pragmatic' ? [[socialist,0.40],[moderate,0.35],['abstain',0.25]]
+                : [['cup',0.30],[moderate,0.25],['abstain',0.45]];
+            // Only a sovereignty retreat opens a small radical-nationalist outlet.
+            // Missing mainstream outlets increase demobilization, never the FNC fraction.
+            if ((faction == 'core' || faction == 'civic') && Q.erc_roadmap <= 2 && live('fnc')) {
+                routes[2][1] -= 0.05;
+                routes.push(['fnc',0.05]);
+            }
+            var fallback = contest != 'barcelona' ? 'abstain' : (federal || (live('psc') ? 'psc' : null));
+            var opening = Number(Q[key(from)]) || 0;
+            var loss = opening * rate * ercShare(from);
+            for (var route of routes) {
+                var to = live(route[0]) ? route[0] : fallback;
+                if (!to || !loss) continue;
+                G.cardSupportTransfer(Q, { contest: contest, from: from, to: to, amount: loss * route[1], maxDonorFraction: 0.5,
+                    ...(contest == 'barcelona' ? {} : { constituencies: [c] }),
+                    ...(contest == 'parlament' ? { demographics: [d] } : {}) });
+            }
+        }
+        for (var c of Q.parlament_constituencies) for (var d of Q.parlament_demographics) transferCell('parlament', c, d);
+        transferCell('congreso', 'catalunya', null);
+        transferCell('barcelona', null, null);
+        // Other municipalities use regional appeal scores rather than voter stocks.
+        Q.erc_redbelt_mod = (Number(Q.erc_redbelt_mod) || 0) - 10 * rate;
+        Q.erc_interior_mod = (Number(Q.erc_interior_mod) || 0) - 10 * rate;
+        for (var advisor of departures[faction]) {
+            // Maragall can still bring a new network from outside after this rupture.
+            if (advisor == 'ernest_maragall' && !Q[advisor + '_advisor_available'] && !Q[advisor + '_advisor']) continue;
+            if (Q[advisor + '_advisor']) Q.n_advisors = Math.max(0, Q.n_advisors - 1);
+            Q[advisor + '_advisor'] = 0;
+            Q[advisor + '_advisor_available'] = 0;
+            Q[advisor + '_departed'] = true;
+        }
+        Q['erc_' + faction + '_resign'] = true;
+        Q['erc_' + faction + '_strength'] = 0;
+        Q['erc_' + faction + '_dissent'] = 0;
+    }
+    Q.erc_split_faction = null;
+!}
