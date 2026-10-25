@@ -472,7 +472,7 @@ on-arrival: {!
                 Q.parlament_coalition_proposal_bnl_name = "Carlos Carrizosa";
                 Q.parlament_coalition_proposal_bnl_gender = "m";
             } else {
-                Q.parlament_coalition_proposal_bnl_name = "José María Espejo-Saavedra";
+                Q.parlament_coalition_proposal_bnl_name = Q.speaker == "José María Espejo-Saavedra" ? "Joan Garcia" : "José María Espejo-Saavedra";
                 Q.parlament_coalition_proposal_bnl_gender = "m";
             }
             break;

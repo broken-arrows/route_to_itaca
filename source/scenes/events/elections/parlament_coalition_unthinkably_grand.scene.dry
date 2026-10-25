@@ -84,8 +84,8 @@ on-arrival: {!
         Q.speaker = Q.parlament_current_icv_leader == "Lluís Rabell" ? "Dolors Camats" : "Lluís Rabell";
         Q.speaker_gender = Q.parlament_current_icv_leader == "Lluís Rabell" ? "f" : "m";
     } else {
-        Q.speaker = Q.cs_leader;
-        Q.speaker_gender = Q.cs_leader_gender;
+        Q.speaker = "José María Espejo-Saavedra";
+        Q.speaker_gender = "m";
     }
 !}
 go-to: parlament_coalition_setnames

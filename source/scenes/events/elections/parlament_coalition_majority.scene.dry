@@ -83,7 +83,11 @@ on-arrival: {!
             Q.speaker_gender = Q.parlament_current_icv_leader == "Lluís Rabell" ? "f" : "m";
             break;
         case "cs":
-            Q.speaker = "Carlos Carrizosa";
+            Q.speaker = "José María Espejo-Saavedra";
+            Q.speaker_gender = "m";
+            break;
+        case "ppc":
+            Q.speaker = "Enric Millo";
             Q.speaker_gender = "m";
             break;
         case "cup":

@@ -322,11 +322,11 @@ on-arrival: {!
         Q.speaker_gender = "m";
     } else if (cabinet.length > 1) {
         Q.speaker_party = vicePresident;
-        Q.speaker = Q[vicePresident + "_leader"];
-        Q.speaker_gender = Q[vicePresident + "_leader_gender"];
+        Q.speaker = "José María Espejo-Saavedra";
+        Q.speaker_gender = "m";
     } else if (president == "cs") {
         Q.speaker_party = "cs";
-        Q.speaker = "Carlos Carrizosa";
+        Q.speaker = "José María Espejo-Saavedra";
         Q.speaker_gender = "m";
     } else if (president == "psc") {
         Q.speaker_party = "psc";
