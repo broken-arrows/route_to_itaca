@@ -1,0 +1,193 @@
+title: Policing powers negotiations
+subtitle: Gobierno and Generalitat meet to discuss further power transfers
+tags: event
+role: event
+new-page: true
+face-image: img/events/aragones_sanchez.jpg
+view-if: (negotiated_police_trigger or negotiated_police_psoe_trigger) and not constitution_reformed
+on-arrival: {!
+    var lead = Q.congreso_agreement_lead_party || Q.congreso_coalition_lead_party;
+    Q.congreso_delivery_psoe = lead == "psoe";
+    Q.congreso_delivery_partner = Number(Q.congreso_delivery_psoe ? Q.psc_relations : Q[Q.parlament_current_icv + "_relations"]) || 0;
+    var relations = Number(Q.cat_spa_relations) + (Q.congreso_delivery_psoe ? 0 : 10);
+    Q.congreso_delivery_cost = relations > 60 ? 0 : relations > 50 ? 1 : relations > 40 ? 2 : relations > 30 ? 3 : -1;
+    Q.congreso_delivery_score = (Q.generalitat_surplus >= -1.5 ? 1 : 0)
+        + (Q.public_debt <= 30 ? 1 : 0)
+        + (Q.social_dissent >= 65 ? 1 : 0)
+        + (Q.independence_movement >= 70 ? 1 : 0);
+    Q.congreso_delivery_level = 0;
+    Q.congreso_delivery_result_level = 0;
+    Q.congreso_delivery_vote_result = null;
+    Q.congreso_delivery_vote_passed = false;
+!}
+
+= Policing powers negotiations
+
+After the negotiations for an investiture resulted in the newly formed [+ spanish_coalition_disp +] promising a wider powers for the Mossos d'Esquadra, the Catalan police. Now the Generalitat and Gobierno now meet to close the deal. [? if congreso_delivery_psoe: The PSOE is not particularly thrilled about this promise, but they are, at least, now seated at the table.?][? if not congreso_delivery_psoe: It is a never-before seen party the one sitting now in Madrid, so a real chance for something different may exist after all. ?][? if congreso_delivery_police_stalls > 0: Even after stalled negotiations, a conclusion must be reached now.?]
+
+- @accept_soft
+- @big_win
+- @press
+- @broken
+
+@accept_soft
+title: Let's play this safe
+subtitle: Even if it's a limited deal, we should do our best to make sure we get it. [? if congreso_delivery_cost > 0: \[-[+ congreso_delivery_cost +] resources\]?]
+choose-if: not constitution_reformed and (negotiated_police_trigger or negotiated_police_psoe_trigger) and congreso_delivery_partner >= 55 and congreso_delivery_cost >= 0 and (not congreso_delivery_psoe or congreso_delivery_score >= 2) and party_resources >= congreso_delivery_cost
+unavailable-subtitle: [? if congreso_delivery_partner < 55: We don't have good enough relations with [? if congreso_delivery_psoe: the PSOE?][? if not congreso_delivery_psoe: [+ parlament_current_icv +]?]. ?][? if congreso_delivery_cost < 0: Catalonia-Spain relations are too strained for this to be an option. ?][? if congreso_delivery_psoe and congreso_delivery_score < 2: [? if spanish_pm_gender = "m": Presidente ?][? if spanish_pm_gender = "f": Presidenta ?][+ spanish_pm +] considers that the current economic situation of the Generalitat is too precarious to take on this responsibility. ?][? if congreso_delivery_cost >= 0 and party_resources < congreso_delivery_cost: Not enough resources. ?]
+on-arrival: {!
+    Q.party_resources -= Q.congreso_delivery_cost;
+    Q.negotiated_police_trigger = false;
+    Q.negotiated_police_countdown = -1;
+    Q.negotiated_police_psoe_trigger = false;
+    Q.negotiated_police_psoe_countdown = -1;
+    Q.countdowns = Q.countdowns.filter(function (name) { return !["negotiated_police","negotiated_police_psoe"].includes(name); });
+    Q.congreso_delivery_level = 2;
+!}
+go-to: enact
+
+@big_win
+title: Push for a real transfer of powers!
+subtitle: This may even require the Congreso to vote on it. [? if congreso_delivery_cost > 0: \[-[+ congreso_delivery_cost +] resources\]?]
+choose-if: not congreso_delivery_psoe and not constitution_reformed and (negotiated_police_trigger or negotiated_police_psoe_trigger) and congreso_delivery_partner >= 55 and congreso_delivery_cost >= 0 and congreso_delivery_score >= 2 and party_resources >= congreso_delivery_cost
+unavailable-subtitle: [? if congreso_delivery_psoe: The PSOE is unwilling to go this far at the moment. ?][? if not congreso_delivery_psoe and congreso_delivery_partner < 55: We don't have good enough relations with [+ parlament_current_icv +]. ?][? if congreso_delivery_cost < 0: Catalonia-Spain relations are too strained at the moment. ?][? if congreso_delivery_score < 2: [? if spanish_pm_gender = "m": Presidente ?][? if spanish_pm_gender = "f": Presidenta ?][+ spanish_pm +] considers that the current economic situation of the Generalitat is too precarious to take on this responsibility. ?][? if congreso_delivery_cost >= 0 and party_resources < congreso_delivery_cost: Not enough resources. ?]
+on-arrival: {!
+    Q.party_resources -= Q.congreso_delivery_cost;
+    Q.negotiated_police_trigger = false;
+    Q.negotiated_police_countdown = -1;
+    Q.negotiated_police_psoe_trigger = false;
+    Q.negotiated_police_psoe_countdown = -1;
+    Q.countdowns = Q.countdowns.filter(function (name) { return !["negotiated_police","negotiated_police_psoe"].includes(name); });
+    Q.congreso_delivery_level = 3;
+!}
+go-to: vote
+
+@press
+title: Refuse to close a deal just yet
+subtitle: We can try to stall and re-open negotiations in a few months, but there's no guarantee this will change things.
+view-if: congreso_delivery_police_stalls < 1
+on-arrival: {!
+    Q.congreso_delivery_police_stalls = 1;
+    Q.negotiated_police_trigger = false;
+    Q.negotiated_police_countdown = -1;
+    Q.negotiated_police_psoe_trigger = false;
+    Q.negotiated_police_psoe_countdown = -1;
+    Q.countdowns = Q.countdowns.filter(function (name) { return !["negotiated_police","negotiated_police_psoe"].includes(name); });
+    var name = "negotiated_police";
+    if (!Q.countdowns.includes(name)) Q.countdowns.push(name);
+    Q[name + "_countdown"] = 3;
+    Q[name + "_trigger"] = false;
+
+!}
+go-to: post_event
+
+@broken
+title: No meaningful agreement is reached!
+subtitle: Some minor transfer of powers will occur on paper, but the situation will remain generally unchanged
+on-arrival: {!
+    Q.negotiated_police_trigger = false;
+    Q.negotiated_police_countdown = -1;
+    Q.negotiated_police_psoe_trigger = false;
+    Q.negotiated_police_psoe_countdown = -1;
+    Q.countdowns = Q.countdowns.filter(function (name) { return !["negotiated_police","negotiated_police_psoe"].includes(name); });
+    if (Q.congreso_delivery_psoe) this.achieve("psoed");
+!}
+go-to: broken_result
+
+@broken_result
+
+It seems like, despite all the promises made during coalition negotiations, nothing will be meaningfully changing after all. [? if congreso_delivery_vote_result: The Congreso has rejected any and all of the proposed agreements on policing powers. ?][? if not congreso_delivery_vote_result: Talks on policing powers have ended without much changing.?]
+
+- @post_event: Once again, we seem to get the short end of the stick...
+
+@vote
+on-arrival: {!
+    var yes = 0, no = 0, abstain = 0;
+    var yesParties = [], noParties = [], abstainParties = [];
+    var proTransfer = ["podemos", "up", "sumar", "iu", "mpais", "erc", "cup",
+        "ciu", "cdc", "dl", "pdcat", "junts", "jxsi", "jxcat", "fr",
+        "pnv", "ehbildu", "amaiur", "bng", "compromis", "mes", "gbai"];
+    var neutral = ["cc", "prc", "te", "psc", "unio"];
+    var psoeSupports = (Q.spanish_coalition || []).includes("psoe")
+        && Q.psc_relations >= 60 && Q.cat_spa_relations >= 45;
+    for (var party of Q.congreso_parties || []) {
+        var seats = Math.max(0, Number(Q[party + "_congreso_s"]) || 0);
+        if (!seats) continue;
+        var label = {
+            ciu:"CiU", psoe:"PSOE", psc:"PSC", erc:"ERC", pp:"PP", cs:"Cs",
+            podemos:"Podemos", iu:"IU", cup:"CUP", fr:"FR", dl:"DL", pdcat:"PDeCAT",
+            jxsi:"JxSí", cdc:"CDC", unio:"UDC", junts:"Junts", upyd:"UPyD", vox:"VOX",
+            mpais:"Más País", up:"UP", sumar:"Sumar", jxcat:"JxCat", compromis:"Compromís",
+            mes:"MÉS", amaiur:"Amaiur", nsuma:"NA+", ehbildu:"EH Bildu", upn:"UPN",
+            gbai:"GBai", pnv:"PNV", bng:"BNG", cc:"CC-PNC", fac:"FAC", prc:"PRC", te:"¡TE!"
+        }[party] || party;
+        if (party == "psoe" && psoeSupports || proTransfer.includes(party)) {
+            yes += seats;
+            yesParties.push({label: label});
+        } else if (party == "psoe" || neutral.includes(party)) {
+            abstain += seats;
+            abstainParties.push({label: label});
+        } else {
+            no += seats;
+            noParties.push({label: label});
+        }
+    }
+    Q.congreso_delivery_vote_passed = yes > no;
+    Q.congreso_delivery_vote_result = {outcomes: [
+        {kind:"yes", label:"Yes", votes:yes, parties:yesParties},
+        {kind:"abstain", label:"Abstention", votes:abstain, parties:abstainParties},
+        {kind:"no", label:"No", votes:no, parties:noParties}
+    ]};
+!}
+
+After some very difficult negotiations, with some ministers from Madrid openly opposing them, it seems like at last the Generalitat and the Gobierno have agreed to expand the responsibilities of the Mossos d'Esquadra. While, expectedly, some state police presence will remain in Catalonia, the Mossos d'Esquadra would gain substantial new responsibilities from INTERPOL integration to coastal patrolling. It is, however, now up to the Congreso to approve the transfer.
+
+- @vote_result
+
+@vote_result
+title: and so, the Congreso votes...
+go-to: failed if not congreso_delivery_vote_passed; enact if congreso_delivery_vote_passed
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"congreso_delivery_vote_result"}'></div>
+
+@failed
+go-to: broken_result
+
+@enact
+view-if: congreso_delivery_level = 2 or (congreso_delivery_level = 3 and congreso_delivery_vote_passed)
+on-arrival: {!
+    var strong = Q.congreso_delivery_level == 3;
+
+    Q.security_control = Math.max(Q.security_control || 0, strong ? 3 : 2);
+    Q.police_devolution_level = Math.max(Q.police_devolution_level || 0, strong ? 3 : 2);
+    if (strong) Q.competence_police = true;
+
+    var id = "spanish_devolution_police";
+    var dissent = strong ? -0.2 : -0.1;
+    var old = Q.active_mods && Q.active_mods[id];
+    if (!old || !old.active || old.def.targets.social_dissent_eq > dissent) {
+        var priorEffect = old && old.active
+            ? old.def.targets.social_dissent_eq * Math.min(1, old.ticks_active / old.def.ramp_ticks)
+            : 0;
+        var ramp = strong ? 12 : 6;
+        if (old && old.active) G.deactivateLaw(Q, id, undefined, true);
+        G.registerLaw(Q, {
+            id:id,
+            title:strong ? "Expanded Catalan Policing Powers" : "Limited Policing Powers Expansion",
+            colour:"green", icon:"img/interior_icon.svg",
+            description:strong ? "The Mossos d'Esquadra now have taken on substantial new responsibilities, including INTERPOL integration and coastal patrolling. Only a token Spanish police forces remain now in Catalonia." : "The Mossos d'Esquadra have gained some extended roles in international policing agreements, alongside a small withdrawal of Spanish police forces.",
+            targets:{social_dissent_eq:dissent}, ramp_ticks:ramp
+        });
+        // Preserve the modest effect already in place when extending the agreement.
+        Q.active_mods[id].ticks_active = priorEffect / dissent * ramp;
+    }
+
+    Q.cat_spa_relations = Math.min(100, Q.cat_spa_relations + (strong ? 4 : 2));
+    Q.congreso_delivery_result_level = Q.congreso_delivery_level;
+    Q.congreso_delivery_level = 0;
+!}
+
+[? if congreso_delivery_result_level = 2: The Mossos will take on some additional responsibilities, with some integration into international policing agreements and some almost-cosmetic expansion of powers and withrawal of some Spanish police forces from Catalonia, but it is a step forward at least. ?]
+[? if congreso_delivery_result_level = 3: The Congreso has approved a substantial expansion of the Mossos' responsibilities! It is a great step forward in further autonomy and self-governance for Catalonia. ?]
+
+- @post_event: Continue...

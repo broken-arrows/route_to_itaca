@@ -1,0 +1,123 @@
+title: Economic support negotiations
+subtitle: Gobierno and Generalitat meet to discuss the promised financial support
+tags: event
+role: event
+new-page: true
+face-image: img/events/aragones_sanchez.jpg
+view-if: (negotiated_cash_trigger) and not constitution_reformed
+on-arrival: {!
+    var lead = Q.congreso_agreement_lead_party || Q.congreso_coalition_lead_party;
+    Q.congreso_delivery_psoe = lead == "psoe";
+    Q.congreso_delivery_partner = Number(Q.congreso_delivery_psoe ? Q.psc_relations : Q[Q.parlament_current_icv + "_relations"]) || 0;
+    var relations = Number(Q.cat_spa_relations) + (Q.congreso_delivery_psoe ? 0 : 10);
+    Q.congreso_delivery_cost = relations > 60 ? 0 : relations > 50 ? 1 : relations > 40 ? 2 : relations > 30 ? 3 : -1;
+    Q.congreso_delivery_score = (Q.generalitat_surplus >= -1.5 ? 1 : 0)
+        + (Q.public_debt <= 30 ? 1 : 0)
+        + (Q.social_dissent >= 65 ? 1 : 0)
+        + (Q.independence_movement >= 70 ? 1 : 0);
+    Q.congreso_delivery_level = 0;
+    Q.congreso_delivery_result_level = 0;
+!}
+
+= Economic support negotiations
+
+After the negotiations for an investiture resulted in the newly formed [+ spanish_coalition_disp +] promising economic support for the Generalitat, the Generalitat and Gobierno now meet to close the deal. [? if congreso_delivery_psoe: The PSOE is not particularly thrilled about this promise, but they are, at least, now seated at the table.?][? if not congreso_delivery_psoe: It is a never-before seen party the one sitting now in Madrid, so a real chance for something different may exist after all. ?][? if congreso_delivery_cash_stalls > 0: Even after stalled negotiations, a conclusion must be reached now.?]
+
+- @accept_soft
+- @big_win
+- @press
+- @broken
+
+@accept_soft
+title: Let's play this safe
+subtitle: Even if it's a limited deal, we should do our best to make sure we get it. [? if congreso_delivery_cost > 0: \[-[+ congreso_delivery_cost +] resources\]?]
+choose-if: not constitution_reformed and (negotiated_cash_trigger) and congreso_delivery_partner >= 55 and congreso_delivery_cost >= 0 and (not congreso_delivery_psoe or congreso_delivery_score >= 2) and party_resources >= congreso_delivery_cost
+unavailable-subtitle: [? if congreso_delivery_partner < 55: We don't have good enough relations with [? if congreso_delivery_psoe: the PSOE?][? if not congreso_delivery_psoe: [+ parlament_current_icv +]?]. ?][? if congreso_delivery_cost < 0: Catalonia-Spain relations are too strained for this to be an option. ?][? if congreso_delivery_psoe and congreso_delivery_score < 2: [? if spanish_pm_gender = "m": Presidente ?][? if spanish_pm_gender = "f": Presidenta ?][+ spanish_pm +] does not believe this to be a necessity at the moment. ?][? if congreso_delivery_cost >= 0 and party_resources < congreso_delivery_cost: Not enough resources. ?]
+on-arrival: {!
+    Q.party_resources -= Q.congreso_delivery_cost;
+    Q.negotiated_cash_trigger = false;
+    Q.negotiated_cash_countdown = -1;
+    Q.countdowns = Q.countdowns.filter(function (name) { return !["negotiated_cash"].includes(name); });
+    Q.congreso_delivery_level = 2;
+!}
+go-to: enact
+
+@big_win
+title: Push for the full support package!
+subtitle: The Gobierno should deliver what it promised. [? if congreso_delivery_cost > 0: \[-[+ congreso_delivery_cost +] resources\]?]
+choose-if: not congreso_delivery_psoe and not constitution_reformed and (negotiated_cash_trigger) and congreso_delivery_partner >= 55 and congreso_delivery_cost >= 0 and congreso_delivery_score >= 2 and party_resources >= congreso_delivery_cost
+unavailable-subtitle: [? if congreso_delivery_psoe: The PSOE is unwilling to go this far at the moment. ?][? if not congreso_delivery_psoe and congreso_delivery_partner < 55: We don't have good enough relations with [+ parlament_current_icv +]. ?][? if congreso_delivery_cost < 0: Catalonia-Spain relations are too strained at the moment. ?][? if congreso_delivery_score < 2: [? if spanish_pm_gender = "m": Presidente ?][? if spanish_pm_gender = "f": Presidenta ?][+ spanish_pm +] does not believe this to be a necessity at the moment. ?][? if congreso_delivery_cost >= 0 and party_resources < congreso_delivery_cost: Not enough resources. ?]
+on-arrival: {!
+    Q.party_resources -= Q.congreso_delivery_cost;
+    Q.negotiated_cash_trigger = false;
+    Q.negotiated_cash_countdown = -1;
+    Q.countdowns = Q.countdowns.filter(function (name) { return !["negotiated_cash"].includes(name); });
+    Q.congreso_delivery_level = 3;
+!}
+go-to: enact
+
+@press
+title: Refuse to close a deal just yet
+subtitle: We can try to stall and re-open negotiations in a few months, but there's no guarantee this will change things.
+view-if: congreso_delivery_cash_stalls < 1
+on-arrival: {!
+    Q.congreso_delivery_cash_stalls = 1;
+    Q.negotiated_cash_trigger = false;
+    Q.negotiated_cash_countdown = -1;
+    Q.countdowns = Q.countdowns.filter(function (name) { return !["negotiated_cash"].includes(name); });
+    var name = "negotiated_cash";
+    if (!Q.countdowns.includes(name)) Q.countdowns.push(name);
+    Q[name + "_countdown"] = 3;
+    Q[name + "_trigger"] = false;
+
+!}
+go-to: post_event
+
+@broken
+title: No meaningful agreement is reached!
+subtitle: The promised support will stay on paper, and the Generalitat will have to make do.
+on-arrival: {!
+    Q.negotiated_cash_trigger = false;
+    Q.negotiated_cash_countdown = -1;
+    Q.countdowns = Q.countdowns.filter(function (name) { return !["negotiated_cash"].includes(name); });
+    if (Q.congreso_delivery_psoe) this.achieve("psoed");
+!}
+go-to: broken_result
+
+@broken_result
+
+It seems like, despite all the promises made during coalition negotiations, nothing will be meaningfully changing after all. Talks on economic support have ended without much changing.
+
+- @post_event: Once again, we seem to get the short end of the stick...
+
+@enact
+view-if: congreso_delivery_level = 2 or (congreso_delivery_level = 3)
+on-arrival: {!
+    var strong = Q.congreso_delivery_level == 3;
+
+    Q.congreso_delivery_debt_relieved = 0;
+    if (Q.public_debt > 10) {
+        Q.congreso_delivery_debt_relieved = Math.min(Q.public_debt, strong ? 4 : 1.5);
+        Q.public_debt -= Q.congreso_delivery_debt_relieved;
+    } else {
+        G.registerLaw(Q, {
+            id: "spanish_coalition_investment_" + Q.year + "_" + Q.month,
+            title: strong ? "State Investment Programme" : "Limited State Investment Programme", colour: "green", icon: "img/economy_icon.svg",
+            description: strong ? "With little debt to forgive, the Gobierno is now in the process of delivering a wide support package through a two-year programme of investment in Catalonia." : "With little debt to forgive, the Gobierno is now delivering a limited two-year investment programme in Catalonia.",
+            targets: {gdp_growth: strong ? 0.10 : 0.05, welfare_index_growth: strong ? 0.08 : 0.04},
+            ramp_ticks: 3, expires: {year: Q.year + 2, month: Q.month}
+        });
+    }
+
+    Q.cat_spa_relations = Math.min(100, Q.cat_spa_relations + (strong ? 2 : 1));
+    Q.congreso_delivery_result_level = Q.congreso_delivery_level;
+    Q.congreso_delivery_level = 0;
+!}
+
+[? if congreso_delivery_result_level = 2: The Gobierno has agreed to release part of the promised support. It is less than we had hoped for, but with the Generalitat's accounts as they are, it is hardly something to turn down.?]
+[? if congreso_delivery_result_level = 3: It seems like, after all, the Gobierno will be delivering deliver the full support package. After all the negotiations, the Generalitat finally has something concrete to show for its investiture votes! ?]
+
+[? if congreso_delivery_debt_relieved > 0: Thanks to this, the Generalitat's debt falls by [+ congreso_delivery_debt_relieved +] percentage points!?]
+[? if congreso_delivery_debt_relieved = 0: With little debt to forgive, Madrid will fund a two-year investment programme instead.?]
+
+- @post_event: Continue...

@@ -212,7 +212,7 @@ GDP growth: [+ gdp_growth_dataviz +]% [+ gdp_growth_change +]
 
 Debt status: [+ public_debt : public_debt_qualifier +]
 
-Financing: [? if not fla_active and not ecb_qe: None?][? if fla_active: FLA?][? if fla_active and fla_escalated:  (stringent conditions)?][? if fla_active and ecb_qe:  + ?][? if ecb_qe: ECB?]
+Financing: [? if not fla_active and not ecb_qe: None?][? if fla_active: FLA?][? if fla_active and fla_escalated:  (stringent conditions)?] [? if fla_active and ecb_qe: + ?][? if ecb_qe: ECB?]
 
 Unemployment: [+ unemployment_dataviz +]% [+ unemployment_change +]
 

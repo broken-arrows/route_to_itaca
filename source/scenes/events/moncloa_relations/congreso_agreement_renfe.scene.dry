@@ -1,0 +1,190 @@
+title: Railway control negotiations
+subtitle: Gobierno and Generalitat meet to discuss further power transfers
+tags: event
+role: event
+new-page: true
+face-image: img/events/aragones_sanchez.jpg
+view-if: (negotiated_renfe_trigger or negotiated_renfe_psoe_trigger) and not constitution_reformed
+on-arrival: {!
+    var lead = Q.congreso_agreement_lead_party || Q.congreso_coalition_lead_party;
+    Q.congreso_delivery_psoe = lead == "psoe";
+    Q.congreso_delivery_partner = Number(Q.congreso_delivery_psoe ? Q.psc_relations : Q[Q.parlament_current_icv + "_relations"]) || 0;
+    var relations = Number(Q.cat_spa_relations) + (Q.congreso_delivery_psoe ? 0 : 10);
+    Q.congreso_delivery_cost = relations > 60 ? 0 : relations > 50 ? 1 : relations > 40 ? 2 : relations > 30 ? 3 : -1;
+    Q.congreso_delivery_score = (Q.generalitat_surplus >= -1.5 ? 1 : 0)
+        + (Q.public_debt <= 30 ? 1 : 0)
+        + (Q.social_dissent >= 65 ? 1 : 0)
+        + (Q.independence_movement >= 70 ? 1 : 0);
+    Q.congreso_delivery_level = 0;
+    Q.congreso_delivery_result_level = 0;
+    Q.congreso_delivery_vote_result = null;
+    Q.congreso_delivery_vote_passed = false;
+!}
+
+= Railway control negotiations
+
+After the negotiations for an investiture resulted in the newly formed [+ spanish_coalition_disp +] promising further devolution of railway powers, the Generalitat and Gobierno now meet to close the deal. [? if congreso_delivery_psoe: The PSOE is not particularly thrilled about this promise, but they are, at least, now seated at the table.?][? if not congreso_delivery_psoe: It is a never-before seen party the one sitting now in Madrid, so a real chance for something different may exist after all. ?][? if congreso_delivery_renfe_stalls > 0: Even after stalled negotiations, a conclusion must be reached now.?]
+
+- @accept_soft
+- @big_win
+- @press
+- @broken
+
+@accept_soft
+title: Let's play this safe
+subtitle: Even if it's a limited deal, we should do our best to make sure we get it. [? if congreso_delivery_cost > 0: \[-[+ congreso_delivery_cost +] resources\]?]
+choose-if: not constitution_reformed and (negotiated_renfe_trigger or negotiated_renfe_psoe_trigger) and congreso_delivery_partner >= 55 and congreso_delivery_cost >= 0 and (not congreso_delivery_psoe or congreso_delivery_score >= 2) and party_resources >= congreso_delivery_cost
+unavailable-subtitle: [? if congreso_delivery_partner < 55: We don't have good enough relations with [? if congreso_delivery_psoe: the PSOE?][? if not congreso_delivery_psoe: [+ parlament_current_icv +]?]. ?][? if congreso_delivery_cost < 0: Catalonia-Spain relations are too strained for this to be an option. ?][? if congreso_delivery_psoe and congreso_delivery_score < 2: [? if spanish_pm_gender = "m": Presidente ?][? if spanish_pm_gender = "f": Presidenta ?][+ spanish_pm +] considers that the current economic situation of the Generalitat is too precarious to take on this responsibility. ?][? if congreso_delivery_cost >= 0 and party_resources < congreso_delivery_cost: Not enough resources. ?]
+on-arrival: {!
+    Q.party_resources -= Q.congreso_delivery_cost;
+    Q.negotiated_renfe_trigger = false;
+    Q.negotiated_renfe_countdown = -1;
+    Q.negotiated_renfe_psoe_trigger = false;
+    Q.negotiated_renfe_psoe_countdown = -1;
+    Q.countdowns = Q.countdowns.filter(function (name) { return !["negotiated_renfe","negotiated_renfe_psoe"].includes(name); });
+    Q.congreso_delivery_level = 2;
+!}
+go-to: enact
+
+@big_win
+title: Push for a real transfer of powers!
+subtitle: This may even require the Congreso to vote on it. [? if congreso_delivery_cost > 0: \[-[+ congreso_delivery_cost +] resources\]?]
+choose-if: not congreso_delivery_psoe and not constitution_reformed and (negotiated_renfe_trigger or negotiated_renfe_psoe_trigger) and congreso_delivery_partner >= 55 and congreso_delivery_cost >= 0 and not congreso_delivery_psoe and congreso_delivery_score >= 2 and party_resources >= congreso_delivery_cost
+unavailable-subtitle: [? if congreso_delivery_psoe: The PSOE is unwilling to go this far at the moment. ?][? if not congreso_delivery_psoe and congreso_delivery_partner < 55: We don't have good enough relations with [+ parlament_current_icv +]. ?][? if congreso_delivery_cost < 0: Catalonia-Spain relations are too strained at the moment. ?][? if congreso_delivery_score < 2: [? if spanish_pm_gender = "m": Presidente ?][? if spanish_pm_gender = "f": Presidenta ?][+ spanish_pm +] considers that the current economic situation of the Generalitat is too precarious to take on this responsibility. ?][? if congreso_delivery_cost >= 0 and party_resources < congreso_delivery_cost: Not enough resources. ?]
+on-arrival: {!
+    Q.party_resources -= Q.congreso_delivery_cost;
+    Q.negotiated_renfe_trigger = false;
+    Q.negotiated_renfe_countdown = -1;
+    Q.negotiated_renfe_psoe_trigger = false;
+    Q.negotiated_renfe_psoe_countdown = -1;
+    Q.countdowns = Q.countdowns.filter(function (name) { return !["negotiated_renfe","negotiated_renfe_psoe"].includes(name); });
+    Q.congreso_delivery_level = 3;
+!}
+go-to: vote
+
+@press
+title: Refuse to close a deal just yet
+subtitle: We can try to stall and re-open negotiations in a few months, but there's no guarantee this will change things.
+view-if: congreso_delivery_renfe_stalls < 1
+on-arrival: {!
+    Q.congreso_delivery_renfe_stalls = 1;
+    Q.negotiated_renfe_trigger = false;
+    Q.negotiated_renfe_countdown = -1;
+    Q.negotiated_renfe_psoe_trigger = false;
+    Q.negotiated_renfe_psoe_countdown = -1;
+    Q.countdowns = Q.countdowns.filter(function (name) { return !["negotiated_renfe","negotiated_renfe_psoe"].includes(name); });
+    var name = "negotiated_renfe";
+    if (!Q.countdowns.includes(name)) Q.countdowns.push(name);
+    Q[name + "_countdown"] = 3;
+    Q[name + "_trigger"] = false;
+
+!}
+go-to: post_event
+
+@broken
+title: No meaningful agreement is reached!
+subtitle: Some minor transfer of powers will occur on paper, but the situation will remain generally unchanged.
+on-arrival: {!
+    Q.negotiated_renfe_trigger = false;
+    Q.negotiated_renfe_countdown = -1;
+    Q.negotiated_renfe_psoe_trigger = false;
+    Q.negotiated_renfe_psoe_countdown = -1;
+    Q.countdowns = Q.countdowns.filter(function (name) { return !["negotiated_renfe","negotiated_renfe_psoe"].includes(name); });
+    if (Q.congreso_delivery_psoe) this.achieve("psoed");
+!}
+go-to: broken_result
+
+@broken_result
+
+It seems like, despite all the promises made during coalition negotiations, nothing will be meaningfully changing after all. [? if congreso_delivery_vote_result: The Congreso has rejected any and all of the proposed agreements on railway management. ?][? if not congreso_delivery_vote_result: Talks on railway management have ended without nothing changing much.?]
+
+- @post_event: Once again, we seem to get the short end of the stick...
+
+@vote
+on-arrival: {!
+    var yes = 0, no = 0, abstain = 0;
+    var yesParties = [], noParties = [], abstainParties = [];
+    var proTransfer = ["podemos", "up", "sumar", "iu", "mpais", "erc", "cup",
+        "ciu", "cdc", "dl", "pdcat", "junts", "jxsi", "jxcat", "fr",
+        "pnv", "ehbildu", "amaiur", "bng", "compromis", "mes", "gbai"];
+    var neutral = ["cc", "prc", "te", "psc", "unio"];
+    var psoeSupports = (Q.spanish_coalition || []).includes("psoe")
+        && Q.psc_relations >= 60 && Q.cat_spa_relations >= 45;
+    for (var party of Q.congreso_parties || []) {
+        var seats = Math.max(0, Number(Q[party + "_congreso_s"]) || 0);
+        if (!seats) continue;
+        var label = {
+            ciu:"CiU", psoe:"PSOE", psc:"PSC", erc:"ERC", pp:"PP", cs:"Cs",
+            podemos:"Podemos", iu:"IU", cup:"CUP", fr:"FR", dl:"DL", pdcat:"PDeCAT",
+            jxsi:"JxSí", cdc:"CDC", unio:"UDC", junts:"Junts", upyd:"UPyD", vox:"VOX",
+            mpais:"Más País", up:"UP", sumar:"Sumar", jxcat:"JxCat", compromis:"Compromís",
+            mes:"MÉS", amaiur:"Amaiur", nsuma:"NA+", ehbildu:"EH Bildu", upn:"UPN",
+            gbai:"GBai", pnv:"PNV", bng:"BNG", cc:"CC-PNC", fac:"FAC", prc:"PRC", te:"¡TE!"
+        }[party] || party;
+        if (party == "psoe" && psoeSupports || proTransfer.includes(party)) {
+            yes += seats;
+            yesParties.push({label: label});
+        } else if (party == "psoe" || neutral.includes(party)) {
+            abstain += seats;
+            abstainParties.push({label: label});
+        } else {
+            no += seats;
+            noParties.push({label: label});
+        }
+    }
+    Q.congreso_delivery_vote_passed = yes > no;
+    Q.congreso_delivery_vote_result = {outcomes: [
+        {kind:"yes", label:"Yes", votes:yes, parties:yesParties},
+        {kind:"abstain", label:"Abstention", votes:abstain, parties:abstainParties},
+        {kind:"no", label:"No", votes:no, parties:noParties}
+    ]};
+!}
+
+Generalitat and Gobierno have reach an agreement to gradually devolve railway control and management to Catalonia. This is, without mincing words, a big deal. If managed to pass through the Congreso, the Generalitat would gain complete control over most of the railway infrastructure and operations within Catalonia, done so by its own agencies, with only High Speed and some long distance operations being managed by Spanish-controlled RENFE and ADIF.
+
+- @vote_result
+
+@vote_result
+title: and so, the Congreso votes...
+go-to: failed if not congreso_delivery_vote_passed; enact if congreso_delivery_vote_passed
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"congreso_delivery_vote_result"}'></div>
+
+@failed
+go-to: broken_result
+
+@enact
+view-if: congreso_delivery_level = 2 or (congreso_delivery_level = 3 and congreso_delivery_vote_passed)
+on-arrival: {!
+    var strong = Q.congreso_delivery_level == 3;
+    function law(id, title, icon, targets) {
+        var old = Q.active_mods && Q.active_mods[id];
+        if (old && old.active && old.def.targets && Object.keys(targets).every(function (key) {
+            return old.def.targets[key] >= targets[key];
+        })) return;
+        var priorTicks = old && old.active ? old.ticks_active : 0;
+        if (old && old.active) G.deactivateLaw(Q, id, undefined, true);
+        G.registerLaw(Q, {id:id, title:title, colour:"green", icon:icon,
+            description: strong ? "The Generalitat now controls with its own agencies the rail infrastructure and operations within Catalonia, with the State retaining only control over High Speed and some long distance operations." : "The Generalitat has now more powers to decide what and how rail infrastructure is built and operated.",
+            targets:targets, ramp_ticks:strong ? 12 : 6});
+        // The larger package doubles these soft effects. Keep the old contribution
+        // while the additional half ramps in, instead of restarting at zero.
+        if (strong && priorTicks > 0) Q.active_mods[id].ticks_active = priorTicks;
+    }
+
+    Q.railways_control = Math.max(Q.railways_control || 0, strong ? 3 : 2);
+    if (strong) Q.competence_renfe = true;
+    law("spanish_devolution_railways", strong ? "Catalan Railways" : "Expanded Rail Control", "img/train_icon.svg", 
+        {gdp_growth:strong ? 0.10 : 0.05, welfare_index_growth:strong ? 0.16 : 0.08});
+
+    Q.cat_spa_relations = Math.min(100, Q.cat_spa_relations + (strong ? 4 : 2));
+    Q.congreso_delivery_result_level = Q.congreso_delivery_level;
+    Q.congreso_delivery_level = 0;
+    
+!}
+
+
+[? if congreso_delivery_result_level = 2: After some tense negotiations, it seems like we may need get some powers transferred. While not as wide and far-reaching as many would've hope, we at least are taking steps in the right direction!?]
+[? if congreso_delivery_result_level = 3: Incredibly, the Congreso has passed the necessary provisions for further power transfers to Catalonia. ?]
+
+- @post_event: Continue...
