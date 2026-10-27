@@ -2,7 +2,7 @@ title: Political Rally
 new-page: true
 tags: erc_party
 view-if: erc_rally_timer <= 0 and (year > 2012 or month >= 9)
-on-arrival: month_actions += 1; erc_rally_timer = 6 if next_election_time - time > 6 and not (year == 2012); erc_rally_timer = 2 if (year == 2012) or (next_election_time - time <= 6)
+on-arrival: month_actions += 1 if not erc_advisor_action or difficulty >= 0; erc_rally_timer = 6 if next_election_time - time > 6 and not (year == 2012); erc_rally_timer = 2 if (year == 2012) or (next_election_time - time <= 6)
 card-image: img/erc/rally.png
 face-image: img/erc/rally.png
 role: card-party
@@ -16,6 +16,7 @@ Mass rallies, protests, and student strikes are a common feature of left and pro
 - @reform: Democratization, republicanism, and the fight for a new system for the Spanish state.
 - @far_right: Holding the line against the far right, Spanish nationalism, and all the political heirs to Franco's regime.
 - @local: A mixture of various local and national concerns that resonate most with the audience.
+- @cancel_advisor_action
 - @easy_discard
 
 @independence

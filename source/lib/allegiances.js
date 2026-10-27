@@ -24,7 +24,51 @@
 (function () {
   "use strict";
 
+  // Shared party/list affiliations for ERC members; dismissal from the advisor
+  // roster alone is not departure from the party.
+  function ercMember(Q, person) {
+    if (Q[person + "_departed"]) {
+      return [
+        { colour: "erc", label: "ERC", note: "former" },
+        { colour: "#464646", label: "indp." },
+      ];
+    }
+    var list = [{ colour: "erc", label: "ERC" }];
+    if (Q.jxsi_formed && Q.erc_in_jxsi) list.push({ colour: "jxsi", label: "JxSí" });
+    if (Q.jxcat_formed && Q.erc_in_jxcat) list.push({ colour: "jxcat", label: "JxCat" });
+    return list;
+  }
+
   var allegiances = {
+    alfred_bosch: function (Q) { return ercMember(Q, "alfred_bosch"); },
+    carles_mundo: function (Q) { return ercMember(Q, "carles_mundo"); },
+    dolors_bassa: function (Q) { return ercMember(Q, "dolors_bassa"); },
+    joan_tarda: function (Q) { return ercMember(Q, "joan_tarda"); },
+    marta_rovira: function (Q) { return ercMember(Q, "marta_rovira"); },
+    pere_aragones: function (Q) { return ercMember(Q, "pere_aragones"); },
+    roger_torrent: function (Q) { return ercMember(Q, "roger_torrent"); },
+    sergi_sabria: function (Q) { return ercMember(Q, "sergi_sabria"); },
+    teresa_jorda: function (Q) { return ercMember(Q, "teresa_jorda"); },
+    elisenda_paluzie: function (Q) {
+      var list = [{ colour: "#010202", label: "ANC" }];
+      if (Q.elisenda_paluzie_advisor && !Q.elisenda_paluzie_departed) {
+        list.push({ colour: "erc", label: "ERC" });
+      } else {
+        list.push({ colour: "#464646", label: "indp." });
+      }
+      return list;
+    },
+    joan_josep_nuet: function (Q) {
+      var joined = Q.joan_josep_nuet_advisor_available || Q.joan_josep_nuet_advisor;
+      var list = [{ colour: "icv", label: "ICV-EUiA" }];
+      if (Q.csqp_formed) list.push({ colour: "csqp", label: "CSQP" });
+      if (Q.cecp_formed) list.push({ colour: "cecp", label: "CECP" });
+      if (joined) {
+        list.forEach(function (entry) { entry.note = "former"; });
+        return list.concat(ercMember(Q, "joan_josep_nuet"));
+      }
+      return list;
+    },
     llu_s_companys: function (Q) {
       return [{ colour: "erc", label: "ERC" }];
     },
@@ -299,7 +343,7 @@
       return [{ colour: "psoe", label: "PSOE" }];
     },
     joan_laporta_i_estruch: function (Q) {
-      if (Q.year >= 2014) {
+      if (!(Q.year >= 2014) && !Q.joan_laporta_departed) {
         return [
           { colour: "si", label: "SI", note: "former" },
           { colour: "erc", label: "ERC" },

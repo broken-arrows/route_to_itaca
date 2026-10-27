@@ -1,4 +1,4 @@
-title: Ernest Maragall
+title: ​Ernest Maragall
 tags: advisor
 card-image: img/erc/ernestmaragall.jpg
 face-image: img/erc/ernestmaragall.jpg
@@ -10,4 +10,38 @@ role: pinned-advisor
 
 With a strong history in antifascist activism and local politics, Ernest Maragall is a historic figure of ERC.
 
-- @root: Return to main
+- @open_campaigning
+- @open_inter_party
+- @root: Return to hand
+
+# TODO: Widening the Base access
+
+@open_campaigning
+title: Build ERC's Barcelona local networks
+choose-if: player_party = "erc" and ernest_maragall_advisor and advisor_action_timer <= 0 and not erc_advisor_action
+unavailable-subtitle: [? if advisor_action_timer > 0: Next advisor action available in [+ advisor_action_timer +] [? if rubicon: weeks?][? if not rubicon: months?]. ?]
+role: card-party
+on-arrival: {!
+    if (Q.player_party === "erc" && Q.ernest_maragall_advisor && Q.advisor_action_timer <= 0 && !Q.erc_advisor_action) {
+        Q.erc_advisor_action = {target:"erc_campaigning", actions:Q.month_actions || 0, timer:Q.erc_campaigning_timer || 0, visits:this.state.visits["erc_campaigning"] || 0};
+        Q.last_advisor_action = 1;
+        Q.advisor_action_timer = 6;
+        if (Q.difficulty >= 0) Q.month_actions += 1;
+        Q.erc_campaigning_timer = Q.rubicon ? 2 : 0;
+    }
+!}
+go-to: erc_campaigning.barcelona_networks if erc_advisor_action; root if not erc_advisor_action
+
+@open_inter_party
+title: Build bridges with the PSC
+choose-if: player_party = "erc" and ernest_maragall_advisor and advisor_action_timer <= 0 and not erc_advisor_action
+unavailable-subtitle: [? if advisor_action_timer > 0: Next advisor action available in [+ advisor_action_timer +] [? if rubicon: weeks?][? if not rubicon: months?]. ?]
+role: card-party
+on-arrival: {!
+    Q.erc_advisor_action = {target:"erc_inter_party", actions:Q.month_actions || 0, timer:Q.erc_inter_party_timer || 0, visits:this.state.visits["erc_inter_party"] || 0};
+    Q.last_advisor_action = 1;
+    Q.advisor_action_timer = 6;
+    if (Q.difficulty >= 0) Q.month_actions += 1;
+    Q.erc_inter_party_timer = 6;
+!}
+go-to: erc_inter_party.psc_relations if erc_advisor_action; root if not erc_advisor_action

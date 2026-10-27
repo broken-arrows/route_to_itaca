@@ -28,6 +28,11 @@
       required: false,
       validate: validators.validateLineContent
     },
+    // Optional portrait beside this choice's title, independent of scene/card art.
+    choiceImage: {
+      required: false,
+      validate: null
+    },
     unavailableSubtitle: {
       required: false,
       validate: validators.validateLineContent

@@ -2,6 +2,18 @@ title: Cancel action.
 view-if: last_advisor_action = 1 or last_cabinet_action = 1
 go-to: root
 on-arrival: {!
+if (Q.erc_advisor_action) {
+    var invocation = Q.erc_advisor_action;
+    Q.month_actions = invocation.actions;
+    Q[invocation.target + "_timer"] = invocation.timer;
+    this.state.visits[invocation.target] = invocation.visits;
+    Q.erc_advisor_action = null;
+    Q.party_reaching_out_map = false;
+    Q.erc_bside_contest = null;
+    Q.advisor_action_timer = 0;
+    Q.last_advisor_action = 0;
+    return;
+}
 if (Q.month_actions > 0) {
     Q.month_actions -= 1;
 }

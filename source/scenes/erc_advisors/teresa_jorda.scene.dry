@@ -1,4 +1,4 @@
-title: Teresa Jordà
+title: ​Teresa Jordà
 tags: advisor
 card-image: img/erc/jorda.jpg
 face-image: img/erc/jorda.jpg
@@ -10,4 +10,23 @@ role: pinned-advisor
 
 Teresa Jordà was the Mayor of Ripoll, and can count on a strong background in agricultural and rural issues.
 
-- @root: Return to main
+- @open_campaigning
+- @root: Return to hand
+
+# TODO: Widening the Base access
+
+@open_campaigning
+title: Mobilize rural branches and local networks
+choose-if: player_party = "erc" and teresa_jorda_advisor and advisor_action_timer <= 0 and not erc_advisor_action
+unavailable-subtitle: [? if advisor_action_timer > 0: Next advisor action available in [+ advisor_action_timer +] [? if rubicon: weeks?][? if not rubicon: months?]. ?]
+role: card-party
+on-arrival: {!
+    if (Q.player_party === "erc" && Q.teresa_jorda_advisor && Q.advisor_action_timer <= 0 && !Q.erc_advisor_action) {
+        Q.erc_advisor_action = {target:"erc_campaigning", actions:Q.month_actions || 0, timer:Q.erc_campaigning_timer || 0, visits:this.state.visits["erc_campaigning"] || 0};
+        Q.last_advisor_action = 1;
+        Q.advisor_action_timer = 6;
+        if (Q.difficulty >= 0) Q.month_actions += 1;
+        Q.erc_campaigning_timer = Q.rubicon ? 2 : 0;
+    }
+!}
+go-to: erc_campaigning.rural_networks if erc_advisor_action; root if not erc_advisor_action

@@ -1,7 +1,7 @@
 title: Party Disunity
 new-page: true
 view-if: player_party = "erc" and erc_disunity_timer = 0 and (erc_dissent >= 30 or (erc_left_dissent > 30) or (erc_core_dissent > 30) or (erc_civic_dissent > 30) or (erc_pragmatic_dissent > 30))
-on-arrival: month_actions += 1; erc_disunity_timer = 4
+on-arrival: month_actions += 1 if not erc_advisor_action or difficulty >= 0; erc_disunity_timer = 4
 card-image: img/erc/disunity.jpeg
 face-image: img/erc/disunity.jpeg
 frequency: 200
@@ -19,6 +19,11 @@ The party is being torn apart by internal dissent. Upset at the leadership and g
 
 Something must be done to reinforce party unity.
 
+# TBD: Add these? I believe they make more sense only as advisor action, but let's see
+# - @mediate
+# - @defend_agreement
+# - @social_agreement
+
 - @enforce_unity
 - @concessions_civic
 - @concessions_pragmatics
@@ -26,6 +31,7 @@ Something must be done to reinforce party unity.
 - @concessions_left
 - @do_nothing
 - @easy_discard
+- @cancel_advisor_action
 
 @enforce_unity
 title: Enforce party discipline.
@@ -117,3 +123,41 @@ Let the factions bicker; perhaps dissent is healthy for the party.
 
 
 # TODO: Add expel actions?
+
+@mediate
+title: Mediate between the party's factions
+view-if: oriol_junqueras_advisor
+choose-if: oriol_junqueras_advisor
+on-arrival: {!        
+    for (var faction of ["left", "core", "pragmatic", "civic"]) Q["erc_" + faction + "_dissent"] = Math.max(0, Q["erc_" + faction + "_dissent"] - 4);
+!}
+
+Oriol Junqueras has done his best to bring the factions together. While it's inevitable that some disagreements remain, at least people seem more willing to tolerate them.
+
+- @post_event: Let's hope this is enough!
+
+@defend_agreement
+title: Defend the current governing agreement
+view-if: (oriol_junqueras_advisor or roger_torrent_advisor or carles_mundo_advisor) and (erc_in_gob or erc_supporting)
+choose-if: (oriol_junqueras_advisor or roger_torrent_advisor or carles_mundo_advisor) and (erc_in_gob or erc_supporting)
+on-arrival: {!
+    var relief = Q.burdens_broken || Q.broken_roadmap ? 1 : 4;
+    for (var faction of ["left", "core", "pragmatic", "civic"]) Q["erc_" + faction + "_dissent"] = Math.max(0, Q["erc_" + faction + "_dissent"] - relief);
+!}
+
+The agreement has been defended inside the party, and some may have been somewhat convinced. [? if burdens_broken or broken_roadmap: Nonetheless, our broken promises will still require actual action to mend any scars left behind... ?]
+
+- @post_event: Continue...
+
+@social_agreement
+title: Defend the social commitments of the current government
+view-if: dolors_bassa_advisor and (erc_in_gob or erc_supporting) and burdens_time > 0 and not burdens_broken
+choose-if: dolors_bassa_advisor and (erc_in_gob or erc_supporting) and burdens_time > 0 and not burdens_broken
+on-arrival: {!
+    Q.erc_left_dissent = Math.max(0, Q.erc_left_dissent - 6); Q.erc_core_dissent = Math.max(0, Q.erc_core_dissent - 2);
+!}
+
+Dolors Bassa has made the case for pursuing the agreement's social commitments. 
+
+- @post_event: Now it's up to us to deliver them!
+

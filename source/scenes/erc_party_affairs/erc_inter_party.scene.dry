@@ -2,7 +2,7 @@ title: Inter-Party Relationships
 new-page: true
 view-if: erc_inter_party_timer <= 0 and player_party = "erc"
 tags: erc_party jxsi_party jxcat_party
-on-arrival: month_actions += 1; erc_inter_party_timer = 6;
+on-arrival: month_actions += 1 if not erc_advisor_action or difficulty >= 0; erc_inter_party_timer = 6;
 card-image: img/parties/frontpopular.jpg
 face-image: img/parties/frontpopular.jpg
 role: card-party
@@ -34,26 +34,27 @@ ERC is one of many parties in a very fragmented political landscape. If we are t
 - @fnc_relations: Maybe national unity should include the fringe Catalan far-right, FNC?
 - @erc_alone: ERC can stand alone for now.
 - @easy_discard
+- @cancel_advisor_action
 
 @si_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 view-if: si_parlament_s > 0
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     Q.si_relations += 10*(1 - Q.erc_dissent/100);
 !}
 
 SI are already quite aligned with us, and already eager to work together. Let's hope they retain popular support so we can build a strong alliance here. With the pro-independence movement on the rise, it's not like they are going to just disappear from the Parlament, right?
 
 @jxsi_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 view-if: jxsi_formed and not jxsi_dissolved
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     Q[Q.parlament_current_ciu + "_relations"] += 8*(1 - Q.erc_dissent/100);
     if (Q.cup_in_jxsi) {
         Q.cup_relations += 8*(1 - Q.erc_dissent/100);
@@ -73,13 +74,16 @@ on-arrival: {!
 
 The JxSí coalition is a naturally unstable one, but in the name of National Unity we are doing our best to keep it together.
 
+- @post_event: Continue...
+
+
 @jxcat_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 view-if: jxcat_formed and not jxcat_dissolved
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     Q[Q.parlament_current_ciu + "_relations"] += 8*(1 - Q.erc_dissent/100);
     if (Q.cup_in_jxcat) {
         Q.cup_relations += 8*(1 - Q.erc_dissent/100);
@@ -99,14 +103,16 @@ on-arrival: {!
 
 Just as with JxSí, the JxCat coalition is not the epitome of stability. But now that we are re-editing the National Unity formula, we are somewhat more used to it, and we are doing our best to keep it together.
 
+- @post_event: Continue...
+
 
 @ciu_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1 
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1) 
 view-if: not unio_split
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     if (Q.erc_supporting && Q.cat_coalition.includes("ciu")) {
         Q.ciu_relations += 7*(1 - Q.erc_dissent/100);
         Q.cup_realations -= 2;
@@ -132,13 +138,16 @@ on-arrival: {!
 
 [? if erc_supporting and cat_coalition_includes_ciu: We are currently supporting a CiU government, which they already appreciate. Maybe this can bring us closer together? ?][? if erc_in_gob and cat_coalition_includes_ciu: We are currently governing together with CiU, which already creates some tensions. These move will hopefully smooth some of that over. ?][? if (not erc_supporting and not cat_coalition_includes_ciu) or (not erc_in_gob and not cat_coalition_includes_ciu): Without official institutional obligations to eachother for the moment, building ties with CiU is always easier. ?]The left parties are not particularly happy about these moves though.
 
+- @post_event: Continue...
+
+
 @pdcat_nosplit_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1 
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1) 
 view-if: pdcat_formed and not pdcat_split and not pdcat_in_jxcat and not pdcat_in_jxsi
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     if (Q.erc_supporting && Q.cat_coalition.includes("pdcat")) {
         Q.pdcat_relations += 7*(1 - Q.erc_dissent/100);
         Q.cup_realations -= 2;
@@ -164,13 +173,16 @@ on-arrival: {!
 
 [? if erc_supporting and cat_coalition_includes_pdcat: We are currently supporting a pdcat government, which they already appreciate. Maybe this can bring us closer together? ?][? if erc_in_gob and cat_coalition_includes_pdcat: We are currently governing together with pdcat, which already creates some tensions. These move will hopefully smooth some of that over. ?][? if (not erc_supporting and cat_coalition_includes_pdcat) or (not erc_in_gob and cat_coalition_includes_pdcat): Without official institutional obligations to eachother for the moment, building ties with pdcat is always easier. ?]The left parties are not particularly happy about these moves though.
 
+- @post_event: Continue...
+
+
 @cdc_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1 
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1) 
 view-if: unio_split and not cdc_in_jxsi and not cdc_in_jxcat
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     if (Q.erc_supporting && Q.cat_coalition.includes("cdc")) {
         Q.cdc_relations += 7*(1 - Q.erc_dissent/100);
         Q.cup_realations -= 2;
@@ -196,13 +208,16 @@ on-arrival: {!
 
 [? if erc_supporting and cat_coalition_includes_cdc: We are currently supporting a cdc government, which they already appreciate. Maybe this can bring us closer together? ?][? if erc_in_gob and cat_coalition_includes_cdc: We are currently governing together with cdc, which already creates some tensions. These move will hopefully smooth some of that over. ?][? if (not erc_supporting and cat_coalition_includes_cdc) or (not erc_in_gob and cat_coalition_includes_cdc): Without official institutional obligations to eachother for the moment, building ties with cdc is always easier. ?]The left parties are not particularly happy about these moves though.
 
+- @post_event: Continue...
+
+
 @dl_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1 
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1) 
 view-if: dl_formed and not pdcat_formed and not dl_in_jxcat and not dl_in_jxsi
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     if (Q.erc_supporting && Q.cat_coalition.includes("dl")) {
         Q.dl_relations += 7*(1 - Q.erc_dissent/100);
         Q.cup_realations -= 2;
@@ -228,13 +243,16 @@ on-arrival: {!
 
 [? if erc_supporting and cat_coalition_includes_dl: We are currently supporting a dl government, which they already appreciate. Maybe this can bring us closer together? ?][? if erc_in_gob and cat_coalition_includes_dl: We are currently governing together with dl, which already creates some tensions. These move will hopefully smooth some of that over. ?][? if (not erc_supporting and cat_coalition_includes_dl) or (not erc_in_gob and cat_coalition_includes_dl): Without official institutional obligations to eachother for the moment, building ties with dl is always easier. ?]The left parties are not particularly happy about these moves though.
 
+- @post_event: Continue...
+
+
 @jxcat_noerc_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1 
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1) 
 view-if: jxcat_formed and not erc_in_jxcat
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     if (Q.erc_supporting && Q.cat_coalition.includes("jxcat")) {
         Q.jxcat_relations += 7*(1 - Q.erc_dissent/100);
         Q.cup_realations -= 2;
@@ -260,13 +278,16 @@ on-arrival: {!
 
 [? if erc_supporting and cat_coalition_includes_jxcat: We are currently supporting a jxcat government, which they already appreciate. Maybe this can bring us closer together? ?][? if erc_in_gob and cat_coalition_includes_jxcat: We are currently governing together with jxcat, which already creates some tensions. These move will hopefully smooth some of that over. ?][? if (not erc_supporting and cat_coalition_includes_jxcat) or (not erc_in_gob and cat_coalition_includes_jxcat): Without official institutional obligations to eachother for the moment, building ties with jxcat is always easier. ?]The left parties are not particularly happy about these moves though.
 
+- @post_event: Continue...
+
+
 @junts_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1 
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1) 
 view-if: junts_formed
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     if (Q.erc_supporting && Q.cat_coalition.includes("junts")) {
         Q.junts_relations += 7*(1 - Q.erc_dissent/100);
         Q.cup_realations -= 2;
@@ -292,13 +313,16 @@ on-arrival: {!
 
 [? if erc_supporting and cat_coalition_includes_junts: We are currently supporting a Junts government, which they already appreciate. Maybe this can bring us closer together? ?][? if erc_in_gob and cat_coalition_includes_junts: We are currently governing together with Junts, which already creates some tensions. These move will hopefully smooth some of that over. ?][? if (not erc_supporting and cat_coalition_includes_junts) or (not erc_in_gob and cat_coalition_includes_junts): Without official institutional obligations to eachother for the moment, building ties with Junts is always easier. ?]The left parties are not particularly happy about these moves though.
 
+- @post_event: Continue...
+
+
 @cup_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 view-if: not cup_in_jxsi and not cup_in_jxcat
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     if (Q.erc_in_gob && Q.cup_in_gob) {
         Q.cup_relations += 7*(1 - Q.erc_dissent/100);
         Q.cat_coalition_dissent = -5;
@@ -312,12 +336,12 @@ on-arrival: {!
 [? if erc_in_gob and cup_supporting and not cup_in_gob: The CUP is currently supporting our government, which is already a balancing act. Hopefully this can bring us closer together. ?][? if erc_in_gob and cup_in_gob: We are currently governing together with the CUP, which alread demonstrates our commitment to leftist values. Let's hope this formula can hold up for some time. ?][? if not (erc_in_gob and cup_supporting): Without official institutional obligations to eachother for the moment, building ties with the CUP is always easier. ?]
 
 @icv_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 view-if: not csqp_formed and not cecp_formed and not ecp_formed
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     if (Q.icv_supporting && Q.cat_coalition.includes("erc")) {
         Q.icv_relations += 5*(1 - Q.erc_dissent/100);
     } else if (Q.erc_in_gob && Q.cat_coalition.includes("icv") || Q.cat_coalition.includes("icv") && Q.erc_supporting || Q.icv_supporting && Q.erc_supporting) {
@@ -348,13 +372,16 @@ on-arrival: {!
 
 ICV-EUiA has been a longstanding ally of ERC, we a lot of shared goals on Republicanism and Social Justice. [? if icv_supporting and cat_coalition_includes_erc: They are currently supporting our government, which does bring some friction. ?][? if erc_in_gob and cat_coalition_includes_icv: Governing together does bring some friction though. ?][? if cat_coalition_includes_icv and erc_supporting: We are already supporting a government they are a part of. Not being part of it is bringing some friction though. ?][? if icv_supporting and erc_supporting: We are currently supporting the same government, which feels a bit underwhelming. We should be there as welll! ?]Nonetheless, hope to be able to build on those shared goals. By doing this, we may be somewhat alienating our more Catalanist allies to our right.
 
+- @post_event: Continue...
+
+
 @csqp_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 view-if: csqp_formed
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     if (Q.csqp_supporting && Q.cat_coalition.includes("erc")) {
         Q.csqp_relations += 5*(1 - Q.erc_dissent/100);
     } else if (Q.erc_in_gob && Q.cat_coalition.includes("csqp")) {
@@ -385,13 +412,16 @@ on-arrival: {!
 
 CSQP feels like a natural ally of ERC in many ways. We a lot of shared goals on Republicanism and Social Justice. [? if csqp_supporting and cat_coalition_includes_erc: They are currently supporting our government, which does bring some friction. ?][? if erc_in_gob and cat_coalition_includes_csqp: Governing together does bring some friction though. ?][? if cat_coalition_includes_csqp and erc_supporting: We are already supporting a government they are a part of. Not being part of it is bringing some friction though. ?][? if csqp_supporting and erc_supporting: We are currently supporting the same government, which feels a bit underwhelming. We should be there as welll! ?]Nonetheless, hope to be able to build on those shared goals. By doing this, we may be somewhat alienating our more Catalanist allies to our right.
 
+- @post_event: Continue...
+
+
 @cecp_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 view-if: cecp_formed
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     if (Q.cecp_supporting && Q.cat_coalition.includes("erc")) {
         Q.cecp_relations += 5*(1 - Q.erc_dissent/100);
     } else if (Q.erc_in_gob && Q.cat_coalition.includes("cecp")) {
@@ -426,13 +456,16 @@ on-arrival: {!
 
 CECP feels like a natural ally of ERC in many ways. We a lot of shared goals on Republicanism and Social Justice. [? if cecp_supporting and cat_coalition_includes_erc: They are currently supporting our government, which does bring some friction. ?][? if erc_in_gob and cat_coalition_includes_cecp: Governing together does bring some friction though. ?][? if cat_coalition_includes_cecp and erc_supporting: We are already supporting a government they are a part of. Not being part of it is bringing some friction though. ?][? if cecp_supporting and erc_supporting: We are currently supporting the same government, which feels a bit underwhelming. We should be there as welll! ?]Nonetheless, hope to be able to build on those shared goals. By doing this, we may be somewhat alienating our more Catalanist allies to our right.
 
+- @post_event: Continue...
+
+
 @ecp_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 view-if: ecp_formed
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     if (Q.ecp_supporting && Q.cat_coalition.includes("erc")) {
         Q.ecp_relations += 3*(1 - Q.erc_dissent/100);
     } else if (Q.erc_in_gob && Q.cat_coalition.includes("ecp")) {
@@ -463,13 +496,15 @@ on-arrival: {!
 
 ECP feels less like a natural ally of ERC than its predecessors. We still have a lot of shared goals on Republicanism and Social Justice, but the moderation in their demands is a bit disappointing. [? if ecp_supporting and cat_coalition_includes_erc: They are currently supporting our government, which does bring some friction. ?][? if erc_in_gob and cat_coalition_includes_ecp: Governing together does bring some friction though. ?][? if cat_coalition_includes_ecp and erc_supporting: We are already supporting a government they are a part of. Not being part of it is bringing some friction though. ?][? if ecp_supporting and erc_supporting: We are currently supporting the same government, which feels a bit underwhelming. We should be there as welll! ?]Nonetheless, hope to be able to build on those shared goals. By doing this, we may be somewhat alienating our more Catalanist allies to our right.
 
+- @post_event: Continue...
+
+
 @psc_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
-view-if: not psc_dissolved
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 unavailable-subtitle: Not enough resources
 on-arrival: {!
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     if (Q.junts_formed) {
         Q.junts_relations -= 2;
     } else if (Q.jxcat_formed && !Q.erc_in_jxcat) {
@@ -579,8 +614,8 @@ on-arrival: {!
 Montserrat Tura has taken the PSC through a bold and commendable reform. Not only she has broken with the PSOE, but has moved the party to the left and has now a radical confederalist, pro-self-determination position that we could have only wished for just a few years ago. We have much to build together! [? if psc_supporting and cat_coalition_includes_erc: They are, on top of that, currently supporting our government. ?][? if erc_in_gob and cat_coalition_includes_psc: Governing together does bring some friction, though. ?][? if erc_supporting and cat_coalition_includes_psc: We are already supporting a government they are a part of. Not being part of it is bringing some friction though. ?]By doing this, we may be somewhat alienating our more Catalanist allies to our right.
 
 @pdcat_split_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 view-if: pdcat_split
 unavailable-subtitle: Not enough resources
 on-arrival: {!
@@ -604,7 +639,7 @@ on-arrival: {!
             targetLocal = "jxcat";
         }
     }
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     Q.pdcat_relations += 5*(1 - Q.erc_dissent/100);
     if (Q.junts_formed) {
         Q.junts_relations -= 2;
@@ -647,8 +682,8 @@ on-arrival: {!
 The move to improve our relations with the now-separated, unapologetically bourgeois pdcat is a risky move. They sure are, on paper, pro-independence, but they are far from popular and not particularly well-liked by parties closer to us, both to our right and to our left. It may even alienate some of our more working-class voters. Only time will tell if this move was worth it.
 
 @unio_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 view-if: unio_split and not unio_dissolved
 unavailable-subtitle: Not enough resources
 on-arrival: {!
@@ -672,7 +707,7 @@ on-arrival: {!
             targetLocal = "jxcat";
         }
     }
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     Q.unio_relations += 5*(1 - Q.erc_dissent/100);
     if (Q.junts_formed) {
         Q.junts_relations -= 2;
@@ -715,8 +750,8 @@ on-arrival: {!
 The move to improve our relations with the now-separated, christian democratic udc is a risky move. They are far from popular and not particularly well-liked by parties closer to us, both to our right and to our left. It may even alienate some of our more working-class voters. Only time will tell if this move was worth it.
 
 @pxc_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 view-if: not pxc_dissolved
 unavailable-subtitle: Not enough resources
 on-arrival: {!
@@ -740,7 +775,7 @@ on-arrival: {!
             targetLocal = "jxcat";
         }
     }
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     Q.pxc_relations += 5*(1 - Q.erc_dissent/100);
     if (Q.csqp_formed) {
         Q.csqp_relations -= 5;
@@ -777,8 +812,8 @@ on-arrival: {!
 The Catalan far-right of PxC is not only very marginal, but it is also very much at our ideological opposite. They are even for a re-centralization of Spain (???). Us getting closer to them is quite the unpopular move not only with many of our voters, but also with many potential allies. Are you sure this is worth it?
 
 @fnc_relations
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 view-if: fnc_formed
 unavailable-subtitle: Not enough resources
 on-arrival: {!
@@ -802,7 +837,7 @@ on-arrival: {!
             targetLocal = "jxcat";
         }
     }
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
     Q.fnc_relations += 5*(1 - Q.erc_dissent/100);
         if (Q.csqp_formed) {
         Q.csqp_relations -= 5;

@@ -1915,6 +1915,10 @@
         finalChoice.subtitle = this._renderSnapshot(subtitleSnapshot, true);
         finalChoice.presentation.subtitle = subtitleSnapshot;
       }
+      var choiceImage = choice.choiceImage || choiceScene.choiceImage;
+      if (choiceImage) {
+        finalChoice.choiceImage = choiceImage;
+      }
       // dendrynexus - add success/failure probabilities, and challenges.
       var successProb;
       if (

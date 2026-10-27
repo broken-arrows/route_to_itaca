@@ -1,0 +1,20 @@
+title: Push for a more ambitious roadmap
+new-page: true
+on-arrival: {!
+    if (Q.erc_advisor_action && Q.elisenda_paluzie_advisor && Q.difficulty >= 0) Q.month_actions += 1;
+!}
+go-to: roadmap_card.erc_strengthen_roadmap if {! return !!Q.erc_advisor_action && !!Q.elisenda_paluzie_advisor && (Q.year > 2012 && Q.player_roadmap > 0 && Q.player_roadmap < 3 && !Q.broken_roadmap && !Q.erc_in_jxsi && !Q.erc_in_jxcat && !Q.consultation_pending && !Q.referendum_pending && !(Q.congreso_decidir_countdown > 0 && Q.player_roadmap < 2) && Q.player_roadmap_change_trigger && Q.erc_pragmatic_strength < 30); !}; prepare if {! return !!Q.erc_advisor_action && !!Q.elisenda_paluzie_advisor && !(Q.year > 2012 && Q.player_roadmap > 0 && Q.player_roadmap < 3 && !Q.broken_roadmap && !Q.erc_in_jxsi && !Q.erc_in_jxcat && !Q.consultation_pending && !Q.referendum_pending && !(Q.congreso_decidir_countdown > 0 && Q.player_roadmap < 2) && Q.player_roadmap_change_trigger && Q.erc_pragmatic_strength < 30); !}; prepare if {! return !(Q.year > 2012 && Q.player_roadmap > 0 && Q.player_roadmap < 3 && !Q.broken_roadmap && !Q.erc_in_jxsi && !Q.erc_in_jxcat && !Q.consultation_pending && !Q.referendum_pending && !(Q.congreso_decidir_countdown > 0 && Q.player_roadmap < 2) && Q.player_roadmap_change_trigger && Q.erc_pragmatic_strength < 30); !}
+
+
+@prepare
+on-arrival: {!
+    if (Q.erc_advisor_action && Q.elisenda_paluzie_advisor) {
+        Q.erc_civic_strength += 4;
+        Q.erc_civic_dissent = Math.max(0, Q.erc_civic_dissent - 3);
+        Q.erc_pragmatic_dissent += 2;
+    }
+!}
+
+While the conditions to push ERC towards an more ambitious Roadmap to Independence are not quite there yet, Elisenda Paluzie has been building support for it, and building the necessary grassroots power to bring this change forward.
+
+- @post_event: Soon!

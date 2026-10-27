@@ -9,9 +9,15 @@ role: card-party
 
 = Shuffle Leadership
 
-Changing the leadership of the party might be necessary to adapt to the changing circumstances.
+Changing the leadership of the party might be necessary to adapt to the changing circumstances. Factions within the party may have strong opinions regarding the selected advisors, though.
 
-Removing advisors will increase dissent from their faction of the party, while selecting advisors will increase a faction's strength.
+<div style="display:flex;"><div style="display:flex; align-items:center; justify-content:left; font-weight: bold; width: 40%; margin-left: 3em;"> Left </div><div style="display:flex; font-size: 0.8em; margin-left: 1em; flex-direction:column;"> <div> Strength: [+ erc_left_strength : dissent +] </div><div> Dissent: [+ erc_left_dissent : dissent +]</div> </div> </div>
+
+<div style="display:flex;"><div style="display:flex; align-items:center; justify-content:left; font-weight: bold; width: 40%; margin-left: 3em;"> Republican Core </div><div style="display:flex; font-size: 0.8em; margin-left: 1em; flex-direction:column;"> <div> Strength: [+ erc_core_strength : dissent +] </div><div> Dissent: [+ erc_core_dissent : dissent +]</div> </div> </div>
+
+<div style="display:flex;"><div style="display:flex; align-items:center; justify-content:left; font-weight: bold; width: 40%; margin-left: 3em;"> Pragmatics </div><div style="display:flex; font-size: 0.8em; margin-left: 1em; flex-direction:column;"> <div> Strength: [+ erc_pragmatic_strength : dissent +] </div><div> Dissent: [+ erc_pragmatic_dissent : dissent +]</div> </div> </div>
+
+<div style="display:flex;"><div style="display:flex; align-items:center; justify-content:left; font-weight: bold; width: 40%; margin-left: 3em;"> Civil Society Organizations </div><div style="display:flex; font-size: 0.8em; margin-left: 1em; flex-direction:column;"> <div> Strength: [+ erc_civic_strength : dissent +] </div><div> Dissent: [+ erc_civic_dissent : dissent +]</div> </div> </div>
 
 - @rm_main: Remove advisors
 - @add_advisors: Add advisors
@@ -33,7 +39,7 @@ tags: erc_rm_advisor
 
 @add_advisors
 title: Add advisors
-unavailable-subtitle: Maximum of [+ max_advisors +] advisors.
+unavailable-subtitle: We already have the maximum of [+ max_advisors +] advisors.
 choose-if: n_advisors < max_advisors
 go-to: erc_advisor_menu
 
@@ -45,7 +51,7 @@ frequency: 1
 - @erc_social_left: Add from the Left
 - @erc_republican_core: Add from the Republican Core
 - @erc_institutional_pragmatics: Add from the Pragmatics
-- @erc_civic_nationalists: Add from Civil Organizations
+- @erc_civic_nationalists: Add from Civil Society Organizations
 - @rm_main: Remove advisors instead
 - @remove_none: Stop changing advisors
 
@@ -78,10 +84,12 @@ view-if: n_advisors < max_advisors
 # erc_social_left
 
 @add_dolors_bassa
-title: Dolors Bassa i Coll
-subtitle: Secretary General of the UGT in Girona, has a strong link with many progressive social movements.
+title: ​Dolors Bassa i Coll
+choice-image: img/erc/bassa.jpg
+order: -10
+subtitle: Secretary General of the UGT in Girona, has a strong link with many progressive social movements. {!<br><br>!}Actions:{!<br>!}Build support through unions and social movements{!<br>!}Defend the social commitments of the current government
 choose-if: dolors_bassa_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Build support through unions and social movements{!<br>!}Defend the social commitments of the current government
 view-if: n_advisors < max_advisors and dolors_bassa_advisor_available = 1
 on-arrival: dolors_bassa_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_social_left
@@ -90,10 +98,12 @@ go-to: erc_advisor_menu
 Dolors Bassa has been added as an advisor.
 
 @add_joan_josep_nuet
-title: Joan Josep Nuet i Pujals
-subtitle: Former member of ICV-EUiA, he left the CSQP during its crisis.
+title: ​Joan Josep Nuet i Pujals
+choice-image: img/erc/joanjosepnuet.jpg
+order: -10
+subtitle: Former member of ICV-EUiA, he left the CSQP during its crisis. {!<br><br>!}Actions:{!<br>!}Build support through unions and social movements{!<br>!}Build bridges with [+ parlament_current_icv +]
 choose-if: joan_josep_nuet_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Build support through unions and social movements{!<br>!}Build bridges with [+ parlament_current_icv +]
 view-if: n_advisors < max_advisors and joan_josep_nuet_advisor_available = 1
 on-arrival: joan_josep_nuet_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_social_left
@@ -102,10 +112,12 @@ go-to: erc_advisor_menu
 Joan Josep Nuet has been added as an advisor.
 
 @add_marta_rovira
-title: Marta Rovira i Vergés
-subtitle: A lawyer by profession, she has been ERC's secretary general since 2011.
+title: ​Marta Rovira i Vergés
+choice-image: img/erc/martarovira.jpg
+order: -10
+subtitle: A lawyer by profession, she has been ERC's secretary general since 2011. {!<br><br>!}Actions:{!<br>!}Coordinate the party's territorial organization{!<br>!}Build national unity with [+ parlament_current_ciu +]{!<br>!}Build bridges with the CUP
 choose-if: marta_rovira_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Coordinate the party's territorial organization{!<br>!}Build national unity with [+ parlament_current_ciu +]{!<br>!}Build bridges with the CUP
 view-if: n_advisors < max_advisors and  marta_rovira_advisor_available = 1
 on-arrival: marta_rovira_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_social_left
@@ -115,10 +127,12 @@ Marta Rovira has been added as an advisor.
 
 
 @add_teresa_jorda
-title: Teresa Jordà i Roura
-subtitle: Former Mayor of Ripoll, she has the strongest background in agricultural and rural issues.
+title: ​Teresa Jordà i Roura
+choice-image: img/erc/jorda.jpg
+order: -10
+subtitle: Former Mayor of Ripoll, she has the strongest background in agricultural and rural issues. {!<br><br>!}Actions:{!<br>!}Mobilize rural branches and local networks
 choose-if: teresa_jorda_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Mobilize rural branches and local networks
 view-if: n_advisors < max_advisors and teresa_jorda_advisor_available = 1
 on-arrival: teresa_jorda_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_social_left
@@ -130,9 +144,11 @@ Teresa Jordà has been added as an advisor.
 
 @add_oriol_junqueras
 title: ​Oriol Junqueras i Vies
-subtitle: Historian and former professor, he has been the president of ERC since 2011.
+choice-image: img/erc/junqueras.jpg
+order: -10
+subtitle: Historian and former professor, he has been the president of ERC since 2011. {!<br><br>!}Actions:{!<br>!}Mediate between the party's factions{!<br>!}Defend the current governing agreement
 choose-if: oriol_junqueras_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Mediate between the party's factions{!<br>!}Defend the current governing agreement
 view-if: n_advisors < max_advisors and oriol_junqueras_advisor_available = 1
 on-arrival: oriol_junqueras_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_republican_core
@@ -142,9 +158,11 @@ go-to: erc_advisor_menu
 
 @add_gabriel_rufian
 title: ​Gabriel Rufián Romero
-subtitle: Of Andalusian descent, has a strong tie to the industrial hinterlands of Barcelona and a strong combative style.
+choice-image: img/erc/rufian.png
+order: -10
+subtitle: Of Andalusian descent, has a strong tie to the industrial hinterlands of Barcelona and a strong combative style. {!<br><br>!}Actions:{!<br>!}Campaign in Barcelona's Red Belt{!<br>!}Reach out to other parties in the Congreso
 choose-if: gabriel_rufian_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Campaign in Barcelona's Red Belt{!<br>!}Reach out to other parties in the Congreso
 view-if: n_advisors < max_advisors and gabriel_rufian_advisor_available = 1
 on-arrival: gabriel_rufian_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_republican_core
@@ -153,10 +171,12 @@ go-to: erc_advisor_menu
 Gabriel Rufián has been added as an advisor.
 
 @add_joan_tarda
-title: Joan Tardà i Coma
-subtitle: One of the longest-serving ERC deputies in the Congreso.
+title: ​Joan Tardà i Coma
+choice-image: img/erc/joantarda.jpg
+order: -10
+subtitle: One of the longest-serving ERC deputies in the Congreso. {!<br><br>!}Actions:{!<br>!}Reach out to other parties in the Congreso{!<br>!}Build bridges with [+ parlament_current_icv +]
 choose-if: joan_tarda_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Reach out to other parties in the Congreso{!<br>!}Build bridges with [+ parlament_current_icv +]
 view-if: n_advisors < max_advisors and joan_tarda_advisor_available = 1
 on-arrival: joan_tarda_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_republican_core
@@ -165,10 +185,12 @@ go-to: erc_advisor_menu
 Joan Tardà has been added as an advisor.
 
 @add_sergi_sabria
-title: Sergi Sabrià i Benito
-subtitle: Rising strategist with a strong background in communications.
+title: ​Sergi Sabrià i Benito
+choice-image: img/erc/sergisabria.jpg
+order: -10
+subtitle: Rising strategist with a strong background in communications. {!<br><br>!}Actions:{!<br>!}Get the party media to work on expanding the voter base{!<br>!}Commission an unofficial PR campaign{!<br>!}Develop our established social-media operations
 choose-if: sergi_sabria_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Get the party media to work on expanding the voter base{!<br>!}Commission an unofficial PR campaign{!<br>!}Develop our established social-media operations
 view-if: n_advisors < max_advisors and sergi_sabria_advisor_available = 1
 on-arrival: sergi_sabria_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_republican_core
@@ -178,9 +200,11 @@ Sergi Sabrià has been added as an advisor.
 
 @add_raul_romeva
 title: ​Raül Romeva i Rueda
-subtitle: Former MEP for ICV-EUiA, he is well versed in international diplomacy.
+choice-image: img/erc/romeva.jpg
+order: -10
+subtitle: Former MEP for ICV-EUiA, he is well versed in international diplomacy. {!<br><br>!}Actions:{!<br>!}Gather international support{!<br>!}Build national unity with [+ parlament_current_ciu +]
 choose-if: raul_romeva_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Gather international support{!<br>!}Build national unity with [+ parlament_current_ciu +]
 view-if: n_advisors < max_advisors and raul_romeva_advisor_available = 1
 on-arrival: raul_romeva_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_republican_core
@@ -190,10 +214,12 @@ Raül Romeva has been added as an advisor.
 
 # erc_institutional_pragmatics
 @add_pere_aragones
-title: Pere Aragonès i Garcia
-subtitle: Economist with family ties to the services and industrial sectors.
+title: ​Pere Aragonès i Garcia
+choice-image: img/erc/aragones.jpg
+order: -10
+subtitle: Economist with family ties to the services and industrial sectors. {!<br><br>!}Actions:{!<br>!}No direct advisor actions.
 choose-if: pere_aragones_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}No direct advisor actions.
 view-if: n_advisors < max_advisors and pere_aragones_advisor_available = 1
 on-arrival: pere_aragones_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_institutional_pragmatics
@@ -202,10 +228,12 @@ go-to: erc_advisor_menu
 Pere Aragonès has been added as an advisor.
 
 @add_roger_torrent
-title: Roger Torrent i Ramió
-subtitle: Former mayor with strong local government experience.
+title: ​Roger Torrent i Ramió
+choice-image: img/erc/rogertorrent.jpg
+order: -10
+subtitle: Former mayor with strong local government experience. {!<br><br>!}Actions:{!<br>!}Coordinate the party's territorial organization{!<br>!}Defend the current governing agreement
 choose-if: roger_torrent_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Coordinate the party's territorial organization{!<br>!}Defend the current governing agreement
 view-if: n_advisors < max_advisors and roger_torrent_advisor_available = 1
 on-arrival: roger_torrent_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_institutional_pragmatics
@@ -214,10 +242,12 @@ go-to: erc_advisor_menu
 Roger Torrent has been added as an advisor.
 
 @add_alfred_bosch
-title: Alfred Bosch i Pascual
-subtitle: University professor and former diplomat, with a strong background in cultural affairs.
+title: ​Alfred Bosch i Pascual
+choice-image: img/erc/alfredbosch.jpg
+order: -10
+subtitle: University professor and former diplomat, with a strong background in cultural affairs. {!<br><br>!}Actions:{!<br>!}Build ERC's Barcelona local networks{!<br>!}Gather international support
 choose-if: alfred_bosch_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Build ERC's Barcelona local networks{!<br>!}Gather international support
 view-if: n_advisors < max_advisors and alfred_bosch_advisor_available = 1
 on-arrival: alfred_bosch_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_institutional_pragmatics
@@ -226,10 +256,12 @@ go-to: erc_advisor_menu
 Alfred Bosch has been added as an advisor.
 
 @add_ernest_maragall
-title: Ernest Maragall i Mira
-subtitle: With a strong history in antifascist activism and local politics, he is a historic figure of ERC.
+title: ​Ernest Maragall i Mira
+choice-image: img/erc/ernestmaragall.jpg
+order: -10
+subtitle: With a strong history in antifascist activism and local politics, he is a historic figure of ERC. {!<br><br>!}Actions:{!<br>!}Build ERC's Barcelona local networks{!<br>!}Build bridges with the PSC
 choose-if: ernest_maragall_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Build ERC's Barcelona local networks{!<br>!}Build bridges with the PSC
 view-if: n_advisors < max_advisors and ernest_maragall_advisor_available = 1
 on-arrival: ernest_maragall_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_institutional_pragmatics
@@ -239,10 +271,12 @@ Ernest Maragall has been added as an advisor.
 
 # erc_civic_nationalists
 @add_joan_laporta
-title: Joan Laporta i Estruch
-subtitle: Former FC Barcelona president, he left the SI coalition he co-founded to instead support ERC.
+title: ​Joan Laporta i Estruch
+choice-image: img/erc/laporta.jpg
+order: -10
+subtitle: Former FC Barcelona president, he left the SI coalition he co-founded to instead support ERC. {!<br><br>!}Actions:{!<br>!}Campaign among business owners and the self-employed{!<br>!}Campaign across Barcelona
 choose-if: joan_laporta_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Campaign among business owners and the self-employed{!<br>!}Campaign across Barcelona
 view-if: n_advisors < max_advisors and joan_laporta_advisor_available = 1
 on-arrival: joan_laporta_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_civic_nationalists
@@ -251,10 +285,12 @@ go-to: erc_advisor_menu
 Joan Laporta has been added as an advisor.
 
 @add_carles_mundo
-title: Carles Mundó i Blanch
-subtitle: Lawyer with a strong background in linguistic and cultural rights.
+title: ​Carles Mundó i Blanch
+choice-image: img/erc/carlesmundo.jpg
+order: -10
+subtitle: Lawyer with a strong background in linguistic and cultural rights. {!<br><br>!}Actions:{!<br>!}Build national unity with [+ parlament_current_ciu +]{!<br>!}Defend the current governing agreement{!<br>!}Build bridges with the PSC
 choose-if: carles_mundo_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Build national unity with [+ parlament_current_ciu +]{!<br>!}Defend the current governing agreement{!<br>!}Build bridges with the PSC
 view-if: n_advisors < max_advisors and carles_mundo_advisor_available = 1
 on-arrival: carles_mundo_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_civic_nationalists
@@ -264,9 +300,11 @@ Carles Mundó has been added as an advisor.
 
 @add_carme_forcadell
 title: ​Carme Forcadell i Lluís
-subtitle: Former president of the ANC, she has a strong background in civic activism.
+choice-image: img/erc/forcadell.jpg
+order: -10
+subtitle: Former president of the ANC, she has a strong background in civic activism. {!<br><br>!}Actions:{!<br>!}Mobilize civil society organizations{!<br>!}Build national unity with [+ parlament_current_ciu +]
 choose-if: carme_forcadell_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Mobilize civil society organizations{!<br>!}Build national unity with [+ parlament_current_ciu +]
 view-if: n_advisors < max_advisors and carme_forcadell_advisor_available = 1
 on-arrival: carme_forcadell_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_civic_nationalists
@@ -275,11 +313,13 @@ go-to: erc_advisor_menu
 Carme Forcadell has been added as an advisor.
 
 @add_elisenda_paluzie
-title: Elisenda Paluzie i Hernández
-subtitle: Prominent economist with a very combative style and a strong background in civic activism.
+title: ​Elisenda Paluzie i Hernández
+choice-image: img/erc/paluzie.jpg
+order: -10
+subtitle: Prominent economist with a very combative style and a strong background in civic activism. {!<br><br>!}Actions:{!<br>!}Mobilize civil society organizations{!<br>!}Push for a more ambitious Roadmap
 view-if: n_advisors < max_advisors and elisenda_paluzie_advisor_available = 1
 choose-if: elisenda_paluzie_advisor = 0
-unavailable-subtitle: Already an advisor
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Mobilize civil society organizations{!<br>!}Push for a more ambitious Roadmap
 on-arrival: elisenda_paluzie_advisor = 1; n_advisors += 1;
 tags: erc_advisor, erc_civic_nationalists
 go-to: erc_advisor_menu
@@ -290,7 +330,10 @@ Elisenda Paluzie has been added as an advisor.
 #################################### removing advisors
 
 @remove_dolors_bassa
-title: Remove Dolors Bassa
+title: Remove ​Dolors Bassa
+choice-image: img/erc/bassa.jpg
+order: -10
+subtitle: Actions:{!<br>!}Build support through unions and social movements{!<br>!}Defend the social commitments of the current government
 view-if: dolors_bassa_advisor = 1
 on-arrival: dolors_bassa_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -299,7 +342,10 @@ go-to: rm_main
 Dolors Bassa is no longer an advisor. The party's Left will not be pleased.
 
 @remove_joan_josep_nuet
-title: Remove Joan Josep Nuet
+title: Remove ​Joan Josep Nuet
+choice-image: img/erc/joanjosepnuet.jpg
+order: -10
+subtitle: Actions:{!<br>!}Build support through unions and social movements{!<br>!}Build bridges with [+ parlament_current_icv +]
 view-if: joan_josep_nuet_advisor = 1
 on-arrival: joan_josep_nuet_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -308,7 +354,10 @@ go-to: rm_main
 Joan Josep Nuet is no longer an advisor. The party's Left will not be pleased.
 
 @remove_marta_rovira
-title: Remove Marta Rovira
+title: Remove ​Marta Rovira
+choice-image: img/erc/martarovira.jpg
+order: -10
+subtitle: Actions:{!<br>!}Coordinate the party's territorial organization{!<br>!}Build national unity with [+ parlament_current_ciu +]{!<br>!}Build bridges with the CUP
 view-if: marta_rovira_advisor = 1
 on-arrival: marta_rovira_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -317,7 +366,10 @@ go-to: rm_main
 Marta Rovira is no longer an advisor. The party's Left will not be pleased.
 
 @remove_teresa_jorda
-title: Remove Teresa Jordà
+title: Remove ​Teresa Jordà
+choice-image: img/erc/jorda.jpg
+order: -10
+subtitle: Actions:{!<br>!}Mobilize rural branches and local networks
 view-if: teresa_jorda_advisor = 1
 on-arrival: teresa_jorda_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -327,6 +379,9 @@ Teresa Jordà is no longer an advisor. The party's Left will not be pleased.
 
 @remove_oriol_junqueras
 title: Remove ​Oriol Junqueras
+choice-image: img/erc/junqueras.jpg
+order: -10
+subtitle: Actions:{!<br>!}Mediate between the party's factions{!<br>!}Defend the current governing agreement
 view-if: oriol_junqueras_advisor = 1
 on-arrival: oriol_junqueras_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -336,6 +391,9 @@ Oriol Junqueras is no longer an advisor. The Republican Core is not pleased.
 
 @remove_gabriel_rufian
 title: Remove ​Gabriel Rufián
+choice-image: img/erc/rufian.png
+order: -10
+subtitle: Actions:{!<br>!}Campaign in Barcelona's Red Belt{!<br>!}Reach out to other parties in the Congreso
 view-if: gabriel_rufian_advisor = 1
 on-arrival: gabriel_rufian_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -344,7 +402,10 @@ go-to: rm_main
 Gabriel Rufián is no longer an advisor. The Republican Core is not pleased.
 
 @remove_joan_tarda
-title: Remove Joan Tardà
+title: Remove ​Joan Tardà
+choice-image: img/erc/joantarda.jpg
+order: -10
+subtitle: Actions:{!<br>!}Reach out to other parties in the Congreso{!<br>!}Build bridges with [+ parlament_current_icv +]
 view-if: joan_tarda_advisor = 1
 on-arrival: joan_tarda_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -353,7 +414,10 @@ go-to: rm_main
 Joan Tardà is no longer an advisor. The Republican Core is not pleased.
 
 @remove_sergi_sabria
-title: Remove Sergi Sabrià
+title: Remove ​Sergi Sabrià
+choice-image: img/erc/sergisabria.jpg
+order: -10
+subtitle: Actions:{!<br>!}Get the party media to work on expanding the voter base{!<br>!}Commission an unofficial PR campaign{!<br>!}Develop our established social-media operations
 view-if: sergi_sabria_advisor = 1
 on-arrival: sergi_sabria_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -363,6 +427,9 @@ Sergi Sabrià is no longer an advisor. The Republican Core is not pleased.
 
 @remove_raul_romeva
 title: Remove ​Raül Romeva
+choice-image: img/erc/romeva.jpg
+order: -10
+subtitle: Actions:{!<br>!}Gather international support{!<br>!}Build national unity with [+ parlament_current_ciu +]
 view-if: raul_romeva_advisor = 1
 on-arrival: raul_romeva_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -371,7 +438,10 @@ go-to: rm_main
 Raül Romeva is no longer an advisor. The Republican Core is not pleased.
 
 @remove_pere_aragones
-title: Remove Pere Aragonès
+title: Remove ​Pere Aragonès
+choice-image: img/erc/aragones.jpg
+order: -10
+subtitle: Actions:{!<br>!}No direct advisor actions.
 view-if: pere_aragones_advisor = 1
 on-arrival: pere_aragones_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -380,7 +450,10 @@ go-to: rm_main
 Pere Aragonès is no longer an advisor. Pragmatics will not be pleased.
 
 @remove_roger_torrent
-title: Remove Roger Torrent
+title: Remove ​Roger Torrent
+choice-image: img/erc/rogertorrent.jpg
+order: -10
+subtitle: Actions:{!<br>!}Coordinate the party's territorial organization{!<br>!}Defend the current governing agreement
 view-if: roger_torrent_advisor = 1
 on-arrival: roger_torrent_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -389,7 +462,10 @@ go-to: rm_main
 Roger Torrent is no longer an advisor. Pragmatics will not be pleased.
 
 @remove_alfred_bosch
-title: Remove Alfred Bosch
+title: Remove ​Alfred Bosch
+choice-image: img/erc/alfredbosch.jpg
+order: -10
+subtitle: Actions:{!<br>!}Build ERC's Barcelona local networks{!<br>!}Gather international support
 view-if: alfred_bosch_advisor = 1
 on-arrival: alfred_bosch_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -398,7 +474,10 @@ go-to: rm_main
 Alfred Bosch is no longer an advisor. Pragmatics will not be pleased.
 
 @remove_ernest_maragall
-title: Remove Ernest Maragall
+title: Remove ​Ernest Maragall
+choice-image: img/erc/ernestmaragall.jpg
+order: -10
+subtitle: Actions:{!<br>!}Build ERC's Barcelona local networks{!<br>!}Build bridges with the PSC
 view-if: ernest_maragall_advisor = 1
 on-arrival: ernest_maragall_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -407,7 +486,10 @@ go-to: rm_main
 Ernest Maragall is no longer an advisor. Pragmatics will not be pleased.
 
 @remove_joan_laporta
-title: Remove Joan Laporta
+title: Remove ​Joan Laporta
+choice-image: img/erc/laporta.jpg
+order: -10
+subtitle: Actions:{!<br>!}Campaign among business owners and the self-employed{!<br>!}Campaign across Barcelona
 view-if: joan_laporta_advisor = 1
 on-arrival: joan_laporta_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -416,7 +498,10 @@ go-to: rm_main
 Joan Laporta is no longer an advisor. Civic Organizations tied to the party will not be pleased.
 
 @remove_carles_mundo
-title: Remove Carles Mundó
+title: Remove ​Carles Mundó
+choice-image: img/erc/carlesmundo.jpg
+order: -10
+subtitle: Actions:{!<br>!}Build national unity with [+ parlament_current_ciu +]{!<br>!}Defend the current governing agreement{!<br>!}Build bridges with the PSC
 view-if: carles_mundo_advisor = 1
 on-arrival: carles_mundo_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -426,6 +511,9 @@ Carles Mundó is no longer an advisor. Civic Organizations tied to the party wil
 
 @remove_carme_forcadell
 title: Remove ​Carme Forcadell
+choice-image: img/erc/forcadell.jpg
+order: -10
+subtitle: Actions:{!<br>!}Mobilize civil society organizations{!<br>!}Build national unity with [+ parlament_current_ciu +]
 view-if: carme_forcadell_advisor = 1
 on-arrival: carme_forcadell_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor
@@ -434,7 +522,10 @@ go-to: rm_main
 Carme Forcadell is no longer an advisor. Civic Organizations tied to the party will not be pleased.
 
 @remove_elisenda_paluzie
-title: Remove Elisenda Paluzie
+title: Remove ​Elisenda Paluzie
+choice-image: img/erc/paluzie.jpg
+order: -10
+subtitle: Actions:{!<br>!}Mobilize civil society organizations{!<br>!}Push for a more ambitious Roadmap
 view-if: elisenda_paluzie_advisor = 1
 on-arrival: elisenda_paluzie_advisor = 0; n_advisors -= 1;
 tags: erc_rm_advisor

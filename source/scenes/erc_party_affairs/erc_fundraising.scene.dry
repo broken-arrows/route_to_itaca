@@ -1,7 +1,7 @@
 title: Fundraising
 new-page: true
 view-if: erc_fundraising_timer <= 0
-on-arrival: erc_fundraising_timer = 12; month_actions += 1
+on-arrival: erc_fundraising_timer = 12; month_actions += 1 if not erc_advisor_action or difficulty >= 0
 card-image: img/erc/executiva.jpg
 face-image: img/erc/executiva.jpg
 tags: erc_party
@@ -16,6 +16,7 @@ Fact is, the party needs resources to work. [? if party_income < 2: Right now, t
 - @raise_rates
 - @lower_rates
 - @root: We do not need to change our funding sources.
+- view-if: not last_advisor_action
 - @easy_discard
 - @cancel_advisor_action
 
@@ -96,13 +97,13 @@ In times of economic uncertainty, it's never popular to increase public subsidie
 
 @lower_allocation
 title: Lobby for a reduction of party subsidies
-subtitle: \[-1 resources\]
-choose-if: party_resources_mult > 0 and erc_pragmatic_strength < 30 and party_resources > 0
-unavailable-subtitle: [? if party_resources_mult <= 0: Party subsidies are already virtually non-existing. ?][? if erc_left_strength >= 30: The Pragmatics oppose this, and they are too strong at the moment. ?][? if party_resources < 1: Not enough resources. ?]
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: party_resources_mult > 0 and erc_pragmatic_strength < 30 and (erc_advisor_action or party_resources > 0)
+unavailable-subtitle: [? if party_resources_mult <= 0: Party subsidies are already virtually non-existing. ?][? if erc_left_strength >= 30: The Pragmatics oppose this, and they are too strong at the moment. ?][? if not erc_advisor_action and party_resources < 1: Not enough resources. ?]
 on-arrival: {!
-    if (Q.party_resources_mult > 0 && Q.erc_pragmatic_strength < 30 && Q.party_resources > 0) {
+    if (Q.party_resources_mult > 0 && Q.erc_pragmatic_strength < 30 && (Q.erc_advisor_action || Q.party_resources > 0)) {
         var reactionTransfers = [];
-        Q.party_resources -= 1;
+        if (!Q.erc_advisor_action) Q.party_resources -= 1;
         Q.party_resources_mult -= 1;
 
         Q.erc_left_dissent -= 8;
@@ -214,15 +215,15 @@ Party dues have not really represented an important share of the party's income 
 
 @lower_rates
 title: Lower party dues
-subtitle: [? if party_income = 2: \[-1 resources\]?]
-choose-if: party_income >= 1 and (party_resources > 0 or party_income < 2)
-unavailable-subtitle: [? if party_income < 1: Dues are already as low as they can be. ?][? if party_resources < 1 and party_income == 2: Not enough resources. ?]
+subtitle: [? if party_income = 2: [? if not erc_advisor_action: \[-1 resources\] ?]?]
+choose-if: party_income >= 1 and ((erc_advisor_action or party_resources > 0) or party_income < 2)
+unavailable-subtitle: [? if party_income < 1: Dues are already as low as they can be. ?][? if not erc_advisor_action and party_resources < 1 and party_income == 2: Not enough resources. ?]
 on-arrival: {!
-    if (Q.party_income >= 1 && (Q.party_resources > 0 || Q.party_income < 2)) {
+    if (Q.party_income >= 1 && ((Q.erc_advisor_action || Q.party_resources > 0) || Q.party_income < 2)) {
         G.clearPoliticalEffect(Q, "party_dues");
         if (Q.party_income == 2) {
             Q.party_income -= 1;
-            Q.party_resources -= 1;
+            if (!Q.erc_advisor_action) Q.party_resources -= 1;
         } else if (Q.party_income > 0) {
             Q.party_income_increased = false;
         }

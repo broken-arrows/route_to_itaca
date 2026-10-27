@@ -1,4 +1,4 @@
-title: Joan Josep Nuet
+title: ​Joan Josep Nuet
 tags: advisor
 card-image: img/erc/joanjosepnuet.jpg
 face-image: img/erc/joanjosepnuet.jpg
@@ -10,4 +10,40 @@ role: pinned-advisor
 
 Joan Josep Nuet was a member of ICV-EUiA, until he left the CSQP during its crisis.
 
-- @root: Return to main
+- @open_campaigning
+- @open_inter_party
+- @root: Return to hand
+
+# TODO: Widening the Base access
+
+@open_campaigning
+title: Build support through unions and social movements
+choose-if: player_party = "erc" and joan_josep_nuet_advisor and advisor_action_timer <= 0 and not erc_advisor_action
+unavailable-subtitle: [? if advisor_action_timer > 0: Next advisor action available in [+ advisor_action_timer +] [? if rubicon: weeks?][? if not rubicon: months?]. ?][? if advisor_action_timer <= 0: The political conditions for this action are not met. ?]
+role: card-party
+on-arrival: {!
+    if (Q.player_party === "erc" && Q.joan_josep_nuet_advisor && Q.advisor_action_timer <= 0 && !Q.erc_advisor_action) {
+        Q.erc_advisor_action = {target:"erc_campaigning", actions:Q.month_actions || 0, timer:Q.erc_campaigning_timer || 0, visits:this.state.visits["erc_campaigning"] || 0};
+        Q.last_advisor_action = 1;
+        Q.advisor_action_timer = 6;
+        if (Q.difficulty >= 0) Q.month_actions += 1;
+        Q.erc_campaigning_timer = Q.rubicon ? 2 : 0;
+    }
+!}
+go-to: erc_campaigning.union_networks if erc_advisor_action; root if not erc_advisor_action
+
+@open_inter_party
+title: Build bridges with [+ parlament_current_icv +]
+choose-if: player_party = "erc" and joan_josep_nuet_advisor and advisor_action_timer <= 0 and not erc_advisor_action and ((parlament_current_icv = "icv" and (not csqp_formed and not cecp_formed and not ecp_formed)) or (parlament_current_icv = "csqp" and (csqp_formed)) or (parlament_current_icv = "cecp" and (cecp_formed)) or (parlament_current_icv = "ecp" and (ecp_formed)))
+unavailable-subtitle: [? if advisor_action_timer > 0: Next advisor action available in [+ advisor_action_timer +] [? if rubicon: weeks?][? if not rubicon: months?]. ?]
+role: card-party
+on-arrival: {!
+    if (Q.player_party === "erc" && Q.joan_josep_nuet_advisor && Q.advisor_action_timer <= 0 && !Q.erc_advisor_action && ((Q.parlament_current_icv === "icv" && (!Q.csqp_formed && !Q.cecp_formed && !Q.ecp_formed)) || (Q.parlament_current_icv === "csqp" && (Q.csqp_formed)) || (Q.parlament_current_icv === "cecp" && (Q.cecp_formed)) || (Q.parlament_current_icv === "ecp" && (Q.ecp_formed)))) {
+        Q.erc_advisor_action = {target:"erc_inter_party", actions:Q.month_actions || 0, timer:Q.erc_inter_party_timer || 0, visits:this.state.visits["erc_inter_party"] || 0};
+        Q.last_advisor_action = 1;
+        Q.advisor_action_timer = 6;
+        if (Q.difficulty >= 0) Q.month_actions += 1;
+        Q.erc_inter_party_timer = 6;
+    }
+!}
+go-to: erc_inter_party.icv_relations if erc_advisor_action and (parlament_current_icv = "icv" and (not csqp_formed and not cecp_formed and not ecp_formed)); erc_inter_party.csqp_relations if erc_advisor_action and (parlament_current_icv = "csqp" and (csqp_formed)); erc_inter_party.cecp_relations if erc_advisor_action and (parlament_current_icv = "cecp" and (cecp_formed)); erc_inter_party.ecp_relations if erc_advisor_action and (parlament_current_icv = "ecp" and (ecp_formed)); root if not erc_advisor_action

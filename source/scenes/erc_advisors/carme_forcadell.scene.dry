@@ -10,4 +10,40 @@ role: pinned-advisor
 
 Carme Forcadell was, until recently, the president of the ANC, and has a strong background in civic activism.
 
-- @root: Return to main
+- @open_rally
+- @open_inter_party
+- @root: Return to hand
+
+# TODO: Widening the Base access
+
+@open_rally
+title: Mobilize civil society organizations
+choose-if: player_party = "erc" and carme_forcadell_advisor and advisor_action_timer <= 0 and not erc_advisor_action and ((year > 2012 or month >= 9))
+unavailable-subtitle: [? if advisor_action_timer > 0: Next advisor action available in [+ advisor_action_timer +] [? if rubicon: weeks?][? if not rubicon: months?]. ?]
+role: card-party
+on-arrival: {!
+    if (Q.player_party === "erc" && Q.carme_forcadell_advisor && Q.advisor_action_timer <= 0 && !Q.erc_advisor_action && ((Q.year > 2012 || Q.month >= 9))) {
+        Q.erc_advisor_action = {target:"erc_rally", actions:Q.month_actions || 0, timer:Q.erc_rally_timer || 0, visits:this.state.visits["erc_rally"] || 0};
+        Q.last_advisor_action = 1;
+        Q.advisor_action_timer = 6;
+        if (Q.difficulty >= 0) Q.month_actions += 1;
+        Q.erc_rally_timer = (Q.year === 2012 || Q.next_election_time - Q.time <= 6) ? 2 : 6;
+    }
+!}
+go-to: erc_rally.independence if erc_advisor_action and (year > 2012 or month >= 9); root if not erc_advisor_action
+
+@open_inter_party
+title: Build national unity with [+ parlament_current_ciu +]
+choose-if: player_party = "erc" and carme_forcadell_advisor and advisor_action_timer <= 0 and not erc_advisor_action and ((parlament_current_ciu = "ciu" and (not unio_split)) or (parlament_current_ciu = "cdc" and (unio_split and not cdc_in_jxsi and not cdc_in_jxcat)) or (parlament_current_ciu = "dl" and (dl_formed and not pdcat_formed and not dl_in_jxcat and not dl_in_jxsi)) or (parlament_current_ciu = "pdcat" and (pdcat_formed and not pdcat_split and not pdcat_in_jxcat and not pdcat_in_jxsi)) or (parlament_current_ciu = "junts" and (junts_formed)) or (parlament_current_ciu = "jxsi" and (jxsi_formed and not jxsi_dissolved)) or (parlament_current_ciu = "jxcat" and erc_in_jxcat and jxcat_formed and not jxcat_dissolved) or (parlament_current_ciu = "jxcat" and not erc_in_jxcat and jxcat_formed and not jxcat_dissolved))
+unavailable-subtitle: [? if advisor_action_timer > 0: Next advisor action available in [+ advisor_action_timer +] [? if rubicon: weeks?][? if not rubicon: months?]. ?]
+role: card-party
+on-arrival: {!
+    if (Q.player_party === "erc" && Q.carme_forcadell_advisor && Q.advisor_action_timer <= 0 && !Q.erc_advisor_action && ((Q.parlament_current_ciu === "ciu" && (!Q.unio_split)) || (Q.parlament_current_ciu === "cdc" && (Q.unio_split && !Q.cdc_in_jxsi && !Q.cdc_in_jxcat)) || (Q.parlament_current_ciu === "dl" && (Q.dl_formed && !Q.pdcat_formed && !Q.dl_in_jxcat && !Q.dl_in_jxsi)) || (Q.parlament_current_ciu === "pdcat" && (Q.pdcat_formed && !Q.pdcat_split && !Q.pdcat_in_jxcat && !Q.pdcat_in_jxsi)) || (Q.parlament_current_ciu === "junts" && (Q.junts_formed)) || (Q.parlament_current_ciu === "jxsi" && (Q.jxsi_formed && !Q.jxsi_dissolved)) || (Q.parlament_current_ciu === "jxcat" && Q.erc_in_jxcat && Q.jxcat_formed && !Q.jxcat_dissolved) || (Q.parlament_current_ciu === "jxcat" && !Q.erc_in_jxcat && Q.jxcat_formed && !Q.jxcat_dissolved))) {
+        Q.erc_advisor_action = {target:"erc_inter_party", actions:Q.month_actions || 0, timer:Q.erc_inter_party_timer || 0, visits:this.state.visits["erc_inter_party"] || 0};
+        Q.last_advisor_action = 1;
+        Q.advisor_action_timer = 6;
+        if (Q.difficulty >= 0) Q.month_actions += 1;
+        Q.erc_inter_party_timer = 6;
+    }
+!}
+go-to: erc_inter_party.ciu_relations if erc_advisor_action and (parlament_current_ciu = "ciu" and (not unio_split)); erc_inter_party.cdc_relations if erc_advisor_action and (parlament_current_ciu = "cdc" and (unio_split and not cdc_in_jxsi and not cdc_in_jxcat)); erc_inter_party.dl_relations if erc_advisor_action and (parlament_current_ciu = "dl" and (dl_formed and not pdcat_formed and not dl_in_jxcat and not dl_in_jxsi)); erc_inter_party.pdcat_nosplit_relations if erc_advisor_action and (parlament_current_ciu = "pdcat" and (pdcat_formed and not pdcat_split and not pdcat_in_jxcat and not pdcat_in_jxsi)); erc_inter_party.junts_relations if erc_advisor_action and (parlament_current_ciu = "junts" and (junts_formed)); erc_inter_party.jxsi_relations if erc_advisor_action and (parlament_current_ciu = "jxsi" and (jxsi_formed and not jxsi_dissolved)); erc_inter_party.jxcat_relations if erc_advisor_action and (parlament_current_ciu = "jxcat" and erc_in_jxcat and jxcat_formed and not jxcat_dissolved); erc_inter_party.jxcat_noerc_relations if erc_advisor_action and (parlament_current_ciu = "jxcat" and not erc_in_jxcat and jxcat_formed and not jxcat_dissolved); root if not erc_advisor_action

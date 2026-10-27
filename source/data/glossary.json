@@ -747,8 +747,7 @@
     },
     {
       "id": "ernest_maragall",
-      "match": ["Ernest Maragall", "ernest maragall"],
-      "display": "Ernest Maragall",
+      "match": ["Ernest Maragall", "ernest maragall", "Ernest Maragall i Mira"],
       "colour": "erc",
       "tooltip": {
         "title": "Ernest Maragall i Mira",
@@ -901,9 +900,10 @@
         "Gabriel Rufian",
         "gabriel rufian",
         "Grabriel Rufián",
-        "Gabriel Rufián"
+        "Gabriel Rufián",
+        "Gabriel Rufián i Romero",
+        "Gabriel Rufian i Romero"
       ],
-      "display": "Gabriel Rufián",
       "colour": "erc",
       "tooltip": {
         "title": "Gabriel Rufian i Romero",
@@ -1641,9 +1641,9 @@
       "match": [
         "Carme Forcadell",
         "Carme Forcadell i Lluís",
-        "carme forcadell"
+        "carme forcadell",
+        "Carme Forcadell i Lluis"
       ],
-      "display": "Carme Forcadell",
       "colour": "jxsi",
       "tooltip": {
         "title": "Carme Forcadell i Lluís",
@@ -1657,9 +1657,9 @@
         "Raül Romeva",
         "Raul Romeva",
         "Raül Romeva i Rueda",
-        "raul romeva"
+        "raul romeva",
+        "Raul Romeva i Rueda"
       ],
-      "display": "Raül Romeva",
       "colour": "jxsi",
       "tooltip": {
         "title": "Raül Romeva i Rueda",
@@ -1861,6 +1861,157 @@
       "display": "VOX",
       "colour": "vox",
       "bold": true
+    },
+    {
+      "id": "alfred_bosch",
+      "match": [
+        "Alfred Bosch i García",
+        "Alfred Bosch",
+        "Alfred Bosch i Garcia"
+      ],
+      "colour": "erc",
+      "tooltip": {
+        "title": "Alfred Bosch i García",
+        "img": "img/erc/alfredbosch.jpg",
+        "ideology": "Social Democracy, Pragmatic Independence"
+      }
+    },
+    {
+      "id": "carles_mundo",
+      "match": [
+        "Carles Mundó i Blanch",
+        "Carles Mundó",
+        "Carles Mundo i Blanch",
+        "Carles Mundo"
+      ],
+      "colour": "erc",
+      "tooltip": {
+        "title": "Carles Mundó i Blanch",
+        "img": "img/erc/carlesmundo.jpg",
+        "ideology": "Social Democracy, Independence"
+      }
+    },
+    {
+      "id": "dolors_bassa",
+      "match": ["Dolors Bassa i Coll", "Dolors Bassa"],
+      "colour": "erc",
+      "tooltip": {
+        "title": "Dolors Bassa i Coll",
+        "img": "img/erc/bassa.jpg",
+        "ideology": "Left-wing Republicanism, Independence"
+      }
+    },
+    {
+      "id": "elisenda_paluzie",
+      "match": [
+        "Elisenda Paluzie i Hernández",
+        "Elisenda Paluzie",
+        "Elisenda Paluzie i Hernandez"
+      ],
+      "colour": "erc",
+      "tooltip": {
+        "title": "Elisenda Paluzie i Hernández",
+        "img": "img/erc/paluzie.jpg",
+        "ideology": "Civic Nationalism, Independence"
+      }
+    },
+    {
+      "id": "joan_josep_nuet",
+      "match": ["Joan Josep Nuet i Pujals", "Joan Josep Nuet"],
+      "colour": "icv",
+      "tooltip": {
+        "title": "Joan Josep Nuet i Pujals",
+        "img": "img/erc/joanjosepnuet.jpg",
+        "ideology": "Communism, Self-determination"
+      }
+    },
+    {
+      "id": "joan_tarda",
+      "match": [
+        "Joan Tardà i Comas",
+        "Joan Tardà",
+        "Joan Tarda i Comas",
+        "Joan Tarda"
+      ],
+      "colour": "erc",
+      "tooltip": {
+        "title": "Joan Tardà i Comas",
+        "img": "img/erc/joantarda.jpg",
+        "ideology": "Left-wing Republicanism, Independence"
+      }
+    },
+    {
+      "id": "marta_rovira",
+      "match": [
+        "Marta Rovira i Vergés",
+        "Marta Rovira",
+        "Marta Rovira i Verges"
+      ],
+      "colour": "erc",
+      "tooltip": {
+        "title": "Marta Rovira i Vergés",
+        "img": "img/erc/martarovira.jpg",
+        "ideology": "Left-wing Republicanism, Independence"
+      }
+    },
+    {
+      "id": "pere_aragones",
+      "match": [
+        "Pere Aragonès i Garcia",
+        "Pere Aragonès",
+        "Pere Aragones i Garcia",
+        "Pere Aragones"
+      ],
+      "colour": "erc",
+      "tooltip": {
+        "title": "Pere Aragonès i Garcia",
+        "img": "img/erc/aragones.jpg",
+        "ideology": "Social Democracy, Pragmatic Independence"
+      }
+    },
+    {
+      "id": "roger_torrent",
+      "match": [
+        "Roger Torrent i Ramió",
+        "Roger Torrent",
+        "Roger Torrent i Ramio"
+      ],
+      "colour": "erc",
+      "tooltip": {
+        "title": "Roger Torrent i Ramió",
+        "img": "img/erc/rogertorrent.jpg",
+        "ideology": "Social Democracy, Pragmatic Independence"
+      }
+    },
+    {
+      "id": "sergi_sabria",
+      "match": [
+        "Sergi Sabrià i Benito",
+        "Sergi Sabrià",
+        "Sergi Sabria i Benito",
+        "Sergi Sabria"
+      ],
+      "colour": "erc",
+      "tooltip": {
+        "title": "Sergi Sabrià i Benito",
+        "img": "img/erc/sergisabria.jpg",
+        "ideology": "Left-wing Republicanism, Independence"
+      }
+    },
+    {
+      "id": "teresa_jorda",
+      "match": [
+        "Teresa Jordà i Roura",
+        "Teresa Jordà",
+        "Teresa Jorda i Roura",
+        "Teresa Jorda"
+      ],
+      "colour": "erc",
+      "tooltip": {
+        "title": "Teresa Jordà i Roura",
+        "img": "img/erc/jorda.jpg",
+        "ideology": "Left-wing Republicanism, Independence"
+      }
     }
   ]
 }

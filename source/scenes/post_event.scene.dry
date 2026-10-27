@@ -2,6 +2,7 @@ title: Continue...
 new-page: true
 on-arrival: {!
 var sovereigntyTimerBefore = Q.coalition_phase_timer;
+Q.erc_advisor_action = null;
 Q.last_advisor_action = 0;
 Q.last_cabinet_action = 0;
 
@@ -297,6 +298,48 @@ if (has_time_passed) {
         Q.erc_civic_dissent += 1;
     }
     // TODO: Ripple effect for CUP-player
+
+    
+
+    // ERC advisors: recurring work only on elapsed time, scaled during weekly play.
+    if (Q.player_party === "erc") {
+        var advisorMonth = Q.rubicon ? 0.25 : 1;
+        var factions = {
+            left: ["dolors_bassa", "joan_josep_nuet", "marta_rovira", "teresa_jorda"],
+            core: ["oriol_junqueras", "gabriel_rufian", "joan_tarda", "sergi_sabria", "raul_romeva"],
+            pragmatic: ["pere_aragones", "roger_torrent", "alfred_bosch", "ernest_maragall"],
+            civic: ["joan_laporta", "carles_mundo", "carme_forcadell", "elisenda_paluzie"]
+        };
+        var mediators = ["oriol_junqueras", "joan_tarda", "sergi_sabria", "raul_romeva"].filter(function(p) { return Q[p + "_advisor"]; }).length;
+        for (var faction of Object.keys(factions)) {
+            var represented = factions[faction].filter(function(p) { return Q[p + "_advisor"]; }).length;
+            var relief = Math.min(0.2, represented * 0.1) + Math.min(0.1, mediators * 0.025);
+            Q["erc_" + faction + "_dissent"] = Math.max(0, Q["erc_" + faction + "_dissent"] - advisorMonth * relief);
+        }
+        for (var pair of [["marta_rovira", "left"], ["roger_torrent", "pragmatic"], ["elisenda_paluzie", "civic"]]) {
+            if (Q[pair[0] + "_advisor"]) Q["erc_" + pair[1] + "_strength"] += 0.1 * advisorMonth;
+        }
+        for (var pair of [["joan_josep_nuet", Q.parlament_current_icv], ["carme_forcadell", Q.parlament_current_ciu]]) {
+            var relation = pair[1] + "_relations";
+            if (Q[pair[0] + "_advisor"] && pair[1] && Number.isFinite(Q[relation]) && Q[relation] >= 30 && Q[relation] < 65 && !Q.burdens_broken && !Q.broken_roadmap) Q[relation] = Math.min(65, Q[relation] + 0.1 * advisorMonth);
+        }
+        var effectiveness = advisorMonth * Math.max(0, 1 - Q.erc_dissent / 100) * (Q.burdens_broken && (Q.erc_in_gob || Q.erc_supporting) ? 0.3 : 1);
+        if (Q.gabriel_rufian_advisor) {
+            G.cardSupportTransfer(Q, {contest:"congreso",to:"erc",from:"psoe",amount:0.025*effectiveness,maxDonorFraction:0.5,constituencies:["catalunya"]});
+            Q.erc_redbelt_mod += Math.min(Math.max(0, 4 - Q.erc_redbelt_mod), 0.025 * effectiveness);
+        }
+        if (Q.dolors_bassa_advisor) {
+            G.cardSupportTransfer(Q, {contest:"congreso",to:"erc",from:"federal_left",amount:0.02*effectiveness,maxDonorFraction:0.5,constituencies:["catalunya"]});
+            G.cardSupportTransfer(Q, {contest:"parlament",to:"erc",from:"psc",amount:0.01*effectiveness,maxDonorFraction:0.5,constituencies:["barcelona","tarragona"],demographics:["ind","unemployed"]});
+        }
+        if (Q.teresa_jorda_advisor) {
+            G.cardSupportTransfer(Q, {contest:"parlament",to:"erc",from:"ciu",amount:0.02*effectiveness,maxDonorFraction:0.5,constituencies:["girona","lleida","tarragona"],demographics:["rural"]});
+            Q.erc_interior_mod += Math.min(Math.max(0, 4 - Q.erc_interior_mod), 0.025 * effectiveness);
+        }
+        if (Q.alfred_bosch_advisor || Q.ernest_maragall_advisor) G.cardSupportTransfer(Q, {contest:"barcelona",to:"erc",from:"psc",amount:0.03*effectiveness,maxDonorFraction:0.5});
+    }
+    // Special countdown for ERC's bside
+    if (Q.erc_bside_pending) Q.erc_bside_pending.months = Math.max(0, Q.erc_bside_pending.months - (Q.rubicon ? 0.25 : 1));
 
     // 2.4. Historical records
     // Parlament

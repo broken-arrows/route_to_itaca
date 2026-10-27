@@ -11,6 +11,13 @@ on the next build with no reinstall.
 
 ## What `-ten` adds on top of DendryNexus
 
+- **`choice-image` optional scene/choice attribute**: an image URL passed through as
+  `choiceImage` in choice display records (a choice override takes precedence over
+  its destination scene). Classic reuses `.card` and `.card-img` for illustrated
+  choices, with the title and subtitle alongside. Rows use one column unless there
+  is room for two. Text-only choices follow in the ordinary `.choices` list.
+  Hiding portraits returns all choices to that ordinary list. This is independent of
+  `card-image` and `face-image`. Other renderers may ignore it.
 - **`role` scene attribute**: a compiler-validated enum naming which UI surface a scene
   renders on: `desk`, `deck`, `card`, `pinned-action`, `newspaper`, `event`, `info-tab`,
   `pause-item`, `main-menu-item`, `library-item`, `ending`, `default`. Additive and

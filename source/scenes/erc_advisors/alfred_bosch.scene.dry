@@ -1,4 +1,4 @@
-title: Alfred Bosch
+title: ​Alfred Bosch
 tags: advisor
 card-image: img/erc/alfredbosch.jpg
 face-image: img/erc/alfredbosch.jpg
@@ -10,4 +10,38 @@ role: pinned-advisor
 
 Alfred Bosch is a university professor and former diplomat, with a strong background in cultural affairs.
 
-- @root: Return to main
+- @open_campaigning
+- @open_international
+- @root: Return to hand
+
+# TODO: Widening the Base access
+
+@open_campaigning
+title: Build ERC's Barcelona local networks
+choose-if: player_party = "erc" and alfred_bosch_advisor and advisor_action_timer <= 0 and not erc_advisor_action
+unavailable-subtitle: [? if advisor_action_timer > 0: Next advisor action available in [+ advisor_action_timer +] [? if rubicon: weeks?][? if not rubicon: months?]. ?]
+role: card-party
+on-arrival: {!
+    if (Q.player_party === "erc" && Q.alfred_bosch_advisor && Q.advisor_action_timer <= 0 && !Q.erc_advisor_action) {
+        Q.erc_advisor_action = {target:"erc_campaigning", actions:Q.month_actions || 0, timer:Q.erc_campaigning_timer || 0, visits:this.state.visits["erc_campaigning"] || 0};
+        Q.last_advisor_action = 1;
+        Q.advisor_action_timer = 6;
+        if (Q.difficulty >= 0) Q.month_actions += 1;
+        Q.erc_campaigning_timer = Q.rubicon ? 2 : 0;
+    }
+!}
+go-to: erc_campaigning.barcelona_networks if erc_advisor_action; root if not erc_advisor_action
+
+@open_international
+title: Gather international support
+choose-if: player_party = "erc" and alfred_bosch_advisor and advisor_action_timer <= 0 and not erc_advisor_action
+unavailable-subtitle: Next advisor action available in [+ advisor_action_timer +] [? if rubicon and advisor_action_timer > 1: weeks?][? if rubicon and advisor_action_timer = 1: week?][? if not rubicon and advisor_action_timer > 1: months?][? if not rubicon and advisor_action_timer = 1: month?].
+on-arrival: {!
+    if (Q.player_party === "erc" && Q.alfred_bosch_advisor && (Q.advisor_action_timer || 0) <= 0 && !Q.erc_advisor_action) {
+        Q.erc_advisor_action = {target:"erc_international", actions:Q.month_actions || 0, timer:Q["erc_international_timer"] || 0, visits:this.state.visits["erc_international"] || 0};
+        Q.last_advisor_action = 1;
+        Q.advisor_action_timer = 6;
+        Q["erc_international_timer"] = 0;
+    }
+!}
+go-to: erc_international if erc_advisor_action; root if not erc_advisor_action

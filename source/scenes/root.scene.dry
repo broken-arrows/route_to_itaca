@@ -1648,9 +1648,11 @@ What party shall you lead?
 
 @esquerra
 role: setup
+choice-image: img/parties/logo_erc.png
+subtitle: The century-old left-wing republican party advocates for Catalan independence, socialism, and anti-austerity measures.
 face-image: img/parties/logo_erc.png
 
-**Republican Left of Catalonia - ERC**
+= Republican Left of Catalonia - ERC
 
 The left-wing republican party advocates for Catalan independence, socialism, and anti-austerity measures. Formed in 1931, it endured Franco's dictatorship and re-emerged post-1975. It governed in as part of the 2003-2010 tripartite coalition with PSC and ICV-EUiA but lost support after compromising for governance, poor economic leadership, and the failed new charter of autonomy. Now in 2012 is seems to be the main beneficiary of the growing independence sentiment, pushing for a referendum on self-determination.
 
@@ -1725,11 +1727,13 @@ go-to: intros
 @ciu
 role: setup
 title: Convergence and Union (CiU)
+choice-image: img/parties/logo_ciu.png
+subtitle: The center-right nationalist federation of the liberal Democratic Convergence of Catalonia (CDC) and the christian Democratic Union of Catalonia (UDC) is the undisputed space for moderate Catalan autonomism with pro-business policies.
 face-image: img/parties/logo_ciu.png
 view-if: 1==0
 unavailable-subtitle: Coming soon! (maybe?)
 
-**Convergence and Union - CiU**
+= Convergence and Union - CiU
 
 The center-right nationalist federation of the liberal Democratic Convergence of Catalonia (CDC) and the christian Democratic Union of Catalonia (UDC) has positioned itself as the moderately autonomist with pro-business policies force. It governed Catalonia almost undisputed in the post-Franco autonomy era, and has come back again in 2010 under Artur Mas, who has long championed fiscal autonomy. Nonetheless, the statute reform's partial rollback fueled internal debates on independence. In 2012, it faces strong austerity backlash and a voter shift to harder-line pro-independence options.
 
@@ -1744,9 +1748,11 @@ go-to: intros
 
 @cup
 role: setup
+choice-image: img/parties/logo_cup.svg
+subtitle: The far-left, anti-capitalist, eco-socialist platform demands direct democracy, independence, and municipalism.
 face-image: img/parties/logo_cup.svg
 
-**Popular Unity Candidacy - CUP**
+= Popular Unity Candidacy - CUP
 
 The far-left, anti-capitalist, eco-socialist platform demands direct democracy, independence, and municipalism. Emerging from 1980s local assemblies, until recently it had a strong grassroots focus and avoided institutions. In 2012, it is getting ready for its first elections, posing as the "left alternative" and pledging one-term mandates and anti-austerity. How much it is able to scale nationally may very well depend on its ability to remain internally coherent and united.
 

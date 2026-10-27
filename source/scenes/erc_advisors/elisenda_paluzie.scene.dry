@@ -1,4 +1,4 @@
-title: Elisenda Paluzie
+title: ​Elisenda Paluzie
 tags: advisor
 card-image: img/erc/paluzie.jpg
 face-image: img/erc/paluzie.jpg
@@ -10,4 +10,38 @@ role: pinned-advisor
 
 Elisenda Paluzie is a prominent economist with a very combative style and a strong background in civic activism.
 
-- @root: Return to main
+- @open_rally
+- @open_radicalize
+- @root: Return to hand
+
+# TODO: Widening the Base access
+
+@open_rally
+title: Mobilize civil society organizations
+choose-if: player_party = "erc" and elisenda_paluzie_advisor and advisor_action_timer <= 0 and not erc_advisor_action and ((year > 2012 or month >= 9))
+unavailable-subtitle: [? if advisor_action_timer > 0: Next advisor action available in [+ advisor_action_timer +] [? if rubicon: weeks?][? if not rubicon: months?]. ?]
+role: card-party
+on-arrival: {!
+    if (Q.player_party === "erc" && Q.elisenda_paluzie_advisor && Q.advisor_action_timer <= 0 && !Q.erc_advisor_action && ((Q.year > 2012 || Q.month >= 9))) {
+        Q.erc_advisor_action = {target:"erc_rally", actions:Q.month_actions || 0, timer:Q.erc_rally_timer || 0, visits:this.state.visits["erc_rally"] || 0};
+        Q.last_advisor_action = 1;
+        Q.advisor_action_timer = 6;
+        if (Q.difficulty >= 0) Q.month_actions += 1;
+        Q.erc_rally_timer = (Q.year === 2012 || Q.next_election_time - Q.time <= 6) ? 2 : 6;
+    }
+!}
+go-to: erc_rally.independence if erc_advisor_action and (year > 2012 or month >= 9); root if not erc_advisor_action
+
+@open_radicalize
+title: Push for a more ambitious Roadmap
+choose-if: player_party = "erc" and elisenda_paluzie_advisor and advisor_action_timer <= 0 and not erc_advisor_action
+unavailable-subtitle: Next advisor action available in [+ advisor_action_timer +] [? if rubicon and advisor_action_timer > 1: weeks?][? if rubicon and advisor_action_timer = 1: week?][? if not rubicon and advisor_action_timer > 1: months?][? if not rubicon and advisor_action_timer = 1: month?].
+on-arrival: {!
+    if (Q.player_party === "erc" && Q.elisenda_paluzie_advisor && (Q.advisor_action_timer || 0) <= 0 && !Q.erc_advisor_action) {
+        Q.erc_advisor_action = {target:"erc_advisor_radicalize", actions:Q.month_actions || 0, timer:Q["erc_advisor_radicalize_timer"] || 0, visits:this.state.visits["erc_advisor_radicalize"] || 0};
+        Q.last_advisor_action = 1;
+        Q.advisor_action_timer = 6;
+        Q["erc_advisor_radicalize_timer"] = 0;
+    }
+!}
+go-to: erc_advisor_radicalize if erc_advisor_action; root if not erc_advisor_action

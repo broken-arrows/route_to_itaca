@@ -9,6 +9,12 @@ import { gameLib } from '../src/game-bindings';
 describe('gameLib.allegiances', () => {
   const A = gameLib.allegiances;
 
+  it('keeps Laporta aligned with ERC at game start, then marks his departure', () => {
+    expect(A.joan_laporta_i_estruch({ year: 2012, month: 8 })).toContainEqual({ colour: 'erc', label: 'ERC' });
+    expect(A.joan_laporta_i_estruch({ year: 2014 })).toContainEqual({ colour: 'erc', label: 'ERC', note: 'former' });
+    expect(A.joan_laporta_i_estruch({ year: 2013, joan_laporta_departed: true })).toContainEqual({ colour: 'erc', label: 'ERC', note: 'former' });
+  });
+
   it('is wired through the game lib as a map of functions', () => {
     expect(A && typeof A).toBe('object');
     expect(typeof A.artur_mas).toBe('function');

@@ -857,7 +857,8 @@ blockquote + blockquote.attribution {
 
 ul.decks,
 ul.hand,
-ul.pinned-cards {
+ul.pinned-cards,
+ul.choice-cards {
   list-style: none;
   padding-left: 0;
 }
@@ -885,7 +886,8 @@ a.card {
   border-radius: 7px;
   transition: box-shadow 0.2s, left 0.2s, top 0.2s;
 }
-a.card:hover {
+a.card:hover,
+ul.choice-cards > li:not(.unavailable):hover > a.card {
   box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.2);
   left: -5px;
   top: -5px;
@@ -969,16 +971,18 @@ a.card:hover .card-tooltip {
 
 /* Unlike cards, face images can have different sizes. */
 .face-figure {
+  border: 3px solid var(--card-border-color);
+  border-radius: 7px;
+}
+.face-figure {
   /*vertical-align: top;*/
   display: inline-block;
-  border: 3px solid var(--card-border-color);
   float: left;
   max-width: 35%;
   /*max-height: 180px;*/
   margin-right: 1em;
   margin-bottom: 0.5em;
   overflow: hidden;
-  border-radius: 7px;
 }
 .face-img {
   /*max-width: 150px;*/
@@ -1997,3 +2001,40 @@ header {
 .builder-playground .builder-brace { grid-column: 3; position: relative; border: 1px solid currentColor; border-radius: 7px; margin: -.35em -.3em; min-width: 0; pointer-events: none; }
 .builder-playground .builder-brace::before { content: ''; position: absolute; top: 50%; right: 100%; width: 1.7em; border-top: 1px solid currentColor; }
 
+
+ul.choice-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr));
+  gap: 1.5em;
+}
+ul.choice-cards > li {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: start;
+  gap: 1em;
+  min-width: 0;
+  cursor: pointer;
+}
+.choice-description {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.choice-description .choice-title {
+  margin-bottom: 0.4em;
+  font-weight: bold;
+}
+.choice-description .subtitle {
+  font-style: italic;
+}
+ul.choice-cards > li.unavailable {
+  color: var(--unavailable-color);
+  cursor: default;
+}
+ul.choice-cards a.card[aria-disabled="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+ul.choice-cards a.card:focus-visible {
+  outline: 2px solid var(--link-color);
+  outline-offset: 3px;
+}

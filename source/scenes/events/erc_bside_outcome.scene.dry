@@ -1,0 +1,41 @@
+title: An "unofficial" campaign
+tags: event
+new-page: true
+view-if: {! return Q.player_party === "erc" && !!Q.erc_bside_pending && Q.erc_bside_pending.months <= 0; !}
+face-image: img/events/erc_campanya_b.jpeg
+on-arrival: {!
+    Q.erc_bside_pending.resolved = true;
+    if (Q.erc_bside_pending.exposed) {
+        var severity = Q.erc_bside_pending.provocation ? 2 : 1;
+        for (var faction of ["left","core","pragmatic","civic"]) Q["erc_" + faction + "_dissent"] += 2 * severity;
+        Q.independence_trust -= 2 * severity;
+        for (var partner of [Q.parlament_current_icv, Q.parlament_current_ciu]) if (partner) Q[partner + "_relations"] -= 3 * severity;
+        for (var contest of ["barcelona", "parlament", "congreso"]) {
+            var transfer = {contest:contest, to:contest === "congreso" ? "psoe" : "psc", from:"erc", amount:0.8*severity, maxDonorFraction:0.5};
+            if (contest === "parlament") {
+                transfer.constituencies = "all";
+                transfer.demographics = ["young", "middle", "ind"];
+            } else if (contest === "congreso") {
+                transfer.constituencies = ["catalunya"];
+            }
+            G.cardSupportTransfer(Q, transfer);
+        }
+    }
+    // TODO: What happens for CUP player? this should fire at least once in a run probably
+!}
+on-departure: {!
+    Q.erc_bside_pending = null;
+    if (Q.sergi_sabria_advisor) {
+        Q.n_advisors -= 1;
+    }
+    Q.sergi_sabria_departed = true;
+    Q.sergi_sabria_advisor = false;
+    Q.sergi_sabria_advisor_available = false;
+!}
+
+= An "unofficial" campaign
+
+[? if {! return !!Q.erc_bside_pending && Q.erc_bside_pending.exposed; !}: Despite our best attempts, the planned unofficial communications campaign has gone wrong. Very wrong. Somehow, information leaked, and now the press is clearly reporting our hand in it. It's hard to predict just yet how bad the backlash will be, but the earthquake is already being felt through the party. Sergi Sabrià has basically been pushed to resigning, while [+ erc_leader +] has had to publicly apologize while denying any knowledge of it. Big names within the party have been very vocal about their heavy dissatisfaction with this strategy being employed, chief among them Ernest Maragall and Elisenda Paluzie. Gaining the confidence back from the electorate is going to be no easy feat. ?]
+[? if {! return !!Q.erc_bside_pending && !Q.erc_bside_pending.exposed; !}: Our planned unofficial campaign seems to have been carried out properly and in complete secrecy. While our hand in it has not been noticed, it is unclear if such a direct attack will be enough to really sway anyone into changing their opinion. ?]
+
+- @post_event: Continue...

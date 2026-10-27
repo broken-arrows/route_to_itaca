@@ -70,6 +70,7 @@ view-if: n_advisors < max_advisors
 
 @add_anna_gabriel
 title: Anna Gabriel i Sabaté
+choice-image: img/cup/annagabriel.jpg
 subtitle: From a mining family, she is a syndicalist CGT member with a strong background in feminisms and antifascism.
 choose-if: anna_gabriel_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -82,6 +83,7 @@ Anna Gabriel has been added as an advisor.
 
 @add_carles_riera
 title: Carles Riera i Albert
+choice-image: img/cup/carlesriera.jpg
 subtitle: A sociologist and long-time activist with strong points on geopolitics, civil disobedience, and open confrontation with the state.
 choose-if: carles_riera_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -94,6 +96,7 @@ Carles Riera has been added as an advisor.
 
 @add_mireia_vehi
 title: Mireia Vehí i Cantenys
+choice-image: img/cup/mireiavehi.jpg
 subtitle: With a long background in social movements for international solidarity and housing rights, she is a strong voice on anti-racism and feminisms.
 choose-if: mireia_vehi_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -106,6 +109,7 @@ Mireia Vehí has been added as an advisor.
 
 @add_vidal_aragones
 title: Vidal Aragonés i Chicharro
+choice-image: img/cup/vidalaragones.png
 subtitle: A lawyer and workers' rights activist from a industrial working class background, he's a leading voice on syndicalism, labor rights, and independence as a revolutionary process.
 choose-if: vidal_aragones_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -118,6 +122,7 @@ Vidal Aragonés has been added as an advisor.
 
 @add_eulalia_reguant
 title: Eulàlia Reguant i Cura
+choice-image: img/cup/eulaliareguant.png
 subtitle: A mathematician with a trajectory of work on social organizations, ethical finances, global justice, and antifascism.
 choose-if: eulalia_reguant_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -130,6 +135,7 @@ Eulàlia Reguant has been added as an advisor.
 
 @add_quim_arrufat
 title: Quim Arrufat i Ibáñez
+choice-image: img/cup/quimarrufat.jpg
 subtitle: A political scientist with long experience in internatonalism, human and housing rights.
 choose-if: quim_arrufat_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -142,6 +148,7 @@ Quim Arrufat has been added as an advisor.
 
 @add_albert_botran
 title: Albert Botran i Pahissa
+choice-image: img/cup/albertbotran.png
 subtitle: A historian and political scientist who has become one of the leading theorists on independence as a revolutionary process.
 choose-if: albert_botran_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -154,6 +161,7 @@ Albert Botran has been added as an advisor.
 
 @add_antonio_banos
 title: Antonio Baños i Boncompain
+choice-image: img/cup/antoniobanos.jpg
 subtitle: A journalist with a strong communications background, he's a leading voice for practical politics for achieving independence.
 choose-if: antonio_banos_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -166,6 +174,7 @@ Antonio Baños has been added as an advisor.
 
 @add_mieria_boya
 title: Mireia Boya e Busquet
+choice-image: img/cup/mireiaboya.jpg
 subtitle: An ambientologist, she represents the Aranese-Occitan minority of Catalonia and leads fights on environmentalism, territorial defence, minority rights.
 choose-if: mieria_boya_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -179,6 +188,7 @@ Mireia Boya has been added as an advisor.
 
 @add_david_fernandez
 title: ​David Fernàndez i Ramos
+choice-image: img/cup/davidfernandez.jpg
 subtitle: A journalist with a diverse background in social movements, he's one of the most charismatic figures in the party with strong points on corruption fight and civil disobedience.
 choose-if: david_fernandez_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -191,6 +201,7 @@ go-to: cup_advisor_menu
 
 @add_dolors_sabater
 title: Dolors Sabater i Puig
+choice-image: img/cup/dolorssabater.jpg
 subtitle: A teacher with an incredibly long story on social movements ranging from ecologism to antimilitarism, she is an icon of worker-class fight in the industrial hinterland of Barcelona.
 choose-if: dolors_sabater_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -203,6 +214,7 @@ Dolors Sabater has been added as an advisor.
 
 @add_gabriela_serra
 title: Gabriela Serra i Frediani
+choice-image: img/cup/gabrielaserra.jpg
 subtitle: A pedagogist from an old-school comunist background, she was part of the International Brigades for Peace in Guatemala and was critically vocal against NATO membership and presence.
 choose-if: gabriela_serra_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -215,6 +227,7 @@ Gabriela Serra has been added as an advisor.
 
 @add_benet_salellas
 title: Benet Salellas i Vilar
+choice-image: img/cup/benetsalellas.jpg
 subtitle: A lawer and philologyst, he is a specialist in penal law and defence of political persecution. 
 choose-if: benet_salellas_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -227,6 +240,7 @@ Benet Salellas has been added as an advisor.
 
 @add_pau_juvilla
 title: Pau Juvillà i Ballester
+choice-image: img/cup/paujuvilla.jpg
 subtitle: A biologist, writer and CGT syndicalist who was trialed for draft evasion, he's a strong voice on ecologism, antimilitarism, and civil disobedience.
 choose-if: pau_juvilla_advisor = 0
 unavailable-subtitle: Already an advisor
@@ -241,6 +255,7 @@ Pau Juvillà has been added as an advisor.
 #################################### removing advisors
 @remove_anna_gabriel
 title: Remove Anna Gabriel
+choice-image: img/cup/annagabriel.jpg
 view-if: anna_gabriel_advisor = 1
 on-arrival: anna_gabriel_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor
@@ -250,6 +265,7 @@ Anna Gabriel has been removed as an advisor.
 
 @remove_carles_riera
 title: Remove Carles Riera
+choice-image: img/cup/carlesriera.jpg
 view-if: carles_riera_advisor = 1
 on-arrival: carles_riera_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor
@@ -259,6 +275,7 @@ Carles Riera has been removed as an advisor.
 
 @remove_mireia_vehi
 title: Remove Mireia Vehí
+choice-image: img/cup/mireiavehi.jpg
 view-if: mireia_vehi_advisor = 1
 on-arrival: mireia_vehi_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor
@@ -268,6 +285,7 @@ Mireia Vehí has been removed as an advisor.
 
 @remove_vidal_aragones
 title: Remove Vidal Aragonés
+choice-image: img/cup/vidalaragones.png
 view-if: vidal_aragones_advisor = 1
 on-arrival: vidal_aragones_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor
@@ -277,6 +295,7 @@ Vidal Aragonés has been removed as an advisor.
 
 @remove_quim_arrufat
 title: Remove Quim Arrufat
+choice-image: img/cup/quimarrufat.jpg
 view-if: quim_arrufat_advisor = 1
 on-arrival: quim_arrufat_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor
@@ -286,6 +305,7 @@ Quim Arrufat has been removed as an advisor.
 
 @remove_eulalia_reguant
 title: Remove Eulàlia Reguant
+choice-image: img/cup/eulaliareguant.png
 view-if: eulalia_reguant_advisor = 1
 on-arrival: eulalia_reguant_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor
@@ -295,6 +315,7 @@ Eulàlia Reguant has been removed as an advisor.
 
 @remove_benet_salellas
 title: Remove Benet Salellas
+choice-image: img/cup/benetsalellas.jpg
 view-if: benet_salellas_advisor = 1
 on-arrival: benet_salellas_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor
@@ -304,6 +325,7 @@ Benet Salellas has been removed as an advisor.
 
 @remove_albert_botran
 title: Remove Albert Botran
+choice-image: img/cup/albertbotran.png
 view-if: albert_botran_advisor = 1
 on-arrival: albert_botran_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor
@@ -313,6 +335,7 @@ Albert Botran has been removed as an advisor.
 
 @remove_antonio_banos
 title: Remove Antonio Baños
+choice-image: img/cup/antoniobanos.jpg
 view-if: antonio_banos_advisor = 1
 on-arrival: antonio_banos_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor
@@ -322,6 +345,7 @@ Antonio Baños has been removed as an advisor.
 
 @remove_david_fernandez
 title: Remove ​David Fernàndez
+choice-image: img/cup/davidfernandez.jpg
 view-if: david_fernandez_advisor = 1
 on-arrival: david_fernandez_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor
@@ -331,6 +355,7 @@ go-to: rm_main_cup
 
 @remove_mieria_boya
 title: Remove Mireia Boya
+choice-image: img/cup/mireiaboya.jpg
 view-if: mieria_boya_advisor = 1
 on-arrival: mieria_boya_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor
@@ -340,6 +365,7 @@ Mireia Boya has been removed as an advisor.
 
 @remove_dolors_sabater
 title: Remove Dolors Sabater
+choice-image: img/cup/dolorssabater.jpg
 view-if: dolors_sabater_advisor = 1
 on-arrival: dolors_sabater_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor
@@ -349,6 +375,7 @@ Dolors Sabater has been removed as an advisor.
 
 @remove_gabriela_serra
 title: Remove Gabriela Serra
+choice-image: img/cup/gabrielaserra.jpg
 view-if: gabriela_serra_advisor = 1
 on-arrival: gabriela_serra_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor
@@ -358,6 +385,7 @@ Gabriela Serra has been removed as an advisor.
 
 @remove_pau_juvilla
 title: Remove Pau Juvillà
+choice-image: img/cup/paujuvilla.jpg
 view-if: pau_juvilla_advisor = 1
 on-arrival: pau_juvilla_advisor = 0; n_advisors -= 1;
 tags: cup_rm_advisor

@@ -1,7 +1,7 @@
 title: Campaigning
 new-page: true
 view-if: not rubicon or erc_campaigning_timer <= 0
-on-arrival: month_actions += 1; erc_campaigning_timer = 2 if rubicon
+on-arrival: month_actions += 1 if not erc_advisor_action or difficulty >= 0; erc_campaigning_timer = 2 if rubicon
 max-visits: 36
 card-image: img/erc/campaign.jpeg
 face-image: img/erc/campaign.jpeg
@@ -13,6 +13,10 @@ role: card-party
 
 Whether or not we are in an electoral campaign, the party is always trying to broaden its voter base. Who should we focus our campaign efforts on?
 
+# TBD: add as part of the card's action?
+# - @territorial_networks
+# - @barcelona_province
+
 - @workers: The industrial working class, including factory workers, construction workers, and service workers.
 - @redbelt: The working class in the metropolitan area of Barcelona, the traditional stronghold of the PSC.
 - @middle: The middle working class of professionals, public employees, and highly qualified workers.
@@ -20,14 +24,19 @@ Whether or not we are in an electoral campaign, the party is always trying to br
 - @rural: Rural workers and small farmers from rural Catalonia.
 - @retirees: Retirees and the elderly.
 - @unemployed: The unemployed.
+- @union_networks
+- @barcelona_networks
+- @rural_networks
 - @local_election: Focus our resources on the upcoming local elections.
 - @congreso_election: Focus our resources on the upcoming Congreso election.
 - @root: We either don't want to or cannot campaign right now.
+- view-if: not last_advisor_action
 - @easy_discard
+- @cancel_advisor_action
 
 @workers
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
     var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
@@ -43,15 +52,15 @@ on-arrival: {!
     G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"federal_left", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
     G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"abstain", amount:0.2*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
     Q.erc_redbelt_mod = Math.min(4, Q.erc_redbelt_mod + 0.35*effectiveness*credibility);
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
 !}
 
 We have increased our campaigning among industrial workers across Catalonia, but such a generalized campaign will have a hard time breaking through Barcelona's red belt. [? if gabriel_rufian_advisor: The figure of Gabriel Rufian seems to be functioning greatly for these campaigns. ?][? if burdens_broken and (erc_supporting or erc_in_gob): However, our failure to meet the social commitments we assumed in government makes the campaign a bit harder to believe. ?]
 
 @redbelt
-subtitle: \[-1 resources\]
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
 view-if: gabriel_rufian_advisor = 1 or erc_break_red_belt = 1
-choose-if: party_resources >= 1
+choose-if: (erc_advisor_action or party_resources >= 1)
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
     var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
@@ -68,14 +77,17 @@ on-arrival: {!
     G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"psc", amount:0.7*effectiveness*credibility, maxDonorFraction:0.5});
     G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"federal_left", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5});
     Q.erc_redbelt_mod = Q.erc_redbelt_mod + (0.8 + 0.25*Q.gabriel_rufian_advisor)*effectiveness*credibility;
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
 !}
 
 We have increased our campaigning efforts among industrial workers, specially around Barcelona's red belt, the traditional stronghold of the PSC. [? if gabriel_rufian_advisor: The figure of Gabriel Rufian seems to be functioning greatly for these campaigns. ?][? if burdens_broken and (erc_supporting or erc_in_gob): Our failure to meet the social commitments we assumed in government makes the campaign a bit harder to believe, though. ?]
 
+- @post_event: Continue...
+
+
 @middle
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
     var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
@@ -91,14 +103,14 @@ on-arrival: {!
     G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"psoe", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
     G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"ciu", amount:0.45*effectiveness*credibility, maxDonorFraction:0.5});
     G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"psc", amount:0.2*effectiveness*credibility, maxDonorFraction:0.5});
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
 !}
 
 We have increased our campaigning among the middle class. [? if broken_roadmap: Our failure to follow through with our promised roadmap makes our campaigning harder to believe, though. ?]
 
 @business
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
     var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
@@ -113,14 +125,17 @@ on-arrival: {!
     G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"pp", amount:appeal*0.2, maxDonorFraction:0.5, constituencies:["catalunya"]});
     G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"ciu", amount:appeal*0.35, maxDonorFraction:0.5});
     G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"pp", amount:appeal*0.15, maxDonorFraction:0.5});
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
 !}
 
 We have increased our campaigning among the business community. [? if erc_pragmatic_strength < 40 or erc_roadmap > 2: However, our general party lines are not the most appealing to this group, who may prefer more pragmatic approaches to politics. ?][? if broken_roadmap = 1: We have been unable to follow through with our roadmap to independence, and that makes our campaign somewhat more difficult. ?]
 
+- @post_event: Continue...
+
+
 @rural
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
     var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
@@ -132,14 +147,14 @@ on-arrival: {!
     }
     G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"ciu", amount:0.7*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
     Q.erc_interior_mod = Q.erc_interior_mod + 0.75*effectiveness*credibility;
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
 !}
 
 We have increased our campaigning efforts in rural Catalonia. [? if broken_roadmap = 1: We have been unable to follow through with our roadmap to independence, and that makes our campaign somewhat more difficult. ?]
 
 @retirees
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
     var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
@@ -155,14 +170,14 @@ on-arrival: {!
     G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"abstain", amount:0.2*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
     G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"psc", amount:0.35*effectiveness*credibility, maxDonorFraction:0.5});
     G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"ciu", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5});
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
 !}
 
 We have increased our campaigning among retirees, stressing ERC's commitment to for a secure and expanded social pension system in a future Catalan Republic. [? if joan_tarda_advisor: Joan Tardà is proving especially effective at reaching this audience. ?][? if broken_roadmap: Our failure to fulfil our independence roadmap makes them distrustful of our messages, though. ?]
 
 @unemployed
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
     var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
@@ -178,15 +193,15 @@ on-arrival: {!
     G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"psoe", amount:0.2*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
     G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"federal_left", amount:0.45*effectiveness*credibility, maxDonorFraction:0.5});
     G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"psc", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5});
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
 !}
 
 We have increased our campaigning among the unemployed. [? if burdens_broken and (erc_supporting or erc_in_gob): Our failure to meet the social commitments we assumed in government makes our campaign a bit harder to believe though. ?]
 
 @local_election
 view-if: next_local_election_time - time <= 12
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
     var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
@@ -200,15 +215,15 @@ on-arrival: {!
     G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"ciu", amount:0.2*effectiveness, maxDonorFraction:0.5});
     Q.erc_redbelt_mod += (0.25 + 0.2*Q.erc_break_red_belt)*effectiveness;
     Q.erc_interior_mod += 0.45*effectiveness;
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
 !}
 
 Campaigning efforts have been focused on the upcoming local elections, and supporting our grassroots candidates across the country.
 
 @congreso_election
 view-if: next_spanish_election_time - time <= 12
-subtitle: \[-1 resources\]
-choose-if: party_resources >= 1
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+choose-if: (erc_advisor_action or party_resources >= 1)
 unavailable-subtitle: Not enough resources.
 on-arrival: {!
     var effectiveness = Math.max(0, 1-Q.erc_dissent/100);
@@ -217,7 +232,91 @@ on-arrival: {!
     G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"federal_left", amount:0.3*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
     G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"ciu", amount:0.3*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
     G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"abstain", amount:0.25*effectiveness*credibility, maxDonorFraction:0.5, constituencies:["catalunya"]});
-    Q.party_resources -= 1;
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
 !}
 
 We have concentrated the party's focus on the Congreso race in Catalonia, presenting ERC as both the clearest Catalan voice in Madrid and an agent of republican reform. [? if broken_roadmap: Our broken independence roadmap makes it harder to believe, though. ?]
+
+@territorial_networks
+title: Coordinate our party's territorial organization
+view-if: marta_rovira_advisor or roger_torrent_advisor
+choose-if: (marta_rovira_advisor or roger_torrent_advisor) and (erc_advisor_action or party_resources >= 1)
+unavailable-subtitle: Not enough resources.
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+on-arrival: {!
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
+    var effectiveness = Math.max(0, 1 - Q.erc_dissent / 100) * (Q.burdens_broken && (Q.erc_in_gob || Q.erc_supporting) ? 0.3 : 1);
+    Q.erc_redbelt_mod += Math.min(Math.max(0, 8 - Q.erc_redbelt_mod), 0.7 * effectiveness);
+    Q.erc_interior_mod += Math.min(Math.max(0, 8 - Q.erc_interior_mod), 0.7 * effectiveness);
+    G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"psc", amount:(0.25 * effectiveness), maxDonorFraction:0.5, constituencies:"all", demographics:["middle","rural"]});
+!}
+
+Thanks to the efforts of [? if marta_rovira_advisor: Marta Rovira ?][? if marta_rovira_advisor and roger_torrent_advisor: and ?][? if roger_torrent_advisor: Roger Torrent ?]our local branches have strengthened their municipal networks. 
+
+@union_networks
+title: Campaign through unions and social movements
+view-if: dolors_bassa_advisor or joan_josep_nuet_advisor
+choose-if: (dolors_bassa_advisor or joan_josep_nuet_advisor) and (erc_advisor_action or party_resources >= 1)
+unavailable-subtitle: Not enough resources.
+subtitle: [? if not erc_advisor_action: \[-1 resources\]. ?]
+on-arrival: {!
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
+    var effectiveness = Math.max(0, 1 - Q.erc_dissent / 100) * (Q.burdens_broken && (Q.erc_in_gob || Q.erc_supporting) ? 0.3 : 1);
+    G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"federal_left", amount:(0.8 * effectiveness), maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"psoe", amount:(0.6 * effectiveness), maxDonorFraction:0.5, constituencies:["catalunya"]});
+    G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"federal_left", amount:(0.25 * effectiveness), maxDonorFraction:0.5, constituencies:["barcelona","tarragona"], demographics:["ind","unemployed"]});
+    Q.erc_redbelt_mod += Math.min(Math.max(0, 8 - Q.erc_redbelt_mod), 0.5 * effectiveness);
+!}
+
+Thanks to the contacts of [? if dolors_bassa_advisor: Dolors Bassa ?][? if dolors_bassa_advisor and joan_josep_nuet_advisor: and ?][? if joan_josep_nuet_advisor: Joan Josep Nuet?] many doors have been opened in NGOs and Unions for making our message and our proposals heard.
+
+@barcelona_networks
+title: Campaign through our party's Barcelona local networks
+view-if: alfred_bosch_advisor or ernest_maragall_advisor
+choose-if: (alfred_bosch_advisor or ernest_maragall_advisor) and (erc_advisor_action or party_resources >= 1)
+unavailable-subtitle: Not enough resources.
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+on-arrival: {!
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
+    var effectiveness = Math.max(0, 1 - Q.erc_dissent / 100) * (Q.burdens_broken && (Q.erc_in_gob || Q.erc_supporting) ? 0.3 : 1);
+    G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"psc", amount:(1.1 * effectiveness), maxDonorFraction:0.5});
+    G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"federal_left", amount:(0.7 * effectiveness), maxDonorFraction:0.5});
+    G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"psc", amount:(0.15 * effectiveness), maxDonorFraction:0.5, constituencies:["barcelona"], demographics:["middle"]});
+!}
+
+Our local neighbourhood networks have reached more voters in the city of Barcelona voters.
+
+
+@rural_networks
+title: Mobilize rural branches and local networks
+view-if: teresa_jorda_advisor
+choose-if: teresa_jorda_advisor and (erc_advisor_action or party_resources >= 1)
+unavailable-subtitle: Not enough resources.
+subtitle: [? if not erc_advisor_action:\[-1 resources\] ?]
+on-arrival: {!
+    if (!Q.erc_advisor_action) Q.party_resources -= 1;
+    var effectiveness = Math.max(0, 1 - Q.erc_dissent / 100) * (Q.burdens_broken && (Q.erc_in_gob || Q.erc_supporting) ? 0.3 : 1);
+    Q.erc_interior_mod += Math.min(Math.max(0, 8 - Q.erc_interior_mod), 1.2 * effectiveness);
+    G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"ciu", amount:(0.6 * effectiveness), maxDonorFraction:0.5, constituencies:["girona","lleida","tarragona"], demographics:["rural"]});
+    G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"ciu", amount:(0.2 * effectiveness), maxDonorFraction:0.5, constituencies:["catalunya"]});
+!}
+
+The efforts of Teresa Jordà have made our party's rural roots stronger.
+
+@barcelona_province
+title: Campaign with Laporta for Parlament across Barcelona province
+view-if: joan_laporta_advisor
+choose-if: joan_laporta_advisor and (erc_advisor_action or party_resources >= 1)
+subtitle: [? if not erc_advisor_action: \[-1 resources\] ?] 
+unavailable-subtitle: Not enough resources.
+on-arrival: {!
+    if (Q.joan_laporta_advisor && (Q.erc_advisor_action || Q.party_resources >= 1)) {
+        if (!Q.erc_advisor_action) Q.party_resources -= 1;
+        var effectiveness = Math.max(0, 1 - Q.erc_dissent / 100) * (Q.broken_roadmap ? 0.25 : 1);
+        G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"ciu", amount:0.8 * effectiveness, maxDonorFraction:0.5, constituencies:["barcelona"], demographics:["middle","buss","ind"]});
+        G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"abstain", amount:0.4 * effectiveness, maxDonorFraction:0.5, constituencies:["barcelona"], demographics:["middle","buss","ind"]});
+    }
+!}
+
+Joan Laporta has taken the flag of our party and our strive for independence and made it heard throughout Barcelona. 
+

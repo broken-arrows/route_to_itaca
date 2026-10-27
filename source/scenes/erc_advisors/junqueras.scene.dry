@@ -10,4 +10,40 @@ role: pinned-advisor
 
 Oriol Junqueras is a historian and former professor who has been the president of ERC since 2011.
 
-- @root: Return to main
+- @open_disunity
+- @open_inter_party
+- @root: Return to hand
+
+# TODO: Widening the Base access
+
+@open_disunity
+title: Mediate between the party's factions
+choose-if: player_party = "erc" and oriol_junqueras_advisor and advisor_action_timer <= 0 and not erc_advisor_action
+unavailable-subtitle: [? if advisor_action_timer > 0: Next advisor action available in [+ advisor_action_timer +] [? if rubicon: weeks?][? if not rubicon: months?]. ?]
+role: card-party
+on-arrival: {!
+    if (Q.player_party === "erc" && Q.oriol_junqueras_advisor && Q.advisor_action_timer <= 0 && !Q.erc_advisor_action) {
+        Q.erc_advisor_action = {target:"erc_disunity", actions:Q.month_actions || 0, timer:Q.erc_disunity_timer || 0, visits:this.state.visits["erc_disunity"] || 0};
+        Q.last_advisor_action = 1;
+        Q.advisor_action_timer = 6;
+        if (Q.difficulty >= 0) Q.month_actions += 1;
+        Q.erc_disunity_timer = 4;
+    }
+!}
+go-to: erc_disunity.mediate if erc_advisor_action; root if not erc_advisor_action
+
+@open_inter_party
+title: Defend the current governing agreement
+choose-if: player_party = "erc" and oriol_junqueras_advisor and advisor_action_timer <= 0 and not erc_advisor_action and ((erc_in_gob or erc_supporting))
+unavailable-subtitle: [? if advisor_action_timer > 0: Next advisor action available in [+ advisor_action_timer +] [? if rubicon: weeks?][? if not rubicon: months?]. ?][? if advisor_action_timer <= 0: We are not governing nor giving government support. ?]
+role: card-party
+on-arrival: {!
+    if (Q.player_party === "erc" && Q.oriol_junqueras_advisor && Q.advisor_action_timer <= 0 && !Q.erc_advisor_action && ((Q.erc_in_gob || Q.erc_supporting))) {
+        Q.erc_advisor_action = {target:"erc_disunity", actions:Q.month_actions || 0, timer:Q.erc_disunity_timer || 0, visits:this.state.visits["erc_disunity"] || 0};
+        Q.last_advisor_action = 1;
+        Q.advisor_action_timer = 6;
+        if (Q.difficulty >= 0) Q.month_actions += 1;
+        Q.erc_disunity_timer = 4;
+    }
+!}
+go-to: erc_disunity.defend_agreement if erc_advisor_action and (erc_in_gob or erc_supporting); root if not erc_advisor_action

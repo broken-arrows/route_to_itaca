@@ -203,6 +203,7 @@
 
   BrowserUserInterface.prototype.displayChoices = function (choices) {
     var $ul = $("<ul>").addClass("choices");
+    var $cards = $("<ul>").addClass("choice-cards").css("display", "grid");
     for (var i = 0; i < choices.length; ++i) {
       var choice = choices[i];
 
@@ -213,6 +214,7 @@
       }
 
       var $li = $("<li>");
+      var $subtitleHolder = $li;
       var $titleHolder = $li;
       if (choice.canChoose) {
         $titleHolder = $("<a>").attr({ href: "#", "data-choice": i });
@@ -221,6 +223,19 @@
         $titleHolder.addClass("unavailable");
       }
       $titleHolder.html(title);
+      if (choice.choiceImage && this.show_portraits) {
+        // Reuse the shell's card frame, art sizing and hover treatment.
+        var $card = $("<a>").addClass("card").attr("aria-label", $("<span>").html(title).text());
+        if (choice.canChoose) {
+          $card.attr({ href: "#", "data-choice": i });
+        } else {
+          $card.attr("aria-disabled", "true");
+        }
+        $card.append($("<img>").addClass("card-img").attr({ src: choice.choiceImage, alt: "" }));
+        $subtitleHolder = $("<div>").addClass("choice-description");
+        $subtitleHolder.append($("<div>").addClass("choice-title").html(title));
+        $li.empty().append($card).append($subtitleHolder);
+      }
       if (
         choice.checkQuality &&
         choice.difficulty &&
@@ -238,18 +253,16 @@
           "%)";
       }
       if (subtitle) {
-        $li.append($("<div>").addClass("subtitle").html(subtitle));
+        $subtitleHolder.append($("<div>").addClass("subtitle").html(subtitle));
       }
 
-      $ul.append($li);
+      (choice.choiceImage && this.show_portraits ? $cards : $ul).append($li);
     }
-    if (this.animate) {
-      $ul.fadeIn(this.fade_time);
-      this.$content.append($ul);
-    } else {
-      this.$content.append($ul);
+    for (var $list of [$cards, $ul]) {
+      if (!$list.children().length) continue;
+      if (this.animate) $list.fadeIn(this.fade_time);
+      this.$content.append($list);
     }
-    $ul.focus();
     if (this.onNewPage) {
       this.onNewPage = false;
       if (window && window.onNewPage) {
@@ -277,7 +290,7 @@
   };
 
   BrowserUserInterface.prototype.removeChoices = function () {
-    $(".choices", this.$content).remove();
+    $(".choices, .choice-cards", this.$content).remove();
     $(".hidden", this.$content).remove();
   };
 
@@ -1228,17 +1241,17 @@
 
   BrowserUserInterface.prototype._registerEvents = function () {
     var that = this;
-    this.$content.on("click", "ul.choices li a", function (event) {
+    this.$content.on("click", "ul.choices li a, ul.choice-cards a[data-choice]", function (event) {
       event.preventDefault();
       event.stopPropagation();
       var choice = parseInt($(this).attr("data-choice"));
       that.dendryEngine.choose(choice);
       return false;
     });
-    this.$content.on("click", "ul.choices li", function (event) {
+    this.$content.on("click", "ul.choices li, ul.choice-cards > li", function (event) {
       event.preventDefault();
       event.stopPropagation();
-      $("a", this).click();
+      $("a[data-choice]", this).first().click();
       return false;
     });
     // dendrynexus - onclick for decks and cards
