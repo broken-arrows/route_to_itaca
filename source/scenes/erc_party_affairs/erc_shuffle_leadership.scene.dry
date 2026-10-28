@@ -3,7 +3,7 @@ new-page: true
 view-if: erc_shuffle_leadership_timer <= 0 and player_party = "erc" and difficulty > 0
 on-arrival: erc_shuffle_leadership_timer += 4; month_actions += 1 if difficulty > 0
 frequency: 100
-card-image: img/erc/congres.jepg
+card-image: img/erc/congres.png
 tags: erc_party jxsi_party jxcat_party
 role: card-party
 
@@ -85,7 +85,11 @@ subtitle: Secretary General of the UGT in Girona, has a strong link with many pr
 choose-if: dolors_bassa_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Build support through unions and social movements{!<br>!}Defend the social commitments of the current government
 view-if: n_advisors < max_advisors and dolors_bassa_advisor_available = 1
-on-arrival: dolors_bassa_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.dolors_bassa_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_left_dissent = Math.max(0, Q.erc_left_dissent - 4);
+!}
 tags: erc_advisor, erc_social_left
 go-to: erc_advisor_menu
 
@@ -99,7 +103,11 @@ subtitle: Former member of ICV-EUiA, he left the CSQP during its crisis. {!<br><
 choose-if: joan_josep_nuet_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Build support through unions and social movements{!<br>!}Build bridges with [+ parlament_current_icv +]
 view-if: n_advisors < max_advisors and joan_josep_nuet_advisor_available = 1
-on-arrival: joan_josep_nuet_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.joan_josep_nuet_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_left_dissent = Math.max(0, Q.erc_left_dissent - 4);
+!}
 tags: erc_advisor, erc_social_left
 go-to: erc_advisor_menu
 
@@ -113,7 +121,11 @@ subtitle: A lawyer by profession, she has been ERC's secretary general since 201
 choose-if: marta_rovira_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Coordinate the party's territorial organization{!<br>!}Build national unity with [+ parlament_current_ciu +]{!<br>!}Build bridges with the CUP
 view-if: n_advisors < max_advisors and  marta_rovira_advisor_available = 1
-on-arrival: marta_rovira_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.marta_rovira_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_left_dissent = Math.max(0, Q.erc_left_dissent - 4);
+!}
 tags: erc_advisor, erc_social_left
 go-to: erc_advisor_menu
 
@@ -128,7 +140,11 @@ subtitle: Former Mayor of Ripoll, she has the strongest background in agricultur
 choose-if: teresa_jorda_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Mobilize rural branches and local networks
 view-if: n_advisors < max_advisors and teresa_jorda_advisor_available = 1
-on-arrival: teresa_jorda_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.teresa_jorda_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_left_dissent = Math.max(0, Q.erc_left_dissent - 4);
+!}
 tags: erc_advisor, erc_social_left
 go-to: erc_advisor_menu
 
@@ -144,7 +160,11 @@ subtitle: Historian and former professor, he has been the president of ERC since
 choose-if: oriol_junqueras_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Mediate between the party's factions{!<br>!}Defend the current governing agreement
 view-if: n_advisors < max_advisors and oriol_junqueras_advisor_available = 1
-on-arrival: oriol_junqueras_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.oriol_junqueras_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_core_dissent = Math.max(0, Q.erc_core_dissent - 4);
+!}
 tags: erc_advisor, erc_republican_core
 go-to: erc_advisor_menu
 
@@ -158,7 +178,11 @@ subtitle: Of Andalusian descent, has a strong tie to the industrial hinterlands 
 choose-if: gabriel_rufian_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Campaign in Barcelona's Red Belt{!<br>!}Reach out to other parties in the Congreso
 view-if: n_advisors < max_advisors and gabriel_rufian_advisor_available = 1
-on-arrival: gabriel_rufian_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.gabriel_rufian_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_core_dissent = Math.max(0, Q.erc_core_dissent - 4);
+!}
 tags: erc_advisor, erc_republican_core
 go-to: erc_advisor_menu
 
@@ -172,7 +196,11 @@ subtitle: One of the longest-serving ERC deputies in the Congreso. {!<br><br>!}A
 choose-if: joan_tarda_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Reach out to other parties in the Congreso{!<br>!}Build bridges with [+ parlament_current_icv +]
 view-if: n_advisors < max_advisors and joan_tarda_advisor_available = 1
-on-arrival: joan_tarda_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.joan_tarda_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_core_dissent = Math.max(0, Q.erc_core_dissent - 4);
+!}
 tags: erc_advisor, erc_republican_core
 go-to: erc_advisor_menu
 
@@ -186,7 +214,11 @@ subtitle: Rising strategist with a strong background in communications. {!<br><b
 choose-if: sergi_sabria_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Get the party media to work on expanding the voter base{!<br>!}Commission an unofficial PR campaign{!<br>!}Develop our established social-media operations
 view-if: n_advisors < max_advisors and sergi_sabria_advisor_available = 1
-on-arrival: sergi_sabria_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.sergi_sabria_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_core_dissent = Math.max(0, Q.erc_core_dissent - 4);
+!}
 tags: erc_advisor, erc_republican_core
 go-to: erc_advisor_menu
 
@@ -200,7 +232,11 @@ subtitle: Former MEP for ICV-EUiA, he is well versed in international diplomacy.
 choose-if: raul_romeva_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Gather international support{!<br>!}Build national unity with [+ parlament_current_ciu +]
 view-if: n_advisors < max_advisors and raul_romeva_advisor_available = 1
-on-arrival: raul_romeva_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.raul_romeva_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_core_dissent = Math.max(0, Q.erc_core_dissent - 4);
+!}
 tags: erc_advisor, erc_republican_core
 go-to: erc_advisor_menu
 
@@ -215,7 +251,11 @@ subtitle: Economist with family ties to the services and industrial sectors. {!<
 choose-if: pere_aragones_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}No direct advisor actions.
 view-if: n_advisors < max_advisors and pere_aragones_advisor_available = 1
-on-arrival: pere_aragones_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.pere_aragones_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_pragmatic_dissent = Math.max(0, Q.erc_pragmatic_dissent - 4);
+!}
 tags: erc_advisor, erc_institutional_pragmatics
 go-to: erc_advisor_menu
 
@@ -229,7 +269,11 @@ subtitle: Former mayor with strong local government experience. {!<br><br>!}Acti
 choose-if: roger_torrent_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Coordinate the party's territorial organization{!<br>!}Defend the current governing agreement
 view-if: n_advisors < max_advisors and roger_torrent_advisor_available = 1
-on-arrival: roger_torrent_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.roger_torrent_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_pragmatic_dissent = Math.max(0, Q.erc_pragmatic_dissent - 4);
+!}
 tags: erc_advisor, erc_institutional_pragmatics
 go-to: erc_advisor_menu
 
@@ -243,7 +287,11 @@ subtitle: University professor and former diplomat, with a strong background in 
 choose-if: alfred_bosch_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Build ERC's Barcelona local networks{!<br>!}Gather international support
 view-if: n_advisors < max_advisors and alfred_bosch_advisor_available = 1
-on-arrival: alfred_bosch_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.alfred_bosch_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_pragmatic_dissent = Math.max(0, Q.erc_pragmatic_dissent - 4);
+!}
 tags: erc_advisor, erc_institutional_pragmatics
 go-to: erc_advisor_menu
 
@@ -257,7 +305,11 @@ subtitle: With a strong history in antifascist activism and local politics, he i
 choose-if: ernest_maragall_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Build ERC's Barcelona local networks{!<br>!}Build bridges with the PSC
 view-if: n_advisors < max_advisors and ernest_maragall_advisor_available = 1
-on-arrival: ernest_maragall_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.ernest_maragall_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_pragmatic_dissent = Math.max(0, Q.erc_pragmatic_dissent - 4);
+!}
 tags: erc_advisor, erc_institutional_pragmatics
 go-to: erc_advisor_menu
 
@@ -272,7 +324,11 @@ subtitle: Former FC Barcelona president, he left the SI coalition he co-founded 
 choose-if: joan_laporta_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Campaign among business owners and the self-employed{!<br>!}Campaign across Barcelona
 view-if: n_advisors < max_advisors and joan_laporta_advisor_available = 1
-on-arrival: joan_laporta_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.joan_laporta_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_civic_dissent = Math.max(0, Q.erc_civic_dissent - 4);
+!}
 tags: erc_advisor, erc_civic_nationalists
 go-to: erc_advisor_menu
 
@@ -286,7 +342,11 @@ subtitle: Lawyer with a strong background in linguistic and cultural rights. {!<
 choose-if: carles_mundo_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Build national unity with [+ parlament_current_ciu +]{!<br>!}Defend the current governing agreement{!<br>!}Build bridges with the PSC
 view-if: n_advisors < max_advisors and carles_mundo_advisor_available = 1
-on-arrival: carles_mundo_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.carles_mundo_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_civic_dissent = Math.max(0, Q.erc_civic_dissent - 4);
+!}
 tags: erc_advisor, erc_civic_nationalists
 go-to: erc_advisor_menu
 
@@ -300,7 +360,11 @@ subtitle: Former president of the ANC, she has a strong background in civic acti
 choose-if: carme_forcadell_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Mobilize civil society organizations{!<br>!}Build national unity with [+ parlament_current_ciu +]
 view-if: n_advisors < max_advisors and carme_forcadell_advisor_available = 1
-on-arrival: carme_forcadell_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.carme_forcadell_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_civic_dissent = Math.max(0, Q.erc_civic_dissent - 4);
+!}
 tags: erc_advisor, erc_civic_nationalists
 go-to: erc_advisor_menu
 
@@ -314,7 +378,11 @@ subtitle: Prominent economist with a very combative style and a strong backgroun
 view-if: n_advisors < max_advisors and elisenda_paluzie_advisor_available = 1
 choose-if: elisenda_paluzie_advisor = 0
 unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Mobilize civil society organizations{!<br>!}Push for a more ambitious Roadmap
-on-arrival: elisenda_paluzie_advisor = 1; n_advisors += 1;
+on-arrival: {!
+    Q.elisenda_paluzie_advisor = 1;
+    Q.n_advisors += 1;
+    Q.erc_civic_dissent = Math.max(0, Q.erc_civic_dissent - 4);
+!}
 tags: erc_advisor, erc_civic_nationalists
 go-to: erc_advisor_menu
 
@@ -329,7 +397,7 @@ choice-image: img/erc/bassa.jpg
 order: -10
 subtitle: Actions:{!<br>!}Build support through unions and social movements{!<br>!}Defend the social commitments of the current government
 view-if: dolors_bassa_advisor = 1
-on-arrival: dolors_bassa_advisor = 0; n_advisors -= 1;
+on-arrival: dolors_bassa_advisor = 0; n_advisors -= 1; erc_left_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -341,7 +409,7 @@ choice-image: img/erc/joanjosepnuet.jpg
 order: -10
 subtitle: Actions:{!<br>!}Build support through unions and social movements{!<br>!}Build bridges with [+ parlament_current_icv +]
 view-if: joan_josep_nuet_advisor = 1
-on-arrival: joan_josep_nuet_advisor = 0; n_advisors -= 1;
+on-arrival: joan_josep_nuet_advisor = 0; n_advisors -= 1; erc_left_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -353,7 +421,7 @@ choice-image: img/erc/martarovira.jpg
 order: -10
 subtitle: Actions:{!<br>!}Coordinate the party's territorial organization{!<br>!}Build national unity with [+ parlament_current_ciu +]{!<br>!}Build bridges with the CUP
 view-if: marta_rovira_advisor = 1
-on-arrival: marta_rovira_advisor = 0; n_advisors -= 1;
+on-arrival: marta_rovira_advisor = 0; n_advisors -= 1; erc_left_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -365,7 +433,7 @@ choice-image: img/erc/jorda.jpg
 order: -10
 subtitle: Actions:{!<br>!}Mobilize rural branches and local networks
 view-if: teresa_jorda_advisor = 1
-on-arrival: teresa_jorda_advisor = 0; n_advisors -= 1;
+on-arrival: teresa_jorda_advisor = 0; n_advisors -= 1; erc_left_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -377,7 +445,7 @@ choice-image: img/erc/junqueras.jpg
 order: -10
 subtitle: Actions:{!<br>!}Mediate between the party's factions{!<br>!}Defend the current governing agreement
 view-if: oriol_junqueras_advisor = 1
-on-arrival: oriol_junqueras_advisor = 0; n_advisors -= 1;
+on-arrival: oriol_junqueras_advisor = 0; n_advisors -= 1; erc_core_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -389,7 +457,7 @@ choice-image: img/erc/rufian.png
 order: -10
 subtitle: Actions:{!<br>!}Campaign in Barcelona's Red Belt{!<br>!}Reach out to other parties in the Congreso
 view-if: gabriel_rufian_advisor = 1
-on-arrival: gabriel_rufian_advisor = 0; n_advisors -= 1;
+on-arrival: gabriel_rufian_advisor = 0; n_advisors -= 1; erc_core_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -401,7 +469,7 @@ choice-image: img/erc/joantarda.jpg
 order: -10
 subtitle: Actions:{!<br>!}Reach out to other parties in the Congreso{!<br>!}Build bridges with [+ parlament_current_icv +]
 view-if: joan_tarda_advisor = 1
-on-arrival: joan_tarda_advisor = 0; n_advisors -= 1;
+on-arrival: joan_tarda_advisor = 0; n_advisors -= 1; erc_core_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -413,7 +481,7 @@ choice-image: img/erc/sergisabria.jpg
 order: -10
 subtitle: Actions:{!<br>!}Get the party media to work on expanding the voter base{!<br>!}Commission an unofficial PR campaign{!<br>!}Develop our established social-media operations
 view-if: sergi_sabria_advisor = 1
-on-arrival: sergi_sabria_advisor = 0; n_advisors -= 1;
+on-arrival: sergi_sabria_advisor = 0; n_advisors -= 1; erc_core_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -425,7 +493,7 @@ choice-image: img/erc/romeva.jpg
 order: -10
 subtitle: Actions:{!<br>!}Gather international support{!<br>!}Build national unity with [+ parlament_current_ciu +]
 view-if: raul_romeva_advisor = 1
-on-arrival: raul_romeva_advisor = 0; n_advisors -= 1;
+on-arrival: raul_romeva_advisor = 0; n_advisors -= 1; erc_core_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -437,7 +505,7 @@ choice-image: img/erc/aragones.jpg
 order: -10
 subtitle: Actions:{!<br>!}No direct advisor actions.
 view-if: pere_aragones_advisor = 1
-on-arrival: pere_aragones_advisor = 0; n_advisors -= 1;
+on-arrival: pere_aragones_advisor = 0; n_advisors -= 1; erc_pragmatic_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -449,7 +517,7 @@ choice-image: img/erc/rogertorrent.jpg
 order: -10
 subtitle: Actions:{!<br>!}Coordinate the party's territorial organization{!<br>!}Defend the current governing agreement
 view-if: roger_torrent_advisor = 1
-on-arrival: roger_torrent_advisor = 0; n_advisors -= 1;
+on-arrival: roger_torrent_advisor = 0; n_advisors -= 1; erc_pragmatic_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -461,7 +529,7 @@ choice-image: img/erc/alfredbosch.jpg
 order: -10
 subtitle: Actions:{!<br>!}Build ERC's Barcelona local networks{!<br>!}Gather international support
 view-if: alfred_bosch_advisor = 1
-on-arrival: alfred_bosch_advisor = 0; n_advisors -= 1;
+on-arrival: alfred_bosch_advisor = 0; n_advisors -= 1; erc_pragmatic_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -473,7 +541,7 @@ choice-image: img/erc/ernestmaragall.jpg
 order: -10
 subtitle: Actions:{!<br>!}Build ERC's Barcelona local networks{!<br>!}Build bridges with the PSC
 view-if: ernest_maragall_advisor = 1
-on-arrival: ernest_maragall_advisor = 0; n_advisors -= 1;
+on-arrival: ernest_maragall_advisor = 0; n_advisors -= 1; erc_pragmatic_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -485,7 +553,7 @@ choice-image: img/erc/laporta.jpg
 order: -10
 subtitle: Actions:{!<br>!}Campaign among business owners and the self-employed{!<br>!}Campaign across Barcelona
 view-if: joan_laporta_advisor = 1
-on-arrival: joan_laporta_advisor = 0; n_advisors -= 1;
+on-arrival: joan_laporta_advisor = 0; n_advisors -= 1; erc_civic_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -497,7 +565,7 @@ choice-image: img/erc/carlesmundo.jpg
 order: -10
 subtitle: Actions:{!<br>!}Build national unity with [+ parlament_current_ciu +]{!<br>!}Defend the current governing agreement{!<br>!}Build bridges with the PSC
 view-if: carles_mundo_advisor = 1
-on-arrival: carles_mundo_advisor = 0; n_advisors -= 1;
+on-arrival: carles_mundo_advisor = 0; n_advisors -= 1; erc_civic_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -509,7 +577,7 @@ choice-image: img/erc/forcadell.jpg
 order: -10
 subtitle: Actions:{!<br>!}Mobilize civil society organizations{!<br>!}Build national unity with [+ parlament_current_ciu +]
 view-if: carme_forcadell_advisor = 1
-on-arrival: carme_forcadell_advisor = 0; n_advisors -= 1;
+on-arrival: carme_forcadell_advisor = 0; n_advisors -= 1; erc_civic_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
@@ -521,7 +589,7 @@ choice-image: img/erc/paluzie.jpg
 order: -10
 subtitle: Actions:{!<br>!}Mobilize civil society organizations{!<br>!}Push for a more ambitious Roadmap
 view-if: elisenda_paluzie_advisor = 1
-on-arrival: elisenda_paluzie_advisor = 0; n_advisors -= 1;
+on-arrival: elisenda_paluzie_advisor = 0; n_advisors -= 1; erc_civic_dissent += 7;
 tags: erc_rm_advisor
 go-to: rm_main
 
