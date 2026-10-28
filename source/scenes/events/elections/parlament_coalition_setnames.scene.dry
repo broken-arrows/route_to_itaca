@@ -111,7 +111,7 @@ on-arrival: {!
                 Q.parlament_coalition_proposal_vp_gender = "m";
                 break;
             case "cup":
-                Q.parlament_coalition_proposal_vp_name = "Dolors Sabter";
+                Q.parlament_coalition_proposal_vp_name = "Dolors Sabater";
                 Q.parlament_coalition_proposal_vp_gender = "f";
                 break;
         }
@@ -619,7 +619,7 @@ on-arrival: {!
             break;
         case "cup":
             Q.parlament_coalition_proposal_territory_name = "Mireia Boya";
-            Q.parlament_coalition_proposal_territory_gender = "m";
+            Q.parlament_coalition_proposal_territory_gender = "f";
             break;
     }
     if (Q.parlament_coalition_sovereignty_kind && Q.parlament_coalition_proposal_president_name) {
@@ -633,6 +633,31 @@ on-arrival: {!
             }
         }
     }
+    
+    var offices = ["president", "vp", "economy", "interior", "health", "education", "bnl", "foreign", "territory"];
+    var ercNames = ["Oriol Junqueras", "Marta Rovira", "Pere Aragonès", "Josep Huguet", "Toni Comín", "Dolors Bassa", "Roger Torrent", "Raül Romeva"];
+    for (var office of offices) {
+        var key = "parlament_coalition_proposal_" + office;
+        var list = Q[key];
+        Q[key + "_affiliation"] = null;
+        if (!["jxsi", "jxcat"].includes(list)) continue;
+        if (Q["cup_in_" + list] && ["education", "territory"].includes(office)) {
+            var candidates = office == "education" ? ["Anna Gabriel", "Dolors Sabater", "Mireia Vehí"] : ["Mireia Boya", "Sergi Saladié"];
+            var chosen = candidates.find(function (name) {
+                return name != Q.cup_leader && !offices.some(function (other) {
+                    return other != office && Q["parlament_coalition_proposal_" + other + "_name"] == name;
+                });
+            });
+            if (chosen) {
+                Q[key + "_name"] = chosen;
+                Q[key + "_gender"] = chosen == "Sergi Saladié" ? "m" : "f";
+                Q[key + "_affiliation"] = "cup";
+                continue;
+            }
+        }
+        Q[key + "_affiliation"] = ercNames.includes(Q[key + "_name"]) || Q[key + "_name"] == Q.erc_leader ? "erc" : "cdc";
+    }
+
 !}
 go-to: jumpScene
 

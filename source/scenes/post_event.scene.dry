@@ -287,15 +287,19 @@ if (has_time_passed) {
 
 
     // 2.3. Ripple effects from time passing.
-    if (Q.unemployment >= 20) {
-        if (Q.erc_in_gob) {
-            Q.erc_left_dissent += 0.5;
-        } else if (Q.erc_supporting) {
-            Q.erc_left_dissent += 0.25;
-        }
-    }
     if (Q.broken_roadmap == 1) {
         Q.erc_civic_dissent += 1;
+    }
+    if (Q.player_party === "erc") {
+        if (Q.unemployment >= 20) {
+            if (Q.erc_in_gob) {
+                Q.erc_left_dissent += 0.5 * (Q.rubicon ? 0.25 : 1);
+            } else if (Q.erc_supporting) {
+                Q.erc_left_dissent += 0.25 * (Q.rubicon ? 0.25 : 1);
+        }
+        }
+        var pragmaticRoadmapDissent = Q.erc_roadmap === 3 ? 0.75 : Q.erc_roadmap === 2 ? 0.2 : 0;
+        Q.erc_pragmatic_dissent += pragmaticRoadmapDissent * (Q.rubicon ? 0.25 : 1);
     }
     // TODO: Ripple effect for CUP-player
 

@@ -5,7 +5,7 @@ role: event
 tags: event
 face-image: img/events/generalitat_premsa.jpg
 view-if: {!
-    return !Q.cat_caretaker_gov && !(Q.government_does_things_timer > 0) &&
+    return G.governmentPlayerControl(Q) < 1 && !Q.cat_caretaker_gov && !(Q.government_does_things_timer > 0) &&
         (Q.cat_coalition || []).some(function (party) {
             party = party == "ciu" ? Q.parlament_current_ciu || party : party == "federal_left" ? Q.parlament_current_icv || party : party;
             return party != Q.player_party;
@@ -95,14 +95,14 @@ on-arrival: {!
     var support = (Q.cat_coalition_support || []).map(current);
     var canBudget = Q.budget_year < Q.year && Q.budget_year_attempted != Q.year && !Q.budget_parlament_trigger && !Q.budget_postponed_trigger &&
         !(Q.budget_postponed_countdown > 0) && !(Q.budget_draft && Q.budget_draft_origin && Q.budget_draft_origin.year == Q.year);
-    function catalogue(actor) {
-        var ideology = (Q[actor + "_ideology"] || "").split(",").map(function (part) {
+    function catalogue(actor, affiliation) {
+        var ideology = (Q[(affiliation || actor) + "_ideology"] || "").split(",").map(function (part) {
             return part.trim().toLowerCase().replace(/center/g, "centre");
         });
         var economic = ideology[0] || "";
         var territorial = ideology[1] || "";
         // A national list has no economic label of its own: use its current policy leadership.
-        var policyParty = actor;
+        var policyParty = affiliation || actor;
         if (economic == "national coalition") {
             policyParty = actor == "jxsi" ? (Q.jxsi_formation_num > 50 ? "erc" : "cdc") :
                 (Q.jxcat_leader_party == "erc" ? "erc" : "cdc");
@@ -136,6 +136,8 @@ on-arrival: {!
         };
         function add(holder, field, to, title, reason, weight, profile, kind, extra) {
             if (owners[holder] != actor || !(weight > 0)) return;
+            var ministerAffiliation = ["jxsi", "jxcat"].includes(actor) ? Q[holder.replace(/_party$/, "_affiliation")] || null : null;
+            if (ministerAffiliation != affiliation || ministerAffiliation == player) return;
             if (kind == "cut") weight *= Math.max(0.5, -Q.generalitat_surplus);
             var from = Q[field];
             if (from === undefined && kind != "curriculum") return;
@@ -281,7 +283,13 @@ on-arrival: {!
 
     if (!Q.npc_government_response && !Q.npc_government_initiative && actors.length && !Q.cat_caretaker_gov) {
         var actor = actors[Math.floor(G.random(Q) * actors.length)];
-        var candidates = catalogue(actor);
+        var profiles = [null];
+        if (["jxsi", "jxcat"].includes(actor)) {
+            profiles = fields.filter(function (field) { return owners[field] == actor; }).map(function (field) {
+                return Q[field.replace(/_party$/, "_affiliation")] || null;
+            }).filter(function (profile, index, all) { return profile != player && all.indexOf(profile) == index; });
+        }
+        var candidates = profiles.reduce(function (all, profile) { return all.concat(catalogue(actor, profile)); }, []);
         var total = candidates.reduce(function (sum, item) { return sum + item.weight; }, 0);
         var roll = G.random(Q) * total;
         for (var candidate of candidates) {
@@ -314,6 +322,10 @@ on-arrival: {!
     if (initiative) {
         valid = !Q.cat_caretaker_gov && owners[initiative.holder] == initiative.party &&
             initiative.party != player && Q[initiative.field] == initiative.from;
+        if (["jxsi", "jxcat"].includes(initiative.party)) {
+            var affiliation = Q[initiative.holder.replace(/_party$/, "_affiliation")];
+            if (affiliation && (affiliation == player || affiliation != initiative.policyParty)) valid = false;
+        }
         for (var record of Q.coalition_policy_commitments || []) {
             if (!["retired", "penalized"].includes(record.status) && record.kind == initiative.field &&
                 Number.isFinite(record.target) && initiative.to < initiative.from && initiative.to < record.target)
@@ -535,7 +547,7 @@ on-arrival: {!
             })]));
         }
     }
-    Q.government_does_things_timer = 8 + Math.floor(G.random(Q) * 3);
+    Q.government_does_things_timer = G.governmentInitiativeTimer(Q);
     Q.npc_government_initiative = null;
     Q.npc_government_response = null;
 !}
@@ -554,7 +566,7 @@ call: generalitat_setpolicy
 
 @fallback
 on-arrival: {! 
-    Q.government_does_things_timer = 8 + Math.floor(G.random(Q) * 3);
+    Q.government_does_things_timer = G.governmentInitiativeTimer(Q);
 !}
 
 It seems like the government will continue to prioritizes ongoing work. No new measures have been announced after all?

@@ -93,6 +93,68 @@ function answer(f: ReturnType<typeof setup>, name: string) {
 afterEach(() => vi.restoreAllMocks());
 
 describe('NPC cabinet scheduling', () => {
+  it('scales intervals with control, caps jitter at twelve and uses joint-list shares instead of offices', () => {
+    const f = setup();
+    const lib = f.adapter.engine.gameLib as any;
+    // The timer uses its library-local stream, so sample all three jitter outcomes.
+    Object.assign(f.q, Object.fromEntries(offices.map(field => [field, 'ciu'])));
+    expect(lib.governmentPlayerControl(f.q)).toBe(0);
+    expect(new Set(Array.from({length: 100}, () => lib.governmentInitiativeTimer(f.q)))).toEqual(new Set([3, 4, 5]));
+    Object.assign(f.q, Object.fromEntries(offices.map(field => [field, 'erc'])));
+    expect(lib.governmentPlayerControl(f.q)).toBe(1);
+    expect(new Set(Array.from({length: 100}, () => lib.governmentInitiativeTimer(f.q)))).toEqual(new Set([11, 12]));
+    for (const list of ['jxsi', 'jxcat']) {
+      Object.assign(f.q, {cat_coalition: [list], ['player_in_' + list]: true,
+        ['cup_in_' + list]: true, [list + '_cup_formation_num']: 20, [list + '_formation_num']: 50});
+      expect(lib.governmentPlayerControl(f.q)).toBeCloseTo(0.4);
+      f.q.player_party = 'cup';
+      expect(lib.governmentPlayerControl(f.q)).toBeCloseTo(0.2);
+      f.q.player_party = 'erc';
+    }
+  });
+  it.each(['jxsi', 'jxcat'])('appoints CUP education and territory ministers in %s with leader fallbacks', list => {
+    for (const leader of ['David Fernàndez', 'Anna Gabriel', 'Mireia Boya']) {
+      const f = setup({cup_leader: leader, ['cup_in_' + list]: true, ['erc_in_' + list]: true,
+        jxsi_formation_num: 50, parlament_coalition_proposal_president: list,
+        parlament_coalition_proposal_vp: list});
+      f.adapter.engine.state.jumpSceneId = 'generalitat_coalition_card';
+      for (const office of ['economy', 'interior', 'health', 'education', 'territory', 'foreign', 'bnl'])
+        f.q['parlament_coalition_proposal_' + office] = list;
+      f.adapter.goToScene('parlament_coalition_setnames');
+      expect(f.q.parlament_coalition_proposal_education_name).toBe(leader === 'Anna Gabriel' ? 'Dolors Sabater' : 'Anna Gabriel');
+      expect(f.q.parlament_coalition_proposal_territory_name).toBe(leader === 'Mireia Boya' ? 'Sergi Saladié' : 'Mireia Boya');
+      expect(f.q.parlament_coalition_proposal_education_affiliation).toBe('cup');
+      expect(f.q.parlament_coalition_proposal_territory_affiliation).toBe('cup');
+      expect(f.q.parlament_coalition_proposal_territory_gender).toBe(leader === 'Mireia Boya' ? 'm' : 'f');
+      expect(f.q.parlament_coalition_proposal_health_affiliation).toBe('erc');
+      f.q.cat_coalition = [list];
+      f.q[list + '_parlament_s'] = 70;
+      f.adapter.goToScene('parlament_coalition_resolve');
+      expect(f.q.education_minister_affiliation).toBe('cup');
+      expect(f.q.territory_minister_affiliation).toBe('cup');
+      expect(f.q.health_minister_affiliation).toBe('erc');
+      expect(f.q.education_minister_party).toBe(list);
+      f.adapter.engine.state.jumpSceneId = 'generalitat_coalition_card';
+      f.q.parlament_coalition_proposal_territory = 'cup';
+      f.adapter.goToScene('parlament_coalition_setnames');
+      expect(f.q.parlament_coalition_proposal_territory_affiliation).toBeNull();
+      expect(f.q.parlament_coalition_proposal_territory_gender).toBe('f');
+      expect(f.errors.mock.calls.filter(call => String(call[0]).includes('action'))).toEqual([]);
+    }
+  });
+  it('uses actual constituent profiles and excludes the player’s ministers inside a joint list', () => {
+    const f = setup({player_party: 'cup', player_in_jxsi: true, cup_in_jxsi: true, erc_in_jxsi: true,
+      cat_coalition: ['jxsi'], ...Object.fromEntries(offices.map(field => [field, 'jxsi'])),
+      ...Object.fromEntries(offices.map(field => [field.replace(/_party$/, '_affiliation'), 'cup'])),
+      health_minister_affiliation: 'erc', erc_ideology: 'Social Democracy, Pragmatic Independence',
+      cup_ideology: 'Anticapitalism, Unilateralism', jxsi_ideology: 'National Coalition, Pragmatic Independence',
+      jxsi_formation_num: 50, jxsi_cup_formation_num: 20});
+    const proposals = f.candidates();
+    expect(proposals.length).toBeGreaterThan(0);
+    expect(proposals.every(item => item.holder === 'health_minister_party' && item.policyParty === 'erc')).toBe(true);
+    expect(proposals.some(item => item.field === 'healthcare_spending' && item.to === 0)).toBe(true);
+    expect(proposals.some(item => item.kind === 'cut')).toBe(false);
+  });
   it('selects only on arrival, preserves a proposal across save/load and uses no scheduling scratch state', () => {
     const f = setup();
     const frame = f.adapter.goToScene('post_event');

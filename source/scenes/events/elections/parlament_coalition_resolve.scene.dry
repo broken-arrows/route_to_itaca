@@ -2,7 +2,6 @@ title: resolve coalition
 on-arrival: {!
     Q.coalition_phase_timer = 0;
     Q.npc_government_initiative = null;
-    Q.government_does_things_timer = 8 + Math.floor(G.random(Q) * 3);
     var rawCabinet = Array.isArray(Q.cat_coalition) ? Q.cat_coalition : [];
     var rawSupport = Array.isArray(Q.cat_coalition_support) ? Q.cat_coalition_support : [];
     var rawAbstain = Array.isArray(Q.cat_coalition_abstain) ? Q.cat_coalition_abstain : [];
@@ -117,6 +116,11 @@ on-arrival: {!
     Q.bnl_minister = Q.parlament_coalition_proposal_bnl_name;
     Q.bnl_minister_gender = Q.parlament_coalition_proposal_bnl_gender;
 
+    for (var office of ["president", "vp", "economy", "interior", "health", "education", "territory", "foreign", "bnl"]) {
+        var live = office == "president" ? "president" : office == "vp" ? "vicepresident" : office + "_minister";
+        Q[live + "_affiliation"] = Q["parlament_coalition_proposal_" + office + "_affiliation"] || null;
+    }
+    Q.government_does_things_timer = G.governmentInitiativeTimer(Q);
     Q.cat_caretaker_gov = false;
     Q.parlament_repeat_election = false;
 

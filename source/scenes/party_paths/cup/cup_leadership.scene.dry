@@ -175,7 +175,7 @@ on-arrival: {!
                 new_candidate_gender = "m";
                 break;
             case 0:
-                new_candidate = "Albert Botrán";
+                new_candidate = "Albert Botran";
                 new_candidate_gender = "m";
                 break;
             case 1:

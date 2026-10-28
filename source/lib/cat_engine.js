@@ -741,6 +741,31 @@
     return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
   }
 
+  // Shared by initial setup, cabinet formation and both initiative outcomes.
+  function governmentPlayerControl(Q) {
+    const player = Q.player_party;
+    const cabinet = Q.cat_coalition || [];
+    const list = ["jxsi", "jxcat"].find(list => cabinet.includes(list) &&
+      (Q["player_in_" + list] || Q[player + "_in_" + list]));
+    if (list) {
+      const cup = Q["cup_in_" + list] ? clamp(Number(Q[list + "_cup_formation_num"]) || 10, 0, 100) / 100 : 0;
+      const erc = clamp(Number(Q[list + "_formation_num"]) || 50, 0, 100) / 100;
+      return player === "cup" ? cup : (player === "erc" ? erc : 1 - erc) * (1 - cup);
+    }
+    const current = party => party === "ciu" ? Q.parlament_current_ciu || party :
+      party === "federal_left" ? Q.parlament_current_icv || party : party;
+    const fields = ["president_party", "vicepresident_party", "economy_minister_party", "health_minister_party",
+      "education_minister_party", "bnl_minister_party", "territory_minister_party", "foreign_minister_party", "interior_minister_party"];
+    return fields.filter(field => {
+      const holder = Q[field];
+      return current(["indp.", "ind.", "independent"].includes(holder) ? Q.president_party : holder) === player;
+    }).length / fields.length;
+  }
+
+  function governmentInitiativeTimer(Q) {
+    return Math.min(12, Math.round(4 + 8 * governmentPlayerControl(Q)) + Math.floor(random(Q) * 3) - 1);
+  }
+
   function gaussianRandom(Q, mean = 0, stdev = 1) {
     let u = 1 - random(Q);
     let v = random(Q);
@@ -3779,6 +3804,8 @@
     applyPoliticalEffect,
     clearPoliticalEffect,
     buildBrokenBurdensTransfers,
+    governmentPlayerControl,
+    governmentInitiativeTimer,
     initRandom,
     random,
     buildParlamentCorruptionTransfers,

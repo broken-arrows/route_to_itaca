@@ -1446,7 +1446,7 @@ on-arrival: {!
     Q[timer+'_rubicon_timer'] = 0;
   }
 
-  Q.government_does_things_timer = 8;
+  Q.government_does_things_timer = G.governmentInitiativeTimer(Q);
 
   // ADVISOR LIST (note that they actually get initalized on chosing a party)
   // ERC Advisors
