@@ -3,6 +3,7 @@ view-if: (((player_party = "erc" and erc_in_gob) or (player_in_jxsi and jxsi_in_
 face-image: img/generalitat/abracada.jpg
 card-image: img/generalitat/abracada.jpg
 frequency: 100
+new-page: true
 tags: generalitat
 on-arrival: month_actions += 1; generalitat_coalition_timer = 5
 call: generalitat_coalition_card.prepare
@@ -886,18 +887,6 @@ on-arrival: {!
         Q.coalition_rupture_target = "";
         Q.coalition_rupture_recheck = true;
         var offices = {president: "president", vp: "vicepresident", economy: "economy_minister", interior: "interior_minister", health: "health_minister", education: "education_minister", territory: "territory_minister", foreign: "foreign_minister", bnl: "bnl_minister"};
-        var labels = {
-            president: G.text("Presidency"),
-            vp: G.text("Vice-Presidency"),
-            economy: G.text("Economy"),
-            interior: G.text("Interior"),
-            health: G.text("Health"),
-            education: G.text("Education"),
-            territory: G.text("Territory"),
-            foreign: G.text("Foreign Affairs"),
-            bnl: G.text("Business & Labour")
-        };
-        Q.coalition_expulsion_cabinet_disp = "";
         for (var key in offices) {
             var office = offices[key];
             var saved = Q.coalition_expulsion_preserved_offices[key];
@@ -907,12 +896,6 @@ on-arrival: {!
             Q["parlament_coalition_proposal_" + key] = Q[office + "_party"];
             Q["parlament_coalition_proposal_" + key + "_name"] = Q[office];
             Q["parlament_coalition_proposal_" + key + "_gender"] = Q[office + "_gender"];
-            G.setText(Q, "coalition_expulsion_cabinet_disp", G.joinText([G.getText(Q, "coalition_expulsion_cabinet_disp"), G.text("<div><strong>{office}</strong>: {holder} ({party})</div>", {
-                office: labels[key],
-                holder: String(Q[office]),
-                holder_gender: Q[office + "_gender"],
-                party: String(Q[office + "_party"])
-            })]));
         }
         G.setText(Q, "historical_event", (Q.president_gender == "m" ? G.text("President {president} has expelled {removed_parties} from the Generalitat, leaving only {player_party} governing.", {
             president: String(Q.president),
@@ -932,7 +915,7 @@ on-arrival: {!
 
 We have expelled [+ coalition_expulsion_partners_disp +] from the government and taken over their ministries. We now lead a [+ cat_coalition_disp +]:
 
-[+ coalition_expulsion_cabinet_disp +]
+{!<div data-widget="cabinet-proposal"></div>!}
 
 Let's hope this was the right move. There's no going back now.
 

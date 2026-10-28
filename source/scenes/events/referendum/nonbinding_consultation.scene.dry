@@ -79,14 +79,7 @@ on-arrival: {!
 
 **Do you want Catalonia to become an independent state in the form of a republic?**
 
-{!<table style='border-spacing: 0px; margin-right: 1em; width:95%; table-layout: fixed;'>!}
-{!<tr><td style='width: 4.5em'> YES </td><td style='height: 2em; background-color: #008000; border-radius: 0 3px 3px 0; color: white; text-align: center; width: !}[+ consultation_yes_pc +]{!%'>!}[?if consultation_yes_pc > 12 :[+ consultation_yes +] ?]{!</td><td style="padding-left:0.5em;">!}[?if consultation_yes_pc < 12 : <span style="font-size:0.9em">[+ consultation_yes +]</span> | ?][+ consultation_yes_pc +]{!%</td></tr>!}
-{!</table>!}
-{!<table style='border-spacing: 0px; margin-right: 1em; width:95%; table-layout: fixed;'>!}
-{!<tr><td style='width: 4.5em'> NO </td><td style='height: 2em; background-color: #c30000; border-radius: 0 3px 3px 0; color: white; text-align: center; width: !}[+ consultation_no_pc +]{!%'>!}[?if consultation_no_pc > 12 :[+ consultation_no +]?]{!</td><td style="padding-left:0.5em;">!}[?if consultation_no_pc < 12 : <span style="font-size:0.9em">[+ consultation_no +]</span> | ?] [+ consultation_no_pc +]{!%</td></tr>!}
-{!</table>!}
-{!<div style="width: 95%;text-align: center; margin-top:-0.75em;">!} **Turnout:**  [+ consultation_participation_pc +]% {!</div>!}
-{!<div style="width: 95%; justify-content: center; display:flex;"><div class="box" style="width: 70%; border-radius: 3px; background-color: #ccc"><div class="box" style=" height: 1em; background-color: dimgrey; margin-right: 0.5em; border-radius: 3px; width:!}[+ consultation_participation_pc +]{!%;"></div></div></div>!}
+{!<div data-widget="result-bars" data-props='{"rows":[{"label":"YES","shareFrom":"consultation_yes_pc","valueFrom":"consultation_yes","colour":"#008000"},{"label":"NO","shareFrom":"consultation_no_pc","valueFrom":"consultation_no","colour":"#c30000"},{"label":"Turnout","shareFrom":"consultation_participation_pc","colour":"#696969"}]}'></div>!}
 
 - @after
 - @after_no
@@ -150,18 +143,7 @@ on-arrival: {!
 
 **In case of affirmative answer, do you want this state to become independent?**
 
-{!<table style='border-spacing: 0px; margin-right: 1em; width:95%; table-layout: fixed;'>!}
-{!<tr><td style='width: 4.5em'> YES </td><td style='height: 2em; background-color: #008000; border-radius: 0 3px 3px 0; color: white; text-align: center; width: !}[+ consultation_yes_pc +]{!%'>!}[?if consultation_yes_pc > 12 :[+ consultation_yes +]?]{!</td><td style="padding-left:0.5em;">!}[?if consultation_yes_pc < 12 : <span style="font-size:0.9em">[+ consultation_yes +]</span> | ?][+ consultation_yes_pc +]{!%</td></tr>!}
-{!</table>!}
-{!<table style='border-spacing: 0px; margin-right: 1em; width:95%; table-layout: fixed;'>!}
-{!<tr><td style='width: 4.5em'> YES/NO </td><td style='height: 2em; background-color: #c38f00; border-radius: 0 3px 3px 0; color: white; text-align: center; width: !}[+ consultation_yesno_pc +]{!%'>!}[?if consultation_yesno_pc > 12 : [+ consultation_yesno +]?]{!</td><td style="padding-left:0.5em;">!}[?if consultation_yesno_pc < 12 : <span style="font-size:0.9em">[+ consultation_yesno +]</span> | ?][+ consultation_yesno_pc +]{!%</td></tr>!}
-{!</table>!}
-{!</table>!}
-{!<table style='border-spacing: 0px; margin-right: 1em; width:95%; table-layout: fixed;'>!}
-{!<tr><td style='width: 4.5em'> NO </td><td style='height: 2em; background-color: #c30000; border-radius: 0 3px 3px 0; color: white; text-align: center; width: !}[+ consultation_no_pc +]{!%'>!}[?if consultation_no_pc > 12 :[+ consultation_no +]?]{!</td><td style="padding-left:0.5em;">!}[?if consultation_no_pc < 12 : <span style="font-size:0.9em">[+ consultation_no +]</span> | ?] [+ consultation_no_pc +]{!%</td></tr>!}
-{!</table>!}
-{!<div style="width: 95%;text-align: center; margin-top:-0.75em;">!} **Turnout:**  [+ consultation_participation_pc +]% {!</div>!}
-{!<div style="width: 95%; justify-content: center; display:flex;"><div class="box" style="width: 70%; border-radius: 3px; background-color: #ccc"><div class="box" style=" height: 1em; background-color: dimgrey; margin-right: 0.5em; border-radius: 3px; width:!}[+ consultation_participation_pc +]{!%;"></div></div></div>!}
+{!<div data-widget="result-bars" data-props='{"rows":[{"label":"YES","shareFrom":"consultation_yes_pc","valueFrom":"consultation_yes","colour":"#008000"},{"label":"YES/NO","shareFrom":"consultation_yesno_pc","valueFrom":"consultation_yesno","colour":"#c38f00"},{"label":"NO","shareFrom":"consultation_no_pc","valueFrom":"consultation_no","colour":"#c30000"},{"label":"Turnout","shareFrom":"consultation_participation_pc","colour":"#696969"}]}'></div>!}
 
 - @after
 - @after_no
@@ -216,14 +198,7 @@ on-arrival: {!
 
 **Do you want Catalonia to exercise its right to self-determination and accede to full sovereignty, on the condition a new understanding of the relationship between Catalonia and Spain is first offered and negotiated with the Spanish State?**
 
-{!<table style='border-spacing: 0px; margin-right: 1em; width:95%; table-layout: fixed;'>!}
-{!<tr><td style='width: 4.5em'> YES/YES </td><td style='height: 2em; background-color: #008000; border-radius: 0 3px 3px 0; color: white; text-align: center; width: !}[+ consultation_yes_pc +]{!%'>!}[?if consultation_yes_pc > 12 :[+ consultation_yes +]?]{!</td><td style="padding-left:0.5em;">!}[?if consultation_yes_pc < 12 : <span style="font-size:0.9em">[+ consultation_yes +]</span> | ?][+ consultation_yes_pc +]{!%</td></tr>!}
-{!</table>!}
-{!<table style='border-spacing: 0px; margin-right: 1em; width:95%; table-layout: fixed;'>!}
-{!<tr><td style='width: 4.5em'> NO </td><td style='height: 2em; background-color: #c30000; border-radius: 0 3px 3px 0; color: white; text-align: center; width: !}[+ consultation_no_pc +]{!%'>!}[?if consultation_no_pc > 12 :[+ consultation_no +]?]{!</td><td style="padding-left:0.5em;">!}[?if consultation_no_pc < 12 : <span style="font-size:0.9em">[+ consultation_no +]</span> | ?] [+ consultation_no_pc +]{!%</td></tr>!}
-{!</table>!}
-{!<div style="width: 95%;text-align: center; margin-top:-0.75em;">!} **Turnout:**  [+ consultation_participation_pc +]% {!</div>!}
-{!<div style="width: 95%; justify-content: center; display:flex;"><div class="box" style="width: 70%; border-radius: 3px; background-color: #ccc"><div class="box" style=" height: 1em; background-color: dimgrey; margin-right: 0.5em; border-radius: 3px; width:!}[+ consultation_participation_pc +]{!%;"></div></div></div>!}
+{!<div data-widget="result-bars" data-props='{"rows":[{"label":"YES","shareFrom":"consultation_yes_pc","valueFrom":"consultation_yes","colour":"#008000"},{"label":"NO","shareFrom":"consultation_no_pc","valueFrom":"consultation_no","colour":"#c30000"},{"label":"Turnout","shareFrom":"consultation_participation_pc","colour":"#696969"}]}'></div>!}
 
 - @after
 - @after_no

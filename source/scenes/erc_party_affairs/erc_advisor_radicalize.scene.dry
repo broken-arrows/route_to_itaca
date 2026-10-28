@@ -1,5 +1,4 @@
 title: Push for a more ambitious roadmap
-new-page: true
 on-arrival: {!
     if (Q.erc_advisor_action && Q.elisenda_paluzie_advisor && Q.difficulty >= 0) Q.month_actions += 1;
 !}

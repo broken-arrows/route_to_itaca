@@ -1,3 +1,7 @@
+import ElectionResults from './ElectionResults.vue';
+import ResultBars from './ResultBars.vue';
+import StackedBreakdown from './StackedBreakdown.vue';
+import CabinetProposal from './CabinetProposal.vue';
 import { defineAsyncComponent, type Component } from 'vue';
 import { WIDGET_NAMES } from './widget-names.mjs';
 import Hemicycle from './Hemicycle.vue';
@@ -25,6 +29,10 @@ export type WidgetName = (typeof WIDGET_NAMES)[number];
 // that isn't a WidgetName at all — see widget.registry.test.ts's "WIDGETS
 // keys ⊆ WIDGET_NAMES" guard for the runtime equivalent against real content.
 export const WIDGETS: Partial<Record<WidgetName, Component>> = {
+  'election-results': ElectionResults,
+  'result-bars': ResultBars,
+  'stacked-breakdown': StackedBreakdown,
+  'cabinet-proposal': CabinetProposal,
   'builder-playground': BuilderPlayground,
   hemicycle: Hemicycle,
   'achievement-gallery': AchievementGallery,

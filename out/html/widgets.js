@@ -23,10 +23,13 @@
   "use strict";
   function tr(text, params) {
     if (window.ClassicI18n) return window.ClassicI18n.text(text, params);
-    return text.replace(/\{(\w+)\}/g, function (m, key) { return params && params[key] !== undefined ? params[key] : m; });
+    return text.replace(/\{(\w+)\}/g, function (m, key) {
+      return params && params[key] !== undefined ? params[key] : m;
+    });
   }
-  function tc(text) { return window.ClassicI18n ? window.ClassicI18n.content(text) : text; }
-
+  function tc(text) {
+    return window.ClassicI18n ? window.ClassicI18n.content(text) : text;
+  }
 
   function readDataProps(el) {
     var raw = el.getAttribute("data-props");
@@ -86,7 +89,351 @@
   // Dispatch table for names declared via `data-widget`. Each handler owns
   // reading whatever data-props it needs; the shell's renderers themselves
   // are called exactly as they always were (by id + Q [+ config]).
+  // Scene result renderers stay in this monolithic old-shell host.
+  function sceneLabel(source) {
+    if (!source) return "";
+    var key =
+      "widgets.scene." + source.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+    return window.ClassicI18n ? window.ClassicI18n.t(key, source) : source;
+  }
+  function sceneNode(parent, tag, text, style) {
+    var node = document.createElement(tag);
+    if (text !== undefined && text !== null) node.textContent = String(text);
+    if (style) node.style.cssText = style;
+    parent.appendChild(node);
+    return node;
+  }
+  function sceneText(parent, text) {
+    var node = sceneNode(parent, "span", sceneLabel(String(text)));
+    // Preserve the old UI's party/person glossary presentation.
+    if (window.applyWholesome)
+      node.innerHTML = window.applyWholesome(node.innerHTML);
+    return node;
+  }
+  function sceneChange(parent, value, digits, suffix) {
+    if (value === null) return sceneNode(parent, "em", sceneLabel("New!"));
+    var rounded = Number(value.toFixed(digits || 0));
+    var arrow = sceneNode(parent, "img");
+    arrow.src =
+      "img/" +
+      (rounded > 0 ? "arrowup" : rounded < 0 ? "arrowdown" : "steady") +
+      ".png";
+    arrow.alt = rounded > 0 ? "+" : rounded < 0 ? "−" : "";
+    parent.appendChild(
+      document.createTextNode(
+        " " + Math.abs(rounded).toFixed(digits || 0) + (suffix || ""),
+      ),
+    );
+  }
+  function sceneBars(el, Q, stacked) {
+    var props = resolveProps(el, Q);
+    var rows = window.RTI_GAME_LIB.sceneResultBars(
+      Q,
+      props.rows,
+      props.groupBelow,
+    );
+    el.replaceChildren();
+    el.style.cssText =
+      "margin:1em 0;width:95%;font-variant-numeric:tabular-nums;";
+    if (stacked) {
+      var thematic = !!props.title;
+      var showLabels =
+        !thematic ||
+        rows.every(function (row) {
+          return row.value === null;
+        });
+      var strip = sceneNode(
+        el,
+        "div",
+        null,
+        "display:flex;position:relative;margin:" +
+          (thematic
+            ? showLabels
+              ? "1.8em 0 .3em"
+              : "1.2em 0 .3em"
+            : "1em 0 2em") +
+          ";",
+      );
+      rows.forEach(function (row, index) {
+        var segment = sceneNode(
+          strip,
+          "div",
+          null,
+          "position:relative;flex:0 0 " +
+            row.width +
+            "%;min-width:0;height:2em;background:" +
+            row.colour +
+            ";text-align:center;" +
+            (index === 0
+              ? "border-radius:3px 0 0 3px;"
+              : index === rows.length - 1
+                ? "border-radius:0 3px 3px 0;"
+                : ""),
+        );
+        var small = thematic && row.width < (row.value !== null ? 13 : 8);
+        var value =
+          row.value !== null
+            ? row.value + " (" + row.share + "%)"
+            : row.share + "%";
+        var textColour =
+          ["var(--erc)", "var(--cup)", "#b1b0ae"].indexOf(row.colour) >= 0
+            ? "var(--text-color)"
+            : "white";
+        sceneNode(
+          segment,
+          "span",
+          value,
+          "position:absolute;white-space:nowrap;font-weight:bold;line-height:" +
+            (small ? "1.3em" : "2em") +
+            ";left:50%;transform:translateX(-50%);" +
+            (small ? "bottom:100%;" : "top:0;color:" + textColour + ";"),
+        );
+        if (!showLabels) return;
+        var alignment = thematic
+          ? index === 0
+            ? "left:0;text-align:left;"
+            : index === rows.length - 1
+              ? "right:0;text-align:right;"
+              : "left:50%;transform:translateX(-50%);"
+          : "left:50%;transform:translateX(-50%);";
+        var label = sceneNode(
+          segment,
+          "div",
+          null,
+          "position:absolute;white-space:nowrap;" +
+            alignment +
+            (thematic
+              ? "bottom:100%;margin-bottom:" + (small ? "1.1em" : ".2em") + ";"
+              : "top:100%;margin-top:.2em;"),
+        );
+        sceneText(label, row.label);
+      });
+      if (props.title)
+        sceneNode(
+          el,
+          "div",
+          sceneLabel(props.title),
+          "font-style:italic;margin-left:3em;",
+        );
+      return;
+    }
+    rows.forEach(function (row) {
+      if (row.label === "Turnout") {
+        var turnout = sceneNode(
+          el,
+          "div",
+          null,
+          "text-align:center;margin:1em 0;",
+        );
+        sceneNode(turnout, "strong", sceneLabel(row.label) + ": ");
+        sceneNode(turnout, "span", row.share + "%");
+        if (row.change !== null) {
+          var change = sceneNode(turnout, "span", " (");
+          sceneChange(change, row.change, 1, "%");
+          change.appendChild(document.createTextNode(")"));
+        }
+        var track = sceneNode(
+          turnout,
+          "div",
+          null,
+          "width:70%;margin:.3em auto 0;background:#ccc;border-radius:3px;overflow:hidden;",
+        );
+        track.className = "scene-turnout-track";
+        track.setAttribute("aria-hidden", "true");
+        sceneNode(
+          track,
+          "div",
+          null,
+          "height:1em;width:" + row.width + "%;background:" + row.colour,
+        );
+        return;
+      }
+      var block = sceneNode(
+        el,
+        "div",
+        null,
+        "display:grid;grid-template-columns:4.5em minmax(0,1fr) 4.5em;align-items:center;gap:.5em;margin:.7em 0;",
+      );
+      sceneText(block, row.label);
+      var lane = sceneNode(block, "div", null, "position:relative;");
+      sceneNode(
+        lane,
+        "div",
+        null,
+        "height:2em;border-radius:0 3px 3px 0;width:" +
+          row.width +
+          "%;background:" +
+          row.colour,
+      );
+      if (row.value !== null && row.width > 12)
+        sceneNode(
+          lane,
+          "span",
+          row.value,
+          "position:absolute;top:0;white-space:nowrap;line-height:2em;left:0;width:" + row.width + "%;text-align:center;color:white;",
+        );
+      sceneNode(
+        lane,
+        "span",
+        row.share + "%" + (row.value !== null && row.width <= 12 ? " (" + row.value + ")" : ""),
+        "position:absolute;top:0;white-space:nowrap;line-height:2em;left:calc(" + row.width + "% + .4em);",
+      );
+    });
+  }
   var HANDLERS = {
+    "election-results": function (el, Q) {
+      var props = resolveProps(el, Q);
+      var rows = window.RTI_GAME_LIB.electionResultRows(Q, props.layout);
+      el.replaceChildren();
+      el.style.overflowX = "auto";
+      var table = sceneNode(
+        el,
+        "table",
+        null,
+        "margin-left:.5em;display:table;width:95%;font-variant-numeric:tabular-nums;",
+      );
+      var wideVote = !!props.voteHeading;
+      var widths = wideVote
+        ? ["min-width:5em", "width:9em", "width:5em", "width:3em", "width:3em"]
+        : ["min-width:6em", "width:7em", "width:7em", "width:3em", "width:3em"];
+      var head = sceneNode(sceneNode(table, "thead"), "tr");
+      [
+        "Party",
+        props.voteHeading || "Popular Vote",
+        "Change",
+        "Seats",
+        "Change",
+      ].forEach(function (label, i) {
+        var cell = sceneNode(
+          head,
+          "th",
+          sceneLabel(label),
+          widths[i] +
+            ";text-align:" +
+            (i === 1 ? "right" : i === 3 ? "center" : "left") +
+            ";",
+        );
+        cell.scope = "col";
+        if (i === 3) cell.setAttribute("aria-sort", "descending");
+      });
+      var body = sceneNode(table, "tbody");
+      rows.forEach(function (row) {
+        var tr = sceneNode(body, "tr");
+        tr.setAttribute("data-party", row.id);
+        var name = sceneNode(
+          tr,
+          "th",
+          null,
+          "text-align:left;font-weight:normal;white-space:nowrap;",
+        );
+        name.scope = "row";
+        sceneNode(name, "i", null, "background:" + row.colour).className =
+          "box";
+        name.appendChild(document.createTextNode(" "));
+        sceneText(name, row.label);
+        sceneNode(
+          tr,
+          "td",
+          row.votes +
+            "%" +
+            (row.catalonia !== null ? " (" + row.catalonia + "%)" : ""),
+          "text-align:right;white-space:nowrap;",
+        );
+        sceneChange(
+          sceneNode(tr, "td", null, "white-space:nowrap;"),
+          row.voteChange,
+          2,
+          "%",
+        );
+        sceneNode(tr, "td", row.seats, "text-align:right;");
+        sceneChange(
+          sceneNode(tr, "td", null, "white-space:nowrap;"),
+          row.seatChange,
+        );
+      });
+    },
+    "result-bars": function (el, Q) {
+      sceneBars(el, Q, false);
+    },
+    "stacked-breakdown": function (el, Q) {
+      sceneBars(el, Q, true);
+    },
+    "cabinet-proposal": function (el, Q) {
+      el.replaceChildren();
+      var presidency;
+      window.RTI_GAME_LIB.proposedCabinetRows(Q).forEach(function (row) {
+        if (row.id === "president" || row.id === "vp") {
+          if (row.id === "president") {
+            var header = sceneNode(el, "div", null, "display:flex;align-items:center;gap:1em;margin:.8em 0;");
+            var seal = sceneNode(header, "img", null, "width:2em;object-fit:contain;");
+            seal.src = row.icon;
+            seal.alt = "";
+            presidency = sceneNode(header, "div");
+          }
+          var line = sceneNode(presidency, "div", null, "white-space:nowrap;" + (row.id === "vp" ? "font-size:.9em;" : ""));
+          var title = sceneNode(line, "strong", row.label + " ");
+          sceneText(row.id === "president" ? title : line, row.name);
+          if (row.party) {
+            sceneNode(line, "span", " (");
+            sceneText(line, row.party);
+            sceneNode(line, "span", ")");
+          }
+          return;
+        }
+        var block = sceneNode(
+          el,
+          "div",
+          null,
+          "display:flex;align-items:center;gap:.8em;margin:.8em 0;",
+        );
+        var icon = sceneNode(
+          block,
+          "img",
+          null,
+          "width:2em;height:2em;object-fit:contain;",
+        );
+        icon.src = row.icon;
+        icon.alt = "";
+        var detail = sceneNode(block, "div");
+        sceneNode(detail, "strong", sceneLabel(row.label));
+        if (row.party) {
+          sceneNode(detail, "span", " (");
+          sceneText(detail, row.party);
+          sceneNode(detail, "span", ")");
+        }
+        sceneNode(detail, "br");
+        sceneText(detail, row.name);
+      });
+    },
+    "tension-rows": function (el, Q) {
+      var rows = resolveProps(el, Q).rows || [];
+      var engine = window.dendryUI.dendryEngine;
+      el.replaceChildren();
+      el.style.cssText = "width:70%;max-width:28em;margin:1em auto;";
+      rows.forEach(function (row) {
+        var block = sceneNode(
+          el,
+          "div",
+          null,
+          "display:flex;align-items:center;flex-wrap:wrap;gap:.3em 1em;margin:.5em 0;",
+        );
+        sceneNode(
+          block,
+          "strong",
+          sceneLabel(row.label),
+          "flex:1;min-width:9em;",
+        );
+        var metrics = sceneNode(block, "div", null, "font-size:.9em;");
+        [
+          ["Strength", row.strength, row.strengthDisplay],
+          ["Dissent", row.dissent, row.dissentDisplay],
+        ].forEach(function (metric) {
+          var line = sceneNode(metrics, "div", sceneLabel(metric[0]) + ": ");
+          var value = sceneNode(line, "span");
+          value.innerHTML = tc(engine.qdisplay(metric[1], metric[2]));
+        });
+      });
+    },
     "builder-playground": function (el, Q) {
       var config = resolveProps(el, Q);
       var engine = window.dendryUI && window.dendryUI.dendryEngine;
@@ -200,7 +547,12 @@
             button.textContent = direction < 0 ? "‹" : "›";
             button.setAttribute(
               "aria-label",
-              tr(direction < 0 ? "Previous party for {party}" : "Next party for {party}", { party: row.name }),
+              tr(
+                direction < 0
+                  ? "Previous party for {party}"
+                  : "Next party for {party}",
+                { party: row.name },
+              ),
             );
             button.className =
               direction < 0 ? "builder-previous" : "builder-next";
@@ -233,9 +585,18 @@
           minus.textContent = "−";
           plus.textContent = "+";
           minus.type = plus.type = "button";
-          minus.setAttribute("aria-label", tr("Remove a seat from {party}", { party: row.name }));
-          plus.setAttribute("aria-label", tr("Add a seat to {party}", { party: row.name }));
-          input.setAttribute("aria-label", tr("{party} seats", { party: row.name }));
+          minus.setAttribute(
+            "aria-label",
+            tr("Remove a seat from {party}", { party: row.name }),
+          );
+          plus.setAttribute(
+            "aria-label",
+            tr("Add a seat to {party}", { party: row.name }),
+          );
+          input.setAttribute(
+            "aria-label",
+            tr("{party} seats", { party: row.name }),
+          );
           input.type = "text";
           input.inputMode = "numeric";
           input.pattern = "[0-9]*";
@@ -299,7 +660,8 @@
       var parties = Q[props.partiesFrom];
       // linegraph appends its axes/paths. Start clean on every shell refresh.
       el.replaceChildren();
-      if (!Array.isArray(records) || !records.length || !Array.isArray(parties)) return;
+      if (!Array.isArray(records) || !records.length || !Array.isArray(parties))
+        return;
       var valid = records.filter(function (row) {
         return row && row.date != null && Number.isFinite(+new Date(row.date));
       });
@@ -310,45 +672,69 @@
       svg.style.width = "100%";
       svg.style.maxWidth = "500px";
       el.appendChild(svg);
-      var chart = d3.linegraph(true, true, parties, props.partyColours, props.partyNames);
+      var chart = d3.linegraph(
+        true,
+        true,
+        parties,
+        props.partyColours,
+        props.partyNames,
+      );
       var events = [];
-      var firstDate = Math.min.apply(null, valid.map(function (row) { return +new Date(row.date); }));
+      var firstDate = Math.min.apply(
+        null,
+        valid.map(function (row) {
+          return +new Date(row.date);
+        }),
+      );
       var history = props.eventsFrom && Q[props.eventsFrom];
-      if (Array.isArray(history)) history.forEach(function (event) {
-        if (!event || event.date == null || typeof event.label !== "string") return;
-        var date = +new Date(event.date);
-        if (!Number.isFinite(date) || date < firstDate) return;
-        var group = events.find(function (entry) { return +new Date(entry.date) === date; });
-        if (!group) {
-          group = { date: event.date, labels: [] };
-          events.push(group);
-        }
-        var label = tc(event.label);
-        if (!group.labels.includes(label)) group.labels.push(label);
+      if (Array.isArray(history))
+        history.forEach(function (event) {
+          if (!event || event.date == null || typeof event.label !== "string")
+            return;
+          var date = +new Date(event.date);
+          if (!Number.isFinite(date) || date < firstDate) return;
+          var group = events.find(function (entry) {
+            return +new Date(entry.date) === date;
+          });
+          if (!group) {
+            group = { date: event.date, labels: [] };
+            events.push(group);
+          }
+          var label = tc(event.label);
+          if (!group.labels.includes(label)) group.labels.push(label);
+        });
+      events.sort(function (a, b) {
+        return +new Date(a.date) - +new Date(b.date);
       });
-      events.sort(function (a, b) { return +new Date(a.date) - +new Date(b.date); });
-      events.forEach(function (event) { event.label = event.labels.join(" · "); });
+      events.forEach(function (event) {
+        event.label = event.labels.join(" · ");
+      });
       chart.width(width).height(400).events(events);
       d3.select(svg).datum(valid).call(chart);
       // SVG text cannot contain the formatter's HTML spans. Transfer its
       // canonical term, colour and tooltip trigger onto the SVG legend names.
-      if (typeof window.applyWholesome === "function") svg.querySelectorAll(".party-label").forEach(function (label) {
-        var holder = document.createElement("span");
-        holder.textContent = label.textContent;
-        holder.innerHTML = window.applyWholesome(holder.innerHTML);
-        var term = holder.querySelector("[data-term]");
-        if (!term) return;
-        label.textContent = holder.textContent;
-        var colour = term.style.color || term.style.getPropertyValue("--mytooltip-color");
-        label.setAttribute("data-term", term.getAttribute("data-term"));
-        if (colour) {
-          label.style.color = colour;
-          label.style.setProperty("--mytooltip-color", colour);
-          label.style.fill = colour;
-        }
-        if (term.classList.contains("mytooltip")) label.classList.add("mytooltip");
-        if (term.style.fontWeight) label.style.fontWeight = term.style.fontWeight;
-      });
+      if (typeof window.applyWholesome === "function")
+        svg.querySelectorAll(".party-label").forEach(function (label) {
+          var holder = document.createElement("span");
+          holder.textContent = label.textContent;
+          holder.innerHTML = window.applyWholesome(holder.innerHTML);
+          var term = holder.querySelector("[data-term]");
+          if (!term) return;
+          label.textContent = holder.textContent;
+          var colour =
+            term.style.color ||
+            term.style.getPropertyValue("--mytooltip-color");
+          label.setAttribute("data-term", term.getAttribute("data-term"));
+          if (colour) {
+            label.style.color = colour;
+            label.style.setProperty("--mytooltip-color", colour);
+            label.style.fill = colour;
+          }
+          if (term.classList.contains("mytooltip"))
+            label.classList.add("mytooltip");
+          if (term.style.fontWeight)
+            label.style.fontWeight = term.style.fontWeight;
+        });
     },
     hemicycle: function (el, Q) {
       var props = readDataProps(el);
@@ -426,7 +812,9 @@
           majorityLabel.className = "hemicycle-majority";
           el.appendChild(majorityLabel);
         }
-        majorityLabel.textContent = tr("Majority: {count} seats", { count: majority });
+        majorityLabel.textContent = tr("Majority: {count} seats", {
+          count: majority,
+        });
       } else if (majorityLabel) {
         majorityLabel.remove();
       }
@@ -502,7 +890,10 @@
         segment.style.flexGrow = String(votes);
         segment.setAttribute(
           "aria-label",
-          tr("{label}: {count} votes", { label: tc(String(outcome.label || "")), count: votes }),
+          tr("{label}: {count} votes", {
+            label: tc(String(outcome.label || "")),
+            count: votes,
+          }),
         );
         segment.textContent = String(votes);
         bar.appendChild(segment);
@@ -639,7 +1030,10 @@
           var item = document.createElement("div");
           item.className = "roadmaps-widget__party";
           item.setAttribute("role", "listitem");
-          item.setAttribute("aria-label", party.label + ": " + tr(position.label));
+          item.setAttribute(
+            "aria-label",
+            party.label + ": " + tr(position.label),
+          );
 
           var logo = document.createElement("img");
           logo.className = "roadmaps-widget__logo";
@@ -797,10 +1191,9 @@
     { id: "congreso-party-tour-widget", handler: "congreso-party-tour" },
   ];
 
-  // Shared explicit handlers resolve their data here. Desk-only Brief widgets
-  // live in status_new.scene.dry, which this frozen shell never renders, so an
-  // unknown marker deliberately remains untouched rather than growing a
-  // generic fallback solely for a UI that is scheduled for retirement.
+  // Explicit handlers resolve their data here. The faction summary also uses
+  // the Brief's derivation in ordinary scenes; other Brief-only shapes remain
+  // in status_new.scene.dry. Unknown markers deliberately remain untouched.
   function resolveProps(el, Q) {
     var props = readDataProps(el);
     if (typeof props.configFrom === "string") {

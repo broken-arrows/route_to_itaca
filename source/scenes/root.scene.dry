@@ -1582,7 +1582,7 @@ For more information on the politics, government, and recent history of Cataloni
 @easy_mode
 role: setup
 subtitle: Extra party resources, more lenient interactions and easier options.
-on-arrival: difficulty = -1; party_resources = 4; max_advisors = 5;
+on-arrival: difficulty = -1; party_resources = 4; max_advisors = 4;
 new-page: true
 go-to: party_selection
 

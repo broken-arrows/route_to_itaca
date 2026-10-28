@@ -14,7 +14,23 @@ export interface AllegianceEntry {
   note?: string;
 }
 
+export interface SceneBarSpec {
+  label: string; shareFrom: string; valueFrom?: string; colour: string;
+  complement?: number; positiveOnly?: boolean; turnoutContest?: string; partyFrom?: string;
+}
+export interface SceneBar {
+  label: string; colour: string; share: number; width: number;
+  value: string | number | null; change: number | null;
+}
 export interface GameLib {
+  electionResultRows(q: Record<string, unknown>, layout: string): Array<{
+    id: string; label: string; colour: string; votes: number; seats: number;
+    catalonia: number | null; voteChange: number | null; seatChange: number | null;
+  }>;
+  sceneResultBars(q: Record<string, unknown>, rows: SceneBarSpec[], groupBelow?: number): SceneBar[];
+  proposedCabinetRows(q: Record<string, unknown>): Array<{
+    id: string; label: string; icon: string; name: string; party: string;
+  }>;
   /** Immediate response followed by finite monthly pressure; same id replaces its tail. */
   applyPoliticalEffect(q: Record<string, unknown>, definition: {
     id: string;

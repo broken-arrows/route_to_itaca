@@ -5840,5 +5840,7 @@
   "Our planned unofficial campaign seems to have been carried out properly and in complete secrecy. While our hand in it has not been noticed, it is unclear if such a direct attack will be enough to really sway anyone into changing their opinion. ": null,
   "The center-right nationalist federation of the liberal Democratic Convergence of Catalonia (CDC) and the christian Democratic Union of Catalonia (UDC) is the undisputed space for moderate Catalan autonomism with pro-business policies.": null,
   "The century-old left-wing republican party advocates for Catalan independence, socialism, and anti-austerity measures.": null,
-  "The far-left, anti-capitalist, eco-socialist platform demands direct democracy, independence, and municipalism.": null
+  "The far-left, anti-capitalist, eco-socialist platform demands direct democracy, independence, and municipalism.": null,
+  "<strong>{emphasis1}</strong> {speaker} ({speaker_party}) ": null,
+  "Speaker of the House:": null
 }

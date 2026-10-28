@@ -1,4 +1,8 @@
 export declare const WIDGET_NAMES: readonly [
+  'election-results',
+  'result-bars',
+  'stacked-breakdown',
+  'cabinet-proposal',
   'builder-playground',
   'hemicycle',
   'achievement-gallery',

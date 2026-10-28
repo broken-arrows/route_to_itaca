@@ -24,6 +24,10 @@
  *   Government sheet.
  */
 export const WIDGET_NAMES = [
+  'election-results',
+  'result-bars',
+  'stacked-breakdown',
+  'cabinet-proposal',
   "builder-playground",
   "hemicycle",
   "achievement-gallery",

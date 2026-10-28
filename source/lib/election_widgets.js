@@ -740,7 +740,230 @@
       });
   }
 
+
+  // Authored election rows: keep each scene's existing visibility keys, labels and
+  // Catalonia columns. Ordering is a view operation and never mutates game state.
+  var RESULT_LAYOUTS = {
+    "parlament": [
+      {"show":"jxsi_parlament_showviz","prefix":"jxsi_parlament","label":"jxsi","colour":"var(--jxsi)","catalonia":false},
+      {"show":"ciu_parlament_showviz","prefix":"ciu_parlament","label":"CiU","colour":"var(--ciu)","catalonia":false},
+      {"show":"dl_parlament_showviz","prefix":"dl_parlament","label":"DL","colour":"var(--dl)","catalonia":false},
+      {"show":"jxcat_parlament_showviz","prefix":"jxcat_parlament","label":"JxCat","colour":"var(--jxcat)","catalonia":false},
+      {"show":"junts_parlament_showviz","prefix":"junts_parlament","label":"Junts","colour":"var(--junts)","catalonia":false},
+      {"show":"cdc_parlament_showviz","prefix":"cdc_parlament","label":"CDC","colour":"var(--cdc)","catalonia":false},
+      {"show":"pdcat_parlament_showviz","prefix":"pdcat_parlament","label":"PDeCAT","colour":"var(--pdcat)","catalonia":false},
+      {"show":"erc_parlament_showviz","prefix":"erc_parlament","label":"ERC","colour":"var(--erc)","catalonia":false},
+      {"show":"cs_parlament_showviz","prefix":"cs_parlament","label":"Cs","colour":"var(--cs)","catalonia":false},
+      {"show":"psc_parlament_showviz","prefix":"psc_parlament","label":"PSC","colour":"var(--psc)","catalonia":false},
+      {"show":"ppc_parlament_showviz","prefix":"ppc_parlament","label":"PPC","colour":"var(--ppc)","catalonia":false},
+      {"show":"vox_parlament_showviz","prefix":"vox_parlament","label":"Vox","colour":"var(--vox)","catalonia":false},
+      {"show":"icv_parlament_showviz","prefix":"icv_parlament","label":"ICV-EUiA","colour":"var(--icv)","catalonia":false},
+      {"show":"csqp_parlament_showviz","prefix":"csqp_parlament","label":"CSQP","colour":"var(--csqp)","catalonia":false},
+      {"show":"cecp_parlament_showviz","prefix":"cecp_parlament","label":"CECP","colour":"var(--cecp)","catalonia":false},
+      {"show":"ecp_parlament_showviz","prefix":"ecp_parlament","label":"ECP","colour":"var(--ecp)","catalonia":false},
+      {"show":"cup_parlament_showviz","prefix":"cup_parlament","label":"CUP","colour":"var(--cup)","catalonia":false},
+      {"show":"unio_parlament_showviz","prefix":"unio_parlament","label":"UDC","colour":"var(--unio)","catalonia":false},
+      {"show":"pxc_parlament_showviz","prefix":"pxc_parlament","label":"PxC","colour":"var(--pxc)","catalonia":false},
+      {"show":"fnc_parlament_showviz","prefix":"fnc_parlament","label":"FNC","colour":"var(--fnc)","catalonia":false},
+      {"show":"si_parlament_showviz","prefix":"si_parlament","label":"SI","colour":"var(--si)","catalonia":false}
+    ],
+    "congreso": [
+      {"show":"psoe_congreso_showviz","prefix":"psoe_congreso","label":"PSOE","colour":"var(--psoe)","catalonia":true,"cataloniaAbove":0.1},
+      {"show":"pp_congreso_showviz","prefix":"pp_congreso","label":"PP","colour":"var(--pp)","catalonia":true},
+      {"show":"up_congreso_showviz","prefix":"up_congreso","label":"UP","colour":"var(--up)","catalonia":true},
+      {"show":"cs_congreso_showviz","prefix":"cs_congreso","label":"csspa","colour":"var(--cs)","catalonia":true},
+      {"show":"vox_congreso_showviz","prefix":"vox_congreso","label":"Vox","colour":"var(--vox)","catalonia":true},
+      {"show":"podemos_congreso_showviz","prefix":"podemos_congreso","label":"Podemos","colour":"var(--podemos)","catalonia":true},
+      {"show":"mpais_congreso_showviz","prefix":"mpais_congreso","label":"Más País","colour":"var(--mpais)","catalonia":true},
+      {"show":"sumar_congreso_showviz","prefix":"sumar_congreso","label":"Sumar","colour":"var(--sumar)","catalonia":true},
+      {"show":"iu_congreso_showviz","prefix":"iu_congreso","label":"IU","colour":"var(--iu)","catalonia":true},
+      {"show":"erc_congreso_showviz","prefix":"erc_congreso","label":"ERC","colour":"var(--erc)","catalonia":true},
+      {"show":"jxsi_congreso_showviz","prefix":"jxsi_congreso","label":"jxsi","colour":"var(--jxsi)","catalonia":true},
+      {"show":"ciu_congreso_showviz","prefix":"ciu_congreso","label":"CiU","colour":"var(--ciu)","catalonia":true},
+      {"show":"jxcat_congreso_showviz","prefix":"jxcat_congreso","label":"JxCat","colour":"var(--jxcat)","catalonia":true},
+      {"show":"cdc_congreso_showviz","prefix":"cdc_congreso","label":"CDC","colour":"var(--cdc)","catalonia":true},
+      {"show":"dl_congreso_showviz","prefix":"dl_congreso","label":"DL","colour":"var(--dl)","catalonia":true},
+      {"show":"pdcat_congreso_showviz","prefix":"pdcat_congreso","label":"PDeCAT","colour":"var(--pdcat)","catalonia":true},
+      {"show":"unio_congreso_showviz","prefix":"unio_congreso","label":"UDC","colour":"var(--unio)","catalonia":true},
+      {"show":"junts_congreso_showviz","prefix":"junts_congreso","label":"Junts","colour":"var(--junts)","catalonia":true},
+      {"show":"psc_congreso_showviz","prefix":"psc_congreso","label":"PSC","colour":"var(--psc)","catalonia":true},
+      {"show":"pnv_congreso_showviz","prefix":"pnv_congreso","label":"EAJ-PNV","colour":"var(--pnv)","catalonia":false},
+      {"show":"ehbildu_congreso_showviz","prefix":"ehbildu_congreso","label":"EH Bildu","colour":"var(--ehbildu)","catalonia":false},
+      {"show":"amaiur_congreso_showviz","prefix":"amaiur_congreso","label":"Amaiur","colour":"var(--amaiur)","catalonia":false},
+      {"show":"cup_congreso_showviz","prefix":"cup_congreso","label":"CUP","colour":"var(--cup)","catalonia":true},
+      {"show":"fr_congreso_showviz","prefix":"fr_congreso","label":"FR","colour":"var(--fr)","catalonia":true},
+      {"show":"cc_congreso_showviz","prefix":"cc_congreso","label":"CC-PNC","colour":"var(--cc)","catalonia":false},
+      {"show":"bng_congreso_showviz","prefix":"bng_congreso","label":"BNG","colour":"var(--bng)","catalonia":false},
+      {"show":"upyd_congreso_showviz","prefix":"upyd_congreso","label":"UPyD","colour":"var(--upyd)","catalonia":true},
+      {"show":"nsuma_congreso_showviz","prefix":"nsuma_congreso","label":"nsuma","colour":"var(--nsuma)","catalonia":false},
+      {"show":"compromis_congreso_showviz","prefix":"compromis_congreso","label":"Compromís","colour":"var(--compromis)","catalonia":false},
+      {"show":"prc_congreso_showviz","prefix":"prc_congreso","label":"PRC","colour":"var(--prc)","catalonia":false},
+      {"show":"fac_congreso_showviz","prefix":"fac_congreso","label":"FAC","colour":"var(--fac)","catalonia":false},
+      {"show":"gbai_congreso_showviz","prefix":"gbai_congreso","label":"GBai","colour":"var(--gbai)","catalonia":false},
+      {"show":"mes_congreso_showviz","prefix":"mes_congreso","label":"MÉS","colour":"var(--mes)","catalonia":false},
+      {"show":"te_congreso_showviz","prefix":"te_congreso","label":"texiste","colour":"var(--te)","catalonia":false}
+    ],
+    "local_barcelona": [
+      {"show":"bcomu_local_barcelona_showviz","prefix":"bcomu_local_barcelona","label":"bcomu","colour":"var(--bcomu)","catalonia":false},
+      {"show":"jxsi_bacelona_local_showviz","prefix":"jxsi_local_barcelona","label":"jxsibcn","colour":"var(--jxsi)","catalonia":false},
+      {"show":"ciu_local_barcelona_showviz","prefix":"ciu_local_barcelona","label":"ciubcn","colour":"var(--ciu)","catalonia":false},
+      {"show":"jxcat_local_barcelona_showviz","prefix":"jxcat_local_barcelona","label":"jxcatbcn","colour":"var(--jxcat)","catalonia":false},
+      {"show":"junts_local_barcelona_showviz","prefix":"junts_local_barcelona","label":"juntsbcn","colour":"var(--junts)","catalonia":false},
+      {"show":"cdc_local_barcelona_showviz","prefix":"cdc_local_barcelona","label":"cdcbcn","colour":"var(--cdc)","catalonia":false},
+      {"show":"pdcat_local_barcelona_showviz","prefix":"pdcat_local_barcelona","label":"pdcatbcn","colour":"var(--pdcat)","catalonia":false},
+      {"show":"erc_local_barcelona_showviz","prefix":"erc_local_barcelona","label":"ercbcn","colour":"var(--erc)","catalonia":false},
+      {"show":"psc_local_barcelona_showviz","prefix":"psc_local_barcelona","label":"pscbcn","colour":"var(--psc)","catalonia":false},
+      {"show":"cs_local_barcelona_showviz","prefix":"cs_local_barcelona","label":"csbcn","colour":"var(--cs)","catalonia":false},
+      {"show":"pp_local_barcelona_showviz","prefix":"pp_local_barcelona","label":"ppbcn","colour":"var(--pp)","catalonia":false},
+      {"show":"vox_local_barcelona_showviz","prefix":"vox_local_barcelona","label":"voxbcn","colour":"var(--vox)","catalonia":false},
+      {"show":"cup_local_barcelona_showviz","prefix":"cup_local_barcelona","label":"cupbcn","colour":"var(--cup)","catalonia":false},
+      {"show":"unio_local_barcelona_showviz","prefix":"unio_local_barcelona","label":"udcbcn","colour":"var(--unio)","catalonia":false},
+      {"show":"pxc_local_barcelona_showviz","prefix":"pxc_local_barcelona","label":"pxcbcn","colour":"var(--pxc)","catalonia":false},
+      {"show":"fnc_local_barcelona_showviz","prefix":"fnc_local_barcelona","label":"fncbcn","colour":"var(--fnc)","catalonia":false},
+      {"show":"primaries_local_barcelona_showviz","prefix":"primaries_local_barcelona","label":"primariesbcn","colour":"var(--primaries)","catalonia":false}
+    ],
+    "simulation_parlament": [
+      {"show":"jxsi_parlament_showviz","prefix":"jxsi_parlament","label":"jxsi","colour":"var(--jxsi)","catalonia":false},
+      {"show":"ciu_parlament_showviz","prefix":"ciu_parlament","label":"CiU","colour":"var(--ciu)","catalonia":false},
+      {"show":"jxcat_parlament_showviz","prefix":"jxcat_parlament","label":"JxCat","colour":"var(--jxcat)","catalonia":false},
+      {"show":"junts_parlament_showviz","prefix":"junts_parlament","label":"Junts","colour":"var(--junts)","catalonia":false},
+      {"show":"cdc_parlament_showviz","prefix":"cdc_parlament","label":"CDC","colour":"var(--cdc)","catalonia":false},
+      {"show":"pdcat_parlament_showviz","prefix":"pdcat_parlament","label":"PDeCAT","colour":"var(--pdcat)","catalonia":false},
+      {"show":"erc_parlament_showviz","prefix":"erc_parlament","label":"ERC","colour":"var(--erc)","catalonia":false},
+      {"show":"cs_parlament_showviz","prefix":"cs_parlament","label":"Cs","colour":"var(--cs)","catalonia":false},
+      {"show":"psc_parlament_showviz","prefix":"psc_parlament","label":"PSC","colour":"var(--psc)","catalonia":false},
+      {"show":"ppc_parlament_showviz","prefix":"ppc_parlament","label":"PPC","colour":"var(--ppc)","catalonia":false},
+      {"show":"vox_parlament_showviz","prefix":"vox_parlament","label":"Vox","colour":"var(--vox)","catalonia":false},
+      {"show":"icv_parlament_showviz","prefix":"icv_parlament","label":"ICV-EUiA","colour":"var(--icv)","catalonia":false},
+      {"show":"csqp_parlament_showviz","prefix":"csqp_parlament","label":"CSQP","colour":"var(--csqp)","catalonia":false},
+      {"show":"cecp_parlament_showviz","prefix":"cecp_parlament","label":"CECP","colour":"var(--cecp)","catalonia":false},
+      {"show":"ecp_parlament_showviz","prefix":"ecp_parlament","label":"ECP","colour":"var(--ecp)","catalonia":false},
+      {"show":"cup_parlament_showviz","prefix":"cup_parlament","label":"CUP","colour":"var(--cup)","catalonia":false},
+      {"show":"unio_parlament_showviz","prefix":"unio_parlament","label":"UDC","colour":"var(--unio)","catalonia":false},
+      {"show":"pxc_parlament_showviz","prefix":"pxc_parlament","label":"PxC","colour":"var(--pxc)","catalonia":false},
+      {"show":"fnc_parlament_showviz","prefix":"fnc_parlament","label":"FNC","colour":"var(--fnc)","catalonia":false},
+      {"show":"si_parlament_showviz","prefix":"si_parlament","label":"SI","colour":"var(--si)","catalonia":false}
+    ],
+    "simulation_congreso": [
+      {"show":"psoe_congreso_showviz","prefix":"psoe_congreso","label":"PSOE","colour":"var(--psoe)","catalonia":true},
+      {"show":"pp_congreso_showviz","prefix":"pp_congreso","label":"PP","colour":"var(--pp)","catalonia":true},
+      {"show":"up_congreso_showviz","prefix":"up_congreso","label":"UP","colour":"var(--up)","catalonia":true},
+      {"show":"cs_congreso_showviz","prefix":"cs_congreso","label":"csspa","colour":"var(--cs)","catalonia":true},
+      {"show":"vox_congreso_showviz","prefix":"vox_congreso","label":"Vox","colour":"var(--vox)","catalonia":true},
+      {"show":"podemos_congreso_showviz","prefix":"podemos_congreso","label":"Podemos","colour":"var(--podemos)","catalonia":true},
+      {"show":"mpais_congreso_showviz","prefix":"mpais_congreso","label":"Más País","colour":"var(--mpais)","catalonia":true},
+      {"show":"sumar_congreso_showviz","prefix":"sumar_congreso","label":"Sumar","colour":"var(--sumar)","catalonia":true},
+      {"show":"iu_congreso_showviz","prefix":"iu_congreso","label":"IU","colour":"var(--iu)","catalonia":true},
+      {"show":"erc_congreso_showviz","prefix":"erc_congreso","label":"ERC","colour":"var(--erc)","catalonia":true},
+      {"show":"jxsi_congreso_showviz","prefix":"jxsi_congreso","label":"jxsi","colour":"var(--jxsi)","catalonia":true},
+      {"show":"ciu_congreso_showviz","prefix":"ciu_congreso","label":"CiU","colour":"var(--ciu)","catalonia":true},
+      {"show":"jxcat_congreso_showviz","prefix":"jxcat_congreso","label":"JxCat","colour":"var(--jxcat)","catalonia":true},
+      {"show":"cdc_congreso_showviz","prefix":"cdc_congreso","label":"CDC","colour":"var(--cdc)","catalonia":true},
+      {"show":"dl_congreso_showviz","prefix":"dl_congreso","label":"DL","colour":"var(--dl)","catalonia":true},
+      {"show":"pdcat_congreso_showviz","prefix":"pdcat_congreso","label":"PDeCAT","colour":"var(--pdcat)","catalonia":true},
+      {"show":"unio_congreso_showviz","prefix":"unio_congreso","label":"UDC","colour":"var(--unio)","catalonia":true},
+      {"show":"junts_congreso_showviz","prefix":"junts_congreso","label":"Junts","colour":"var(--junts)","catalonia":true},
+      {"show":"pnv_congreso_showviz","prefix":"pnv_congreso","label":"EAJ-PNV","colour":"var(--pnv)","catalonia":false},
+      {"show":"ehbildu_congreso_showviz","prefix":"ehbildu_congreso","label":"EH Bildu","colour":"var(--ehbildu)","catalonia":false},
+      {"show":"amaiur_congreso_showviz","prefix":"amaiur_congreso","label":"Amaiur","colour":"var(--amaiur)","catalonia":false},
+      {"show":"cup_congreso_showviz","prefix":"cup_congreso","label":"CUP","colour":"var(--cup)","catalonia":true},
+      {"show":"fr_congreso_showviz","prefix":"fr_congreso","label":"FR","colour":"var(--fr)","catalonia":true},
+      {"show":"cc_congreso_showviz","prefix":"cc_congreso","label":"CC-PNC","colour":"var(--cc)","catalonia":false},
+      {"show":"bng_congreso_showviz","prefix":"bng_congreso","label":"BNG","colour":"var(--bng)","catalonia":false},
+      {"show":"upyd_congreso_showviz","prefix":"upyd_congreso","label":"UPyD","colour":"var(--upyd)","catalonia":true},
+      {"show":"nsuma_congreso_showviz","prefix":"nsuma_congreso","label":"nsuma","colour":"var(--nsuma)","catalonia":false},
+      {"show":"compromis_congreso_showviz","prefix":"compromis_congreso","label":"Compromís","colour":"var(--compromis)","catalonia":false},
+      {"show":"prc_congreso_showviz","prefix":"prc_congreso","label":"PRC","colour":"var(--prc)","catalonia":false},
+      {"show":"fac_congreso_showviz","prefix":"fac_congreso","label":"FAC","colour":"var(--fac)","catalonia":false},
+      {"show":"gbai_congreso_showviz","prefix":"gbai_congreso","label":"GBai","colour":"var(--gbai)","catalonia":false},
+      {"show":"mes_congreso_showviz","prefix":"mes_congreso","label":"MÉS","colour":"var(--mes)","catalonia":false},
+      {"show":"te_congreso_showviz","prefix":"te_congreso","label":"texiste","colour":"var(--te)","catalonia":false}
+    ],
+    "simulation_local_barcelona": [
+      {"show":"bcomu_local_barcelona_showviz","prefix":"bcomu_local_barcelona","label":"bcomu","colour":"var(--bcomu)","catalonia":false},
+      {"show":"jxsi_bacelona_local_showviz","prefix":"jxsi_local_barcelona","label":"jxsibcn","colour":"var(--jxsi)","catalonia":false},
+      {"show":"ciu_local_barcelona_showviz","prefix":"ciu_local_barcelona","label":"ciubcn","colour":"var(--ciu)","catalonia":false},
+      {"show":"jxcat_local_barcelona_showviz","prefix":"jxcat_local_barcelona","label":"jxcatbcn","colour":"var(--jxcat)","catalonia":false},
+      {"show":"junts_local_barcelona_showviz","prefix":"junts_local_barcelona","label":"juntsbcn","colour":"var(--junts)","catalonia":false},
+      {"show":"cdc_local_barcelona_showviz","prefix":"cdc_local_barcelona","label":"cdcbcn","colour":"var(--cdc)","catalonia":false},
+      {"show":"pdcat_local_barcelona_showviz","prefix":"pdcat_local_barcelona","label":"pdcatbcn","colour":"var(--pdcat)","catalonia":false},
+      {"show":"erc_local_barcelona_showviz","prefix":"erc_local_barcelona","label":"ercbcn","colour":"var(--erc)","catalonia":false},
+      {"show":"psc_local_barcelona_showviz","prefix":"psc_local_barcelona","label":"pscbcn","colour":"var(--psc)","catalonia":false},
+      {"show":"cs_local_barcelona_showviz","prefix":"cs_local_barcelona","label":"csbcn","colour":"var(--cs)","catalonia":false},
+      {"show":"pp_local_barcelona_showviz","prefix":"pp_local_barcelona","label":"ppbcn","colour":"var(--pp)","catalonia":false},
+      {"show":"vox_local_barcelona_showviz","prefix":"vox_local_barcelona","label":"voxbcn","colour":"var(--vox)","catalonia":false},
+      {"show":"cup_local_barcelona_showviz","prefix":"cup_local_barcelona","label":"cupbcn","colour":"var(--cup)","catalonia":false},
+      {"show":"unio_local_barcelona_showviz","prefix":"unio_local_barcelona","label":"udcbcn","colour":"var(--unio)","catalonia":false},
+      {"show":"pxc_local_barcelona_showviz","prefix":"pxc_local_barcelona","label":"pxcbcn","colour":"var(--pxc)","catalonia":false},
+      {"show":"fnc_local_barcelona_showviz","prefix":"fnc_local_barcelona","label":"fncbcn","colour":"var(--fnc)","catalonia":false},
+      {"show":"primaries_local_barcelona_showviz","prefix":"primaries_local_barcelona","label":"primariesbcn","colour":"var(--primaries)","catalonia":false}
+    ]
+  };
+  function electionResultRows(Q, layout) {
+    return (RESULT_LAYOUTS[layout] || []).filter(function (row) {
+      return !!Q[row.show];
+    }).map(function (row, index) {
+      var key = row.prefix;
+      var fresh = !Number(Q[key + '_s_old']);
+      return {
+        id: key, label: row.label, colour: row.colour, index: index,
+        votes: Number(Q[key + '_pv']) || 0, seats: Number(Q[key + '_s']) || 0,
+        catalonia: row.catalonia && (row.cataloniaAbove === undefined || Number(Q[key + '_pv_cat']) > row.cataloniaAbove) ? Number(Q[key + '_pv_cat']) || 0 : null,
+        voteChange: fresh ? null : (Number(Q[key + '_pv']) || 0) - (Number(Q[key + '_pv_old']) || 0),
+        seatChange: fresh ? null : (Number(Q[key + '_s']) || 0) - (Number(Q[key + '_s_old']) || 0)
+      };
+    }).sort(function (a, b) { return b.seats - a.seats || b.votes - a.votes || a.index - b.index; });
+  }
+  function sceneResultBars(Q, rows, groupBelow) {
+    var result = (rows || []).map(function (row) {
+      var share = Number(Q[row.shareFrom]) || 0;
+      var value = row.valueFrom ? Q[row.valueFrom] : null;
+      if (row.complement !== undefined) {
+        share = Number((100 - share).toFixed(2));
+        value = row.complement - Number(value);
+      }
+      return {
+        label: row.partyFrom ? String(Q[row.partyFrom] || 'icv') : row.label,
+        colour: row.partyFrom ? 'var(--' + (Q[row.partyFrom] || 'icv') + ')' : row.colour,
+        share: share, width: Math.max(0, Math.min(100, share)), value: value,
+        change: row.turnoutContest ? (Number(Q['abstain_' + row.turnoutContest + '_pv_old']) || 0) - (Number(Q['abstain_' + row.turnoutContest + '_pv']) || 0) : null,
+        positiveOnly: row.positiveOnly
+      };
+    }).filter(function (row) { return !row.positiveOnly || row.share > 0; });
+    if (groupBelow) {
+      var others = result.find(function (row) { return row.label === 'others'; });
+      if (!others) others = { label: 'others', colour: 'var(--txt)', share: 0, width: 0, value: null, change: null };
+      result = result.filter(function (row) {
+        if (row === others) return false;
+        if (row.share >= groupBelow) return true;
+        others.share += row.share;
+        return false;
+      });
+      others.share = Number(others.share.toFixed(2));
+      others.width = Math.max(0, Math.min(100, others.share));
+      if (others.share > 0) result.push(others);
+    }
+    return result;
+  }
+  function proposedCabinetRows(Q) {
+    var offices = [['president', 'President', 'cat_seal.svg'], ['vp', 'Vicepresident', 'cat_seal.svg'],
+      ['economy', 'Economy', 'economy_icon.svg'], ['health', 'Health', 'health_icon.svg'],
+      ['education', 'Education', 'education_icon.svg'], ['interior', 'Interior', 'interior_icon.svg'],
+      ['foreign', 'Foreign Affairs', 'international_icon.svg'], ['bnl', 'Business & Labour', 'labour_icon.svg'],
+      ['territory', 'Territory', 'territory_icon.svg']];
+    return offices.map(function (office) {
+      var key = 'parlament_coalition_proposal_' + office[0];
+      var label = office[1];
+      if (office[0] === 'president') label = 'M.H. ' + (Q[key + '_gender'] === 'f' ? 'Presidenta' : 'President');
+      if (office[0] === 'vp') label = 'H. ' + (Q[key + '_gender'] === 'f' ? 'Vicepresidenta' : 'Vicepresident');
+      return { id: office[0], label: label, icon: 'img/' + office[2], name: String(Q[key + '_name'] || ''), party: String(Q[key] || '') };
+    });
+  }
+
   var api = {
+    electionResultRows: electionResultRows,
+    sceneResultBars: sceneResultBars,
+    proposedCabinetRows: proposedCabinetRows,
     coalitionBuilderConfig: coalitionBuilderConfig,
     editCoalitionBuilder: editCoalitionBuilder,
     switchCoalitionBuilderParty: switchCoalitionBuilderParty,

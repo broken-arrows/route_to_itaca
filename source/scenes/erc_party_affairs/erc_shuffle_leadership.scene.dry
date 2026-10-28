@@ -11,13 +11,7 @@ role: card-party
 
 Changing the leadership of the party might be necessary to adapt to the changing circumstances. Factions within the party may have strong opinions regarding the selected advisors, though.
 
-<div style="display:flex;"><div style="display:flex; align-items:center; justify-content:left; font-weight: bold; width: 40%; margin-left: 3em;"> Left </div><div style="display:flex; font-size: 0.8em; margin-left: 1em; flex-direction:column;"> <div> Strength: [+ erc_left_strength : dissent +] </div><div> Dissent: [+ erc_left_dissent : dissent +]</div> </div> </div>
-
-<div style="display:flex;"><div style="display:flex; align-items:center; justify-content:left; font-weight: bold; width: 40%; margin-left: 3em;"> Republican Core </div><div style="display:flex; font-size: 0.8em; margin-left: 1em; flex-direction:column;"> <div> Strength: [+ erc_core_strength : dissent +] </div><div> Dissent: [+ erc_core_dissent : dissent +]</div> </div> </div>
-
-<div style="display:flex;"><div style="display:flex; align-items:center; justify-content:left; font-weight: bold; width: 40%; margin-left: 3em;"> Pragmatics </div><div style="display:flex; font-size: 0.8em; margin-left: 1em; flex-direction:column;"> <div> Strength: [+ erc_pragmatic_strength : dissent +] </div><div> Dissent: [+ erc_pragmatic_dissent : dissent +]</div> </div> </div>
-
-<div style="display:flex;"><div style="display:flex; align-items:center; justify-content:left; font-weight: bold; width: 40%; margin-left: 3em;"> Civil Society Organizations </div><div style="display:flex; font-size: 0.8em; margin-left: 1em; flex-direction:column;"> <div> Strength: [+ erc_civic_strength : dissent +] </div><div> Dissent: [+ erc_civic_dissent : dissent +]</div> </div> </div>
+{!<div data-widget="tension-rows" data-props='{"deriveFrom":"factions"}'></div>!}
 
 - @rm_main: Remove advisors
 - @add_advisors: Add advisors

@@ -91,12 +91,7 @@ The CUP membership meets in Manresa, with more than 3000 local representatives w
 @results
 # Careful: it's misleading, the variables are flipped regarding how the original question was asked.
 
-{!<table style='border-spacing: 0px; margin-right: 1em; width:95%; table-layout: fixed;'>!}
-{!<tr><td style='width: 4.5em'> YES </td><td style='height: 2em; background-color: #008000; border-radius: 0 3px 3px 0; color: white; text-align: center; width: !}[+ 100 - parlament_coalition_sovereignty_assembly_yes_pc +]{!%'>!}[?if consultation_yes_pc > 12 :[+ 3030 - parlament_coalition_sovereignty_assembly_yes +] ?]{!</td><td style="padding-left:0.5em;">!}[? if 100 - parlament_coalition_sovereignty_assembly_yes_pc < 12 : <span style="font-size:0.9em">[+ 3030 - parlament_coalition_sovereignty_assembly_yes +]</span> | ?][+ 100 - parlament_coalition_sovereignty_assembly_yes_pc +]{!%</td></tr>!}
-{!</table>!}
-{!<table style='border-spacing: 0px; margin-right: 1em; width:95%; table-layout: fixed;'>!}
-{!<tr><td style='width: 4.5em'> NO </td><td style='height: 2em; background-color: #c30000; border-radius: 0 3px 3px 0; color: white; text-align: center; width: !}[+ parlament_coalition_sovereignty_assembly_yes_pc +]{!%'>!}[?if parlament_coalition_sovereignty_assembly_yes_pc > 12 :[+ parlament_coalition_sovereignty_assembly_yes +]?]{!</td><td style="padding-left:0.5em;">!}[?if parlament_coalition_sovereignty_assembly_yes_pc < 12 : <span style="font-size:0.9em">[+ parlament_coalition_sovereignty_assembly_yes +]</span> | ?] [+ parlament_coalition_sovereignty_assembly_yes_pc +]{!%</td></tr>!}
-{!</table>!}
+{!<div data-widget="result-bars" data-props='{"rows":[{"label":"YES","shareFrom":"parlament_coalition_sovereignty_assembly_yes_pc","valueFrom":"parlament_coalition_sovereignty_assembly_yes","complement":3030,"colour":"#008000"},{"label":"NO","shareFrom":"parlament_coalition_sovereignty_assembly_yes_pc","valueFrom":"parlament_coalition_sovereignty_assembly_yes","colour":"#c30000"}]}'></div>!}
 
 [? if player_party = "cup" and parlament_coalition_sovereignty_assembly_result = "approve": With this final result, the party's membership has clearly decided to give an exceptional chance to Artur Mas. There's little more left to do than return to negotiations and strike the best possible deal.?]
 [? if player_party = "cup" and parlament_coalition_sovereignty_assembly_result = "veto": With this final result, it is now clear that the party needs to uphold its promised veto to Artur Mas and push things, if needed, to new elections. The ball is clearly on their side now. ?]
