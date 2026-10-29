@@ -1,12 +1,12 @@
-title: A new roadmap for [+ player_party +]
+title: A new roadmap deadline for [+ player_party +]
 new-page: true
 tags: event
 view-if: broken_roadmap_expires_trigger or (roadmap_year = 0 and year > 2012)
 role: event
 
-= A new roadmap for [+ player_party +]
+= A new roadmap deadline for [+ player_party +]
 
-We have no current deadline for our [+ roadmap : roadmap +] roadmap to independence. Without it, we can hardly have any credibility that we will achieve anything we are proposing. What should we be aiming at?
+We have no current deadline for our [? if player_party = "erc" : [+ erc_roadmap : roadmap +]?][? if player_party = "cup" : [+ cup_roadmap : roadmap +]?] roadmap to independence. Without it, we can hardly have any credibility that we will achieve anything we are proposing. What should we be aiming at?
 
 - @next_two_years
 - @next_four_years

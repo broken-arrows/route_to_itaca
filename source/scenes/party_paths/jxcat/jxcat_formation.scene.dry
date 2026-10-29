@@ -480,6 +480,8 @@ on-arrival: {!
             Q[from + suffix] = 0;
         }
         function mapGovernment(Q, replacements, defaultParty) {
+            // Electoral agreements do not reconstitute the serving caretaker cabinet.
+            if (Q.cat_caretaker_gov) return;
             const expand = (p) => replacements[p] || [p];
             for (const role of [
                 "cat_coalition",
@@ -733,60 +735,63 @@ on-arrival: {!
             Q.jxcat_in_congreso = false;
             Q.jxcat_in_local = false;
             Q.parlament_current_ciu = "jxcat";
-            const replacements = { [cdc]: ["jxcat"] };
-            const defaultParty = "jxcat";
-            const expand = (p) => replacements[p] || [p];
-            for (const role of [
-                "cat_coalition",
-                "cat_coalition_support",
-                "cat_coalition_abstain",
-            ]) {
-                Q[role] = [...new Set((Q[role] || []).flatMap(expand))];
-            }
-            Q.cat_coalition_support = Q.cat_coalition_support.filter((p) => !Q.cat_coalition.includes(p));
-            Q.cat_coalition_abstain = Q.cat_coalition_abstain.filter((p) => !Q.cat_coalition.includes(p) && !Q.cat_coalition_support.includes(p));
-            for (const office of OFFICES) {
-                const members = replacements[Q[office + "_party"]];
-                if (!members)
-                    continue;
-                Q[office + "_party"] =
-                    members.find((p) => Q[p + "_leader"] === Q[office]) ||
-                        (members.includes(defaultParty) ? defaultParty : members[0]);
-            }
-            for (const p of [...CDC, "erc", "cup", "jxsi", "jxcat"]) {
-                const list = Q[p + "_in_jxcat"]
-                    ? "jxcat"
-                    : Q[p + "_in_jxsi"]
-                        ? "jxsi"
-                        : p;
-                Q[p + "_in_gob"] =
-                    Q.cat_coalition.includes(p) || Q.cat_coalition.includes(list);
-                Q[p + "_supporting"] =
-                    Q[p + "_in_gob"] ||
-                        Q.cat_coalition_support.includes(p) ||
-                        Q.cat_coalition_support.includes(list);
-            }
-            G.setText(Q, "position_disp", (Q[Q.player_party + "_in_gob"] ? G.text("Generalitat") : (Q[Q.player_party + "_supporting"] ? G.text("<span style='font-style: italic'>Government Support</span>") : G.text("<span style='font-style: italic'>Opposition</span>"))));
-            if (Q.cat_coalition.length) {
-                const seats = Q.cat_coalition.reduce((sum, p) => sum + num(Q[p + "_parlament_s"]), 0);
-                const majority = num(Q.parlament_s_majority) || 68;
-                const names = {
-                    jxsi: "JxSí",
-                    jxcat: "JxCat",
-                    pdcat: "PDeCAT",
-                    junts: "Junts",
-                };
-                const label = Q.cat_coalition
-                    .map((p) => names[p] || p.toUpperCase())
-                    .join(" + ");
-                G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition,
-                    (seats >= majority ? G.text("Majority government - {seats}/{majority}", {
-                        seats: String(seats),
-                        majority: String(majority)
-                    }) : G.text("Minority government - {seats}/{majority}", {
-                        seats: String(seats),
-                        majority: String(majority)
-                    })), G.literalText(label)));
+            // Keep the outgoing cabinet until a new investiture.
+            if (!Q.cat_caretaker_gov) {
+                const replacements = { [cdc]: ["jxcat"] };
+                const defaultParty = "jxcat";
+                const expand = (p) => replacements[p] || [p];
+                for (const role of [
+                    "cat_coalition",
+                    "cat_coalition_support",
+                    "cat_coalition_abstain",
+                ]) {
+                    Q[role] = [...new Set((Q[role] || []).flatMap(expand))];
+                }
+                Q.cat_coalition_support = Q.cat_coalition_support.filter((p) => !Q.cat_coalition.includes(p));
+                Q.cat_coalition_abstain = Q.cat_coalition_abstain.filter((p) => !Q.cat_coalition.includes(p) && !Q.cat_coalition_support.includes(p));
+                for (const office of OFFICES) {
+                    const members = replacements[Q[office + "_party"]];
+                    if (!members)
+                        continue;
+                    Q[office + "_party"] =
+                        members.find((p) => Q[p + "_leader"] === Q[office]) ||
+                            (members.includes(defaultParty) ? defaultParty : members[0]);
+                }
+                for (const p of [...CDC, "erc", "cup", "jxsi", "jxcat"]) {
+                    const list = Q[p + "_in_jxcat"]
+                        ? "jxcat"
+                        : Q[p + "_in_jxsi"]
+                            ? "jxsi"
+                            : p;
+                    Q[p + "_in_gob"] =
+                        Q.cat_coalition.includes(p) || Q.cat_coalition.includes(list);
+                    Q[p + "_supporting"] =
+                        Q[p + "_in_gob"] ||
+                            Q.cat_coalition_support.includes(p) ||
+                            Q.cat_coalition_support.includes(list);
+                }
+                G.setText(Q, "position_disp", (Q[Q.player_party + "_in_gob"] ? G.text("Generalitat") : (Q[Q.player_party + "_supporting"] ? G.text("<span style='font-style: italic'>Government Support</span>") : G.text("<span style='font-style: italic'>Opposition</span>"))));
+                if (Q.cat_coalition.length) {
+                    const seats = Q.cat_coalition.reduce((sum, p) => sum + num(Q[p + "_parlament_s"]), 0);
+                    const majority = num(Q.parlament_s_majority) || 68;
+                    const names = {
+                        jxsi: "JxSí",
+                        jxcat: "JxCat",
+                        pdcat: "PDeCAT",
+                        junts: "Junts",
+                    };
+                    const label = Q.cat_coalition
+                        .map((p) => names[p] || p.toUpperCase())
+                        .join(" + ");
+                    G.setText(Q, "cat_coalition_disp", G.governmentTooltipText("generalitat", Q.cat_coalition,
+                        (seats >= majority ? G.text("Majority government - {seats}/{majority}", {
+                            seats: String(seats),
+                            majority: String(majority)
+                        }) : G.text("Minority government - {seats}/{majority}", {
+                            seats: String(seats),
+                            majority: String(majority)
+                        })), G.literalText(label)));
+                }
             }
             G.setText(Q, "historical_event", G.text("The unity proposal has failed. {jxcat_leader} will lead JxCat without ERC or the CUP.", {
                 jxcat_leader: String(Q.jxcat_leader),
@@ -798,11 +803,11 @@ on-arrival: {!
     this.state.currentHands['main.main_easy'] = [];
     this.state.currentHands['main.main_hard'] = [];
 
-    if (Q.president_party == "jxcat" && (Q.cat_coalition.includes("erc") || Q.cat_coalition.includes("cup") || Q.erc_supporting)) {
+    if (!Q.cat_caretaker_gov && Q.president_party == "jxcat" && (Q.cat_coalition.includes("erc") || Q.cat_coalition.includes("cup") || Q.erc_supporting)) {
         Q.parlament_snap_election_countdown = 1;
     }
 !}
 
-The common-list proposal has failed. [+ jxcat_leader +] will lead jxcat as the successor to [+ parlament_current_ciu +], while ERC and CUP run separately. [? if parlament_snap_election_countdown = 1: It's unclear how long can the current government can last, given the very visible disagreements between the parties... ?]
+The common-list proposal has failed. [+ jxcat_leader +] will lead jxcat as the successor to [+ parlament_current_ciu +], while ERC and CUP run separately. [? if not cat_caretaker_gov and parlament_snap_election_countdown = 1: It's unclear how long can the current government can last, given the very visible disagreements between the parties... ?]
 
 - @post_event: Each party will take its own road

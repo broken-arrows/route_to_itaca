@@ -4,7 +4,7 @@ max-visits: 1
 face-image: img/events/pas_al_costat.webp
 new-page: true
 tags: events
-view-if: jxsi_formed and jxsi_formation_number != 40 and not jxsi_dissolved
+view-if: jxsi_formed and jxsi_formation_num != 40 and not jxsi_dissolved
 on-arrival: {!
     // TODO / TBD: other triggers for this?? + trigger to switch to puigdemont at some point??
     Q[Q.parlament_current_ciu + "_leader"] = "Neus Munté";
