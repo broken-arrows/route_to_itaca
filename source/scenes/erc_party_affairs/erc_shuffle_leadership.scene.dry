@@ -210,9 +210,9 @@ Joan Tardà has been added as an advisor.
 title: ​Sergi Sabrià i Benito
 choice-image: img/erc/sergisabria.jpg
 order: -10
-subtitle: Rising strategist with a strong background in communications. {!<br><br>!}Actions:{!<br>!}Get the party media to work on expanding the voter base{!<br>!}Commission an unofficial PR campaign{!<br>!}Develop our established social-media operations
+subtitle: Rising strategist with a strong background in communications. {!<br><br>!}Actions:{!<br>!}Work on expanding the voter base{!<br>!}Commission an unofficial PR campaign{!<br>!}Develop our established social-media operations
 choose-if: sergi_sabria_advisor = 0
-unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Get the party media to work on expanding the voter base{!<br>!}Commission an unofficial PR campaign{!<br>!}Develop our established social-media operations
+unavailable-subtitle: Already an advisor {!<br><br>!}Actions:{!<br>!}Work on expanding the voter base{!<br>!}Commission an unofficial PR campaign{!<br>!}Develop our established social-media operations
 view-if: n_advisors < max_advisors and sergi_sabria_advisor_available = 1
 on-arrival: {!
     Q.sergi_sabria_advisor = 1;
@@ -479,7 +479,7 @@ Joan Tardà is no longer an advisor. The Republican Core is not pleased.
 title: Remove ​Sergi Sabrià
 choice-image: img/erc/sergisabria.jpg
 order: -10
-subtitle: Actions:{!<br>!}Get the party media to work on expanding the voter base{!<br>!}Commission an unofficial PR campaign{!<br>!}Develop our established social-media operations
+subtitle: Actions:{!<br>!}Work on expanding the voter base{!<br>!}Commission an unofficial PR campaign{!<br>!}Develop our established social-media operations
 view-if: sergi_sabria_advisor = 1
 on-arrival: sergi_sabria_advisor = 0; n_advisors -= 1; erc_core_dissent += 7;
 tags: erc_rm_advisor

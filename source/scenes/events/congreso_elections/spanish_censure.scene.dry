@@ -1,0 +1,241 @@
+title: A motion of censure reaches the Congreso
+view-if: censure_pending
+tags: event
+subtitle: The incumbent [+ spanish_coalition_disp +], in danger
+on-arrival: {!
+    var kind = Q.censure_pending;
+    Q.censure_pending = '';
+    Q.censure_current = null;
+    if (kind) {
+        var offer = G.spanishCensureOffer(Q, this.state.visits, kind);
+        if (offer.ready) {
+            Q.censure_current = offer;
+            if (!Q.censure_attempted) Q.censure_attempted = {};
+            Q.censure_attempted[kind] = true;
+        }
+    }
+    Q.censure_negotiating = false;
+    Q.censure_player_vote = 'abstain';
+    Q.censure_previous_agreement = null;
+    // TODO: Cases for the PP, Cs, and VOX
+!}
+role: event
+go-to: choices if censure_current; shouldnt_be_here if not censure_current
+
+@shouldnt_be_here
+
+You should not be here??! Report a bug if you see this 🙏🙏
+
+please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
+
+@choices
+new-page: true
+on-arrival: {!
+    var motion = Q.censure_current;
+    Q.censure_can_mediate = false;
+    Q.censure_can_persuade_ciu = false;
+    Q.censure_can_negotiate = false;
+    if (motion) {
+        var pnv = motion.votes.find(function (r) { return r.party === 'pnv'; });
+        if (pnv) pnv.yes = 0;
+        var yes = motion.votes.reduce(function (n, r) { return n + r.yes; }, 0);
+        var psoe = motion.votes.find(function (r) { return r.party === 'psoe'; });
+        if (pnv && motion.pnvCompatible && (motion.kind === 'psoe' || (psoe && psoe.yes > 0))
+            && yes + motion.playerSeats + pnv.seats >= motion.majority) pnv.yes = pnv.seats;
+        Q.censure_yes_without_player = yes + (pnv ? pnv.yes : 0);
+        Q.censure_player_seats = motion.playerSeats;
+        Q.censure_majority = motion.majority;
+        Q.censure_candidate = motion.candidate;
+        Q.censure_mediation_cost = motion.mediationCost;
+        var partner = motion.votes.find(function (r) { return r.party === motion.mediationParty; });
+        Q.censure_can_mediate = !motion.mediated && !!partner && motion.mediationTarget > partner.yes
+            && Q.party_resources >= motion.mediationCost;
+        Q.censure_can_persuade_ciu = !motion.ciuPersuaded && motion.ciuCanPersuade && motion.ciuRelations >= 65
+            && Q.party_resources >= 1 && motion.votes.some(function (r) { return r.catRight && r.yes < r.seats && !r.no; });
+        Q.censure_can_negotiate = motion.playerSeats > 0 && Q.censure_yes_without_player < motion.majority
+            && Q.censure_yes_without_player + motion.playerSeats >= motion.majority;
+        // Our delegation has not voted yet, but belongs in the chamber total.
+        var rows = motion.votes.concat([{ party: motion.player, seats: motion.playerSeats, yes: 0, no: 0 }]);
+        var no = rows.reduce(function (n, r) { return n + r.no; }, 0);
+        Q.censure_vote_preview = { outcomes: [
+            { kind: 'yes', label: G.englishText(G.text('In favour')), votes: Q.censure_yes_without_player,
+                parties: rows.filter(function (r) { return r.yes > 0; }).map(function (r) { return { label: r.party, count: r.yes }; }) },
+            { kind: 'abstain', label: G.englishText(G.text('Abstaining / undecided')), votes: motion.total - Q.censure_yes_without_player - no,
+                parties: rows.filter(function (r) { return r.seats > r.yes + r.no; }).map(function (r) { return { label: r.party, count: r.seats - r.yes - r.no }; }) },
+            { kind: 'no', label: G.englishText(G.text('Against')), votes: no,
+                parties: rows.filter(function (r) { return r.no > 0; }).map(function (r) { return { label: r.party, count: r.no }; }) }
+        ] };
+    }
+!}
+
+= A motion of censure!
+
+In a system where votes of no confidence need to be "constructive", the only way for the Congreso to oust the current government is to agree on a replacement for it. That is exactly what [+ censure_candidate +] is now proposing, putting enormous pressure on the incumbent [+ spanish_coalition_disp +]. Note however that, unlike in a normal investiture, [+ censure_candidate +] will need at the very least [+ censure_majority +] seats in favour, with abstentions not lowering that threshold. 
+
+[? if {! return Q.censure_current.kind === 'podemos' !}: All eyes are now on the position that the PSOE will be taking, as it may very well make or break the proposal. ?][? if {! return Q.censure_current && Q.censure_current.kind === 'podemos' && Q.psoe_leader === '???'; !}: Given that after the ousting of Pedro Sánchez the party still has not held its primaries, this is set to be quite the situation. With a vacant leadership and the party more divided than ever, many PSOE representatives will be voting according to their individual positions, even if the "official" party line is to abstain. ?][? if {! return Q.censure_current && Q.censure_current.kind === 'podemos' && Q.psoe_leader === 'Eduardo Madina'; !}: Given the promises made by [+ censure_candidate +] in the presentation of the motion, Eduardo Madina is favouring abstention. ?][? if {! return Q.censure_current && Q.censure_current.kind === 'podemos' && Q.psoe_leader === 'Susana Díaz'; !}: Yet with Susana Díaz at the forefront, the idea of a Podemos-led government seems way too out of the question for the PSOE. ?]
+
+<div id="censure-vote-preview" data-widget="chamber-vote" data-props='{"configFrom":"censure_vote_preview"}'></div>
+
+- @mediate
+- @persuade_ciu
+- @negotiate
+- @support
+- @abstain
+- @oppose
+- @observe
+
+@mediate
+title: Can we mediate between the PSOE and [? if iu_in_up: UP?][? if not iu_in_up: Podemos?]?
+subtitle: This will take significant effort. \[-[+ censure_mediation_cost +] resources\]
+choose-if: censure_can_mediate
+view-if: {! var m = Q.censure_current; return !(!m.mediated && !m.votes.some(function (r) { return r.party === m.mediationParty; })); !}
+unavailable-subtitle: [? if {! return Q.censure_current.mediated; !}: We have already done everything we could here. ?][? if {! var m = Q.censure_current; return !m.mediated && m.votes.some(function (r) { return r.party === m.mediationParty && r.yes >= r.seats; }); !}: [+ {! return Q.censure_current.mediationParty; !} +] already supports the motion. ?][? if {! var m = Q.censure_current; return !m.mediated && m.votes.some(function (r) { return r.party === m.mediationParty && r.yes < r.seats; }); !}: [? if {! return Q.censure_current.kind === 'podemos' && Q.psoe_leader === 'Susana Díaz'; !}: Susana Díaz is decidedly against a government lead by [+ censure_candidate +]. ?][? if {! return Q.censure_current.kind === 'psoe' && Q.psoe_leader === 'Susana Díaz'; !}: With tensions with the PSOE at an all-time high, its hard to imagine further support from any left party coming forward for Susana Díaz. ?][? if {! return Q.censure_current.kind === 'psoe' ? Q.psoe_leader !== 'Susana Díaz' : ['Pedro Sánchez', 'Eduardo Madina', '???'].includes(Q.psoe_leader); !}: [? if party_resources < censure_mediation_cost: Not enough resources. ?][? if {! return (Number(Q.psc_relations) || 0) < (Q.censure_current.kind === 'podemos' && Q.psoe_leader === 'Eduardo Madina' ? 75 : 65); !}: Our relations with the PSC are not good enough. ?][? if {! return (Number(Q[Q.parlament_current_icv + '_relations']) || 0) < (Q.censure_current.kind === 'podemos' && Q.psoe_leader === 'Eduardo Madina' ? 75 : 65); !}: Our relations with [+ parlament_current_icv +] are not good enough. ?][? if {! return (Number(Q.cat_spa_relations) || 0) < (Q.censure_current.kind === 'podemos' && Q.psoe_leader === 'Eduardo Madina' ? 50 : 30); !}: Tensions between Gobierno and Generalitat are way too high to make our mediation effective. ?][? if {! return Q.censure_current.kind === 'podemos' && Q.psoe_leader === 'Eduardo Madina' && (Number(Q['corruption_' + Q.censure_current.incumbentParty]) || 0) < 50; !}: Eduardo Madina is currently too reluctant to support such a move. ?][? if {! return Q.censure_current.kind === 'podemos' && Q.psoe_leader === 'Eduardo Madina' && (Number(Q[Q.censure_current.left + '_congreso_s']) || 0) < (Number(Q.psoe_congreso_s) || 0); !}: Eduardo Madina will not support a candidate from a party smaller than the PSOE. ?]?]?]
+on-arrival: {!
+    var motion = Q.censure_current;
+    var partner = motion.votes.find(function (r) { return r.party === motion.mediationParty; });
+    if (partner && motion.mediationTarget > partner.yes) {
+        Q.party_resources -= motion.mediationCost;
+        partner.yes = motion.mediationTarget;
+        partner.no = 0;
+        motion.mediated = true;
+    }
+!}
+go-to: choices
+
+@persuade_ciu
+title: Let's try to convince [+ parlament_current_ciu +] to help this make it pass the majority line
+subtitle: They are not the biggest fans of [+ censure_candidate +], so we'll have to thread carefully. \[-1 resources\]
+choose-if: censure_can_persuade_ciu
+view-if: {! var m = Q.censure_current; return !(!m.ciuCanPersuade || m.ciuPersuaded || !m.votes.some(function (r) { return r.catRight && r.yes < r.seats && !r.no; })); !}
+unavailable-subtitle: [? if {! return Q.censure_current.ciuPersuaded; !}: We have already done everything we could here. ?][? if {! var m = Q.censure_current; return !m.ciuPersuaded && m.votes.some(function (r) { return r.catRight; }) && !m.votes.some(function (r) { return r.catRight && r.yes < r.seats; }); !}: [+parlament_current_ciu+] is already supporting this. ?][? if {! var m = Q.censure_current; return !m.ciuPersuaded && m.votes.some(function (r) { return r.catRight && r.yes < r.seats; }); !}: [? if party_resources < 1: Not enough resources. ?][? if {! return Q.censure_current.ciuRelations < 65; !}: Our relations with [+ parlament_current_ciu +] are not good enough. ?][? if {! return (Number(Q[Q.parlament_current_ciu + '_roadmap']) || 0) > 2; !}: [+ parlament_current_ciu +] has too ambitious of a Roadmap to support this motion.. ?][? if {! return (Number(Q.cat_spa_relations) || 0) < (Q.censure_current.kind === 'psoe' && Q.psoe_leader === 'Susana Díaz' ? 50 : 25); !}: Tensions between Gobierno and Generalitat are way too high to make our mediation effective. ?]?]
+on-arrival: {!
+    Q.party_resources -= 1;
+    for (var row of Q.censure_current.votes) if (row.catRight && !row.no) row.yes = row.seats;
+    Q.censure_current.ciuPersuaded = true;
+!}
+go-to: choices
+
+@negotiate
+title: Let's negotiate some concessions in exchange for our votes...
+subtitle: After all, our deputies are necessary to reach the absolute majority.
+choose-if: censure_can_negotiate
+view-if: censure_player_seats > 0
+unavailable-subtitle: [? if censure_player_seats > 0 and censure_yes_without_player >= censure_majority: Our votes are not needed for this proposal to pass. ?][? if {! return Q.censure_player_seats > 0 && Q.censure_yes_without_player + Q.censure_player_seats < Q.censure_majority; !}: Even with our vote in favour, this motion of censure will not have enough support. ?]
+on-arrival: {!
+    Q.censure_previous_agreement = {};
+    for (var key of Object.keys(Q)) {
+        if (key.startsWith('congreso_coalition_negotiated_') || ['congreso_coalition_lead_party', 'congreso_coalition_leverage', 'congreso_erc_referendum_waived', 'congreso_left_carrier'].includes(key)) {
+            Q.censure_previous_agreement[key] = Q[key];
+        }
+    }
+    Q.censure_negotiating = true;
+    Q.censure_player_vote = 'yes';
+    Q.congreso_coalition_lead_party = Q.censure_current.party;
+    Q.congreso_left_carrier = Q.censure_current.left;
+!}
+set-jump: spanish_censure.result
+go-to: congreso_coalition_negotiation if censure_negotiating; choices if not censure_negotiating
+
+@support
+title: Vote YES
+view-if: censure_player_seats > 0
+on-arrival: censure_player_vote = 'yes'
+go-to: vote
+
+@abstain
+title: Abstain from voting
+view-if: censure_player_seats > 0
+on-arrival: censure_player_vote = 'abstain'
+go-to: vote
+
+@oppose
+title: Vote NO
+view-if: censure_player_seats > 0
+on-arrival: censure_player_vote = 'no'
+go-to: vote
+
+@observe
+title: And so, the Congreso votes
+view-if: censure_player_seats = 0
+go-to: vote
+
+@vote
+on-arrival: {!
+    var motion = Q.censure_current;
+    Q.censure_won = false;
+    if (motion && !motion.resolved) {
+        Q.censure_yes = motion.votes.reduce(function (n, r) { return n + r.yes; }, 0)
+            + (Q.censure_player_vote === 'yes' ? motion.playerSeats : 0);
+        Q.censure_no = motion.votes.reduce(function (n, r) { return n + r.no; }, 0)
+            + (Q.censure_player_vote === 'no' ? motion.playerSeats : 0);
+        Q.censure_abstain = motion.total - Q.censure_yes - Q.censure_no;
+        var rows = motion.votes.concat([{ party: motion.player, seats: motion.playerSeats,
+            yes: Q.censure_player_vote === 'yes' ? motion.playerSeats : 0,
+            no: Q.censure_player_vote === 'no' ? motion.playerSeats : 0 }]);
+        Q.censure_vote_result = { outcomes: [
+            { kind: 'yes', label: G.englishText(G.text('Yes')), votes: Q.censure_yes,
+                parties: rows.filter(function (r) { return r.yes > 0; }).map(function (r) { return { label: r.party, count: r.yes }; }) },
+            { kind: 'no', label: G.englishText(G.text('No')), votes: Q.censure_no,
+                parties: rows.filter(function (r) { return r.no > 0; }).map(function (r) { return { label: r.party, count: r.no }; }) },
+            { kind: 'abstain', label: G.englishText(G.text('Abstention')), votes: Q.censure_abstain,
+                parties: rows.filter(function (r) { return r.seats > r.yes + r.no; }).map(function (r) { return { label: r.party, count: r.seats - r.yes - r.no }; }) }
+        ] };
+        Q.censure_won = Q.censure_yes >= motion.majority
+            && motion.chamber === (this.state.visits['congreso_election.post_election'] || 0)
+            && Q.spanish_pm === motion.incumbent && Q.spanish_pm_party === motion.incumbentParty;
+        motion.resolved = true;
+        if (Q.censure_won) {
+            // Promises belonged to the outgoing cabinet. Retain completed laws
+            // and competences; only the new commitments start delivery below.
+            Q.countdowns = Q.countdowns.filter(function (name) { return !name.startsWith('negotiated_'); });
+            for (var key of Object.keys(Q)) {
+                if (key.startsWith('negotiated_') && key.endsWith('_trigger')) Q[key] = false;
+                if (key.startsWith('negotiated_') && key.endsWith('_countdown')) Q[key] = -1;
+                if (!Q.censure_negotiating && key.startsWith('congreso_coalition_negotiated_')) Q[key] = 0;
+            }
+            Q.congreso_left_agreement = null;
+            Q.congreso_agreement_lead_party = motion.party;
+            Q.spanish_pm = motion.candidate;
+            Q.spanish_pm_gender = motion.gender;
+            Q.spanish_pm_party = motion.party;
+            Q.censure_podemos_countdown = 6;
+            Q.censure_podemos_trigger = false;
+            if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
+            Q.spanish_coalition = [motion.party];
+            Q.spa_caretaker_gov = false;
+            var seats = Q[motion.party + '_congreso_s'] || 0;
+            G.setText(Q, 'spanish_coalition_disp', G.text('{party} {government}', {
+                party: motion.party === 'psoe' ? 'PSOE' : motion.party === 'up' ? 'UP' : motion.party === 'sumar' ? 'Sumar' : 'Podemos',
+                government: G.governmentTooltipText('gobierno', Q.spanish_coalition,
+                    G.text(seats >= motion.majority ? 'Majority government - {seats}/{majority}' : 'Minority government - {seats}/{majority}', {
+                        seats: String(seats), majority: String(motion.majority)
+                    }), G.text(seats >= motion.majority ? 'Majority government' : 'Minority government'))
+            }));
+        } else if (Q.censure_previous_agreement) {
+            for (var key of Object.keys(Q)) {
+                if (key.startsWith('congreso_coalition_negotiated_') && !(key in Q.censure_previous_agreement)) delete Q[key];
+            }
+            for (var key of Object.keys(Q.censure_previous_agreement)) Q[key] = Q.censure_previous_agreement[key];
+        }
+    }
+!}
+go-to: congreso_coalition_negotiation.activate if censure_won and censure_negotiating; result if not censure_won or not censure_negotiating
+
+@result
+on-arrival: {!
+    Q.censure_negotiating = false;
+    Q.censure_previous_agreement = null;
+    Q.censure_current = null;
+!}
+
+<div data-widget="chamber-vote" data-props='{"configFrom":"censure_vote_result"}'></div>
+
+[? if censure_won: The motion of censure led by [+ censure_candidate +] has been a success! [+ spanish_coalition_disp +] will now preside over in Moncloa.?]
+
+[? if not censure_won: And thus, the motion fails, and [? if spanish_pm_gender == "m": Presidente ?][? if spanish_pm_gender == "f": Presidenta ?][+ spanish_pm +] can now relax in a secure position, at least for now. ?]
+
+- @post_event

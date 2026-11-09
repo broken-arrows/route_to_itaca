@@ -23,6 +23,9 @@ on-arrival: {!
     Q.spanish_pm = Q[Q.congreso_left_carrier + "_leader"];
     Q.spanish_pm_gender = Q[Q.congreso_left_carrier + "_gender"];
     Q.spanish_pm_party = Q.congreso_left_carrier;
+    Q.censure_podemos_countdown = 6;
+    Q.censure_podemos_trigger = false;
+    if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
     Q.spanish_coalition = [Q.congreso_left_carrier, "psoe"];
     if (Q.congreso_left_iu_s > 0) {
         Q.spanish_coalition.push("iu");
@@ -58,6 +61,9 @@ on-arrival: {!
     Q.spanish_pm = Q[Q.congreso_left_carrier + "_leader"];
     Q.spanish_pm_gender = Q[Q.congreso_left_carrier + "_gender"];
     Q.spanish_pm_party = Q.congreso_left_carrier;
+    Q.censure_podemos_countdown = 6;
+    Q.censure_podemos_trigger = false;
+    if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
     Q.spanish_coalition = [Q.congreso_left_carrier];
     if (Q.congreso_left_iu_s > 0) {
         Q.spanish_coalition.push("iu");

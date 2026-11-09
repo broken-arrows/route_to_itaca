@@ -696,14 +696,7 @@ subtitle: [? if psoe_holdout_congress: After all, there seems to be no agreement
 choose-if: congreso_coalition_force_elections
 unavailable-subtitle: This is out of our control.
 on-arrival: {!    
-    Q.next_spanish_election_time = Q.time + 6;
-    Q.next_spanish_election_month = Q.month + 6;
-    if (Q.next_spanish_election_month >= 12) {
-        Q.next_spanish_election_month = Q.next_spanish_election_month % 12;
-        Q.next_spanish_election_year = Q.year + 1;
-    } else {
-        Q.next_spanish_election_year = Q.year;
-    }
+    G.callCongresoRepeatElection(Q);
 
     if (!Q.rubicon) Q[Q.player_party + "_congreso_catalunya_support"] -= 2.5;
 

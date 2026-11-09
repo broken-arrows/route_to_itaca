@@ -14,6 +14,7 @@ on-arrival: {!
     Q.congreso_erc_referendum_waived = Q.player_party == "erc" && Q.congreso_left_agreement
         && Q.congreso_left_agreement.kind == "erc"
         && Q.congreso_left_agreement.chamber === (this.state.visits['congreso_election.post_election'] || 0);
+    if (Q.censure_negotiating && Q.censure_current && Q.censure_current.mediated && Q.censure_current.noReferendum) Q.congreso_erc_referendum_waived = true;
 !}
 go-to: choices
 # TODO: dynamic leverage?
@@ -231,6 +232,9 @@ TODO! what happens here + party consequences for not choosing this
 
 @resolve
 title: Finalize negotiations
+go-to: spanish_censure.vote if censure_negotiating; activate if not censure_negotiating
+
+@activate
 on-arrival: {!
     Q.congreso_delivery_cash_stalls = 0;
     Q.congreso_delivery_funding_stalls = 0;

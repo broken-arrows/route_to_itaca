@@ -18,6 +18,9 @@ on-arrival: {!
     Q.spanish_pm = Q.pp_leader;
     Q.spanish_pm_gender = Q.pp_leader_gender;
     Q.spanish_pm_party = "pp";
+    Q.censure_podemos_countdown = 6;
+    Q.censure_podemos_trigger = false;
+    if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
     Q.spanish_coalition = ["pp", "cs"];
     var government_seats = Q.pp_congreso_s + Q.cs_congreso_s;
     G.setText(Q, "spanish_coalition_disp", G.governmentTooltipText("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? G.text("Majority government - {seats}/{majority}", {
@@ -45,6 +48,9 @@ on-arrival: {!
     Q.spanish_pm = Q.csspa_leader;
     Q.spanish_pm_gender = Q.csspa_leader_gender;
     Q.spanish_pm_party = "cs";
+    Q.censure_podemos_countdown = 6;
+    Q.censure_podemos_trigger = false;
+    if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
     Q.spanish_coalition = ["cs", "pp"];
     var government_seats = Q.cs_congreso_s + Q.pp_congreso_s;
     G.setText(Q, "spanish_coalition_disp", G.governmentTooltipText("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? G.text("Majority government - {seats}/{majority}", {
@@ -73,6 +79,9 @@ on-arrival: {!
     Q.spanish_pm = Q.pp_leader;
     Q.spanish_pm_gender = Q.pp_leader_gender;
     Q.spanish_pm_party = "pp";
+    Q.censure_podemos_countdown = 6;
+    Q.censure_podemos_trigger = false;
+    if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
     Q.spanish_coalition = ["pp", "vox"];
     var government_seats = Q.pp_congreso_s + Q.vox_congreso_s;
     G.setText(Q, "spanish_coalition_disp", G.governmentTooltipText("gobierno", Q.spanish_coalition, (government_seats >= Q.congreso_s_majority ? G.text("Majority government - {seats}/{majority}", {
@@ -100,6 +109,9 @@ on-arrival: {!
     Q.spanish_pm = Q.pp_leader;
     Q.spanish_pm_gender = Q.pp_leader_gender
     Q.spanish_pm_party = "pp";
+    Q.censure_podemos_countdown = 6;
+    Q.censure_podemos_trigger = false;
+    if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
     Q.spanish_coalition = ["pp"];
     G.setText(Q, "spanish_coalition_disp", G.text("{party} {government}", {
         party: "PP",

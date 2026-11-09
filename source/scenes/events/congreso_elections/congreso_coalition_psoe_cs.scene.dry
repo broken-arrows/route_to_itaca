@@ -19,6 +19,9 @@ on-arrival: {!
     Q.spanish_pm = Q.psoe_leader;
     Q.spanish_pm_gender = Q.psoe_leader_gender;
     Q.spanish_pm_party = "psoe";
+    Q.censure_podemos_countdown = 6;
+    Q.censure_podemos_trigger = false;
+    if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
     Q.spanish_coalition = ["psoe", "cs"];
 
     var government_seats = Q.psoe_congreso_s + Q.cs_congreso_s;
@@ -49,6 +52,9 @@ on-arrival: {!
     Q.spanish_pm = Q.csspa_leader;
     Q.spanish_pm_gender = Q.csspa_leader_gender;
     Q.spanish_pm_party = "cs";
+    Q.censure_podemos_countdown = 6;
+    Q.censure_podemos_trigger = false;
+    if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
     Q.spanish_coalition = ["cs", "psoe"];
     var government_seats = Q.cs_congreso_s + Q.psoe_congreso_s;
     G.setText(Q, "spanish_coalition_disp", G.text("{government} (csspa - PSOE)", {
@@ -76,17 +82,25 @@ face-image: img/events/rivera_sanchez.jpg
 on-arrival: {!
     Q.congreso_coalition_psoe_cs_wtf_happened = true;
     
-    Q.next_spanish_election_time = Q.time + 6;
-    Q.next_spanish_election_month = Q.month + 6;
-    if (Q.next_spanish_election_month > 12 ) {
-        Q.next_spanish_election_year = Q.year + 1;
-        Q.next_spanish_election_month = Q.next_spanish_election_month % 12;
-    } else {
-        Q.next_spanish_election_year = Q.year;
-    }
+    G.callCongresoRepeatElection(Q);
 
-    G.spaSupportInject(Q, 'pp',      'all', 2.5, 'cs');
-    G.spaSupportInject(Q, 'abstain', 'all', 2.0, 'cs');
+    const PSOE_CS_PACT_RATES = {
+        catalunya: [0.08, 0.06],
+        euskadi: [0.08, 0.06],
+        navarra: [0.1, 0.06],
+        galicia: [0.1, 0.06],
+        valencia: [0.1, 0.03],
+        balears: [0.1, 0.03],
+        rest: [0.12, 0.06],
+    };
+
+    for (const c of Q.congreso_constituencies || []) {
+      const rates = PSOE_CS_PACT_RATES[c] || PSOE_CS_PACT_RATES.rest;
+      const support = Q["cs_congreso_" + c + "_support"] || 0;
+      if (support <= 0) continue;
+      G.spaSupportInject(Q, "pp", c, support * rates[0], "cs");
+      G.spaSupportInject(Q, "abstain", c, support * rates[1], "cs");
+    }
     G.spaSupportInject(Q, 'abstain', 'all', 1.0, 'psoe');
 
     if (Q[Q.congreso_left_carrier + "_congreso_s"] > Q.psoe_congreso_s) {

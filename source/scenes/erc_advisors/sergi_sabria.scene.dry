@@ -33,7 +33,7 @@ on-arrival: {!
 go-to: erc_media.unofficial if erc_advisor_action and (not erc_bside_pending); root if not erc_advisor_action
 
 @open_campaign
-title: Get the party media to work on expanding the voter base
+title: Work on expanding the voter base
 choose-if: player_party = "erc" and sergi_sabria_advisor and advisor_action_timer <= 0 and not erc_advisor_action
 unavailable-subtitle: [? if advisor_action_timer > 0: Next advisor action available in [+ advisor_action_timer +] [? if rubicon: weeks?][? if not rubicon: months?]. ?][? if advisor_action_timer <= 0: The political conditions for this action are not met. ?]
 role: card-party

@@ -24,6 +24,9 @@ on-arrival: {!
     Q.spanish_pm = Q.psoe_leader;
     Q.spanish_pm_gender = Q.psoe_leader_gender;
     Q.spanish_pm_party = "psoe";
+    Q.censure_podemos_countdown = 6;
+    Q.censure_podemos_trigger = false;
+    if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
     Q.spanish_coalition = ["psoe", Q.congreso_left_carrier];
 
     var government_seats = Q.psoe_congreso_s + Q[Q.congreso_left_carrier + "_congreso_s"];
@@ -57,6 +60,9 @@ on-arrival: {!
     Q.spanish_pm = Q.psoe_leader;
     Q.spanish_pm_gender = Q.psoe_leader_gender;
     Q.spanish_pm_party = "psoe";
+    Q.censure_podemos_countdown = 6;
+    Q.censure_podemos_trigger = false;
+    if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
     Q.spanish_coalition = ["psoe"];
 
     G.setText(Q, "spanish_coalition_disp", G.text("{party} {government}", {

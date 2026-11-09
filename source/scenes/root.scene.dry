@@ -97,6 +97,10 @@ on-arrival: {!
   Q.next_spanish_election_month = 12;
   Q.next_spanish_election_year = 2015;
   Q.next_spanish_election_time = 40;
+  Q.censure_negotiating = false;
+  Q.censure_attempted = {};
+  Q.censure_podemos_countdown = -1;
+  Q.censure_podemos_trigger = true;
   Q.next_local_election_week = 4;
   Q.next_local_election_month = 5;
   Q.next_local_election_year = 2015;

@@ -61,6 +61,7 @@ function updatePendingEvents(engine) {
 }
 
 // Keep the requested advance until both current editions have been resolved.
+Q.censure_pending = G.spanishCensurePending(Q, this.state.visits);
 updatePendingEvents(this);
 
 // 1. update dates
@@ -212,7 +213,7 @@ if (has_time_passed) {
                     if (alignment < 0) {
                         joins = opportunity;
                     } else if (alignment == 0) {
-                        joins = challenge && (reform || (Q.iu_in_up && Q.year <= 2016));
+                        joins = challenge && reform;
                     } else {
                         joins = challenge && reform;
                     }
@@ -234,8 +235,7 @@ if (has_time_passed) {
                     if (alignment < 0) {
                         joins = representation || opportunity || earlyUnion;
                     } else if (alignment == 0) {
-                        joins = (representation && (earlyUnion || opportunity || reform))
-                            || (opportunity && (earlyUnion || reform));
+                        joins = (representation || opportunity) && (earlyUnion || reform);
                     } else {
                         joins = opportunity && reform;
                     }
@@ -578,7 +578,7 @@ if (Q.territory_county_roads_trigger) {
     Q.territory_county_roads_trigger = false;
     var voterSnapshot = ((Q.active_mods || {})["territory_county_roads"] || {}).def || {};
     G.deactivateLaw(Q, "territory_county_roads", undefined, true);
-    G.registerLaw(Q, {id:"territory_county_roads", title:"County roads expansion",
+    G.registerLaw(Q, {fiscal_ticks:24, id:"territory_county_roads", title:"County roads expansion",
             colour:"green", icon:"img/car_icon.svg",
             description:"Critical road links like the C-17 and the A-27 have been constructed.",
             targets:{gdp_growth:0.08, unemployment_recovery:0.015, generalitat_surplus:-0.005}});
@@ -658,7 +658,7 @@ if (Q.territory_b40_trigger) {
     Q.territory_b40_trigger = false;
     var voterSnapshot = ((Q.active_mods || {})["territory_b40"] || {}).def || {};
     G.deactivateLaw(Q, "territory_b40", undefined, true);
-    G.registerLaw(Q, {id:"territory_b40", title:"Barcelona's Fourth Belt",
+    G.registerLaw(Q, {fiscal_ticks:24, id:"territory_b40", title:"Barcelona's Fourth Belt",
             colour:"green", icon:"img/car_icon.svg",
             description:"The B-40, Barcelona's final bypass highway, has been completed!",
             targets:{gdp_growth:0.02, generalitat_surplus:-0.005}});
@@ -740,7 +740,7 @@ if (Q.territory_metro1_trigger) {
     Q.territory_metro1_trigger = false;
     var voterSnapshot = ((Q.active_mods || {})["territory_metro1"] || {}).def || {};
     G.deactivateLaw(Q, "territory_metro1", undefined, true);
-    G.registerLaw(Q, {id:"territory_metro1", title:"Metro L9/L10",
+    G.registerLaw(Q, {fiscal_ticks:24, id:"territory_metro1", title:"Metro L9/L10",
             colour:"green", icon:"img/subway_icon.svg",
             description:"Barcelona's L9/L10 Metro line has been completed.",
             targets:{gdp_growth:0.035, unemployment_recovery:0.005,
@@ -821,7 +821,7 @@ if (Q.territory_metro2_trigger) {
     Q.territory_metro2_trigger = false;
     var voterSnapshot = ((Q.active_mods || {})["territory_metro2"] || {}).def || {};
     G.deactivateLaw(Q, "territory_metro2", undefined, true);
-    G.registerLaw(Q, {id:"territory_metro2", title:"Metro L1&L3",
+    G.registerLaw(Q, {fiscal_ticks:24, id:"territory_metro2", title:"Metro L1&L3",
             colour:"green", icon:"img/subway_icon.svg",
             description:"Barcelona's L1 and L3 Metro lines have been expanded.",
             targets:{gdp_growth:0.02, unemployment_recovery:0.005,
@@ -980,7 +980,7 @@ if (Q.territory_rail1_trigger) {
     Q.climate_transition_points += 1;
     var voterSnapshot = ((Q.active_mods || {})["territory_rail1"] || {}).def || {};
     G.deactivateLaw(Q, "territory_rail1", undefined, true);
-    G.registerLaw(Q, {id:"territory_rail1", title:"Lleida-La Pobla Railway", colour:"green", icon:"img/train_icon.svg",
+    G.registerLaw(Q, {fiscal_ticks:24, id:"territory_rail1", title:"Lleida-La Pobla Railway", colour:"green", icon:"img/train_icon.svg",
         description:"FGC has managed to ressurrect the Lleida-La Pobla line with new trains and improved services.",
         targets:{gdp_growth:0.02, welfare_index_growth:0.02, unemployment_recovery:0.005, generalitat_surplus:-0.005}});
     if (voterSnapshot.electoral_origin == "erc" || voterSnapshot.electoral_origin == "cup") {
@@ -1059,7 +1059,7 @@ if (Q.territory_rail2_trigger) {
     Q.climate_transition_points += 1;
     var voterSnapshot = ((Q.active_mods || {})["territory_rail2"] || {}).def || {};
     G.deactivateLaw(Q, "territory_rail2", undefined, true);
-    G.registerLaw(Q, {id:"territory_rail2", title:"Regional Train-Trams", colour:"green", icon:"img/train_icon.svg",
+    G.registerLaw(Q, {fiscal_ticks:24, id:"territory_rail2", title:"Regional Train-Trams", colour:"green", icon:"img/train_icon.svg",
         description:"Train-trams in the Camp de Tarragona and the Girona counties have been built.",
         targets:{gdp_growth:0.035, welfare_index_growth:0.05, unemployment_recovery:0.01, generalitat_surplus:-0.01}});
     if (voterSnapshot.electoral_origin == "erc" || voterSnapshot.electoral_origin == "cup") {
@@ -1174,7 +1174,10 @@ if ((!Q.hidden_erc_ciu_transfer) && (Q.year == 2016 && Q.month == 5)) {
 if ((!Q.podemos_hidden_surge) && (Q.year == 2014 && Q.month == 5)) {
     Q.podemos_hidden_surge = true;
     G.spaSupportInject(Q, 'podemos', 'all', 6.0, 'iu');
-    G.spaSupportInject(Q, 'podemos', 'all', 9.0, 'abstain');
+    // Catalunya already has a larger organized IU/ICV electorate to draw from.
+    for (var c of Q.congreso_constituencies) {
+        G.spaSupportInject(Q, 'podemos', c, c == 'catalunya' ? 7.5 : 9.0, 'abstain');
+    }
     G.spaSupportInject(Q, 'podemos', 'all', 3.0, 'psoe');
 }
 if (Q.amaiur_congreso_s > 0 && Q.spa_ehbildu_active && Q.year == 2015 && Q.month == 10) {
@@ -1244,6 +1247,7 @@ if (Q.parlament_coalition_sovereignty_phase === 3 && sovereigntyTimerBefore > 0 
 }
 
 // Monthly updates may have made new stories or elections available.
+Q.censure_pending = G.spanishCensurePending(Q, this.state.visits);
 updatePendingEvents(this);
 !}
 call: generalitat_setpolicy

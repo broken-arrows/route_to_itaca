@@ -22,6 +22,9 @@ on-arrival: {!
     Q.spanish_pm = Q.psoe_leader;
     Q.spanish_pm_gender = Q.psoe_leader_gender;
     Q.spanish_pm_party = "psoe";
+    Q.censure_podemos_countdown = 6;
+    Q.censure_podemos_trigger = false;
+    if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
     Q.spanish_coalition = ["psoe", "pp"];
     var government_seats = Q.psoe_congreso_s + Q.pp_congreso_s;
     G.setText(Q, "spanish_coalition_disp", G.text("{government} (PSOE - PP)", {
@@ -58,6 +61,9 @@ on-arrival: {!
     Q.spanish_pm = Q.pp_leader;
     Q.spanish_pm_gender = Q.pp_leader_gender;
     Q.spanish_pm_party = "pp";
+    Q.censure_podemos_countdown = 6;
+    Q.censure_podemos_trigger = false;
+    if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
     Q.spanish_coalition = ["pp", "psoe"];
     var government_seats = Q.pp_congreso_s + Q.psoe_congreso_s;
     G.setText(Q, "spanish_coalition_disp", G.text("{government} (PP - PSOE)", {
@@ -93,6 +99,9 @@ on-arrival: {!
     Q.spanish_pm = Q.pp_leader;
     Q.spanish_pm_gender = Q.pp_leader_gender;
     Q.spanish_pm_party = "pp";
+    Q.censure_podemos_countdown = 6;
+    Q.censure_podemos_trigger = false;
+    if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
     Q.spanish_coalition = ["pp"];
     G.setText(Q, "spanish_coalition_disp", G.text("{party} {government}", {
         party: "PP",

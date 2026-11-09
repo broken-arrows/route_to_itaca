@@ -20,6 +20,7 @@ new-page: true
 on-arrival: {!
     Q.next_spanish_election_year += 4;
     Q.next_spanish_election_time += 48;
+    Q.censure_attempted = {};
 
     // Persist the actual playthrough date for chart annotations, once per event.
     if (!Array.isArray(Q.election_history_events)) Q.election_history_events = [];
