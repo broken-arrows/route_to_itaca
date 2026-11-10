@@ -35,6 +35,9 @@ describe('Classic localization', () => {
     vi.stubGlobal('fetch', vi.fn(async (url: string) => {
       const [, language, kind] = /locales\/(\w+)\/(\w+)\.json/.exec(url)!;
       const data = catalog(language!, kind!);
+      if (language === 'ca' && kind === 'ui') {
+        data.classic.messages['Test count: {count}'] = 'Recompte de prova: {count}';
+      }
       if (language === 'ca' && kind === 'content') Object.assign(data, { 'New Game': 'Nova partida', Status: 'Estat' });
       return { ok: true, json: async () => data };
     }));
@@ -99,8 +102,8 @@ describe('Classic localization', () => {
   it('supports named parameters and fallback, and restores the saved language', async () => {
     const ui = await boot();
     await w.ClassicI18n.setLocale('ca');
-    expect(w.ClassicI18n.text('Majority: {count} seats', { count: 68 })).toBe('Majority: 68 seats');
-    expect(w.ClassicI18n.text('Not catalogued')).toBe('Not catalogued');
+    expect(w.ClassicI18n.text('Test count: {count}', { count: 68 })).toBe('Recompte de prova: 68');
+    expect(w.ClassicI18n.text('Uncatalogued test count: {count}', { count: 68 })).toBe('Uncatalogued test count: 68');
     expect(localStorage.getItem(ui.settings_key + ':language')).toBe('ca');
     new Function(read('out/html/localization.js'))();
     await w.ClassicI18n.init(ui);

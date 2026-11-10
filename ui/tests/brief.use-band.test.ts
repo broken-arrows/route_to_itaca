@@ -114,8 +114,9 @@ describe('useBand — round trip through a booted adapter', () => {
   });
 
   it('reads control’s ladder rungs as tokens', () => {
-    expect(band(0, 'control')).toEqual({ band: 'none', label: 'None' });
-    expect(band(3, 'control')).toEqual({ band: 'complete', label: 'Complete' });
+    expect(band(0, 'control').band).toBe('none');
+    expect(band(3, 'control').band).toBe('substantial');
+    expect(band(4, 'control').band).toBe('complete');
   });
 
   it('slugs an UN-banded qdisplay (relationships) into a usable token', () => {

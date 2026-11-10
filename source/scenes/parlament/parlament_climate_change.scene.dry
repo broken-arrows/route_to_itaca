@@ -226,7 +226,7 @@ on-arrival: {!
             Q.climate_transition_points += 2;
         } else {
             Q.climate_capacity = (Q.climate_capacity || 0) + 8;
-            G.registerLaw(Q, {id:"climate_carbon_budgets",colour:"green",description:"Carbon budgets have been set as a guide to future emissions reductions.",title:"Catalan Carbon Budgets",icon:"img/leaf_icon.svg",targets:{gdp_growth:-0.02,generalitat_surplus:-0.015,welfare_index_growth:0.03},ramp_ticks:12});
+            G.registerLaw(Q, {fiscal_ticks:24, id:"climate_carbon_budgets",colour:"green",description:"Carbon budgets have been set as a guide to future emissions reductions.",title:"Catalan Carbon Budgets",icon:"img/leaf_icon.svg",targets:{gdp_growth:-0.02,generalitat_surplus:-0.015,welfare_index_growth:0.03},ramp_ticks:12});
             Q.climate_transition_points += 1;
         }
         Q.constitutional_climate_change_countdown = 24;

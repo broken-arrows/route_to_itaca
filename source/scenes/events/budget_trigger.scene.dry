@@ -62,15 +62,19 @@ on-arrival: {!
     }
     // Prefer a restrained tax package, but seek revenue when inherited finances require it.
     if (right) {
-        var yields = [-3, -2, -1, 0, 1];
-        var costs = (projects.county ? 1 : 0) + (projects.b40 ? 2 : 0) + (projects.metro1 ? 2 : 0) + (projects.metro2 ? 1 : 0) +
-            (projects.water2 ? 1 : 0) + (projects.water3 ? 2 : 0) + (projects.tmobilitat2 ? 2 : 0) + (projects.rail1 ? 1 : 0) + (projects.rail2 ? 2 : 0) + (projects.icf ? 2 : 0) + (projects.digital ? 1 : 0) + (projects.universal ? 1 : 0);
+        var prices = this.game.data.budget_prices;
+        var yields = prices.tax_revenue;
+        var capCosts = prices.spending_cap_cost;
+        var projectCosts = prices.projects;
+        var costs = Object.keys(projects).reduce(function (total, key) {
+            return total + (projects[key] ? projectCosts[key] : 0);
+        }, 0);
         var bestMargin = -Infinity;
         var minimumTax = tax;
         for (var candidate = Math.max(-2, Q.tax_policy_level - 2); candidate <= Math.min(2, Q.tax_policy_level + 2); candidate++) {
             if (candidate < minimumTax || party == "ciu" && candidate >= 2 && !taxPromised) continue;
-            var margin = Q.generalitat_surplus + yields[candidate + 2] - yields[Q.tax_policy_level + 2] -
-                2 * (cap - Q.social_spending_cap) - costs;
+            var margin = Q.generalitat_surplus + yields[candidate] - yields[Q.tax_policy_level] -
+                (capCosts[cap] - capCosts[Q.social_spending_cap]) - costs;
             if (margin > bestMargin) { tax = candidate; bestMargin = margin; }
             if (margin >= 0) break;
         }

@@ -16,9 +16,8 @@ describe('no-action Monte Carlo runner', () => {
     expect(result.final.year).toBeGreaterThan(2012);
     expect(result.monthsAdvanced).toBeGreaterThanOrEqual(12);
     expect(result.targetElectionKeys).toEqual([`${result.final.year}-${result.final.month}`]);
-    expect(result.historicalStructuralEvents).toContain('plebiscite_election');
-    // The authored event may form JxSi before the runner's fallback offer.
-    expect(result.structuralState.jxsiFormed || result.historicalStructuralEvents.includes('jxsi_formation_offered')).toBe(true);
+    // Stop at the first election even if it precedes the historical interventions.
+    // The separate formation test below exercises the JxSi route.
     expect(Number.isFinite(result.seatDelta)).toBe(true);
     expect(Number.isFinite(result.final.validVoteShare.cs)).toBe(true);
     expect(result.baseline.families.abstention).toBeGreaterThan(0);

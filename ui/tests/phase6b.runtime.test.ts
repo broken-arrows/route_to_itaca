@@ -169,51 +169,38 @@ describe('6B shared English-string recipe lifecycle', () => {
 });
 
 describe('6B captured rendering and grammatical catalog entries', () => {
-  it.each([
-    ['events/elections/snap_election', 'subtitle:'],
-    ['events/elections/parlament_normal_diss', 'subtitle:'],
-    ['events/elections/parlament_normal_diss', 'After four years'],
-    ['party_paths/jxcat/jxcat_formation', '[? if jxsi_formed and not jxsi_dissolved: Basically'],
-    ['events/elections/parlament_coalition_ciu_erc', '[? if parlament_current_ciu_s > 40: The government'],
-    ['events/elections/parlament_coalition_erc_ciu', '[? if erc_parlament_s > 40: The government'],
-  ])('renders native gendered English titles in %s (%s)', async (scene, prefix) => {
-    const source = readFileSync(join(import.meta.dirname, '../../source/scenes', scene + '.scene.dry'), 'utf8');
-    const line = source.split(/\r?\n/).find(line => line.startsWith(prefix))!;
-    expect(line).toBeDefined();
-    const prose = line.replace(/^subtitle:\s*/, '');
-    for (const gender of ['m', 'f']) {
-      for (const seats of [35, 45]) {
-        const name = gender === 'f' ? 'Neus Munté' : 'Artur Mas';
-        const qualities = {president:name, president_gender:gender, erc_leader:name, erc_leader_gender:gender,
-          parlament_current_ciu_leader:name, parlament_coalition_proposal_president_gender:gender,
-          parlament_current_ciu:'ciu', parlament_current_ciu_s:seats, erc_parlament_s:seats,
-          jxcat_president_available:true, jxcat_president_civic_veto:true, next_election_month:2, next_election_year:2013};
-        const { engine, ui } = start(await compiled({
-          root:'title: Root\non-arrival: {! Object.assign(Q, ' + JSON.stringify(qualities) + '); !}\n\n' + prose + '\n',
-        }, {}, {month:readFileSync(join(import.meta.dirname, '../../source/qdisplays/month.qdisplay.dry'), 'utf8')}));
-        const title = (gender === 'f' ? 'Presidenta ' : 'President ') + name;
-        expect(ui.html).toContain(title);
-        expect(ui.html).not.toContain((gender === 'f' ? 'President ' : 'Presidenta ') + name);
-        engine.state.qualities.president_gender = gender === 'f' ? 'm' : 'f';
-        const before = state(engine), rng = engine.random.getState();
-        engine.setLocale('ca', {}); engine.refreshPresentation();
-        expect(ui.html).toContain(title);
-        engine.setLocale('en', {}); engine.refreshPresentation();
-        expect(ui.html).toContain(title);
-        expect(state(engine)).toEqual(before);
-        expect(engine.random.getState()).toEqual(rng);
-        if (prefix === 'subtitle:') {
-          const ca = JSON.parse(readFileSync(join(import.meta.dirname, '../../source/locales/ca/content.json'), 'utf8'));
-          engine.setLocale('ca', ca); engine.refreshPresentation();
-          expect(ui.html).toContain((gender === 'f' ? 'La presidenta ' : 'El president ') + name);
-          expect(ui.html).toContain('fixa la data de les noves eleccions');
-          expect(state(engine)).toEqual(before);
-          expect(engine.random.getState()).toEqual(rng);
-        }
-      }
-    }
-  });
+  it.each(['m', 'f'])('captures gendered clauses and inserts across locale changes (gender=%s)', async (gender) => {
+    // Controlled prose tests the engine contract without freezing authored scenes
+    // or the wording chosen by the real Catalan catalog.
+    const { engine, ui } = start(await compiled({
+      root: `title: Root
+on-arrival: {! Q.gender = '${gender}'; Q.person = 'Test Person'; !}
 
+[? if gender = "m": Male?][? if gender = "f": Female?] [+ person +] announces an election.
+
+- @root: Repeat
+`,
+    }));
+    const title = gender === 'f' ? 'Female' : 'Male';
+    expect(ui.html).toContain(`${title} Test Person`);
+    const original = ui.html;
+    engine.state.qualities.gender = gender === 'f' ? 'm' : 'f';
+    engine.state.qualities.person = 'Changed Person';
+    const before = state(engine), rng = engine.random.getState();
+    engine.setLocale('ca', {}); engine.refreshPresentation();
+    expect(ui.html).toBe(original);
+    engine.setLocale('ca', {
+      Male: 'Masculine fixture', Female: 'Feminine fixture',
+      '{clause1}{clause2} {person} announces an election.': '{person}: {clause1}{clause2}.',
+    });
+    engine.refreshPresentation();
+    expect(ui.html).toContain(`Test Person: ${gender === 'f' ? 'Feminine' : 'Masculine'} fixture`);
+    expect(ui.html).not.toContain('Changed Person');
+    expect(state(engine)).toEqual(before);
+    expect(engine.random.getState()).toEqual(rng);
+    engine.setLocale('en', {}); engine.refreshPresentation();
+    expect(ui.html).toBe(original);
+  });
   it('preserves ordinary array/object insert coercion and captures expressions once', async () => {
     const game = await compiled({
       root: 'title: Root\non-arrival: {! Q.items=["a","b"]; Q.object={}; Q.calls=0; !}\n\n[+ items +] / [+ {! Q.calls++; return Q.object; !} +]\n',

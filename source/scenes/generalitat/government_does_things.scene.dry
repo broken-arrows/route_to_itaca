@@ -16,7 +16,7 @@ go-to: fallback if npc_government_initiative == null
 
 = A new government initiative
 
-[+ npc_government_party +] intends to **[+ npc_government_title +]**. [+ npc_government_reason +]
+[+ npc_government_party +] intends to **[+ npc_government_title +]**. [+ npc_government_reason +] [? if npc_government_breaks_agreement: This is despite the earlier promises during the investiture negotiations regarding this very topic... so much for keeping up with their words.?]
 
 [? if npc_government_can_influence: We do have a unique chance here to influence our coalition partners, though. ?]
 
@@ -61,6 +61,11 @@ on-arrival: {!
     var candidateText = {};
     // TODO: Adapt proposals and responses to Rubicon's concrete circumstances and weekly cadence.
     var player = Q.player_party;
+    var calendarMonth = Q.year * 12 + Q.month;
+    function protects(record) {
+        return !["retired", "penalized"].includes(record.status) &&
+            (!Number.isFinite(record.agreed_month) || calendarMonth - record.agreed_month < 18);
+    }
     var controlled = [player];
     for (var list of ["jxsi", "jxcat"])
         if (Q["player_in_" + list] || Q[player + "_in_" + list]) controlled.push(list);
@@ -138,12 +143,13 @@ on-arrival: {!
             if (owners[holder] != actor || !(weight > 0)) return;
             var ministerAffiliation = ["jxsi", "jxcat"].includes(actor) ? Q[holder.replace(/_party$/, "_affiliation")] || null : null;
             if (ministerAffiliation != affiliation || ministerAffiliation == player) return;
+            if (kind == "cut" && Q.npc_austerity_timer > 0) return;
             if (kind == "cut") weight *= Math.max(0.5, -Q.generalitat_surplus);
             var from = Q[field];
             if (from === undefined && kind != "curriculum") return;
             if (from == to && kind != "curriculum") return;
             for (var record of Q.coalition_policy_commitments || []) {
-                if (record.status == "retired" || record.status == "penalized" || !Number.isFinite(record.target)) continue;
+                if (!protects(record) || !Number.isFinite(record.target)) continue;
                 if (record.kind == field && to < from && to < record.target) return;
             }
             if (field == "institutional_alignment" && to < from && (Q.coalition_indy_commitments || []).some(function (record) {
@@ -317,17 +323,22 @@ on-arrival: {!
     Q.npc_government_can_protest = false;
     Q.npc_government_stop_cost = 2;
     Q.npc_government_is_cut = !!initiative && initiative.kind == "cut";
+    Q.npc_government_breaks_agreement = !!initiative && (Q.coalition_policy_commitments || []).some(function (record) {
+        return !["retired", "penalized"].includes(record.status) && record.kind == initiative.field &&
+            Number.isFinite(record.target) && initiative.to < initiative.from && initiative.to < record.target;
+    });
     G.setText(Q, "npc_government_stop_blocker", G.text("It's not like they are in government because of us, so there's little we can do."));
     G.setText(Q, "npc_government_alternative_blocker", G.text("It's not like they are in government because of us, so there's little we can do."));
     if (initiative) {
         valid = !Q.cat_caretaker_gov && owners[initiative.holder] == initiative.party &&
             initiative.party != player && Q[initiative.field] == initiative.from;
+        if (initiative.kind == "cut" && Q.npc_austerity_timer > 0) valid = false;
         if (["jxsi", "jxcat"].includes(initiative.party)) {
             var affiliation = Q[initiative.holder.replace(/_party$/, "_affiliation")];
             if (affiliation && (affiliation == player || affiliation != initiative.policyParty)) valid = false;
         }
         for (var record of Q.coalition_policy_commitments || []) {
-            if (!["retired", "penalized"].includes(record.status) && record.kind == initiative.field &&
+            if (protects(record) && record.kind == initiative.field &&
                 Number.isFinite(record.target) && initiative.to < initiative.from && initiative.to < record.target)
                 valid = false;
         }
@@ -372,6 +383,7 @@ on-arrival: {!
     }
     if (!Q.npc_government_response) return;
     var response = Q.npc_government_response;
+    var enactedCut = false;
     Q.npc_government_budget_pending = false;
     G.setText(Q, "npc_government_outcome", G.text("The initiative could not proceed (???)."));
     var authorized = valid && (response == "accept" || response == "protest" && Q.npc_government_can_protest ||
@@ -402,6 +414,7 @@ on-arrival: {!
                 var tax = next;
                 for (var record of Q.coalition_policy_commitments || []) {
                     if (!["pending_budget", "applied", "broken"].includes(record.status)) continue;
+                    if (!protects(record)) continue;
                     if (record.kind == "social_spending_cap") cap = Math.max(cap, record.target);
                     if (record.kind == "tax_policy_level") tax = Math.max(tax, record.target);
                 }
@@ -420,6 +433,23 @@ on-arrival: {!
                 var oldCurriculum = (Q.active_mods || {}).education_school_policy;
                 var previousRoutes = packageKey ? Q[packageKey] || [] : initiative.kind == "curriculum" && oldCurriculum ? oldCurriculum.def.electoral_transfers || [] : [];
                 Q[field] = next;
+                enactedCut = initiative.kind == "cut";
+                var breached = false;
+                for (var record of Q.coalition_policy_commitments || []) {
+                    if (["retired", "penalized"].includes(record.status) || record.kind != field || !Number.isFinite(record.target)) continue;
+                    if (next >= record.target && record.status == "broken") record.status = "applied";
+                    if (next < initiative.from && next < record.target && record.status != "broken") {
+                        record.status = "broken";
+                        G.deactivateLaw(Q, "coalition_pending_" + record.kind, undefined, true);
+                        if ((record.signatories || []).some(function (party) { return controlled.includes(party); })) breached = true;
+                    }
+                }
+                if (breached) {
+                    if (Number.isFinite(Q[initiative.party + "_relations"])) Q[initiative.party + "_relations"] -= 5;
+                    Q.coalition_rupture_recheck = true;
+                    G.setText(Q, "npc_government_outcome", G.joinText([G.getText(Q, "npc_government_outcome"),
+                        G.text("This decision breaks our investiture agreement and damages relations with the government. The commitment remains on record.")]));
+                }
                 if (initiative.kind == "austerity") G.deactivateLaw(Q, "general_cuts_" + initiative.from, undefined, true);
                 if (initiative.kind == "atc" && next == 2) Q.independence_trust = Math.min(100, Q.independence_trust + 2);
                 if (initiative.kind == "sexual") Q.welfare_index = Math.min(100, Q.welfare_index + 0.15);
@@ -548,6 +578,11 @@ on-arrival: {!
         }
     }
     Q.government_does_things_timer = G.governmentInitiativeTimer(Q);
+    if (enactedCut) {
+        // Two initiative intervals, sampled once; non-cut initiatives do not reset it.
+        Q.npc_austerity_timer = 2 * Q.government_does_things_timer;
+        if (!Q.timers.includes("npc_austerity")) Q.timers.push("npc_austerity");
+    }
     Q.npc_government_initiative = null;
     Q.npc_government_response = null;
 !}

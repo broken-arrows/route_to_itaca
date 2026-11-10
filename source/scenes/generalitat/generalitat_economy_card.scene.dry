@@ -345,7 +345,7 @@ on-arrival: {!
         if (Q.player_party == "cup") Q.burdens_broken = true;
         Q.government_budget += 1;
         // No icon, no colour = not visible, as intended
-        G.registerLaw(Q, {id:"economy_asset_sale_" + Q.economy_asset_sales,
+        G.registerLaw(Q, {fiscal_ticks:12, id:"economy_asset_sale_" + Q.economy_asset_sales,
             title:"Public Buildings Sale and Leaseback " + Q.economy_asset_sales,
             description:"A package of Generalitat administrative buildings has been sold. Continued use requires ongoing rental payments.",
             targets:{generalitat_surplus: -0.01}});

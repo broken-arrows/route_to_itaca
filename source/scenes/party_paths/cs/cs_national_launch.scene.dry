@@ -6,8 +6,17 @@ face-image: img/events/cs_statewide.jpg
 max-visits: 1
 on-arrival: {!
     Q.spa_cs_active = true;
-    G.spaSupportInject(Q, 'cs', 'all', 9.0, 'pp');
-    G.spaSupportInject(Q, 'cs', 'all', 2.0, 'abstain');
+    for (var c of Q.congreso_constituencies) {
+        if (c == 'catalunya') {
+            G.spaSupportInject(Q, 'cs', c, 2.0, 'pp');
+            G.spaSupportInject(Q, 'cs', c, 2.5, 'ciu');
+            G.spaSupportInject(Q, 'cs', c, 1.2, 'psoe');
+            G.spaSupportInject(Q, 'cs', c, 3.5, 'abstain');
+            continue;
+        }
+        G.spaSupportInject(Q, 'cs', c, c == 'euskadi' ? 2.5 : c == 'galicia' ? 5.5 : 9.0, 'pp');
+        G.spaSupportInject(Q, 'cs', c, c == 'euskadi' ? 0.5 : c == 'galicia' ? 1.2 : 2.0, 'abstain');
+    }
 
     Q.cs_leader = "Inés Arrimadas";
     Q.cs_leader_gender = "f";

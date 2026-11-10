@@ -1040,7 +1040,7 @@ on-arrival: {!
         Q.territory_roads = 1;
         Q.government_budget -= 1;
         Q.burdens_done += 1;
-        G.registerLaw(Q, {id:"toll_free_roads",colour:"green",description:"All Generalitat-administered roads and highways are toll-free.",title:"Toll-free roads",icon:"img/car_icon.svg",targets:{gdp_growth:0.01,generalitat_surplus:-0.02,welfare_index_growth:-0.01}});
+        G.registerLaw(Q, {fiscal_ticks:12, id:"toll_free_roads",colour:"green",description:"All Generalitat-administered roads and highways are toll-free.",title:"Toll-free roads",icon:"img/car_icon.svg",targets:{gdp_growth:0.01,generalitat_surplus:-0.02,welfare_index_growth:-0.01}});
 
         var voterOrigin = Q.player_party;
         var voterCabinet = [Q.player_party].concat(Q.cat_coalition || []);

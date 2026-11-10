@@ -47,6 +47,43 @@ function propose(adapter: DendryAdapter) {
 }
 
 describe('NPC budget authors and fiscal conversion', () => {
+  it('reserves ordinary restoration at the policy scale without implementing it', () => {
+    const { adapter, q } = setup('ciu', {
+      generalitat_surplus: 0.5, social_spending_cap: -1,
+      education_spending: -1, healthcare_spending: -1, public_salary_level: -1,
+    });
+    propose(adapter);
+    adapter.goToScene('parlament_budget.cap_higher');
+    expect(q.parlament_budget_margin).toBeCloseTo(0.14);
+    expect(q.parlament_budget_shortfall).toBe(0);
+    expect(q.social_spending_cap).toBe(-1);
+    expect([q.education_spending, q.healthcare_spending, q.public_salary_level]).toEqual([-1, -1, -1]);
+    expect(q.generalitat_surplus).toBe(0.5);
+    adapter.goToScene('parlament_budget.cap_lower');
+    expect(q.parlament_budget_margin).toBeCloseTo(0.5);
+  });
+
+  it('still identifies an unfunded expansion and restores the sign when withdrawn', () => {
+    const { adapter, q } = setup('ciu', { generalitat_surplus: 0.5 });
+    propose(adapter);
+    adapter.goToScene('parlament_budget.cap_higher');
+    expect(q.parlament_budget_margin).toBeCloseTo(-0.46);
+    expect(q.parlament_budget_shortfall).toBeCloseTo(0.46);
+    adapter.goToScene('parlament_budget.cap_lower');
+    expect(q.parlament_budget_margin).toBeCloseTo(0.5);
+  });
+
+  it('uses the enacted annual tax adjustment scale in the approval assessment', () => {
+    const { adapter, q } = setup('ciu', { tax_policy_level: 0, generalitat_surplus: -0.1 });
+    propose(adapter);
+    expect(q.budget_draft.tax_policy_level).toBe(1);
+    const gain = q.parlament_budget_margin - q.budget_draft_origin.surplus_at_draft;
+    adapter.goToScene('parlament_budget.pass');
+    expect(q.tax_policy_level).toBe(1);
+    const law = q.active_mods.regional_taxes_high.def;
+    expect(gain).toBeCloseTo(law.targets.generalitat_surplus * law.fiscal_ticks);
+  });
+
   it('supports the untouched CiU budget after ERC secures Education spending at formation', () => {
     const { adapter, q } = setup('ciu', {
       cat_coalition: ['ciu', 'erc'], ciu_parlament_s: 50, erc_parlament_s: 21,
@@ -94,7 +131,7 @@ describe('NPC budget authors and fiscal conversion', () => {
     propose(adapter);
     const originalGap = q.parlament_budget_shortfall;
     adapter.goToScene('parlament_budget.tax_lower');
-    expect(q.parlament_budget_shortfall).toBeCloseTo(originalGap + 1);
+    expect(q.parlament_budget_shortfall).toBeCloseTo(originalGap + 0.24);
     expect(q.parlament_budget_positions[party]).toBe('no');
   });
 
@@ -110,8 +147,8 @@ describe('NPC budget authors and fiscal conversion', () => {
     const { adapter, q } = setup('ciu', { generalitat_surplus: -1, tax_policy_level: 0 });
     propose(adapter);
     expect(q.budget_draft.tax_policy_level).toBe(1);
-    expect(q.parlament_budget_margin).toBeCloseTo(0);
-    expect(q.parlament_budget_shortfall).toBe(0);
+    expect(q.parlament_budget_margin).toBeCloseTo(-0.76);
+    expect(q.parlament_budget_shortfall).toBeCloseTo(0.76);
   });
 
   it('keeps a separate CiU cabinet partner opposed to the gap in an ERC proposal', () => {
@@ -137,7 +174,7 @@ describe('NPC budget authors and fiscal conversion', () => {
     const { adapter, q } = setup('ciu');
     propose(adapter);
     adapter.goToScene('parlament_budget.tax_lower');
-    expect(q.parlament_budget_shortfall).toBeCloseTo(3.3);
+    expect(q.parlament_budget_shortfall).toBeCloseTo(2.54);
     expect(q.parlament_budget_positions.ciu).toBe('no');
     adapter.goToScene('parlament_budget.tax_higher');
     expect(q.parlament_budget_shortfall).toBeCloseTo(2.3);
@@ -149,7 +186,7 @@ describe('NPC budget authors and fiscal conversion', () => {
     const { adapter, q } = setup('ciu');
     propose(adapter);
     adapter.goToScene('parlament_budget.tax_higher');
-    expect(q.parlament_budget_shortfall).toBeCloseTo(1.3);
+    expect(q.parlament_budget_shortfall).toBeCloseTo(2.06);
     expect(q.parlament_budget_positions.ciu).toBe('no');
   });
 
@@ -159,7 +196,7 @@ describe('NPC budget authors and fiscal conversion', () => {
     });
     propose(adapter);
     expect(q.budget_draft.projects.county).toBe(true);
-    expect(q.parlament_budget_shortfall).toBeCloseTo(3.3);
+    expect(q.parlament_budget_shortfall).toBeCloseTo(2.36);
     adapter.goToScene('parlament_budget.county');
     expect(q.parlament_budget_shortfall).toBeCloseTo(2.3);
     expect(q.parlament_budget_positions.ciu).toBe('yes');

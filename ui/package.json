@@ -15,6 +15,7 @@
     "test": "vitest run",
     "balance:no-action": "vitest run tests/no-action-monte-carlo.test.ts --reporter=verbose",
     "balance:locals": "vitest run tests/local-election-monte-carlo.test.ts --reporter=verbose",
+    "balance:historical": "vitest run tests/historical-balance.test.ts --reporter=verbose",
     "test:watch": "vitest"
   },
   "dependencies": {

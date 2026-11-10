@@ -178,7 +178,7 @@ on-arrival: {!
                 return;
             }
             var allowed = item.spending && Q.social_spending_cap >= item.target;
-            var record = {kind: item.kind, target: item.target, scope: scope, signatories: signatories.slice(), status: allowed ? "applied" : "pending_budget"};
+            var record = {kind: item.kind, target: item.target, scope: scope, signatories: signatories.slice(), agreed_month: Q.year * 12 + Q.month, status: allowed ? "applied" : "pending_budget"};
             Q.coalition_policy_commitments.push(record);
             if (allowed) {
                 Q[item.kind] = item.target;

@@ -181,28 +181,133 @@ title: Spanish General Election
 on-arrival: {!
 // Careful! Here, different constituencies have different parties!
 
-var VIRTUAL_REST_STRUCTURE = {
-    36: 1,  // Madrid
-    12: 1,  // Seville
-    11: 1,  // Malaga
-    10: 1,  // Murcia
-    9: 1,   // Cadiz
-    8: 2,   // Las Palmas, Asturias
-    7: 3,   // Granada, Zaragoza, Tenerife
-    6: 4,   // Cordoba, Almeria, Toledo, Badajoz
-    5: 5,   // Jaen, Huelva, Valladolid, Ciudad Real, Cantabria
-    4: 6,   // Leon, Burgos, Salamanca, Albacete, Caceres, La Rioja
-    3: 8,   // Avila, Palencia, Segovia, Zamora, Guadalajara, Cuenca, Huesca, Teruel
-    2: 1,   // Soria
-    1: 2    // Ceuta, Melilla
+// Compact geography: province, 2015 seats, 2016+ seats, electorate.
+// Census and district sizes: JEC/BOE 2015 and 2016 results. Later changes are
+// approximated by 2016 sizes. No historical party vote profiles are used.
+var CONGRESO_DISTRICTS = {
+    catalunya: [
+        ["Barcelona",31,31,4128181],
+        ["Girona",6,6,511640],
+        ["Lleida",4,4,313836],
+        ["Tarragona",6,6,562799]
+    ],
+    valencia: [
+        ["Alicante/Alacant",12,12,1251941],
+        ["Castellón/Castelló",5,5,417197],
+        ["Valencia/València",15,16,1946144]
+    ],
+    balears: [
+        ["Balears (Illes)",8,8,771381]
+    ],
+    navarra: [
+        ["Navarra",5,5,502520]
+    ],
+    euskadi: [
+        ["Araba/Álava",4,4,254327],
+        ["Bizkaia",8,8,949177],
+        ["Gipuzkoa",6,6,580725]
+    ],
+    galicia: [
+        ["Coruña (A)",8,8,1088822],
+        ["Lugo",4,4,349547],
+        ["Ourense",4,4,365513],
+        ["Pontevedra",7,7,901970]
+    ],
+    rest: [
+        ["Albacete",4,4,310674],
+        ["Almería",6,6,490192],
+        ["Asturias",8,8,985087],
+        ["Ávila",3,3,139955],
+        ["Badajoz",6,6,559247],
+        ["Burgos",4,4,300985],
+        ["Cáceres",4,4,351037],
+        ["Cádiz",9,9,993618],
+        ["Cantabria",5,5,498771],
+        ["Ciudad Real",5,5,401885],
+        ["Córdoba",6,6,651727],
+        ["Cuenca",3,3,158886],
+        ["Granada",7,7,748189],
+        ["Guadalajara",3,3,182321],
+        ["Huelva",5,5,396415],
+        ["Huesca",3,3,174072],
+        ["Jaén",5,5,533748],
+        ["León",5,4,442375],
+        ["Madrid",36,36,4913893],
+        ["Málaga",11,11,1160216],
+        ["Murcia",10,10,1031733],
+        ["Palencia",3,3,144427],
+        ["Palmas (Las)",8,8,838543],
+        ["Rioja (La)",4,4,247507],
+        ["Salamanca",4,4,309358],
+        ["S/C Tenerife",7,7,830368],
+        ["Segovia",3,3,121440],
+        ["Sevilla",12,12,1531161],
+        ["Soria",2,2,76986],
+        ["Teruel",3,3,109984],
+        ["Toledo",6,6,518838],
+        ["Valladolid",5,5,433667],
+        ["Zamora",3,3,174445],
+        ["Zaragoza",7,7,735079],
+        ["Ceuta",1,1,61660],
+        ["Melilla",1,1,57639]
+    ]
 };
+// District size is a simple rural/urban proxy within rest-of-Spain only.
+var RURAL_BIAS = {pp:1.15, psoe:1.05, podemos:0.75, cs:0.85};
+var URBAN_BIAS = {pp:0.95, psoe:0.95, podemos:1.15, cs:1.0};
+var BIAS_FAMILY = {up:"podemos", sumar:"podemos", mpais:"podemos", psc:"psoe", upn:"pp", nsuma:"pp"};
+// Concentrated local support earns seats through ordinary allocation. Treating
+// CC as Tenerife-centred is a coarse approximation, not a guaranteed seat.
+var LOCAL_PROVINCE = {cc:"S/C Tenerife", fac:"Asturias", prc:"Cantabria", te:"Teruel"};
+var seatColumn = Q.year < 2016 ? 1 : 2;
+Q.congreso_seats = {};
+for (var region in CONGRESO_DISTRICTS) {
+    Q.congreso_seats[region] = CONGRESO_DISTRICTS[region].reduce(function (total, district) {
+        return total + district[seatColumn];
+    }, 0);
+}
 
-var PROTECTED_MINORS = {
-    'cc':  { threshold: 0.26, max_seats: 15 }, // Las Palmas (8) + Santa Cruz de Tenerife (7)
-    'fac': { threshold: 0.40, max_seats: 8 },  // Asturias
-    'prc': { threshold: 0.25, max_seats: 5 },  // Cantabria
-    'te':  { threshold: 0.20, max_seats: 3 },  // Teruel
-};
+function dhondt_method(votes, count) {
+    var result = Object.fromEntries(Object.keys(votes).map(function (p) { return [p, 0]; }));
+    var total = Object.values(votes).reduce(function (sum, value) { return sum + value; }, 0);
+    // The simulation has no blank-vote stock: use candidacy votes for the threshold.
+    var eligible = Object.keys(votes).filter(function (p) { return votes[p] > 0 && votes[p] >= total * 0.03; });
+    for (var seat = 0; seat < count && eligible.length; seat++) {
+        eligible.sort(function (a, b) {
+            return votes[b] / (result[b] + 1) - votes[a] / (result[a] + 1) ||
+                votes[b] - votes[a] || a.localeCompare(b);
+        });
+        result[eligible[0]]++;
+    }
+    return result;
+}
+
+function allocate_region(region, votes) {
+    var districts = CONGRESO_DISTRICTS[region];
+    var projected = districts.map(function () { return {}; });
+    var result = Object.fromEntries(Object.keys(votes).map(function (p) { return [p, 0]; }));
+    for (var party of Object.keys(votes)) {
+        var family = BIAS_FAMILY[party] || party;
+        var home = region === "rest" ? LOCAL_PROVINCE[party] : null;
+        var weights = districts.map(function (district) {
+            if (home) return district[0] === home ? district[3] : 0;
+            var bias = region !== "rest" ? {} : district[seatColumn] <= 4 ? RURAL_BIAS :
+                district[seatColumn] >= 8 ? URBAN_BIAS : {};
+            return district[3] * (bias[family] || 1);
+        });
+        var totalWeight = weights.reduce(function (sum, weight) { return sum + weight; }, 0);
+        if (!totalWeight) throw new Error("No Congreso district for " + party + " in " + region);
+        // Normalize each party separately so geography never creates or removes voters.
+        districts.forEach(function (district, i) {
+            projected[i][party] = votes[party] * weights[i] / totalWeight;
+        });
+    }
+    districts.forEach(function (district, i) {
+        var seats = dhondt_method(projected[i], district[seatColumn]);
+        for (var party in result) result[party] += seats[party];
+    });
+    return result;
+}
 
 // 00. Store old results and get a list of all possible parties involved
 var CONGRESO_PARTIES = [];
@@ -296,45 +401,6 @@ for (var c of Q.congreso_constituencies) {
     }
 }
 
-// 02. Helper Function: D'Hondt Method
-function dhondt_method(votes_map, num_seats) {
-    var seats = {};
-    var quotients = [];
-
-    // Initialize
-    for (var party in votes_map) {
-        seats[party] = 0;
-        if (votes_map[party] > 0) {
-            quotients.push({
-                party: party,
-                val: votes_map[party],
-                original: votes_map[party],
-                seats: 0
-            });
-        }
-    }
-
-    // Allocate
-    for (var i = 0; i < num_seats; i++) {
-        if (quotients.length === 0) break;
-
-        // Sort descending
-        quotients.sort(function(a, b) {
-            return b.val - a.val;
-        });
-
-        var winner = quotients[0];
-        winner.seats++;
-        winner.val = winner.original / (winner.seats + 1);
-    }
-
-    // Update results
-    for (var q of quotients) {
-        seats[q.party] = q.seats;
-    }
-    return seats;
-}
-
 // 03. Main Simulation Loop 
 for (var constituency of Q.congreso_constituencies) {
     var region_census = Q.congreso_pop[constituency] || 1000;
@@ -370,74 +436,12 @@ for (var constituency of Q.congreso_constituencies) {
     total_national_valid_votes += region_valid_total; // Only valid votes
     total_national_census += (region_valid_total + raw_abst); // Census (Valid + Abst)
 
-    var seats_available = Q.congreso_seats[constituency];
-    var seat_results = {};
-
-    if (constituency === 'rest') {
-        // VIRTUAL REST LOGIC
-        var working_votes = Object.assign({}, region_votes_map);
-        var protected_seats_awarded = 0;
-        var rest_seats = {};
-
-        // Protected Minors Check, against CENSUS not valid votes
-        for (var minor in PROTECTED_MINORS) {
-            if (working_votes[minor] !== undefined) {
-                var threshold = PROTECTED_MINORS[minor].threshold;
-                var max_seats = PROTECTED_MINORS[minor].max_seats;
-                var share = (working_votes[minor] / region_census) * 100;
-                
-                while (share >= threshold && (rest_seats[minor] || 0) < max_seats) {
-                    total_party_seats[minor] += 1;
-                    rest_seats[minor] = (rest_seats[minor] || 0) + 1;
-                    protected_seats_awarded++;
-                    share -= threshold;
-                    working_votes[minor] = 0; // Remove from main pool
-                }
-            }
-        }
-
-        var virtual_districts = [];
-        for (var size in VIRTUAL_REST_STRUCTURE) {
-            var count = VIRTUAL_REST_STRUCTURE[size];
-            for (var k = 0; k < count; k++) virtual_districts.push(parseInt(size));
-        }
-        virtual_districts.sort(function(a, b) { return a - b });
-
-        for (var k = 0; k < protected_seats_awarded; k++) {
-            for (var i = 0; i < virtual_districts.length; i++) {
-                if (virtual_districts[i] >= 5) { virtual_districts[i]--; break; }
-            }
-        }
-
-        for (var dist_size of virtual_districts) {
-            if (dist_size > 0) {
-                var biased_votes = {};
-                var bias_set = {};
-                if (dist_size <= 4) bias_set = Q.congreso_rural_bias;
-                if (dist_size >= 8) bias_set = Q.congreso_urban_bias;
-                
-                for (var p in working_votes) {
-                    var multiplier = bias_set[p] || 1.0;
-                    biased_votes[p] = working_votes[p] * multiplier;
-                }
-                var dist_res = dhondt_method(biased_votes, dist_size);
-                for (var p in dist_res) {
-                    total_party_seats[p] += dist_res[p];
-                    rest_seats[p] = (rest_seats[p] || 0) + dist_res[p];
-                }
-            }
-        }
-        for (var p of Q.congreso_parties_rest) Q[p + '_congreso_s_rest'] = rest_seats[p] || 0;
-
-    } else {
-        // STANDARD REGIONAL
-        seat_results = dhondt_method(region_votes_map, seats_available);
-        for (var p in seat_results) {
-            total_party_seats[p] += seat_results[p];
-            Q[p + '_congreso_s_' + constituency] = seat_results[p];
-        }
+    var seat_results = allocate_region(constituency, region_votes_map);
+    for (var p in seat_results) {
+        total_party_seats[p] += seat_results[p];
+        Q[p + '_congreso_s_' + constituency] = seat_results[p];
     }
-    
+
     // Regional PV Calculation (Valid Votes Only)
     if (constituency === 'catalunya') {
         for (var p of local_parties) {

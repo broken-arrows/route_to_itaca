@@ -73,9 +73,11 @@ describe('Economy modifier scaling', () => {
     maturity(q, 1);
     expect(contribution(q, 'generalitat_surplus')).toBeGreaterThan(baseline);
     maturity(q, 11);
-    // The shared setter also synchronizes taxes; measure the ATC investments themselves.
+    // The first ATC adjustment has settled; its savings remain but no longer grow.
+    expect(q.active_mods.economy_atc1.fiscal_applied).toBeCloseTo(0.1425);
+    expect(q.active_mods.economy_atc1.live_effect.generalitat_surplus).toBe(0);
     expect(q.active_mods.economy_atc1.live_effect.generalitat_surplus +
-      q.active_mods.economy_atc2.live_effect.generalitat_surplus).toBeCloseTo(0.03);
+      q.active_mods.economy_atc2.live_effect.generalitat_surplus).toBeCloseTo(0.015);
   });
 
   it('stacks rental obligations and improved pay without changing opening pay cuts', () => {
@@ -232,7 +234,7 @@ describe('Business and Labour policies', () => {
 });
 
 describe('ICF budget approval', () => {
-  it.each(['guarantees', 'cooperative'])('funds only the selected %s branch with two fiscal points and no repeated reactions', branch => {
+  it.each(['guarantees', 'cooperative'])('funds only the selected %s branch with an annualized reservation and no repeated reactions', branch => {
     const { adapter, q } = setup();
     action(adapter, 'icf1');
     maturity(q, 2);
@@ -247,7 +249,7 @@ describe('ICF budget approval', () => {
     submit(adapter, false);
     const margin = q.parlament_budget_margin;
     adapter.goToScene('parlament_budget.icf');
-    expect(q.parlament_budget_margin).toBeCloseTo(margin - 2);
+    expect(q.parlament_budget_margin).toBeCloseTo(margin - 0.24);
     expect(q.parlament_budget_can_pass).toBe(true);
     adapter.goToScene('parlament_budget.pass');
     expect(q.bnl_icf_level).toBe(2);
@@ -300,7 +302,7 @@ describe('ICF budget approval', () => {
     adapter.goToScene('budget_trigger');
     expect(q.budget_draft.projects.icf).toBe(true);
     expect(q.parlament_budget_icf_available).toBe(true);
-    expect(q.parlament_budget_margin).toBe(-4); // No base allowance: -2 cap expansion, -2 ICF.
+    expect(q.parlament_budget_margin).toBeCloseTo(-1.68); // Cap 1 -> 2 costs 1.44; ICF reserves .24.
   });
 
   it('keeps an unfunded branch inert when parliamentary support is insufficient', () => {

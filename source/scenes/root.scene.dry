@@ -753,20 +753,6 @@ on-arrival: {!
     }
   }
 
-  Q.congreso_rural_bias = {
-      'pp': 1.15,      // PP is dominant in rural Castilla
-      'psoe': 1.05,    // PSOE holds up well in rural South
-      'podemos': 0.75, // Podemos struggles significantly in rural areas
-      'cs': 0.85,      // Cs also struggles in rural areas
-  };
-
-  Q.congreso_urban_bias = {
-      'pp': 0.95,
-      'psoe': 0.95,
-      'podemos': 1.15,
-      'cs': 1.0
-  };
-
   // As of congreso 2011
 
   Q.abstain_congreso_pv = 31.06;
@@ -950,11 +936,11 @@ on-arrival: {!
   };
 
   Q.SURPLUS_DRIFT_BY_GEN = {
-    'CiU': 0.022, 'CDC_ERC': 0.008,
+    'CiU': 0, 'CDC_ERC': 0,
     'CDC_ERC_CUP': -0.010, 'ERC_CUP': -0.018,
-    'ART155': 0.028, 'JxCat': 0.008, 'PSC': -0.008, 'Comuns': -0.018,
-    'ERC': 0.010, 'ERC_min': 0.008, 'CUP': -0.020,
-    'PSC_ERC': -0.010, 'PSC_Comuns': -0.015, 'Cs': 0.015,
+    'ART155': 0, 'JxCat': 0, 'PSC': -0.008, 'Comuns': -0.018,
+    'ERC': 0, 'ERC_min': 0, 'CUP': -0.020,
+    'PSC_ERC': -0.010, 'PSC_Comuns': -0.015, 'Cs': 0,
     'player': 0.0
   };
 
@@ -997,62 +983,62 @@ on-arrival: {!
     'PP_VOX': 15, 'Cs': 3
   };
 
-  Q.ciu_parlament_barcelona_buss_support = 23.5;
-  Q.ciu_parlament_barcelona_ind_support = 19.19;
-  Q.ciu_parlament_barcelona_middle_support = 17.54;
-  Q.ciu_parlament_barcelona_young_support = 12.54;
-  Q.ciu_parlament_barcelona_retired_support = 29.35;
-  Q.ciu_parlament_barcelona_rural_support = 25.0;
-  Q.ciu_parlament_barcelona_unemployed_support = 14.53;
-  Q.ciu_parlament_girona_buss_support = 31.43;
-  Q.ciu_parlament_girona_ind_support = 24.19;
-  Q.ciu_parlament_girona_middle_support = 28.12;
-  Q.ciu_parlament_girona_young_support = 27.58;
-  Q.ciu_parlament_girona_retired_support = 44.6;
-  Q.ciu_parlament_girona_rural_support = 29.14;
-  Q.ciu_parlament_girona_unemployed_support = 31.62;
-  Q.ciu_parlament_lleida_buss_support = 30.92;
-  Q.ciu_parlament_lleida_ind_support = 25.77;
-  Q.ciu_parlament_lleida_middle_support = 28.32;
-  Q.ciu_parlament_lleida_young_support = 24.05;
-  Q.ciu_parlament_lleida_retired_support = 40.68;
-  Q.ciu_parlament_lleida_rural_support = 33.82;
-  Q.ciu_parlament_lleida_unemployed_support = 22.09;
-  Q.ciu_parlament_tarragona_buss_support = 25.58;
-  Q.ciu_parlament_tarragona_ind_support = 28.64;
-  Q.ciu_parlament_tarragona_middle_support = 22.61;
-  Q.ciu_parlament_tarragona_young_support = 18.72;
-  Q.ciu_parlament_tarragona_retired_support = 35.72;
-  Q.ciu_parlament_tarragona_rural_support = 9.6;
-  Q.ciu_parlament_tarragona_unemployed_support = 20.79;
-  Q.erc_parlament_barcelona_buss_support = 8.3;
-  Q.erc_parlament_barcelona_ind_support = 8.28;
-  Q.erc_parlament_barcelona_middle_support = 8.72;
-  Q.erc_parlament_barcelona_young_support = 8.93;
-  Q.erc_parlament_barcelona_retired_support = 8.3;
-  Q.erc_parlament_barcelona_rural_support = 26.5;
-  Q.erc_parlament_barcelona_unemployed_support = 10.12;
-  Q.erc_parlament_girona_buss_support = 18.33;
-  Q.erc_parlament_girona_ind_support = 17.84;
-  Q.erc_parlament_girona_middle_support = 16.66;
-  Q.erc_parlament_girona_young_support = 15.87;
-  Q.erc_parlament_girona_retired_support = 9.84;
-  Q.erc_parlament_girona_rural_support = 18.09;
-  Q.erc_parlament_girona_unemployed_support = 10.9;
-  Q.erc_parlament_lleida_buss_support = 13.02;
-  Q.erc_parlament_lleida_ind_support = 20.2;
-  Q.erc_parlament_lleida_middle_support = 20.0;
-  Q.erc_parlament_lleida_young_support = 17.4;
-  Q.erc_parlament_lleida_retired_support = 8.42;
-  Q.erc_parlament_lleida_rural_support = 17.52;
-  Q.erc_parlament_lleida_unemployed_support = 14.49;
-  Q.erc_parlament_tarragona_buss_support = 22.31;
-  Q.erc_parlament_tarragona_ind_support = 6.03;
-  Q.erc_parlament_tarragona_middle_support = 11.06;
-  Q.erc_parlament_tarragona_young_support = 10.84;
-  Q.erc_parlament_tarragona_retired_support = 9.18;
-  Q.erc_parlament_tarragona_rural_support = 21.47;
-  Q.erc_parlament_tarragona_unemployed_support = 7.92;
+  Q.ciu_parlament_barcelona_buss_support = 21.15;
+  Q.ciu_parlament_barcelona_ind_support = 17.271;
+  Q.ciu_parlament_barcelona_middle_support = 15.786;
+  Q.ciu_parlament_barcelona_young_support = 11.286;
+  Q.ciu_parlament_barcelona_retired_support = 26.415;
+  Q.ciu_parlament_barcelona_rural_support = 22.5;
+  Q.ciu_parlament_barcelona_unemployed_support = 13.077;
+  Q.ciu_parlament_girona_buss_support = 28.287;
+  Q.ciu_parlament_girona_ind_support = 21.771;
+  Q.ciu_parlament_girona_middle_support = 25.308;
+  Q.ciu_parlament_girona_young_support = 24.822;
+  Q.ciu_parlament_girona_retired_support = 40.14;
+  Q.ciu_parlament_girona_rural_support = 26.226;
+  Q.ciu_parlament_girona_unemployed_support = 28.458;
+  Q.ciu_parlament_lleida_buss_support = 27.828;
+  Q.ciu_parlament_lleida_ind_support = 23.193;
+  Q.ciu_parlament_lleida_middle_support = 25.488;
+  Q.ciu_parlament_lleida_young_support = 21.645;
+  Q.ciu_parlament_lleida_retired_support = 36.612;
+  Q.ciu_parlament_lleida_rural_support = 30.438;
+  Q.ciu_parlament_lleida_unemployed_support = 19.881;
+  Q.ciu_parlament_tarragona_buss_support = 23.022;
+  Q.ciu_parlament_tarragona_ind_support = 25.776;
+  Q.ciu_parlament_tarragona_middle_support = 20.349;
+  Q.ciu_parlament_tarragona_young_support = 16.848;
+  Q.ciu_parlament_tarragona_retired_support = 32.148;
+  Q.ciu_parlament_tarragona_rural_support = 8.64;
+  Q.ciu_parlament_tarragona_unemployed_support = 18.711;
+  Q.erc_parlament_barcelona_buss_support = 4.15;
+  Q.erc_parlament_barcelona_ind_support = 4.14;
+  Q.erc_parlament_barcelona_middle_support = 4.36;
+  Q.erc_parlament_barcelona_young_support = 4.465;
+  Q.erc_parlament_barcelona_retired_support = 4.15;
+  Q.erc_parlament_barcelona_rural_support = 13.25;
+  Q.erc_parlament_barcelona_unemployed_support = 5.06;
+  Q.erc_parlament_girona_buss_support = 9.165;
+  Q.erc_parlament_girona_ind_support = 8.92;
+  Q.erc_parlament_girona_middle_support = 8.33;
+  Q.erc_parlament_girona_young_support = 7.935;
+  Q.erc_parlament_girona_retired_support = 4.92;
+  Q.erc_parlament_girona_rural_support = 9.045;
+  Q.erc_parlament_girona_unemployed_support = 5.45;
+  Q.erc_parlament_lleida_buss_support = 6.51;
+  Q.erc_parlament_lleida_ind_support = 10.1;
+  Q.erc_parlament_lleida_middle_support = 10;
+  Q.erc_parlament_lleida_young_support = 8.7;
+  Q.erc_parlament_lleida_retired_support = 4.21;
+  Q.erc_parlament_lleida_rural_support = 8.76;
+  Q.erc_parlament_lleida_unemployed_support = 7.245;
+  Q.erc_parlament_tarragona_buss_support = 11.155;
+  Q.erc_parlament_tarragona_ind_support = 3.015;
+  Q.erc_parlament_tarragona_middle_support = 5.53;
+  Q.erc_parlament_tarragona_young_support = 5.42;
+  Q.erc_parlament_tarragona_retired_support = 4.59;
+  Q.erc_parlament_tarragona_rural_support = 10.735;
+  Q.erc_parlament_tarragona_unemployed_support = 3.96;
   Q.cup_parlament_barcelona_buss_support = 2.2;
   Q.cup_parlament_barcelona_ind_support = 1.82;
   Q.cup_parlament_barcelona_middle_support = 1.9;
@@ -1221,41 +1207,36 @@ on-arrival: {!
   Q.pxc_parlament_tarragona_retired_support = 0.0001;
   Q.pxc_parlament_tarragona_rural_support = 0.0001;
   Q.pxc_parlament_tarragona_unemployed_support = 0.0001;
-  Q.abstain_parlament_barcelona_buss_support = 25.4;
-  Q.abstain_parlament_barcelona_ind_support = 32.42;
-  Q.abstain_parlament_barcelona_middle_support = 27.66;
-  Q.abstain_parlament_barcelona_young_support = 44.33;
-  Q.abstain_parlament_barcelona_retired_support = 24.29;
-  Q.abstain_parlament_barcelona_rural_support = 16.0;
-  Q.abstain_parlament_barcelona_unemployed_support = 42.08;
-  Q.abstain_parlament_girona_buss_support = 24.2;
-  Q.abstain_parlament_girona_ind_support = 28.45;
-  Q.abstain_parlament_girona_middle_support = 24.48;
-  Q.abstain_parlament_girona_young_support = 28.05;
-  Q.abstain_parlament_girona_retired_support = 25.39;
-  Q.abstain_parlament_girona_rural_support = 32.66;
-  Q.abstain_parlament_girona_unemployed_support = 29.5;
-  Q.abstain_parlament_lleida_buss_support = 33.33;
-  Q.abstain_parlament_lleida_ind_support = 31.31;
-  Q.abstain_parlament_lleida_middle_support = 28.42;
-  Q.abstain_parlament_lleida_young_support = 33.82;
-  Q.abstain_parlament_lleida_retired_support = 29.47;
-  Q.abstain_parlament_lleida_rural_support = 26.8;
-  Q.abstain_parlament_lleida_unemployed_support = 38.65;
-  Q.abstain_parlament_tarragona_buss_support = 27.18;
-  Q.abstain_parlament_tarragona_ind_support = 34.17;
-  Q.abstain_parlament_tarragona_middle_support = 29.15;
-  Q.abstain_parlament_tarragona_young_support = 31.53;
-  Q.abstain_parlament_tarragona_retired_support = 30.62;
-  Q.abstain_parlament_tarragona_rural_support = 39.55;
-  Q.abstain_parlament_tarragona_unemployed_support = 37.62;
+  Q.abstain_parlament_barcelona_buss_support = 31.9;
+  Q.abstain_parlament_barcelona_ind_support = 38.479;
+  Q.abstain_parlament_barcelona_middle_support = 33.774;
+  Q.abstain_parlament_barcelona_young_support = 50.049;
+  Q.abstain_parlament_barcelona_retired_support = 31.375;
+  Q.abstain_parlament_barcelona_rural_support = 31.75;
+  Q.abstain_parlament_barcelona_unemployed_support = 48.593;
+  Q.abstain_parlament_girona_buss_support = 36.508;
+  Q.abstain_parlament_girona_ind_support = 39.789;
+  Q.abstain_parlament_girona_middle_support = 35.622;
+  Q.abstain_parlament_girona_young_support = 38.743;
+  Q.abstain_parlament_girona_retired_support = 34.77;
+  Q.abstain_parlament_girona_rural_support = 44.619;
+  Q.abstain_parlament_girona_unemployed_support = 38.112;
+  Q.abstain_parlament_lleida_buss_support = 42.932;
+  Q.abstain_parlament_lleida_ind_support = 43.987;
+  Q.abstain_parlament_lleida_middle_support = 41.252;
+  Q.abstain_parlament_lleida_young_support = 44.925;
+  Q.abstain_parlament_lleida_retired_support = 37.748;
+  Q.abstain_parlament_lleida_rural_support = 38.942;
+  Q.abstain_parlament_lleida_unemployed_support = 48.104;
+  Q.abstain_parlament_tarragona_buss_support = 40.893;
+  Q.abstain_parlament_tarragona_ind_support = 40.049;
+  Q.abstain_parlament_tarragona_middle_support = 36.941;
+  Q.abstain_parlament_tarragona_young_support = 38.822;
+  Q.abstain_parlament_tarragona_retired_support = 38.782;
+  Q.abstain_parlament_tarragona_rural_support = 51.245;
+  Q.abstain_parlament_tarragona_unemployed_support = 43.659;
 
-  // Congreso supports (Aug 2012, % of census incl. abstain — see congreso_engine.js).
-  // Parties not set here stay 0 (zeroed in @start_menu) and only come to life via
-  // their formation scenes: Podemos (2014), Cs national (2015), Vox (2018), Unidas
-  // Podemos / NSuma / Más País / Compromís / Més / FR-CUP etc. The 2012 left space
-  // is IU; the abertzale left is Amaiur (rebrands to EH Bildu later).
-
+  // Congreso supports (Aug 2012, % of census incl. abstain).
   // Catalunya — CiU bloc runs as "ciu"; ERC separate; left space = IU.
   Q.ciu_congreso_catalunya_support = 21.00;
   Q.psoe_congreso_catalunya_support = 18.00;

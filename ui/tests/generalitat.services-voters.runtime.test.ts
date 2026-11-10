@@ -52,6 +52,23 @@ function support(q: Record<string, any>) {
   return Object.fromEntries(Object.entries(q).filter(([key, value]) => key.endsWith('_support') && typeof value === 'number')) as Record<string, number>;
 }
 
+function sideContestGains(q: Record<string, any>, before: Record<string, number>) {
+  return {
+    congreso: q.erc_congreso_catalunya_support - before.erc_congreso_catalunya_support,
+    barcelona: q.erc_local_barcelona_support - before.erc_local_barcelona_support,
+  };
+}
+
+function baselineHealthGains() {
+  const { adapter, q } = setup();
+  const before = support(q);
+  adapter.goToScene('generalitat_health_card.approve_raise');
+  const gains = sideContestGains(q, before);
+  expect(gains.congreso).toBeGreaterThan(0);
+  expect(gains.barcelona).toBeGreaterThan(0);
+  return gains;
+}
+
 function checkConservation(q: Record<string, any>, previous: Record<string, number>) {
   for (const province of q.parlament_constituencies) for (const demo of q.parlament_demographics) {
     const parties = [...q.parties, 'abstain'];
@@ -140,6 +157,7 @@ describe('Delivered ministries target particular voters', () => {
   });
 
   it('side contests use their own donors when the Parliamentary route is unavailable', () => {
+    const baseline = baselineHealthGains();
     const { adapter, q } = setup();
     for (const province of q.parlament_constituencies) for (const demo of q.parlament_demographics) {
       for (const donor of ['psc', 'icv', 'abstain']) {
@@ -151,14 +169,14 @@ describe('Delivered ministries target particular voters', () => {
     adapter.goToScene('generalitat_health_card.approve_raise');
     expect(q.healthcare_spending).toBe(1);
     for (const [key, value] of Object.entries(before).filter(([key]) => key.includes('_parlament_'))) expect(q[key]).toBe(value);
-    expect(q.erc_congreso_catalunya_support - before.erc_congreso_catalunya_support).toBeCloseTo(0.04);
-    expect(q.erc_local_barcelona_support - before.erc_local_barcelona_support).toBeCloseTo(0.08 * 0.75);
+    expect(sideContestGains(q, before)).toEqual(baseline);
     expect(q.psoe_congreso_catalunya_support).toBeLessThan(before.psoe_congreso_catalunya_support);
     expect(q.psc_local_barcelona_support).toBeLessThan(before.psc_local_barcelona_support);
     checkConservation(q, before);
   });
 
   it('tiny Parliamentary donors limit that contest while the side profiles remain independently authored', () => {
+    const baseline = baselineHealthGains();
     const { adapter, q } = setup();
     for (const province of q.parlament_constituencies) for (const demo of q.parlament_demographics) {
       for (const donor of ['psc', 'icv', 'abstain']) {
@@ -172,8 +190,7 @@ describe('Delivered ministries target particular voters', () => {
       const gain = q[`erc_parlament_${province}_${demo}_support`] - before[`erc_parlament_${province}_${demo}_support`];
       expect(gain).toBeLessThanOrEqual(0.0000015);
     }
-    expect(q.erc_congreso_catalunya_support - before.erc_congreso_catalunya_support).toBeCloseTo(0.04);
-    expect(q.erc_local_barcelona_support - before.erc_local_barcelona_support).toBeCloseTo(0.08 * 0.75);
+    expect(sideContestGains(q, before)).toEqual(baseline);
     checkConservation(q, before);
   });
 

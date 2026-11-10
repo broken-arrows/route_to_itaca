@@ -1524,20 +1524,6 @@ on-arrival: {!
     Q.congreso_parties_rest = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "cc", "fac", "prc", "te"];
 
 
-    Q.congreso_rural_bias = {
-        'pp': 1.15,      // PP is dominant in rural Castilla
-        'psoe': 1.05,    // PSOE holds up well in rural South
-        'podemos': 0.75, // Podemos struggles significantly in rural areas
-        'cs': 0.85,      // Cs also struggles in rural areas
-    };
-
-    Q.congreso_urban_bias = {
-        'pp': 0.95,
-        'psoe': 0.95,
-        'podemos': 1.15,
-        'cs': 1.0
-    };
-
     // Previous congreso control
     // Previous election results (2011)
     Q.abstain_congreso_pv = 31.06;
@@ -1696,20 +1682,6 @@ on-arrival: {!
     Q.congreso_parties_galicia = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "bng"];
     Q.congreso_parties_rest = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "cc", "fac", "prc", "te"];
 
-
-    Q.congreso_rural_bias = {
-        'pp': 1.15,      // PP is dominant in rural Castilla
-        'psoe': 1.05,    // PSOE holds up well in rural South
-        'podemos': 0.75, // Podemos struggles significantly in rural areas
-        'cs': 0.85,      // Cs also struggles in rural areas
-    };
-
-    Q.congreso_urban_bias = {
-        'pp': 0.95,
-        'psoe': 0.95,
-        'podemos': 1.15,
-        'cs': 1.0
-    };
 
     // Previous congreso control
     // Previous election results (2015)
@@ -2197,20 +2169,6 @@ on-arrival: {!
     Q.congreso_parties_rest = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "cc", "fac", "prc", "te"];
 
 
-    Q.congreso_rural_bias = {
-        'pp': 1.15,      // PP is dominant in rural Castilla
-        'psoe': 1.05,    // PSOE holds up well in rural South
-        'podemos': 0.75, // Podemos struggles significantly in rural areas
-        'cs': 0.85,      // Cs also struggles in rural areas
-    };
-
-    Q.congreso_urban_bias = {
-        'pp': 0.95,
-        'psoe': 0.95,
-        'podemos': 1.15,
-        'cs': 1.0
-    };
-
     // Previous congreso control (2016)
     Q.abstain_congreso_pv = 30.16;
 
@@ -2359,20 +2317,6 @@ on-arrival: {!
     Q.congreso_parties_galicia = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "bng"];
     Q.congreso_parties_rest = ["pp", "psoe", "podemos", "cs", "iu", "vox", "up", "sumar", "upyd", "mpais", "cc", "fac", "prc", "te"];
 
-
-    Q.congreso_rural_bias = {
-        'pp': 1.15,      // PP is dominant in rural Castilla
-        'psoe': 1.05,    // PSOE holds up well in rural South
-        'podemos': 0.75, // Podemos struggles significantly in rural areas
-        'cs': 0.85,      // Cs also struggles in rural areas
-    };
-
-    Q.congreso_urban_bias = {
-        'pp': 0.95,
-        'psoe': 0.95,
-        'podemos': 1.15,
-        'cs': 1.0
-    };
 
     // Previous congreso control (April 2019)
     Q.abstain_congreso_pv = 22.42;

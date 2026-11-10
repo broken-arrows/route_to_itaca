@@ -7,9 +7,9 @@ role: event
 on-arrival: {!
     G.deactivateLaw(Q, "climate_transition_core_initial", undefined, true);
     G.deactivateLaw(Q, "climate_binding_targets_initial", undefined, true);
-    G.registerLaw(Q, {id:"climate_transition_core_mature",colour:"green",description:"Beyond an initial investment, and targets for emissions reductions, strides have been made to reduce GHG emissions and transform the economy",title:"Mature Climate Transition",icon:"img/leaf_icon.svg",targets:{gdp_growth:0.01,generalitat_surplus:-0.01,unemployment_recovery:0.02,welfare_index_growth:0.05}});
+    G.registerLaw(Q, {fiscal_ticks:24, id:"climate_transition_core_mature",colour:"green",description:"Beyond an initial investment, and targets for emissions reductions, strides have been made to reduce GHG emissions and transform the economy",title:"Mature Climate Transition",icon:"img/leaf_icon.svg",targets:{gdp_growth:0.01,generalitat_surplus:-0.01,unemployment_recovery:0.02,welfare_index_growth:0.05}});
     if (!Q.climate_transition_contested_struck) {
-        G.registerLaw(Q, {id:"climate_binding_targets_mature",colour:"green",description:"Binding targets on GHG emissions have been set for operations happening in Catalonia.",title:"Binding Climate Targets",icon:"img/leaf_icon.svg",targets:{gdp_growth:0.02,generalitat_surplus:-0.01,unemployment_recovery:0.005,welfare_index_growth:0.02}});
+        G.registerLaw(Q, {fiscal_ticks:24, id:"climate_binding_targets_mature",colour:"green",description:"Binding targets on GHG emissions have been set for operations happening in Catalonia.",title:"Binding Climate Targets",icon:"img/leaf_icon.svg",targets:{gdp_growth:0.02,generalitat_surplus:-0.01,unemployment_recovery:0.005,welfare_index_growth:0.02}});
     }
     // TODO: check number of climate_transition_points required
 !}

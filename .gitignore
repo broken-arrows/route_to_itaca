@@ -29,3 +29,9 @@ Overview.pdf
 /out/html/locales/
 /out/release/
 *.log
+
+# Local balance tools
+/ui/tests/congreso-national-calibration.test.ts
+/ui/tests/macro-calibration.test.ts
+/ui/tests/natural-balance.test.ts
+/ui/tests/fiscal-outliers.test.ts

@@ -93,13 +93,74 @@ function answer(f: ReturnType<typeof setup>, name: string) {
 afterEach(() => vi.restoreAllMocks());
 
 describe('NPC cabinet scheduling', () => {
+  it.each(['cabinet', 'external_support'])('permits an aged %s agreement breach without erasing the promise', scope => {
+    const f=setup({healthcare_spending:0,coalition_policy_commitments:[{kind:'healthcare_spending',target:0,
+      scope,signatories:['ciu','erc'],status:'applied',agreed_month:2013*12+4-17}],
+      ...(scope==='external_support'?{cat_coalition:['ciu'],cat_coalition_support:['erc']}: {})});
+    expect(f.candidates().some(item=>item.kind==='cut')).toBe(false);
+    f.q.month=5;
+    const frame=propose(f,'healthcare_spending',-1);
+    expect(frame.html).toContain('This proposal goes against');
+    answer(f,'accept');
+    expect(f.q.healthcare_spending).toBe(-1);
+    expect(f.q.coalition_policy_commitments[0]).toMatchObject({status:'broken',target:0});
+    expect(f.q.ciu_relations).toBe(55);
+    expect(f.q.coalition_rupture_recheck).toBe(true);
+    expect(f.q.npc_government_outcome).toContain('investiture agreement');
+    if(scope==='external_support') expect(f.q.cat_coalition_support).toContain('erc');
+  });
+
+  it('shares a twice-pace cut cooldown across ministries and persists it through save/load', () => {
+    const f=setup({education_minister_party:'ciu',economy_minister_party:'ciu',territory_minister_party:'ciu'});
+    propose(f,'healthcare_spending',-2);
+    answer(f,'accept');
+    const cooldown=f.q.npc_austerity_timer;
+    expect(cooldown).toBe(2*f.q.government_does_things_timer);
+    expect(f.q.timers.filter((id:string)=>id==='npc_austerity')).toHaveLength(1);
+    const loaded=DendryAdapter.fromJSONText(gameText);
+    loaded.importStateJSON(f.adapter.exportStateJSON());
+    expect(loaded.qualities.npc_austerity_timer).toBe(cooldown);
+    expect(f.candidates().some(item=>item.kind==='cut')).toBe(false);
+    expect(f.candidates().some(item=>item.kind!=='cut')).toBe(true);
+    propose(f,'territory_renewables',1);
+    answer(f,'accept');
+    expect(f.q.npc_austerity_timer).toBe(cooldown);
+    f.q.npc_austerity_timer=1;
+    expect(f.candidates().some(item=>item.kind==='cut')).toBe(false);
+    f.q.npc_austerity_timer=0;
+    expect(f.candidates().some(item=>item.field==='education_spending' && item.kind==='cut')).toBe(true);
+  });
+
+  it('starts no cut cooldown for stopped proposals and revalidates a queued cut', () => {
+    const f=setup();
+    due(f); answer(f,'stop');
+    expect(f.q.npc_austerity_timer||0).toBe(0);
+    propose(f,'healthcare_spending',-2);
+    f.q.npc_austerity_timer=3;
+    f.adapter.goToScene(`${scene}.accept`);
+    expect(f.q.healthcare_spending).toBe(-1);
+    expect(f.q.npc_austerity_timer).toBe(3);
+    expect(f.errors.mock.calls.filter(call=>String(call[0]).includes('action'))).toEqual([]);
+  });
+
+  it('submits an aged tax-agreement breach to the ordinary budget vote without silently restoring the old target', () => {
+    const f=setup({economy_minister_party:'ciu',generalitat_surplus:0.5,tax_policy_level:2,
+      year:2014,budget_year:2013,budget_year_attempted:2013,
+      coalition_policy_commitments:[{kind:'tax_policy_level',target:2,scope:'external_support',
+        signatories:['ciu','erc'],status:'applied',agreed_month:2012*12+10}]});
+    propose(f,'tax_policy_level',1);
+    answer(f,'accept');
+    expect(f.q.budget_draft.tax_policy_level).toBe(1);
+    expect(f.q.tax_policy_level).toBe(2);
+    expect(f.q.coalition_policy_commitments[0].status).toBe('applied');
+  });
   it('scales intervals with control, caps jitter at twelve and uses joint-list shares instead of offices', () => {
     const f = setup();
     const lib = f.adapter.engine.gameLib as any;
     // The timer uses its library-local stream, so sample all three jitter outcomes.
     Object.assign(f.q, Object.fromEntries(offices.map(field => [field, 'ciu'])));
     expect(lib.governmentPlayerControl(f.q)).toBe(0);
-    expect(new Set(Array.from({length: 100}, () => lib.governmentInitiativeTimer(f.q)))).toEqual(new Set([3, 4, 5]));
+    expect(new Set(Array.from({length: 100}, () => lib.governmentInitiativeTimer(f.q)))).toEqual(new Set([5, 6, 7]));
     Object.assign(f.q, Object.fromEntries(offices.map(field => [field, 'erc'])));
     expect(lib.governmentPlayerControl(f.q)).toBe(1);
     expect(new Set(Array.from({length: 100}, () => lib.governmentInitiativeTimer(f.q)))).toEqual(new Set([11, 12]));

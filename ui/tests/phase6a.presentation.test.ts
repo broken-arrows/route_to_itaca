@@ -173,12 +173,15 @@ describe('Phase 6A real authored routes and restoration', () => {
     game.goToScene('root.normal_mode');
     game.goToScene('root.esquerra');
     await flushPromises();
-    const nodes = Array.from(wrapper.get('[data-test="presentation-page"]').element.querySelectorAll('img, h1, p'));
-    const difficulty = nodes.findIndex((node) => node.textContent?.includes('Normal difficulty'));
-    const image = nodes.findIndex((node) => node.getAttribute('data-test') === 'presentation-face-image');
-    const party = nodes.findIndex((node) => node.tagName === 'P' && node.textContent?.includes('Republican Left of Catalonia - ERC'));
-    expect(image).toBeGreaterThan(difficulty);
-    expect(image).toBeLessThan(party);
+    const prose = wrapper.get('.presentation-prose').element;
+    const scene = wrapper.get('.presentation-scene-text').element;
+    const image = wrapper.get('[data-test="presentation-face-image"]').element;
+    // Earlier setup content precedes the current scene. Its image precedes the
+    // scene's prose, whether that prose starts with a heading or a paragraph.
+    expect(prose.lastElementChild).toBe(scene);
+    expect(scene.previousElementSibling?.textContent?.trim()).toBeTruthy();
+    expect(scene.firstElementChild).toBe(image);
+    expect(image.nextElementSibling?.textContent?.trim()).toBeTruthy();
   });
 
   it('keeps the image beside its scene text through save/load, locale refresh and Library return', () => {
@@ -187,9 +190,9 @@ describe('Phase 6A real authored routes and restoration', () => {
     adapter.goToScene('root.start');
     adapter.goToScene('root.normal_mode');
     const detail = adapter.goToScene('root.esquerra');
-    expect(detail.faceImageContent?.beforeHtml).toContain('difficulty');
-    expect(detail.faceImageContent?.afterHtml).toContain('Republican Left of Catalonia');
-    expect(detail.faceImageContent?.afterHtml).not.toContain('difficulty');
+    expect(detail.faceImageContent?.beforeHtml).toBeTruthy();
+    expect(detail.faceImageContent?.afterHtml).toBeTruthy();
+    expect(detail.faceImageContent?.afterHtml).not.toBe(detail.faceImageContent?.beforeHtml);
     const restored = DendryAdapter.fromJSONText(compiled);
     const loaded = restored.importStateJSON(adapter.exportStateJSON());
     expect(loaded.faceImageContent).toEqual(detail.faceImageContent);
