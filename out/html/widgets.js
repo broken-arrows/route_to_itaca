@@ -657,7 +657,10 @@
     "election-history": function (el, Q) {
       var props = resolveProps(el, Q);
       var records = Q[props.recordsFrom];
-      var parties = Q[props.partiesFrom];
+      var variables = Array.isArray(props.series);
+      var parties = variables ? props.series.map(function (row) { return row.id; }) : Q[props.partiesFrom];
+      var names = variables ? Object.fromEntries(props.series.map(function (row) { return [row.id, tc(row.name)]; })) : props.partyNames;
+      var colours = variables ? Object.fromEntries(props.series.map(function (row) { return [row.id, row.colour]; })) : props.partyColours;
       // linegraph appends its axes/paths. Start clean on every shell refresh.
       el.replaceChildren();
       if (!Array.isArray(records) || !records.length || !Array.isArray(parties))
@@ -666,6 +669,11 @@
         return row && row.date != null && Number.isFinite(+new Date(row.date));
       });
       if (!valid.length) return;
+      if (variables && props.unitLabel) {
+        var unit = document.createElement('p');
+        unit.textContent = tc(props.unitLabel);
+        el.appendChild(unit);
+      }
       var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       var width = Math.max(250, Math.min(500, el.clientWidth || 500));
       svg.setAttribute("viewBox", "0 0 " + width + " 400");
@@ -676,8 +684,12 @@
         true,
         true,
         parties,
-        props.partyColours,
-        props.partyNames,
+        colours,
+        names,
+        undefined,
+        undefined,
+        variables ? 0 : undefined,
+        { variables: variables, yMin: props.yMin, yMax: props.yMax, valueSuffix: props.valueSuffix },
       );
       var events = [];
       var firstDate = Math.min.apply(

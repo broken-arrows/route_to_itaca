@@ -179,7 +179,7 @@ on-arrival: {!
 @cdc_relations
 subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
 choose-if: (erc_advisor_action or party_resources >= 1) 
-view-if: unio_split and not cdc_in_jxsi and not cdc_in_jxcat
+view-if: unio_split and not cdc_in_jxsi and not cdc_in_jxcat and parlament_current_ciu = "cdc"
 unavailable-subtitle: Not enough resources
 on-arrival: {!
     if (!Q.erc_advisor_action) Q.party_resources -= 1;

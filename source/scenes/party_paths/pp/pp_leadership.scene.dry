@@ -18,6 +18,9 @@ role: event
 
 After years of political wear, corruption scandals, anti-austerity backlash, and a long etc, its now clear for the PP that Mariano Rajoy's leadership needs a succession. In this year's party congress, two main candidacies stand. On one hand, [? if not pp_party_congress_gob_alone: former ?] Vice-Presidenta Soraya Sáenz de Santamaría is the closest thing to a Rajoy-legacy candidate, having governed together for years. Yet just as it has taken a toll on Rajoy, corruption and political wear could see her struggle to reach the leadership. On the other hand, Pablo Casado is the "renewal" candidate. Young and energetic, he is a bet on a new PP, but his lack of political experience may end up proving a liability.
 
+- @soraya_leadership
+- @casado_leadership
+
 @soraya_leadership
 title: Soraya Sáenz de Santamaría succeeds Rajoy as PP leader
 choose-if: not pp_party_congress_casado

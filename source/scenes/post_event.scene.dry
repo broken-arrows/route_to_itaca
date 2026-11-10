@@ -384,6 +384,7 @@ if (has_time_passed) {
 
     Q.economic_records.push({
         'date': new Date(Q.year, Q.month-1, Q.week*7),
+        'week': Q.rubicon ? Q.week : null,
         'gdp_growth': Q.gdp_growth,
         'public_debt': Q.public_debt,
         'unemployment': Q.unemployment,
@@ -391,6 +392,7 @@ if (has_time_passed) {
     })
     Q.social_records.push({
         'date': new Date(Q.year, Q.month-1, Q.week*7),
+        'week': Q.rubicon ? Q.week : null,
         'independence_movement': Q.independence_movement,
         'independence_trust': Q.independence_trust,
         'social_dissent': Q.social_dissent,

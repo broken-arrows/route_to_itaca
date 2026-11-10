@@ -368,6 +368,100 @@ describe('Classic election history', () => {
   });
 });
 
+const variableProps = {
+  recordsFrom: 'history',
+  series: [
+    { id: 'growth', name: 'Growth', colour: '#387b58' },
+    { id: 'balance', name: 'Balance', colour: '#8b528b' },
+  ],
+  unitLabel: 'Annual change (%)',
+};
+const variableRecords = [
+  { date: '2012-08-07', growth: -3, balance: -2 },
+  { date: '2012-09-07', growth: 0, balance: 0 },
+  { date: '2012-10-07', growth: 2, balance: null },
+  { date: '2012-11-07', growth: 3, balance: 1 },
+];
+
+it('uses the existing Vue chart for signed variables, retaining zero and gaps only for missing data', () => {
+  const w = mount(ElectionHistory, { props: { ...variableProps, q: { history: variableRecords } }, global: { plugins: [i18n] } });
+  expect(w.findAll('.history-line')).toHaveLength(2);
+  expect(w.get('[data-party="growth"] .history-line').attributes('d')?.match(/M/g)).toHaveLength(1);
+  expect(w.get('[data-party="balance"] .history-line').attributes('d')?.match(/M/g)).toHaveLength(2);
+  expect(w.find('.history-zero').exists()).toBe(true);
+  expect(w.get('.history-unit').text()).toBe(variableProps.unitLabel);
+  expect(w.get('.history-axis').text()).toMatch(/-\d+%/);
+  const ys = [...w.get('[data-party="growth"] .history-line').attributes('d')!.matchAll(/[ML][\d.]+,([\d.]+)/g)].map(match => Number(match[1]));
+  const baseline = Number(w.get('.history-axis-baseline').attributes('y1'));
+  expect(ys).toHaveLength(4);
+  expect(ys.every(y => y >= 32 && y <= baseline)).toBe(true);
+  w.unmount();
+});
+
+it('renders a fixed index scale including zero without percentage labels', () => {
+  const w = mount(ElectionHistory, { props: { ...variableProps, valueSuffix: '', yMin: 0, yMax: 100,
+    q: { history: [{ date: '2012-08-07', growth: 0, balance: 100 }] } }, global: { plugins: [i18n] } });
+  expect(w.findAll('.history-point')).toHaveLength(2);
+  expect(w.get('.history-axis').text()).not.toContain('%');
+  expect(w.get('button[data-party="growth"]').attributes('aria-label')).toContain('Growth: 0 ·');
+  expect(w.find('.history-zero').exists()).toBe(false);
+  expect(Number(w.get('[data-party="balance"] circle').attributes('cy'))).toBe(32);
+  w.unmount();
+});
+
+it('renders signed variables in Classic and keeps hover highlighting inside its own chart', () => {
+  vi.stubGlobal('dendryUI', { game: { data: { glossary: { terms: [] } } } });
+  window.eval(read('out/html/d3.v7.min.js'));
+  window.eval(read('out/html/d3-linegraph.js'));
+  window.eval(read('out/html/widgets.js'));
+  document.body.innerHTML = '<main><div></div><div></div></main>';
+  const [a, b] = [...document.querySelectorAll('main > div')];
+  for (const el of [a, b]) {
+    el.setAttribute('data-widget', 'election-history');
+    el.setAttribute('data-props', JSON.stringify(variableProps));
+  }
+  const q = { history: variableRecords };
+  const before = JSON.stringify(q);
+  (window as unknown as { mountWidgets: (root: Element, q: object) => void }).mountWidgets(document.body, q);
+  expect(a.querySelectorAll('.party-line')).toHaveLength(2);
+  expect(a.querySelector('.party-line[series="growth"]')?.getAttribute('d')?.match(/M/g)).toHaveLength(1);
+  expect(a.querySelector('.party-line[series="balance"]')?.getAttribute('d')?.match(/M/g)).toHaveLength(2);
+  expect(a.querySelector('.history-zero')).not.toBeNull();
+  expect(a.textContent).toContain('-');
+  a.querySelector('.party-line[series="growth"]')!.dispatchEvent(new MouseEvent('mouseover'));
+  expect(a.querySelector('.party-line[series="balance"]')?.getAttribute('stroke-width')).toBe('0.1');
+  expect(b.querySelector('.party-line[series="balance"]')?.getAttribute('stroke-width')).toBe('1.5');
+  const zeroX = Number([...a.querySelector('.party-line[series="growth"]')!.getAttribute('d')!.matchAll(/[ML]([\d.]+),/g)][1][1]);
+  a.querySelector('svg')!.dispatchEvent(new MouseEvent('mousemove', { clientX: zeroX, clientY: 100 }));
+  expect(a.querySelectorAll('.history-guide-point')).toHaveLength(2);
+  expect(JSON.stringify(q)).toBe(before);
+});
+
+it('mounts all five end-of-game histories from their authored scene after save restoration', async () => {
+  const errors = vi.spyOn(console, 'error');
+  const game = useGameStore();
+  game.newGame();
+  game.goToScene('root.start');
+  const q = game.adapter!.qualities;
+  Object.assign(q, {
+    economic_records: [{ date: '2017-09-07', unemployment: 15, public_debt: 30, gdp_growth: -1, generalitat_surplus: 0 }],
+    social_records: [{ date: '2017-09-07', independence_movement: 60, independence_trust: 0, social_dissent: 70, cat_spa_relations: 35, welfare_index: 72, podemos_channeling: 0.8 }],
+    party_support_records: records, party_spa_support_records: records, parties, congreso_parties: parties,
+  });
+  game.goToScene('game_over.end_stats');
+  game.restoreState(game.captureState());
+  const state = game.captureState();
+  const w = mount(Prose, { props: { html: game.frame!.html }, global: { plugins: [i18n] } });
+  await flushPromises();
+  expect(w.findAll('.election-history')).toHaveLength(5);
+  expect(w.findAll('.history-line')).toHaveLength(14);
+  expect(w.find('[data-party="welfare_index"]').exists()).toBe(false);
+  expect(w.find('[data-party="podemos_channeling"]').exists()).toBe(false);
+  expect(game.captureState()).toBe(state);
+  expect(errors).not.toHaveBeenCalled();
+  w.unmount();
+});
+
 it('records weekly and monthly sampling metadata through the real post-event action', () => {
   const errors = vi.spyOn(console, 'error');
   const game = useGameStore();
@@ -383,12 +477,12 @@ it('records weekly and monthly sampling metadata through the real post-event act
   Object.assign(q, { rubicon: true, week: 2, month_actions: 1, month_actions_last: 2, historical_mode: false });
   game.goToScene('post_event');
   expect(q.week).toBe(3);
-  for (const key of ['party_support_records', 'party_spa_support_records']) {
+  for (const key of ['party_support_records', 'party_spa_support_records', 'economic_records', 'social_records']) {
     expect((q[key] as Array<{ week: number | null }>).at(-1)?.week).toBe(3);
   }
   Object.assign(q, { rubicon: false, month_actions: 1 });
   game.goToScene('post_event');
-  for (const key of ['party_support_records', 'party_spa_support_records']) {
+  for (const key of ['party_support_records', 'party_spa_support_records', 'economic_records', 'social_records']) {
     expect((q[key] as Array<{ week: number | null }>).at(-1)?.week).toBeNull();
   }
   expect(errors).not.toHaveBeenCalled();

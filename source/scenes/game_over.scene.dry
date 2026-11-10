@@ -116,6 +116,31 @@ role: ending
 
 <div data-widget="achievement-gallery" data-props='{"scope":"playthrough"}'></div>
 
+@end_stats
+title: Statistics
+view-if: not end_stats_seen
+on-arrival: end_stats_seen = 1
+tags: endings
+go-to: eg_menu
+role: ending
+
+**Unemployment and Public Debt**
+
+{!<div data-widget="election-history" data-props='{"eventsFrom":"election_history_events","recordsFrom":"economic_records","series":[{"id":"unemployment","name":"Unemployment (%)","colour":"#ad552d"},{"id":"public_debt","name":"Public debt (% GDP)","colour":"#436b96"}]}'></div>!}
+
+**GDP growth and Fiscal balance**
+
+{!<div data-widget="election-history" data-props='{"eventsFrom":"election_history_events","recordsFrom":"economic_records","series":[{"id":"gdp_growth","name":"GDP growth (%)","colour":"#387b58"},{"id":"generalitat_surplus","name":"Surplus/Deficit (%)","colour":"#8b528b"}]}'></div>!}
+
+**Party Support History - Catalonia**
+
+{!<div data-widget="election-history" data-props='{"eventsFrom":"election_history_events","recordsFrom":"party_support_records","partiesFrom":"parties","partyNames":{"ciu":"CiU","erc":"ERC","cs":"Cs","psc":"PSC","ppc":"PPC","vox":"Vox","icv":"ICV-EUiA","csqp":"CSQP","cecp":"CECP","ecp":"ECP","cup":"CUP","si":"SI","unio":"UDC","jxsi":"JxSí","jxcat":"JxCat","junts":"Junts","cdc":"CDC","dl":"DL","pdcat":"PDeCAT","fnc":"FNC","pxc":"PxC"},"partyColours":{"ciu":"var(--ciu)","erc":"var(--erc)","cs":"var(--cs)","psc":"var(--psc)","ppc":"var(--ppc)","vox":"var(--vox)","icv":"var(--icv)","csqp":"var(--csqp)","cecp":"var(--cecp)","ecp":"var(--ecp)","cup":"var(--cup)","si":"var(--si)","unio":"var(--unio)","jxsi":"var(--jxsi)","jxcat":"var(--jxcat)","junts":"var(--junts)","cdc":"var(--cdc)","dl":"var(--dl)","pdcat":"var(--pdcat)","fnc":"var(--fnc)","pxc":"var(--pxc)"}}'></div>!}
+
+**Party Support History - Spain**
+
+{!<div data-widget="election-history" data-props='{"eventsFrom":"election_history_events","recordsFrom":"party_spa_support_records","partiesFrom":"congreso_parties","partyNames":{"ciu":"CiU","erc":"ERC","cs":"Cs","psc":"PSC","pp":"PP","vox":"Vox","cup":"CUP","unio":"UDC","jxsi":"JxSí","jxcat":"JxCat","junts":"Junts","cdc":"CDC","dl":"DL","pdcat":"PDeCAT","psoe":"PSOE","iu":"IU","up":"UP","podemos":"Podemos","sumar":"Sumar","mpais":"Más País","pnv":"EAJ-PNV","ehbildu":"EH Bildu","amaiur":"Amaiur","bng":"BNG","mes":"MES","gbai":"GBai","compromis":"Compromís","cc":"CC-PNC","fac":"FAC","prc":"PRC","te":"¡TE!","fr":"FR","upyd":"UPyD","upn":"UPN","nsuma":"NA+"},"partyColours":{"ciu":"var(--ciu)","erc":"var(--erc)","cs":"var(--cs)","psc":"var(--psc)","pp":"var(--pp)","vox":"var(--vox)","cup":"var(--cup)","unio":"var(--unio)","jxsi":"var(--jxsi)","jxcat":"var(--jxcat)","junts":"var(--junts)","cdc":"var(--cdc)","dl":"var(--dl)","pdcat":"var(--pdcat)","psoe":"var(--psoe)","iu":"var(--iu)","up":"var(--up)","podemos":"var(--podemos)","sumar":"var(--sumar)","mpais":"var(--mpais)","pnv":"var(--pnv)","ehbildu":"var(--ehbildu)","amaiur":"var(--amaiur)","bng":"var(--bng)","mes":"var(--mes)","gbai":"var(--gbai)","compromis":"var(--compromis)","cc":"var(--cc)","fac":"var(--fac)","prc":"var(--prc)","te":"var(--te)","fr":"var(--fr)","upyd":"var(--upyd)","upn":"var(--upn)","nsuma":"var(--nsuma)"}}'></div>!}
+
+
 @end_game
 role: ending
 game-over: true

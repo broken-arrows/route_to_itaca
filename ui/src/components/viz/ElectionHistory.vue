@@ -11,7 +11,12 @@ import { useGlossary } from '../../glossary/useGlossary';
 
 const props = withDefaults(defineProps<{
   recordsFrom: string;
-  partiesFrom: string;
+  partiesFrom?: string;
+  series?: Array<{ id: string; name: string; colour: string }>;
+  unitLabel?: string;
+  valueSuffix?: string;
+  yMin?: number;
+  yMax?: number;
   eventsFrom?: string;
   partyNames?: Record<string, string>;
   partyColours?: Record<string, string>;
@@ -40,7 +45,8 @@ const records = computed<RecordPoint[]>(() => {
   }).sort((a, b) => +a.date - +b.date);
 });
 const parties = computed<string[]>(() => {
-  const raw = props.q[props.partiesFrom];
+  if (props.series) return props.series.map(row => row.id);
+  const raw = props.partiesFrom ? props.q[props.partiesFrom] : null;
   return Array.isArray(raw) ? [...new Set(raw.filter((id): id is string => typeof id === 'string'))] : [];
 });
 const events = computed(() => {
@@ -65,7 +71,7 @@ const events = computed(() => {
 // the recorded percentages; they are not normalized election vote shares.
 function reading(record: RecordPoint, party: string): number | null {
   const value = record.values[party];
-  return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : null;
+  return typeof value === 'number' && Number.isFinite(value) && (props.series || value > 0) ? value : null;
 }
 const eventLines = computed(() => events.value.map(event => event.labels));
 const x = computed(() => {
@@ -89,15 +95,25 @@ const annotations = computed(() => {
     lines: lines[index],
   }));
 });
-const width = 600;
+const width = computed(() => props.series ? 760 : 600);
 const top = computed(() => TOP);
 const visibleParties = computed(() => parties.value.filter(id => records.value.some(record => reading(record, id) !== null)).length);
 const bottom = computed(() => TOP + Math.max(243, visibleParties.value * 18 + 12));
 const height = computed(() => bottom.value + 45);
 const y = computed(() => {
-  let max = 0;
+  let min = 0, max = 0;
   for (const record of records.value) {
-    for (const party of parties.value) max = Math.max(max, reading(record, party) ?? 0);
+    for (const party of parties.value) {
+      const value = reading(record, party) ?? 0;
+      min = Math.min(min, value);
+      max = Math.max(max, value);
+    }
+  }
+  if (props.series) {
+    const padding = Math.max(1, (max - min) * 0.1);
+    const domain = [props.yMin ?? (min < 0 ? min - padding : 0), props.yMax ?? max + padding];
+    const scale = scaleLinear().domain(domain).range([bottom.value, top.value]);
+    return props.yMin === undefined && props.yMax === undefined ? scale.nice(5) : scale;
   }
   return scaleLinear().domain([0, max + 10]).nice(5).range([bottom.value, top.value]);
 });
@@ -129,13 +145,15 @@ function onPlotMove(event: MouseEvent): void {
     return;
   }
   const box = (event.currentTarget as SVGSVGElement).getBoundingClientRect();
-  const px = (event.clientX - box.left) * width / box.width;
+  const px = (event.clientX - box.left) * width.value / box.width;
   const py = (event.clientY - box.top) * height.value / box.height;
   const record = px >= L && px <= R && py >= top.value && py <= bottom.value ? nearestRecord(px) : undefined;
   hoverX.value = record ? x.value(record.date) : null;
 }
 const numberFormat = computed(() => new Intl.NumberFormat(locale.value, { maximumFractionDigits: 1 }));
-const percentage = (value: number) => `${numberFormat.value.format(value)}%`;
+const suffix = computed(() => props.valueSuffix ?? '%');
+const unitLabel = computed(() => props.unitLabel ? (game.adapter?.translate(props.unitLabel) ?? props.unitLabel) : t('widgets.history.electorate'));
+const percentage = (value: number) => `${numberFormat.value.format(value)}${suffix.value}`;
 const xTicks = computed(() => {
   if (records.value.length === 1) return [records.value[0].date];
   return x.value.ticks(4);
@@ -146,7 +164,8 @@ const series = computed(() => parties.value.flatMap((id) => {
     return value === null ? [] : [{ date: record.date, value }];
   });
   if (!points.length) return [];
-  const name = props.partyNames[id] ?? id;
+  const variable = props.series?.find(row => row.id === id);
+  const name = variable ? (game.adapter?.translate(variable.name) ?? variable.name) : props.partyNames[id] ?? id;
   const term = partyTerm(id) ?? partyTerm(name);
   const last = points[points.length - 1];
   const path = line<RecordPoint>()
@@ -154,8 +173,8 @@ const series = computed(() => parties.value.flatMap((id) => {
     .defined(record => reading(record, id) !== null)
     .x(record => x.value(record.date))
     .y(record => y.value(reading(record, id)!))(records.value);
-  return [{ id, name, last, path, colour: props.partyColours[id] ?? '#8a8273',
-    labelColour: colourValue(term?.colour) ?? props.partyColours[id] ?? '#8a8273',
+  return [{ id, name, last, path, colour: variable?.colour ?? props.partyColours[id] ?? '#8a8273',
+    labelColour: variable?.colour ?? colourValue(term?.colour) ?? props.partyColours[id] ?? '#8a8273',
     label: markGlossary(name, game.glossary),
     summary: `${name}: ${percentage(last.value)} · ${dateLabel(last.date)}` }];
 }));
@@ -189,15 +208,16 @@ const labelledSeries = computed(() => {
 <template>
   <div class="election-history">
     <template v-if="series.length">
-      <p class="history-unit">{{ t('widgets.history.electorate') }}</p>
+      <p class="history-unit">{{ unitLabel }}</p>
       <div class="history-plot">
-      <svg :viewBox="`0 0 ${width} ${height}`" role="img" :aria-label="t('widgets.history.label')"
+      <svg :viewBox="`0 0 ${width} ${height}`" role="img" :aria-label="props.series ? unitLabel : t('widgets.history.label')"
         @mousemove="onPlotMove" @mouseleave="hoverX = null">
         <rect class="history-hover-surface" :x="L" :y="top" :width="R - L" :height="bottom - top" fill="transparent" />
         <g class="history-axis" aria-hidden="true">
           <line class="history-axis-baseline" :x1="L" :x2="R" :y1="bottom" :y2="bottom" />
+          <line v-if="props.series && y.domain()[0] < 0 && y.domain()[1] > 0" class="history-zero" :x1="L" :x2="R" :y1="y(0)" :y2="y(0)" />
           <g v-for="tick in y.ticks(5)" :key="tick">
-            <text :x="L - 8" :y="y(tick)" text-anchor="end" dominant-baseline="middle">{{ tick }}%</text>
+            <text :x="L - 8" :y="y(tick)" text-anchor="end" dominant-baseline="middle">{{ tick }}{{ suffix }}</text>
           </g>
           <text v-for="tick in xTicks" :key="+tick" :x="x(tick)" :y="bottom + 24" text-anchor="middle">{{ dateLabel(tick) }}</text>
         </g>
@@ -248,6 +268,7 @@ const labelledSeries = computed(() => {
 .history-unit, .history-empty { margin: 8px 0; font: var(--type-compact); color: #6b655a; }
 .history-axis { font: var(--type-compact); fill: #6b655a; }
 .history-axis-baseline { stroke: #8a8273; stroke-width: 1; }
+.history-zero { stroke: #8a8273; stroke-width: 1; stroke-dasharray: 3 4; }
 .history-event { fill: #6b655a; font: 12px var(--type-face-text, sans-serif); }
 .history-event text { paint-order: stroke; stroke: var(--paper-0, #faf9f5); stroke-width: 3px; stroke-linejoin: round; }
 .history-event line { stroke: #b8b8b8; stroke-width: 1; }
