@@ -296,7 +296,8 @@ on-arrival: {!
     Q.parlament_budget_player_default = Q.parlament_budget_player_policy_can_yes ? basePosition(Q.player_party) : "no";
     Q.parlament_budget_player_resource_required = Q.parlament_budget_player_default == "no" &&
         (Q.player_party == "erc" && projection.tax <= 0 || Q.player_party == "cup" && projection.tax < 2) ? 1 : 0;
-    Q.parlament_budget_player_can_yes = Q.parlament_budget_player_policy_can_yes && Q.party_resources >= Q.parlament_budget_player_resource_required;
+    Q.parlament_budget_player_can_yes = Q.parlament_budget_player_policy_can_yes &&
+        (Q.parlament_budget_player_resource_required <= 0 || Q.party_resources >= Q.parlament_budget_player_resource_required);
     Q.parlament_budget_player_resource_cost = Q.parlament_budget_player_vote == "yes" && Q.parlament_budget_player_default == "no" ? Q.parlament_budget_player_resource_required : 0;
     Q.parlament_budget_player_position = position(playerVehicle);
     var parties = ["ciu", "cdc", "dl", "pdcat", "junts", "jxsi", "jxcat", "erc", "cup", "psc", "icv", "csqp", "cecp", "ecp", "ppc", "cs", "unio", "si", "vox", "pxc", "fnc"];
@@ -741,10 +742,11 @@ The Parlament will reconvene in [+ budget_postponed_countdown +] [? if rubicon: 
 @pass
 title: Approve the budget
 subtitle: [? if parlament_budget_player_governs: \[ +[+ parlament_budget_executive_grant +] budget\]?]
-choose-if: parlament_budget_can_pass
-unavailable-subtitle: [? if not parlament_budget_chamber_majority: Not enough parliamentary support.?][? if not parlament_budget_cabinet_yes: Every cabinet party must approve the budget.?]
+choose-if: parlament_budget_can_pass and (parlament_budget_player_resource_cost <= 0 or party_resources >= parlament_budget_player_resource_cost)
+unavailable-subtitle: [? if not parlament_budget_chamber_majority: Not enough parliamentary support.?][? if not parlament_budget_cabinet_yes: Every cabinet party must approve the budget.?][? if parlament_budget_player_resource_cost > 0 and party_resources < parlament_budget_player_resource_cost: Not enough resources.?]
 on-arrival: {!
-    if (!Q.parlament_budget_can_pass || Q.budget_year >= Q.year || Q.party_resources < Q.parlament_budget_player_resource_cost)
+    if (!Q.parlament_budget_can_pass || Q.budget_year >= Q.year ||
+        Q.parlament_budget_player_resource_cost > 0 && Q.party_resources < Q.parlament_budget_player_resource_cost)
         throw new Error("Budget approval conditions changed");
     // Recheck ICF funding authority before charging resources or enacting any terms.
     if (Q.budget_draft.projects.icf) {

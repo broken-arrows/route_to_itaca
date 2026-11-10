@@ -1445,7 +1445,7 @@ on-arrival: {!
   Q.gabriel_rufian_advisor = 0;
   Q.joan_tarda_advisor = 0;
   Q.sergi_sabria_advisor = 0;
-  Q.raul_romera_advisor = 0;
+  Q.raul_romeva_advisor = 0;
   // Institutional Pragmatics
   Q.pere_aragones_advisor = 0;
   Q.pere_aragones_advisor_available = 1;
