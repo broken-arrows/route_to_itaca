@@ -16,6 +16,65 @@ function setup() {
 const transfer = { contest:'congreso', from:'erc', to:'abstain', amount:1,
   maxDonorFraction:0.5, constituencies:['catalunya'] };
 
+describe('Raised dues cover specialist network campaigns', () => {
+  const networks = [
+    { action: 'union_networks', advisors: ['dolors_bassa'], names: ['Dolors Bassa'] },
+    { action: 'union_networks', advisors: ['joan_josep_nuet'], names: ['Joan Josep Nuet'] },
+    { action: 'union_networks', advisors: ['dolors_bassa', 'joan_josep_nuet'], names: ['Dolors Bassa', 'Joan Josep Nuet'] },
+    { action: 'barcelona_networks', advisors: ['alfred_bosch'], names: ['Alfred Bosch'] },
+    { action: 'barcelona_networks', advisors: ['ernest_maragall'], names: ['Ernest Maragall'] },
+    { action: 'barcelona_networks', advisors: ['alfred_bosch', 'ernest_maragall'], names: ['Alfred Bosch', 'Ernest Maragall'] },
+    { action: 'rural_networks', advisors: ['teresa_jorda'], names: ['Teresa Jordà'] },
+  ];
+
+  it.each(networks)('$action follows actual dues changes with $advisors', ({ action, advisors, names }) => {
+    const { a, q } = setup();
+    Object.assign(q, { party_income: 1, party_income_increased: false, erc_advisor_action: null });
+    for (const advisor of ['dolors_bassa', 'joan_josep_nuet', 'alfred_bosch', 'ernest_maragall', 'teresa_jorda'])
+      q[advisor + '_advisor'] = Number(advisors.includes(advisor));
+    const choice = () => a.goToScene('erc_campaigning').choices.find(c => c.id === 'erc_campaigning.' + action)!;
+
+    q.party_resources = 0;
+    expect(choice().canChoose).toBe(false);
+    q.party_resources = 1;
+    let frame = a.goToScene('erc_campaigning');
+    a.choose(frame.choices.findIndex(c => c.id === 'erc_campaigning.' + action));
+    expect(q.party_resources).toBe(0);
+
+    a.goToScene('erc_fundraising.raise_rates');
+    expect(q.party_income_increased).toBe(true);
+    q.party_resources = 0;
+    q.month_actions = 0;
+    frame = a.goToScene('erc_campaigning');
+    const index = frame.choices.findIndex(c => c.id === 'erc_campaigning.' + action);
+    expect(frame.choices[index].canChoose).toBe(true);
+    expect(frame.choices[index].subtitle).not.toContain('[-1 resources]');
+    for (const name of names) expect(frame.choices[index].subtitle).toContain(name);
+    a.choose(index);
+    expect(q.party_resources).toBe(0);
+    expect(q.month_actions).toBe(1);
+
+    a.goToScene('erc_fundraising.lower_rates');
+    expect(q.party_income_increased).toBe(false);
+    expect(choice().canChoose).toBe(false);
+  });
+
+  it('retains advisor requirements and the costs of ordinary campaigns', () => {
+    const { a, q } = setup();
+    Object.assign(q, {
+      party_income_increased: true, party_resources: 0, erc_advisor_action: null,
+      dolors_bassa_advisor: 0, joan_josep_nuet_advisor: 0,
+      alfred_bosch_advisor: 0, ernest_maragall_advisor: 0, teresa_jorda_advisor: 0,
+      gabriel_rufian_advisor: 1,
+    });
+    const choices = a.goToScene('erc_campaigning').choices;
+    for (const action of ['union_networks', 'barcelona_networks', 'rural_networks'])
+      expect(choices.some(c => c.id === 'erc_campaigning.' + action)).toBe(false);
+    for (const action of ['workers', 'middle', 'rural', 'redbelt'])
+      expect(choices.find(c => c.id === 'erc_campaigning.' + action)?.canChoose).toBe(false);
+  });
+});
+
 describe('Persistent political reactions', () => {
   it('applies the immediate response, fades monthly, expires, and conserves transfers', () => {
     const { q } = setup();

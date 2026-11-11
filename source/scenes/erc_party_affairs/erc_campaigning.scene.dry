@@ -256,11 +256,11 @@ Thanks to the efforts of [? if marta_rovira_advisor: Marta Rovira ?][? if marta_
 @union_networks
 title: Campaign through unions and social movements
 view-if: dolors_bassa_advisor or joan_josep_nuet_advisor
-choose-if: (dolors_bassa_advisor or joan_josep_nuet_advisor) and (erc_advisor_action or party_resources >= 1)
+choose-if: (dolors_bassa_advisor or joan_josep_nuet_advisor) and (erc_advisor_action or party_income_increased or party_resources >= 1)
 unavailable-subtitle: Not enough resources.
-subtitle: [? if not erc_advisor_action: \[-1 resources\]. ?]
+subtitle: [? if not erc_advisor_action and not party_income_increased: \[-1 resources\]. ?][? if not erc_advisor_action and party_income_increased: No party resources needed, thanks to increased party dues and the efforts of [? if dolors_bassa_advisor: Dolors Bassa?][? if dolors_bassa_advisor and joan_josep_nuet_advisor: and ?][? if joan_josep_nuet_advisor: Joan Josep Nuet?]. ?]
 on-arrival: {!
-    if (!Q.erc_advisor_action) Q.party_resources -= 1;
+    if (!Q.erc_advisor_action && !Q.party_income_increased) Q.party_resources -= 1;
     var effectiveness = Math.max(0, 1 - Q.erc_dissent / 100) * (Q.burdens_broken && (Q.erc_in_gob || Q.erc_supporting) ? 0.3 : 1);
     G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"federal_left", amount:(0.8 * effectiveness), maxDonorFraction:0.5, constituencies:["catalunya"]});
     G.cardSupportTransfer(Q, {contest:"congreso", to:"erc", from:"psoe", amount:(0.6 * effectiveness), maxDonorFraction:0.5, constituencies:["catalunya"]});
@@ -273,11 +273,11 @@ Thanks to the contacts of [? if dolors_bassa_advisor: Dolors Bassa ?][? if dolor
 @barcelona_networks
 title: Campaign through our party's Barcelona local networks
 view-if: alfred_bosch_advisor or ernest_maragall_advisor
-choose-if: (alfred_bosch_advisor or ernest_maragall_advisor) and (erc_advisor_action or party_resources >= 1)
+choose-if: (alfred_bosch_advisor or ernest_maragall_advisor) and (erc_advisor_action or party_income_increased or party_resources >= 1)
 unavailable-subtitle: Not enough resources.
-subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
+subtitle: [? if not erc_advisor_action and not party_income_increased: \[-1 resources\] ?][? if not erc_advisor_action and party_income_increased: No party resources needed, thanks to increased party dues and the efforts of [? if alfred_bosch_advisor: Alfred Bosch?][? if alfred_bosch_advisor and ernest_maragall_advisor: and ?][? if ernest_maragall_advisor: Ernest Maragall?]. ?]
 on-arrival: {!
-    if (!Q.erc_advisor_action) Q.party_resources -= 1;
+    if (!Q.erc_advisor_action && !Q.party_income_increased) Q.party_resources -= 1;
     var effectiveness = Math.max(0, 1 - Q.erc_dissent / 100) * (Q.burdens_broken && (Q.erc_in_gob || Q.erc_supporting) ? 0.3 : 1);
     G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"psc", amount:(1.1 * effectiveness), maxDonorFraction:0.5});
     G.cardSupportTransfer(Q, {contest:"barcelona", to:"erc", from:"federal_left", amount:(0.7 * effectiveness), maxDonorFraction:0.5});
@@ -290,11 +290,11 @@ Our local neighbourhood networks have reached more voters in the city of Barcelo
 @rural_networks
 title: Mobilize rural branches and local networks
 view-if: teresa_jorda_advisor
-choose-if: teresa_jorda_advisor and (erc_advisor_action or party_resources >= 1)
+choose-if: teresa_jorda_advisor and (erc_advisor_action or party_income_increased or party_resources >= 1)
 unavailable-subtitle: Not enough resources.
-subtitle: [? if not erc_advisor_action:\[-1 resources\] ?]
+subtitle: [? if not erc_advisor_action and not party_income_increased:\[-1 resources\] ?][? if not erc_advisor_action and party_income_increased: No party resources needed, thanks to increased party dues and the efforts of Teresa Jordà. ?]
 on-arrival: {!
-    if (!Q.erc_advisor_action) Q.party_resources -= 1;
+    if (!Q.erc_advisor_action && !Q.party_income_increased) Q.party_resources -= 1;
     var effectiveness = Math.max(0, 1 - Q.erc_dissent / 100) * (Q.burdens_broken && (Q.erc_in_gob || Q.erc_supporting) ? 0.3 : 1);
     Q.erc_interior_mod += Math.min(Math.max(0, 8 - Q.erc_interior_mod), 1.2 * effectiveness);
     G.cardSupportTransfer(Q, {contest:"parlament", to:"erc", from:"ciu", amount:(0.6 * effectiveness), maxDonorFraction:0.5, constituencies:["girona","lleida","tarragona"], demographics:["rural"]});

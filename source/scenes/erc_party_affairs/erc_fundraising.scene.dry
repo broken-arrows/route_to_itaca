@@ -144,7 +144,7 @@ choose-if: party_income < 2
 on-arrival: {!
     if (Q.party_income < 2) {
         var reactionTransfers = [];
-        // TODO: Actually add the discounts on actions based on Q.party_income_increased (namely party additions to cards)
+        // Raised dues cover the advisor-led union, Barcelona and rural network campaigns.
 
         // Note that this can be reached from unitary fundraising after all
         var target = "erc";

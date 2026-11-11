@@ -41,6 +41,49 @@ function singlePartyVote(
 }
 
 describe('digital-law compiled behaviour', () => {
+  it.each([0, -1])('passes a player bill with %s party resources and consumes the parliamentary opportunity', (resources) => {
+    const adapter = DendryAdapter.fromJSONText(gameText);
+    adapter.beginGame([1, 2, 3, 4]);
+    adapter.goToScene('root.start_menu');
+    adapter.goToScene('root.start');
+    const q = adapter.qualities as Record<string, any>;
+    for (const p of parties) q[`${p}_parlament_s`] = 0;
+    Object.assign(q, {
+      player_party: 'erc', player_in_jxsi: false, player_in_jxcat: false,
+      erc_parlament_s: 70, ppc_parlament_s: 65, year: 2014,
+      cat_caretaker_gov: false, parlament_timer: 0, month_actions: 0,
+      party_resources: resources,
+    });
+    const choose = (id: string) => {
+      const choices = adapter.currentFrame().choices;
+      const index = choices.findIndex(choice => choice.id === id);
+      expect(index, id).toBeGreaterThanOrEqual(0);
+      expect(choices[index].canChoose, id).toBe(true);
+      adapter.choose(index);
+    };
+    adapter.goToScene('parlament_card');
+    choose('parlament_card.rights');
+    choose('parlament_digital');
+    choose('parlament_digital.digital_public_services');
+    choose('parlament_digital.digital_vote');
+    expect(q.parlament_digital_passed).toBe(true);
+    expect(q.party_resources).toBe(resources);
+    expect(q.parlament_timer).toBe(6);
+    expect(q.month_actions).toBe(1);
+  });
+
+  it('does not grant resources when a bank-tax draft is abandoned', () => {
+    const adapter = DendryAdapter.fromJSONText(gameText);
+    adapter.beginGame([1, 2, 3, 4]);
+    adapter.goToScene('root.start_menu');
+    adapter.goToScene('root.start');
+    const q = adapter.qualities as Record<string, any>;
+    Object.assign(q, { party_resources: 0, coming_from_parlament: true, month_actions: 1 });
+    adapter.goToScene('parlament_bank_taxes.back_to_parlament');
+    expect(q.party_resources).toBe(0);
+    expect(adapter.engine.state.sceneId).toBe('parlament_card.parlament_menu');
+  });
+
   it.each([
     ['Montserrat Tura', [10, 0, 0]],
     ['Àngel Ros', [0, 10, 0]],

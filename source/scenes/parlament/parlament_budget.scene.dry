@@ -295,11 +295,7 @@ on-arrival: {!
     Q.parlament_budget_player_has_seats = hasSeats(playerVehicle);
     Q.parlament_budget_player_policy_can_yes = !hardVetoReasons(Q.player_party, draft, projection).length;
     Q.parlament_budget_player_default = Q.parlament_budget_player_policy_can_yes ? basePosition(Q.player_party) : "no";
-    Q.parlament_budget_player_resource_required = Q.parlament_budget_player_default == "no" &&
-        (Q.player_party == "erc" && projection.tax <= 0 || Q.player_party == "cup" && projection.tax < 2) ? 1 : 0;
-    Q.parlament_budget_player_can_yes = Q.parlament_budget_player_policy_can_yes &&
-        (Q.parlament_budget_player_resource_required <= 0 || Q.party_resources >= Q.parlament_budget_player_resource_required);
-    Q.parlament_budget_player_resource_cost = Q.parlament_budget_player_vote == "yes" && Q.parlament_budget_player_default == "no" ? Q.parlament_budget_player_resource_required : 0;
+    Q.parlament_budget_player_can_yes = Q.parlament_budget_player_policy_can_yes;
     Q.parlament_budget_player_position = position(playerVehicle);
     var parties = ["ciu", "cdc", "dl", "pdcat", "junts", "jxsi", "jxcat", "erc", "cup", "psc", "icv", "csqp", "cecp", "ecp", "ppc", "cs", "unio", "si", "vox", "pxc", "fnc"];
     var labels = {ciu:"CiU", cdc:"CDC", dl:"DL", pdcat:"PDeCAT", junts:"Junts", jxsi:"JxSí", jxcat:"JxCat", erc:"ERC", cup:"CUP", psc:"PSC", icv:"ICV-EUiA", csqp:"CSQP", cecp:"CECP", ecp:"ECP", ppc:"PPC", cs:"Cs", unio:"UDC", si:"SI", vox:"Vox", pxc:"PxC", fnc:"FNC"};
@@ -367,7 +363,6 @@ on-arrival: {!
         var reasons = hardVetoReasons(party, proposed, p);
         if (!terms.length && basePosition(party) == "no") reasons.push("No acceptable policy concession seem possible with them at the moment...");
         var threshold = party == "cup" && ["Endavant", "Third Sector"].includes(Q.cup_faction) ? 65 : 55;
-        if (Q.party_resources <= Q.parlament_budget_player_resource_cost) reasons.push("Not enough resources.");
         if ((Number(Q[party + "_relations"]) || 0) <= threshold) reasons.push("Our relations with " + (labels[party] || party) + " are not good enough.");
         Q.parlament_budget_deal_proposals[party] = proposed;
         return {possible:!reasons.length, reason:reasons.join(" "), terms:terms.join(" ") || "Support the existing terms."};
@@ -646,7 +641,7 @@ go-to: review
 title: Change our party's vote to YES
 view-if: parlament_budget_player_has_seats and parlament_budget_player_position != "yes"
 choose-if: parlament_budget_player_can_yes
-unavailable-subtitle: [? if not parlament_budget_player_policy_can_yes: This budget is too far from our party's position to be approved. ?][? if parlament_budget_player_policy_can_yes: Not enough resources.?]
+unavailable-subtitle: [? if not parlament_budget_player_policy_can_yes: This budget is too far from our party's position to be approved. ?]
 on-arrival: parlament_budget_player_vote = "yes"
 go-to: review
 
@@ -658,7 +653,7 @@ go-to: review
 
 @approach_cup
 title: Approach the CUP for support
-subtitle: \[-1 resources\] [+ parlament_budget_cup_deal_terms +]
+subtitle: [+ parlament_budget_cup_deal_terms +]
 view-if: parlament_budget_can_approach_cup
 choose-if: parlament_budget_cup_deal_possible
 unavailable-subtitle: [+ parlament_budget_cup_block_reason +]
@@ -667,7 +662,7 @@ go-to: make_deal
 
 @approach_psc
 title: Approach the PSC for support
-subtitle: \[-1 resources\] [+ parlament_budget_psc_deal_terms +]
+subtitle: [+ parlament_budget_psc_deal_terms +]
 view-if: parlament_budget_can_approach_psc
 choose-if: parlament_budget_psc_deal_possible
 unavailable-subtitle: [+ parlament_budget_psc_block_reason +]
@@ -676,7 +671,7 @@ go-to: make_deal
 
 @approach_erc
 title: Approach ERC for support
-subtitle: \[-1 resources\] [+ parlament_budget_erc_deal_terms +]
+subtitle: [+ parlament_budget_erc_deal_terms +]
 view-if: parlament_budget_can_approach_erc
 choose-if: parlament_budget_erc_deal_possible
 unavailable-subtitle: [+ parlament_budget_erc_block_reason +]
@@ -685,7 +680,7 @@ go-to: make_deal
 
 @approach_icv
 title: Approach [+ parlament_current_icv +] for support
-subtitle: \[-1 resources\] [+ parlament_budget_icv_deal_terms +]
+subtitle: [+ parlament_budget_icv_deal_terms +]
 view-if: parlament_budget_can_approach_icv
 choose-if: parlament_budget_icv_deal_possible
 unavailable-subtitle: [+ parlament_budget_icv_block_reason +]
@@ -694,7 +689,7 @@ go-to: make_deal
 
 @approach_ciu
 title: Approach [+ parlament_budget_ciu_label +] for support
-subtitle: \[-1 resources\] [+ parlament_budget_ciu_deal_terms +]
+subtitle: [+ parlament_budget_ciu_deal_terms +]
 view-if: parlament_budget_can_approach_ciu
 choose-if: parlament_budget_ciu_deal_possible
 unavailable-subtitle: [+ parlament_budget_ciu_block_reason +]
@@ -706,7 +701,7 @@ go-to: make_deal
 on-arrival: {!
     var party = Q.parlament_budget_deal_party;
     var key = party == Q.parlament_budget_ciu_target ? "ciu" : party == Q.parlament_budget_icv_target ? "icv" : party;
-    if (!Q["parlament_budget_" + key + "_deal_possible"] || Q.party_resources <= Q.parlament_budget_player_resource_cost)
+    if (!Q["parlament_budget_" + key + "_deal_possible"])
         throw new Error("Budget support negotiations are unavailable");
     var proposal = Q.parlament_budget_deal_proposals[party];
     // Terms are charged only through the projection. Keep earlier deals only
@@ -718,7 +713,6 @@ on-arrival: {!
     Q.budget_draft = {tax_policy_level:proposal.tax_policy_level, social_spending_cap:proposal.social_spending_cap, projects:Object.assign({}, proposal.projects)};
     Q.parlament_budget_deals.push({party:party, tax:proposal.tax_policy_level, cap:proposal.social_spending_cap, projects:Object.assign({}, proposal.projects)});
     Q.parlament_budget_changes_made = true;
-    Q.party_resources -= 1;
     Q[party + "_relations"] -= 5;
 !}
 go-to: review
@@ -744,8 +738,8 @@ The Parlament will reconvene in [+ budget_postponed_countdown +] [? if rubicon: 
 @pass
 title: Approve the budget
 subtitle: [? if parlament_budget_player_governs: \[ +[+ parlament_budget_executive_grant +] budget\]?]
-choose-if: parlament_budget_can_pass and (parlament_budget_player_resource_cost <= 0 or party_resources >= parlament_budget_player_resource_cost)
-unavailable-subtitle: [? if not parlament_budget_chamber_majority: Not enough parliamentary support.?][? if not parlament_budget_cabinet_yes: Every cabinet party must approve the budget.?][? if parlament_budget_player_resource_cost > 0 and party_resources < parlament_budget_player_resource_cost: Not enough resources.?]
+choose-if: parlament_budget_can_pass
+unavailable-subtitle: [? if not parlament_budget_chamber_majority: Not enough parliamentary support.?][? if not parlament_budget_cabinet_yes: Every cabinet party must approve the budget.?]
 on-arrival: {!
     // Intervention may have changed since the proposal or vote was prepared.
     var flaCeiling = (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3);
@@ -754,10 +748,9 @@ on-arrival: {!
         ["education_spending", "healthcare_spending", "public_salary_level"].some(function (field) {
             return Q.parlament_budget_projection.levels[field] > flaCeiling;
         })) return;
-    if (!Q.parlament_budget_can_pass || Q.budget_year >= Q.year ||
-        Q.parlament_budget_player_resource_cost > 0 && Q.party_resources < Q.parlament_budget_player_resource_cost)
+    if (!Q.parlament_budget_can_pass || Q.budget_year >= Q.year)
         throw new Error("Budget approval conditions changed");
-    // Recheck ICF funding authority before charging resources or enacting any terms.
+    // Recheck ICF funding authority before enacting any terms.
     if (Q.budget_draft.projects.icf) {
         var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
         var icfProposal = (Q.active_mods || {}).bnl_icf_proposal;
@@ -775,7 +768,7 @@ on-arrival: {!
             !Q.vp_digital_prepared || !digitalProposal || !digitalProposal.active || digitalProposal.def.colour != "gray" ||
             !(Q.parlament_digital_passed && ["generalitat", "catalonia"].includes(Q.cybersecurity_agency_scope) && (Q.active_mods || {}).digital_agency_core && Q.active_mods.digital_agency_core.active)) throw new Error("Digital budget funding conditions changed");
     }
-    // Recheck health authority before charging resources or enacting any budget terms.
+    // Recheck health authority before enacting any budget terms.
     if (Q.budget_draft.projects.universal) {
         var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
         var universalProposal = (Q.active_mods || {}).healthcare_universal_proposal;
@@ -785,7 +778,6 @@ on-arrival: {!
     }
     var projection = Q.parlament_budget_projection;
     var origin = Q.budget_draft_origin;
-    Q.party_resources -= Q.parlament_budget_player_resource_cost;
     if (Q.parlament_budget_player_governs) Q.government_budget += Q.parlament_budget_executive_grant;
     var creditBurden = Q.parlament_budget_player_governs &&
         (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0);

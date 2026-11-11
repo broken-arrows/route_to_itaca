@@ -32,7 +32,7 @@ describe('non-sovereignty law pilots', () => {
       'parlament/parlament_digital.scene.dry',
     ]) {
       const law = scene(relative);
-      expect(law).toMatch(/choose-if: party_resources > 0 and not parlament_.+_passed/);
+      expect(law).toMatch(/choose-if: not parlament_.+_passed/);
       expect(law).toContain('Already approved!');
       expect(law).not.toContain('_attempted');
       expect(law).not.toMatch(/@.+_already/);

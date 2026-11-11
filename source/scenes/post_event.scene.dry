@@ -148,18 +148,25 @@ if (has_time_passed) {
 
     if (Q.month == 1 && Q.week == 1) {
         // It's a new year
-        var party_resources_size = 0;
-        if ((Q.player_party == "erc" && Q.erc_in_jxsi) || (Q.player_party == "cup" && Q.cup_in_jxsi)) {
-            party_resources_size = Math.floor(Q.jxsi_parlament_s / 10);
-        } else if ((Q.player_party == "erc" && Q.erc_in_jxcat) || (Q.player_party == "cup" && Q.cup_in_jxcat)) {
-            party_resources_size = Math.floor(Q.jxcat_parlament_s / 10);
-        } else {
-            party_resources_size = Math.floor(Q[Q.player_party + "_parlament_s"] / 10);
+        var fundingSeats = Number(Q[Q.player_party + "_parlament_s"]) || 0;
+        var fundingList = ["jxsi", "jxcat"].find(function (list) {
+            return Q[Q.player_party + "_in_" + list] && Q[list + "_parlament_s"] > 0;
+        });
+        if (fundingList) {
+            var cupShare = Q["cup_in_" + fundingList]
+                ? Math.min(100, Math.max(10, Number(Q[fundingList + "_cup_formation_num"]) || 0)) / 100 : 0;
+            var ercShare = Math.min(1, Math.max(0, (Number(Q[fundingList + "_formation_num"]) || 50) / 100)) * (1 - cupShare);
+            var playerShare = Q.player_party == "erc" ? ercShare :
+                Q.player_party == "cup" ? cupShare : 1 - cupShare - ercShare;
+            fundingSeats = Q[fundingList + "_parlament_s"] * playerShare;
         }
-        if (party_resources_size < 1) party_resources_size = 1;
-        if (party_resources_size > 3) party_resources_size = 3;
-
-        Q.party_resources += party_resources_size * Q.party_resources_mult + Q.party_income;
+        var sizeGrant = fundingSeats >= 20 ? 2 : 1;
+        var subsidyLevel = Math.max(0, Number(Q.party_resources_mult) || 0);
+        var publicFunding = subsidyLevel > 0 ? sizeGrant + subsidyLevel - 1 : 0;
+        var baseFunding = publicFunding + Math.max(0, Number(Q.party_income) || 0);
+        var yearlyFunding = baseFunding > 0 ? Math.max(1, baseFunding - (Number(Q.difficulty) || 0)) : 0;
+        if (fundingList && baseFunding > 0) yearlyFunding += 1;
+        Q.party_resources += yearlyFunding;
 
         var playerList = Q.player_in_jxsi ? "jxsi" :
             Q.player_in_jxcat ? "jxcat" : Q.player_party;

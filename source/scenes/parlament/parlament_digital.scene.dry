@@ -1,10 +1,8 @@
 title: Law on Digital Public Services and Cybersecurity
 new-page: true
-choose-if: party_resources > 0 and not parlament_digital_passed
-subtitle: [? if coming_from_parlament: \[-1 resources\]?]
-unavailable-subtitle: [? if parlament_digital_passed: Already approved!?][? if not parlament_digital_passed and party_resources < 1: Not enough resources.?]
+choose-if: not parlament_digital_passed
+unavailable-subtitle: [? if parlament_digital_passed: Already approved!?]
 on-arrival: {!
-    if (Q.coming_from_parlament) Q.party_resources -= 1;
     Q.parlament_digital_deals = [];
 !}
 

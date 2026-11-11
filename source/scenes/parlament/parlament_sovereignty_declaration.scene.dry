@@ -1,9 +1,7 @@
 title: Sovereignty Declaration
 new-page: true
 on-arrival: {!
-    if (Q.coming_from_parlament) {
-        Q.party_resources -= 1;
-    } else if (Q.player_party == "erc") {
+    if (!Q.coming_from_parlament && Q.player_party == "erc") {
         Q.erc_parlament_barcelona_middle_support -= 2.5;
         Q.erc_parlament_girona_middle_support -= 3.5;
         Q.erc_parlament_lleida_middle_support -= 3.5;
@@ -49,9 +47,8 @@ on-arrival: {!
         Q.parlament_sovereignty_declaration_legality = true;
     }
 !}
-choose-if: party_resources > 0 and not parlament_sovereignty_declaration and speaker_party != 'ppc' and speaker_party != 'cs' and speaker_party != 'unio' and speaker_party != 'psc' and speaker_party != 'ecp'
-subtitle: [? if coming_from_parlament : \[-1 resources\] ?]
-unavailable-subtitle: [? if parlament_sovereignty_declaration : Already approved! ?][? if (not parlament_sovereignty_declaration) and (speaker_party == 'ppc' or speaker_party == 'cs' or speaker_party == 'unio' or speaker_party == 'psc' or speaker_party == 'ecp') : Speaker of the House [+ speaker +] ([+ speaker_party +]) will not allow debating this.?][? if (not parlament_sovereignty_declaration) and (party_resources < 1) : Not enough resources.?]
+choose-if: not parlament_sovereignty_declaration and speaker_party != 'ppc' and speaker_party != 'cs' and speaker_party != 'unio' and speaker_party != 'psc' and speaker_party != 'ecp'
+unavailable-subtitle: [? if parlament_sovereignty_declaration : Already approved! ?][? if (not parlament_sovereignty_declaration) and (speaker_party == 'ppc' or speaker_party == 'cs' or speaker_party == 'unio' or speaker_party == 'psc' or speaker_party == 'ecp') : Speaker of the House [+ speaker +] ([+ speaker_party +]) will not allow debating this.?]
 go-to: decisions_erc if coming_from_parlament and player_party == "erc"; decisions_cup if player_party == "cup"; no_parlament if not coming_from_parlament
 
 = Parlamentary Declaration of Sovereignty

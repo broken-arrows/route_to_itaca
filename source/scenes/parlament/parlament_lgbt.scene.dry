@@ -1,11 +1,7 @@
 title: Law on LGBTI Rights
 new-page: true
-choose-if: party_resources > 0 and not parlament_lgbt_passed
-subtitle: [? if coming_from_parlament: \[-1 resources\]?]
-unavailable-subtitle: [? if parlament_lgbt_passed: Already approved!?][? if not parlament_lgbt_passed and party_resources < 1: Not enough resources.?]
-on-arrival: {!
-    if (Q.coming_from_parlament) Q.party_resources -= 1;
-!}
+choose-if: not parlament_lgbt_passed
+unavailable-subtitle: [? if parlament_lgbt_passed: Already approved!?]
 
 = Law on LGBTI Rights
 

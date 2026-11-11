@@ -279,6 +279,49 @@ describe('Budget passage executive reward', () => {
 });
 
 describe('Budget approaches respect the player ballot', () => {
+  it.each([0, -1])('negotiates and approves a budget with %s party resources', (resources) => {
+    const { adapter, q } = setup('erc', {
+      player_party: 'erc', cat_coalition: ['erc'], erc_parlament_s: 60,
+      cup_parlament_s: 10, ppc_parlament_s: 65, cup_relations: 80,
+      cup_faction: 'Poble Lliure', tax_policy_level: 0,
+      generalitat_surplus: 2, party_resources: resources,
+    });
+    propose(adapter);
+    const choose = (id: string) => {
+      const choices = adapter.currentFrame().choices;
+      const index = choices.findIndex(choice => choice.id === id);
+      expect(index, id).toBeGreaterThanOrEqual(0);
+      expect(choices[index].canChoose, id).toBe(true);
+      adapter.choose(index);
+    };
+    choose('parlament_budget.tax_lower');
+    choose('parlament_budget.approach_cup');
+    expect(q.parlament_budget_deals).toHaveLength(1);
+    expect(q.cup_relations).toBe(75);
+    expect(q.party_resources).toBe(resources);
+    choose('parlament_budget.pass');
+    expect(q.budget_year).toBe(q.year);
+    expect(q.party_resources).toBe(resources);
+  });
+
+  it.each([0, -1])('allows a compromise YES vote with %s party resources', (resources) => {
+    const { adapter, q } = setup('ciu', {
+      ciu_parlament_s: 60, erc_parlament_s: 10, ppc_parlament_s: 65,
+      party_resources: resources, tax_policy_level: 0, generalitat_surplus: 2,
+    });
+    propose(adapter);
+    expect(q.parlament_budget_player_default).toBe('no');
+    const choices = adapter.currentFrame().choices;
+    const index = choices.findIndex(choice => choice.id === 'parlament_budget.vote_yes');
+    expect(index).toBeGreaterThanOrEqual(0);
+    expect(choices[index].canChoose).toBe(true);
+    adapter.choose(index);
+    expect(q.parlament_budget_positions.erc).toBe('yes');
+    adapter.goToScene('parlament_budget.pass');
+    expect(q.budget_year).toBe(q.year);
+    expect(q.party_resources).toBe(resources);
+  });
+
   it.each(['jxsi', 'jxcat'].flatMap((list) => ['erc', 'cup'].flatMap((player) =>
     [-2.3, 0].map((surplus) => ({ list, player, surplus })))))
   ('hides own constituents in $list for $player with surplus $surplus', ({ list, player, surplus }) => {
