@@ -19,6 +19,6 @@ on-arrival: {!
 
 [? if parlament_energy_poverty_variant == "public_guarantee": After a difficult and complex trial, the Constitutional Court has upheld the Generalitat's publicly funded guarantee of essential supply. It accepts that Catalonia may use its social-assistance powers to protect vulnerable households and negotiate support with suppliers. A victory after all! ?]
 
-[? if parlament_energy_poverty_variant == "disconnection_ban": While the Constitutional Court has preserved the law's social assistance foundations, and the provisions allowing social services to act against Energy Poverty, the disconnection ban has not been so lucky. The Gobierno and the energy sector, historically tightly interlinked, have been able to push the court into ruling it against the constitution.?]
+[? if parlament_energy_poverty_variant == "disconnection_ban": While the Constitutional Court has preserved the law's social assistance foundations, and the provisions allowing social services to act against Energy Poverty, the disconnection ban has not been so lucky. The [+ spanish_coalition_disp +], who filed the challenge, and the energy sector, historically tightly interlinked, have been able to push the court into ruling it against the constitution.?]
 
 - @post_event: Continue...

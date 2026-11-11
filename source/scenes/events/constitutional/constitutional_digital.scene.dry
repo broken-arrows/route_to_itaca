@@ -15,7 +15,7 @@ on-arrival: {!
 
 = Constitutional Court rules on the Catalan Cybersecurity Agency
 
-[? if parlament_digital_variant == "public_services": The Constitutional Court has ruled in favour of the Catalan Cybersecurity Agency. It has deemed the protection of Catalonia's public administration to fall within the Generalitat's powers, while expecting the agency to cooperate with other law-enforcement bodies. ?]
+[? if parlament_digital_variant == "public_services": Hearing the PP-Cs petition, the Constitutional Court has ruled in favour of the Catalan Cybersecurity Agency. It has deemed the protection of Catalonia's public administration to fall within the Generalitat's powers, while expecting the agency to cooperate with other law-enforcement bodies. ?]
 
 [? if parlament_digital_variant == "national_scope": The Constitutional Court has ruled in favour of greatly reducing the agency's powers. While the agency itself survives with a limited role in protecting public services and resources, its authority over the Catalan citizens and companies has been reduced to basically zero.?]
 

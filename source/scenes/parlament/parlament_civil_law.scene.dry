@@ -107,7 +107,7 @@ on-arrival: {!
 <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_civil_law_vote_result"}'></div>
 
 [? if parlament_civil_law_passed and parlament_civil_law_variant == "consolidation": The Parlament has approved the consolidation of Catalonia's established law of contracts. With its more traditional roots, there's hope that at least any constitutional challenges to it fall on their own, but we'll have to wait and see.?]
-[? if parlament_civil_law_passed and parlament_civil_law_variant == "complete_book_six": The Parlament has completed Book Six of the Civil Code. Most of the new framework rests firmly on Catalonia's civil-law powers, though the usual suspects have already filed challenges against many of its newly developed contractual rules.?]
+[? if parlament_civil_law_passed and parlament_civil_law_variant == "complete_book_six": The Parlament has completed Book Six of the Civil Code. Most of the new framework rests firmly on Catalonia's civil-law powers, though the Spanish government has already filed a challenge against many of its newly developed contractual rules.?]
 [? if not parlament_civil_law_passed: The Parlament has rejected Book Six. Catalan contract law remains incomplete, though we may want to introduce the proposal again at a more favourable time.?]
 
 - @post_event: Continue...

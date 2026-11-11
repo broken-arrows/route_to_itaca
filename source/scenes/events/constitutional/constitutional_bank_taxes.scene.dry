@@ -11,6 +11,6 @@ on-arrival: {!
 
 = Constitutional Court rules on the Catalan Bank Taxation
 
-With the central government having recently passed very similar taxation updates to the ones already in place by the Generalitat, the challenge to the Catalan bank taxes has gained even more weight. With double taxation never being allowed, the Constitutional Court has opted to struck down the Catalan version of the law, leaving only the Gobierno's, and thus cutting off any direct revenue from it for the Catalan government.
+With the central government having recently passed very similar taxation updates to the ones already in place by the Generalitat, the challenge to the Catalan bank taxes has gained even more weight. With double taxation never being allowed, the Constitutional Court has opted to follow through with the challenge filled by [? if constitutional_bank_taxes_appellant: the [+ constitutional_bank_taxes_appellant +] government?][? if not constitutional_bank_taxes_appellant: the current [+ spanish_coalition_disp +]?] and has struck down the Catalan version of the law, leaving only the Gobierno's, and thus cutting off any direct revenue from it for the Catalan government.
 
 - @post_event: Damn it!
