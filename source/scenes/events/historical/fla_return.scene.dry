@@ -1,5 +1,5 @@
 title: The Generalitat to seek FLA financing
-view-if: not fla_active and (public_debt >= 28 or generalitat_surplus <= -2)
+view-if: not fla_active and (public_debt >= 28 or generalitat_surplus <= -2) and not spa_caretaker_gov
 tags: event
 new-page: true
 role: event

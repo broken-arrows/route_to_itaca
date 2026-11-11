@@ -70,12 +70,13 @@ describe('Parlament political signal observation', () => {
     q.independence_movement = 95;
     q.independence_trust = 20;
     q.parlament_signal_baseline.independence_trust = previousTrust;
+    const profile = gameLib.getParlamentDisappointmentProfile(q);
     tick(q);
     const change = q.independence_trust - previousTrust;
     const depth = (30 - q.independence_trust) / 30;
     const oldResponse = -.025 * change * depth * .6 * 1.2;
     const route = q.parlament_vote_trace.mechanisms['requested.nonlinear.cup_trust'];
-    expect(Math.abs(route.cup)).toBeGreaterThan(Math.abs(oldResponse) * 2);
+    expect(route.cup).toBeCloseTo(oldResponse * (0.06 / 0.025) * (change < 0 ? profile.cupFactor : 1), 10);
     expect(Math.sign(route.cup)).toBe(-Math.sign(change));
     expect(route.cup + route.icr + route.il).toBeCloseTo(0, 10);
   });

@@ -968,6 +968,16 @@
           -value * traceWeight,
         );
     });
+    // Representation makes FNC a rival for far-right recruitment. Redirect
+    // 30% of positive VOX matrix gains, preserving the original donor budget.
+    // Outgoing VOX voters retain their full response.
+    if (Q.fnc_parlament_s > 0 && requestedMatrix.vox > 0 && carriers.fnc) {
+      const diverted = 0.3 * requestedMatrix.vox;
+      requestedMatrix.vox -= diverted;
+      requestedMatrix[carriers.fnc] = (requestedMatrix[carriers.fnc] || 0) + diverted;
+      recordParlamentVoteTrace(Q, "correction.fnc_vox_appeal", "vox", -diverted * traceWeight);
+      recordParlamentVoteTrace(Q, "correction.fnc_vox_appeal", "fnc", diverted * traceWeight);
+    }
     const gainTotal = Object.values(requestedMatrix).reduce(
       (n, v) => n + Math.max(0, v),
       0,
@@ -995,39 +1005,30 @@
         amount = -amount;
       }
       const source = carriers[from];
-      const destination = carriers[to];
-      recordParlamentVoteTrace(
-        Q,
-        `requested.${mechanism}`,
-        from,
-        -amount * traceWeight,
-      );
-      recordParlamentVoteTrace(
-        Q,
-        `requested.${mechanism}`,
-        to,
-        amount * traceWeight,
-      );
-      // An inactive family has no electoral destination. Retain its donor's voters.
-      if (!source || !destination || source === destination) continue;
-      if (isIndependenceRecruitment(source, destination)) {
-        const returning = Math.min(
-          amount,
-          Math.max(0, request.returningAmount || 0),
-        );
-        amount = returning + (amount - returning) * recruitmentScale;
+      const destinations = [{ to, amount, mechanism, onSettled: request.onSettled,
+        returningAmount: request.returningAmount }];
+      if (carriers[to] === "vox" && Q.fnc_parlament_s > 0 && carriers.fnc) {
+        destinations[0].amount *= 0.7;
+        destinations.push({ to: "fnc", amount: amount * 0.3,
+          mechanism: "nonlinear.fnc_vox_competition", returningAmount: 0 });
       }
-      requests.push({
-        from,
-        to,
-        source,
-        destination,
-        amount,
-        mechanism,
-        onSettled: request.onSettled,
-      });
-      outgoing[source] = (outgoing[source] || 0) + amount;
+      for (const route of destinations) {
+        const destination = carriers[route.to];
+        let amount = route.amount;
+        recordParlamentVoteTrace(Q, `requested.${route.mechanism}`, from, -amount * traceWeight);
+        recordParlamentVoteTrace(Q, `requested.${route.mechanism}`, route.to, amount * traceWeight);
+        // Unavailable destinations and transfers back into the donor retain voters.
+        if (!source || !destination || source === destination) continue;
+        if (isIndependenceRecruitment(source, destination)) {
+          const returning = Math.min(amount, Math.max(0, route.returningAmount || 0));
+          amount = returning + (amount - returning) * recruitmentScale;
+        }
+        requests.push({ from, to: route.to, source, destination, amount,
+          mechanism: route.mechanism, onSettled: route.onSettled });
+        outgoing[source] = (outgoing[source] || 0) + amount;
+      }
     }
+
     const scale = (p) =>
       outgoing[p] > 0 ? Math.min(1, opening[p] / outgoing[p]) : 1;
     const changes = {};
@@ -1750,6 +1751,7 @@
     const recruitmentScale = independenceRecruitmentScale(
       cardNationalIndependenceShare(Q),
     );
+    const disappointmentProfile = getParlamentDisappointmentProfile(Q);
     for (const prov of PROVINCES) {
       for (const demo of DEMOS) {
         const delta_vec = new Array(FAMILIES.length).fill(0);
@@ -1867,6 +1869,7 @@
             carriers,
             support,
             scale: nl_d.cup_trust * nl_p.cup_trust,
+            disappointmentProfile,
           }),
         );
         const partyMultiplier =
@@ -1969,9 +1972,27 @@
             depth *
             nl_d.cup_trust *
             nl_p.cup_trust;
-          addFamilyDelta("nonlinear.cup_trust", "cup", extra_cup);
-          addFamilyDelta("nonlinear.cup_trust", "icr", -extra_cup * 0.7);
-          addFamilyDelta("nonlinear.cup_trust", "il", -extra_cup * 0.3);
+          if (extra_cup > 0) {
+            // Keep donor identities: a net-vector split would inadvertently
+            // give ERC the same FNC affinity as the conservative electorate.
+            for (const [from, share] of [["icr", 0.7], ["il", 0.3]]) {
+              const split = splitParlamentDisappointmentGain(
+                Q, from, extra_cup * share, disappointmentProfile,
+              );
+              for (const to of ["cup", "fnc"]) {
+                if (split[to] > 0) transfers.push({
+                  from, to, amount: split[to],
+                  mechanism: to === "cup" ? "nonlinear.cup_trust"
+                    : "nonlinear.fnc_disappointment_diversion",
+                });
+              }
+            }
+          } else {
+            // Recovering trust can still win voters back at full strength.
+            addFamilyDelta("nonlinear.cup_trust", "cup", extra_cup);
+            addFamilyDelta("nonlinear.cup_trust", "icr", -extra_cup * 0.7);
+            addFamilyDelta("nonlinear.cup_trust", "il", -extra_cup * 0.3);
+          }
         }
 
         // ── ART155 BACKLASH
@@ -3564,19 +3585,37 @@
           effectiveRequest *= independenceRecruitmentScale(independenceShare);
         }
 
-        const actual = Math.min(
+        let actual = Math.min(
           effectiveRequest,
           fromCurrent * options.maxDonorFraction,
         );
         if (!Number.isFinite(actual) || actual < 0)
           cardTransferError("calculated transfer is invalid");
-        transfers.push({ toKey, fromKey, toCurrent, fromCurrent, actual });
+        let diversion;
+        if (contest === "parlament" && to === "vox" && Q.fnc_parlament_s > 0 && lineup.includes("fnc")) {
+          let diverted = actual * 0.3;
+          actual -= diverted;
+          if (from !== "fnc") {
+            const fncKey = cardSupportKey(contest, "fnc", constituency, demographic);
+            const fncCurrent = Q[fncKey];
+            if (!Number.isFinite(fncCurrent) || fncCurrent < 0)
+              cardTransferError(fncKey + " must hold finite, non-negative support");
+            if (isIndependenceRecruitment(from, "fnc")) {
+              if (nationalIndependenceShare === undefined)
+                nationalIndependenceShare = cardNationalIndependenceShare(Q);
+              diverted *= independenceRecruitmentScale(nationalIndependenceShare);
+            }
+            diversion = { key: fncKey, current: fncCurrent, amount: diverted };
+          }
+        }
+        transfers.push({ toKey, fromKey, toCurrent, fromCurrent, actual, diversion });
       }
     }
 
     let totalTransferred = 0;
     for (const transfer of transfers) {
-      const nextFrom = transfer.fromCurrent - transfer.actual;
+      const spent = transfer.actual + (transfer.diversion?.amount || 0);
+      const nextFrom = transfer.fromCurrent - spent;
       const nextTo = transfer.toCurrent + transfer.actual;
       if (
         !Number.isFinite(nextFrom) ||
@@ -3588,7 +3627,9 @@
       }
       Q[transfer.fromKey] = nextFrom;
       Q[transfer.toKey] = nextTo;
-      totalTransferred += transfer.actual;
+      if (transfer.diversion)
+        Q[transfer.diversion.key] = transfer.diversion.current + transfer.diversion.amount;
+      totalTransferred += spent;
     }
     return totalTransferred;
   }
@@ -4125,6 +4166,52 @@
     }
   }
 
+  // Take this profile once before any monthly/event transfers. CUP's live
+  // national valid-vote share supplies size, while formal roles supply its
+  // credibility as an alternative. A pooled ballot has no separate CUP stock.
+  function getParlamentDisappointmentProfile(Q) {
+    const provinces = Q.parlament_constituencies || [];
+    const demographics = Q.parlament_demographics || [];
+    let valid = 0;
+    let cup = 0;
+    for (const province of provinces) for (const demo of demographics) {
+      const population = Math.max(0, Number(Q[`parlament_${province}_${demo}_pop`]) || 0);
+      for (const party of new Set(Q.parties || [])) {
+        if (party === "abstain") continue;
+        const votes = population * Math.max(0,
+          Number(Q[`${party}_parlament_${province}_${demo}_support`]) || 0);
+        valid += votes;
+        if (party === "cup") cup += votes;
+      }
+    }
+    const share = valid > 0 ? 100 * cup / valid : 0;
+    const pressure = Math.max(0, share - 6) / 2;
+    const sizeFactor = 0.35 + 0.65 / (1 + pressure * pressure);
+    const carriers = parlamentFamilyCarriers(Q, provinces[0], demographics[0]);
+    const hasCup = (parties) => (parties || []).some(
+      (p) => p === "cup" || (coalitionFamilies(Q, p) || []).includes("cup"));
+    let credibility = hasCup(Q.cat_coalition) ? 0.25
+      : hasCup(Q.cat_coalition_support) ? 0.6
+        : hasCup(Q.cat_coalition_abstain) ? 0.85 : 1;
+    if (carriers.cup !== "cup" || (Q.player_party === "cup" && Q.broken_roadmap))
+      credibility = 0;
+    return { share, sizeFactor, credibility, cupFactor: sizeFactor * credibility,
+      frustrationSquared: clamp(Q.parlament_disappointment?.frustration || 0, 0, 1) ** 2,
+      fncAvailable: Q.fnc_formed === true && Q.pxc_dissolved === true,
+      breachMultiplier: Q.broken_roadmap ? 1.5 : 1 };
+  }
+
+  // Only a portion of blocked CUP recruitment finds FNC. The monthly remainder
+  // stays with its donor; a fixed event loss can assign it to abstention instead.
+  function splitParlamentDisappointmentGain(Q, from, amount, profile) {
+    profile = profile || getParlamentDisappointmentProfile(Q);
+    const cup = amount * profile.cupFactor;
+    const affinity = from === "icr" ? 0.5 : from === "il" ? 0.1 : 0;
+    const fnc = profile.fncAvailable ? (amount - cup) * affinity *
+      profile.frustrationSquared * profile.breachMultiplier : 0;
+    return { cup, fnc, retained: amount - cup - fnc };
+  }
+
   // A finite susceptible fraction of mainstream voters can switch under
   // prolonged disappointment. These are authored capacities, not vote targets.
   function advanceParlamentDisappointment(Q) {
@@ -4162,6 +4249,7 @@
     }
     const requests = [];
     const scale = clamp(context.scale ?? 1, 0, 2);
+    const profile = context.disappointmentProfile || getParlamentDisappointmentProfile(Q);
     for (const family of ["icr", "il"]) {
       const stock = state.cells[key][family];
       const source = carriers[family];
@@ -4180,11 +4268,11 @@
       };
       // CUP also responds to current low trust, but its event response remains
       // the faster channel. FNC needs both accumulated and current frustration.
-      request(
-        "cup",
-        0.02 * state.pressure,
-        "nonlinear.cup_sustained_disappointment",
+      const split = splitParlamentDisappointmentGain(
+        Q, family, 0.02 * state.pressure, profile,
       );
+      request("cup", split.cup, "nonlinear.cup_sustained_disappointment");
+      request("fnc", split.fnc, "nonlinear.fnc_disappointment_diversion");
       if (
         family === "icr" &&
         Q.fnc_formed === true &&
@@ -4273,6 +4361,8 @@
     random,
     buildParlamentCorruptionTransfers,
     advanceParlamentDisappointment,
+    getParlamentDisappointmentProfile,
+    splitParlamentDisappointmentGain,
     buildParlamentDisappointmentTransfers,
     buildParlamentCompetitionTransfers:
       parlamentCompetition.buildParlamentCompetitionTransfers,

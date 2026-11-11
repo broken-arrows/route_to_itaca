@@ -23,6 +23,7 @@ on-arrival: {!
     Q.spanish_pm = Q[Q.congreso_left_carrier + "_leader"];
     Q.spanish_pm_gender = Q[Q.congreso_left_carrier + "_gender"];
     Q.spanish_pm_party = Q.congreso_left_carrier;
+    Q.spa_caretaker_gov = false;
     Q.censure_podemos_countdown = 6;
     Q.censure_podemos_trigger = false;
     if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
@@ -61,6 +62,7 @@ on-arrival: {!
     Q.spanish_pm = Q[Q.congreso_left_carrier + "_leader"];
     Q.spanish_pm_gender = Q[Q.congreso_left_carrier + "_gender"];
     Q.spanish_pm_party = Q.congreso_left_carrier;
+    Q.spa_caretaker_gov = false;
     Q.censure_podemos_countdown = 6;
     Q.censure_podemos_trigger = false;
     if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');

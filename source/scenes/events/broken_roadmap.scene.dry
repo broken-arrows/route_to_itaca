@@ -8,6 +8,7 @@ on-arrival: {!
     if (Q.player_in_jxsi || Q.player_in_jxcat) {
         this.achieve("junts_pel_bluf");
     }
+    Q.broken_roadmap = 1;
     Q.broken_roadmap_trigger = false;
     Q.broken_roadmap_expires_countdown = 12;
     if (!Q.countdowns.includes("broken_roadmap_expires")) Q.countdowns.push("broken_roadmap_expires");
@@ -24,6 +25,7 @@ on-arrival: {!
     Q.roadmap_year = 0;
     Q.erc_civic_dissent += 15;
     Q.erc_core_dissent += 3;
+    var disappointmentProfile = G.getParlamentDisappointmentProfile(Q);
 
     for (var c of Q.parlament_constituencies) {
         for (var d of Q.parlament_demographics) {
@@ -40,13 +42,17 @@ on-arrival: {!
             Q[ercCarrier + suffix] = (Q[ercCarrier + suffix] || 0) - ercLoss;
             Q[ciuCarrier + suffix] = (Q[ciuCarrier + suffix] || 0) - ciuLoss;
 
-            Q["abstain_parlament_" + c + "_" + d + "_support"] += 0.8*amount;
-            Q["fnc_parlament_" + c + "_" + d + "_support"] += 0.05*amount;
-            if (!((ciuCarrier == "jxsi" || ciuCarrier == "jxcat") && Q["cup_in_" + ciuCarrier])) {
-                Q["cup_parlament_" + c + "_" + d + "_support"] += 0.15*amount;
-            } else {
-                Q["fnc_parlament_" + c + "_" + d + "_support"] += 0.05*amount;
-                Q["abstain_parlament_" + c + "_" + d + "_support"] += 0.1*amount;
+            // Pooled mainstream support has no saved voter ownership: use
+            // the same equal-source approximation as monthly disappointment.
+            var losses = ciuCarrier == ercCarrier
+                ? [["il", amount / 2], ["icr", amount / 2]]
+                : [["il", ercLoss], ["icr", ciuLoss]];
+            for (var loss of losses) {
+                var split = G.splitParlamentDisappointmentGain(Q, loss[0], 0.15 * loss[1], disappointmentProfile);
+                var toFnc = split.fnc + (disappointmentProfile.fncAvailable ? 0.05 * loss[1] : 0);
+                Q["cup_parlament_" + c + "_" + d + "_support"] += split.cup;
+                Q["fnc_parlament_" + c + "_" + d + "_support"] += toFnc;
+                Q["abstain_parlament_" + c + "_" + d + "_support"] += loss[1] - split.cup - toFnc;
             }
         }
     }
@@ -63,4 +69,8 @@ Gaining their confidence back is going to be an uphill battle, and we are set to
 
 
 @cup_broken
-# TODO: CUP consequences for a broken roadmap
+on-arrival: {!
+    // TODO: more effects for player CUP?
+    Q.roadmap_year = 0;
+    Q.independence_trust *= 0.5;
+!}

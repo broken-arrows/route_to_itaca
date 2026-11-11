@@ -43,8 +43,9 @@ describe('Broken commitments', () => {
     expect(q[key(list)]).toBeCloseTo(35.2, 10);
     expect(q[key('erc')]).toBe(0);
     expect(q[key('cup')]).toBeCloseTo(cupInside ? 0 : 0.72, 10);
-    expect(q[key('fnc')]).toBeCloseTo(cupInside ? 0.48 : 0.24, 10);
-    expect(q[key('abstain')]).toBeCloseTo(cupInside ? 34.32 : 33.84, 10);
+    // This is a pre-formation opening: unavailable FNC gains remain abstention.
+    expect(q[key('fnc')]).toBe(0);
+    expect(q[key('abstain')]).toBeCloseTo(cupInside ? 34.8 : 34.08, 10);
     expect(['erc', 'cdc', 'jxsi', 'jxcat', 'cup', 'fnc', 'abstain'].reduce((s,p)=>s+q[key(p)],0)).toBeCloseTo(70, 10);
   });
 

@@ -6,6 +6,7 @@ const initial = { ciu: 30, erc: 15, cup: 5, fnc: 0, abstain: 50 };
 const key = (p: string) => `${p}_parlament_girona_middle_support`;
 function state(overrides = {}) {
   return { parties: ['ciu','erc','cup','fnc'], parlament_constituencies:['girona'], parlament_demographics:['middle'],
+    parlament_girona_middle_pop: 1000,
     parlament_current_ciu:'ciu', independence_movement:85, independence_trust:15,
     fnc_formed:true,pxc_dissolved:true,
     ...Object.fromEntries(Object.entries(initial).map(([p,v])=>[key(p),v])), ...overrides } as Record<string, any>;
@@ -25,7 +26,9 @@ describe('sustained process disappointment', () => {
     expect(fnc(first)).toBeLessThan(first.filter(r=>r.to==='cup').reduce((s,r)=>s+r.amount,0));
     for(let i=0;i<17;i++) step(q);
     expect(fnc(step(q))).toBeGreaterThan(fnc(first)*10);
-    expect(first.filter(r=>r.to==='fnc').every(r=>r.from==='icr')).toBe(true);
+    const diverted = first.filter(r=>r.mechanism==='nonlinear.fnc_disappointment_diversion');
+    expect(diverted.some(r=>r.from==='il')).toBe(true);
+    expect(diverted.find(r=>r.from==='icr')!.amount).toBeCloseTo(diverted.find(r=>r.from==='il')!.amount * 10);
   });
   it('requires strong movement and current distrust; accumulated frustration fades during recovery', () => {
     const cold=state({independence_movement:30});
@@ -49,7 +52,9 @@ describe('sustained process disappointment', () => {
     expect(q[key('ciu')]).toBeGreaterThanOrEqual(30*.88-1e-9);
     expect(q[key('erc')]).toBeGreaterThanOrEqual(15*.88-1e-9);
     expect(Object.keys(initial).reduce((s,p)=>s+q[key(p)],0)).toBeCloseTo(100,8);
-    expect(step(q).reduce((s,r)=>s+r.amount,0)).toBeLessThan(1e-5);
+    const late = step(q).reduce((s,r)=>s+r.amount,0);
+    for(let i=0;i<600;i++) step(q);
+    expect(step(q).reduce((s,r)=>s+r.amount,0)).toBeLessThan(late / 10);
     gameLib.resetParlamentParticipation(q);
     expect(q.parlament_disappointment).toBeUndefined();
   });

@@ -1,6 +1,6 @@
 title: FLA conditions get more stringent
 subtitle: With the Generalitat unable to curtail public debt, the Gobierno seems set on intervening
-view-if: fla_active and not fla_escalated and public_debt >= 35
+view-if: fla_active and not fla_escalated and public_debt >= 35 and not spa_caretaker_gov
 tags: event
 new-page: true
 role: event

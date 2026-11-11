@@ -5,7 +5,7 @@ view-if: {!
     var progressive = cabinet.length > 0 && cabinet.every(function (party) {
         return ["psoe", "podemos", "up", "sumar"].includes(party);
     });
-    return Q.fla_active && Q.fla_escalated && !Q.fla_severe && !progressive &&
+    return Q.fla_active && Q.fla_escalated && !Q.fla_severe && !progressive && !Q.spa_caretaker_gov &&
         Q.public_debt >= 40 && Q.generalitat_surplus <= -1.5 &&
         Q.fla_intervention_month != null && Q.year * 12 + Q.month - Q.fla_intervention_month >= 6;
 !}

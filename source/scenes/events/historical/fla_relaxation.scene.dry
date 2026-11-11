@@ -1,5 +1,5 @@
 title: FLA conditions relaxed
-view-if: fla_active and fla_escalated and not fla_severe and public_debt <= 32 and generalitat_surplus > -1.5
+view-if: fla_active and fla_escalated and not fla_severe and public_debt <= 32 and generalitat_surplus > -1.5 and not spa_caretaker_gov
 tags: event
 new-page: true
 role: event

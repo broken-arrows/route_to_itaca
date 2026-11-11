@@ -44,6 +44,49 @@ function pick(adapter: DendryAdapter, id: string) {
 }
 
 describe('Spanish censure motions', () => {
+  it.each<[string, Record<string, number>]>([
+    ['congreso_coalition_grand.toleration', { pp_congreso_s: 137, psoe_congreso_s: 85,
+      up_congreso_s: 71, cs_congreso_s: 32, erc_congreso_s: 9, pdcat_congreso_s: 8,
+      pnv_congreso_s: 5, ehbildu_congreso_s: 2, cc_congreso_s: 1 }],
+    ['congreso_coalition_right.pp_cs', { pp_congreso_s: 130, psoe_congreso_s: 100,
+      up_congreso_s: 60, cs_congreso_s: 46, erc_congreso_s: 8, pnv_congreso_s: 6 }],
+  ])('ends caretaker status through %s and permits a later Gürtel motion', (formation, seats) => {
+    const a = setup({ ...seats, year: 2016, month: 4, time: 44,
+      next_spanish_election_time: 46, corruption_pp: 44,
+      psoe_leader: 'Susana Díaz', congreso_coalition_grand_ok: true });
+    a.goToScene('congreso_party_tour');
+    expect(a.qualities.spa_caretaker_gov).toBe(true);
+    Object.assign(a.qualities, { year: 2016, month: 6, time: 46, next_spanish_election_time: 94 });
+    a.goToScene('congreso_coalition');
+    expect(a.qualities.spa_caretaker_gov).toBe(true);
+    pick(a, formation);
+    expect(a.qualities.spa_caretaker_gov).toBe(false);
+    expect(a.qualities.spanish_pm_party).toBe('pp');
+
+    Object.assign(a.qualities, { year: 2018, month: 5, time: 69 });
+    a.goToScene('post_event');
+    expect(available(a, 'psoe')).toBe(false);
+    a.goToScene('gurtel_verdict');
+    pick(a, 'post_event');
+    expect(available(a, 'psoe')).toBe(true);
+    pick(a, 'spanish_censure');
+    expect(a.qualities.censure_current.incumbentParty).toBe('pp');
+  });
+
+  it('keeps the outgoing cabinet caretaker until negotiated investiture resolves', () => {
+    const a = setup();
+    a.goToScene('congreso_party_tour');
+    a.qualities.congreso_left_carrier = 'up';
+    a.qualities.congreso_coalition_progressive_talks = true;
+    a.goToScene('congreso_coalition_progressive.progressive');
+    expect(a.qualities.spa_caretaker_gov).toBe(true);
+    pick(a, 'congreso_coalition_negotiation.cash');
+    expect(a.qualities.spa_caretaker_gov).toBe(true);
+    pick(a, 'congreso_coalition_negotiation.resolve');
+    expect(a.qualities.spa_caretaker_gov).toBe(false);
+    expect(a.qualities.spanish_coalition).toEqual(['psoe', 'up']);
+  });
+
   it('exposes one shared event and refreshes readiness in post_event without consuming attempts', () => {
     const a = setup();
     expect(a.currentFrame().choices.filter(c => c.id === 'spanish_censure')).toHaveLength(1);
