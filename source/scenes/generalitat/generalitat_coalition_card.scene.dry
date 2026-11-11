@@ -369,7 +369,7 @@ go-to: concessions_ciu if random_seed <= 0.5 and (generalitat_surplus < 0 or tax
 @concessions_icv
 title: Give concessions to [+ parlament_current_icv +]
 view-if: coalition_affairs_includes_icv and parlament_current_icv_relations < 55
-choose-if: (tax_policy_level >= -2 and tax_policy_level < 2) or (education_spending >= -2 and education_spending < 2 and education_spending < social_spending_cap) or (healthcare_spending >= -2 and healthcare_spending < 2 and healthcare_spending < social_spending_cap) or (public_salary_level >= -2 and public_salary_level < 2 and public_salary_level < social_spending_cap) or economy_cuts > 0
+choose-if: (tax_policy_level >= -2 and tax_policy_level < 2) or (education_spending >= -2 and education_spending < 2 and education_spending < social_spending_cap and (not fla_escalated or (not fla_severe and education_spending < 0) or (fla_severe and education_spending < -1))) or (healthcare_spending >= -2 and healthcare_spending < 2 and healthcare_spending < social_spending_cap and (not fla_escalated or (not fla_severe and healthcare_spending < 0) or (fla_severe and healthcare_spending < -1))) or (public_salary_level >= -2 and public_salary_level < 2 and public_salary_level < social_spending_cap and (not fla_escalated or (not fla_severe and public_salary_level < 0) or (fla_severe and public_salary_level < -1))) or economy_cuts > 0
 unavailable-subtitle: There's no austerity to revert, nor funding to public services expand!?.
 on-arrival: {!
     var electoralBefore = {education_spending:Q.education_spending, healthcare_spending:Q.healthcare_spending,
@@ -378,7 +378,7 @@ on-arrival: {!
     Q.coalition_affairs_icv_concession = "";
     var raiseField = "";
     for (var field of ["education_spending", "healthcare_spending", "public_salary_level"]) {
-        if (Q[field] >= -2 && Q[field] < 2 && Q[field] + 1 <= Q.social_spending_cap
+        if (Q[field] >= -2 && Q[field] < 2 && Q[field] + 1 <= Q.social_spending_cap && Q[field] + 1 <= (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3)
             && (!raiseField || Q[field] < Q[raiseField])) {
             raiseField = field;
         }

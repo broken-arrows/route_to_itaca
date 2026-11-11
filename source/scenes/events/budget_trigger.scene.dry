@@ -60,6 +60,7 @@ on-arrival: {!
             taxPromised = true;
         }
     }
+    cap = Math.min(cap, (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3));
     // Prefer a restrained tax package, but seek revenue when inherited finances require it.
     if (right) {
         var prices = this.game.data.budget_prices;

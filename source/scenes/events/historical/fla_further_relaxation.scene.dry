@@ -1,0 +1,15 @@
+title: Some FLA restrictions, relaxed
+view-if: fla_active and fla_escalated and fla_severe and public_debt <= 37 and generalitat_surplus > -1.5
+tags: event
+new-page: true
+role: event
+face-image: img/events/fla_2.jpeg
+on-arrival: {!
+    Q.fla_severe = false;
+!}
+
+= Some FLA restrictions, relaxed
+
+With public debt and deficit figures for the Generalitat improving, the extraordinary measures that conditioned further financing through the FLA are now being somewhat relaxed. Some conditions still apply, specially regarding funding expansions and taxing measures, but the Generalitat has a tiny bit more breathing room to maneuver.
+
+- @post_event: Step by step...

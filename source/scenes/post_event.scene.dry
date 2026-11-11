@@ -48,7 +48,7 @@ function updatePendingEvents(engine) {
     Q.has_event = 0;
     var scene = engine.game.scenes['post_event.events_choice'];
     var choices = engine._compileChoices(scene);
-    if (choices && choices[0].title != "Continue...") {
+    if (choices && choices.some(function (choice) { return choice.canChoose && choice.id != engine.state.rootSceneId; })) {
         Q.has_event = 1;
     }
 

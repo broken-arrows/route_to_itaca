@@ -478,11 +478,11 @@ The sale of administrative buildings gives us has given us some breathing room f
 title: [? if public_salary_level < 0: Revert public salary cuts ?][? if public_salary_level >= 0: Improve public-salaries ?]
 view-if: public_salary_level < 2 and economy_cuts <= 0
 subtitle: \[-1 budget [? if public_salary_level >= social_spending_cap: on spending cap increase approval ?] \]
-choose-if: public_salary_level >= -2 and public_salary_level < 2 and government_budget > 0 and not public_salary_raise_pending
-unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if public_salary_raise_pending: This pay increase is already awaiting budget authorization.?]
+choose-if: (public_salary_level >= -2 and public_salary_level < 2 and government_budget > 0 and not public_salary_raise_pending) and (not fla_escalated or (not fla_severe and public_salary_level < 0) or (fla_severe and public_salary_level < -1))
+unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if public_salary_raise_pending: This pay increase is already awaiting budget authorization.?][? if fla_escalated and ((not fla_severe and public_salary_level >= 0) or (fla_severe and public_salary_level >= -1)): Stringent FLA conditions prohibit such a funding expansion. ?]
 on-arrival: {!
     var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
-    if (controlledParties.includes(Q.economy_minister_party) && !Q.cat_caretaker_gov && Q.public_salary_level >= -2 && Q.public_salary_level < 2 && Q.economy_cuts <= 0 && Q.government_budget > 0 && (Q.public_salary_prepared_level == null || Q.public_salary_prepared_level !== Q.public_salary_level + 1)) {
+    if (Q.public_salary_level + 1 <= (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3) && controlledParties.includes(Q.economy_minister_party) && !Q.cat_caretaker_gov && Q.public_salary_level >= -2 && Q.public_salary_level < 2 && Q.economy_cuts <= 0 && Q.government_budget > 0 && (Q.public_salary_prepared_level == null || Q.public_salary_prepared_level !== Q.public_salary_level + 1)) {
         var previousLevel = Q.public_salary_level;
         Q.government_budget -= 1;
         Q.economy_pay_delivered = Q.public_salary_level + 1 <= Q.social_spending_cap;
@@ -797,10 +797,10 @@ on-arrival: {!
     Q.economy_budget_tax_higher = proposal.tax_policy_level < Math.min(2, Q.tax_policy_level + 2);
     Q.economy_budget_cap_lower = proposal.social_spending_cap > -2 &&
         Q.education_spending != 3 && Q.healthcare_spending != 3;
-    Q.economy_budget_cap_higher = proposal.social_spending_cap < 3;
+    Q.economy_budget_cap_higher = proposal.social_spending_cap < (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3);
     Q.economy_budget_valid = proposal.tax_policy_level >= Math.max(-2, Q.tax_policy_level - 2) &&
         proposal.tax_policy_level <= Math.min(2, Q.tax_policy_level + 2) &&
-        proposal.social_spending_cap >= -2 && proposal.social_spending_cap <= 3 &&
+        proposal.social_spending_cap >= -2 && proposal.social_spending_cap <= (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3) &&
         (proposal.social_spending_cap == 3 || Q.education_spending != 3 && Q.healthcare_spending != 3);
     Q.economy_budget_education_cut = Q.education_spending > proposal.social_spending_cap;
     Q.economy_budget_health_cut = Q.healthcare_spending > proposal.social_spending_cap;
@@ -920,9 +920,10 @@ go-to: budget_review
 @budget_cap_higher
 title: Raise social spending authorization
 choose-if: economy_budget_cap_higher
-unavailable-subtitle: The proposed social spending caps are already as high as they can be.
+unavailable-subtitle: The proposed social spending caps are already as high as they can be. [? if fla_escalated: Stringent FLA conditions prohibit such a funding expansion. ?]
 on-arrival: {!
-    Q.economy_budget_proposal.social_spending_cap += 1;
+    if (Q.economy_budget_proposal.social_spending_cap < (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3))
+        Q.economy_budget_proposal.social_spending_cap += 1;
 !}
 go-to: budget_review
 
@@ -1036,6 +1037,7 @@ choose-if: budget_year < year and economy_budget_valid
 unavailable-subtitle: [? if budget_year >= year: This year's budget has already been approved. ?][? if not economy_budget_valid: This proposal exceeds the permitted tax changes or spending ceiling. Exceptional public-service frameworks must first be reversed before a lower spending ceiling can be approved. ?]
 on-arrival: {!
     var proposal = Q.economy_budget_proposal;
+    if (proposal.social_spending_cap > (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3)) return;
     Q.budget_draft_origin = {
         author:"player", proposer_party:Q.economy_minister_party, year:Q.year,
         tax_policy_level:proposal.tax_policy_level,

@@ -1,6 +1,8 @@
 title: Parlament votes on Reopening Private Education
 subtitle: The Catalan chamber considers [? if education_minister_gender = "m": Conseller ?][? if education_minister_gender = "f": Consellera ?]of Education [+ education_minister +]'s proposal
 view-if: education_de_public_introduced
+choose-if: not cat_caretaker_gov
+unavailable-subtitle: The Parlament is currently dissolved.
 tags: event
 new-page: true
 role: event

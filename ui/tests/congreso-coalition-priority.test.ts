@@ -28,6 +28,68 @@ function selectableIds(frame: ReturnType<DendryAdapter['goToScene']>) {
   return frame.choices.filter((choice) => choice.canChoose).map((choice) => choice.id);
 }
 
+describe('Congreso necessary investiture partners', () => {
+  function progressiveMembers(overrides: Record<string, unknown>) {
+    const { adapter } = enterCoalitionMenu({
+      parlament_current_ciu: 'pdcat',
+      pdcat_roadmap: 1,
+      erc_in_jxsi: false,
+      erc_in_jxcat: false,
+      iu_in_up: true,
+      psoe_congreso_s: 100,
+      up_congreso_s: 50,
+      erc_congreso_s: 26,
+      pdcat_congreso_s: 8,
+      pp_congreso_s: 166,
+      ...overrides,
+    });
+    const config = adapter.qualities.congreso_coalition_config as {
+      coalitions: { seatsVar: string; members: { party: string; type: string; escalated?: boolean }[] }[];
+    };
+    return {
+      adapter,
+      members: config.coalitions.find((coalition) => coalition.seatsVar === 'congreso_coalition_progressive_s')!.members,
+    };
+  }
+
+  it('drops PDeCAT abstention after negotiated ERC support supplies 176 yes votes', () => {
+    const { adapter, members } = progressiveMembers({});
+
+    expect(members.map((member) => member.party)).toEqual(['psoe', 'up', 'erc']);
+    expect(members.find((member) => member.party === 'erc')).toMatchObject({ type: 'support', escalated: true });
+    expect(adapter.qualities.congreso_coalition_progressive_reach).toBe(true);
+    expect(adapter.qualities.congreso_coalition_progressive_talks).toBe(true);
+  });
+
+  it('retains PDeCAT abstention when its no vote would defeat investiture', () => {
+    const { adapter, members } = progressiveMembers({
+      up_congreso_s: 69,
+      erc_congreso_s: 0,
+      pdcat_congreso_s: 14,
+      pp_congreso_s: 167,
+    });
+
+    expect(members.map((member) => member.party)).toEqual(['psoe', 'up', 'pdcat']);
+    expect(members.find((member) => member.party === 'pdcat')).toMatchObject({ type: 'abstain' });
+    expect(adapter.qualities.congreso_coalition_progressive_reach).toBe(true);
+    expect(adapter.qualities.congreso_coalition_progressive_talks).toBe(false);
+  });
+
+  it('preserves the governing core even when one cabinet party has its own majority', () => {
+    const { members } = progressiveMembers({
+      psoe_congreso_s: 176,
+      up_congreso_s: 50,
+      erc_congreso_s: 0,
+      pp_congreso_s: 116,
+    });
+
+    expect(members).toEqual([
+      { party: 'psoe', type: 'government' },
+      { party: 'up', type: 'government' },
+    ]);
+  });
+});
+
 describe('Congreso right-coalition priorities', () => {
   it('chooses a viable PP-Cs cabinet ahead of either Grand Coalition or Grand Toleration', () => {
     const { adapter, frame } = enterCoalitionMenu({

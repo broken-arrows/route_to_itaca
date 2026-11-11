@@ -1,6 +1,8 @@
 title: Parlament votes on Restoring Public Healthcare
 subtitle: The Catalan chamber considers [? if health_minister_gender = "m": Conseller ?][? if health_minister_gender = "f": Consellera ?]of Health [+ health_minister +]'s proposal
 view-if: healthcare_de_privatization_introduced
+choose-if: not cat_caretaker_gov
+unavailable-subtitle: The Parlament is currently dissolved.
 tags: event
 new-page: true
 role: event

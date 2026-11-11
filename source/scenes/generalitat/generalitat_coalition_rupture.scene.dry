@@ -4,7 +4,7 @@ new-page: true
 face-image: img/events/government_breakup.webp
 tags: event
 role: event
-view-if: coalition_rupture_trigger
+view-if: coalition_rupture_trigger and not cat_caretaker_gov
 on-arrival: coalition_rupture_trigger = false
 call: generalitat_coalition_card.prepare
 go-to: options

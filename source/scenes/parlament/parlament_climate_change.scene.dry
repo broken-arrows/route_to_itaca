@@ -27,6 +27,7 @@ go-to: climate_change_negotiation
 Many on the right of the political spectrum are fundamentally opposed to this level of regulation of the private sector. We may want to approach them if we want to secure an ample majority for this vote.
 
 @climate_change_negotiation
+new-page: true
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
@@ -55,7 +56,30 @@ on-arrival: {!
     Q.parlament_climate_change_can_approach_erc = canApproach("erc", cupPlayer);
     Q.parlament_climate_change_can_approach_convergence = canApproach(Q.parlament_current_ciu, ercPlayer || cupPlayer);
     Q.parlament_climate_change_can_approach_icv = canApproach(Q.parlament_current_icv, ercPlayer || cupPlayer);
+    // Forecast the ballot without applying the law's voting effects.
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var agreedPositions = {};
+    for (var deal of Q.parlament_climate_change_deals) agreedPositions[deal.party] = deal.position;
+    var forecast = {
+        yes: {kind:"yes", label:"Yes", votes:0, parties:[]},
+        abstain: {kind:"abstain", label:"Abstention", votes:0, parties:[]},
+        no: {kind:"no", label:"No", votes:0, parties:[]}
+    };
+    for (var party of Object.keys(labels)) {
+        var seats = Q[party + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        var position = agreedPositions[party] || (Q.parlament_climate_change_yes_names.includes(party) ? "yes" : Q.parlament_climate_change_no_names.includes(party) ? "no" : "abstain");
+        forecast[position].votes += seats;
+        forecast[position].parties.push({label:labels[party]});
+    }
+    Q.parlament_climate_change_vote_preview = {outcomes:[forecast.yes, forecast.abstain, forecast.no]};
 !}
+
+= Climate Change Law
+
+Parties in the Parlament are expected to vote soon, so we have a unique chance now to try to push their positions.
+
+{! <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_climate_change_vote_preview"}'></div> !}
 
 - @climate_change_approach_cup
 - @climate_change_approach_psc
@@ -129,6 +153,7 @@ on-arrival: {!
 go-to: climate_change_negotiation
 
 @climate_change_vote
+new-page: true
 subtitle: [? if not parlament_climate_change_deal_party: Who needs their support anyway? ?]
 on-arrival: {!
     // TODO: Even more radical version for CUP?
@@ -234,6 +259,8 @@ on-arrival: {!
         Q.burdens_done += 1;
     }
 !}
+
+= Climate Change Law
 
 <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_climate_change_vote_result"}'></div>
 

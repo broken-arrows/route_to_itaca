@@ -35,11 +35,11 @@ The Ministry of Health commands the highest budget allocation of the Generalitat
 title: Roll out a Public-only Healthcare system
 subtitle: Such a landmark policy would ultimately need the Parlament's approval \[-2 budget if passed\]\[-1 resources\]
 view-if: healthcare_spending >= 2
-choose-if: healthcare_spending = 2 and social_spending_cap = 3 and not healthcare_public_introduced and government_budget >= 2 and party_resources > 0
-unavailable-subtitle: [? if healthcare_spending = 3: Already approved!. ?][? if social_spending_cap < 3: The current social spending cap does not allow for this level of investment.?][? if healthcare_public_introduced: This proposal is waiting on the Parlament's approval.?][? if government_budget < 2: Not enough budget. ?][? if party_resources <= 0: Not enough resources. ?]
+choose-if: (healthcare_spending = 2 and social_spending_cap = 3 and not healthcare_public_introduced and government_budget >= 2 and party_resources > 0) and (not fla_escalated)
+unavailable-subtitle: [? if healthcare_spending = 3: Already approved!. ?][? if social_spending_cap < 3: The current social spending cap does not allow for this level of investment.?][? if healthcare_public_introduced: This proposal is waiting on the Parlament's approval.?][? if government_budget < 2: Not enough budget. ?][? if party_resources <= 0: Not enough resources. ?][? if fla_escalated: Stringent FLA conditions prohibit such a funding expansion. ?]
 on-arrival: {!
     var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
-    if (controlledParties.includes(Q.health_minister_party) && !Q.cat_caretaker_gov && Q.healthcare_spending == 2 && Q.social_spending_cap == 3 && !Q.healthcare_public_introduced && Q.government_budget >= 2 && Q.party_resources > 0) {
+    if (!Q.fla_escalated && controlledParties.includes(Q.health_minister_party) && !Q.cat_caretaker_gov && Q.healthcare_spending == 2 && Q.social_spending_cap == 3 && !Q.healthcare_public_introduced && Q.government_budget >= 2 && Q.party_resources > 0) {
         Q.healthcare_public_introduced = true;
         Q.party_resources -= 1;
         G.registerLaw(Q, {id:"healthcare_public_proposal", title:"Public-Only Healthcare Proposal",
@@ -173,8 +173,8 @@ We are asking the Parlament to replace the public-only healthcare framework with
 title: Expand Healthcare funding
 view-if: healthcare_spending >= 0 and healthcare_spending < 2
 subtitle: \[-1 budget [? if healthcare_spending >= social_spending_cap: on spending cap increase approval ?]\]
-choose-if: government_budget > 0 and not healthcare_raise_pending
-unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if healthcare_raise_pending: This increase is already awaiting budget authorization.?]
+choose-if: (government_budget > 0 and not healthcare_raise_pending) and (not fla_escalated or (not fla_severe and healthcare_spending < 0) or (fla_severe and healthcare_spending < -1))
+unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if healthcare_raise_pending: This increase is already awaiting budget authorization.?][? if fla_escalated and ((not fla_severe and healthcare_spending >= 0) or (fla_severe and healthcare_spending >= -1)): Stringent FLA conditions prohibit such a funding expansion. ?]
 go-to: approve_raise
 
 @healthcare_cuts
@@ -455,14 +455,14 @@ Against the wishes of big parts of the party, who accuse us of going against eve
 title: Revert Healthcare spending cuts
 view-if: healthcare_spending < 0 and healthcare_spending > -3
 subtitle: \[-1 budget [? if healthcare_spending >= social_spending_cap: on spending cap increase approval ?]\]
-choose-if: government_budget > 0 and not healthcare_raise_pending
-unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if healthcare_raise_pending: This increase is already awaiting budget authorization.?]
+choose-if: (government_budget > 0 and not healthcare_raise_pending) and (not fla_escalated or (not fla_severe and healthcare_spending < 0) or (fla_severe and healthcare_spending < -1))
+unavailable-subtitle: [? if government_budget <= 0: Not enough budget.?][? if healthcare_raise_pending: This increase is already awaiting budget authorization.?][? if fla_escalated and ((not fla_severe and healthcare_spending >= 0) or (fla_severe and healthcare_spending >= -1)): Stringent FLA conditions prohibit such a funding expansion. ?]
 go-to: approve_raise
 
 @approve_raise
 on-arrival: {!
     var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
-    if (controlledParties.includes(Q.health_minister_party) && !Q.cat_caretaker_gov && Q.healthcare_spending >= -2 && Q.healthcare_spending < 2 && Q.government_budget > 0 && (Q.healthcare_prepared_level == null || Q.healthcare_prepared_level !== Q.healthcare_spending + 1)) {
+    if (Q.healthcare_spending + 1 <= (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3) && controlledParties.includes(Q.health_minister_party) && !Q.cat_caretaker_gov && Q.healthcare_spending >= -2 && Q.healthcare_spending < 2 && Q.government_budget > 0 && (Q.healthcare_prepared_level == null || Q.healthcare_prepared_level !== Q.healthcare_spending + 1)) {
         var previousLevel = Q.healthcare_spending;
         Q.government_budget -= 1;
         Q.health_raise_delivered = Q.healthcare_spending + 1 <= Q.social_spending_cap;

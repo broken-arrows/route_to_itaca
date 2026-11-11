@@ -323,6 +323,17 @@ on-arrival: {!
             }
             if (!moved) break;                                               // nothing left to give
         }
+        // Remove partners made redundant by later support, preserving the core
+        // and preferring earlier-courted parties. Removed seats count as NO.
+        if (enough()) {
+            for (var prune = members.length - 1; prune >= core.length; prune--) {
+                var member = members[prune];
+                var seats = seatsOf(member);
+                addSeats(-seats, member.type);
+                if (enough()) members.splice(prune, 1);
+                else addSeats(seats, member.type);
+            }
+        }
         return members;
     };
     // Investiture maths over a finished member list (used to set choose-if flags).

@@ -7,6 +7,8 @@ face-image: img/events/fla_1.webp
 on-arrival: {!
     Q.fla_active = true;
     Q.fla_escalated = false;
+    Q.fla_severe = false;
+    Q.fla_intervention_month = null;
 !}
 
 = The Generalitat to seek FLA financing

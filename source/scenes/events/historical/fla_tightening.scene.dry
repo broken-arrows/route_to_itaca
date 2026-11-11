@@ -7,10 +7,30 @@ role: event
 face-image: img/events/fla_1.webp
 on-arrival: {!
     Q.fla_escalated = true;
+    Q.fla_severe = false;
+    Q.fla_intervention_month = Q.year * 12 + Q.month;
+    var ownershipNotices = [];
+    if (Q.healthcare_spending == 3) ownershipNotices.push(G.text("The public-only healthcare framework is to be effectively scrapped, with public funding falling back to crisis levels and private providers stepping into the market once again. "));
+    if (Q.education_spending == 3) ownershipNotices.push(G.text("The public-only education framework is to be effectively scrapped, with public funding falling back to crisis levels and private providers stepping into the market once again. "));
+    G.setText(Q, "fla_ownership_notice", G.joinText(ownershipNotices, " "));
+    Q.social_spending_cap = Math.min(Q.social_spending_cap, 0);
+    for (var field of ["education_spending", "healthcare_spending", "public_salary_level"])
+        Q[field] = Math.min(Q[field], 0);
+    // Retire outstanding public-only bills and their now-obsolete court reviews.
+    for (var service of ["healthcare", "education"]) {
+        Q[service + "_public_introduced"] = false;
+        G.deactivateLaw(Q, service + "_public_proposal", undefined, true);
+        Q["constitutional_" + service + "_public_trigger"] = false;
+        Q["constitutional_" + service + "_public_countdown"] = -1;
+        Q.countdowns = Q.countdowns.filter(function (id) { return id != "constitutional_" + service + "_public"; });
+    }
 !}
+call: generalitat_setpolicy
 
 = FLA conditions get more stringent
 
 With public debt reaching past the 35% of GDP mark, continued financing through the FLA, the central-government-run liquidity fund, comes under "enhanced" fiscal supervision. In plain language, this translates to enforced austerity measures and more supervision over Catalan public spending until the financial situation is reverted back to a more "acceptable" state. Needless to say, this also lowers the Generalitat's credibility in other financial markets, making debt seeking even harder.
+
+[? if fla_ownership_notice: A very controversial part of this intervention happens regarding the recent intervention of the Generalitat in key sectors. [+ fla_ownership_notice +]?]
 
 - @post_event: This is really not great...

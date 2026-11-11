@@ -172,7 +172,7 @@ on-arrival: {!
                 minister: String(Q[service[3] + "_minister"]),
                 minister_gender: Q[service[3] + "_minister_gender"]
             });
-            if (Number.isInteger(level) && level >= -2 && level < 2 && level < Q.social_spending_cap && Q.generalitat_surplus > -3 &&
+            if (Number.isInteger(level) && level >= -2 && level < 2 && level < Q.social_spending_cap && level < (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3) && Q.generalitat_surplus > -3 &&
                 Q[service[1] == "education_spending" ? "education_prepared_level" : "healthcare_prepared_level"] == null)
                 add(service[0], service[1], level + 1, (level < 0 ? G.text("restore {service} cuts", { service: service[2] == "education" ? G.text("education") : G.text("healthcare") }) : G.text("expand {service} funding", { service: service[2] == "education" ? G.text("education") : G.text("healthcare") })),  G.text("{minister} {reason}", {minister: consellerText, reason: distress ? G.text("argues that it about time crisis-era cuts are reverted.") : G.text("is pushing forward a reform for better funding and expanded resources.")}),
                     left ? (distress ? 5 : 3) : !deficit ? 1 : 0, "services");
@@ -181,7 +181,7 @@ on-arrival: {!
                     market && deficit ? 4 : left && !radical && Q.generalitat_surplus < -2 ? 1 : 0, "services", "cut");
         }
         if (Number.isInteger(Q.public_salary_level) && Q.public_salary_level >= -2 && Q.public_salary_level < 2 && Q.economy_cuts <= 0 &&
-            Q.public_salary_level < Q.social_spending_cap && Q.generalitat_surplus > -3 && Q.public_salary_prepared_level == null)
+            Q.public_salary_level < Q.social_spending_cap && Q.public_salary_level < (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3) && Q.generalitat_surplus > -3 && Q.public_salary_prepared_level == null)
             add("economy_minister_party", "public_salary_level", Q.public_salary_level + 1, G.text("improve public-sector pay"),
                 ((Q.economy_minister_gender == "m" ? G.text("Conseller of the Economy {economy_minister} says it is time public-service working conditions are restored and improved.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender }) : G.text("Consellera of the Economy {economy_minister} says it is time public-service working conditions are restored and improved.", { economy_minister: String(Q.economy_minister), economy_minister_gender: Q.economy_minister_gender }))), left ? 3 : !deficit ? 1 : 0, "services");
         if (Number.isInteger(Q.public_salary_level) && Q.public_salary_level > -2 && Q.public_salary_level <= 2)
@@ -303,8 +303,18 @@ on-arrival: {!
             if (roll < 0) { Q.npc_government_initiative = candidate; break; }
         }
     }
-    if (Q.npc_government_initiative) {
-        Q.npc_government_party = Q.npc_government_initiative.party;
+    var initiative = Q.npc_government_initiative;
+    // Internal negotiations target the constituent; outsiders deal with the whole list.
+    var responseParty = initiative && initiative.party;
+    if (initiative && ["jxsi", "jxcat"].includes(initiative.party)) {
+        if (controlled.includes(initiative.party))
+            responseParty = initiative.policyParty == "cdc" ? current("ciu") : initiative.policyParty;
+        // JxSi formation may leave its external relationship uninitialized.
+        else if (!Number.isFinite(Q[responseParty + "_relations"]) && Number.isFinite(Q[current("ciu") + "_relations"]))
+            Q[responseParty + "_relations"] = Q[current("ciu") + "_relations"];
+    }
+    if (initiative) {
+        Q.npc_government_party = responseParty;
         if (candidateText[Q.npc_government_initiative.id]) G.setText(Q, "npc_government_title", candidateText[Q.npc_government_initiative.id].title);
         else if (Q.npc_government_title === Q.npc_government_initiative.title) G.copyText(Q, "npc_government_title", "npc_government_title");
         else Q.npc_government_title = Q.npc_government_initiative.title;
@@ -315,7 +325,6 @@ on-arrival: {!
         else if (Q.npc_government_office === Q.npc_government_initiative.office) G.copyText(Q, "npc_government_office", "npc_government_office");
         else Q.npc_government_office = Q.npc_government_initiative.office;
     }
-    var initiative = Q.npc_government_initiative;
     var valid = false;
     Q.npc_government_can_influence = false;
     Q.npc_government_can_stop = false;
@@ -359,11 +368,11 @@ on-arrival: {!
             !Q.active_mods.digital_agency_core.active)) valid = false;
         if (initiative.profile == "services" && initiative.to > initiative.from &&
             ["education_spending", "healthcare_spending", "public_salary_level"].includes(initiative.field) &&
-            (initiative.to > Q.social_spending_cap || Q.generalitat_surplus <= -3)) valid = false;
+            (initiative.to > Q.social_spending_cap || initiative.to > (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3) || Q.generalitat_surplus <= -3)) valid = false;
         Q.npc_government_can_influence = controlled.some(function (party) {
             return cabinet.includes(party) || support.includes(party);
         });
-        var relations = Q[initiative.party + "_relations"];
+        var relations = Q[responseParty + "_relations"];
         Q.npc_government_can_protest = valid && Number.isFinite(relations);
         Q.npc_government_stop_cost = relations >= 65 ? 1 : 2;
         if (Q.npc_government_can_influence) {
@@ -372,7 +381,7 @@ on-arrival: {!
             }) : (Q.party_resources < Q.npc_government_stop_cost ? G.text("Not enough resources.") : G.literalText(""))));
             Q.npc_government_can_stop = valid && Q.npc_government_stop_blocker == "";
             G.setText(Q, "npc_government_alternative_blocker", (owners.economy_minister_party != initiative.party ? G.text("(???)") : (!initiative.acceptsTax ? G.text("{party} is against further tax increases.", {
-                party: G.nameText("party", initiative.party)
+                party: G.nameText("party", responseParty)
             }) : (Q.tax_policy_level >= 2 ? G.text("Regional taxes are already at their maximum level.") : (!canBudget ? G.text("This year's budget has already been discussed...") : G.literalText(""))))));
             Q.npc_government_can_alternative = valid && Q.npc_government_is_cut && Q.npc_government_alternative_blocker == "";
         }
@@ -392,11 +401,11 @@ on-arrival: {!
         if (response == "stop") {
             Q.party_resources -= Q.npc_government_stop_cost;
             G.setText(Q, "npc_government_outcome", G.text("We persuaded {party} to abandon the initiative.", {
-                party: String(initiative.party)
+                party: G.nameText("party", responseParty)
             }));
         } else {
             if (response == "protest") {
-                Q[initiative.party + "_relations"] -= 5;
+                Q[responseParty + "_relations"] -= 5;
                 Q.coalition_rupture_recheck = true;
             }
             if (response == "alternative") initiative = Object.assign({}, initiative, {kind:"budget", field:"tax_policy_level",
@@ -404,7 +413,7 @@ on-arrival: {!
             var field = initiative.field;
             var next = initiative.to;
             G.setText(Q, "npc_government_outcome", G.text("{party} has decided to {title}.", {
-                party: G.nameText("party", initiative.party),
+                party: G.nameText("party", responseParty),
                 title: G.getText(Q, "npc_government_title")
             }));
             if (initiative.kind == "budget") {
@@ -418,6 +427,7 @@ on-arrival: {!
                     if (record.kind == "social_spending_cap") cap = Math.max(cap, record.target);
                     if (record.kind == "tax_policy_level") tax = Math.max(tax, record.target);
                 }
+                cap = Math.min(cap, (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3));
                 Q.budget_draft_origin = {author:"npc", proposer_party:initiative.party, proposer_policy_party:initiative.policyParty,
                     year:Q.year, tax_policy_level:tax, social_spending_cap:cap, enacted_tax_policy_level:Q.tax_policy_level,
                     enacted_social_spending_cap:Q.social_spending_cap, surplus_at_draft:Q.generalitat_surplus, projects:Object.assign({}, projects),
@@ -425,7 +435,7 @@ on-arrival: {!
                 Q.budget_draft = {tax_policy_level:tax, social_spending_cap:cap, projects:projects};
                 Q.npc_government_budget_pending = true;
                 G.setText(Q, "npc_government_outcome", G.text("Following our alternative proposal, {party} has submitted a regional-tax proposal for the coming annual budget. We'll have to see if it passes, though.", {
-                    party: String(initiative.party)
+                    party: G.nameText("party", responseParty)
                 }));
             } else {
                 var packageKey = {bnl_tourism_level:"bnl_tourism_electoral_routes",bnl_union_level:"bnl_union_electoral_routes",
@@ -445,7 +455,7 @@ on-arrival: {!
                     }
                 }
                 if (breached) {
-                    if (Number.isFinite(Q[initiative.party + "_relations"])) Q[initiative.party + "_relations"] -= 5;
+                    if (Number.isFinite(Q[responseParty + "_relations"])) Q[responseParty + "_relations"] -= 5;
                     Q.coalition_rupture_recheck = true;
                     G.setText(Q, "npc_government_outcome", G.joinText([G.getText(Q, "npc_government_outcome"),
                         G.text("This decision breaks our investiture agreement and damages relations with the government. The commitment remains on record.")]));
@@ -573,7 +583,7 @@ on-arrival: {!
                 }
             }
             if (response == "protest") G.setText(Q, "npc_government_outcome", G.joinText([G.getText(Q, "npc_government_outcome"), G.text("Much to the dismay of {npc_government_party}, we've broken line and openly protested against their new direction. No one is particularly happy about this, and it seems like they won't be abandoning this new agenda any time soon anyway...", {
-                npc_government_party: String(Q.npc_government_party)
+                npc_government_party: G.nameText("party", Q.npc_government_party)
             })]));
         }
     }

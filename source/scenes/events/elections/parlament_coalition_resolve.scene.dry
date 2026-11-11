@@ -170,6 +170,8 @@ on-arrival: {!
         ];
         commitments.forEach(function (item) {
             if (!item.selected) return;
+            // Previously accepted promises cannot bypass a new intervention.
+            if (Q.fla_escalated && (item.spending || item.kind == "social_spending_cap") && item.target > (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3)) return;
             var current = Q[item.kind];
             var maximum = item.kind == "social_spending_cap" ? 3 : 2;
             var minimum = -2;

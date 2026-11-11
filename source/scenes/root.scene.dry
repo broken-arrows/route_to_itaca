@@ -867,6 +867,8 @@ on-arrival: {!
   // ENGINE Scales
   Q.fla_active = true;
   Q.fla_escalated = false;
+  Q.fla_severe = false;
+  Q.fla_intervention_month = null;
   Q.ecb_qe = false; // Should trigger 2015.
   Q.psc_recovery_mult = 0; //0 for navarro, 1 for iceta, can be a multiplier for other psc leaders
 

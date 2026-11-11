@@ -7,6 +7,8 @@ face-image: img/events/fla_2.jpeg
 on-arrival: {!
     Q.fla_active = false;
     Q.fla_escalated = false;
+    Q.fla_severe = false;
+    Q.fla_intervention_month = null;
 !}
 
 = The Generalitat, to leave FLA financing scheme

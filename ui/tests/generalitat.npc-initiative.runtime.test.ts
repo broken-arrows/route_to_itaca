@@ -99,8 +99,8 @@ describe('NPC cabinet scheduling', () => {
       ...(scope==='external_support'?{cat_coalition:['ciu'],cat_coalition_support:['erc']}: {})});
     expect(f.candidates().some(item=>item.kind==='cut')).toBe(false);
     f.q.month=5;
-    const frame=propose(f,'healthcare_spending',-1);
-    expect(frame.html).toContain('This proposal goes against');
+    propose(f,'healthcare_spending',-1);
+    expect(f.q.npc_government_breaks_agreement).toBe(true);
     answer(f,'accept');
     expect(f.q.healthcare_spending).toBe(-1);
     expect(f.q.coalition_policy_commitments[0]).toMatchObject({status:'broken',target:0});
@@ -246,7 +246,8 @@ describe('NPC cabinet scheduling', () => {
   it.each(['jxsi', 'jxcat'])('allows %s initiatives while retaining player ministry access and influence', list => {
     const f = setup({cat_coalition:[list], ...Object.fromEntries(offices.map(field => [field,list])),
       ['player_in_' + list]:true, ['erc_in_' + list]:true, ['cdc_in_' + list]:true,
-      [list + '_ideology']:'National Coalition, Pragmatic Independence', [list + '_relations']:65,
+      [list + '_ideology']:'National Coalition, Pragmatic Independence',
+      parlament_current_ciu:'cdc', cdc_relations:65,
       cdc_ideology:'Liberal-Conservatism, Pact-Pragmatism', jxsi_formation_num:40, jxcat_leader_party:'cdc'});
     const newspaper = f.adapter.goToScene('post_event.events_choice');
     expect(newspaper.choices.some(c => c.id === scene)).toBe(true);
@@ -260,6 +261,91 @@ describe('NPC cabinet scheduling', () => {
     answer(f, 'accept');
     expect(f.q.healthcare_spending).toBe(-2);
     expect(f.q.active_mods.healthcare_copaid.active).toBe(true);
+  });
+  describe.each(['jxsi', 'jxcat'])('%s initiative counterparts', list => {
+    function joint(overrides: Record<string, any> = {}) {
+      return setup({cat_coalition:[list], ...Object.fromEntries(offices.map(field => [field,list])),
+        ...Object.fromEntries(offices.map(field => [field.replace(/_party$/, '_affiliation'),'cdc'])),
+        ['player_in_' + list]:true, ['erc_in_' + list]:true, ['cdc_in_' + list]:true,
+        [list + '_ideology']:'National Coalition, Pragmatic Independence',
+        [list + '_relations']:undefined, parlament_current_ciu:'cdc', cdc_relations:65,
+        cdc_ideology:'Liberal-Conservatism, Pact-Pragmatism', jxsi_formation_num:40,
+        jxcat_formation_num:40, jxcat_leader_party:'cdc', ...overrides});
+    }
+
+    it.each(['cdc', 'dl', 'pdcat'])('uses the current %s constituent for internal persuasion and protest', constituent => {
+      const f = joint({parlament_current_ciu:constituent, [constituent + '_relations']:65});
+      propose(f, 'healthcare_spending', -2, list);
+      expect(f.q.npc_government_initiative).toMatchObject({party:list, policyParty:'cdc'});
+      expect(f.q.npc_government_party).toBe(constituent);
+      expect(f.q.npc_government_can_protest).toBe(true);
+      answer(f, 'stop');
+      expect(f.q.party_resources).toBe(3);
+      expect(f.q.healthcare_spending).toBe(-1);
+      propose(f, 'healthcare_spending', -2, list);
+      answer(f, 'protest');
+      expect(f.q[constituent + '_relations']).toBe(60);
+      expect(f.q[list + '_relations']).toBeUndefined();
+      expect(f.q.healthcare_spending).toBe(-2);
+    });
+
+    it('uses ERC relations for a CUP member responding to an ERC minister', () => {
+      const f = joint({player_party:'cup', ['cup_in_' + list]:true, erc_relations:60,
+        health_minister_affiliation:'erc', erc_ideology:'Social Democracy, Pragmatic Independence'});
+      propose(f, 'healthcare_spending', 0, list);
+      expect(f.q.npc_government_party).toBe('erc');
+      answer(f, 'stop');
+      expect(f.q.party_resources).toBe(2);
+      expect(f.q.healthcare_spending).toBe(-1);
+    });
+
+    it('keeps internal persuasion locked when constituent relations are low despite a friendly list', () => {
+      const f = joint({cdc_relations:54, [list + '_relations']:80});
+      const frame = propose(f, 'healthcare_spending', -2, list);
+      expect(frame.choices.find(c => c.id.endsWith('.stop'))?.canChoose).toBe(false);
+      expect(f.q.npc_government_can_protest).toBe(true);
+      expect(f.q.npc_government_stop_blocker).toContain('cdc');
+    });
+
+    it.each(['cabinet', 'support', 'opposition'])('keeps the list as counterpart for a CUP outsider in %s', role => {
+      const f = joint({player_party:'cup', ['player_in_' + list]:false,
+        [list + '_relations']:65, cdc_relations:10,
+        cat_coalition:role === 'cabinet' ? [list,'cup'] : [list],
+        cat_coalition_support:role === 'support' ? ['cup'] : []});
+      propose(f, 'healthcare_spending', -2, list);
+      expect(f.q.npc_government_party).toBe(list);
+      expect(f.q.npc_government_can_stop).toBe(role !== 'opposition');
+      if (role !== 'opposition') {
+        answer(f, 'stop');
+        expect(f.q.party_resources).toBe(3);
+        propose(f, 'healthcare_spending', -2, list);
+      }
+      answer(f, 'protest');
+      expect(f.q[list + '_relations']).toBe(60);
+      expect(f.q.cdc_relations).toBe(10);
+      expect(f.q.healthcare_spending).toBe(-2);
+    });
+
+    it('restores a missing external list relation from its current CDC constituent', () => {
+      const f = joint({player_party:'cup', ['player_in_' + list]:false,
+        parlament_current_ciu:'pdcat', pdcat_relations:65, cat_coalition_support:['cup']});
+      propose(f, 'healthcare_spending', -2, list);
+      expect(f.q.npc_government_party).toBe(list);
+      answer(f, 'stop');
+      expect(f.q.party_resources).toBe(3);
+      propose(f, 'healthcare_spending', -2, list);
+      answer(f, 'protest');
+      expect(f.q[list + '_relations']).toBe(60);
+      expect(f.q.pdcat_relations).toBe(65);
+    });
+
+    it('keeps an existing low external list relation despite friendly constituents', () => {
+      const f = joint({player_party:'cup', ['player_in_' + list]:false,
+        [list + '_relations']:54, cdc_relations:80, cat_coalition_support:['cup']});
+      const frame = propose(f, 'healthcare_spending', -2, list);
+      expect(frame.choices.find(c => c.id.endsWith('.stop'))?.canChoose).toBe(false);
+      expect(f.q[list + '_relations']).toBe(54);
+    });
   });
   it('falls back and restarts the timer when the selected minister has no applicable proposal', () => {
     const f = setup({health_minister_party:'erc'});

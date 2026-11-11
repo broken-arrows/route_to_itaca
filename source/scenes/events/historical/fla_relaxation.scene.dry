@@ -1,11 +1,13 @@
 title: FLA conditions relaxed
-view-if: fla_active and fla_escalated and public_debt <= 32 and generalitat_surplus > -1.5
+view-if: fla_active and fla_escalated and not fla_severe and public_debt <= 32 and generalitat_surplus > -1.5
 tags: event
 new-page: true
 role: event
 face-image: img/events/fla_2.jpeg
 on-arrival: {!
     Q.fla_escalated = false;
+    Q.fla_severe = false;
+    Q.fla_intervention_month = null;
 !}
 
 = FLA conditions relaxed

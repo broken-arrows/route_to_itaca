@@ -1,4 +1,5 @@
 {
+  "Expected vote": "Previsió de vot",
   "1": null,
   "2": null,
   "3": null,
@@ -3731,7 +3732,7 @@
   "The Parlament has rejected the reform! We'll have to rethink our supports this legislature if we're to ever attempt such law again. ": null,
   "The Parlament has rejected the reform. Public concern over policing will not change without any further actions, so we may want to re-introduce this proposal at a later date.": null,
   "The Parlament is currently dissolved, so no parliamentary actions are possible at this point.": null,
-  "The Parlament is currently dissolved.": null,
+  "The Parlament is currently dissolved.": "El Parlament està dissolt.",
   "The Parlament must first pass the Catalan LGBTI law.": null,
   "The Parlament urges the Catalan government, all the political forces, and social agents to build a consensus within the Catalan Statute of Autonomy to bring forward this democratic process, so that the people of Catalonia can freely choose their own way...": null,
   "The Parlament urges the Catalan government, all the political forces, and social agents to build the maximum possible consensus to bring forward this democratic process, with dialogue with the international community, the European Union, and the Spanish government so that the people of Catalonia can freely choose their own way...": null,

@@ -72,6 +72,7 @@ on-arrival: {!
         for (var p of policies) {
             if (policies.filter(selected).length >= minimum) break;
             if (!selected(p) && n(Q[current[p]]) < (p === 'cap' ? 3 : 2) &&
+                (p === 'tax' || n(Q[current[p]]) + 1 <= (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3)) &&
                 (Q.player_party === 'erc' || programmeCost + policyCost(p) <= allowance)) {
                 Q[prefix + 'policy_' + p] = true;
                 programmeCost += policyCost(p);

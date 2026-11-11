@@ -1,0 +1,28 @@
+title: FLA conditions gets tighter
+subtitle: Financing for the Generalitat becomes conditional on further cuts
+view-if: {!
+    var cabinet = Q.spanish_coalition || [Q.spanish_pm_party];
+    var progressive = cabinet.length > 0 && cabinet.every(function (party) {
+        return ["psoe", "podemos", "up", "sumar"].includes(party);
+    });
+    return Q.fla_active && Q.fla_escalated && !Q.fla_severe && !progressive &&
+        Q.public_debt >= 40 && Q.generalitat_surplus <= -1.5 &&
+        Q.fla_intervention_month != null && Q.year * 12 + Q.month - Q.fla_intervention_month >= 6;
+!}
+tags: event
+new-page: true
+role: event
+face-image: img/events/fla_1.webp
+on-arrival: {!
+    Q.fla_severe = true;
+    Q.social_spending_cap = Math.min(Q.social_spending_cap, -1);
+    for (var field of ["education_spending", "healthcare_spending", "public_salary_level"])
+        Q[field] = Math.min(Q[field], -1);
+!}
+call: generalitat_setpolicy
+
+= FLA conditions gets tighter
+
+With the Generalitat's debt spiraling up, its credit ratings falling by every metric, and the public deficit still not under control, the [+ spanish_coalition_disp +] has announced further conditions for continued financing through the FLA. This is quite a blow to the efforts made by the current [+ cat_coalition_disp +], and specially for [? if economy_minister_gender = "m": Conseller ?][? if economy_minister_gender = "f": Consellera ?] of Economy [+ economy_minister +], who will effectively be forced to implement further austerity measures throughout the board.
+
+- @post_event: More and more austerity...

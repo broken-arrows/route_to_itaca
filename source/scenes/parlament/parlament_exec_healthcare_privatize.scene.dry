@@ -1,6 +1,8 @@
 title: Parlament votes on Healthcare Privatization
 subtitle: The Catalan chamber, to make or break [? if health_minister_gender = "m": Conseller ?][? if health_minister_gender = "f": Consellera ?]of Health [+ health_minister +]'s proposal
 view-if: healthcare_privatization_introduced
+choose-if: not cat_caretaker_gov
+unavailable-subtitle: The Parlament is currently dissolved.
 tags: event
 new-page: true
 on-arrival: {!

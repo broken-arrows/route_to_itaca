@@ -1,6 +1,8 @@
 title: Parlament votes on Public-Only Healthcare
 subtitle: The Catalan chamber, to make or break [? if health_minister_gender = "m": Conseller ?][? if health_minister_gender = "f": Consellera ?]of Health [+ health_minister +]'s proposal
 view-if: healthcare_public_introduced
+choose-if: not cat_caretaker_gov
+unavailable-subtitle: The Parlament is currently dissolved.
 tags: event
 new-page: true
 role: event
@@ -68,7 +70,7 @@ on-arrival: {!
         }
     }
     Q.parlament_healthcare_public_passed = Q.healthcare_public_introduced && Q.parlament_healthcare_public_yes > Q.parlament_healthcare_public_no &&
-        Q.healthcare_spending == 2 && Q.social_spending_cap == 3 && Q.government_budget >= 2;
+        !Q.fla_escalated && Q.healthcare_spending == 2 && Q.social_spending_cap == 3 && Q.government_budget >= 2;
     Q.parlament_healthcare_public_vote_result = {outcomes:[
         {kind:"yes",label:"Yes",votes:Q.parlament_healthcare_public_yes,parties:yesParties},
         {kind:"abstain",label:"Abstention",votes:Q.parlament_healthcare_public_abst,parties:abstainParties},
@@ -83,7 +85,7 @@ go-to: on_yes if parlament_healthcare_public_passed; on_no if not parlament_heal
 @on_yes
 on-arrival: {!
     var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
-    if (Q.parlament_healthcare_public_passed && Q.healthcare_public_introduced && Q.healthcare_spending == 2 && !Q.cat_caretaker_gov && controlledParties.includes(Q.health_minister_party) && Q.government_budget >= 2 && Q.social_spending_cap == 3) {
+    if (!Q.fla_escalated && Q.parlament_healthcare_public_passed && Q.healthcare_public_introduced && Q.healthcare_spending == 2 && !Q.cat_caretaker_gov && controlledParties.includes(Q.health_minister_party) && Q.government_budget >= 2 && Q.social_spending_cap == 3) {
         Q.government_budget -= 2;
         if (Q.healthcare_spending == 2 && (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0)) Q.burdens_done += 1;
         Q.healthcare_spending = 3;

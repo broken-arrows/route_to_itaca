@@ -16,14 +16,15 @@ you're allowed to make a wish once you do so! ✨
 tags: fiscal_concessions
 title: [? if parlament_coalition_policy_cap: Withdraw demand to raise the social spending cap?][? if not parlament_coalition_policy_cap: Propose a higher social spending cap?]
 view-if: parlament_coalition_policy_cap or (social_spending_cap >= -2 and social_spending_cap < 3)
-choose-if: parlament_coalition_policy_cap or (parlament_coalition_policy_cap_target = social_spending_cap + 1 and parlament_coalition_policy_cap_target <= 3 and (parlament_coalition_leverage >= parlament_coalition_policy_spending_cost or (player_party = "cup" and parlament_coalition_sovereignty_phase > 0)))
+choose-if: parlament_coalition_policy_cap or ((parlament_coalition_policy_cap_target = social_spending_cap + 1 and parlament_coalition_policy_cap_target <= 3 and (parlament_coalition_leverage >= parlament_coalition_policy_spending_cost or (player_party = "cup" and parlament_coalition_sovereignty_phase > 0))) and (not fla_escalated or (not fla_severe and parlament_coalition_policy_cap_target <= 0) or (fla_severe and parlament_coalition_policy_cap_target <= -1)))
 subtitle: A raise of the social spending cap gives us more options to invest in things like Education, Health and other public investments.
-unavailable-subtitle: [? if parlament_coalition_policy_cap_target > 3: There is no longer a cap! ?][? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions. ?]
+unavailable-subtitle: [? if parlament_coalition_policy_cap_target > 3: There is no longer a cap! ?][? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions. ?][? if fla_escalated and ((not fla_severe and parlament_coalition_policy_cap_target > 0) or (fla_severe and parlament_coalition_policy_cap_target > -1)): Stringent FLA conditions prohibit such a funding expansion. ?]
 on-arrival: {!
     var taking = !Q.parlament_coalition_policy_cap;
     var canDemand = Q.social_spending_cap >= -2 && Q.social_spending_cap < 3
         && Q.parlament_coalition_policy_cap_target === Q.social_spending_cap + 1
         && (Q.parlament_coalition_leverage >= Q.parlament_coalition_policy_spending_cost || (Q.player_party === "cup" && Q.parlament_coalition_sovereignty_phase > 0));
+    canDemand = canDemand && Q.parlament_coalition_policy_cap_target <= (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3);
     if (!taking || canDemand) {
         if (Q.parlament_coalition_sovereignty_phase > 0) Q.parlament_coalition_changes = true;
         Q.parlament_coalition_policy_cap = taking;
@@ -36,14 +37,15 @@ go-to: jumpScene
 tags: fiscal_concessions
 title: [? if parlament_coalition_policy_education: Withdraw our demand for more Education spending?][? if not parlament_coalition_policy_education: Propose more Education spending?]
 view-if: parlament_coalition_policy_education or (education_spending >= -2 and education_spending < 2)
-choose-if: parlament_coalition_policy_education or ((parlament_coalition_leverage >= parlament_coalition_policy_spending_cost or (player_party = "cup" and parlament_coalition_sovereignty_phase > 0)) and parlament_coalition_policy_education_target = education_spending + 1 and education_spending >= -2 and education_spending < 2)
+choose-if: parlament_coalition_policy_education or (((parlament_coalition_leverage >= parlament_coalition_policy_spending_cost or (player_party = "cup" and parlament_coalition_sovereignty_phase > 0)) and parlament_coalition_policy_education_target = education_spending + 1 and education_spending >= -2 and education_spending < 2) and (not fla_escalated or (not fla_severe and parlament_coalition_policy_education_target <= 0) or (fla_severe and parlament_coalition_policy_education_target <= -1)))
 subtitle: [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_education_target: This increase will be conditional on a budget with a higher social spending cap being approved by the Parlament.?]
-unavailable-subtitle: [? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions. ?]
+unavailable-subtitle: [? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions. ?][? if fla_escalated and ((not fla_severe and parlament_coalition_policy_education_target > 0) or (fla_severe and parlament_coalition_policy_education_target > -1)): Stringent FLA conditions prohibit such a funding expansion. ?]
 on-arrival: {!
     var taking = !Q.parlament_coalition_policy_education;
     var canDemand = Q.education_spending >= -2 && Q.education_spending < 2
         && Q.parlament_coalition_policy_education_target === Q.education_spending + 1
         && (Q.parlament_coalition_leverage >= Q.parlament_coalition_policy_spending_cost || (Q.player_party === "cup" && Q.parlament_coalition_sovereignty_phase > 0));
+    canDemand = canDemand && Q.parlament_coalition_policy_education_target <= (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3);
     if (!taking || canDemand) {
         if (Q.parlament_coalition_sovereignty_phase > 0) Q.parlament_coalition_changes = true;
         Q.parlament_coalition_policy_education = taking;
@@ -56,14 +58,15 @@ go-to: jumpScene
 tags: fiscal_concessions
 title: [? if parlament_coalition_policy_health: Withdraw our demand for more Health spending?][? if not parlament_coalition_policy_health: Propose more Health spending?]
 view-if: parlament_coalition_policy_health or (healthcare_spending >= -2 and healthcare_spending < 2)
-choose-if: parlament_coalition_policy_health or ((parlament_coalition_leverage >= parlament_coalition_policy_spending_cost or (player_party = "cup" and parlament_coalition_sovereignty_phase > 0)) and parlament_coalition_policy_health_target = healthcare_spending + 1 and healthcare_spending >= -2 and healthcare_spending < 2)
+choose-if: parlament_coalition_policy_health or (((parlament_coalition_leverage >= parlament_coalition_policy_spending_cost or (player_party = "cup" and parlament_coalition_sovereignty_phase > 0)) and parlament_coalition_policy_health_target = healthcare_spending + 1 and healthcare_spending >= -2 and healthcare_spending < 2) and (not fla_escalated or (not fla_severe and parlament_coalition_policy_health_target <= 0) or (fla_severe and parlament_coalition_policy_health_target <= -1)))
 subtitle: [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_health_target: This increase will be conditional on a budget with a higher social spending cap being approved by the Parlament. ?]
-unavailable-subtitle: [? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions. ?]
+unavailable-subtitle: [? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions. ?][? if fla_escalated and ((not fla_severe and parlament_coalition_policy_health_target > 0) or (fla_severe and parlament_coalition_policy_health_target > -1)): Stringent FLA conditions prohibit such a funding expansion. ?]
 on-arrival: {!
     var taking = !Q.parlament_coalition_policy_health;
     var canDemand = Q.healthcare_spending >= -2 && Q.healthcare_spending < 2
         && Q.parlament_coalition_policy_health_target === Q.healthcare_spending + 1
         && (Q.parlament_coalition_leverage >= Q.parlament_coalition_policy_spending_cost || (Q.player_party === "cup" && Q.parlament_coalition_sovereignty_phase > 0));
+    canDemand = canDemand && Q.parlament_coalition_policy_health_target <= (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3);
     if (!taking || canDemand) {
         if (Q.parlament_coalition_sovereignty_phase > 0) Q.parlament_coalition_changes = true;
         Q.parlament_coalition_policy_health = taking;
@@ -76,14 +79,15 @@ go-to: jumpScene
 tags: fiscal_concessions
 title: [? if parlament_coalition_policy_pay: Withdraw our demand for higher public worker salaries?][? if not parlament_coalition_policy_pay: Propose higher public worker salaries?]
 view-if: parlament_coalition_policy_pay or (public_salary_level >= -2 and public_salary_level < 2)
-choose-if: parlament_coalition_policy_pay or ((parlament_coalition_leverage >= parlament_coalition_policy_spending_cost or (player_party = "cup" and parlament_coalition_sovereignty_phase > 0)) and parlament_coalition_policy_pay_target = public_salary_level + 1 and public_salary_level >= -2 and public_salary_level < 2)
+choose-if: parlament_coalition_policy_pay or (((parlament_coalition_leverage >= parlament_coalition_policy_spending_cost or (player_party = "cup" and parlament_coalition_sovereignty_phase > 0)) and parlament_coalition_policy_pay_target = public_salary_level + 1 and public_salary_level >= -2 and public_salary_level < 2) and (not fla_escalated or (not fla_severe and parlament_coalition_policy_pay_target <= 0) or (fla_severe and parlament_coalition_policy_pay_target <= -1)))
 subtitle: [? if parlament_coalition_policy_effective_cap < parlament_coalition_policy_pay_target: This increase will be conditional on a budget with a higher social spending cap being approved by the Parlament. ?]
-unavailable-subtitle: [? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions.?]
+unavailable-subtitle: [? if parlament_coalition_leverage < parlament_coalition_policy_spending_cost: We don't have enough leverage to propose more concessions.?][? if fla_escalated and ((not fla_severe and parlament_coalition_policy_pay_target > 0) or (fla_severe and parlament_coalition_policy_pay_target > -1)): Stringent FLA conditions prohibit such a funding expansion. ?]
 on-arrival: {!
     var taking = !Q.parlament_coalition_policy_pay;
     var canDemand = Q.public_salary_level >= -2 && Q.public_salary_level < 2
         && Q.parlament_coalition_policy_pay_target === Q.public_salary_level + 1
         && (Q.parlament_coalition_leverage >= Q.parlament_coalition_policy_spending_cost || (Q.player_party === "cup" && Q.parlament_coalition_sovereignty_phase > 0));
+    canDemand = canDemand && Q.parlament_coalition_policy_pay_target <= (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3);
     if (!taking || canDemand) {
         if (Q.parlament_coalition_sovereignty_phase > 0) Q.parlament_coalition_changes = true;
         Q.parlament_coalition_policy_pay = taking;
@@ -159,6 +163,8 @@ on-arrival: {!
     for (var term of terms) {
         if (!Q["parlament_coalition_policy_" + term[0]]) continue;
         selected = true;
+        if (Q.fla_escalated && term[0] != "tax" && Q["parlament_coalition_policy_" + term[0] + "_target"] > (Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3))
+            addReason(reasons, G.text("Stringent FLA conditions prohibit such a funding expansion."));
         var current = Q[term[1]];
         var target = Q["parlament_coalition_policy_" + term[0] + "_target"];
         if (!Number.isInteger(current) || !Number.isInteger(target) || current < term[2] || current >= term[3] || target !== current + 1) addReason(reasons, term[4]);

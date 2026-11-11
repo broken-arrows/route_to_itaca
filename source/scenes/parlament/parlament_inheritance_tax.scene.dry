@@ -64,7 +64,28 @@ on-arrival: {!
     Q.parlament_inheritance_tax_can_approach_erc = canApproach("erc", cupPlayer);
     Q.parlament_inheritance_tax_can_approach_convergence = canApproach(Q.parlament_current_ciu, ercPlayer || cupPlayer);
     Q.parlament_inheritance_tax_can_approach_icv = canApproach(Q.parlament_current_icv, ercPlayer || cupPlayer);
+    // Forecast the ballot without applying the law's voting effects.
+    var labels = {ciu:"CiU",cdc:"CDC",dl:"DL",pdcat:"PDeCAT",jxsi:"JxSí",jxcat:"JxCat",junts:"Junts",erc:"ERC",cup:"CUP",psc:"PSC",ppc:"PPC",cs:"Cs",icv:"ICV-EUiA",csqp:"CSQP",cecp:"CECP",ecp:"ECP",unio:"UDC",si:"SI",vox:"Vox",pxc:"PxC",fnc:"FNC"};
+    var agreedPositions = {};
+    for (var deal of Q.parlament_inheritance_tax_deals) agreedPositions[deal.party] = deal.position;
+    var forecast = {
+        yes: {kind:"yes", label:"Yes", votes:0, parties:[]},
+        abstain: {kind:"abstain", label:"Abstention", votes:0, parties:[]},
+        no: {kind:"no", label:"No", votes:0, parties:[]}
+    };
+    for (var party of Object.keys(labels)) {
+        var seats = Q[party + "_parlament_s"] || 0;
+        if (seats <= 0) continue;
+        var position = agreedPositions[party] || (Q.parlament_inheritance_tax_yes_names.includes(party) ? "yes" : Q.parlament_inheritance_tax_no_names.includes(party) ? "no" : "abstain");
+        forecast[position].votes += seats;
+        forecast[position].parties.push({label:labels[party]});
+    }
+    Q.parlament_inheritance_tax_vote_preview = {outcomes:[forecast.yes, forecast.abstain, forecast.no]};
 !}
+
+**Expected vote**
+
+{! <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_inheritance_tax_vote_preview"}'></div> !}
 
 - @inheritance_approach_cup
 - @inheritance_approach_psc
@@ -138,6 +159,7 @@ on-arrival: {!
 go-to: inheritance_negotiation
 
 @inheritance_vote
+new-page: true
 subtitle: [? if not parlament_inheritance_tax_deal_party: Who needs their support anyway? ?]
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
@@ -231,6 +253,8 @@ on-arrival: {!
         Q.burdens_done += 1;
     }
 !}
+
+= Law on Inheritance and Gift Taxes
 
 <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_inheritance_tax_vote_result"}'></div>
 
