@@ -6,26 +6,50 @@ tags: event
 view-if: consultation_day_trigger
 max-visits: 1
 on-arrival: {!
-    // TODO: How does the preparation event affect this?
-
-    this.achieve("calcotada");
+    var cooperatingParties = ["ciu", "cdc", "dl", "pdcat", "jxcat", "junts", "jxsi", "erc", "cup"];
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    Q.consultation_preparation = 0;
+    for (var ministry of ["health", "education"]) {
+        var owner = Q[ministry + "_minister_party"];
+        var npcPreparation = !controlledParties.includes(owner) && cooperatingParties.includes(owner) ? 1 : 0;
+        // A change of minister does not erase work or add the NPC allowance twice.
+        Q.consultation_preparation += Math.max(Q["consultation_" + ministry + "_preparations"] || 0, npcPreparation);
+    }
+    for (var area of ["rb", "interior"]) {
+        var holdings = cooperatingParties.reduce(function (total, party) {
+            return total + (Q[party + "_local_" + area + "_pct"] || 0);
+        }, 0);
+        Q.consultation_preparation += holdings >= 50 ? 2 : holdings >= 25 ? 1 : 0;
+    }
+    if (cooperatingParties.includes(Q.local_barcelona_wp)) Q.consultation_preparation += 2;
+    else if (["icv", "csqp", "cecp", "ecp", "bcomu", "comuns"].includes(Q.local_barcelona_wp)) Q.consultation_preparation += 1;
     Q.consultation_happened = true;
     Q.consultation_pending = false;
     Q.roadmap_year = 0;
-    Q.burdens_done += 1;
+    if (Q.consultation_preparation >= 4) {
+        this.achieve("calcotada");
+        Q.burdens_done += 1;
+    }
     // Persist the actual playthrough date for chart annotations, once per event.
     if (!Array.isArray(Q.election_history_events)) Q.election_history_events = [];
     var historyDate = new Date(Q.year, Q.month - 1, (Q.week || 1) * 7).toISOString();
-    if (!Q.election_history_events.some(function (event) { return event.type === "consultation" && event.date === historyDate; })) {
+    if (Q.consultation_preparation >= 4 && !Q.election_history_events.some(function (event) { return event.type === "consultation" && event.date === historyDate; })) {
         Q.election_history_events.push({ date: historyDate, type: "consultation", label: G.englishText(G.text("Non-binding consultation")) });
     }
 !}
+go-to: failure if consultation_preparation < 4
 role: event
 
 = Participative process of [+ month : month +] [+ year +]
 
-Today, all Catalan residents 16 and over have been called to vote on the non-binding consulation on the political future of Catalonia. Participation is not easy to predict as, following the ruling of the Constitutional Court against the law allowing this consultation, PP[? if vox_parlament_s > 0: , Cs, and Vox?] [? if not vox_parlament_s > 0: and Cs ?]have announced a complete boicot of the consultation. [? if psc_leader == "Àngel Ros" or psc_leader == "Montserrat Tura": The PSC, while not thrilled by the idea of this consultation without an agreement, is at least somewhat supporting.?][? if not (psc_leader == "Àngel Ros" or psc_leader == "Montserrat Tura"): The PSC is not thrilled by the idea of this consultation without an agreement and has taken an ambivalent position, neither boicotting nor openly calling for participating in it, in yet another impossible balancing act.?] [? if icv_parlament_s > 0: ICV-EUiA?][? if csqp_parlament_s > 0: CSQP?][? if cecp_parlament_s > 0: CECP?][? if ecp_parlament_s > 0: ECP?] is calling their voters to make their voice heard[? if consultation_question = 2: , while officially supporting a vote for the Yes/No option?]. All pro-independence party naturally are enthusiastic about seeing the results.
 
+[? if consultation_preparation < 4: Despite all the best efforts of the [+ cat_coalition_disp +], there will be no results to celebrate today. In a mixture of boycott by local authorities, poor planning by different ministries, and a myriad other factors, fact is that too few suitable voting places were secured. In a last-second decision, [? if president_gender = "m": President ?][? if president_gender = "f": Presidenta ?][+ president +] has announced the "indefinite postponement" of the vote, blaming the blocking and lack of understanding of local authorities and the Spanish government. ?]
+
+[? if consultation_preparation < 4: This is, of course, unlikely to convince many, as [? if president_gender = "m": he ?][? if president_gender = "f": she ?] has effectively and nonetheless left volunteers, would-be voters, and basically the totality of the pro-independence movement hanging and deeply disappointed. ?]
+
+[? if consultation_preparation >= 4: Today, all Catalan residents 16 and over have been called to vote on the non-binding consulation on the political future of Catalonia. Participation is not easy to predict as, following the ruling of the Constitutional Court against the law allowing this consultation, PP[? if vox_parlament_s > 0: , Cs, and Vox?] [? if not vox_parlament_s > 0: and Cs ?]have announced a complete boicot of the consultation. [? if psc_leader == "Àngel Ros" or psc_leader == "Montserrat Tura": The PSC, while not thrilled by the idea of this consultation without an agreement, is at least somewhat supporting.?][? if not (psc_leader == "Àngel Ros" or psc_leader == "Montserrat Tura"): The PSC is not thrilled by the idea of this consultation without an agreement and has taken an ambivalent position, neither boicotting nor openly calling for participating in it, in yet another impossible balancing act.?] [? if icv_parlament_s > 0: ICV-EUiA?][? if csqp_parlament_s > 0: CSQP?][? if cecp_parlament_s > 0: CECP?][? if ecp_parlament_s > 0: ECP?] is calling their voters to make their voice heard[? if consultation_question = 2: , while officially supporting a vote for the Yes/No option?]. All pro-independence party naturally are enthusiastic about seeing the results.?]
+
+- @failure
 - @direct
 - @double
 - @convoluted
@@ -33,7 +57,7 @@ Today, all Catalan residents 16 and over have been called to vote on the non-bin
 
 @direct
 title: Do you want Catalonia to become an independent state in the form of a republic?
-view-if: consultation_question = 1
+view-if: consultation_preparation >= 4 and consultation_question = 1
 on-arrival: {!
     Q.consultation_yes = 0;
     Q.consultation_abst = 0;
@@ -67,6 +91,14 @@ on-arrival: {!
     Q.consultation_abst = Math.ceil(Q.consultation_abst);
     Q.consultation_no = Math.ceil(Q.consultation_no);
 
+    if (Q.consultation_preparation < 6) {
+        for (var option of ["yes", "no"]) {
+            var ballots = Q["consultation_" + option];
+            Q["consultation_" + option] = Math.floor(ballots * 0.8);
+            Q.consultation_abst += ballots - Q["consultation_" + option];
+        }
+    }
+
     Q.consultation_total_votes = Q.consultation_no + Q.consultation_yes;
     Q.consultation_participation_pc = Math.round((Q.consultation_total_votes/ (Q.consultation_total_votes + Q.consultation_abst)) * 1000) / 10;
     Q.consultation_yes_pc = Math.round((Q.consultation_yes / Q.consultation_total_votes) * 1000) / 10;
@@ -82,11 +114,12 @@ on-arrival: {!
 {!<div data-widget="result-bars" data-props='{"rows":[{"label":"YES","shareFrom":"consultation_yes_pc","valueFrom":"consultation_yes","colour":"#008000"},{"label":"NO","shareFrom":"consultation_no_pc","valueFrom":"consultation_no","colour":"#c30000"},{"label":"Turnout","shareFrom":"consultation_participation_pc","colour":"#696969"}]}'></div>!}
 
 - @after
+- @troubled
 - @after_no
 
 @double
 title: Do you want Catalonia to become a state? In case of affirmative answer, do you want this state to become independent?
-view-if: consultation_question = 2
+view-if: consultation_preparation >= 4 and consultation_question = 2
 on-arrival: {!
     Q.consultation_yes = 0;
     Q.consultation_yesno = 0;
@@ -127,6 +160,14 @@ on-arrival: {!
     Q.consultation_abst = Math.ceil(Q.consultation_abst);
     Q.consultation_no = Math.ceil(Q.consultation_no);
 
+    if (Q.consultation_preparation < 6) {
+        for (var option of ["yes", "yesno", "no"]) {
+            var ballots = Q["consultation_" + option];
+            Q["consultation_" + option] = Math.floor(ballots * 0.8);
+            Q.consultation_abst += ballots - Q["consultation_" + option];
+        }
+    }
+
     Q.consultation_total_votes = Q.consultation_no + Q.consultation_yes + Q.consultation_yesno;
     Q.consultation_participation_pc = Math.round((Q.consultation_total_votes/ (Q.consultation_total_votes + Q.consultation_abst)) * 1000) / 10;
     Q.consultation_yes_pc = Math.round((Q.consultation_yes / Q.consultation_total_votes) * 1000) / 10;
@@ -146,11 +187,12 @@ on-arrival: {!
 {!<div data-widget="result-bars" data-props='{"rows":[{"label":"YES","shareFrom":"consultation_yes_pc","valueFrom":"consultation_yes","colour":"#008000"},{"label":"YES/NO","shareFrom":"consultation_yesno_pc","valueFrom":"consultation_yesno","colour":"#c38f00"},{"label":"NO","shareFrom":"consultation_no_pc","valueFrom":"consultation_no","colour":"#c30000"},{"label":"Turnout","shareFrom":"consultation_participation_pc","colour":"#696969"}]}'></div>!}
 
 - @after
+- @troubled
 - @after_no
 
 @convoluted
 title: Do you want Catalonia to exercise its right to self-determination and accede to full sovereignty, on the condition a new understanding of the relationship between Catalonia and Spain is first offered and negotiated with the Spanish State?
-view-if: consultation_question = 3
+view-if: consultation_preparation >= 4 and consultation_question = 3
 on-arrival: {!
     Q.consultation_yes = 0;
     Q.consultation_abst = 0;
@@ -185,6 +227,14 @@ on-arrival: {!
     Q.consultation_abst = Math.ceil(Q.consultation_abst + Q.consultation_yes *0.3 + Q.consultation_no * 0.5);
     Q.consultation_no = Math.ceil(Q.consultation_no * 0.5);
 
+    if (Q.consultation_preparation < 6) {
+        for (var option of ["yes", "no"]) {
+            var ballots = Q["consultation_" + option];
+            Q["consultation_" + option] = Math.floor(ballots * 0.8);
+            Q.consultation_abst += ballots - Q["consultation_" + option];
+        }
+    }
+
     Q.consultation_total_votes = Q.consultation_no + Q.consultation_yes;
     Q.consultation_participation_pc = Math.round((Q.consultation_total_votes/ (Q.consultation_total_votes + Q.consultation_abst)) * 1000) / 10;
     Q.consultation_yes_pc = Math.round((Q.consultation_yes / Q.consultation_total_votes) * 1000) / 10;
@@ -201,12 +251,13 @@ on-arrival: {!
 {!<div data-widget="result-bars" data-props='{"rows":[{"label":"YES","shareFrom":"consultation_yes_pc","valueFrom":"consultation_yes","colour":"#008000"},{"label":"NO","shareFrom":"consultation_no_pc","valueFrom":"consultation_no","colour":"#c30000"},{"label":"Turnout","shareFrom":"consultation_participation_pc","colour":"#696969"}]}'></div>!}
 
 - @after
+- @troubled
 - @after_no
 
 @after
 title: Independence won!
 subtitle: ... what now?
-view-if: consultation_yes_pc > consultation_no_pc
+view-if: consultation_preparation >= 6 and consultation_yes_pc > consultation_no_pc
 on-arrival: {!
     if (!Q.countdowns.includes("unio_breakup")) Q.countdowns.push("unio_breakup");
     if (!Q.countdowns.includes("jxsi_formation")) Q.countdowns.push("jxsi_formation");
@@ -216,6 +267,29 @@ on-arrival: {!
 !}
 
 After the celebration, it is clear what the question on everyone's mind right is: what now? A non-binding consultation does not force the Generalitat into any path of action, and it is not like the current [+ cat_coalition_disp +] has made any provisions for continuing any path towards independence after this. It may be time to re-think any roadmaps towards independence...
+
+- @post_event: Was everything just for this?
+
+@failure
+title: What a disaster...
+view-if: consultation_preparation < 4
+on-arrival: {!
+    Q.independence_trust = Math.max(0, Q.independence_trust - 15);
+    Q.independence_movement = Math.max(0, Q.independence_movement - 5);
+!}
+go-to: post_event
+
+@troubled
+title: We voted, but barely
+view-if: consultation_preparation >= 4 and consultation_preparation < 6 and consultation_yes_pc > consultation_no_pc
+call: nonbinding_consultation.after
+on-arrival: {!
+    Q.independence_trust = Math.max(0, Q.independence_trust - 10);
+!}
+
+Of course, and as expected, the "Yes" has won. But the organization has left much to be desired, to say the least.  There have been glaring gaps in the voting process with whole areas of the country effectively left unserved by polling spaces. This deeply unserious siutation has been heavily criticized by the pro-union parties, of course, but also by many critical voices within the independence movement. Despite the celebrations by the Generalitat as a "win for democracy", it is clear that any attempts at pursuing independence further will require a level of seriousness much beyond what has transpired today.
+
+And even past the debate, the bigger question on everyone's mind is: what now? A non-binding consultation does not force the Generalitat into any path of action, and it is not like the current [+ cat_coalition_disp +] has made any provisions for continuing any path towards independence after this. It may be time to re-think any roadmaps towards independence...
 
 - @post_event: Was everything just for this?
 

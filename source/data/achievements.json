@@ -78,6 +78,13 @@
       "image": "img/achievements/psoed.jpg"
     },
     {
+      "id": "cat_space",
+      "name": "NASA Catalana",
+      "description": "Develop the Catalan Space Agency into an, albeit quite limited, space program with sovereign communications capabilities.",
+      "stars": 2,
+      "image": "img/achievements/cat_space.jpeg"
+    },
+    {
       "id": "one_more_lane",
       "name": "One more lane bro",
       "description": "\"Solve traffic\" by conducting a very car-centric executive agenda.",

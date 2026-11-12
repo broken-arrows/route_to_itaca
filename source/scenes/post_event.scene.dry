@@ -66,6 +66,7 @@ updatePendingEvents(this);
 
 // 1. update dates
 var has_time_passed = false;
+var calendarMonthBefore = Q.year * 12 + Q.month;
 if (Q.rubicon && !Q.has_event && !Q.has_election) {
     if (Q.month_actions_last > Q.month_actions) {
         has_time_passed = true;
@@ -411,6 +412,8 @@ if (has_time_passed) {
 
     // 2.5. Countdown updating.
     for (var countdown of Q.countdowns) {
+        // Satellite deployment is measured in months, including during Rubicon.
+        if (["space_test", "space_communications"].includes(countdown) && Q.year * 12 + Q.month == calendarMonthBefore) continue;
         if (Q[countdown + "_countdown"] >= 0) {
             Q[countdown + "_countdown"] -= 1;
             // countdowns at -1 are actually usefull for visualizations
@@ -745,6 +748,22 @@ if (Q.territory_b40_trigger) {
         }
     }
 }
+if (Q.space_test_trigger) {
+    Q.space_test_trigger = false;
+    G.registerLaw(Q, {id:"space_test", title:"Experimental Satellite Programme", colour:"green", icon:"img/space_icon.svg",
+        description:"The Enxaneta, the first Catalan satellite, has been successfully launched and now orbits Low Earth Orbit carrying experimental payloads.",
+        launch_provider:Q.active_mods.space_test.def.launch_provider, ramp_ticks:12, fiscal_ticks:24,
+        targets:{gdp_growth:0.03, generalitat_surplus:-0.04 / 18.5}});
+}
+if (Q.space_communications_trigger) {
+    Q.space_communications_trigger = false;
+    var spaceCommunications = Q.active_mods.space_communications;
+    spaceCommunications.def.colour = "green";
+    spaceCommunications.def.description = "The Catalan Space Agency has built upon the success of the Enxaneta test satellite and has developed and built the ground equipment and technological capacities to deploy its first set of communication satellites for civilian and governmental use.";
+    spaceCommunications.def.sovereign_communications = true;
+    this.achieve("cat_space");
+}
+
 if (Q.territory_metro1_trigger) {
     Q.territory_metro1_trigger = false;
     var voterSnapshot = ((Q.active_mods || {})["territory_metro1"] || {}).def || {};

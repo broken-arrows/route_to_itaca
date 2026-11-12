@@ -41,7 +41,7 @@ on-arrival: {!
         taxNames = [G.text("Very low"), G.text("Low"), G.text("Moderate"), G.text("High"), G.text("Very high")];
     var capNames = ["Further austerity", "Maintain reduced services", "Restored, ordinary services", "Expanded services and improved pay", "Further service expansion and broader improvements", "Full authorization, effectively a removal of spending caps."],
         capTexts = [G.text("Further austerity"), G.text("Maintain reduced services"), G.text("Restored, ordinary services"), G.text("Expanded services and improved pay"), G.text("Further service expansion and broader improvements"), G.text("Full authorization, effectively a removal of spending caps.")];
-    var projectIds = {county:"territory_county_roads", b40:"territory_b40", metro1:"territory_metro1", metro2:"territory_metro2", water2:"territory_water2", water3:"territory_water3", tmobilitat2:"territory_tmobilitat2", rail1:"territory_rail1", rail2:"territory_rail2", icf:"bnl_icf_proposal", digital:"vp_digital3_proposal", universal:"healthcare_universal_proposal"};
+    var projectIds = {county:"territory_county_roads", b40:"territory_b40", metro1:"territory_metro1", metro2:"territory_metro2", water2:"territory_water2", water3:"territory_water3", tmobilitat2:"territory_tmobilitat2", rail1:"territory_rail1", rail2:"territory_rail2", icf:"bnl_icf_proposal", digital:"vp_digital3_proposal", universal:"healthcare_universal_proposal", space:"space_communications_proposal"};
     var projectCosts = prices.projects;
     var available = {};
     var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
@@ -60,6 +60,10 @@ on-arrival: {!
             !Q.cat_caretaker_gov && controlledParties.includes(Q.vicepresident_party) && Q.parlament_digital_passed && ["generalitat", "catalonia"].includes(Q.cybersecurity_agency_scope) && (Q.active_mods || {}).digital_agency_core && Q.active_mods.digital_agency_core.active;
         if (key == "universal") available[key] = available[key] && Q.healthcare_universal_level == 1 && Q.healthcare_universal_introduced &&
             !Q.cat_caretaker_gov && controlledParties.includes(Q.health_minister_party);
+        if (key == "space") available[key] = available[key] && !Q.cat_caretaker_gov &&
+            !!(Q.active_mods || {}).space_agency && Q.active_mods.space_agency.active &&
+            !!Q.active_mods.space_test && Q.active_mods.space_test.active && Q.active_mods.space_test.def.colour == "green" &&
+            !(Q.active_mods.space_communications && Q.active_mods.space_communications.active);
         Q["parlament_budget_" + key + "_available"] = available[key];
         Q["parlament_budget_" + key] = !!draft.projects[key];
     }
@@ -357,7 +361,7 @@ on-arrival: {!
         }
         if (proposed.tax_policy_level != draft.tax_policy_level) terms.push("Autonomic Taxes: " + taxProfiles[proposed.tax_policy_level + 2].name + ".");
         if (proposed.social_spending_cap != draft.social_spending_cap) terms.push("Social Spending authorization: " + capNames[proposed.social_spending_cap + 2] + ".");
-        var projectNames = {county:"county roads", b40:"the B-40", metro1:"the L9/L10", metro2:"the L1/L3 expansion", water2:"public water facilities", water3:"public water supply and management", tmobilitat2: "Catalonia-wide T-mobilitat", rail1:"the Lleida-La Pobla railway", rail2:"the Tarragona and Girona train-trams", icf:Q.parlament_budget_icf_name, digital:"fully-digital administration", universal:"truly universal healthcare access"};
+        var projectNames = {county:"county roads", b40:"the B-40", metro1:"the L9/L10", metro2:"the L1/L3 expansion", water2:"public water facilities", water3:"public water supply and management", tmobilitat2: "Catalonia-wide T-mobilitat", rail1:"the Lleida-La Pobla railway", rail2:"the Tarragona and Girona train-trams", icf:Q.parlament_budget_icf_name, digital:"fully-digital administration", universal:"truly universal healthcare access", space:"government satellite communications"};
         for (var key of Object.keys(projectIds)) if (proposed.projects[key] != draft.projects[key]) terms.push((proposed.projects[key] ? "Fund " : "Remove ") + projectNames[key] + ".");
         var p = project(proposed);
         var reasons = hardVetoReasons(party, proposed, p);
@@ -426,6 +430,7 @@ on-arrival: {!
 [? if parlament_budget_icf: · Fund [+ parlament_budget_icf_name +].?]
 [? if parlament_budget_digital: · Fund the transformation into a Fully-Digital administration.?]
 [? if parlament_budget_universal: · Fund truly universal healthcare access.?]
+[? if parlament_budget_space: · Fund the satellite communications programme.?]
 
 [? if parlament_budget_commitment_summary: **Agreed policy commitments:** [+ parlament_budget_commitment_summary +]?]
 
@@ -459,6 +464,7 @@ on-arrival: {!
 - @icf
 - @digital
 - @universal
+- @space
 - @vote_yes
 - @vote_no
 - @approach_cup
@@ -637,6 +643,19 @@ on-arrival: {!
 !}
 go-to: review
 
+@space
+title: [? if parlament_budget_space: Remove ?][? if not parlament_budget_space: Fund ?] satellite communications programme
+view-if: parlament_budget_space_available or parlament_budget_space
+choose-if: parlament_budget_space_available or parlament_budget_space
+on-arrival: {!
+    if (Q.parlament_budget_space_available || Q.budget_draft.projects.space) {
+        Q.budget_draft.projects.space = !Q.budget_draft.projects.space;
+        Q.parlament_budget_deals = [];
+        Q.parlament_budget_changes_made = true;
+    }
+!}
+go-to: review
+
 @vote_yes
 title: Change our party's vote to YES
 view-if: parlament_budget_player_has_seats and parlament_budget_player_position != "yes"
@@ -775,6 +794,15 @@ on-arrival: {!
         if (Q.cat_caretaker_gov || !controlledParties.includes(Q.health_minister_party) || Q.healthcare_universal_level != 1 ||
             !Q.healthcare_universal_introduced || !universalProposal || !universalProposal.active || universalProposal.def.colour != "gray")
             throw new Error("Universal healthcare budget funding conditions changed");
+    }
+    if (Q.budget_draft.projects.space) {
+        var laws = Q.active_mods || {};
+        var spaceProposal = laws.space_communications_proposal;
+        if (Q.cat_caretaker_gov || !spaceProposal || !spaceProposal.active || spaceProposal.def.colour != "gray" ||
+            spaceProposal.def.launch_provider != "russia" || !laws.space_agency || !laws.space_agency.active ||
+            !laws.space_test || !laws.space_test.active || laws.space_test.def.colour != "green" ||
+            laws.space_communications && laws.space_communications.active)
+            throw new Error("Satellite communications funding conditions changed");
     }
     var projection = Q.parlament_budget_projection;
     var origin = Q.budget_draft_origin;
@@ -1367,6 +1395,16 @@ on-arrival: {!
                 }
             }
         }
+    }
+    if (Q.budget_draft.projects.space) {
+        G.deactivateLaw(Q, "space_communications_proposal", undefined, true);
+        G.registerLaw(Q, {id:"space_communications", title:"Sovereign Satellite Communications", colour:"orange", icon:"img/space_icon.svg",
+            description:"In development: the Catalan Space Agency is building upon the success of the Enxaneta test satellite and developing the ground equipment and technological capacities to deploy its first set of communication satellites for civilian and governmental use.",
+            launch_provider:"russia",
+            fiscal_ticks:24, targets:{generalitat_surplus:-0.04 / 24}});
+        if (!Q.countdowns.includes("space_communications")) Q.countdowns.push("space_communications");
+        Q.space_communications_countdown = 6;
+        if (creditBurden) Q.burdens_done += 1;
     }
     var electoralPolicies = [];
     if (Q.budget_draft.projects.digital) {

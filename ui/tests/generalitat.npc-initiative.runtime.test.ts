@@ -8,6 +8,7 @@ const gameText = readFileSync(resolve(import.meta.dirname, '../../out/game.json'
 const scene = 'government_does_things';
 const offices = ['president_party', 'vicepresident_party', 'economy_minister_party', 'health_minister_party',
   'education_minister_party', 'bnl_minister_party', 'territory_minister_party', 'foreign_minister_party', 'interior_minister_party'];
+type LawLibrary = { registerLaw(q: Record<string, any>, definition: Record<string, any>): void };
 
 function setup(overrides: Record<string, any> = {}) {
   const adapter = DendryAdapter.fromJSONText(gameText);
@@ -34,6 +35,11 @@ function setup(overrides: Record<string, any> = {}) {
     burdens_goal: 4, burdens_time: 12, burdens_done: 0, burdens_broken: false,
     ...overrides,
   });
+  // Existing cases isolate other policy agendas. Space-specific cases start it afresh.
+  if (overrides.active_mods === undefined) {
+    for (const id of ['space_agency', 'space_test'])
+      (adapter.engine.gameLib as unknown as LawLibrary).registerLaw(q, {id, colour:'green', targets:{}});
+  }
   for (const party of q.parties) for (const province of q.parlament_constituencies)
     for (const demo of q.parlament_demographics) q[`${party}_parlament_${province}_${demo}_support`] = 4;
   for (const province of q.parlament_constituencies) for (const demo of q.parlament_demographics) {
@@ -91,6 +97,133 @@ function answer(f: ReturnType<typeof setup>, name: string) {
 }
 
 afterEach(() => vi.restoreAllMocks());
+
+describe('NPC space programme initiatives', () => {
+  function programme(stage: number, holder = 'president_party') {
+    const f = setup({ ...Object.fromEntries(offices.map(field => [field, 'erc'])), [holder]: 'ciu', active_mods:{} });
+    const library = f.adapter.engine.gameLib as unknown as LawLibrary;
+    if (stage >= 2) library.registerLaw(f.q, {id:'space_agency', colour:'green', targets:{}});
+    if (stage >= 3) library.registerLaw(f.q, {id:'space_test', colour:'green', targets:{}});
+    return f;
+  }
+
+  it.each([
+    [1, 'education_minister_party'], [1, 'vicepresident_party'], [1, 'president_party'],
+    [2, 'bnl_minister_party'], [2, 'vicepresident_party'], [2, 'president_party'],
+  ])('advances tier %s through an NPC holding %s', (stage, holder) => {
+    const f = programme(Number(stage), String(holder));
+    const actions = f.candidates().filter(item => item.kind === 'space');
+    expect(actions).toHaveLength(1);
+    expect(actions[0]).toMatchObject({holder, to:stage, from:Number(stage) - 1, party:'ciu'});
+    const budget = f.q.government_budget;
+    propose(f, 'space_program', stage);
+    answer(f, 'accept');
+    const id = stage === 1 ? 'space_agency' : 'space_test';
+    expect(f.q.active_mods[id].active).toBe(true);
+    expect(f.q.active_mods[id].def.icon).toBe('img/space_icon.svg');
+    expect(f.q.space_program).toBeUndefined(); // Progress lives in the project records.
+    expect(f.q.government_budget).toBe(budget); // Ordinary NPC initiative cadence owns effort.
+    if (stage === 1) expect(f.q.active_mods[id].def.targets.gdp_growth).toBe(0.02);
+    if (stage === 2) {
+      expect(f.q.space_test_countdown).toBe(3);
+      expect(f.q.countdowns.filter((id: string) => id === 'space_test')).toHaveLength(1);
+    }
+    expect(f.candidates().filter(item => item.kind === 'space').some(item => item.to === stage)).toBe(false);
+  });
+
+  it.each([[1, 'bnl_minister_party'], [2, 'education_minister_party'],
+    [3, 'bnl_minister_party'], [3, 'foreign_minister_party'], [3, 'vicepresident_party'], [3, 'president_party']])(
+    'excludes tier %s when the NPC only holds %s', (stage, holder) => {
+      const f = programme(Number(stage), String(holder));
+      expect(f.candidates().some(item => item.kind === 'space')).toBe(false);
+    },
+  );
+
+  it('leaves communications preparation to the player after an NPC test mission', () => {
+    const f = programme(1);
+    propose(f, 'space_program', 1); answer(f, 'accept');
+    propose(f, 'space_program', 2); answer(f, 'accept');
+    expect(f.candidates().some(item => item.kind === 'space')).toBe(false);
+    (f.adapter.engine.game as any).tagLookup.event = {};
+    (f.adapter.engine.game as any).tagLookup.election = {};
+    for (let month = 0; month < 3; month++) {
+      f.q.month_actions = 1;
+      f.adapter.goToScene('post_event');
+    }
+    expect(f.q.active_mods.space_test.def.colour).toBe('green');
+    expect(f.q.active_mods.space_test.def.targets.gdp_growth).toBe(0.03);
+    expect(f.candidates().some(item => item.kind === 'space')).toBe(false);
+    expect(f.q.active_mods.space_communications_proposal).toBeUndefined();
+    f.q.generalitat_vp_timer = 0;
+    const ministry = f.adapter.goToScene('generalitat_vp_card');
+    const stage = ministry.choices.findIndex(choice => choice.id === 'generalitat_space_program.communications');
+    expect(stage).toBeGreaterThanOrEqual(0);
+    expect(ministry.choices[stage].canChoose).toBe(true);
+    const providers = f.adapter.choose(stage);
+    const provider = providers.choices.findIndex(choice => choice.id === 'generalitat_space_program.communications_russia');
+    expect(provider).toBeGreaterThanOrEqual(0);
+    expect(providers.choices[provider].canChoose).toBe(true);
+    const budget = f.q.government_budget;
+    f.adapter.choose(provider);
+    expect(f.q.government_budget).toBe(budget - 1);
+    expect(f.q.active_mods.space_communications_proposal.active).toBe(true);
+    f.q.cat_coalition = ['ciu']; f.q.economy_minister_party = 'ciu';
+    f.q.ciu_parlament_s = 100; f.q.erc_parlament_s = 0;
+    f.q.budget_year = 2012; f.q.generalitat_surplus = 1;
+    f.q.budget_parlament_trigger = true;
+    f.adapter.goToScene('budget_trigger');
+    expect(f.q.budget_draft.projects.space).toBe(true);
+    expect(f.q.parlament_budget_can_pass).toBe(true);
+    f.adapter.goToScene('parlament_budget.pass');
+    expect(f.q.space_communications_countdown).toBe(6);
+  });
+
+  it('rejects an already queued NPC communications proposal', () => {
+    const f = programme(2);
+    propose(f, 'space_program', 2);
+    Object.assign(f.q.npc_government_initiative, {to:3, from:2});
+    (f.adapter.engine.gameLib as unknown as LawLibrary).registerLaw(f.q, {id:'space_test', colour:'green', targets:{}});
+    const test = structuredClone(f.q.active_mods.space_test);
+    const budget = f.q.government_budget;
+    answer(f, 'accept');
+    expect(f.q.active_mods.space_communications_proposal).toBeUndefined();
+    expect(f.q.active_mods.space_test).toEqual(test);
+    expect(f.q.government_budget).toBe(budget);
+  });
+
+  it.each(['jxsi', 'jxcat'])('uses the NPC constituent of %s and excludes player-appointed ministers', list => {
+    const f = setup({ ...Object.fromEntries(offices.map(field => [field, list])),
+      ...Object.fromEntries(offices.map(field => [field.replace(/_party$/, '_affiliation'), 'erc'])),
+      active_mods:{}, cat_coalition:[list], [`player_in_${list}`]:true,
+      [`erc_in_${list}`]:true, education_minister_affiliation:'cdc' });
+    const candidates = f.candidates().filter(item => item.kind === 'space');
+    expect(candidates).toHaveLength(1);
+    expect(candidates[0]).toMatchObject({party:list, policyParty:'cdc', holder:'education_minister_party'});
+    propose(f, 'space_program', 1, list);
+    answer(f, 'accept');
+    expect(f.q.active_mods.space_agency.active).toBe(true);
+    f.q.active_mods = {};
+    f.q.education_minister_affiliation = 'erc';
+    expect(f.candidates().some(item => item.kind === 'space')).toBe(false);
+  });
+
+  it('rechecks stale initiatives and permits persuasion to stop a mission', () => {
+    const f = programme(1);
+    propose(f, 'space_program', 1);
+    f.q.cat_caretaker_gov = true;
+    answer(f, 'accept');
+    expect(f.q.active_mods.space_agency).toBeUndefined();
+    f.q.cat_caretaker_gov = false;
+    propose(f, 'space_program', 1);
+    answer(f, 'stop');
+    expect(f.q.active_mods.space_agency).toBeUndefined();
+    propose(f, 'space_program', 1);
+    (f.adapter.engine.gameLib as unknown as LawLibrary).registerLaw(f.q, {id:'space_agency', colour:'green', targets:{}});
+    const law = f.q.active_mods.space_agency;
+    answer(f, 'accept');
+    expect(f.q.active_mods.space_agency).toBe(law);
+  });
+});
 
 describe('NPC cabinet scheduling', () => {
   it.each(['cabinet', 'external_support'])('permits an aged %s agreement breach without erasing the promise', scope => {

@@ -145,7 +145,7 @@ on-arrival: {!
             if (ministerAffiliation != affiliation || ministerAffiliation == player) return;
             if (kind == "cut" && Q.npc_austerity_timer > 0) return;
             if (kind == "cut") weight *= Math.max(0.5, -Q.generalitat_surplus);
-            var from = Q[field];
+            var from = kind == "space" ? to - 1 : Q[field];
             if (from === undefined && kind != "curriculum") return;
             if (from == to && kind != "curriculum") return;
             for (var record of Q.coalition_policy_commitments || []) {
@@ -251,6 +251,21 @@ on-arrival: {!
             (Q.active_mods || {}).digital_agency_core && Q.active_mods.digital_agency_core.active)
             add("vicepresident_party", "vp_digital_level", 2, G.text("integrate and secure digital administration"),
                 (Q.vicepresident_gender == "m" ? G.text("Vicepresident {vicepresident} hopes to make further use of the newly-established Catalan Cybersecurity Agency to protect the digital administration.", { vicepresident: String(Q.vicepresident), vicepresident_gender: Q.vicepresident_gender }) : G.text("Vicepresidenta {vicepresident} hopes to make further use of the newly-established Catalan Cybersecurity Agency to protect the digital administration.", { vicepresident: String(Q.vicepresident), vicepresident_gender: Q.vicepresident_gender })), 2, "institutional", "digital");
+        var spaceLaws = Q.active_mods || {};
+        var spaceStage = !spaceLaws.space_agency ? 1 :
+            spaceLaws.space_agency.active && !spaceLaws.space_test ? 2 : 0;
+        var spaceOffices = spaceStage == 1 ? ["education_minister_party", "vicepresident_party", "president_party"] :
+            ["bnl_minister_party", "vicepresident_party", "president_party"];
+        var spaceHolder = spaceOffices.find(function (holder) {
+            var member = ["jxsi", "jxcat"].includes(actor) ? Q[holder.replace(/_party$/, "_affiliation")] || null : null;
+            return owners[holder] == actor && member == affiliation && member != player;
+        });
+        if (spaceStage && spaceHolder)
+            add(spaceHolder, "space_program", spaceStage,
+                spaceStage == 1 ? G.text("establish the Catalan Space Agency") : G.text("commission the launch of a Catalan experimental satellite"),
+                spaceStage == 1 ? G.text("The ministry proposes coordinating university research and industrial expertise through a newly stablished government agency.") :
+                    G.text("The agency is ready to develop and launch a technological demonstrator satellite, the Enxaneta, to be built in collaboration with local universities and research centres."),
+                sovereign ? 2 : 1, "institutional", "space");
         var alignmentOffice = owners.president_party == actor ? "president_party" : "vicepresident_party";
         if (!sovereign && Q.institutional_alignment > -10 && (central || Q.institutional_alignment > 0))
             add(alignmentOffice, "institutional_alignment", Q.institutional_alignment - 1, G.text("prioritize institutional accommodation"),
@@ -340,7 +355,15 @@ on-arrival: {!
     G.setText(Q, "npc_government_alternative_blocker", G.text("It's not like they are in government because of us, so there's little we can do."));
     if (initiative) {
         valid = !Q.cat_caretaker_gov && owners[initiative.holder] == initiative.party &&
-            initiative.party != player && Q[initiative.field] == initiative.from;
+            initiative.party != player && (initiative.kind == "space" || Q[initiative.field] == initiative.from);
+        if (initiative.kind == "space") {
+            var spaceLaws = Q.active_mods || {};
+            var permitted = initiative.to == 1 ? ["education_minister_party", "vicepresident_party", "president_party"] :
+                ["bnl_minister_party", "vicepresident_party", "president_party"];
+            var ready = initiative.to == 1 ? !spaceLaws.space_agency : initiative.to == 2 &&
+                !!spaceLaws.space_agency && spaceLaws.space_agency.active && !spaceLaws.space_test;
+            if (!ready || !permitted.includes(initiative.holder)) valid = false;
+        }
         if (initiative.kind == "cut" && Q.npc_austerity_timer > 0) valid = false;
         if (["jxsi", "jxcat"].includes(initiative.party)) {
             var affiliation = Q[initiative.holder.replace(/_party$/, "_affiliation")];
@@ -418,7 +441,7 @@ on-arrival: {!
             }));
             if (initiative.kind == "budget") {
                 var projects = {};
-                for (var key of ["county", "b40", "metro1", "metro2", "water2", "water3", "tmobilitat2", "rail1", "rail2", "icf", "digital", "universal"]) projects[key] = false;
+                for (var key of ["county", "b40", "metro1", "metro2", "water2", "water3", "tmobilitat2", "rail1", "rail2", "icf", "digital", "universal", "space"]) projects[key] = false;
                 var cap = Q.social_spending_cap;
                 var tax = next;
                 for (var record of Q.coalition_policy_commitments || []) {
@@ -437,6 +460,20 @@ on-arrival: {!
                 G.setText(Q, "npc_government_outcome", G.text("Following our alternative proposal, {party} has submitted a regional-tax proposal for the coming annual budget. We'll have to see if it passes, though.", {
                     party: G.nameText("party", responseParty)
                 }));
+            } else if (initiative.kind == "space") {
+                if (next == 1) G.registerLaw(Q, {id:"space_agency", title:"Catalan Space Agency", colour:"green", icon:"img/space_icon.svg",
+                    description:"The Catalan Space Agency coordinates university research and industrial development, supporting the up-and-coming domestic space sector.",
+                    ramp_ticks:6, fiscal_ticks:12, targets:{gdp_growth:0.02, generalitat_surplus:-0.02 / 9.5}});
+                if (next == 2) {
+                    G.registerLaw(Q, {id:"space_test", title:"Enxaneta Experimental Satellite", colour:"orange", icon:"img/space_icon.svg",
+                        description:"In development: an experimental mission is being developed with local researchers and suppliers to launch the first Catalan satellite, the Enxaneta, into Low Earth Orbit.",
+                        launch_provider:"russia", targets:{}});
+                    if (!Q.countdowns.includes("space_test")) Q.countdowns.push("space_test");
+                    Q.space_test_countdown = 3;
+                }
+                // Match ordinary NPC initiatives: executive effort is represented by their shared cadence.
+                if (controlled.some(function (party) { return cabinet.includes(party); }) &&
+                    (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0)) Q.burdens_done += 1;
             } else {
                 var packageKey = {bnl_tourism_level:"bnl_tourism_electoral_routes",bnl_union_level:"bnl_union_electoral_routes",
                     territory_livestock:"territory_livestock_electoral_routes"}[field];
@@ -458,7 +495,7 @@ on-arrival: {!
                     if (Number.isFinite(Q[responseParty + "_relations"])) Q[responseParty + "_relations"] -= 5;
                     Q.coalition_rupture_recheck = true;
                     G.setText(Q, "npc_government_outcome", G.joinText([G.getText(Q, "npc_government_outcome"),
-                        G.text("This decision breaks our investiture agreement and damages relations with the government. The commitment remains on record.")]));
+                        G.text("This is against the investiture agreement, and is sure to cause not be received very positively.")]));
                 }
                 if (initiative.kind == "austerity") G.deactivateLaw(Q, "general_cuts_" + initiative.from, undefined, true);
                 if (initiative.kind == "atc" && next == 2) Q.independence_trust = Math.min(100, Q.independence_trust + 2);

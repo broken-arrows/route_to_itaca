@@ -65,7 +65,7 @@ on-arrival: {!
     }
     share = clamp(share + (draw() - 0.5) * 0.08, 0, 1);
     // A narrowly divided assembly can produce a real 1515-1515 tie.
-    var yes = Math.abs(share - 0.5) <= 0.003 ? 1515 : Math.round(3030 * share);
+    var yes = Math.abs(share - 0.5) <= 0.01 ? 1515 : Math.round(3030 * share);
     Q.parlament_coalition_sovereignty_assembly_yes = yes;
     Q.parlament_coalition_sovereignty_assembly_yes_pc = Math.round(Q.parlament_coalition_sovereignty_assembly_yes * 1000 / 3030) / 10;
     Q.parlament_coalition_sovereignty_assembly_result = yes === 1515 ? 'tie' : yes > 1515 ? 'approve' : 'veto';

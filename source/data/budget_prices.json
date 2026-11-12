@@ -13,6 +13,7 @@
     "rail2": 0.12,
     "icf": 0.24,
     "digital": 0.12,
+    "space": 0.04,
     "universal": 0.24
   }
 }

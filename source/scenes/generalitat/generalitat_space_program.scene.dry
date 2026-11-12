@@ -1,0 +1,138 @@
+title: Catalan Space Programme
+
+You should not be here??! Report a bug if you see this 🙏🙏
+
+please please do so via <a class="link" target="_blank" href="https://github.com/broken-arrows/route_to_itaca/issues">GitHub Issues</a>
+
+you're allowed to make a wish once you do so! ✨
+
+- @post_event.make_a_wish
+
+@agency
+title: Establish the Catalan Space Agency
+subtitle: The new government agency will coordinate university research and promote the up and coming space industry in Catalonia. \[-1 budget\]
+view-if: {! return !(Q.active_mods || {}).space_agency; !}
+choose-if: {! return !Q.cat_caretaker_gov && Q.government_budget >= 1 &&
+    [Q.player_party, Q.player_in_jxsi ? "jxsi" : "", Q.player_in_jxcat ? "jxcat" : ""].some(function (party) {
+        return party && [Q.education_minister_party, Q.vicepresident_party, Q.president_party].includes(party);
+    }); !}
+unavailable-subtitle: [? if government_budget < 1: Not enough budget.?][? if cat_caretaker_gov: The current government is in caretaking capacity.?]
+on-arrival: {!
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (!Q.cat_caretaker_gov && Q.government_budget >= 1 && !(Q.active_mods || {}).space_agency &&
+        [Q.education_minister_party, Q.vicepresident_party, Q.president_party].some(function (party) { return controlledParties.includes(party); })) {
+        Q.government_budget -= 1;
+        // Six-month ramp over twelve fiscal ticks: the scale sums to 9.5.
+        G.registerLaw(Q, {id:"space_agency", title:"Catalan Space Agency", colour:"green", icon:"img/space_icon.svg",
+            description:"The Catalan Space Agency coordinates university research, technical training and industrial partnerships, supporting a small domestic space sector.",
+            ramp_ticks:6, fiscal_ticks:12, targets:{gdp_growth:0.02, generalitat_surplus:-0.02 / 9.5}});
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
+    }
+!}
+
+
+The Catalan Space Agency has been established! While its detractors among the pro-union opposition joke around going to Mars in search of the Catalan Republic, the fact is that this opens a new avenue for research and industrial development in Catalonia that has at least a chance to prosper. As the space sector in the West moves towards a more commercial development model, existing industrial capacity in the sector and new funding for startups could in theory carve a new niche for Catalonia. Or at least, that's the hope here.
+
+- @post_event
+
+@test_sat
+title: Commission and launch the first ever Catalan satellite
+subtitle: Develop a demonstrator with local researchers and suppliers, then choose a launch provider. The mission takes three months. \[-1 budget\]
+view-if: {! var laws = Q.active_mods || {}; return !!laws.space_agency && laws.space_agency.active && !laws.space_test; !}
+choose-if: {! return !Q.cat_caretaker_gov && Q.government_budget >= 1 &&
+    [Q.player_party, Q.player_in_jxsi ? "jxsi" : "", Q.player_in_jxcat ? "jxcat" : ""].some(function (party) {
+        return party && [Q.bnl_minister_party, Q.vicepresident_party, Q.president_party].includes(party);
+    }); !}
+unavailable-subtitle: [? if government_budget < 1: Not enough budget.?][? if cat_caretaker_gov: The current government is in caretaking capacity.?]
+
+The first Catalan-developed satellite, designed by local researchers, named by the popular kid's club "Super 3" as the "Enxaneta", will be developed using local suppliers. However, the question of launch is a bit more tricky: there's no real suitable launch providers in our country, so the Generalitat will have to play the diplomatic game of securing a spot in a foreign launch provider mission, sharing its ride. 
+
+- @test_russia
+- @test_europe
+- @test_usa
+
+@test_russia
+title: Launch through Roscosmos' commercial launch services
+subtitle: The Russian space agency offers competitive pricing after all, and are not ones to turn away from an opportunity.
+on-arrival: {!
+    // TODO: effects for this
+    var laws = Q.active_mods || {};
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (!Q.cat_caretaker_gov && Q.government_budget >= 1 && laws.space_agency && laws.space_agency.active && !laws.space_test &&
+        [Q.bnl_minister_party, Q.vicepresident_party, Q.president_party].some(function (party) { return controlledParties.includes(party); })) {
+        Q.government_budget -= 1;
+        G.registerLaw(Q, {id:"space_test", title:"Experimental Satellite Programme", colour:"orange", icon:"img/space_icon.svg",
+            description:"In development: an experimental mission is being developed with local researchers and suppliers to launch the first Catalan satellite, the Enxaneta, into Low Earth Orbit.", targets:{}});
+        if (!Q.countdowns.includes("space_test")) Q.countdowns.push("space_test");
+        Q.space_test_countdown = 3;
+        if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
+    }
+!}
+
+Thanks to the efforts of [? if foreign_minister_gender = "m": Conseller ?][? if foreign_minister_gender = "f": Consellera ?][+ foreign_minister +], a spot has been secured in a Roscosmos-guaranteed Progress launch in a few months. Once fully ready, the Enxaneta is set to reach for the stars!
+
+- @post_event: Catalonia can into space!
+
+@test_europe
+title: Launch through a contract with Arianespace
+subtitle: Using Europe's main launch provider is seen as the logical and default choice to promote Catalan-European integration and further industrial cooperation.
+choose-if: 1 == 0
+unavailable-subtitle: WIP!
+
+@test_usa
+title: Launch through a contract with SpaceX
+subtitle: The US-based provider is a rising star in the new commercial space sector.
+choose-if: 1 == 0
+unavailable-subtitle: WIP!
+
+@communications
+title: Develop sovereign satellite-based communications
+subtitle: We'll commission an initial group of communications satellites, and ground equipment and operation. \[-1 budget\]
+view-if: {! var laws = Q.active_mods || {}; return !!laws.space_test && laws.space_test.active && laws.space_test.def.colour == "green" &&
+    !laws.space_communications && !(laws.space_communications_proposal && laws.space_communications_proposal.active); !}
+choose-if: {! return !Q.cat_caretaker_gov && Q.government_budget >= 1 &&
+    [Q.player_party, Q.player_in_jxsi ? "jxsi" : "", Q.player_in_jxcat ? "jxcat" : ""].some(function (party) {
+        return party && [Q.vicepresident_party, Q.president_party].includes(party);
+    }); !}
+unavailable-subtitle: [? if government_budget < 1: Not enough budget.?][? if cat_caretaker_gov: The current government is in caretaking capacity.?]
+
+After the success of the "Enxaneta", enough expertise has been developed to push forward the project of a Catalan-operated satellite-based communications system for both civilian and governmental use. Even if bandwidth will be limited, it has the chance to demonstrate the prowess of local industry and provide vital services to many areas and services of the country. For this to finally become a reality, all that's left is to choose our launch provider; and, of course, for the Parlament to approve the necessary budget to properly support such a project.
+
+- @communications_russia
+- @communications_europe
+- @communications_usa
+
+@communications_russia
+title: Launch through Roscosmos' commercial launch services
+subtitle: The Russian space agency offers competitive pricing after all, and are not ones to turn away from an opportunity.
+on-arrival: {!
+    var laws = Q.active_mods || {};
+    var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+    if (!Q.cat_caretaker_gov && Q.government_budget >= 1 && laws.space_agency && laws.space_agency.active &&
+        laws.space_test && laws.space_test.active && laws.space_test.def.colour == "green" && !laws.space_communications &&
+        !(laws.space_communications_proposal && laws.space_communications_proposal.active) &&
+        [Q.vicepresident_party, Q.president_party].some(function (party) { return controlledParties.includes(party); })) {
+        Q.government_budget -= 1;
+        G.registerLaw(Q, {id:"space_communications_proposal", title:"Government Satellite Communications", colour:"gray", icon:"img/space_icon.svg",
+            description:"Pending budget approval: the Catalan Space Agency has built upon the success of the Enxaneta test satellite and is proposing the development and deployment of its first set of communication satellites for civilian and governmental use.",
+            launch_provider:"russia", targets:{}});
+        Q.active_mods.space_test.hidden = true;
+    }
+!}
+
+Thanks to the efforts of [? if foreign_minister_gender = "m": Conseller ?][? if foreign_minister_gender = "f": Consellera ?][+ foreign_minister +], a spot has been secured in a Roscosmos-guaranteed Progress launch. All that's left is for the Paralment to approve this!
+
+- @post_event: One small step...
+
+@communications_europe
+title: Launch through a contract with Arianespace
+subtitle: Using Europe's main launch provider is seen as the logical and default choice to promote Catalan-European integration and further industrial cooperation.
+choose-if: 1 == 0
+unavailable-subtitle: WIP!
+
+@communications_usa
+title: Launch through a contract with SpaceX
+subtitle: The US-based provider is a rising star in the new commercial space sector.
+choose-if: 1 == 0
+unavailable-subtitle: WIP!
+

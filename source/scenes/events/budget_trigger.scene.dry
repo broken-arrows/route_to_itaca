@@ -20,6 +20,10 @@ on-arrival: {!
         if (id == "territory_water3") return Q.territory_water == 2;
         if (id == "territory_tmobilitat2") return Q.territory_tmobilitat == 1;
         if (id == "territory_rail2") return Q.territory_tmobilitat == 2;
+        if (id == "space_communications_proposal") return !Q.cat_caretaker_gov &&
+            !!(Q.active_mods || {}).space_agency && Q.active_mods.space_agency.active &&
+            !!Q.active_mods.space_test && Q.active_mods.space_test.active && Q.active_mods.space_test.def.colour == "green" &&
+            !(Q.active_mods.space_communications && Q.active_mods.space_communications.active);
         if (id == "vp_digital3_proposal") {
             var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
             return Q.vp_digital_level == 2 && Q.vp_digital_prepared && !Q.cat_caretaker_gov &&
@@ -51,6 +55,7 @@ on-arrival: {!
     projects.icf = prepared("bnl_icf_proposal") && (Q.bnl_icf_prepared_branch == "guarantees" || !right);
     projects.digital = prepared("vp_digital3_proposal");
     projects.universal = prepared("healthcare_universal_proposal");
+    projects.space = prepared("space_communications_proposal");
     var taxPromised = false;
     for (var record of Q.coalition_policy_commitments || []) {
         if (record.scope != "cabinet" || !["pending_budget", "applied"].includes(record.status)) continue;

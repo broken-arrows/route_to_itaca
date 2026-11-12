@@ -42,6 +42,8 @@ on-arrival: {!
   Q.burdens_time = 0;
   Q.burdens_done = 0;
   Q.burdens_goal = 0;
+  Q.consultation_health_preparations = 0;
+  Q.consultation_education_preparations = 0;
 
   // start situation
   Q.president = "Artur Mas";
