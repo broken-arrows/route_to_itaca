@@ -61,16 +61,9 @@ declare module 'dendrynexus-ten/lib/engine.js' {
     renderLine(content: unknown): string;
     getSceneTitle(sceneId?: string): string;
     getCurrentTitle(): string;
-    // Public wrapper for the engine's private _getQDisplay (engine.js:901).
-    // Classifies a raw quality value through one of the built-in displays
-    // ('cardinal'/'ordinal'/'number'/'fudge', each returning a word/ordinal
-    // string) or a game-authored qdisplay (source/qdisplays/*.dry), whose
-    // `content` ranges likewise resolve to plain-text `output` strings in
-    // this codebase (no markup is used in any qdisplay's output lines) —
-    // see getUserQDisplay/getCardinalNumber/getOrdinalNumber/getFudgeDisplay,
-    // all of which return `string`. Row view-models (source/lib/brief.js)
-    // carry {value, qdisplay} rather than a pre-computed band so the
-    // qdisplay files stay the only place a threshold is written.
+    // Classify and render a qdisplay in the active content locale using the
+    // same captured-text renderer as authored inserts. The result is HTML;
+    // data-scale/data-band remain locale-independent presentation identifiers.
     qdisplay(value: unknown, qDisplayId: string): string;
     // Evaluates a content tree against current state and returns display
     // content. Private by name, but it is the engine's only out-of-band render

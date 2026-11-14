@@ -1,5 +1,5 @@
 
-# party faction dissent
+# Faction, party and coalition dissent; strength uses faction_strength.
 (..4.999) <span class="q-band" data-scale="dissent" data-band="very_low">very low</span>
 (4.999..14.999) <span class="q-band" data-scale="dissent" data-band="low">low</span>
 (14.999..29.999) <span class="q-band" data-scale="dissent" data-band="medium">medium</span>

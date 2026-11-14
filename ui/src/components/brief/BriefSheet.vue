@@ -402,8 +402,8 @@ defineProps<{ title: string; context: string; html: string }>();
 .sheet-body :deep([data-band='negotiate']) { color: var(--accent-gold); }
 .sheet-body :deep([data-band='unilateral']) { color: #b03030; }
 
-/* relationships carries no data-band of its own — useBand() slugs its word
-   into one (`warm`, `cold`, `very_friendly`, …). §2 frame 13's bench stamps:
+/* relationships declares stable data-band tokens (`warm`, `cold`,
+   `very_friendly`, …), independent of its wording. Bench stamps:
    WARM/FRIENDLY green, COLD slate, HOSTILE red, YOU neutral ink. `hostile` is
    shared with international_opinion and `neutral` with politics_trust; both
    mean the same thing on both scales, which is what makes one ramp possible. */

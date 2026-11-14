@@ -7,7 +7,7 @@ const DIR = join(__dirname, '..', '..', 'source', 'qdisplays');
 const BANDED = [
   'control', 'dissent', 'social_dissent', 'independence_movement',
   'politics_trust', 'public_debt_qualifier', 'international_opinion',
-  'cat_spa_relations', 'roadmap',
+  'cat_spa_relations', 'roadmap', 'faction_strength', 'relationships', 'politics_trust_sentence',
 ];
 
 describe('qdisplay band tokens', () => {

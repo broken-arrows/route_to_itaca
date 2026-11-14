@@ -461,12 +461,12 @@ on-arrival: {!
                     party: G.nameText("party", responseParty)
                 }));
             } else if (initiative.kind == "space") {
-                if (next == 1) G.registerLaw(Q, {id:"space_agency", title:"Catalan Space Agency", colour:"green", icon:"img/space_icon.svg",
-                    description:"The Catalan Space Agency coordinates university research and industrial development, supporting the up-and-coming domestic space sector.",
+                if (next == 1) G.registerLaw(Q, {id:"space_agency", title:G.englishText(G.text("Catalan Space Agency")), colour:"green", icon:"img/space_icon.svg",
+                    description:G.englishText(G.text("The Catalan Space Agency coordinates university research and industrial development, supporting the up-and-coming domestic space sector.")),
                     ramp_ticks:6, fiscal_ticks:12, targets:{gdp_growth:0.02, generalitat_surplus:-0.02 / 9.5}});
                 if (next == 2) {
-                    G.registerLaw(Q, {id:"space_test", title:"Enxaneta Experimental Satellite", colour:"orange", icon:"img/space_icon.svg",
-                        description:"In development: an experimental mission is being developed with local researchers and suppliers to launch the first Catalan satellite, the Enxaneta, into Low Earth Orbit.",
+                    G.registerLaw(Q, {id:"space_test", title:G.englishText(G.text("Enxaneta Experimental Satellite")), colour:"orange", icon:"img/space_icon.svg",
+                        description:G.englishText(G.text("In development: an experimental mission is being developed with local researchers and suppliers to launch the first Catalan satellite, the Enxaneta, into Low Earth Orbit.")),
                         launch_provider:"russia", targets:{}});
                     if (!Q.countdowns.includes("space_test")) Q.countdowns.push("space_test");
                     Q.space_test_countdown = 3;

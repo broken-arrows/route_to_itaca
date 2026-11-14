@@ -44,7 +44,7 @@ describe('G.brief trend derivations', () => {
     expect(core.strength).toBe(33);
     expect(core.dissent).toBe(44);
     for (const r of rows) {
-      expect(r.strengthDisplay).toBe('dissent');
+      expect(r.strengthDisplay).toBe('faction_strength');
       expect(r.dissentDisplay).toBe('dissent');
     }
   });
@@ -87,8 +87,8 @@ describe('G.brief trend derivations', () => {
     expect(a.qdisplay(90, 'social_dissent')).toContain('very high');
     expect(a.qdisplay(5, 'independence_movement')).toContain('very low');
     expect(a.qdisplay(90, 'independence_movement')).toContain('very high');
-    expect(a.qdisplay(5, 'politics_trust')).toContain('completely distrustful');
-    expect(a.qdisplay(90, 'politics_trust')).toContain('blindly trusting');
+    expect(a.qdisplay(5, 'politics_trust')).toContain('very low');
+    expect(a.qdisplay(90, 'politics_trust')).toContain('very high');
   });
 
   it('no derivation invents a band token — classification is the qdisplay layer', () => {

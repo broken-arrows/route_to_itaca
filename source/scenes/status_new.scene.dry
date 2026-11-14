@@ -74,7 +74,7 @@ role: info-tab
 
 <div data-widget="level-bars" data-props='{"deriveFrom":"street"}'></div>
 
-<div style="font-size:0.85em;"> Currently [+ independence_trust : politics_trust +] the government.</div>
+<div style="font-size:0.85em;">[+ independence_trust : politics_trust_sentence +]</div>
 
 
 @chamber

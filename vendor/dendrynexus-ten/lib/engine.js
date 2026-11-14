@@ -766,7 +766,9 @@
   // That keeps every threshold written in exactly one place (the qdisplay
   // file) instead of being duplicated into JS wherever a row needs a band.
   DendryEngine.prototype.qdisplay = function (value, qDisplayId) {
-    return this._getQDisplay(value, qDisplayId);
+    // Use the same capture/render path as authored inserts. Keep _getQDisplay
+    // locale-independent: it also supplies captured pages and English fallback.
+    return this.renderLine(this._getQDisplay(value, qDisplayId));
   };
 
   DendryEngine.prototype.displayGameOver = function () {

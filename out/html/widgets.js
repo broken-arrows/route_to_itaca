@@ -270,13 +270,19 @@
           lane,
           "span",
           row.value,
-          "position:absolute;top:0;white-space:nowrap;line-height:2em;left:0;width:" + row.width + "%;text-align:center;color:white;",
+          "position:absolute;top:0;white-space:nowrap;line-height:2em;left:0;width:" +
+            row.width +
+            "%;text-align:center;color:white;",
         );
       sceneNode(
         lane,
         "span",
-        row.share + "%" + (row.value !== null && row.width <= 12 ? " (" + row.value + ")" : ""),
-        "position:absolute;top:0;white-space:nowrap;line-height:2em;left:calc(" + row.width + "% + .4em);",
+        row.share +
+          "%" +
+          (row.value !== null && row.width <= 12 ? " (" + row.value + ")" : ""),
+        "position:absolute;top:0;white-space:nowrap;line-height:2em;left:calc(" +
+          row.width +
+          "% + .4em);",
       );
     });
   }
@@ -364,13 +370,28 @@
       window.RTI_GAME_LIB.proposedCabinetRows(Q).forEach(function (row) {
         if (row.id === "president" || row.id === "vp") {
           if (row.id === "president") {
-            var header = sceneNode(el, "div", null, "display:flex;align-items:center;gap:1em;margin:.8em 0;");
-            var seal = sceneNode(header, "img", null, "width:2em;object-fit:contain;");
+            var header = sceneNode(
+              el,
+              "div",
+              null,
+              "display:flex;align-items:center;gap:1em;margin:.8em 0;",
+            );
+            var seal = sceneNode(
+              header,
+              "img",
+              null,
+              "width:2em;object-fit:contain;",
+            );
             seal.src = row.icon;
             seal.alt = "";
             presidency = sceneNode(header, "div");
           }
-          var line = sceneNode(presidency, "div", null, "white-space:nowrap;" + (row.id === "vp" ? "font-size:.9em;" : ""));
+          var line = sceneNode(
+            presidency,
+            "div",
+            null,
+            "white-space:nowrap;" + (row.id === "vp" ? "font-size:.9em;" : ""),
+          );
           var title = sceneNode(line, "strong", row.label + " ");
           sceneText(row.id === "president" ? title : line, row.name);
           if (row.party) {
@@ -430,7 +451,7 @@
         ].forEach(function (metric) {
           var line = sceneNode(metrics, "div", sceneLabel(metric[0]) + ": ");
           var value = sceneNode(line, "span");
-          value.innerHTML = tc(engine.qdisplay(metric[1], metric[2]));
+          value.innerHTML = engine.qdisplay(metric[1], metric[2]);
         });
       });
     },
@@ -658,9 +679,25 @@
       var props = resolveProps(el, Q);
       var records = Q[props.recordsFrom];
       var variables = Array.isArray(props.series);
-      var parties = variables ? props.series.map(function (row) { return row.id; }) : Q[props.partiesFrom];
-      var names = variables ? Object.fromEntries(props.series.map(function (row) { return [row.id, tc(row.name)]; })) : props.partyNames;
-      var colours = variables ? Object.fromEntries(props.series.map(function (row) { return [row.id, row.colour]; })) : props.partyColours;
+      var parties = variables
+        ? props.series.map(function (row) {
+            return row.id;
+          })
+        : Q[props.partiesFrom];
+      var names = variables
+        ? Object.fromEntries(
+            props.series.map(function (row) {
+              return [row.id, tc(row.name)];
+            }),
+          )
+        : props.partyNames;
+      var colours = variables
+        ? Object.fromEntries(
+            props.series.map(function (row) {
+              return [row.id, row.colour];
+            }),
+          )
+        : props.partyColours;
       // linegraph appends its axes/paths. Start clean on every shell refresh.
       el.replaceChildren();
       if (!Array.isArray(records) || !records.length || !Array.isArray(parties))
@@ -670,7 +707,7 @@
       });
       if (!valid.length) return;
       if (variables && props.unitLabel) {
-        var unit = document.createElement('p');
+        var unit = document.createElement("p");
         unit.textContent = tc(props.unitLabel);
         el.appendChild(unit);
       }
@@ -689,7 +726,12 @@
         undefined,
         undefined,
         variables ? 0 : undefined,
-        { variables: variables, yMin: props.yMin, yMax: props.yMax, valueSuffix: props.valueSuffix },
+        {
+          variables: variables,
+          yMin: props.yMin,
+          yMax: props.yMax,
+          valueSuffix: props.valueSuffix,
+        },
       );
       var events = [];
       var firstDate = Math.min.apply(

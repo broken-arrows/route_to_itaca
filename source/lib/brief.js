@@ -29,7 +29,7 @@
  * extraction tool has to find them.
  * ========================================================================== */
 (function () {
-  'use strict';
+  "use strict";
 
   // Shared party walk: the visible set and its order, computed ONCE so every
   // party-shaped row set agrees. Seats desc, ties by Q.parties order.
@@ -38,7 +38,7 @@
     var out = [];
     for (var i = 0; i < parties.length; i++) {
       var p = parties[i];
-      var seats = Q[p + '_parlament_s'] || 0;
+      var seats = Q[p + "_parlament_s"] || 0;
       if (seats > 0) out.push({ id: p, seats: seats, order: i });
     }
     out.sort(function (a, b) {
@@ -54,10 +54,27 @@
   // Display name per party id. The glossary supplies colour + logo; it does NOT
   // supply a short chamber label, so this table does.
   var PARTY_LABELS = {
-    ciu: 'CiU', erc: 'ERC', psc: 'PSC', ppc: 'PPC', icv: 'ICV-EUiA',
-    cs: 'Cs', cup: 'CUP', si: 'SI', cdc: 'CDC', unio: 'UDC', dl: 'DL',
-    jxsi: 'JxSí', junts: 'Junts', jxcat: 'JxCat', pdcat: 'PDeCAT',
-    csqp: 'CSQP', cecp: 'CECP', ecp: 'ECP', vox: 'VOX', fnc: 'FNC', pxc: 'PxC'
+    ciu: "CiU",
+    erc: "ERC",
+    psc: "PSC",
+    ppc: "PPC",
+    icv: "ICV-EUiA",
+    cs: "Cs",
+    cup: "CUP",
+    si: "SI",
+    cdc: "CDC",
+    unio: "UDC",
+    dl: "DL",
+    jxsi: "JxSí",
+    junts: "Junts",
+    jxcat: "JxCat",
+    pdcat: "PDeCAT",
+    csqp: "CSQP",
+    cecp: "CECP",
+    ecp: "ECP",
+    vox: "VOX",
+    fnc: "FNC",
+    pxc: "PxC",
   };
 
   function partyLabel(id) {
@@ -70,8 +87,8 @@
     for (var i = 0; i < seated.length; i++) {
       var id = seated[i].id;
       var isPlayer = id === Q.player_party;
-      var leader = Q[id + '_leader'] || '';
-      var ideology = Q[id + '_ideology'] || '';
+      var leader = Q[id + "_leader"] || "";
+      var ideology = Q[id + "_ideology"] || "";
       rows.push({
         id: id,
         label: partyLabel(id),
@@ -84,11 +101,14 @@
         // to draw", never a third "unset" state. `stampDisplay` names the
         // qdisplay that turns this number into a band; see the ROW CONTRACT
         // note above the file header for why brief.js doesn't do it itself.
-        stamp: (isPlayer || Q[id + '_relations'] === undefined)
-          ? null : Q[id + '_relations'],
-        stampDisplay: 'relationships',
-        subtitle: leader && ideology ? leader + ' — ' + ideology : String(leader || ''),
-        isPlayer: isPlayer
+        stamp:
+          isPlayer || Q[id + "_relations"] === undefined
+            ? null
+            : Q[id + "_relations"],
+        stampDisplay: "relationships",
+        subtitle:
+          leader && ideology ? leader + " — " + ideology : String(leader || ""),
+        isPlayer: isPlayer,
       });
     }
     return rows;
@@ -110,7 +130,7 @@
         // Relative to the LARGEST party, reproducing today's bar scaling
         // (status.scene.dry used Q.parlament_max_seats for exactly this).
         share: max > 0 ? seated[j].seats / max : 0,
-        majority: majority
+        majority: majority,
       });
     }
     return rows;
@@ -120,15 +140,30 @@
   // id -> [label, Q name key, Q party key]. Order is the design's
   // (brief-frames.md §2 frame 13) and matches today's status.government.
   var CABINET = [
-    ['president',     'President',          'president',          'president_party'],
-    ['vicepresident', 'Vice-president',     'vicepresident',      'vicepresident_party'],
-    ['economy',       'Economy',            'economy_minister',   'economy_minister_party'],
-    ['health',        'Health',             'health_minister',    'health_minister_party'],
-    ['education',     'Education',          'education_minister', 'education_minister_party'],
-    ['interior',      'Interior',           'interior_minister',  'interior_minister_party'],
-    ['foreign',       'Foreign affairs',    'foreign_minister',   'foreign_minister_party'],
-    ['bnl',           'Business + labour',  'bnl_minister',       'bnl_minister_party'],
-    ['territory',     'Territory',          'territory_minister', 'territory_minister_party']
+    ["president", "President", "president", "president_party"],
+    ["vicepresident", "Vice-president", "vicepresident", "vicepresident_party"],
+    ["economy", "Economy", "economy_minister", "economy_minister_party"],
+    ["health", "Health", "health_minister", "health_minister_party"],
+    [
+      "education",
+      "Education",
+      "education_minister",
+      "education_minister_party",
+    ],
+    ["interior", "Interior", "interior_minister", "interior_minister_party"],
+    [
+      "foreign",
+      "Foreign affairs",
+      "foreign_minister",
+      "foreign_minister_party",
+    ],
+    ["bnl", "Business + labour", "bnl_minister", "bnl_minister_party"],
+    [
+      "territory",
+      "Territory",
+      "territory_minister",
+      "territory_minister_party",
+    ],
   ];
 
   function cabinet(Q) {
@@ -138,10 +173,10 @@
       rows.push({
         id: e[0],
         label: e[1],
-        value: String(Q[e[2]] === undefined ? '' : Q[e[2]]),
+        value: String(Q[e[2]] === undefined ? "" : Q[e[2]]),
         // A minister's name is not a scale — nothing classifies it.
         valueDisplay: null,
-        party: Q[e[3]] === undefined ? null : String(Q[e[3]])
+        party: Q[e[3]] === undefined ? null : String(Q[e[3]]),
       });
     }
     return rows;
@@ -152,13 +187,13 @@
   // control.qdisplay.dry via the row's valueDisplay. No band
   // table here — see the ROW CONTRACT rule in this file's header.
   var CONTROL = [
-    ['airports',       'Airports',       'airports_control'],
-    ['railways',       'Railways',       'railways_control'],
-    ['ports',          'Ports',          'ports_control'],
-    ['borders',        'Borders',        'borders_control'],
-    ['security',       'Security',       'security_control'],
-    ['communications', 'Communications', 'communications_control'],
-    ['taxation',       'Taxation',       'tax_control']
+    ["airports", "Airports", "airports_control"],
+    ["railways", "Railways", "railways_control"],
+    ["ports", "Ports", "ports_control"],
+    ["borders", "Borders", "borders_control"],
+    ["security", "Security", "security_control"],
+    ["communications", "Communications", "communications_control"],
+    ["taxation", "Taxation", "tax_control"],
   ];
 
   function control(Q) {
@@ -169,8 +204,8 @@
         id: e[0],
         label: e[1],
         value: Q[e[2]] || 0,
-        valueDisplay: 'control',
-        party: null
+        valueDisplay: "control",
+        party: null,
       });
     }
     return rows;
@@ -178,10 +213,15 @@
 
   // -- The chancelleries -------------------------------------------------
   var CHANCELLERIES = [
-    ['eu',     'European Union', 'international_eu_opinion',     'img/flags/eu.svg'],
-    ['usa',    'United States',  'international_usa_opinion',    'img/flags/usa.svg'],
-    ['russia', 'Russia',         'international_russia_opinion', 'img/flags/russia.svg'],
-    ['china',  'P.R. China',     'international_china_opinion',  'img/flags/prc.svg']
+    ["eu", "European Union", "international_eu_opinion", "img/flags/eu.svg"],
+    ["usa", "United States", "international_usa_opinion", "img/flags/usa.svg"],
+    [
+      "russia",
+      "Russia",
+      "international_russia_opinion",
+      "img/flags/russia.svg",
+    ],
+    ["china", "P.R. China", "international_china_opinion", "img/flags/prc.svg"],
   ];
 
   function chancelleries(Q) {
@@ -189,7 +229,7 @@
     for (var i = 0; i < CHANCELLERIES.length; i++) {
       var e = CHANCELLERIES[i];
       var v = Q[e[2]];
-      var n = typeof v === 'number' ? v : 0;
+      var n = typeof v === "number" ? v : 0;
       if (n < -1) n = -1;
       if (n > 3) n = 3;
       rows.push({
@@ -198,9 +238,9 @@
         value: n,
         // international_opinion.qdisplay.dry turns this into the stance line.
         // No band table here — see the ROW CONTRACT rule.
-        valueDisplay: 'international_opinion',
+        valueDisplay: "international_opinion",
         party: null,
-        flag: e[3]
+        flag: e[3],
       });
     }
     return rows;
@@ -209,16 +249,16 @@
   // -- Party factions ----------------------------------------------------
   var FACTIONS = {
     erc: [
-      ['left',      'Left',             'erc_left'],
-      ['core',      'Republican Core',  'erc_core'],
-      ['pragmatic', 'Pragmatics',       'erc_pragmatic'],
-      ['civic',     'Civil Orgs.',      'erc_civic']
+      ["left", "Left", "erc_left"],
+      ["core", "Republican Core", "erc_core"],
+      ["pragmatic", "Pragmatics", "erc_pragmatic"],
+      ["civic", "Civil Orgs.", "erc_civic"],
     ],
     cup: [
-      ['endavant',    'Endavant',     'cup_endavant'],
-      ['poblelliure', 'Poble Lliure', 'cup_poblelliure'],
-      ['thirdsector', 'Third Sector', 'cup_thirdsector']
-    ]
+      ["endavant", "Endavant", "cup_endavant"],
+      ["poblelliure", "Poble Lliure", "cup_poblelliure"],
+      ["thirdsector", "Third Sector", "cup_thirdsector"],
+    ],
   };
 
   function factions(Q) {
@@ -228,13 +268,10 @@
       rows.push({
         id: set[i][0],
         label: set[i][1],
-        strength: Q[set[i][2] + '_strength'] || 0,
-        dissent: Q[set[i][2] + '_dissent'] || 0,
-        // Both scales are classified by the SAME qdisplay today — the legacy
-        // content renders each as `[+ erc_left_strength : dissent +]`. Named
-        // separately anyway so one can move without touching the other.
-        strengthDisplay: 'dissent',
-        dissentDisplay: 'dissent'
+        strength: Q[set[i][2] + "_strength"] || 0,
+        dissent: Q[set[i][2] + "_dissent"] || 0,
+        strengthDisplay: "faction_strength",
+        dissentDisplay: "dissent",
       });
     }
     return rows;
@@ -245,16 +282,21 @@
   // OWN qdisplay, which is what supplies the word — no local ladder here (see
   // the ROW CONTRACT rule). [id, label, Q key, qdisplay id]
   var STREET = [
-    ['social_dissent', 'Social dissent',  'social_dissent',        'social_dissent'],
-    ['independence',   'Indep. momentum', 'independence_movement', 'independence_movement'],
-    ['trust',          'Trust in gov.',   'independence_trust',    'politics_trust']
+    ["social_dissent", "Social dissent", "social_dissent", "social_dissent"],
+    [
+      "independence",
+      "Indep. momentum",
+      "independence_movement",
+      "independence_movement",
+    ],
+    ["trust", "Trust in gov.", "independence_trust", "politics_trust"],
   ];
 
   function street(Q) {
     var rows = [];
     for (var i = 0; i < STREET.length; i++) {
       var v = Q[STREET[i][2]];
-      var n = typeof v === 'number' ? v : 0;
+      var n = typeof v === "number" ? v : 0;
       if (n < 0) n = 0;
       if (n > 100) n = 100;
       rows.push({
@@ -262,7 +304,7 @@
         label: STREET[i][1],
         value: n,
         valueDisplay: STREET[i][3],
-        share: n / 100
+        share: n / 100,
       });
     }
     return rows;
@@ -271,9 +313,9 @@
   // -- Economy trails ----------------------------------------------------
   // [id, label, record field, unit, risingIsGood]
   var TRAILS = [
-    ['gdp',          'GDP growth',           'gdp_growth',          '%', true],
-    ['unemployment', 'Unemployment',         'unemployment',        '%', false],
-    ['surplus',      'Generalitat surplus',  'generalitat_surplus', '%', true]
+    ["gdp", "GDP growth", "gdp_growth", "%", true],
+    ["unemployment", "Unemployment", "unemployment", "%", false],
+    ["surplus", "Generalitat surplus", "generalitat_surplus", "%", true],
   ];
 
   function seriesFrom(records, field) {
@@ -281,7 +323,7 @@
     if (!records || !records.length) return out;
     for (var i = 0; i < records.length; i++) {
       var v = records[i] && records[i][field];
-      if (typeof v === 'number') out.push(v);
+      if (typeof v === "number") out.push(v);
     }
     return out;
   }
@@ -295,22 +337,27 @@
       // Current value: prefer the live quality, fall back to the series tail —
       // at game start the record array can still be empty.
       var live = Q[e[2]];
-      var current = typeof live === 'number'
-        ? live
-        : (series.length ? series[series.length - 1] : 0);
+      var current =
+        typeof live === "number"
+          ? live
+          : series.length
+            ? series[series.length - 1]
+            : 0;
       // Records are written after a turn resolves, so their tail can lag the
       // live scalar currently printed in the row. Add that scalar to the VIEW
       // when needed; do not mutate Q or duplicate a matching recorded point.
-      if (typeof live === 'number' &&
-          (!series.length || series[series.length - 1] !== live)) {
+      if (
+        typeof live === "number" &&
+        (!series.length || series[series.length - 1] !== live)
+      ) {
         series.push(live);
       }
       // Direction from the SERIES, never from Q.<x>_change: those are already
       // rendered HTML (<img src="img/arrowup.png">, root.scene.dry:96-101).
-      var dir = 'flat';
+      var dir = "flat";
       if (series.length >= 2) {
         var delta = series[series.length - 1] - series[series.length - 2];
-        dir = delta > 0 ? 'up' : (delta < 0 ? 'down' : 'flat');
+        dir = delta > 0 ? "up" : delta < 0 ? "down" : "flat";
       }
       rows.push({
         id: e[0],
@@ -323,9 +370,13 @@
         // inks -3.1% GDP, 22.5% unemployment and -2.3% surplus all green.
         // For the two "higher is better" metrics, non-negative is healthy;
         // for unemployment ("lower is better"), only non-positive is.
-        good: dir === 'flat' ? (e[4] ? current >= 0 : current <= 0)
-          : ((dir === 'up') === e[4]),
-        series: series
+        good:
+          dir === "flat"
+            ? e[4]
+              ? current >= 0
+              : current <= 0
+            : (dir === "up") === e[4],
+        series: series,
       });
     }
     return rows;
@@ -351,47 +402,63 @@
   // those two; there are no `ciu_in_*` flags in content.
   function standing(Q) {
     var player = Q.player_party;
-    if (!player) { return []; }
+    if (!player) {
+      return [];
+    }
     var id;
-    if ((player === 'erc' && Q.erc_in_jxsi) || (player === 'cup' && Q.cup_in_jxsi)) {
-      id = 'jxsi';
-    } else if ((player === 'erc' && Q.erc_in_jxcat) || (player === 'cup' && Q.cup_in_jxcat)) {
-      id = 'jxcat';
+    if (
+      (player === "erc" && Q.erc_in_jxsi) ||
+      (player === "cup" && Q.cup_in_jxsi)
+    ) {
+      id = "jxsi";
+    } else if (
+      (player === "erc" && Q.erc_in_jxcat) ||
+      (player === "cup" && Q.cup_in_jxcat)
+    ) {
+      id = "jxcat";
     } else {
       id = player;
     }
     var total = Q.parlament_size || 0;
-    var value = Q[id + '_parlament_s'] || 0;
-    return [{
-      id: id,
-      label: partyLabel(id),
-      value: value,
-      total: total,
-      // A seat count is not a classified scale — no qdisplay bands it.
-      valueDisplay: null,
-      share: total > 0 ? value / total : 0
-    }];
+    var value = Q[id + "_parlament_s"] || 0;
+    return [
+      {
+        id: id,
+        label: partyLabel(id),
+        value: value,
+        total: total,
+        // A seat count is not a classified scale — no qdisplay bands it.
+        valueDisplay: null,
+        share: total > 0 ? value / total : 0,
+      },
+    ];
   }
 
   // -- Polls ---------------------------------------------------------------
   // The old renderer's actual Q schema, centralized here so the Desk never
   // grows a second interpretation of polling arithmetic.
-  var PROVINCES = ['barcelona', 'tarragona', 'lleida', 'girona'];
+  var PROVINCES = ["barcelona", "tarragona", "lleida", "girona"];
   var PROVINCE_LABELS = {
-    barcelona: 'Barcelona', tarragona: 'Tarragona',
-    lleida: 'Lleida', girona: 'Girona'
+    barcelona: "Barcelona",
+    tarragona: "Tarragona",
+    lleida: "Lleida",
+    girona: "Girona",
   };
   var DEMOGRAPHIC_LABELS = {
-    buss: 'Business', ind: 'Ind. workers', middle: 'Middle class',
-    young: 'Young', retired: 'Retired', rural: 'Rural',
-    unemployed: 'Unemployed'
+    buss: "Business",
+    ind: "Ind. workers",
+    middle: "Middle class",
+    young: "Young",
+    retired: "Retired",
+    rural: "Rural",
+    unemployed: "Unemployed",
   };
 
   function pollParties(Q) {
     var parties = Q.parties || [];
     var out = [];
     for (var i = 0; i < parties.length; i++) {
-      if (parties[i] !== 'abstain') out.push(parties[i]);
+      if (parties[i] !== "abstain") out.push(parties[i]);
     }
     return out;
   }
@@ -402,12 +469,21 @@
     var totals = {};
     var population = 0;
     for (var i = 0; i < demos.length; i++) {
-      var pop = Number(Q['parlament_' + province + '_' + demos[i] + '_pop']) || 0;
+      var pop =
+        Number(Q["parlament_" + province + "_" + demos[i] + "_pop"]) || 0;
       population += pop;
       for (var j = 0; j < parties.length; j++) {
-        var support = Number(Q[
-          parties[j] + '_parlament_' + province + '_' + demos[i] + '_support'
-        ]) || 0;
+        var support =
+          Number(
+            Q[
+              parties[j] +
+                "_parlament_" +
+                province +
+                "_" +
+                demos[i] +
+                "_support"
+            ],
+          ) || 0;
         totals[parties[j]] = (totals[parties[j]] || 0) + support * pop;
       }
     }
@@ -419,7 +495,7 @@
     for (var i = 0; i < PROVINCES.length; i++) {
       var id = PROVINCES[i];
       var votes = provinceVotes(Q, id);
-      var winner = '';
+      var winner = "";
       var best = 0;
       Object.keys(votes.totals).forEach(function (party) {
         if (votes.totals[party] > best) {
@@ -433,7 +509,7 @@
         value: winner,
         party: winner || null,
         population: votes.population,
-        seats: (Q.parlament_seats && Q.parlament_seats[id]) || 0
+        seats: (Q.parlament_seats && Q.parlament_seats[id]) || 0,
       });
     }
     return rows;
@@ -447,24 +523,32 @@
       var province = PROVINCES[p];
       for (var d = 0; d < demos.length; d++) {
         var demo = demos[d];
-        var population = Number(Q['parlament_' + province + '_' + demo + '_pop']) || 0;
+        var population =
+          Number(Q["parlament_" + province + "_" + demo + "_pop"]) || 0;
         if (population <= 0) continue;
         var cells = [];
         for (var i = 0; i < parties.length; i++) {
-          var value = Number(Q[
-            parties[i] + '_parlament_' + province + '_' + demo + '_support'
-          ]) || 0;
+          var value =
+            Number(
+              Q[
+                parties[i] + "_parlament_" + province + "_" + demo + "_support"
+              ],
+            ) || 0;
           if (value > 0) {
-            cells.push({ id: parties[i], label: partyLabel(parties[i]), value: value });
+            cells.push({
+              id: parties[i],
+              label: partyLabel(parties[i]),
+              value: value,
+            });
           }
         }
         rows.push({
-          id: province + '_' + demo,
+          id: province + "_" + demo,
           label: DEMOGRAPHIC_LABELS[demo] || demo,
           value: population,
           province: province,
           cells: cells,
-          playerParty: Q.player_party || null
+          playerParty: Q.player_party || null,
         });
       }
     }
@@ -486,7 +570,7 @@
       var allocation = {};
       var seats = (Q.parlament_seats && Q.parlament_seats[province]) || 0;
       for (var s = 0; s < seats; s++) {
-        var winner = '';
+        var winner = "";
         var quotient = 0;
         for (var i = 0; i < eligible.length; i++) {
           var party = eligible[i];
@@ -505,12 +589,12 @@
       eligible.forEach(function (party) {
         if (!allocation[party]) return;
         rows.push({
-          id: province + '_' + party,
+          id: province + "_" + party,
           label: partyLabel(party),
           value: allocation[party],
           province: province,
           party: party,
-          share: maxSeats > 0 ? allocation[party] / maxSeats : 0
+          share: maxSeats > 0 ? allocation[party] / maxSeats : 0,
         });
       });
     }
@@ -530,13 +614,13 @@
       trails: trails,
       crosstab: crosstab,
       seatProjection: seatProjection,
-      provinces: provinces
+      provinces: provinces,
     },
     // Exported for unit tests and for the sheets that need the same ordering.
-    _seatedParties: seatedParties
+    _seatedParties: seatedParties,
   };
 
-  if (typeof module !== 'undefined' && module.exports) {
+  if (typeof module !== "undefined" && module.exports) {
     module.exports = api;
   } else {
     window.RTI_BRIEF = api;

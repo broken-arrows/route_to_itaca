@@ -136,4 +136,28 @@ describe('scene result widgets in both interfaces', () => {
       expect(root.textContent).toContain('very low');
     }
   });
+
+  it('localizes replacement election headings and result labels in Catalan in both shells', () => {
+    i18n.global.locale.value = 'ca';
+    vi.stubGlobal('ClassicI18n', {
+      t: (key: string, fallback: string) => i18n.global.te(key) ? i18n.global.t(key) : fallback,
+      content: (value: string) => value,
+    });
+    const translated = (label: string) => i18n.global.t(`widgets.scene.${label.toLowerCase().replace(/[^a-z0-9]+/g, '_')}`);
+    const results = { layout: 'congreso', voteHeading: 'Popular Vote (Cat.)', q: {} };
+    for (const root of [mount(ElectionResults, { props: results, global: { plugins: [i18n] } }).element, classic('election-results', results, {})]) {
+      expect([...root.querySelectorAll('thead th')].map(el => el.textContent))
+        .toEqual(['Party', 'Popular Vote (Cat.)', 'Change', 'Seats', 'Change'].map(translated));
+    }
+    const props = { title: 'Parlament control', rows: ['Independence', 'Unaligned', 'Union', 'others'].map(label => ({ label, shareFrom: label })) };
+    const q = { Independence: 40, Unaligned: 30, Union: 20, others: 10 };
+    for (const root of [mount(StackedBreakdown, { props: { ...props, q }, global: { plugins: [i18n] } }).element, classic('stacked-breakdown', props, q)]) {
+      for (const label of [props.title, ...props.rows.map(row => row.label)]) expect(root.textContent).toContain(translated(label));
+    }
+    const answers = { rows: ['YES', 'YES/NO', 'NO', 'Turnout'].map(label => ({ label, shareFrom: label })) };
+    const shares = { YES: 50, 'YES/NO': 5, NO: 20, Turnout: 75 };
+    for (const root of [mount(ResultBars, { props: { ...answers, q: shares }, global: { plugins: [i18n] } }).element, classic('result-bars', answers, shares)]) {
+      for (const row of answers.rows) expect(root.textContent).toContain(translated(row.label));
+    }
+  });
 });

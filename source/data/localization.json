@@ -186,6 +186,10 @@
     },
     {
       "registry": "localization",
+      "paths": ["widgetText.brief.*"]
+    },
+    {
+      "registry": "localization",
       "paths": ["widgetText.coalitions.seatCount"],
       "parameters": ["seats"]
     },
@@ -200,6 +204,13 @@
     { "helper": "governmentTooltipText", "arguments": [2, 3] }
   ],
   "widgetText": {
+    "brief": {
+      "socialDissent": "Social dissent",
+      "independenceMomentum": "Indep. momentum",
+      "governmentTrust": "Trust in gov.",
+      "strength": "Strength",
+      "dissent": "Dissent"
+    },
     "coalitions": {
       "support": "support",
       "abstain": "abst.",

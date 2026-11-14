@@ -233,7 +233,7 @@ export class DendryAdapter {
     return out;
   }
 
-  /** Classify a raw quality value through one of the game's qdisplays. Row
+  /** Classify and localize a raw value through one of the game's qdisplays. Row
    *  view-models carry {value, qdisplay} rather than a pre-computed band, so
    *  source/qdisplays/*.dry stays the ONLY place a threshold is written. */
   qdisplay(value: unknown, qdisplayId: string): string {

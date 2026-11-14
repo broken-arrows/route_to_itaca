@@ -49,7 +49,7 @@ describe('Brief row widgets', () => {
             label: 'Left',
             strength: 10,
             dissent: 90,
-            strengthDisplay: 'dissent',
+            strengthDisplay: 'faction_strength',
             dissentDisplay: 'dissent',
           },
         ],

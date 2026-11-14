@@ -22,14 +22,12 @@
  *               data-band="supportive">"Catalonia would be a most welcome
  *               addition…"</p>'
  *      -> so the parser must not hardcode the tag name.
- *   3. TRAILING TEXT OUTSIDE the element (`politics_trust` only — its lines
- *      end in the preposition that follows the word in prose):
- *        qdisplay(50,'politics_trust')
- *        -> '<span … data-band="neutral">neutral</span> about'
+ *   3. TRAILING TEXT OUTSIDE the element (legacy output):
+ *        '<span … data-band="neutral">neutral</span> about'
  *      -> so the label is the element's INNER text, never the whole string
  *         ('neutral', not 'neutral about').
  *   4. NO markup at all, for qdisplays that were never banded
- *      (`relationships`, `month`):  qdisplay(64,'relationships') -> 'warm'.
+ *      (`month` and legacy relationships output).
  *   5. NO markup and no word, when the value matches no range at all:
  *        qdisplay(99,'roadmap') -> '99'  (the raw value, stringified).
  *
@@ -50,9 +48,9 @@ export interface Band {
    * `unset`, …) — what the Desk's one band ramp is keyed on.
    *
    * For an un-banded qdisplay (shape 4 above) there is no token to read, so
-   * the word itself is slugged into one: `relationships` yields `warm`,
-   * `hostile`, `very_friendly` — exactly the tokens the design's bench
-   * stamps use. Empty string when there is nothing to classify at all.
+   * the word itself is slugged into one. Qualitative displays declare their
+   * tokens explicitly so translation never changes their colour.
+   * Empty string when there is nothing to classify at all.
    */
   band: string;
   /** The word, as plain text: no tags, no entities, whitespace collapsed. */
@@ -112,12 +110,9 @@ export function parseQdisplayHtml(html: string): Band {
 
 /**
  * The composable widgets use. `band(value, qdisplayId)` is a pure function of
- * its two arguments plus the game's (load-static) qdisplay table — it does NOT
- * take a `void game.q` tick dependency, because it reads no live state: the
- * VALUE is what changes, and whatever produced it (a `deriveFrom` row set,
- * rebuilt by WidgetHost on every tick) already owns that dependency. Reading
- * `game.adapter` does give any caller the one dependency that matters here —
- * the adapter arriving at boot.
+ * its arguments, the game's qdisplay table and the active content locale.
+ * A refreshed frame invalidates cached labels after a language change;
+ * classification itself reads no live gameplay qualities.
  */
 export function useBand(): {
   band: (value: unknown, qdisplayId?: string | null) => Band;
@@ -125,6 +120,7 @@ export function useBand(): {
   const game = useGameStore();
 
   function band(value: unknown, qdisplayId?: string | null): Band {
+    void game.frame;
     const adapter = game.adapter;
     // `null` is the row contract's "nothing to classify here" (brief.js:87 —
     // your own bench, an unassigned relation); a null/absent qdisplay id is

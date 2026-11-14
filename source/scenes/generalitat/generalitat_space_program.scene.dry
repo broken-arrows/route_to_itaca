@@ -22,9 +22,8 @@ on-arrival: {!
     if (!Q.cat_caretaker_gov && Q.government_budget >= 1 && !(Q.active_mods || {}).space_agency &&
         [Q.education_minister_party, Q.vicepresident_party, Q.president_party].some(function (party) { return controlledParties.includes(party); })) {
         Q.government_budget -= 1;
-        // Six-month ramp over twelve fiscal ticks: the scale sums to 9.5.
-        G.registerLaw(Q, {id:"space_agency", title:"Catalan Space Agency", colour:"green", icon:"img/space_icon.svg",
-            description:"The Catalan Space Agency coordinates university research, technical training and industrial partnerships, supporting a small domestic space sector.",
+        G.registerLaw(Q, {id:"space_agency", title:G.englishText(G.text("Catalan Space Agency")), colour:"green", icon:"img/space_icon.svg",
+            description:G.englishText(G.text("The Catalan Space Agency coordinates university research, technical training and industrial partnerships, supporting a small domestic space sector.")),
             ramp_ticks:6, fiscal_ticks:12, targets:{gdp_growth:0.02, generalitat_surplus:-0.02 / 9.5}});
         if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
     }
@@ -37,7 +36,7 @@ The Catalan Space Agency has been established! While its detractors among the pr
 
 @test_sat
 title: Commission and launch the first ever Catalan satellite
-subtitle: Develop a demonstrator with local researchers and suppliers, then choose a launch provider. The mission takes three months. \[-1 budget\]
+subtitle: A technology demonstrator will be developed through local researchers and suppliers.  \[-1 budget\]
 view-if: {! var laws = Q.active_mods || {}; return !!laws.space_agency && laws.space_agency.active && !laws.space_test; !}
 choose-if: {! return !Q.cat_caretaker_gov && Q.government_budget >= 1 &&
     [Q.player_party, Q.player_in_jxsi ? "jxsi" : "", Q.player_in_jxcat ? "jxcat" : ""].some(function (party) {
@@ -61,8 +60,8 @@ on-arrival: {!
     if (!Q.cat_caretaker_gov && Q.government_budget >= 1 && laws.space_agency && laws.space_agency.active && !laws.space_test &&
         [Q.bnl_minister_party, Q.vicepresident_party, Q.president_party].some(function (party) { return controlledParties.includes(party); })) {
         Q.government_budget -= 1;
-        G.registerLaw(Q, {id:"space_test", title:"Experimental Satellite Programme", colour:"orange", icon:"img/space_icon.svg",
-            description:"In development: an experimental mission is being developed with local researchers and suppliers to launch the first Catalan satellite, the Enxaneta, into Low Earth Orbit.", targets:{}});
+        G.registerLaw(Q, {id:"space_test", title:G.englishText(G.text("Experimental Satellite Programme")), colour:"orange", icon:"img/space_icon.svg",
+            description:G.englishText(G.text("In development: an experimental mission is being developed with local researchers and suppliers to launch the first Catalan satellite, the Enxaneta, into Low Earth Orbit.")), targets:{}});
         if (!Q.countdowns.includes("space_test")) Q.countdowns.push("space_test");
         Q.space_test_countdown = 3;
         if (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0) Q.burdens_done += 1;
@@ -113,8 +112,8 @@ on-arrival: {!
         !(laws.space_communications_proposal && laws.space_communications_proposal.active) &&
         [Q.vicepresident_party, Q.president_party].some(function (party) { return controlledParties.includes(party); })) {
         Q.government_budget -= 1;
-        G.registerLaw(Q, {id:"space_communications_proposal", title:"Government Satellite Communications", colour:"gray", icon:"img/space_icon.svg",
-            description:"Pending budget approval: the Catalan Space Agency has built upon the success of the Enxaneta test satellite and is proposing the development and deployment of its first set of communication satellites for civilian and governmental use.",
+        G.registerLaw(Q, {id:"space_communications_proposal", title:G.englishText(G.text("Government Satellite Communications")), colour:"gray", icon:"img/space_icon.svg",
+            description:G.englishText(G.text("Pending budget approval: the Catalan Space Agency has built upon the success of the Enxaneta test satellite and is proposing the development and deployment of its first set of communication satellites for civilian and governmental use.")),
             launch_provider:"russia", targets:{}});
         Q.active_mods.space_test.hidden = true;
     }

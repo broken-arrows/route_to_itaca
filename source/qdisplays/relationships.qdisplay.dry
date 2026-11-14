@@ -1,9 +1,10 @@
 
-(..5) hostile
-(5..14.9) frigid
-(14.9..29.9) cold
-(29.9..39.9) cool
-(39.9..54.9) neutral
-(54.9..64.9) warm
-(64.9..74.9) friendly
-(74.9..) very friendly
+# Relations with a party
+(..5) <span class="q-band" data-scale="relationships" data-band="hostile">hostile</span>
+(5..14.9) <span class="q-band" data-scale="relationships" data-band="frigid">frigid</span>
+(14.9..29.9) <span class="q-band" data-scale="relationships" data-band="cold">cold</span>
+(29.9..39.9) <span class="q-band" data-scale="relationships" data-band="cool">cool</span>
+(39.9..54.9) <span class="q-band" data-scale="relationships" data-band="neutral">neutral</span>
+(54.9..64.9) <span class="q-band" data-scale="relationships" data-band="warm">warm</span>
+(64.9..74.9) <span class="q-band" data-scale="relationships" data-band="friendly">friendly</span>
+(74.9..) <span class="q-band" data-scale="relationships" data-band="very_friendly">very friendly</span>

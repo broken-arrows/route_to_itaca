@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { DendryAdapter } from '../src/engine/adapter';
 import { parseQdisplayHtml, useBand } from '../src/components/brief/useBand';
 import { useGameStore } from '../src/stores/game';
+import { computed } from 'vue';
 
 const GAME = join(__dirname, '..', '..', 'out', 'game.json');
 
@@ -103,8 +104,8 @@ describe('useBand — round trip through a booted adapter', () => {
     expect(band(90, 'cat_spa_relations').band).toBe('very_low');
   });
 
-  it('strips politics_trust’s trailing preposition (live, not a fixture)', () => {
-    expect(band(50, 'politics_trust')).toEqual({ band: 'neutral', label: 'neutral' });
+  it('uses the compact confidence display without a sentence preposition', () => {
+    expect(band(50, 'politics_trust')).toEqual({ band: 'neutral', label: 'medium' });
   });
 
   it('handles international_opinion’s <p> element', () => {
@@ -119,11 +120,21 @@ describe('useBand — round trip through a booted adapter', () => {
     expect(band(4, 'control').band).toBe('complete');
   });
 
-  it('slugs an UN-banded qdisplay (relationships) into a usable token', () => {
-    // relationships.qdisplay.dry carries no data-band at all — benches rows
-    // still need a stamp token, so the word supplies it.
+  it('reads explicit relationship tokens independently of their wording', () => {
     expect(band(60, 'relationships')).toEqual({ band: 'warm', label: 'warm' });
     expect(band(2, 'relationships')).toEqual({ band: 'hostile', label: 'hostile' });
+  });
+
+  it('refreshes cached labels on a locale change while keeping stable band tokens', () => {
+    const game = useGameStore();
+    const adapter = game.adapter!;
+    const key = adapter.qdisplay(60, 'relationships');
+    const word = computed(() => band(60, 'relationships'));
+    expect(word.value).toEqual({ band: 'warm', label: 'warm' });
+    game.frame = adapter.refreshLocale('ca', { [key]: key.replace('>warm<', '>cordials<') });
+    expect(word.value).toEqual({ band: 'warm', label: 'cordials' });
+    game.frame = adapter.refreshLocale('en', {});
+    expect(word.value).toEqual({ band: 'warm', label: 'warm' });
   });
 
   it('null / absent qdisplay id is EMPTY — the row contract’s "no stamp"', () => {

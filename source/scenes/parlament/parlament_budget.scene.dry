@@ -1398,8 +1398,8 @@ on-arrival: {!
     }
     if (Q.budget_draft.projects.space) {
         G.deactivateLaw(Q, "space_communications_proposal", undefined, true);
-        G.registerLaw(Q, {id:"space_communications", title:"Sovereign Satellite Communications", colour:"orange", icon:"img/space_icon.svg",
-            description:"In development: the Catalan Space Agency is building upon the success of the Enxaneta test satellite and developing the ground equipment and technological capacities to deploy its first set of communication satellites for civilian and governmental use.",
+        G.registerLaw(Q, {id:"space_communications", title:G.englishText(G.text("Sovereign Satellite Communications")), colour:"orange", icon:"img/space_icon.svg",
+            description:G.englishText(G.text("In development: the Catalan Space Agency is building upon the success of the Enxaneta test satellite and developing the ground equipment and technological capacities to deploy its first set of communication satellites for civilian and governmental use.")),
             launch_provider:"russia",
             fiscal_ticks:24, targets:{generalitat_surplus:-0.04 / 24}});
         if (!Q.countdowns.includes("space_communications")) Q.countdowns.push("space_communications");

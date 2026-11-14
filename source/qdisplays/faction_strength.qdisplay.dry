@@ -1,0 +1,7 @@
+# Faction strength (the adjective describes strength, not dissent)
+
+(..4.999) <span class="q-band" data-scale="faction_strength" data-band="very_low">very low</span>
+(4.999..14.999) <span class="q-band" data-scale="faction_strength" data-band="low">low</span>
+(14.999..29.999) <span class="q-band" data-scale="faction_strength" data-band="medium">medium</span>
+(29.999..49.999) <span class="q-band" data-scale="faction_strength" data-band="high">high</span>
+(49.999..) <span class="q-band" data-scale="faction_strength" data-band="very_high">very high</span>

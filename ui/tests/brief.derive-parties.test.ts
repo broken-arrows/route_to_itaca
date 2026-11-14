@@ -107,8 +107,8 @@ describe('G.brief party derivations', () => {
   it('adapter.qdisplay classifies a raw relation value through the real qdisplay', () => {
     const a = DendryAdapter.fromJSONText(readFileSync(GAME, 'utf8'));
     a.beginGame([1, 2, 3, 4]);
-    expect(a.qdisplay(3, 'relationships')).toBe('hostile');
-    expect(a.qdisplay(70, 'relationships')).toBe('friendly');
+    expect(a.qdisplay(3, 'relationships')).toContain('>hostile</span>');
+    expect(a.qdisplay(70, 'relationships')).toContain('>friendly</span>');
   });
 
   // Strengthened vs. the brief's sample: the loop body over `rows` never

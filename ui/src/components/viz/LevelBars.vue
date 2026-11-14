@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useBand } from '../brief/useBand';
+import { useGameStore } from '../../stores/game';
 
 defineOptions({ name: 'LevelBars' });
 
@@ -17,6 +18,7 @@ const props = withDefaults(
   { rows: () => [], q: undefined },
 );
 const { band } = useBand();
+const game = useGameStore();
 const clamp = (n: number) => Math.max(0, Math.min(1, Number.isFinite(n) ? n : 0));
 
 const views = computed(() =>
@@ -24,6 +26,7 @@ const views = computed(() =>
     const classified = band(row.value, row.valueDisplay);
     return {
       ...row,
+      label: game.adapter?.translate(row.label) ?? row.label,
       width: `${clamp(row.share) * 100}%`,
       band: classified.band,
       display: classified.label || String(row.value),
