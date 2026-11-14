@@ -1,0 +1,183 @@
+title: Public servants' strike!
+subtitle: Public servants demand better pay and working conditions.
+new-page: true
+tags: event
+role: event
+face-image: img/events/vaga_public.jpg
+max-visits: 1
+view-if: strike_triggered = "public_pay" and not cat_caretaker_gov and public_salary_level >= -2 and public_salary_level < 1
+on-arrival: {!
+    Q.strike_timer = 6;
+    Q.strike_public_pay_response = null;
+    Q.strike_public_pay_settled = false;
+    Q.strike_public_pay_partner = Q.economy_minister_party;
+    if (["indp.", "ind.", "independent"].includes(Q.strike_public_pay_partner)) Q.strike_public_pay_partner = Q.president_party;
+    if (Q.strike_public_pay_partner == "ciu") Q.strike_public_pay_partner = Q.parlament_current_ciu;
+    if (Q.strike_public_pay_partner == "federal_left") Q.strike_public_pay_partner = Q.parlament_current_icv;
+    Q.strike_public_pay_relations = Q[Q.strike_public_pay_partner + "_relations"];
+    if (["jxsi", "jxcat"].includes(Q.strike_public_pay_partner) && !Number.isFinite(Q.strike_public_pay_relations))
+        Q.strike_public_pay_relations = Q[Q.parlament_current_ciu + "_relations"];
+!}
+
+= Public servants' strike!
+
+Public servants are walking out of their workplaces, demanding [? if public_salary_level < 0: the reversal of the latest pay cut?][? if public_salary_level >= 0: improvements to Generalitat-controlled pay and working conditions?]. On the spotlight, [? if economy_minister_gender = "m": Conseller ?][? if economy_minister_gender = "f": Consellera ?]of Economy [+ economy_minister +], who so far has not answered to these demands. What will our position be?
+
+- @accept
+- @pressure
+- @protest
+- @quiet
+
+@accept
+title: Accept the workers' demands
+view-if: economy_minister_party = player_party or (player_in_jxsi and economy_minister_party = "jxsi") or (player_in_jxcat and economy_minister_party = "jxcat")
+subtitle: We control the ministry after all. \[-1 budget\]
+choose-if: government_budget >= 1 and public_salary_level + 1 <= social_spending_cap and economy_cuts <= 0 and (not fla_escalated or (not fla_severe and public_salary_level < 0) or (fla_severe and public_salary_level < -1))
+unavailable-subtitle: [? if government_budget < 1: Not enough budget. ?][? if public_salary_level + 1 > social_spending_cap: The current social spending cap is too low to allow for this. ?][? if economy_cuts > 0: Extraordinary austerity measures need to be reversed before such a measure would even be possible. ?][? if fla_escalated and ((not fla_severe and public_salary_level >= 0) or (fla_severe and public_salary_level >= -1)): Stringent FLA conditions ban us from taking such action. ?]
+on-arrival: strike_public_pay_response = "accept"
+go-to: resolve
+
+@pressure
+title: Push [+ economy_minister_party +] to accept the workers' demands
+view-if: not (economy_minister_party = player_party or (player_in_jxsi and economy_minister_party = "jxsi") or (player_in_jxcat and economy_minister_party = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))
+subtitle: We'll have to apply pressure on [+ economy_minister_party +] for them to even consider sitting down with the union representatives. \[-1 resources; -1 budget\]
+choose-if: (not (economy_minister_party = player_party or (player_in_jxsi and economy_minister_party = "jxsi") or (player_in_jxcat and economy_minister_party = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))) and party_resources >= 1 and ((difficulty < 0 and strike_public_pay_relations >= 45) or (difficulty >= 0 and strike_public_pay_relations >= 55)) and government_budget >= 1 and public_salary_level + 1 <= social_spending_cap and economy_cuts <= 0 and (not fla_escalated or (not fla_severe and public_salary_level < 0) or (fla_severe and public_salary_level < -1))
+unavailable-subtitle: [? if not ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting))): We are not part of the government nor providing external support to it. ?][? if party_resources < 1: Not enough resources. ?][? if ((difficulty < 0 and strike_public_pay_relations < 45) or (difficulty >= 0 and strike_public_pay_relations < 55)): Our relations with [+ strike_public_pay_partner +] are not good enough. ?][? if government_budget < 1: Not enough budget. ?][? if public_salary_level + 1 > social_spending_cap: The current social spending cap is too low to allow for this. ?][? if economy_cuts > 0: Extraordinary austerity measures need to be reversed before such a measure would even be possible. ?][? if fla_escalated and ((not fla_severe and public_salary_level >= 0) or (fla_severe and public_salary_level >= -1)): Stringent FLA conditions ban us from taking such action. ?]
+on-arrival: strike_public_pay_response = "pressure"
+go-to: resolve
+
+@protest
+title: Join the protests!
+choose-if: not ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))
+unavailable-subtitle: We're not welcome here, as we are currently supporting the government they are protesting against.
+on-arrival: strike_public_pay_response = "protest"
+go-to: resolve
+
+@quiet
+title: [? if (player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob): Back our partner's handling of the strike?][? if not ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) and ((player_party = "erc" and erc_supporting) or (player_party = "cup" and cup_supporting) or (player_in_jxsi and jxsi_supporting) or (player_in_jxcat and jxcat_supporting)): Leave this to the Generalitat to deal with?][? if not ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting))): Stay on the sidelines?]
+on-arrival: strike_public_pay_response = "quiet"
+go-to: resolve
+
+@resolve
+on-arrival: {!
+    var response = Q.strike_public_pay_response;
+    var option = this.game.scenes['strike_public_pay.' + response];
+    var delivery = response == "accept" || response == "pressure";
+    if (Q.strike_triggered == "public_pay" && !Q.cat_caretaker_gov &&
+        Q.public_salary_level >= -2 && Q.public_salary_level < 1 &&
+        option && this._runPredicate(option.viewIf, true) && this._runPredicate(option.chooseIf, true)) {
+        var controlled = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+        Q.strike_triggered = null;
+        Q.strike_public_pay_settled = delivery;
+        if (delivery) {
+            Q.government_budget -= 1;
+            if (response == "pressure") Q.party_resources -= 1;
+            Q.public_salary_level += 1;
+            Q.public_salary_prepared_level = null;
+            G.deactivateLaw(Q, "public_salary_proposal", undefined, true);
+            if ((Q.cat_coalition || []).concat(Q.cat_coalition_support || []).some(function (party) { return controlled.includes(party); }) &&
+                (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0))
+                Q.burdens_done += 1;
+            // The shared policy setter owns the existing law and fiscal reversal.
+            // Do not call the ordinary ministry action: the strike profile below
+            // is the delivery award, not a second bonus on top of that action.
+        }
+
+        var cabinet = Array.from(new Set(Q.cat_coalition || []));
+        function ballot(party) {
+            if (party == "ciu") party = Q.parlament_current_ciu;
+            if (party == "fl" || party == "federal_left") party = Q.parlament_current_icv;
+            for (var list of ["jxsi", "jxcat"])
+                if (Q[party + "_in_" + list] && (Q.parties || []).includes(list) &&
+                    (Q.parlament_constituencies || []).some(function (province) {
+                        return (Q.parlament_demographics || []).some(function (demo) { return Q[list + "_parlament_" + province + "_" + demo + "_support"] > 0; });
+                    })) return list;
+            return party;
+        }
+        var player = ballot(Q.player_party);
+        cabinet = Array.from(new Set(cabinet.map(ballot)));
+        var minister = ballot(Q.strike_public_pay_partner);
+        var left = Array.from(new Set(["erc", "cup", Q.parlament_current_icv].map(ballot)))
+            .filter(function (party) { return (Q.parties || []).includes(party); });
+        var oppositionLeft = left.filter(function (party) { return !cabinet.includes(party) && party != player; });
+
+        // Explicit province/demographic cells: no uniform national polling bonus.
+        var profile = [
+            ["barcelona","middle",0.55],
+            ["barcelona","ind",0.35],
+            ["barcelona","young",0.15],
+            ["girona","middle",0.50],
+            ["girona","rural",0.20],
+            ["girona","young",0.10],
+            ["lleida","middle",0.50],
+            ["lleida","rural",0.25],
+            ["lleida","young",0.10],
+            ["tarragona","middle",0.55],
+            ["tarragona","ind",0.40],
+            ["tarragona","young",0.15]
+        ];
+        var credit = [];
+        if (delivery) {
+            var partners = cabinet.filter(function (party) { return party != player; });
+            credit.push([player, response == "pressure" ? 0.4 : partners.length ? 0.8 : 1]);
+            if (response == "pressure") credit.push([minister,0.6]);
+            else for (var party of partners) credit.push([party,0.2 / partners.length]);
+        }
+        // All routes use the shared conserving helper (including successor/list
+        // resolution, donor caps and independence saturation).
+        function transfer(from, to, amount, cell) {
+            from = ballot(from); to = ballot(to);
+            if (!from || !to || from == to || !(Q.parties || []).concat(["abstain"]).includes(from) ||
+                !(Q.parties || []).concat(["abstain"]).includes(to)) return;
+            G.cardSupportTransfer(Q, {contest:"parlament", from:from, to:to, amount:amount,
+                maxDonorFraction:0.5, constituencies:[cell[0]], demographics:[cell[1]]});
+        }
+        for (var cell of profile) {
+            var amount = cell[2];
+            if (delivery) {
+                for (var recipient of credit) {
+                    var donors = recipient[0] == ballot("cup") ? [["fl",0.45],["erc",0.30],["abstain",0.25]] :
+                        recipient[0] == ballot("erc") ? [["psc",0.45],["fl",0.30],["abstain",0.25]] :
+                        [["psc",0.35],["fl",0.25],["abstain",0.40]];
+                    for (var donor of donors) transfer(donor[0],recipient[0],amount * recipient[1] * donor[1],cell);
+                }
+            } else {
+                // A silent opposition player does not collect the government's
+                // losses. Other opposition parties still gain from mobilization.
+                var challengers = oppositionLeft.slice();
+                if (response == "protest" && !challengers.includes(player)) challengers.push(player);
+                for (var incumbent of cabinet) {
+                    var responsibility = incumbent == minister ? 1 : 0.4;
+                    if (incumbent == player && incumbent != minister) responsibility = 0.6;
+                    var destinations = challengers.filter(function (party) { return party != incumbent; });
+                    for (var destination of destinations)
+                        transfer(incumbent,destination,amount * responsibility * 0.6 / destinations.length,cell);
+                    transfer(incumbent,"abstain",amount * responsibility * 0.2,cell);
+                }
+                for (var destination of challengers) {
+                    transfer("psc",destination,amount * 0.10 / challengers.length,cell);
+                    transfer("abstain",destination,amount * 0.10 / challengers.length,cell);
+                }
+                if ((Q.cat_coalition_support || []).some(function (party) { return controlled.includes(party); }) && !cabinet.includes(player)) {
+                    for (var destination of oppositionLeft)
+                        transfer(player,destination,amount * 0.25 / oppositionLeft.length,cell);
+                }
+            }
+        }
+
+        // Relations concern the actual parties, rather than pooled vote carriers.
+        for (var party of ["erc", "cup", Q.parlament_current_icv]) {
+            if (!controlled.includes(ballot(party)) && Number.isFinite(Q[party + "_relations"]))
+                Q[party + "_relations"] += response == "quiet" ? -2 : 2;
+        }
+        if (response == "pressure" || response == "protest" || response == "quiet" && !controlled.includes(Q.strike_public_pay_partner) &&
+            (Q.cat_coalition || []).concat(Q.cat_coalition_support || []).some(function (party) { return controlled.includes(party); }))
+            Q[Q.strike_public_pay_partner + "_relations"] = (Q.strike_public_pay_relations || 0) + (response == "quiet" ? 2 : response == "pressure" ? -3 : -4);
+    }
+!}
+call: generalitat_setpolicy
+
+[? if strike_public_pay_settled: [? if response == "pressure" : Thanks to our efforts, ?][? if economy_minister_gender = "m": Conseller ?][? if economy_minister_gender = "f": Consellera ?]of Economy [+ economy_minister +] has reached an agreement with union representatives to improve working conditions and pay for Generalitat workers. Further strikes have been called off and the situation seems to have calmed down, at least for now. ?]
+[? if not strike_public_pay_settled: With angry workers on the street and a Ministry deeply against any concession that would put further strain on Generalitat finances, it looks like the labour dispute is here to stay.?]
+
+- @post_event: Continue

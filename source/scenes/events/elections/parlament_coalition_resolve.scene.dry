@@ -1,5 +1,6 @@
 title: resolve coalition
 on-arrival: {!
+    Q.strike_timer = 6;
     Q.coalition_phase_timer = 0;
     Q.npc_government_initiative = null;
     var rawCabinet = Array.isArray(Q.cat_coalition) ? Q.cat_coalition : [];

@@ -1,0 +1,234 @@
+title: Metalworkers' strike!
+subtitle: Metalworkers demand a renewed collective agreement.
+new-page: true
+tags: event
+role: event
+face-image: img/events/vaga_metall.jpg
+max-visits: 1
+view-if: strike_triggered = "metal" and not cat_caretaker_gov
+on-arrival: {!
+    Q.strike_timer = 6;
+    Q.strike_metal_response = null;
+    Q.strike_metal_settled = false;
+    Q.strike_metal_partner = Q.bnl_minister_party;
+    if (["indp.", "ind.", "independent"].includes(Q.strike_metal_partner)) Q.strike_metal_partner = Q.president_party;
+    if (Q.strike_metal_partner == "ciu") Q.strike_metal_partner = Q.parlament_current_ciu;
+    if (Q.strike_metal_partner == "federal_left") Q.strike_metal_partner = Q.parlament_current_icv;
+    Q.strike_metal_relations = Q[Q.strike_metal_partner + "_relations"];
+    if (["jxsi", "jxcat"].includes(Q.strike_metal_partner) && !Number.isFinite(Q.strike_metal_relations))
+        Q.strike_metal_relations = Q[Q.parlament_current_ciu + "_relations"];
+!}
+
+= Metalworkers' strike!
+
+Metalworkers in Barcelona and Tarragona are demanding better worker conditions through a renewed collective agreement, that would see salary increases and payment of overdue salaries. As they take to the streets, blocking access to ports and freight railway terminals, and negotiations between unions and managers grind to a halt, pressure is on [? if bnl_minister_gender = "m": Conseller ?][? if bnl_minister_gender = "f": Consellera ?]of Business and Labour [+ bnl_minister +] to reach a settlement that can solve the deadlock. What will our position be?
+
+- @workers
+- @compromise
+- @industry
+- @pressure
+- @protest
+- @quiet
+
+@workers
+title: Back the workers' demands
+view-if: bnl_minister_party = player_party or (player_in_jxsi and bnl_minister_party = "jxsi") or (player_in_jxcat and bnl_minister_party = "jxcat")
+subtitle: From our held ministry we'll pressure the industry representatives as much as possible. \[-1 budget\]
+# TBD: use party resources instead?
+choose-if: government_budget >= 1
+unavailable-subtitle: [? if government_budget < 1: Not enough budget. ?]
+on-arrival: strike_metal_response = "workers"
+go-to: resolve
+
+@compromise
+title: Broker a balanced agreement
+view-if: bnl_minister_party = player_party or (player_in_jxsi and bnl_minister_party = "jxsi") or (player_in_jxcat and bnl_minister_party = "jxcat")
+subtitle: From our held ministry, we can try to mediate and find a suitable middle ground. \[-1 budget\]
+choose-if: government_budget >= 1
+unavailable-subtitle: [? if government_budget < 1: Not enough budget. ?]
+on-arrival: strike_metal_response = "compromise"
+go-to: resolve
+
+@industry
+title: Prioritize competitiveness
+view-if: bnl_minister_party = player_party or (player_in_jxsi and bnl_minister_party = "jxsi") or (player_in_jxcat and bnl_minister_party = "jxcat")
+subtitle: From our held ministry, we'll favour industry demands. \[-1 budget\]
+choose-if: government_budget >= 1
+unavailable-subtitle: [? if government_budget < 1: Not enough budget. ?]
+on-arrival: strike_metal_response = "industry"
+go-to: resolve
+
+@pressure
+title: Push [+ bnl_minister_party +] to broker a compromise
+view-if: not (bnl_minister_party = player_party or (player_in_jxsi and bnl_minister_party = "jxsi") or (player_in_jxcat and bnl_minister_party = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))
+subtitle: We'll have to apply pressure on [+ bnl_minister_party +] for them to even consider sitting down with the union representatives. \[-1 resources; -1 budget\]
+choose-if: (not (bnl_minister_party = player_party or (player_in_jxsi and bnl_minister_party = "jxsi") or (player_in_jxcat and bnl_minister_party = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))) and party_resources >= 1 and ((difficulty < 0 and strike_metal_relations >= 45) or (difficulty >= 0 and strike_metal_relations >= 55)) and government_budget >= 1
+unavailable-subtitle: [? if not ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting))): We are not part of the government nor providing external support to it. ?][? if party_resources < 1: Not enough resources. ?][? if ((difficulty < 0 and strike_metal_relations < 45) or (difficulty >= 0 and strike_metal_relations < 55)): Our relations with [+ strike_metal_partner +] are not good enough. ?][? if government_budget < 1: Not enough budget. ?]
+on-arrival: strike_metal_response = "pressure"
+go-to: resolve
+
+@protest
+title: Join the protests!
+choose-if: not ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))
+unavailable-subtitle: We're not welcome here, as we are currently supporting the government they are protesting against.
+on-arrival: strike_metal_response = "protest"
+go-to: resolve
+
+@quiet
+title: [? if (player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob): Back our partner's handling of the strike?][? if not ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) and ((player_party = "erc" and erc_supporting) or (player_party = "cup" and cup_supporting) or (player_in_jxsi and jxsi_supporting) or (player_in_jxcat and jxcat_supporting)): Leave this to the Generalitat to deal with?][? if not ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting))): Stay on the sidelines?]
+on-arrival: strike_metal_response = "quiet"
+go-to: resolve
+
+@resolve
+on-arrival: {!
+    var response = Q.strike_metal_response;
+    var option = this.game.scenes['strike_metal.' + response];
+    var agreement = response == "pressure" ? "compromise" : response;
+    var delivery = ["workers", "compromise", "industry"].includes(agreement);
+    if (Q.strike_triggered == "metal" && !Q.cat_caretaker_gov &&
+        option && this._runPredicate(option.viewIf, true) && this._runPredicate(option.chooseIf, true)) {
+        var controlled = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
+        Q.strike_triggered = null;
+        Q.strike_metal_settled = delivery;
+        if (delivery) {
+            Q.government_budget -= 1;
+            if (response == "pressure") Q.party_resources -= 1;
+            // Employers finance the private-sector agreement. The government
+            // spends mediation capacity, with no fiscal or public-pay change.
+            G.registerLaw(Q, {id:"metal_collective_agreement", settlement:agreement,
+                title:"Metal-sector collective agreement",
+                targets:agreement == "workers" ? {welfare_index_growth:0.05, social_dissent_eq:-2} :
+                    agreement == "compromise" ? {welfare_index_growth:0.025, social_dissent_eq:-1} : {}});
+            if ((Q.cat_coalition || []).concat(Q.cat_coalition_support || []).some(function (party) { return controlled.includes(party); }) &&
+                (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0))
+                Q.burdens_done += 1;
+        }
+
+        var cabinet = Array.from(new Set(Q.cat_coalition || []));
+        function ballot(party) {
+            if (party == "ciu") party = Q.parlament_current_ciu;
+            if (party == "fl" || party == "federal_left") party = Q.parlament_current_icv;
+            for (var list of ["jxsi", "jxcat"])
+                if (Q[party + "_in_" + list] && (Q.parties || []).includes(list) &&
+                    (Q.parlament_constituencies || []).some(function (province) {
+                        return (Q.parlament_demographics || []).some(function (demo) { return Q[list + "_parlament_" + province + "_" + demo + "_support"] > 0; });
+                    })) return list;
+            return party;
+        }
+        var player = ballot(Q.player_party);
+        cabinet = Array.from(new Set(cabinet.map(ballot)));
+        var minister = ballot(Q.strike_metal_partner);
+        var left = Array.from(new Set(["erc", "cup", Q.parlament_current_icv].map(ballot)))
+            .filter(function (party) { return (Q.parties || []).includes(party); });
+        var oppositionLeft = left.filter(function (party) { return !cabinet.includes(party) && party != player; });
+
+        // Barcelona is the bargaining electorate; other provinces receive
+        // smaller solidarity/industry effects. Negative rows are backlash.
+        var profile = [
+            ["barcelona","ind",0.70], ["barcelona","young",0.30], ["barcelona","unemployed",0.25], ["barcelona","middle",0.12],
+            ["girona","ind",0.10], ["girona","young",0.04], ["girona","unemployed",0.04],
+            ["tarragona","ind",0.14], ["tarragona","young",0.06], ["tarragona","unemployed",0.06],
+            ["lleida","ind",0.05], ["lleida","young",0.02], ["lleida","unemployed",0.02]
+        ];
+        if (delivery && agreement == "workers") profile.push(
+            ["barcelona","buss",-0.25], ["girona","buss",-0.04], ["tarragona","buss",-0.05], ["lleida","buss",-0.02]);
+        if (delivery && agreement == "compromise") profile = [
+            ["barcelona","ind",0.30], ["barcelona","middle",0.25], ["barcelona","young",0.12], ["barcelona","unemployed",0.10], ["barcelona","buss",0.05],
+            ["girona","ind",0.05], ["girona","middle",0.04], ["girona","buss",0.01],
+            ["tarragona","ind",0.07], ["tarragona","middle",0.05], ["tarragona","buss",0.015],
+            ["lleida","ind",0.025], ["lleida","middle",0.02], ["lleida","buss",0.005]
+        ];
+        if (delivery && agreement == "industry") profile = [
+            ["barcelona","buss",0.50], ["barcelona","middle",0.20], ["barcelona","ind",-0.60], ["barcelona","young",-0.20], ["barcelona","unemployed",-0.20],
+            ["girona","buss",0.08], ["girona","middle",0.03], ["girona","ind",-0.08], ["girona","young",-0.03],
+            ["tarragona","buss",0.10], ["tarragona","middle",0.04], ["tarragona","ind",-0.12], ["tarragona","young",-0.04], ["tarragona","unemployed",-0.04],
+            ["lleida","buss",0.04], ["lleida","middle",0.02], ["lleida","ind",-0.04]
+        ];
+        var credit = [];
+        if (delivery) {
+            var partners = cabinet.filter(function (party) { return party != player; });
+            credit.push([player, response == "pressure" ? 0.4 : partners.length ? 0.8 : 1]);
+            if (response == "pressure") credit.push([minister,0.6]);
+            else for (var party of partners) credit.push([party,0.2 / partners.length]);
+        }
+        function transfer(from, to, amount, cell) {
+            from = ballot(from); to = ballot(to);
+            if (!from || !to || from == to || !(Q.parties || []).concat(["abstain"]).includes(from) ||
+                !(Q.parties || []).concat(["abstain"]).includes(to)) return;
+            G.cardSupportTransfer(Q, {contest:"parlament", from:from, to:to, amount:amount,
+                maxDonorFraction:0.5, constituencies:[cell[0]], demographics:[cell[1]]});
+        }
+        for (var cell of profile) {
+            var amount = cell[2];
+            if (delivery) {
+                for (var recipient of credit) {
+                    if (amount < 0) {
+                        var destinations = cell[1] == "buss" ?
+                            (recipient[0] == ballot("cup") ? [["erc",0.60],["ciu",0.40]] : [["ciu",0.65],["cs",0.35]]) :
+                            recipient[0] == ballot("cup") ? [["fl",0.65],["erc",0.20],["abstain",0.15]] :
+                            [["cup",0.45],["fl",0.35],["abstain",0.20]];
+                        for (var destination of destinations)
+                            transfer(recipient[0],destination[0],-amount * recipient[1] * destination[1],cell);
+                    } else {
+                        var donors = cell[1] == "buss" || agreement == "industry" ? [["ciu",0.55],["psc",0.30],["cs",0.15]] :
+                            recipient[0] == ballot("cup") ? [["fl",0.45],["erc",0.30],["abstain",0.25]] :
+                            recipient[0] == ballot("erc") ? [["psc",0.45],["fl",0.30],["abstain",0.25]] :
+                            [["psc",0.35],["fl",0.25],["abstain",0.40]];
+                        for (var donor of donors) transfer(donor[0],recipient[0],amount * recipient[1] * donor[1],cell);
+                    }
+                }
+            } else {
+                var challengers = oppositionLeft.slice();
+                if (response == "protest" && !challengers.includes(player)) challengers.push(player);
+                for (var incumbent of cabinet) {
+                    var responsibility = incumbent == minister ? 1 : incumbent == player ? 0.6 : 0.4;
+                    var destinations = challengers.filter(function (party) { return party != incumbent; });
+                    for (var destination of destinations)
+                        transfer(incumbent,destination,amount * responsibility * 0.6 / destinations.length,cell);
+                    transfer(incumbent,"abstain",amount * responsibility * 0.2,cell);
+                }
+                for (var destination of challengers) {
+                    transfer("psc",destination,amount * 0.10 / challengers.length,cell);
+                    transfer("abstain",destination,amount * 0.10 / challengers.length,cell);
+                }
+                if ((Q.cat_coalition_support || []).some(function (party) { return controlled.includes(party); }) && !cabinet.includes(player))
+                    for (var destination of oppositionLeft) transfer(player,destination,amount * 0.25 / oppositionLeft.length,cell);
+            }
+        }
+
+        for (var party of Array.from(new Set(["erc", "cup", Q.parlament_current_icv, "psc"]))) {
+            if (!controlled.includes(ballot(party)) && Number.isFinite(Q[party + "_relations"]))
+                Q[party + "_relations"] += agreement == "workers" ? (party == "psc" ? 2 : 3) :
+                    agreement == "industry" ? (party == "psc" ? -2 : -4) : agreement == "compromise" ? 1 : response == "quiet" ? -2 : 2;
+        }
+        var conservatives = [Q.parlament_current_ciu,"ppc","cs"];
+        if (Q.pdcat_split) conservatives.push("pdcat");
+        if (Q.unio_split && !Q.unio_dissolved) conservatives.push("unio");
+        for (var party of Array.from(new Set(conservatives))) {
+            if (delivery && !controlled.includes(ballot(party)) && Number.isFinite(Q[party + "_relations"]))
+                Q[party + "_relations"] += agreement == "workers" ? (party == Q.parlament_current_ciu ? -4 : -2) :
+                    agreement == "industry" ? (party == Q.parlament_current_ciu ? 3 : 2) : 1;
+        }
+        if (response == "pressure" || response == "protest" || response == "quiet" && !controlled.includes(Q.strike_metal_partner) &&
+            (Q.cat_coalition || []).concat(Q.cat_coalition_support || []).some(function (party) { return controlled.includes(party); }))
+            Q[Q.strike_metal_partner + "_relations"] = (Q.strike_metal_relations || 0) + (response == "quiet" ? 2 : response == "pressure" ? -3 : -4);
+
+        if (delivery && Q.player_party == "erc") {
+            Q.erc_left_dissent += agreement == "workers" ? -3 : agreement == "industry" ? 5 : -1;
+            Q.erc_pragmatic_dissent += agreement == "workers" ? 0 : -2;
+            Q.erc_core_dissent += agreement == "workers" ? -1 : agreement == "industry" ? 1 : 0;
+        }
+        if (delivery && Q.player_party == "cup") {
+            Q.cup_endavant_dissent += agreement == "workers" ? -3 : agreement == "industry" ? 6 : 1;
+            Q.cup_thirdsector_dissent += agreement == "workers" ? -2 : agreement == "industry" ? 5 : 0;
+            Q.cup_poblelliure_dissent += agreement == "industry" ? 3 : -1;
+        }
+    }
+!}
+
+[? if strike_metal_response = "workers" and strike_metal_settled: Our positioning in favour of unions has tipped the scales, and employers have been forced to accept a new collective agreement almost identical to the workers' demands. Not that the business representatives are excessively happy, but there's little alternatives left for them now that the strike has been called off and negotiations settled. ?]
+[? if (strike_metal_response = "compromise" or strike_metal_response = "pressure") and strike_metal_settled: [? if response == "pressure" : Thanks to our efforts, ?][? if territory_minister_gender = "m" : Conseller ?][? if territory_minister_gender = "f" : Consellera ?]of Territory [+ territory_minister +] has reached a middle-ground agreement where employers and unions agree to staged repayment and moderate wage increases. With the strike called off, the storm seems to have passed.?]
+[? if strike_metal_response = "industry" and strike_metal_settled: Our positioning in favour of industry demands has tipped the scales, and a minor agreement has been reached. Not many workers are happy about it, but an agreement is an agreement after all, and the strike has been called off, at least for now. ?]
+[? if not strike_metal_settled: With angry workers on the street and a Ministry unable to broker any suitable agreement, it looks like the labour dispute is here to stay. ?]
+
+- @post_event

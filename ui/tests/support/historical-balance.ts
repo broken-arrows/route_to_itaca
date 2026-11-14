@@ -181,8 +181,6 @@ export function runHistoricalBalance(game: string, seed: number, strategy: Strat
       const previousYear = q.budget_year;
       interventions.push({date: date(), kind: 'npc-budget-input', cap, tax, shouldPass});
       frame = adapter.goToScene('budget_trigger');
-      // Fix the author's proposed spending authorization. Parliament still
-      // votes on it; no revenue, fiscal balance or successful passage is forced.
       q.budget_draft_origin.social_spending_cap = cap;
       q.budget_draft.social_spending_cap = cap;
       if (tax !== undefined) q.budget_draft.tax_policy_level = q.budget_draft_origin.tax_policy_level = tax;
