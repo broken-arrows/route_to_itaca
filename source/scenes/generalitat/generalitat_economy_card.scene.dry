@@ -858,7 +858,7 @@ on-arrival: {!
 
 Autonomic Taxes: **[+ economy_budget_tax_name +]**.
 
-Social spending authorization: **[+ economy_budget_cap_name +]**. This effectively caps the maximum spending of the different ministries. [? if economy_budget_education_cut: Approving this would reduce Education spending to fit the new ceiling. ?][? if economy_budget_health_cut: Approving this would reduce Healthcare spending to fit the new ceiling. ?][? if economy_budget_pay_cut: Approving this would reduce public-sector pay to fit the new ceiling. ?][? if education_spending = 3 or healthcare_spending = 3: Exceptional public-service frameworks must, however, be first removed for the ceiling to be lowered. ?]
+Social spending cap: **[+ economy_budget_cap_name +]**. This effectively caps the maximum spending of the different ministries. [? if economy_budget_education_cut: Approving this would reduce Education spending to fit the new ceiling. ?][? if economy_budget_health_cut: Approving this would reduce Healthcare spending to fit the new ceiling. ?][? if economy_budget_pay_cut: Approving this would reduce public-sector pay to fit the new ceiling. ?][? if education_spending = 3 or healthcare_spending = 3: Exceptional public-service frameworks must, however, be first removed for the ceiling to be lowered. ?]
 
 Projects:
 [? if economy_budget_county: - County roads expansion. ?]
@@ -916,7 +916,7 @@ on-arrival: {!
 go-to: budget_review
 
 @budget_cap_lower
-title: Lower social spending authorization
+title: Lower social spending cap
 choose-if: economy_budget_cap_lower
 unavailable-subtitle: The proposed social spending caps are already as lower as they can be.
 on-arrival: {!
@@ -925,7 +925,7 @@ on-arrival: {!
 go-to: budget_review
 
 @budget_cap_higher
-title: Raise social spending authorization
+title: Raise social spending cap
 choose-if: economy_budget_cap_higher
 unavailable-subtitle: The proposed social spending caps are already as high as they can be. [? if fla_escalated: Stringent FLA conditions prohibit such a funding expansion. ?]
 on-arrival: {!

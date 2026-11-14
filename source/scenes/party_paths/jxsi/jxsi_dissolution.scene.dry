@@ -175,7 +175,8 @@ on-arrival: {!
                     const members = replacements[Q[office + "_party"]];
                     if (!members)
                         continue;
-                    Q[office + "_party"] =
+                    const affiliation = Q[office + "_affiliation"] == "cdc" ? core : Q[office + "_affiliation"];
+                    Q[office + "_party"] = members.includes(affiliation) ? affiliation :
                         members.find((p) => Q[p + "_leader"] === Q[office]) ||
                             (members.includes(defaultParty) ? defaultParty : members[0]);
                 }

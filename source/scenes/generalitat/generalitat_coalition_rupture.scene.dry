@@ -1,5 +1,5 @@
-title: Government on the verge of collapse
-subtitle: The current [+ cat_coalition_disp +] may very well be living its last days.
+title: [? if coalition_rupture_list: [? if jxsi_formed and not jxcat_formed: jxsi?][? if jxcat_formed: jxcat ?]  on the verge of collapse?][? if not coalition_rupture_list: Government on the verge of collapse?]
+subtitle: [? if coalition_rupture_list: The National Unity joint list may very well be living its last days.?][? if not coalition_rupture_list: The current [+ cat_coalition_disp +] may very well be living its last days.?]
 new-page: true
 face-image: img/events/government_breakup.webp
 tags: event
@@ -43,9 +43,9 @@ on-arrival: {!
     }
 !}
 
-= Government on the verge of collapse
+= [? if coalition_rupture_list: [? if jxsi_formed and not jxcat_formed: jxsi?][? if jxcat_formed: jxcat ?] on the verge of collapse?][? if not coalition_rupture_list: Government on the verge of collapse?]
 
-After many disagreements since the start of the legislature, our relations with [+ coalition_rupture_target +] are at an all time low. So much so, that right now they [? if coalition_rupture_expulsion: intend to expel us from the government! ?][? if not coalition_rupture_expulsion: intends to withdraw from the government! ?][? if coalition_rupture_low_relations: Relations have deteriorated just way past beyond what they are willing to tolerate. ?][? if coalition_rupture_broken_agreement: We have failed to acquiesce with the agreement we reached with them. ?][? if coalition_rupture_roadmap_conflict: Our roadmaps to independence differ too much. ?]
+After many disagreements since the start of the legislature, our relations with [+ coalition_rupture_target +] are at an all time low. So much so, that right now they [? if coalition_rupture_list: intend to leave the [+ coalition_rupture_list +] unity list! ?][? if not coalition_rupture_list: [? if coalition_rupture_expulsion: intend to expel us from the government! ?][? if not coalition_rupture_expulsion: intends to withdraw from the government! ?]?][? if coalition_rupture_low_relations: Relations have deteriorated just way past beyond what they are willing to tolerate. ?][? if coalition_rupture_broken_agreement: We have failed to acquiesce with the agreement we reached with them. ?][? if coalition_rupture_roadmap_conflict: Our roadmaps to independence differ too much. ?][? if coalition_rupture_failed_roadmap: Our failure to fulfill our promised Roadmap to Independence may very well be the last nail in the coffin for National Unity. ?][? if coalition_rupture_failed_burdens: The inability to deliver governing promises has thrown the National coalition into disarray, with crossed accusations and increased bitterness. ?]
 
 - @policy
 - @independence
@@ -62,7 +62,7 @@ on-arrival: {!
     Q.coalition_affairs_concession_target = Q.coalition_rupture_target;
     Q.coalition_rupture_random = G.random(Q);
 !}
-go-to: policy_right if coalition_rupture_policy_right or (coalition_rupture_target = "psc" and coalition_rupture_random <= 0.5); policy_left
+go-to: policy_right if coalition_rupture_policy_right or (coalition_rupture_target = "psc" and coalition_rupture_random <= 0.5); policy_left if not coalition_rupture_policy_right and (coalition_rupture_target != "psc" or coalition_rupture_random > 0.5)
 
 @policy_right
 call: generalitat_coalition_card.concessions_ciu
@@ -107,6 +107,7 @@ go-to: leave if not coalition_rupture_saved
 Against all predictions, it seems like the current [+ cat_coalition_disp +] will live to fight another day. So far, it seems like [+ coalition_rupture_target +] has accepted our concessions, but we better watch out in the future...
 
 @elections
+view-if: not coalition_rupture_list
 title: Call a snap election instead!
 subtitle: It may be time to let the voters decide instead.
 choose-if: (player_in_jxsi and president_party == "jxsi") or (player_in_jxcat and president_party == "jxcat") or (player_party == president_party)
@@ -117,6 +118,18 @@ on-arrival: {!
 go-to: snap_election
 
 @leave
+title: [? if coalition_rupture_list: [+ coalition_rupture_target +] leaves the unity list?][? if not coalition_rupture_list: [? if coalition_rupture_expulsion: We've been expelled from the Generalitat?][? if not coalition_rupture_expulsion: [+ coalition_rupture_target +] withdraws from the Generalitat ?]?]
+subtitle: There is nothing we can do.
+go-to: dissolve_unity if coalition_rupture_list; leave_government if not coalition_rupture_list
+
+@dissolve_unity
+on-arrival: {!
+    Q[Q.coalition_rupture_list + "_dissolution_trigger"] = true;
+    Q.coalition_rupture_recheck = true;
+!}
+go-to: jxsi_dissolution if coalition_rupture_list = "jxsi"; jxcat_dissolution if coalition_rupture_list = "jxcat"
+
+@leave_government
 title: [? if coalition_rupture_expulsion: We've been expelled from the Generalitat?][? if not coalition_rupture_expulsion: [+ coalition_rupture_target +] withdraws from the Generalitat ?]
 subtitle: There is nothing we can do.
 on-arrival: {!

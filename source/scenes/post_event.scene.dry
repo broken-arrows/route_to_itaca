@@ -45,7 +45,12 @@ for (var c of Q.parlament_constituencies) {
 if (Q.coalition_phase_timer === undefined) Q.coalition_phase_timer = 0;
 
 function updatePendingEvents(engine) {
-    if (Q.strike_triggered && !Q.cat_caretaker_gov) {
+    if (Q.cat_caretaker_gov) {
+        Q.coalition_rupture_trigger = false;
+        Q.coalition_rupture_target = "";
+        Q.coalition_rupture_list = "";
+    }
+    if (Q.strike_triggered && !Q.cat_caretaker_gov && !Q.rubicon) {
         var pendingStrike = engine.game.scenes["strike_" + Q.strike_triggered];
         if (pendingStrike && !engine._runPredicate(pendingStrike.viewIf, true)) Q.strike_triggered = null;
     }
@@ -436,7 +441,10 @@ if (has_time_passed) {
 for (var record of Q.coalition_indy_commitments || []) {
     if (["broken", "penalized"].includes(record.status) && Q[record.law]) record.status = "fulfilled";
     if (record.status != "pending") continue;
-    if (!Q.cat_coalition.includes(record.target) || !Q[Q.player_party + "_in_gob"]) {
+    var currentList = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : "";
+    var partnerInCabinet = Q.cat_coalition.includes(record.target) ||
+        currentList && Q.cat_coalition.includes(currentList) && Q[record.target + "_in_" + currentList];
+    if (!partnerInCabinet || !Q[Q.player_party + "_in_gob"]) {
         record.status = "retired";
     } else if (Q[record.law]) {
         record.status = "fulfilled";
@@ -445,6 +453,36 @@ for (var record of Q.coalition_indy_commitments || []) {
         Q.coalition_indy_breach_trigger = true;
     }
 }
+
+var playerVehicle = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
+var unityList = ["jxsi", "jxcat"].includes(playerVehicle) ? playerVehicle : "";
+var unityPartners = unityList ? [Q.parlament_current_ciu, "erc", "cup"].filter(function(p) {
+    return p != Q.player_party && Q[p + "_in_" + unityList];
+}) : [];
+
+if (Q.broken_roadmap_expires_trigger) {
+    Q.broken_roadmap_expires_trigger = false;
+    Q.broken_roadmap = 0;
+}
+
+if (Q.broken_roadmap && ((Q.cat_coalition || []).includes(Q.player_party) ||
+    (Q.cat_coalition || []).includes(playerVehicle))) Q.burdens_broken = true;
+
+var failedMandates = [];
+if (Q.broken_roadmap) failedMandates.push("roadmap");
+if (Q.burdens_broken) failedMandates.push("burdens");
+var previousFailures = Q.unity_failed_mandates || [];
+var roadmapFailed = Q.broken_roadmap && !previousFailures.includes("roadmap");
+var burdensFailed = Q.burdens_broken && !previousFailures.includes("burdens");
+if (unityList && (roadmapFailed || burdensFailed)) {
+    var relationsHit = (roadmapFailed ? 40 : 25) + 5 * (Q.difficulty || 0);
+    for (var partner of unityPartners) {
+        var relation = partner + "_relations";
+        if (Number.isFinite(Q[relation])) Q[relation] -= Math.min(relationsHit, Math.max(0, Q[relation] - 30));
+    }
+    Q.coalition_rupture_recheck = true;
+}
+Q.unity_failed_mandates = failedMandates;
 
 // 3. re-calculate dissent.
 for (var p of Q.parties) {
@@ -492,7 +530,6 @@ if (Q.player_in_jxsi) {
     Q.jxcat_dissent = Q.jxcat_dissent / jxcat_count;
 }
 
-var playerVehicle = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
 Q.cat_coalition_dissent = 0;
 var partners = (Q.cat_coalition || []).filter(function(p) { return p != playerVehicle; });
 if ((Q.cat_coalition || []).includes(playerVehicle) && partners.length) {
@@ -500,16 +537,20 @@ if ((Q.cat_coalition || []).includes(playerVehicle) && partners.length) {
 }
 
 // One rupture at a time, per partner; never infer relations between NPC parties.
-if (has_time_passed || Q.coalition_rupture_recheck) {
+if (has_time_passed || Q.coalition_rupture_recheck || unityList) {
     Q.coalition_rupture_recheck = false;
     Q.coalition_rupture_trigger = false;
     Q.coalition_rupture_target = "";
+    Q.coalition_rupture_list = "";
     if (!Q.cat_caretaker_gov && (Q.cat_coalition || []).includes(playerVehicle)) {
-        for (var partner of partners) {
+        for (var partner of partners.concat(unityPartners)) {
+            var internal = unityPartners.includes(partner);
+            // Resolve the roadmap notice's electoral effects before splitting its ballot.
+            if (internal && Q.broken_roadmap_trigger) continue;
             var relations = Q[partner + "_relations"];
             var ownRoadmap = Q[playerVehicle + "_roadmap"];
             var partnerRoadmap = Q[partner + "_roadmap"];
-            var incompatible = ownRoadmap >= 1 && partnerRoadmap >= 1 && Math.abs(ownRoadmap - partnerRoadmap) > 1;
+            var incompatible = !internal && ownRoadmap >= 1 && partnerRoadmap >= 1 && Math.abs(ownRoadmap - partnerRoadmap) > 1;
             var brokenLaw = (Q.coalition_indy_commitments || []).some(function(record) {
                 return record.target == partner && ["broken", "penalized"].includes(record.status) && !Q[record.law];
             });
@@ -520,11 +561,15 @@ if (has_time_passed || Q.coalition_rupture_recheck) {
                 if (record.status == "broken" && actual >= record.target) record.status = "applied";
                 return actual < record.target;
             });
-            if (relations < 30 || (relations < 40 && (brokenLaw || brokenPolicy || incompatible))) {
+            var failedMandate = internal && (Q.broken_roadmap || Q.burdens_broken);
+            if (relations < 30 || (relations < 40 && (brokenLaw || brokenPolicy || incompatible || failedMandate))) {
                 Q.coalition_rupture_target = partner;
                 Q.coalition_rupture_trigger = true;
                 Q.coalition_rupture_low_relations = relations < 30;
                 Q.coalition_rupture_broken_agreement = brokenLaw || brokenPolicy;
+                Q.coalition_rupture_failed_roadmap = internal && !!Q.broken_roadmap;
+                Q.coalition_rupture_failed_burdens = internal && !!Q.burdens_broken && !Q.broken_roadmap;
+                Q.coalition_rupture_list = internal ? unityList : "";
                 Q.coalition_rupture_roadmap_conflict = incompatible;
                 break;
             }
@@ -581,14 +626,6 @@ if (has_time_passed && !Q.cat_caretaker_gov && !Q.rubicon && !Q.coalition_ruptur
     Q.snap_budget_distrust = true;
 }
 
-
-if (Q.broken_roadmap_expires_trigger) {
-    Q.broken_roadmap_expires_trigger = false;
-    Q.broken_roadmap = 0;
-}
-
-if (Q.broken_roadmap && ((Q.cat_coalition || []).includes(Q.player_party) ||
-    (Q.cat_coalition || []).includes(playerVehicle))) Q.burdens_broken = true;
 
 if (Q.territory_county_roads_trigger) {
     Q.territory_county_roads_trigger = false;

@@ -10,7 +10,10 @@ on-arrival: {!
     Q.coalition_indy_breach_partners = "";
     for (var record of Q.coalition_indy_commitments || []) {
         if (record.status != "broken") continue;
-        if (!Q.cat_coalition.includes(record.target)) {
+        var list = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : "";
+        var partnerInCabinet = Q.cat_coalition.includes(record.target) ||
+            list && Q.cat_coalition.includes(list) && Q[record.target + "_in_" + list];
+        if (!partnerInCabinet) {
             record.status = "retired";
             continue;
         }
