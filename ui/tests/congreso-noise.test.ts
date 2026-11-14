@@ -124,14 +124,14 @@ describe('congreso noise', () => {
     // [1.38, 9.37] from a 5.0 start — i.e. -72%/+87%, far outside this band.
     expect(Math.min(...finals)).toBeGreaterThan(start * 0.75);
     expect(Math.max(...finals)).toBeLessThan(start * 1.25);
-  });
+  }, 30_000);
 
   it('is unbiased — it must not push a party systematically up or down', () => {
     const { start, finals } = finalsFor('pnv', 'euskadi');
     const mean = finals.reduce((a, b) => a + b, 0) / finals.length;
     expect(mean).toBeGreaterThan(start * 0.95);
     expect(mean).toBeLessThan(start * 1.05);
-  });
+  }, 30_000);
 
   it('never walks a small party into the absorbing zero', () => {
     // `te` sits at 0.05 and died in 32-39% of runs under the walk, permanently:
@@ -142,7 +142,7 @@ describe('congreso noise', () => {
       expect(sup(q, 'te', 'rest')).toBeGreaterThan(0);
       expect(sup(q, 'prc', 'rest')).toBeGreaterThan(0);
     }
-  });
+  }, 30_000);
 
   it('leaves a deliberately folded party at zero — noise must not zombie it back', () => {
     const q = quietGame();

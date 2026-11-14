@@ -9,11 +9,8 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 # Allow one concurrent deployment
 concurrency:
@@ -21,21 +18,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      actions: write # Delete duplicate uploads from this build attempt only.
+    env:
+      PAGES_ARTIFACT_NAME: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+    outputs:
+      artifact-name: ${{ steps.prepare-artifact.outputs.artifact-name }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-      - name: setup node
-        uses: actions/setup-node@v4
+        uses: actions/checkout@v7
         with:
-          node-version: 16
+          persist-credentials: false
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
       - name: Install
-        run: npm install
+        run: npm ci
+      - name: Test Pages artifact preparation
+        run: node --test scripts/prepare-pages-artifact.test.cjs
       # build:classic = make-html + the source/lib -> out/html/lib publication
       # and the compiled-game audit. Publishing the game library
       # is NOT optional: out/html/index.html loads lib/{cat_engine,allegiances,
@@ -49,9 +55,9 @@ jobs:
         run: cp out/game.json out/html/
       # TODO: Uncomment when the new UI is ready
       # - name: Setup node for ui
-      #   uses: actions/setup-node@v4
+      #   uses: actions/setup-node@v7
       #   with:
-      #     node-version: 22
+      #     node-version-file: .node-version
       # - name: Install ui deps
       #   run: npm ci
       #   working-directory: ui
@@ -67,9 +73,46 @@ jobs:
       #     cp -r ui/dist/. out/html/desk/
       #     cp out/game.json out/html/desk/game.en.json
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        id: upload
+        uses: actions/upload-pages-artifact@v5
         with:
+          name: ${{ env.PAGES_ARTIFACT_NAME }}
           path: "out/html"
+          retention-days: 1
+      # An upload retry can create duplicates even on the first build attempt.
+      # Preserve the ID returned by upload; never guess which artifact is newest.
+      - name: Prepare Pages artifact
+        id: prepare-artifact
+        uses: actions/github-script@v9
+        env:
+          PAGES_ARTIFACT_ID: ${{ steps.upload.outputs.artifact_id }}
+        with:
+          retries: 3
+          script: |
+            const prepare = require('./scripts/prepare-pages-artifact.cjs');
+            await prepare({
+              github, context, core,
+              artifactName: process.env.PAGES_ARTIFACT_NAME,
+              artifactId: process.env.PAGES_ARTIFACT_ID,
+            });
+            core.setOutput('artifact-name', process.env.PAGES_ARTIFACT_NAME);
+
+  # Retrying a failed deployment reuses the successful build's output and name.
+  # Keep artifacts after failure so they can be retried until retention expires.
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
+        with:
+          artifact_name: ${{ needs.build.outputs.artifact-name }}

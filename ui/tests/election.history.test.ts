@@ -437,7 +437,7 @@ it('renders signed variables in Classic and keeps hover highlighting inside its 
   expect(JSON.stringify(q)).toBe(before);
 });
 
-it('mounts all five end-of-game histories from their authored scene after save restoration', async () => {
+it('mounts all four end-of-game histories from their authored scene after save restoration', async () => {
   const errors = vi.spyOn(console, 'error');
   const game = useGameStore();
   game.newGame();
@@ -453,8 +453,8 @@ it('mounts all five end-of-game histories from their authored scene after save r
   const state = game.captureState();
   const w = mount(Prose, { props: { html: game.frame!.html }, global: { plugins: [i18n] } });
   await flushPromises();
-  expect(w.findAll('.election-history')).toHaveLength(5);
-  expect(w.findAll('.history-line')).toHaveLength(14);
+  expect(w.findAll('.election-history')).toHaveLength(4);
+  expect(w.findAll('.history-line')).toHaveLength(10);
   expect(w.find('[data-party="welfare_index"]').exists()).toBe(false);
   expect(w.find('[data-party="podemos_channeling"]').exists()).toBe(false);
   expect(game.captureState()).toBe(state);

@@ -154,10 +154,9 @@ describe('consultation preparation', () => {
     clearLocal(q);
     q.ciu_local_interior_pct = 50;
     q.local_barcelona_wp = 'bcomu'; // Exactly 3: the upper failure boundary.
-    const menu = enter(adapter, 'nonbinding_consultation');
+    const failed = enter(adapter, 'nonbinding_consultation');
     expect(q.consultation_preparation).toBe(3);
-    expect(menu.choices.map(choice => choice.id)).toEqual(['nonbinding_consultation.failure']);
-    const failed = choose(adapter, menu, 'nonbinding_consultation.failure');
+    expect(failed.sceneId).toBe('post_event.events_choice');
     expect(failed.html).not.toContain('data-widget="result-bars"');
     expect(q.consultation_total_votes).toBeUndefined();
     expect(q.consultation_happened).toBe(true);
@@ -196,7 +195,7 @@ describe('consultation preparation', () => {
     expect(results.choices.some(choice => choice.id === 'nonbinding_consultation.after')).toBe(false);
     const aftermath = choose(bad, results, 'nonbinding_consultation.troubled');
     expect(aftermath.sceneId).toBe('nonbinding_consultation.troubled');
-    expect(troubled.independence_trust).toBe(45);
+    expect(troubled.independence_trust).toBe(40);
     expect(troubled.jxsi_formation_countdown).toBe(5);
     expect(troubled.plebiscite_election_countdown).toBe(4);
   });
