@@ -3,57 +3,119 @@ view-if: year = 2019 and month = 9 and not rubicon
 tags: event
 new-page: true
 max-visits: 1
-on-arrival: {!
-    // Diada 2019 — moderate recovery, trial verdict (and Tsunami Democràtic) approaching.
-    // Effect AND street turnout decided dynamically from current state (existing Q
-    // vars only). Model + rationale: simulations/diada_dynamics.py.
-    var IM = Q.independence_movement, IT = Q.independence_trust;
-    var SD = Q.social_dissent, CSR = Q.cat_spa_relations;
-    var pod = Q.podemos_channeling || 0;
-    var clamp = function (x, lo, hi) { return Math.max(lo, Math.min(hi, x)); };
-
-    // Situational reads (existing bool flags; absent => false). A referendum/consulta
-    // IS street action (mobilises); a caretaker government means an ordinary election
-    // is near, which drains the marginal effect to the ballot — but still draws crowds.
-    var mobilise = (Q.referendum_pending || Q.consultation_pending) ? 1 : 0;
-    var channel  = Q.cat_caretaker_gov ? 1 : 0;
-
-    // Magnitude: autonomous street floor (IM-IT gap, widest when parties haven't earned
-    // trust) + mobilisation, amplified by antagonism, drained by an imminent election.
-    var gap   = Math.max(0, IM - IT);
-    var antag = clamp(1 + 0.5 * (40 - CSR) / 40, 0.4, 1.6);
-    var mag   = clamp((1.5 + 0.18 * gap + 5.0 * mobilise) * antag * (1 - 0.45 * channel), 0, 16);
-
-    // Valence: hope by default; grief (the sign flips) in the repression aftermath —
-    // broken roadmap + relations on the floor + anger (dissent) still unspent.
-    var grief = 0;
-    if (Q.broken_roadmap) {
-        grief = clamp((20 - CSR) / 15, 0, 1) * clamp((SD - 48) / 10, 0, 1);
-    }
-    var valence = 1 - 2 * grief;
-
-    // Political effect (post_event clamps each variable afterwards).
-    Q.independence_movement += mag * valence;
-    Q.independence_trust    += 0.22 * mag * valence;
-    Q.social_dissent        += -0.22 * mag * valence * (1 - 0.6 * pod);
-    Q.cat_spa_relations     += -0.30 * mag;
-
-    // Street turnout for flavour text, in millions of participants (display only).
-    var turnoutAnchor = 0.43;
-    var stateAdjustment = clamp(
-        0.008 * (IM - 60) + 0.006 * (gap - 25) + 0.004 * (40 - CSR),
-        -0.35, 0.35
-    );
-    var voteBoost = 0.20 * mobilise + 0.05 * channel;
-    Q.diada_size = clamp((turnoutAnchor + stateAdjustment + voteBoost) * (1 - 0.40 * grief), 0.2, 2.0);
-    Q.diada_size = Math.round(Q.diada_size * 100) / 100;
-!}
+on-arrival: diada2019_response = null
 set-bg: img/diada/2010.jpg
 face-image: img/diada/2019.jpg
 role: event
 
 = Goal: Independence
 
-Yet again, the National Day of Catalonia has been marked by the ANC and Omnium Cultural's massive demonstrations in the Catalan capital. With [+ diada_size +] million on the streets, the message now borders on desperation: let's not forget that the goal is Independence, and that, despite everything, the Catalan Republic is still not a reality. 
+Once more, the ANC and Omnium Cultural are organizing a National Day of Catalonia demonstration in the Catalan capital. Under the slogan "Goal: Independence", the message now borders on desperation: let's not forget that the goal is Independence and that, despite everything, the Catalan Republic is still not a reality.
 
-- @post_event: We may be failing somewhere here...
+- @join
+- @force
+- @pass
+
+@join
+title: Join the demonstration!
+choose-if: player_roadmap > 0 and not broken_roadmap and (not ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) or independence_trust >= 40)
+unavailable-subtitle: [? if player_roadmap <= 0: We have no Roadmap to Independence. ?][? if broken_roadmap: Given our broken promises, we are unwelcome here. ?][? if ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) and independence_trust < 40: The organization's lack of trust in our action in government makes us unwelcome here.  ?]
+on-arrival: diada2019_response = "join"
+go-to: report
+
+@force
+title: We'll join, and help out organizing so that it is a success!
+subtitle: Our party apparatus will mobilize in force for this. \[-1 resources\]
+choose-if: player_roadmap > 0 and not broken_roadmap and (not ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) or independence_trust >= 40) and party_resources >= 1
+unavailable-subtitle: [? if player_roadmap <= 0: We have no Roadmap to Independence. ?][? if broken_roadmap: Given our broken promises, we are unwelcome here. ?][? if ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) and independence_trust < 40:  The organization's lack of trust in our action in government makes us unwelcome here. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: diada2019_response = "force"
+go-to: report
+
+@pass
+title: Stay on the sidelines
+on-arrival: diada2019_response = "pass"
+go-to: report
+
+@report
+on-arrival: {!
+    var response = Q.diada2019_response;
+    var option = this.game.scenes['2019diada.' + response];
+    // Check participation before the demonstration's own trust increase.
+    if (Q.year == 2019 && Q.month == 9 && !Q.rubicon && option &&
+        this._runPredicate(option.chooseIf, true)) {
+        // Diada 2019 — moderate recovery, trial verdict (and Tsunami Democràtic) approaching.
+        // Effect AND street turnout decided dynamically from current state (existing Q
+        // vars only). Model + rationale: simulations/diada_dynamics.py.
+        var IM = Q.independence_movement, IT = Q.independence_trust;
+        Q.diada2019_trust = IT;
+        var SD = Q.social_dissent, CSR = Q.cat_spa_relations;
+        var pod = Q.podemos_channeling || 0;
+        var clamp = function (x, lo, hi) { return Math.max(lo, Math.min(hi, x)); };
+
+        // Situational reads (existing bool flags; absent => false). A referendum/consulta
+        // IS street action (mobilises); a caretaker government means an ordinary election
+        // is near, which drains the marginal effect to the ballot — but still draws crowds.
+        var mobilise = (Q.referendum_pending || Q.consultation_pending) ? 1 : 0;
+        var channel  = Q.cat_caretaker_gov ? 1 : 0;
+
+        // Magnitude: autonomous street floor (IM-IT gap, widest when parties haven't earned
+        // trust) + mobilisation, amplified by antagonism, drained by an imminent election.
+        var gap   = Math.max(0, IM - IT);
+        var antag = clamp(1 + 0.5 * (40 - CSR) / 40, 0.4, 1.6);
+        var mag   = clamp((1.5 + 0.18 * gap + 5.0 * mobilise) * antag * (1 - 0.45 * channel), 0, 16);
+
+        // Valence: hope by default; grief (the sign flips) in the repression aftermath —
+        // broken roadmap + relations on the floor + anger (dissent) still unspent.
+        var grief = 0;
+        if (Q.broken_roadmap) {
+            grief = clamp((20 - CSR) / 15, 0, 1) * clamp((SD - 48) / 10, 0, 1);
+        }
+        var valence = 1 - 2 * grief;
+
+        // Political effect (post_event clamps each variable afterwards).
+        Q.independence_movement += mag * valence;
+        Q.independence_trust    += 0.22 * mag * valence;
+        Q.social_dissent        += -0.22 * mag * valence * (1 - 0.6 * pod);
+        Q.cat_spa_relations     += -0.30 * mag;
+
+        // Street turnout for flavour text, in millions of participants (display only).
+        var turnoutAnchor = 0.43;
+        var stateAdjustment = clamp(
+            0.008 * (IM - 60) + 0.006 * (gap - 25) + 0.004 * (40 - CSR),
+            -0.35, 0.35
+        );
+        var voteBoost = 0.20 * mobilise + 0.05 * channel;
+        Q.diada_size = clamp((turnoutAnchor + stateAdjustment + voteBoost) * (1 - 0.40 * grief), 0.2, 2.0);
+        Q.diada_size = Math.round(Q.diada_size * 100) / 100;
+        // Party participation adds to the autonomous mobilization above.
+        if (response == "join" || response == "force") {
+            var inGovernment = (Q.player_party == "erc" && Q.erc_in_gob) ||
+                (Q.player_party == "cup" && Q.cup_in_gob) ||
+                (Q.player_in_jxsi && Q.jxsi_in_gob) || (Q.player_in_jxcat && Q.jxcat_in_gob);
+            var inForce = response == "force";
+            if (inForce) Q.party_resources -= 1;
+            Q.independence_movement += inForce ? 3 : 1;
+            Q.cat_spa_relations -= inForce ? 5 : 1;
+            if (inForce && inGovernment) Q.independence_trust += 3;
+            Q.diada_size = Math.round(clamp(Q.diada_size * (inForce ? 1.10 : 1.05), 0.2, 2.0) * 100) / 100;
+        }
+    }
+!}
+
+Yet again, the National Day of Catalonia has been marked by the ANC and Omnium Cultural's massive demonstrations in the Catalan capital. With [+ diada_size +] million on the streets, the message needs no spelling out.
+
+The protest was supported by [? if (diada2019_trust >= 40 or not (cat_coalition_includes_ciu or cat_coalition_includes_cdc or cat_coalition_includes_dl or cat_coalition_includes_pdcat or cat_coalition_includes_junts or jxsi_in_gob or jxcat_in_gob)): [+ parlament_current_ciu +], ?][? if ((player_party != "cup" or diada2019_response != "pass") and (diada2019_trust >= 40 or not (cup_in_gob or (cup_in_jxsi and jxsi_in_gob) or (cup_in_jxcat and jxcat_in_gob)))): the CUP, ?][? if ((player_party != "erc" or diada2019_response != "pass") and (diada2019_trust >= 40 or not (erc_in_gob or (erc_in_jxsi and jxsi_in_gob) or (erc_in_jxcat and jxcat_in_gob)))): ERC, ?][? if (diada2019_trust >= 40 or not (cat_coalition_includes_ciu or cat_coalition_includes_cdc or cat_coalition_includes_dl or cat_coalition_includes_pdcat or cat_coalition_includes_junts or jxsi_in_gob or jxcat_in_gob)) or ((player_party != "cup" or diada2019_response != "pass") and (diada2019_trust >= 40 or not (cup_in_gob or (cup_in_jxsi and jxsi_in_gob) or (cup_in_jxcat and jxcat_in_gob)))) or ((player_party != "erc" or diada2019_response != "pass") and (diada2019_trust >= 40 or not (erc_in_gob or (erc_in_jxsi and jxsi_in_gob) or (erc_in_jxcat and jxcat_in_gob)))): and ?]many other minor parties and organizations.
+[? if diada2019_trust < 40 and ((cat_coalition_includes_ciu or cat_coalition_includes_cdc or cat_coalition_includes_dl or cat_coalition_includes_pdcat or cat_coalition_includes_junts or jxsi_in_gob or jxcat_in_gob) or (erc_in_gob or (erc_in_jxsi and jxsi_in_gob) or (erc_in_jxcat and jxcat_in_gob)) or (cup_in_gob or (cup_in_jxsi and jxsi_in_gob) or (cup_in_jxcat and jxcat_in_gob))): The organizers made it clear that representatives of [? if (cat_coalition_includes_ciu or cat_coalition_includes_cdc or cat_coalition_includes_dl or cat_coalition_includes_pdcat or cat_coalition_includes_junts or jxsi_in_gob or jxcat_in_gob): [+ parlament_current_ciu +][? if (erc_in_gob or (erc_in_jxsi and jxsi_in_gob) or (erc_in_jxcat and jxcat_in_gob)) and (cup_in_gob or (cup_in_jxsi and jxsi_in_gob) or (cup_in_jxcat and jxcat_in_gob)):,?] [? if ((erc_in_gob or (erc_in_jxsi and jxsi_in_gob) or (erc_in_jxcat and jxcat_in_gob)) and not (cup_in_gob or (cup_in_jxsi and jxsi_in_gob) or (cup_in_jxcat and jxcat_in_gob))) or ((cup_in_gob or (cup_in_jxsi and jxsi_in_gob) or (cup_in_jxcat and jxcat_in_gob)) and not (erc_in_gob or (erc_in_jxsi and jxsi_in_gob) or (erc_in_jxcat and jxcat_in_gob))): and ?]?][? if (erc_in_gob or (erc_in_jxsi and jxsi_in_gob) or (erc_in_jxcat and jxcat_in_gob)): ERC [? if (cup_in_gob or (cup_in_jxsi and jxsi_in_gob) or (cup_in_jxcat and jxcat_in_gob)): and ?]?][? if (cup_in_gob or (cup_in_jxsi and jxsi_in_gob) or (cup_in_jxcat and jxcat_in_gob)): the CUP ?]were not welcome, given the lack of commitment to independence while in government. ?]
+
+- @continue
+- @riots
+
+@continue
+title: Continue...
+view-if: diada2019_trust >= 40 and not rubicon
+go-to: post_event
+
+@riots
+title: Not everything is just a festive celebration, though...
+view-if: diada2019_trust < 40 or rubicon
+go-to: diada_riots

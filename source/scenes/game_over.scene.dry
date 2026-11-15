@@ -10,7 +10,6 @@ on-arrival: {!
       this.achieve('barones')
     }
     if (!Q.ni_un_paper_failed) {
-      // TODO: Actual way for this to fail
       this.achieve("ni_un_paper");
     }
     if (!Q.not_financially_responsible){

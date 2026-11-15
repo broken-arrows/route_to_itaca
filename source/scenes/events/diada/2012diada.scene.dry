@@ -6,31 +6,72 @@ new-page: true
 tags: event
 view-if: year = 2012 and month = 9
 max-visits: 1
-on-arrival: {!
-    Q.diada2012 = 1; 
-    Q.independence_trust += 10;
-    Q.independence_movement += 10;
-    Q.social_dissent -= 5;
-    Q.cat_spa_relations -= 2.5;
-!} 
+face-image: img/diada/2012.jpg
+on-arrival: diada2012_response = null
 role: event
 
 = Catalonia, new state of Europe?
 
-On September 11, the National Day of Catalonia, more than 1.5 million people took to the streets of Barcelona to demand independence. The peaceful and festive demonstration, of a size never seen before in Catalonia, it was organized by the ANC, the main civil society organization pushing for independence, and supported by many other groups, from cultural and language focused Omnium Cultural to unions and the pro-independence parties of ERC, SI, CUP, as well as not-explicitly pro-independence parties, like ICV-EUiA and the ruling CiU.
+On September 11, the National Day of Catalonia, the ANC is organizing a demonstration in Barcelona to demand independence, supported by many other groups, from cultural and language focused Omnium Cultural to unions.
 
-Many government officials, including President Artur Mas, confirmed their support and attendance almost last minute, raising eyebrows amongst the most hardliners in the independence movement regarding oportunism versus actual commitment. Nonetheless, the massive turnout may very well represent the turning point that makes the independence movement no longer a fringe one, but a mainstream political force that can no longer be ignored.
+- @join
+- @force
+- @pass
 
-- @2012diada_erc
-- @2012diada_cup
+@join
+title: Join the demonstration!
+choose-if: player_roadmap > 0 and not broken_roadmap and (not ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) or independence_trust >= 40)
+unavailable-subtitle: [? if player_roadmap <= 0: We have no Roadmap to Independence. ?][? if broken_roadmap: Given our broken promises, we are unwelcome here. ?][? if ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) and independence_trust < 40: The organization's lack of trust in our action in government makes us unwelcome here.  ?]
+on-arrival: diada2012_response = "join"
+go-to: report
 
-@2012diada_erc
-view-if: player_party = "erc"
-title: We are finally being heard!
-go-to: post_event
+@force
+title: We'll join, and help out organizing so that it is a success!
+subtitle: Our party apparatus will mobilize in force for this. \[-1 resources\]
+choose-if: player_roadmap > 0 and not broken_roadmap and (not ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) or independence_trust >= 40) and party_resources >= 1
+unavailable-subtitle: [? if player_roadmap <= 0: We have no Roadmap to Independence. ?][? if broken_roadmap: Given our broken promises, we are unwelcome here. ?][? if ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) and independence_trust < 40:  The organization's lack of trust in our action in government makes us unwelcome here. ?][? if party_resources < 1: Not enough resources. ?]
+on-arrival: diada2012_response = "force"
+go-to: report
 
+@pass
+title: Stay on the sidelines
+on-arrival: diada2012_response = "pass"
+go-to: report
 
-@2012diada_cup
-view-if: player_party = "cup"
-title: We are finally being heard!
-go-to: post_event
+@report
+on-arrival: {!
+    var response = Q.diada2012_response;
+    var option = this.game.scenes['2012diada.' + response];
+    // Check participation before the demonstration's own trust increase.
+    if (Q.year == 2012 && Q.month == 9 && option &&
+        this._runPredicate(option.chooseIf, true)) {
+        var clamp = function (x, lo, hi) { return Math.max(lo, Math.min(hi, x)); };
+        Q.diada2012_trust = Q.independence_trust;
+        Q.diada2012 = 1;
+        Q.independence_trust += 10;
+        Q.independence_movement += 10;
+        Q.social_dissent -= 5;
+        Q.cat_spa_relations -= 2.5;
+        Q.diada_size = 1.5;
+        // Party participation adds to the autonomous mobilization above.
+        if (response == "join" || response == "force") {
+            var inGovernment = (Q.player_party == "erc" && Q.erc_in_gob) ||
+                (Q.player_party == "cup" && Q.cup_in_gob) ||
+                (Q.player_in_jxsi && Q.jxsi_in_gob) || (Q.player_in_jxcat && Q.jxcat_in_gob);
+            var inForce = response == "force";
+            if (inForce) Q.party_resources -= 1;
+            Q.independence_movement += inForce ? 3 : 1;
+            Q.cat_spa_relations -= inForce ? 5 : 1;
+            if (inForce && inGovernment) Q.independence_trust += 3;
+            Q.diada_size = Math.round(clamp(Q.diada_size * (inForce ? 1.10 : 1.05), 0.2, 2.0) * 100) / 100;
+        }
+    }
+!}
+
+As the Diada comes, more than [+ diada_size +] million people take to the streets of Barcelona to demand independence. The peaceful and festive demonstration, of a size never seen before in Catalonia, it was organized by the ANC, the main civil society organization pushing for independence, and supported by many other groups, from cultural and language focused Omnium Cultural to unions.
+
+Many government officials, including President Artur Mas, confirmed their support and attendance almost last minute, raising eyebrows amongst the most hardliners in the independence movement regarding opportunism versus actual commitment. Nonetheless, the massive turnout may very well represent the turning point that makes the independence movement no longer a fringe one, but a mainstream political force that can no longer be ignored.
+
+The protest was supported by [? if (diada2012_trust >= 40 or not (cat_coalition_includes_ciu or cat_coalition_includes_cdc or cat_coalition_includes_dl or cat_coalition_includes_pdcat or cat_coalition_includes_junts or jxsi_in_gob or jxcat_in_gob)): [+ parlament_current_ciu +], ?][? if ((player_party != "cup" or diada2012_response != "pass") and (diada2012_trust >= 40 or not (cup_in_gob or (cup_in_jxsi and jxsi_in_gob) or (cup_in_jxcat and jxcat_in_gob)))): the CUP, ?][? if ((player_party != "erc" or diada2012_response != "pass") and (diada2012_trust >= 40 or not (erc_in_gob or (erc_in_jxsi and jxsi_in_gob) or (erc_in_jxcat and jxcat_in_gob)))): ERC, ?]SI, ICV-EUiA, and many other minor parties and organizations.
+
+- @post_event

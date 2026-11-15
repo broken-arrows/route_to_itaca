@@ -1,0 +1,141 @@
+title: Diada riots
+subtitle: As night falls, tension builds up in the streets.
+face-image: img/events/riot_1.jpg
+on-arrival: {!
+    Q.diada_riots_response = null;
+    Q.ni_un_paper_failed = true;
+!}
+
+# TBD: way to side with protestors when in govt?
+
+As the big rallies die down and families return home, some people remain back, convinced that the protest has not been enough to pressure the political establishment towards actually pushing for independence. Mostly students and young people, clashes with police become intense specially in front and close to key Spanish governmental buildings like the infamous Policía Nacional precinct in Barcelona's Gothic Quarters. Barricades made with makeshift debris and burning containers get built as Spanish riot police throw tear gas and charge against protestors.
+
+
+- @mossos
+- @protest
+- @nothing
+
+@mossos
+title: Deploy the Mossos d'Esquadra
+subtitle: It'd our police that will restore order, rather than the Spanish one.
+view-if: interior_minister_party = player_party or (player_in_jxsi and interior_minister_party = "jxsi") or (player_in_jxcat and interior_minister_party = "jxcat")
+on-arrival: diada_riots_response = "mossos"
+go-to: resolve
+
+@protest
+title: Side with the protesters!
+subtitle: We'll use our platform to defend them and denounce police brutality.
+choose-if: not broken_roadmap and not ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob))
+unavailable-subtitle: [? if broken_roadmap: Our credibility is at a low point as our promises regarding independence have gone unfulfilled. ?][? if (player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob): We are part of the government! ?]
+on-arrival: diada_riots_response = "protest"
+go-to: resolve
+
+@nothing
+title: There's nothing we can do
+on-arrival: diada_riots_response = "nothing"
+go-to: resolve
+
+@resolve
+on-arrival: {!
+    var response = Q.diada_riots_response;
+    var option = this.game.scenes['diada_riots.' + response];
+    if (option && this._runPredicate(option.viewIf, true) && this._runPredicate(option.chooseIf, true)) {
+        var deployment = response == "mossos";
+        // All paths inherit the night's unrest; intervention contains it at a larger political cost.
+        Q.social_dissent += deployment ? 8 : 2;
+        Q.independence_trust -= deployment ? 10 : 2;
+        Q.cat_spa_relations += deployment ? 6 : response == "protest" ? -4 : -2;
+
+        function ballot(party) {
+            if (["indp.", "ind.", "independent"].includes(party)) party = Q.president_party;
+            if (party == "ciu") party = Q.parlament_current_ciu;
+            if (party == "fl" || party == "federal_left") party = Q.parlament_current_icv;
+            for (var list of ["jxsi", "jxcat"])
+                if (Q[party + "_in_" + list] && (Q.parties || []).includes(list) &&
+                    Q.parlament_constituencies.some(function (province) {
+                        return Q.parlament_demographics.some(function (demo) { return Q[list + "_parlament_" + province + "_" + demo + "_support"] > 0; });
+                    })) return list;
+            return party;
+        }
+        var player = ballot(Q.player_party);
+        var minister = ballot(Q.interior_minister_party);
+        var cabinet = Array.from(new Set((Q.cat_coalition || []).map(ballot)));
+        var supporters = Array.from(new Set((Q.cat_coalition_support || []).map(ballot)))
+            .filter(function (party) { return !cabinet.includes(party); });
+        var alternatives = [["cup", 0.65], ["erc", 0.25], [Q.parlament_current_icv, 0.20]];
+        if (Q.fnc_formed && Q.pxc_dissolved) alternatives.push(["fnc", 0.15]);
+        var challengers = [];
+        for (var alternative of alternatives) {
+            var party = ballot(alternative[0]);
+            if (!(Q.parties || []).includes(party) || cabinet.includes(party) ||
+                party == player && response != "protest" || challengers.some(function (entry) { return entry[0] == party; })) continue;
+            challengers.push([party, alternative[1] * (party == player ? 1.5 : 1)]);
+        }
+        // Barcelona's young electorate bears the largest immediate shock.
+        var profile = [
+            ["barcelona", "young", 1.80], ["barcelona", "unemployed", 0.80],
+            ["barcelona", "ind", 0.60], ["barcelona", "middle", 0.35],
+            ["girona", "young", 0.40], ["girona", "middle", 0.15],
+            ["tarragona", "young", 0.35], ["tarragona", "ind", 0.15],
+            ["lleida", "young", 0.30], ["lleida", "middle", 0.10]
+        ];
+        var donors = cabinet.map(function (party) { return [party, party == minister ? 1 : 0.4]; });
+        for (var party of supporters)
+            if (party != player || response != "protest") donors.push([party, 0.2]);
+        function transfer(from, to, amount, cell) {
+            if (from == to || amount <= 0) return;
+            G.cardSupportTransfer(Q, {contest:"parlament", from:from, to:to, amount:amount,
+                maxDonorFraction:0.5, constituencies:[cell[0]], demographics:[cell[1]]});
+        }
+        for (var donor of donors) {
+            // Nationalist disillusionment can feed FNC; other electorates stay on left/abstention routes.
+            var destinations = challengers.filter(function (entry) {
+                return entry[0] != donor[0] && (entry[0] != "fnc" ||
+                    ["erc", "cup", "jxsi", "jxcat", Q.parlament_current_ciu].includes(donor[0]));
+            });
+            var total = destinations.reduce(function (sum, entry) { return sum + entry[1]; }, 0);
+            for (var cell of profile) {
+                var loss = cell[2] * donor[1] * (deployment ? 1 : 0.35);
+                for (var destination of destinations)
+                    transfer(donor[0], destination[0], loss * 0.75 * destination[1] / total, cell);
+                transfer(donor[0], "abstain", loss * (total > 0 ? 0.25 : 1), cell);
+            }
+        }
+
+        function relations(party, change) {
+            if (party && party != Q.player_party && Number.isFinite(Q[party + "_relations"]))
+                Q[party + "_relations"] += change;
+        }
+        if (deployment) {
+            for (var party of Array.from(new Set([Q.parlament_current_ciu, "psc"]))) relations(party, 3);
+            relations("erc", -3);
+            relations("cup", -6);
+            relations(Q.parlament_current_icv, -4);
+            if (Q.fnc_formed && Q.pxc_dissolved) relations("fnc", -4);
+            if (Q.player_party == "erc") {
+                Q.erc_left_dissent += 6;
+                Q.erc_core_dissent += 4;
+                Q.erc_pragmatic_dissent += 1;
+            }
+            if (Q.player_party == "cup") {
+                Q.cup_endavant_dissent += 10;
+                Q.cup_thirdsector_dissent += 8;
+                Q.cup_poblelliure_dissent += 4;
+            }
+        } else if (response == "protest") {
+            // Relations use constituent identities even when votes belong to a shared list.
+            for (var party of Array.from(new Set(["erc", "cup", Q.parlament_current_icv])))
+                relations(party, cabinet.includes(ballot(party)) ? -4 : 3);
+            for (var party of Array.from(new Set([Q.parlament_current_ciu, "psc"]))) relations(party, -4);
+        }
+    }
+
+    // TODO: maybe tweaks depending on the evolution of the role of the mossos
+    // TODO: historical_event addition
+!}
+
+[? if diada_riots_response = "mossos": As the Mossos d'Esquadra are deployed and replace the Policía Nacional in the role of crowd control, the situation does not get much better. Sure Catalan law is more restrictive in equipment use in crowd control, but this only barely makes things better. Clashes are still hard, and criticism of the actions of the police, strong. ?]
+[? if diada_riots_response = "protest": As clashes with police continue, our party takes a stance. We side with organizations for protecting the right to protest and against the extreme police brutality seen in the streets: violent charges, arrests without due process, indiscriminate use of tear gas and rubber bullets, and a long etc. Not that this positioning is appreciated by many of the other political parties, but we have to hope it is appreciated by those actually protesting. ?]
+[? if diada_riots_response = "nothing": As clashes with police continue, our party takes a step back. We focus on the festive and familiar rallies earlier in the day, and leave the crossed accusations of inciting violence and proper riot handling to fly unanswered. ?]
+
+- @post_event

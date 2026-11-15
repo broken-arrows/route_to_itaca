@@ -19,7 +19,8 @@ function enterDiada(scene: string, state: Record<string, unknown>) {
     podemos_channeling: 0,
     ...state,
   });
-  const frame = adapter.goToScene(scene);
+  let frame = adapter.goToScene(scene);
+  frame = adapter.choose(frame.choices.findIndex(choice => choice.id === `${scene}.pass`));
   return { frame, q: adapter.qualities };
 }
 
