@@ -337,7 +337,6 @@ on-arrival: {!
   Q.upyd_leader_gender = "f";
   G.setText(Q, "upyd_ideology", G.text("Liberal reformism, Hypercentralism"));
 
-  // TODO: Podemos + IU + UP leaders and party paths
   Q.podemos_leader = "Pablo Iglesias";
   G.setText(Q, "podemos_ideology", G.text("Anti-austerity left, Plurinationalism"));
   Q.podemos_leader_gender = "m";
@@ -1329,9 +1328,9 @@ on-arrival: {!
   Q.spa_mes_active = false;          // if false, will go with either UP or Podemos, whatver is running
   Q.spa_fr_active = false;
   Q.spa_cup_active = false;
-  Q.spa_mpais_active = false;        // if true, más país will run separate from Podemos and UP - TODO: Pending trigger!
+  Q.spa_mpais_active = false;        // if true, más país will run separate from Podemos and UP
   Q.upn_in_pp = true;                // if false, UPN will go separate from PP
-  Q.iu_in_up = false;                // equivalent to "UP active" flag - TODO: Pending trigger!
+  Q.iu_in_up = false;                // equivalent to "UP active" flag
   Q.spa_bng_active = true;           // if false will run as part of UP
   Q.spa_te_active = false;   
   Q.spa_ehbildu_active = true;       // if false, amaiur will run again (only if ehbildu is ever banned) + amaiur should also includ gbai if reformed! (TODO!)

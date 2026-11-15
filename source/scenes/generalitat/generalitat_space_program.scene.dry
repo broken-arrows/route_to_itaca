@@ -54,7 +54,7 @@ The first Catalan-developed satellite, designed by local researchers, named by t
 title: Launch through Roscosmos' commercial launch services
 subtitle: The Russian space agency offers competitive pricing after all, and are not ones to turn away from an opportunity.
 on-arrival: {!
-    // TODO: effects for this
+    // TODO: Diplomatic and Rubicon consequences
     var laws = Q.active_mods || {};
     var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
     if (!Q.cat_caretaker_gov && Q.government_budget >= 1 && laws.space_agency && laws.space_agency.active && !laws.space_test &&

@@ -37,7 +37,7 @@ on-arrival: {!
     Q.parlament_coalition_sovereignty_can_form = Q.parlament_coalition_sovereignty_phase > 0 && Q.parlament_coalition_proposal_accept && Q.coalition_phase_timer <= 0;
     if (Q.parlament_coalition_sovereignty_can_form) {
         Q.parlament_coalition_policy_accepted = true;
-        Q.parlament_coalition_policy_scope = Q.parlament_coalition_sovereignty_kind == "government" ? "cabinet" : "external_support"; // WIP: check: is this even consumed by anyone?
+        Q.parlament_coalition_policy_scope = Q.parlament_coalition_sovereignty_kind == "government" ? "cabinet" : "external_support";
         Q.cat_coalition = Q.parlament_coalition_sovereignty_cabinet.slice();
         Q.cat_coalition_support = Q.parlament_coalition_sovereignty_kind == "government" ? [] : ["cup"];
         Q.cat_coalition_abstain = [];

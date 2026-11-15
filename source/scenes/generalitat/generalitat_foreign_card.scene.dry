@@ -25,7 +25,7 @@ choose-if: not art155_ever and government_budget >= 1
 unavailable-subtitle: [? if art155_ever: With Article 155 in force, there's no way for this to happen. ?][? if government_budget < 1: Not enough budget. ?]
 on-arrival: {!
     Q.government_budget -= 1;
-    switch (Q.spain_pm_party) {
+    switch (Q.spanish_pm_party) {
         case "pp":
             Q.cat_spa_relations += 5;
             break;

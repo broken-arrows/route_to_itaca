@@ -5,7 +5,6 @@ new-page: true
 face-image: img/events/gurtel.jpg
 max-visits: 1
 on-arrival: {!
-    // TODO: Trigger confidence vote?
     Q.corruption_pp += 25;
 
     Q.gurtel_includes_gob = Q.spanish_coalition.includes("pp");

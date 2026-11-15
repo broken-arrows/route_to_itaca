@@ -45,8 +45,8 @@ Despite our stated goal of eventually building an independent Catalonia, we have
 
 @minor_countries_partyreach
 subtitle: [? if not erc_advisor_action: \[-1 resources\] ?][? if erc_advisor_action: No resource cost. ?]
-choose-if: minor_party_reach < 5 and (erc_advisor_action or party_resources > 0)
-unavailable-subtitle: [? if minor_party_reach >= 5: We have already built our contacts enough with minor countries. ?][? if not erc_advisor_action and party_resources <= 0: We do not have enough resources. ?]
+choose-if: minor_contries_reach < 5 and (erc_advisor_action or party_resources > 0)
+unavailable-subtitle: [? if minor_contries_reach >= 5: We have already built our contacts enough with minor countries. ?][? if not erc_advisor_action and party_resources <= 0: We do not have enough resources. ?]
 on-arrival: party_resources -= 1 if not erc_advisor_action; minor_contries_reach += 1 + 0.5*raul_romeva_advisor; erc_civic_strength += 5;
 
 National liberation parties from Scotland, Québec, Galicia, the Basque Country, Ireland, and many more have always been our comrades adf frontline fighters for self-determination and the freedom of all peoples. Building up that relation can only make us stronger, but is also an action that can only give us so much in terms of actual international standing.
