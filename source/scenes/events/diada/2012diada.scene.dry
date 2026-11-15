@@ -6,7 +6,6 @@ new-page: true
 tags: event
 view-if: year = 2012 and month = 9
 max-visits: 1
-face-image: img/diada/2012.jpg
 on-arrival: diada2012_response = null
 role: event
 

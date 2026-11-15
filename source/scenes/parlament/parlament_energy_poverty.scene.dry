@@ -3,8 +3,15 @@ new-page: true
 choose-if: not parlament_energy_poverty_passed
 unavailable-subtitle: [? if parlament_energy_poverty_passed: Already approved!?]
 on-arrival: {!
+    Q.parlament_energy_poverty_variant = null;
+    Q.parlament_energy_poverty_deal_party = null;
     Q.parlament_energy_poverty_deals = [];
 !}
+go-to: energy_poverty_proposal
+
+@energy_poverty_proposal
+new-page: true
+go-to: energy_public_guarantee if parlament_energy_poverty_variant = "public_guarantee"; energy_disconnection_ban if parlament_energy_poverty_variant = "disconnection_ban"
 
 = Law on Energy Poverty
 
@@ -26,7 +33,6 @@ go-to: energy_poverty_negotiation
 Such an ambitious program for fighting energy poverty has some in the center and the right a bit skeptical about it. We may want to approach them if we want to secure an ample majority for this vote.
 
 @energy_poverty_negotiation
-new-page: true
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
@@ -73,10 +79,6 @@ on-arrival: {!
     }
     Q.parlament_energy_poverty_vote_preview = {outcomes:[forecast.yes, forecast.abstain, forecast.no]};
 !}
-
-= Law on Energy Poverty
-
-Parties in the Parlament are expected to vote soon, so we have a unique chance now to try to push their positions.
 
 {! <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_energy_poverty_vote_preview"}'></div> !}
 
@@ -149,11 +151,10 @@ on-arrival: {!
     Q.parlament_energy_poverty_deals.push({party: party, position: newPosition});
     Q[party + "_relations"] -= 5;
 !}
-go-to: energy_poverty_negotiation
+go-to: energy_poverty_proposal
 
 @energy_poverty_vote
-new-page: true
-subtitle: [? if not parlament_energy_poverty_deal_party: Who needs their support anyway? ?]
+subtitle: [? if not parlament_energy_poverty_deal_party and (parlament_energy_poverty_can_approach_cup or parlament_energy_poverty_can_approach_psc or parlament_energy_poverty_can_approach_erc or parlament_energy_poverty_can_approach_convergence or parlament_energy_poverty_can_approach_icv): Who needs their support anyway? ?]
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;

@@ -3,9 +3,16 @@ new-page: true
 choose-if: not parlament_inheritance_tax_passed
 unavailable-subtitle: [? if parlament_inheritance_tax_passed: Already approved!?]
 on-arrival: {! 
+    Q.parlament_inheritance_tax_variant = null;
+    Q.parlament_inheritance_tax_deal_party = null;
     Q.parlament_inheritance_tax_deals = [];
     // TODO: CUP/ERC reaction when part of JxSi // JxCat
 !}
+go-to: inheritance_proposal
+
+@inheritance_proposal
+new-page: true
+go-to: inheritance_partial if parlament_inheritance_tax_variant = "partial_restoration"; inheritance_strong if parlament_inheritance_tax_variant = "strong_progressive"
 
 = Law on Inheritance and Gift Taxes
 
@@ -154,11 +161,10 @@ on-arrival: {!
     Q.parlament_inheritance_tax_deals.push({party: party, position: newPosition});
     Q[party + "_relations"] -= 5;
 !}
-go-to: inheritance_negotiation
+go-to: inheritance_proposal
 
 @inheritance_vote
-new-page: true
-subtitle: [? if not parlament_inheritance_tax_deal_party: Who needs their support anyway? ?]
+subtitle: [? if not parlament_inheritance_tax_deal_party and (parlament_inheritance_tax_can_approach_cup or parlament_inheritance_tax_can_approach_psc or parlament_inheritance_tax_can_approach_erc or parlament_inheritance_tax_can_approach_convergence or parlament_inheritance_tax_can_approach_icv): Who needs their support anyway? ?]
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;

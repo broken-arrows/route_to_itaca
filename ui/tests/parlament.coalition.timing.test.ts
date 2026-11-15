@@ -96,29 +96,42 @@ describe('coalition time advances after the current newspaper editions', () => {
     expect(visited.mock.calls.some(([id]) => id === 'main' || id.startsWith('main.'))).toBe(false);
   });
 
-  it('also waits for a pending election before consuming the month advance', () => {
+  it.each([0, 1])('resolves events before elections and waits for both before advancing, routing draw: %s', (draw) => {
     const adapter = january({
       next_local_election_year: 2013, next_local_election_month: 1, next_local_election_week: 1,
     });
     const visited = vi.spyOn(adapter.engine, 'goToScene');
     adapter.goToScene('parlament_coalition_ciu_erc_phase.new_phase_2');
+    // Both RNG outcomes must reach the events edition when both editions are due.
+    const routingDraw = vi.spyOn(adapter.engine.random, 'uint32').mockReturnValue(draw);
+    pick(adapter, 'post_event');
+    routingDraw.mockRestore();
+
+    expect(adapter.qualities.month).toBe(1);
+    expect(adapter.qualities.time).toBe(5);
+    expect(adapter.qualities.month_actions).toBe(1);
+    expect(adapter.qualities.coalition_phase_timer).toBe(1);
+    expect(adapter.engine.state.sceneId).toBe('post_event.events_choice');
+    expect(choices(adapter)).toEqual(['barcenas_leak']);
+    pick(adapter, 'barcenas_leak');
     pick(adapter, 'post_event');
 
     expect(adapter.qualities.month).toBe(1);
+    expect(adapter.qualities.time).toBe(5);
+    expect(adapter.qualities.month_actions).toBe(1);
     expect(adapter.qualities.coalition_phase_timer).toBe(1);
     expect(adapter.engine.state.sceneId).toBe('post_event.elections_choice');
     expect(choices(adapter)).toContain('local_elections');
     pick(adapter, 'local_elections');
     expect(adapter.qualities.next_local_election_year).toBe(2017);
-    adapter.goToScene('post_event');
     expect(adapter.qualities.month).toBe(1);
-    expect(adapter.qualities.month_actions).toBe(1);
-    expect(choices(adapter)).toEqual(['barcenas_leak']);
-    pick(adapter, 'barcenas_leak');
-    pick(adapter, 'post_event');
+    expect(adapter.qualities.time).toBe(5);
+    adapter.goToScene('post_event');
 
     expect(adapter.qualities.month).toBe(2);
     expect(adapter.qualities.time).toBe(6);
+    expect(adapter.qualities.month_actions).toBe(0);
+    expect(adapter.qualities.coalition_phase_timer).toBe(0);
     expect(choices(adapter)).toEqual(['parlament_coalition_ciu_erc_phase']);
     expect(visited.mock.calls.some(([id]) => id === 'main' || id.startsWith('main.'))).toBe(false);
   });

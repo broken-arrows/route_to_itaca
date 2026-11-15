@@ -1438,7 +1438,7 @@ on-arrival: {!
   }
 
   Q.government_does_things_timer = G.governmentInitiativeTimer(Q);
-  Q.strike_timer = 6;
+  Q.strike_timer = 9;
 
   // ADVISOR LIST (note that they actually get initalized on chosing a party)
   // ERC Advisors

@@ -3,8 +3,15 @@ new-page: true
 choose-if: not parlament_digital_passed
 unavailable-subtitle: [? if parlament_digital_passed: Already approved!?]
 on-arrival: {!
+    Q.parlament_digital_variant = null;
+    Q.parlament_digital_deal_party = null;
     Q.parlament_digital_deals = [];
 !}
+go-to: digital_proposal
+
+@digital_proposal
+new-page: true
+go-to: digital_public_services if parlament_digital_variant = "public_services"; digital_national_scope if parlament_digital_variant = "national_scope"
 
 = Law on Digital Public Services and Cybersecurity
 
@@ -31,7 +38,6 @@ While it is not surprising that the Spanish right is against this, some are stil
 
 
 @digital_negotiation
-new-page: true
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
@@ -95,10 +101,6 @@ on-arrival: {!
     }
     Q.parlament_digital_vote_preview = {outcomes:[forecast.yes, forecast.abstain, forecast.no]};
 !}
-
-= Law on Digital Public Services and Cybersecurity
-
-Parties in the Parlament are expected to vote soon, so we have a unique chance now to try to push their positions.
 
 {! <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_digital_vote_preview"}'></div> !}
 
@@ -171,11 +173,10 @@ on-arrival: {!
     Q.parlament_digital_deals.push({party: party, position: newPosition});
     Q[party + "_relations"] -= 5;
 !}
-go-to: digital_negotiation
+go-to: digital_proposal
 
 @digital_vote
-new-page: true
-subtitle: [? if not parlament_digital_deal_party: Who needs their support anyway? ?]
+subtitle: [? if not parlament_digital_deal_party and (parlament_digital_can_approach_cup or parlament_digital_can_approach_psc or parlament_digital_can_approach_erc or parlament_digital_can_approach_convergence or parlament_digital_can_approach_icv): Who needs their support anyway? ?]
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;

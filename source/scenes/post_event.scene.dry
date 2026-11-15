@@ -1357,47 +1357,47 @@ updatePendingEvents(this);
 !}
 call: generalitat_setpolicy
 on-departure: {!
-// TODO: set historical/international events. Hardcoded ones are easier to handle as qdisplays.
-if (Q.historical_event == Q.last_historical_event) {
-    Q.historical_event = 0;  
-} 
-// Deliver warnings only when returning to the main page, where the notice is visible.
-if (Q.player_party == 'erc' && !Q.has_event && !Q.has_election) {
-    var warnings = [];
-    if (!Q.erc_left_resign && !Q.erc_left_split_warned && Q.erc_left_dissent >= 49 && Q.erc_left_dissent < 55) {
-        warnings.push(G.text("In the mean time, within ERC, the party's left wing is now loudly voicing its dissent in public media, warning once more, and maybe for one last time, the current leadership.")); Q.erc_left_split_warned = true;
+    // TODO: set historical/international events. Hardcoded ones are easier to handle as qdisplays.
+    if (Q.historical_event == Q.last_historical_event) {
+        Q.historical_event = 0;  
+    } 
+    // Deliver warnings only when returning to the main page, where the notice is visible.
+    if (Q.player_party == 'erc' && !Q.has_event && !Q.has_election) {
+        var warnings = [];
+        if (!Q.erc_left_resign && !Q.erc_left_split_warned && Q.erc_left_dissent >= 49 && Q.erc_left_dissent < 55) {
+            warnings.push(G.text("In the mean time, within ERC, the party's left wing is now loudly voicing its dissent in public media, warning once more, and maybe for one last time, the current leadership.")); Q.erc_left_split_warned = true;
+        }
+        if (!Q.erc_core_resign && !Q.erc_core_split_warned && Q.erc_core_dissent >= 49 && Q.erc_core_dissent < 55) {
+            warnings.push(G.text("In the mean time, within ERC, the party's Republican Core is now loudly voicing its dissent in public media, warning once more, and maybe for one last time, the current leadership..")); Q.erc_core_split_warned = true;
+        }
+        if (!Q.erc_pragmatic_resign && !Q.erc_pragmatic_split_warned && Q.erc_pragmatic_dissent >= 49 && Q.erc_pragmatic_dissent < 55) {
+            warnings.push(G.text("In the mean time, within ERC, the party's Pragmatic sector is now loudly voicing its dissent in public media, warning once more, and maybe for one last time, the current leadership.")); Q.erc_pragmatic_split_warned = true;
+        }
+        if (!Q.erc_civic_resign && !Q.erc_civic_split_warned && Q.erc_civic_dissent >= 49 && Q.erc_civic_dissent < 55) {
+            warnings.push(G.text("In the mean time, a group of Civil society organizations is warning ERC's leadership loudly and widely, threatening to break course with the party if no course of action happens any time soon.")); Q.erc_civic_split_warned = true;
+        }
+        if (warnings.length) {
+            if (Q.historical_event) warnings.unshift(G.getText(Q, 'historical_event'));
+            G.setText(Q, 'historical_event', G.joinText(warnings, ' '));
+        }
     }
-    if (!Q.erc_core_resign && !Q.erc_core_split_warned && Q.erc_core_dissent >= 49 && Q.erc_core_dissent < 55) {
-        warnings.push(G.text("In the mean time, within ERC, the party's Republican Core is now loudly voicing its dissent in public media, warning once more, and maybe for one last time, the current leadership..")); Q.erc_core_split_warned = true;
-    }
-    if (!Q.erc_pragmatic_resign && !Q.erc_pragmatic_split_warned && Q.erc_pragmatic_dissent >= 49 && Q.erc_pragmatic_dissent < 55) {
-        warnings.push(G.text("In the mean time, within ERC, the party's Pragmatic sector is now loudly voicing its dissent in public media, warning once more, and maybe for one last time, the current leadership.")); Q.erc_pragmatic_split_warned = true;
-    }
-    if (!Q.erc_civic_resign && !Q.erc_civic_split_warned && Q.erc_civic_dissent >= 49 && Q.erc_civic_dissent < 55) {
-        warnings.push(G.text("In the mean time, a group of Civil society organizations is warning ERC's leadership loudly and widely, threatening to break course with the party if no course of action happens any time soon.")); Q.erc_civic_split_warned = true;
-    }
-    if (warnings.length) {
-        if (Q.historical_event) warnings.unshift(G.getText(Q, 'historical_event'));
-        G.setText(Q, 'historical_event', G.joinText(warnings, ' '));
-    }
-}
-G.copyText(Q, "last_historical_event", "historical_event");
+    G.copyText(Q, "last_historical_event", "historical_event");
 
-// TODO: Replace the temporary constitutional reform ending with a playable reform process.
-// TODO: Replace the temporary agreed-referendum ending with authorization, court and voting scenes.
-if (Q.constitution_reformed) {
-    var supersededPromises = ["negotiated_cash", "negotiated_funding", "negotiated_funding_psoe",
-        "negotiated_renfe", "negotiated_renfe_psoe", "negotiated_ports", "negotiated_ports_psoe",
-        "negotiated_education", "negotiated_police", "negotiated_police_psoe", "negotiated_borders", "negotiated_borders_psoe"];
-    Q.countdowns = Q.countdowns.filter(function (name) { return !supersededPromises.includes(name); });
-    for (var name of supersededPromises) {
-        Q[name + "_countdown"] = -1;
-        Q[name + "_trigger"] = false;
+    // TODO: Replace the temporary constitutional reform ending with a playable reform process.
+    // TODO: Replace the temporary agreed-referendum ending with authorization, court and voting scenes.
+    if (Q.constitution_reformed) {
+        var supersededPromises = ["negotiated_cash", "negotiated_funding", "negotiated_funding_psoe",
+            "negotiated_renfe", "negotiated_renfe_psoe", "negotiated_ports", "negotiated_ports_psoe",
+            "negotiated_education", "negotiated_police", "negotiated_police_psoe", "negotiated_borders", "negotiated_borders_psoe"];
+        Q.countdowns = Q.countdowns.filter(function (name) { return !supersededPromises.includes(name); });
+        for (var name of supersededPromises) {
+            Q[name + "_countdown"] = -1;
+            Q[name + "_trigger"] = false;
+        }
     }
-}
-// TODO: remove game over on jxcat_formed!
+    // TODO: remove game over on jxcat_formed!
 !}
-go-to: game_over if negotiated_reform_trigger or negotiated_referendum_trigger or (jxcat_formed and player_in_jxcat); events_choice if has_event = 1 and not negotiated_reform_trigger and not negotiated_referendum_trigger; elections_choice if has_election = 1 and not negotiated_reform_trigger and not negotiated_referendum_trigger; main if has_event = 0 and has_election = 0 and difficulty = 0 and not negotiated_reform_trigger and not negotiated_referendum_trigger; main.main_easy if has_event = 0 and has_election = 0 and difficulty < 0 and not negotiated_reform_trigger and not negotiated_referendum_trigger; main.main_hard if has_event = 0 and has_election = 0 and difficulty > 0 and not negotiated_reform_trigger and not negotiated_referendum_trigger
+go-to: game_over if negotiated_reform_trigger or negotiated_referendum_trigger or (jxcat_formed and player_in_jxcat); events_choice if has_event = 1 and not negotiated_reform_trigger and not negotiated_referendum_trigger; elections_choice if has_election = 1 and has_event = 0 and not negotiated_reform_trigger and not negotiated_referendum_trigger; main if has_event = 0 and has_election = 0 and difficulty = 0 and not negotiated_reform_trigger and not negotiated_referendum_trigger; main.main_easy if has_event = 0 and has_election = 0 and difficulty < 0 and not negotiated_reform_trigger and not negotiated_referendum_trigger; main.main_hard if has_event = 0 and has_election = 0 and difficulty > 0 and not negotiated_reform_trigger and not negotiated_referendum_trigger
 
 = [+ month : month +] [+ year +][? if rubicon:, Week [+ week +]?]
 

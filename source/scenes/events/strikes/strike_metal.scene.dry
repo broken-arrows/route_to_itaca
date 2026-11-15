@@ -7,7 +7,7 @@ face-image: img/events/vaga_metall.jpg
 max-visits: 1
 view-if: strike_triggered = "metal" and not cat_caretaker_gov
 on-arrival: {!
-    Q.strike_timer = 6;
+    Q.strike_timer = 9;
     Q.strike_metal_response = null;
     Q.strike_metal_settled = false;
     Q.strike_metal_partner = Q.bnl_minister_party;
@@ -32,7 +32,7 @@ Metalworkers in Barcelona and Tarragona are demanding better worker conditions t
 
 @workers
 title: Back the workers' demands
-view-if: bnl_minister_party = player_party or (player_in_jxsi and bnl_minister_party = "jxsi") or (player_in_jxcat and bnl_minister_party = "jxcat")
+view-if: strike_metal_partner = player_party or (player_in_jxsi and strike_metal_partner = "jxsi") or (player_in_jxcat and strike_metal_partner = "jxcat")
 subtitle: From our held ministry we'll pressure the industry representatives as much as possible. \[-1 budget\]
 # TBD: use party resources instead?
 choose-if: government_budget >= 1
@@ -42,7 +42,7 @@ go-to: resolve
 
 @compromise
 title: Broker a balanced agreement
-view-if: bnl_minister_party = player_party or (player_in_jxsi and bnl_minister_party = "jxsi") or (player_in_jxcat and bnl_minister_party = "jxcat")
+view-if: strike_metal_partner = player_party or (player_in_jxsi and strike_metal_partner = "jxsi") or (player_in_jxcat and strike_metal_partner = "jxcat")
 subtitle: From our held ministry, we can try to mediate and find a suitable middle ground. \[-1 budget\]
 choose-if: government_budget >= 1
 unavailable-subtitle: [? if government_budget < 1: Not enough budget. ?]
@@ -51,7 +51,7 @@ go-to: resolve
 
 @industry
 title: Prioritize competitiveness
-view-if: bnl_minister_party = player_party or (player_in_jxsi and bnl_minister_party = "jxsi") or (player_in_jxcat and bnl_minister_party = "jxcat")
+view-if: strike_metal_partner = player_party or (player_in_jxsi and strike_metal_partner = "jxsi") or (player_in_jxcat and strike_metal_partner = "jxcat")
 subtitle: From our held ministry, we'll favour industry demands. \[-1 budget\]
 choose-if: government_budget >= 1
 unavailable-subtitle: [? if government_budget < 1: Not enough budget. ?]
@@ -59,11 +59,11 @@ on-arrival: strike_metal_response = "industry"
 go-to: resolve
 
 @pressure
-title: Push [+ bnl_minister_party +] to broker a compromise
-view-if: not (bnl_minister_party = player_party or (player_in_jxsi and bnl_minister_party = "jxsi") or (player_in_jxcat and bnl_minister_party = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))
-subtitle: We'll have to apply pressure on [+ bnl_minister_party +] for them to even consider sitting down with the union representatives. \[-1 resources; -1 budget\]
-choose-if: (not (bnl_minister_party = player_party or (player_in_jxsi and bnl_minister_party = "jxsi") or (player_in_jxcat and bnl_minister_party = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))) and party_resources >= 1 and ((difficulty < 0 and strike_metal_relations >= 45) or (difficulty >= 0 and strike_metal_relations >= 55)) and government_budget >= 1
-unavailable-subtitle: [? if not ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting))): We are not part of the government nor providing external support to it. ?][? if party_resources < 1: Not enough resources. ?][? if ((difficulty < 0 and strike_metal_relations < 45) or (difficulty >= 0 and strike_metal_relations < 55)): Our relations with [+ strike_metal_partner +] are not good enough. ?][? if government_budget < 1: Not enough budget. ?]
+title: Push [+ strike_metal_partner +] to broker a compromise
+view-if: not (strike_metal_partner = player_party or (player_in_jxsi and strike_metal_partner = "jxsi") or (player_in_jxcat and strike_metal_partner = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))
+subtitle: We'll have to apply pressure on [+ strike_metal_partner +] for them to even consider sitting down with the union representatives. \[-1 resources[? if ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)):; -1 budget?]\]
+choose-if: (not (strike_metal_partner = player_party or (player_in_jxsi and strike_metal_partner = "jxsi") or (player_in_jxcat and strike_metal_partner = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))) and party_resources >= 1 and ((difficulty < 0 and strike_metal_relations >= 45) or (difficulty >= 0 and strike_metal_relations >= 55)) and (not ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) or government_budget >= 1)
+unavailable-subtitle: [? if not ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting))): We are not part of the government nor providing external support to it. ?][? if party_resources < 1: Not enough resources. ?][? if ((difficulty < 0 and strike_metal_relations < 45) or (difficulty >= 0 and strike_metal_relations < 55)): Our relations with [+ strike_metal_partner +] are not good enough. ?][? if ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) and government_budget < 1: Not enough budget. ?]
 on-arrival: strike_metal_response = "pressure"
 go-to: resolve
 
@@ -91,7 +91,7 @@ on-arrival: {!
         Q.strike_triggered = null;
         Q.strike_metal_settled = delivery;
         if (delivery) {
-            Q.government_budget -= 1;
+            if (response != "pressure" || (Q.player_party == "erc" && Q.erc_in_gob) || (Q.player_party == "cup" && Q.cup_in_gob) || (Q.player_in_jxsi && Q.jxsi_in_gob) || (Q.player_in_jxcat && Q.jxcat_in_gob)) Q.government_budget -= 1;
             if (response == "pressure") Q.party_resources -= 1;
             // Employers finance the private-sector agreement. The government
             // spends mediation capacity, with no fiscal or public-pay change.

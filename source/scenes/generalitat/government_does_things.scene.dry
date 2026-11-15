@@ -397,7 +397,7 @@ on-arrival: {!
         });
         var relations = Q[responseParty + "_relations"];
         Q.npc_government_can_protest = valid && Number.isFinite(relations);
-        Q.npc_government_stop_cost = relations >= 65 ? 1 : 2;
+        Q.npc_government_stop_cost = Q.difficulty > 0 ? (relations >= 65 ? 1 : 2 ) : (relations >= 55 ? 1 : 2 );
         if (Q.npc_government_can_influence) {
             G.setText(Q, "npc_government_stop_blocker", (!Number.isFinite(relations) || relations < 55 ? G.text("We don't have good enough relations with {npc_government_party}", {
                 npc_government_party: G.nameText("party", Q.npc_government_party)

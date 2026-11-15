@@ -2,6 +2,16 @@ title: Public Order Reform
 new-page: true
 choose-if: not parlament_police_passed
 unavailable-subtitle: [? if parlament_police_passed: Already approved!?]
+on-arrival: {!
+    Q.parlament_police_variant = null;
+    Q.parlament_police_deal_party = null;
+    Q.parlament_police_deals = [];
+!}
+go-to: police_proposal
+
+@police_proposal
+new-page: true
+go-to: police_focused if parlament_police_variant = "focused_reform"; police_democratic if parlament_police_variant = "democratic_policing"
 
 = Public Order Reform
 
@@ -24,7 +34,6 @@ on-arrival: {!
     if (Q.coming_from_parlament && !Q.parlament_police_yes_names.includes(proposingParty)) {
         Q.parlament_police_yes_names.push(proposingParty);
     }
-    Q.parlament_police_deals = [];
 !}
 go-to: police_negotiation
 
@@ -40,7 +49,6 @@ on-arrival: {!
     if (Q.coming_from_parlament && !Q.parlament_police_yes_names.includes(proposingParty)) {
         Q.parlament_police_yes_names.push(proposingParty);
     }
-    Q.parlament_police_deals = [];
 !}
 go-to: police_negotiation
 
@@ -80,10 +88,6 @@ on-arrival: {!
     }
     Q.parlament_police_vote_preview = {outcomes:[forecast.yes, forecast.abstain, forecast.no]};
 !}
-
-= Public Order Reform
-
-Parties in the Parlament are expected to vote soon, so we have a unique chance now to try to push their positions.
 
 {! <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_police_vote_preview"}'></div> !}
 
@@ -157,11 +161,10 @@ on-arrival: {!
     Q.parlament_police_deals.push({party: party, position: newPosition});
     Q[party + "_relations"] -= 5;
 !}
-go-to: police_negotiation
+go-to: police_proposal
 
 @police_vote
-new-page: true
-subtitle: [? if not parlament_police_deal_party: Who needs their support anyway? ?]
+subtitle: [? if not parlament_police_deal_party and (parlament_police_can_approach_cup or parlament_police_can_approach_psc or parlament_police_can_approach_erc or parlament_police_can_approach_convergence or parlament_police_can_approach_icv): Who needs their support anyway? ?]
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;

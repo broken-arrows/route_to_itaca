@@ -3,8 +3,15 @@ new-page: true
 choose-if: not parlament_housing_passed
 unavailable-subtitle: [? if parlament_housing_passed: Already approved!?]
 on-arrival: {!
+    Q.parlament_housing_variant = null;
+    Q.parlament_housing_deal_party = null;
     Q.parlament_housing_deals = [];
 !}
+go-to: housing_proposal
+
+@housing_proposal
+new-page: true
+go-to: housing_public_stock if parlament_housing_variant = "acquisition_rehabilitation"; housing_compulsory_relief if parlament_housing_variant = "compulsory_rent_debt_relief"
 
 = Housing Emergency Law
 
@@ -26,7 +33,6 @@ go-to: housing_negotiation
 Such a radical intervention on the private housing market is a bit of a tough pill to swallow for some on the centre and on the right. We may want to approach them if we want to secure an ample majority for this vote.
 
 @housing_negotiation
-new-page: true
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
@@ -73,10 +79,6 @@ on-arrival: {!
     }
     Q.parlament_housing_vote_preview = {outcomes:[forecast.yes, forecast.abstain, forecast.no]};
 !}
-
-= Housing Emergency Law
-
-Parties in the Parlament are expected to vote soon, so we have a unique chance now to try to push their positions.
 
 {! <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_housing_vote_preview"}'></div> !}
 
@@ -149,11 +151,10 @@ on-arrival: {!
     Q.parlament_housing_deals.push({party: party, position: newPosition});
     Q[party + "_relations"] -= 5;
 !}
-go-to: housing_negotiation
+go-to: housing_proposal
 
 @housing_vote
-new-page: true
-subtitle: [? if not parlament_housing_deal_party: Who needs their support anyway? ?]
+subtitle: [? if not parlament_housing_deal_party and (parlament_housing_can_approach_cup or parlament_housing_can_approach_psc or parlament_housing_can_approach_erc or parlament_housing_can_approach_convergence or parlament_housing_can_approach_icv): Who needs their support anyway? ?]
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;

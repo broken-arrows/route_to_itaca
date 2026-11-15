@@ -3,8 +3,15 @@ new-page: true
 choose-if: not parlament_energy_tax_passed
 unavailable-subtitle: [? if parlament_energy_tax_passed: Already approved!?]
 on-arrival: {!
+    Q.parlament_energy_tax_variant = null;
+    Q.parlament_energy_tax_deal_party = null;
     Q.parlament_energy_tax_deals = [];
 !}
+go-to: environmental_tax_proposal
+
+@environmental_tax_proposal
+new-page: true
+go-to: environmental_levies if parlament_energy_tax_variant = "environmental_levies"; environmental_nuclear if parlament_energy_tax_variant = "nuclear_package"
 
 = Law on Environmental Taxation
 
@@ -24,7 +31,6 @@ go-to: environmental_tax_negotiation if player_party != "cup"; environmental_tax
 Taxing nuclear energy production has some parties to our right doubting about the proposal. We may want to approach them if we want to secure an ample majority for this vote.
 
 @environmental_tax_negotiation
-new-page: true
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
@@ -71,10 +77,6 @@ on-arrival: {!
     }
     Q.parlament_energy_tax_vote_preview = {outcomes:[forecast.yes, forecast.abstain, forecast.no]};
 !}
-
-= Law on Environmental Taxation
-
-Parties in the Parlament are expected to vote soon, so we have a unique chance now to try to push their positions.
 
 {! <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_energy_tax_vote_preview"}'></div> !}
 
@@ -147,11 +149,10 @@ on-arrival: {!
     Q.parlament_energy_tax_deals.push({party: party, position: newPosition});
     Q[party + "_relations"] -= 5;
 !}
-go-to: environmental_tax_negotiation
+go-to: environmental_tax_proposal
 
 @environmental_tax_vote
-new-page: true
-subtitle: [? if not parlament_energy_tax_deal_party: Who needs their support anyway? ?]
+subtitle: [? if not parlament_energy_tax_deal_party and (parlament_energy_tax_can_approach_cup or parlament_energy_tax_can_approach_psc or parlament_energy_tax_can_approach_erc or parlament_energy_tax_can_approach_convergence or parlament_energy_tax_can_approach_icv): Who needs their support anyway? ?]
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;

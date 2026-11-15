@@ -7,7 +7,7 @@ face-image: img/events/vaga_fgc.webp
 max-visits: 1
 view-if: strike_triggered = "fgc" and not cat_caretaker_gov
 on-arrival: {!
-    Q.strike_timer = 6;
+    Q.strike_timer = 9;
     Q.strike_fgc_response = null;
     Q.strike_fgc_settled = false;
     Q.strike_fgc_partner = Q.territory_minister_party;
@@ -30,7 +30,7 @@ Railway workers of the Generalitat railway company, FGC, are striking demanding 
 
 @accept
 title: Accept the workers' demands
-view-if: territory_minister_party = player_party or (player_in_jxsi and territory_minister_party = "jxsi") or (player_in_jxcat and territory_minister_party = "jxcat")
+view-if: strike_fgc_partner = player_party or (player_in_jxsi and strike_fgc_partner = "jxsi") or (player_in_jxcat and strike_fgc_partner = "jxcat")
 subtitle: We control the ministry after all. \[-1 budget\]
 choose-if: government_budget >= 1
 unavailable-subtitle: [? if government_budget < 1: Not enough budget. ?]
@@ -38,11 +38,11 @@ on-arrival: strike_fgc_response = "accept"
 go-to: resolve
 
 @pressure
-title: Push [+ territory_minister_party +] to accept the workers' demands
-view-if: not (territory_minister_party = player_party or (player_in_jxsi and territory_minister_party = "jxsi") or (player_in_jxcat and territory_minister_party = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))
-subtitle: We'll have to apply pressure on [+ territory_minister_party +] for them to even consider sitting down with the union representatives. \[-1 resources; -1 budget\]
-choose-if: (not (territory_minister_party = player_party or (player_in_jxsi and territory_minister_party = "jxsi") or (player_in_jxcat and territory_minister_party = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))) and party_resources >= 1 and ((difficulty < 0 and strike_fgc_relations >= 45) or (difficulty >= 0 and strike_fgc_relations >= 55)) and government_budget >= 1
-unavailable-subtitle: [? if not ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting))): We are not part of the government nor providing external support to it. ?][? if party_resources < 1: Not enough resources. ?][? if ((difficulty < 0 and strike_fgc_relations < 45) or (difficulty >= 0 and strike_fgc_relations < 55)): Our relations with [+ strike_fgc_partner +] are not good enough. ?][? if government_budget < 1: Not enough budget. ?]
+title: Push [+ strike_fgc_partner +] to accept the workers' demands
+view-if: not (strike_fgc_partner = player_party or (player_in_jxsi and strike_fgc_partner = "jxsi") or (player_in_jxcat and strike_fgc_partner = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))
+subtitle: We'll have to apply pressure on [+ strike_fgc_partner +] for them to even consider sitting down with the union representatives. \[-1 resources[? if ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)):; -1 budget?]\]
+choose-if: (not (strike_fgc_partner = player_party or (player_in_jxsi and strike_fgc_partner = "jxsi") or (player_in_jxcat and strike_fgc_partner = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))) and party_resources >= 1 and ((difficulty < 0 and strike_fgc_relations >= 45) or (difficulty >= 0 and strike_fgc_relations >= 55)) and (not ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) or government_budget >= 1)
+unavailable-subtitle: [? if not ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting))): We are not part of the government nor providing external support to it. ?][? if party_resources < 1: Not enough resources. ?][? if ((difficulty < 0 and strike_fgc_relations < 45) or (difficulty >= 0 and strike_fgc_relations < 55)): Our relations with [+ strike_fgc_partner +] are not good enough. ?][? if ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) and government_budget < 1: Not enough budget. ?]
 on-arrival: strike_fgc_response = "pressure"
 go-to: resolve
 
@@ -69,7 +69,7 @@ on-arrival: {!
         Q.strike_triggered = null;
         Q.strike_fgc_settled = delivery;
         if (delivery) {
-            Q.government_budget -= 1;
+            if (response != "pressure" || (Q.player_party == "erc" && Q.erc_in_gob) || (Q.player_party == "cup" && Q.cup_in_gob) || (Q.player_in_jxsi && Q.jxsi_in_gob) || (Q.player_in_jxcat && Q.jxcat_in_gob)) Q.government_budget -= 1;
             if (response == "pressure") Q.party_resources -= 1;
             G.registerLaw(Q, {id:"fgc_working_conditions_agreement", title:"FGC settlement", fiscal_ticks:12,
                 targets:{welfare_index_growth:0.05, social_dissent_eq:-1, generalitat_surplus:-0.005}});

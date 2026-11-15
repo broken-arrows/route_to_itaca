@@ -3,8 +3,15 @@ new-page: true
 choose-if: not parlament_comerce_passed
 unavailable-subtitle: [? if parlament_comerce_passed: Already approved!?]
 on-arrival: {!
+    Q.parlament_comerce_variant = null;
+    Q.parlament_comerce_deal_party = null;
     Q.parlament_comerce_deals = [];
 !}
+go-to: commerce_proposal
+
+@commerce_proposal
+new-page: true
+go-to: commerce_internal if parlament_comerce_variant = "internal_framework"; commerce_protective if parlament_comerce_variant = "protective_framework"
 
 = Law on Local Commerce
 
@@ -30,7 +37,6 @@ go-to: commerce_negotiation
 Some parties do see this as "over-regulation" of the private sector. We may want to approach them if we want to secure an ample majority for this vote.
 
 @commerce_negotiation
-new-page: true
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
@@ -77,10 +83,6 @@ on-arrival: {!
     }
     Q.parlament_comerce_vote_preview = {outcomes:[forecast.yes, forecast.abstain, forecast.no]};
 !}
-
-= Law on Local Commerce
-
-Parties in the Parlament are expected to vote soon, so we have a unique chance now to try to push their positions.
 
 {! <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_comerce_vote_preview"}'></div> !}
 
@@ -153,11 +155,10 @@ on-arrival: {!
     Q.parlament_comerce_deals.push({party: party, position: newPosition});
     Q[party + "_relations"] -= 5;
 !}
-go-to: commerce_negotiation
+go-to: commerce_proposal
 
 @commerce_vote
-new-page: true
-subtitle: [? if not parlament_comerce_deal_party: Who needs their support anyway? ?]
+subtitle: [? if not parlament_comerce_deal_party and (parlament_comerce_can_approach_cup or parlament_comerce_can_approach_psc or parlament_comerce_can_approach_erc or parlament_comerce_can_approach_convergence or parlament_comerce_can_approach_icv): Who needs their support anyway? ?]
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;

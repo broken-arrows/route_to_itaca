@@ -3,8 +3,15 @@ new-page: true
 choose-if: not parlament_climate_change_passed
 unavailable-subtitle: [? if parlament_climate_change_passed: Already approved!?]
 on-arrival: {!
+    Q.parlament_climate_change_variant = null;
+    Q.parlament_climate_change_deal_party = null;
     Q.parlament_climate_change_deals = [];
 !}
+go-to: climate_change_proposal
+
+@climate_change_proposal
+new-page: true
+go-to: climate_carbon_budgets if parlament_climate_change_variant = "carbon_budgets"; climate_economy_transition if parlament_climate_change_variant = "economy_transition"
 
 = Climate Change Law
 
@@ -25,7 +32,6 @@ go-to: climate_change_negotiation
 Many on the right of the political spectrum are fundamentally opposed to this level of regulation of the private sector. We may want to approach them if we want to secure an ample majority for this vote.
 
 @climate_change_negotiation
-new-page: true
 on-arrival: {!
     var playerProposal = Q.coming_from_parlament;
     var proposingParty = Q.player_in_jxsi ? "jxsi" : Q.player_in_jxcat ? "jxcat" : Q.player_party;
@@ -72,10 +78,6 @@ on-arrival: {!
     }
     Q.parlament_climate_change_vote_preview = {outcomes:[forecast.yes, forecast.abstain, forecast.no]};
 !}
-
-= Climate Change Law
-
-Parties in the Parlament are expected to vote soon, so we have a unique chance now to try to push their positions.
 
 {! <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_climate_change_vote_preview"}'></div> !}
 
@@ -148,11 +150,10 @@ on-arrival: {!
     Q.parlament_climate_change_deals.push({party: party, position: newPosition});
     Q[party + "_relations"] -= 5;
 !}
-go-to: climate_change_negotiation
+go-to: climate_change_proposal
 
 @climate_change_vote
-new-page: true
-subtitle: [? if not parlament_climate_change_deal_party: Who needs their support anyway? ?]
+subtitle: [? if not parlament_climate_change_deal_party and (parlament_climate_change_can_approach_cup or parlament_climate_change_can_approach_psc or parlament_climate_change_can_approach_erc or parlament_climate_change_can_approach_convergence or parlament_climate_change_can_approach_icv): Who needs their support anyway? ?]
 on-arrival: {!
     // TODO: Even more radical version for CUP?
     var playerProposal = Q.coming_from_parlament;

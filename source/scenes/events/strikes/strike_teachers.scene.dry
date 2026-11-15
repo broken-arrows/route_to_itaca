@@ -7,7 +7,7 @@ face-image: img/events/vaga_education.jpg
 max-visits: 1
 view-if: strike_triggered = "teachers" and not cat_caretaker_gov and education_spending >= -2 and education_spending < 0
 on-arrival: {!
-    Q.strike_timer = 6;
+    Q.strike_timer = 9;
     Q.strike_teachers_response = null;
     Q.strike_teachers_settled = false;
     Q.strike_teachers_partner = Q.education_minister_party;
@@ -30,7 +30,7 @@ Across Catalonia, teachers are striking, protesting against the "dismal state" o
 
 @accept
 title: Accept the workers' demands
-view-if: education_minister_party = player_party or (player_in_jxsi and education_minister_party = "jxsi") or (player_in_jxcat and education_minister_party = "jxcat")
+view-if: strike_teachers_partner = player_party or (player_in_jxsi and strike_teachers_partner = "jxsi") or (player_in_jxcat and strike_teachers_partner = "jxcat")
 subtitle: We control the ministry after all. \[-1 budget\]
 choose-if: government_budget >= 1 and education_spending + 1 <= social_spending_cap and (not fla_escalated or (not fla_severe and education_spending < 0) or (fla_severe and education_spending < -1))
 unavailable-subtitle: [? if government_budget < 1: Not enough budget. ?][? if education_spending + 1 > social_spending_cap: The current social spending cap is too low to allow for this. ?][? if fla_escalated and ((not fla_severe and education_spending >= 0) or (fla_severe and education_spending >= -1)): Stringent FLA conditions ban us from taking such action. ?]
@@ -38,11 +38,11 @@ on-arrival: strike_teachers_response = "accept"
 go-to: resolve
 
 @pressure
-title: Push [+ education_minister_party +] to accept the workers' demands
-view-if: not (education_minister_party = player_party or (player_in_jxsi and education_minister_party = "jxsi") or (player_in_jxcat and education_minister_party = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))
-subtitle: We'll have to apply pressure on [+ education_minister_party +] for them to even consider sitting down with the union representatives. \[-1 resources; -1 budget\].
-choose-if: (not (education_minister_party = player_party or (player_in_jxsi and education_minister_party = "jxsi") or (player_in_jxcat and education_minister_party = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))) and party_resources >= 1 and ((difficulty < 0 and strike_teachers_relations >= 45) or (difficulty >= 0 and strike_teachers_relations >= 55)) and government_budget >= 1 and education_spending + 1 <= social_spending_cap and (not fla_escalated or (not fla_severe and education_spending < 0) or (fla_severe and education_spending < -1))
-unavailable-subtitle: [? if not ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting))): We are not part of the government nor providing external support to it. ?][? if party_resources < 1: Not enough resources. ?][? if ((difficulty < 0 and strike_teachers_relations < 45) or (difficulty >= 0 and strike_teachers_relations < 55)): Our relations with [+ strike_teachers_partner +] are not good enough. ?][? if government_budget < 1: Not enough budget. ?][? if education_spending + 1 > social_spending_cap: The current social spending cap is too low to allow such a measure.  ?][? if fla_escalated and ((not fla_severe and education_spending >= 0) or (fla_severe and education_spending >= -1)): Stringent FLA conditions ban us from taking such action. ?]
+title: Push [+ strike_teachers_partner +] to accept the workers' demands
+view-if: not (strike_teachers_partner = player_party or (player_in_jxsi and strike_teachers_partner = "jxsi") or (player_in_jxcat and strike_teachers_partner = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))
+subtitle: We'll have to apply pressure on [+ strike_teachers_partner +] for them to even consider sitting down with the union representatives. \[-1 resources[? if ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)):; -1 budget?]\].
+choose-if: (not (strike_teachers_partner = player_party or (player_in_jxsi and strike_teachers_partner = "jxsi") or (player_in_jxcat and strike_teachers_partner = "jxcat")) and ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting)))) and party_resources >= 1 and ((difficulty < 0 and strike_teachers_relations >= 45) or (difficulty >= 0 and strike_teachers_relations >= 55)) and (not ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) or government_budget >= 1) and education_spending + 1 <= social_spending_cap and (not fla_escalated or (not fla_severe and education_spending < 0) or (fla_severe and education_spending < -1))
+unavailable-subtitle: [? if not ((player_party = "erc" and (erc_in_gob or erc_supporting)) or (player_party = "cup" and (cup_in_gob or cup_supporting)) or (player_in_jxsi and (jxsi_in_gob or jxsi_supporting)) or (player_in_jxcat and (jxcat_in_gob or jxcat_supporting))): We are not part of the government nor providing external support to it. ?][? if party_resources < 1: Not enough resources. ?][? if ((difficulty < 0 and strike_teachers_relations < 45) or (difficulty >= 0 and strike_teachers_relations < 55)): Our relations with [+ strike_teachers_partner +] are not good enough. ?][? if ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob)) and government_budget < 1: Not enough budget. ?][? if education_spending + 1 > social_spending_cap: The current social spending cap is too low to allow such a measure.  ?][? if fla_escalated and ((not fla_severe and education_spending >= 0) or (fla_severe and education_spending >= -1)): Stringent FLA conditions ban us from taking such action. ?]
 on-arrival: strike_teachers_response = "pressure"
 go-to: resolve
 
@@ -70,7 +70,7 @@ on-arrival: {!
         Q.strike_triggered = null;
         Q.strike_teachers_settled = delivery;
         if (delivery) {
-            Q.government_budget -= 1;
+            if (response != "pressure" || (Q.player_party == "erc" && Q.erc_in_gob) || (Q.player_party == "cup" && Q.cup_in_gob) || (Q.player_in_jxsi && Q.jxsi_in_gob) || (Q.player_in_jxcat && Q.jxcat_in_gob)) Q.government_budget -= 1;
             if (response == "pressure") Q.party_resources -= 1;
             Q.education_spending += 1;
             Q.education_prepared_level = null;

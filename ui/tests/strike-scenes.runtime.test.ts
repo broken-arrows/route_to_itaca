@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DendryAdapter } from '../src/engine/adapter';
 
-const gameText = readFileSync(resolve(import.meta.dirname, '../../out/game.json'), 'utf8');
+const gameText = readFileSync(resolve(import.meta.dirname, process.env.ITACA_STRIKE_GAME_JSON || '../../out/game.json'), 'utf8');
 const sectors = [
   ['fgc', 'territory'], ['firefighters', 'interior'], ['healthcare', 'health'],
   ['teachers', 'education'], ['university', 'education'], ['public_pay', 'economy'],
@@ -99,6 +99,76 @@ describe.each(sectors)('%s strike options', (sector, ministry) => {
     expect(pressure!.subtitle?.trim()).toBeTruthy();
   });
 
+  it.each([
+    ['erc', undefined], ['cup', undefined], ['erc', 'jxsi'], ['cup', 'jxcat'],
+  ])('waives executive capacity for external support by %s through %s', (player, list) => {
+    const vehicle = list || player;
+    const { adapter, q, frame } = setup(sector, ministry, {
+      player_party: player, erc_in_gob: false,
+      [`${vehicle}_supporting`]: true,
+      ...(list ? { [`player_in_${list}`]: true } : {}),
+      cat_coalition: ['psc'], cat_coalition_support: [vehicle], government_budget: 0,
+    });
+    const index = frame.choices.findIndex(choice => choice.id === `strike_${sector}.pressure` && choice.canChoose);
+    expect(index).toBeGreaterThanOrEqual(0);
+    expect(frame.choices[index].subtitle).not.toContain('budget');
+    adapter.choose(index);
+    expect(q[`strike_${sector}_settled`]).toBe(true);
+    expect(q.party_resources).toBe(1);
+    expect(q.government_budget).toBe(0);
+  });
+
+  it.each([-1, 2])('leaves external supporters\' existing budget %i untouched', budget => {
+    const { adapter, q, frame } = setup(sector, ministry, {
+      erc_in_gob: false, erc_supporting: true,
+      cat_coalition: ['psc'], cat_coalition_support: ['erc'], government_budget: budget,
+    });
+    adapter.choose(frame.choices.findIndex(choice => choice.id === `strike_${sector}.pressure` && choice.canChoose));
+    expect(q[`strike_${sector}_settled`]).toBe(true);
+    expect(q.government_budget).toBe(budget);
+  });
+
+  it.each(['indp.', 'ind.', 'independent'])('lets the presidency settle for an %s minister', affiliation => {
+    const { adapter, q, frame } = setup(sector, ministry, {
+      president_party: 'erc', [`${ministry}_minister_party`]: affiliation,
+    });
+    expect(frame.choices.some(choice => choice.id === `strike_${sector}.pressure`)).toBe(false);
+    for (const name of sector === 'metal' ? ['workers', 'compromise', 'industry'] : ['accept']) {
+      expect(frame.choices.find(choice => choice.id === `strike_${sector}.${name}`)?.canChoose).toBe(true);
+    }
+    const accept = sector === 'metal' ? 'workers' : 'accept';
+    adapter.choose(frame.choices.findIndex(choice => choice.id === `strike_${sector}.${accept}`));
+    expect(q[`strike_${sector}_settled`]).toBe(true);
+    expect(q.government_budget).toBe(1);
+  });
+
+  it.each(['jxsi', 'jxcat'])('recognizes an independent ministry under the shared %s presidency', list => {
+    const { frame } = setup(sector, ministry, {
+      [`player_in_${list}`]: true, [`${list}_in_gob`]: true,
+      president_party: list, [`${ministry}_minister_party`]: 'indp.', cat_coalition: [list],
+    });
+    const accept = sector === 'metal' ? 'workers' : 'accept';
+    expect(frame.choices.find(choice => choice.id === `strike_${sector}.${accept}`)?.canChoose).toBe(true);
+    expect(frame.choices.some(choice => choice.id === `strike_${sector}.pressure`)).toBe(false);
+  });
+
+  it('addresses pressure to the presidency party for an independent minister', () => {
+    const { adapter, q, frame } = setup(sector, ministry, { [`${ministry}_minister_party`]: 'indp.' });
+    const index = frame.choices.findIndex(choice => choice.id === `strike_${sector}.pressure` && choice.canChoose);
+    expect(index).toBeGreaterThanOrEqual(0);
+    expect(frame.choices[index].title).toContain('psc');
+    expect(frame.choices[index].subtitle).toContain('psc');
+    expect(frame.choices[index].title).not.toContain('indp.');
+    adapter.choose(index);
+    expect(q[`strike_${sector}_settled`]).toBe(true);
+    expect(q.psc_relations).toBe(52);
+  });
+
+  it('starts a nine-step cooldown on arrival', () => {
+    const { q } = setup(sector, ministry);
+    expect(q.strike_timer).toBe(9);
+  });
+
   it('settles through the visible pressure choice at 55 relations on hard', () => {
     const { adapter, q, frame } = setup(sector, ministry);
     const index = frame.choices.findIndex(choice => choice.id === `strike_${sector}.pressure` && choice.canChoose);
@@ -135,7 +205,11 @@ it.each([
   ['healthcare', 'health', { fla_escalated: true }],
   ['public_pay', 'economy', { fla_escalated: true }],
 ])('%s pressure retains %s restrictions (%j)', (sector, ministry, overrides) => {
-  const { frame } = setup(sector, ministry, overrides);
+  const { frame } = setup(sector, ministry, {
+    erc_in_gob: false, erc_supporting: true,
+    cat_coalition: ['psc'], cat_coalition_support: ['erc'], government_budget: 0,
+    ...overrides,
+  });
   const pressure = frame.choices.find(choice => choice.id === `strike_${sector}.pressure`);
   expect(pressure).toBeDefined();
   expect(pressure!.canChoose).toBe(false);
