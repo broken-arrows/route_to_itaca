@@ -251,10 +251,11 @@
   };
 
   // Factory: validates that a property's value is one of `values`.
-  var makeEnsureInList = function(what, values) {
+  // Case-insensitive lists return the canonical lowercase value.
+  var makeEnsureInList = function(what, values, ignoreCase) {
     var allowed = {};
     for (var vi = 0; vi < values.length; ++vi) {
-      allowed[values[vi]] = true;
+      allowed[ignoreCase ? values[vi].toLowerCase() : values[vi]] = true;
     }
     return function(object, propertyName, callback) {
       assert(
@@ -262,6 +263,9 @@
         );
       var val = propval(object, propertyName);
       val = val.trim();
+      if (ignoreCase) {
+        val = val.toLowerCase();
+      }
       if (allowed[val] === true) {
         return callback(null, val);
       } else {

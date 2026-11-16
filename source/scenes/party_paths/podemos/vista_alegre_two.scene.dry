@@ -44,7 +44,7 @@ The first electoral cycle for the "new" left, which resulted in the current [+ s
 - @preserve
 
 @default
-title: [? if podemos_in_government: Podemos doubles down on their existing structure?][? if not podemos_in_government and podemos_confederal: A bet is made on a strengthened common coordination?][? if not podemos_in_government and not podemos_confederal: Minor party de-centralization measures ?]
+title: [? if podemos_in_government: Podemos doubles down on their existing structure?][? if not podemos_in_government and podemos_confederal: A bet is made on a strengthened coordination?][? if not podemos_in_government and not podemos_confederal: Podemos embraces minor party de-centralization measures ?]
 subtitle: [? if not podemos_in_government and not podemos_confederal: Pablo Echenique will be welcome to be part of the party's leadership to see this through. ?][? if not podemos_in_government and podemos_confederal: Íñigo Errejón will be welcome to be part of the party's leadership to see this through. ?][? if podemos_in_government: After all, this has worked so far to bring the party to the government.?]
 on-arrival: {!
     if (Q.podemos_vista_alegre_two_trigger && Q.year > 2015 && !Q.spa_caretaker_gov) {

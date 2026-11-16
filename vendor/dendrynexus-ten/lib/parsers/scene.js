@@ -103,13 +103,14 @@
     // The old renderer never reads this, so it is inert there.
     role: {
       required: false,
+      // Normalize authored casing before validation and mechanical derivation.
       validate: validators.makeEnsureInList('role', [
         'desk', 'deck', 'deck-gov', 'deck-party', 'deck-parliament',
         'card', 'card-gov', 'card-party', 'card-parliament',
         'pinned-action', 'pinned-advisor', 'pinned-parliament', 'newspaper', 'event',
         'status', 'info-tab', 'pause-item', 'title-hub', 'main-menu-item', 'library-item',
         'setup', 'intro', 'ending', 'default'
-      ])
+      ], true)
     },
 
     maxVisits: {

@@ -15,6 +15,36 @@ describe('role scene attribute', () => {
     expect(game.scenes.t.role).toBe('card');
   });
 
+  it.each([
+    ['DeSk', 'desk'],
+    ['DECK', 'deck'],
+    ['Deck-GOV', 'deck-gov'],
+    ['Deck-PARTY', 'deck-party'],
+    ['Deck-PARLIAMENT', 'deck-parliament'],
+    ['CARD', 'card'],
+    ['Card-GOV', 'card-gov'],
+    ['Card-PARTY', 'card-party'],
+    ['Card-PARLIAMENT', 'card-parliament'],
+    ['Pinned-ACTION', 'pinned-action'],
+    ['Pinned-ADVISOR', 'pinned-advisor'],
+    ['Pinned-PARLIAMENT', 'pinned-parliament'],
+    ['NEWSPAPER', 'newspaper'],
+    ['Event', 'event'],
+    ['Status', 'status'],
+    ['Info-TAB', 'info-tab'],
+    ['Pause-ITEM', 'pause-item'],
+    ['Title-HUB', 'title-hub'],
+    ['Main-Menu-ITEM', 'main-menu-item'],
+    ['Library-ITEM', 'library-item'],
+    ['SETUP', 'setup'],
+    ['INTRO', 'intro'],
+    ['ENDING', 'ending'],
+    ['Default', 'default'],
+  ])('compiles role %s to canonical %s', async (authored, expected) => {
+    const game = await compile([scene(`title: T\nrole: ${authored}\n\nBody.\n`)]);
+    expect(game.scenes.t.role).toBe(expected);
+  });
+
   it.each(['pinned-action', 'pinned-advisor', 'pinned-parliament'])(
     'accepts pinned presentation role %s and preserves it',
     async (role) => {
@@ -50,6 +80,10 @@ describe('role scene attribute', () => {
 
   it('still rejects unknown skin-like values', async () => {
     await expect(compile([scene('title: T\nrole: card-ministry\n\nBody.\n')])).rejects.toThrow(/role/i);
+  });
+
+  it('rejects unknown roles regardless of case', async () => {
+    await expect(compile([scene('title: T\nrole: Card-MINISTRY\n\nBody.\n')])).rejects.toThrow(/role/i);
   });
 
   it('still rejects unknown pinned presentation variants', async () => {

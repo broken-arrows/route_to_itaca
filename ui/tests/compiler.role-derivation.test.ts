@@ -19,7 +19,7 @@ async function adapterFor(files: { name: string; contents: string }[]): Promise<
 const scene = (body: string) => ({ name: 't.scene.dry', contents: body });
 
 describe('role -> mechanical boolean derivation', () => {
-  it.each(['card', 'card-gov', 'card-party', 'card-parliament'])(
+  it.each(['card', 'card-gov', 'card-party', 'card-parliament', 'Card-GOV'])(
     'role: %s derives isCard: true when is-card is absent',
     async (role) => {
       const game = await compile([scene(`title: T\nrole: ${role}\n\nBody.\n`)]);
@@ -27,7 +27,7 @@ describe('role -> mechanical boolean derivation', () => {
     },
   );
 
-  it.each(['deck', 'deck-gov', 'deck-party', 'deck-parliament'])(
+  it.each(['deck', 'deck-gov', 'deck-party', 'deck-parliament', 'Deck-PARTY'])(
     'role: %s derives isDeck: true when is-deck is absent',
     async (role) => {
       const game = await compile([scene(`title: T\nrole: ${role}\n\nBody.\n`)]);
@@ -40,8 +40,8 @@ describe('role -> mechanical boolean derivation', () => {
     expect(game.scenes.t.role).toBe('deck-gov');
   });
 
-  it('role: desk derives isHand: true when is-hand is absent', async () => {
-    const game = await compile([scene('title: T\nrole: desk\n\nBody.\n')]);
+  it.each(['desk', 'DeSk'])('role: %s derives isHand: true when is-hand is absent', async (role) => {
+    const game = await compile([scene(`title: T\nrole: ${role}\n\nBody.\n`)]);
     expect(game.scenes.t.isHand).toBe(true);
   });
 
@@ -64,6 +64,11 @@ describe('role -> mechanical boolean derivation', () => {
     },
   );
 
+  it('derives pinned behavior from a mixed-case role', async () => {
+    const game = await compile([scene('title: T\nrole: Pinned-ADVISOR\n\nBody.\n')]);
+    expect(game.scenes.t).toMatchObject({ role: 'pinned-advisor', isPinnedCard: true });
+  });
+
   it('non-mechanical role (event) leaves all mechanical booleans undefined', async () => {
     const game = await compile([scene('title: T\nrole: event\n\nBody.\n')]);
     expect(game.scenes.t.isCard).toBeUndefined();
@@ -80,16 +85,17 @@ describe('role -> mechanical boolean derivation', () => {
     expect(game.scenes.t.isPinnedCard).toBeUndefined();
   });
 
-  it('explicit is-card wins over the role-derived value, even when false', async () => {
-    const game = await compile([scene('title: T\nrole: card\nis-card: false\n\nBody.\n')]);
+  it.each(['card', 'Card-GOV'])('explicit is-card wins over role: %s, even when false', async (role) => {
+    const game = await compile([scene(`title: T\nrole: ${role}\nis-card: false\n\nBody.\n`)]);
     expect(game.scenes.t.isCard).toBe(false);
   });
 
   it('derives isDeck on a section (@sub) the same way as a root scene', async () => {
     const game = await compile([
-      scene('title: T\nrole: event\n\nRoot body.\n\n@sub\ntitle: Sub\nrole: deck\n\nSub body.\n'),
+      scene('title: T\nrole: event\n\nRoot body.\n\n@sub\ntitle: Sub\nrole: Deck-GOV\n\nSub body.\n'),
     ]);
     expect(game.scenes['t.sub'].isDeck).toBe(true);
+    expect(game.scenes['t.sub'].role).toBe('deck-gov');
     // The root scene's own (non-mechanical) role is untouched by this.
     expect(game.scenes.t.isCard).toBeUndefined();
   });

@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { DendryAdapter } from '../src/engine/adapter';
+import { markGlossary } from '../src/glossary/mark';
 
 const gameText = readFileSync(resolve(import.meta.dirname, '../../out/game.json'), 'utf8');
 
@@ -44,6 +45,108 @@ function pick(adapter: DendryAdapter, id: string) {
 }
 
 describe('Spanish censure motions', () => {
+  it.each([
+    ['up', 100, 60], ['up', 180, 60], ['up', 60, 100], ['up', 100, 180],
+    ['podemos', 100, 60], ['podemos', 180, 60], ['podemos', 60, 100], ['podemos', 100, 180],
+    ['sumar', 100, 60], ['sumar', 60, 100],
+  ] as const)('forms and colours the %s coalition with %s PSOE and %s left seats', (left, psoe, leftSeats) => {
+    const a = setup({ psoe_congreso_s: psoe, up_congreso_s: 0, [left + '_congreso_s']: leftSeats,
+      [left + '_leader']: 'Pablo Iglesias', [left + '_leader_gender']: 'm',
+      congreso_parties: ['pp', 'psoe', left, 'erc', 'pnv'], pp_congreso_s: 334 - psoe - leftSeats });
+    const parties = psoe >= leftSeats ? ['psoe', left] : [left, 'psoe'];
+    const band = psoe + leftSeats >= 176 ? 'Majority' : 'Minority';
+    const name = psoe >= leftSeats ? 'Progressist Coalition' : 'Change Coalition';
+    pick(a, 'spanish_censure');
+    pick(a, 'spanish_censure.support');
+    expect(a.qualities.censure_won).toBe(true);
+    expect(a.qualities.spanish_pm_party).toBe(parties[0]);
+    expect(a.qualities.spanish_coalition).toEqual(parties);
+    function checkDisplay(adapter: DendryAdapter) {
+      const document = new DOMParser().parseFromString(adapter.qualities.spanish_coalition_disp, 'text/html');
+      const government = document.querySelector('.gobierno-coalition');
+      expect(adapter.qualities.spanish_coalition).toEqual(parties);
+      expect(government?.getAttribute('data-parties')).toBe(parties.join(' '));
+      expect(government?.getAttribute('data-summary')).toBe(`${band} government - ${psoe + leftSeats}/176`);
+      expect(government?.textContent).toBe(name);
+      const labels = Array.from(government!.querySelectorAll('span'));
+      expect(labels).toHaveLength(2);
+      expect(labels[0].getAttribute('style')).toContain(`color: var(--${parties[0] === 'psoe' ? 'psoe' : 'up'})`);
+      expect(labels[1].getAttribute('style')).toContain(`color: var(--${parties[0] === 'psoe' ? 'up' : 'psoe'})`);
+      for (const label of labels) expect(label.getAttribute('style')).toContain('font-style: italic');
+      expect(adapter.currentFrame().html).toContain(`color: var(--psoe)`);
+      expect(adapter.currentFrame().html).toContain(`color: var(--up)`);
+    }
+    checkDisplay(a);
+    const restored = DendryAdapter.fromJSONText(gameText);
+    restored.importStateJSON(a.exportStateJSON());
+    checkDisplay(restored);
+  });
+
+  it('forms the two-party cabinet even when PSOE splits its censure vote', () => {
+    const a = setup({ psoe_leader: '???', up_congreso_s: 180, pp_congreso_s: 54 });
+    pick(a, 'spanish_censure');
+    pick(a, 'spanish_censure.support');
+    expect(a.qualities.censure_won).toBe(true);
+    expect(a.qualities.spanish_coalition).toEqual(['up', 'psoe']);
+    expect(a.qualities.spanish_coalition_disp).toContain('data-summary="Majority government - 280/176"');
+    expect(a.qualities.censure_vote_result.outcomes.find((outcome: any) => outcome.kind === 'abstain').votes).toBe(80);
+  });
+
+  it('returns through the proposal prose to refreshed options until the ballot', () => {
+    const a = setup({ psoe_leader: '???', up_congreso_s: 100, pdcat_congreso_s: 8, pp_congreso_s: 126 });
+    pick(a, 'spanish_censure');
+    const time = a.qualities.time;
+    function checkOptions(yes: number) {
+      const frame = a.currentFrame();
+      expect(frame.sceneId).toBe('spanish_censure.choices');
+      expect(frame.html.match(/In a system where votes of no confidence/g)).toHaveLength(1);
+      expect(frame.html.match(/id="censure-vote-preview"/g)).toHaveLength(1);
+      expect(frame.html).toContain('Pablo Iglesias');
+      expect(a.qualities.censure_vote_preview.outcomes.find((outcome: any) => outcome.kind === 'yes').votes).toBe(yes);
+      expect(a.qualities.censure_current.resolved).not.toBe(true);
+      expect(a.qualities.spanish_pm).toBe('Mariano Rajoy');
+      expect(a.qualities.time).toBe(time);
+    }
+    checkOptions(120);
+    pick(a, 'spanish_censure.mediate');
+    checkOptions(166);
+    expect(a.qualities.party_resources).toBe(7);
+    pick(a, 'spanish_censure.persuade_ciu');
+    checkOptions(174);
+    expect(a.qualities.party_resources).toBe(6);
+    pick(a, 'spanish_censure.support');
+    expect(a.currentFrame().sceneId).toBe('spanish_censure.result');
+    expect(a.qualities.censure_yes).toBe(184);
+    expect(a.qualities.censure_won).toBe(true);
+  });
+
+  it.each(['preview', 'result'])('highlights UP in the censure %s', (stage) => {
+    const a = setup();
+    pick(a, 'spanish_censure');
+    if (stage === 'result') pick(a, 'spanish_censure.support');
+    const config = a.qualities[`censure_vote_${stage}`];
+    const yes = config.outcomes.find((outcome: any) => outcome.kind === 'yes');
+    const labels = yes.parties.map((party: any) => party.label).join(', ');
+    const glossary = JSON.parse(gameText).data.glossary.terms;
+    expect(markGlossary(labels, glossary)).toContain('data-term="up">UP</span>');
+  });
+
+  it.each(['preview', 'result'])('shows counts only for split delegations in the censure %s', (stage) => {
+    const a = setup({ psoe_leader: '???' });
+    pick(a, 'spanish_censure');
+    if (stage === 'result') pick(a, 'spanish_censure.support');
+    const config = a.qualities[`censure_vote_${stage}`];
+    const counts: Record<string, number> = {};
+    for (const outcome of config.outcomes) {
+      for (const party of outcome.parties) {
+        if (party.label === 'psoe') counts[outcome.kind] = party.count;
+        else expect(party.count == null, `${outcome.kind}: ${party.label}`).toBe(true);
+      }
+    }
+    expect(counts).toEqual({ yes: 20, abstain: 80 });
+    expect(config.outcomes.reduce((total: number, outcome: any) => total + outcome.votes, 0)).toBe(350);
+  });
+
   it.each<[string, Record<string, number>]>([
     ['congreso_coalition_grand.toleration', { pp_congreso_s: 137, psoe_congreso_s: 85,
       up_congreso_s: 71, cs_congreso_s: 32, erc_congreso_s: 9, pdcat_congreso_s: 8,
@@ -163,6 +266,7 @@ describe('Spanish censure motions', () => {
     expect(a.qualities.censure_yes).toBeGreaterThan(a.qualities.censure_no);
     expect(a.qualities.censure_won).toBe(false);
     expect(a.qualities.spanish_pm).toBe('Mariano Rajoy');
+    expect(a.qualities.spanish_coalition).toEqual(['pp']);
     expect(a.qualities.negotiated_cash_countdown).toBe(7);
     expect(a.qualities.next_spanish_election_time).toBe(election);
     pick(a, 'post_event');
@@ -182,7 +286,7 @@ describe('Spanish censure motions', () => {
     expect(a.qualities.censure_won).toBe(true);
     expect(a.qualities.censure_yes).toBe(176);
     expect(a.qualities.spanish_pm).toBe('Pedro Sánchez');
-    expect(a.qualities.spanish_coalition).toEqual(['psoe']);
+    expect(a.qualities.spanish_coalition).toEqual(['psoe', 'up']);
     expect(a.qualities.negotiated_cash_countdown).toBe(8);
     expect(a.qualities.countdowns).not.toContain('negotiated_funding_psoe');
     expect(a.qualities.competence_renfe).toBe(true);
@@ -216,7 +320,7 @@ describe('Spanish censure motions', () => {
     const a = setup({ psoe_leader: '???', psc_relations: 70, icv_relations: 70, psoe_congreso_s: 101 });
     pick(a, 'spanish_censure');
     expect(a.qualities.censure_current.votes.find((r: any) => r.party === 'psoe').yes).toBe(20);
-    a.goToScene('spanish_censure.choices');
+    a.goToScene('spanish_censure.proposal');
     expect(a.qualities.censure_current.votes.find((r: any) => r.party === 'psoe').yes).toBe(20);
     pick(a, 'spanish_censure.mediate');
     expect(a.qualities.censure_current.votes.find((r: any) => r.party === 'psoe').yes).toBe(40);
@@ -245,7 +349,7 @@ describe('Spanish censure motions', () => {
     pick(a, 'congreso_coalition_negotiation.resolve');
     expect(a.qualities.spanish_pm).toBe('Pablo Iglesias');
     expect(a.qualities.congreso_agreement_lead_party).toBe('up');
-    expect(a.qualities.spanish_coalition).toEqual(['up']);
+    expect(a.qualities.spanish_coalition).toEqual(['up', 'psoe']);
   });
 
   it('does not sell Madina support when political conditions or resources are missing', () => {

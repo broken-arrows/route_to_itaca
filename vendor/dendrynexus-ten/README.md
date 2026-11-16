@@ -18,11 +18,12 @@ on the next build with no reinstall.
   is room for two. Text-only choices follow in the ordinary `.choices` list.
   Hiding portraits returns all choices to that ordinary list. This is independent of
   `card-image` and `face-image`. Other renderers may ignore it.
-- **`role` scene attribute**: a compiler-validated enum naming which UI surface a scene
+- **`role` scene attribute**: a case-insensitive, compiler-validated enum naming which UI surface a scene
   renders on: `desk`, `deck`, `card`, `pinned-action`, `newspaper`, `event`, `info-tab`,
   `pause-item`, `main-menu-item`, `library-item`, `ending`, `default`. Additive and
   presentation-only (tags still drive deck draw-pools). `default`/inheritance is resolved
-  by the UI adapter at runtime; the compiler only validates the enum.
+  by the UI adapter at runtime. Authored role values compile to lowercase
+  (for example, `Card-GOV` becomes `card-gov`).
 - **`info` manifest → `game.json`**: the compiler emits a whitelisted `info` block
   (`title`, `author`, `ifid`, `version`, `languages`) so the runtime can read game-level metadata.
   `languages: en ca` in `info.dry` declares the locale set. Browser persistence uses

@@ -5721,5 +5721,13 @@
   "We'll have to apply pressure on {strike_metal_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}]": null,
   "We'll have to apply pressure on {strike_public_pay_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}]": null,
   "We'll have to apply pressure on {strike_teachers_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}].": null,
-  "We'll have to apply pressure on {strike_university_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}].": null
+  "We'll have to apply pressure on {strike_university_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}].": null,
+  "A bet is made on a strengthened coordination": null,
+  "A Vote of No Confidence!": null,
+  "Even with our vote in favour, this Vote of No Confidence will not have enough support.": null,
+  "Podemos embraces minor party de-centralization measures": null,
+  "The Vote of No Confidence led by {censure_candidate} has been a success! {spanish_coalition_disp} will now preside over in Moncloa.": null,
+  "Yet with Susana Díaz at the forefront, the idea of a Podemos-led government seems way too out of the question for the PSOE.": null,
+  "The \"continuity\" factions in the PP are too weak after everything that has happened.": null,
+  "The \"renewal\" factions in the PP are too weak after everything that has happened.": null
 }

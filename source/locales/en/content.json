@@ -5696,5 +5696,13 @@
   "We'll have to apply pressure on {strike_metal_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}]": "We'll have to apply pressure on {strike_metal_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}]",
   "We'll have to apply pressure on {strike_public_pay_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}]": "We'll have to apply pressure on {strike_public_pay_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}]",
   "We'll have to apply pressure on {strike_teachers_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}].": "We'll have to apply pressure on {strike_teachers_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}].",
-  "We'll have to apply pressure on {strike_university_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}].": "We'll have to apply pressure on {strike_university_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}]."
+  "We'll have to apply pressure on {strike_university_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}].": "We'll have to apply pressure on {strike_university_partner} for them to even consider sitting down with the union representatives. [-1 resources{clause1}].",
+  "A bet is made on a strengthened coordination": "A bet is made on a strengthened coordination",
+  "A Vote of No Confidence!": "A Vote of No Confidence!",
+  "Even with our vote in favour, this Vote of No Confidence will not have enough support.": "Even with our vote in favour, this Vote of No Confidence will not have enough support.",
+  "Podemos embraces minor party de-centralization measures": "Podemos embraces minor party de-centralization measures",
+  "The Vote of No Confidence led by {censure_candidate} has been a success! {spanish_coalition_disp} will now preside over in Moncloa.": "The Vote of No Confidence led by {censure_candidate} has been a success! {spanish_coalition_disp} will now preside over in Moncloa.",
+  "Yet with Susana Díaz at the forefront, the idea of a Podemos-led government seems way too out of the question for the PSOE.": "Yet with Susana Díaz at the forefront, the idea of a Podemos-led government seems way too out of the question for the PSOE.",
+  "The \"continuity\" factions in the PP are too weak after everything that has happened.": "The \"continuity\" factions in the PP are too weak after everything that has happened.",
+  "The \"renewal\" factions in the PP are too weak after everything that has happened.": "The \"renewal\" factions in the PP are too weak after everything that has happened."
 }

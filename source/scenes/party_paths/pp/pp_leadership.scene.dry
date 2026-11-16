@@ -24,6 +24,7 @@ After years of political wear, corruption scandals, anti-austerity backlash, and
 @soraya_leadership
 title: Soraya Sáenz de Santamaría succeeds Rajoy as PP leader
 choose-if: not pp_party_congress_casado
+unavailable-subtitle: The "continuity" factions in the PP are too weak after everything that has happened.
 on-arrival: {!
     Q.pp_leader = "Soraya Sáenz de Santamaría";
     Q.pp_leader_gender = "f";
@@ -35,6 +36,7 @@ In a win for the party factions betting on continuity, Soraya Sáenz de Santamar
 
 @casado_leadership
 title: Pablo Casado takes the reigns of the PP
+unavailable-subtitle: The "renewal" factions in the PP are too weak after everything that has happened.
 choose-if: pp_party_congress_casado
 on-arrival: {!
     Q.corruption_pp = Math.max(0, Q.corruption_pp - 15);
