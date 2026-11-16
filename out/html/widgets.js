@@ -27,8 +27,11 @@
       return params && params[key] !== undefined ? params[key] : m;
     });
   }
-  function tc(text) {
-    return window.ClassicI18n ? window.ClassicI18n.content(text) : text;
+  function tc(text, params) {
+    if (window.ClassicI18n) return window.ClassicI18n.content(text, params);
+    return text.replace(/\{(\w+)\}/g, function (m, key) {
+      return params && params[key] !== undefined ? params[key] : m;
+    });
   }
 
   function readDataProps(el) {
@@ -754,7 +757,7 @@
             group = { date: event.date, labels: [] };
             events.push(group);
           }
-          var label = tc(event.label);
+          var label = tc(event.labelKey || event.label, event.labelParams);
           if (!group.labels.includes(label)) group.labels.push(label);
         });
       events.sort(function (a, b) {

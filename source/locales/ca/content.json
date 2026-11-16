@@ -15,6 +15,7 @@
   "Congreso Election": "Eleccions al Congreso",
   "Local Election": "Eleccions Municipals",
   "Non-binding consultation": "Consulta no vinculant",
+  "Vote of No Confidence ({surname})": "Moció de censura ({surname})",
   "New Parlament elections called!": "Convocades noves eleccions al Parlament!",
   "President": "President",
   "Presidenta": "Presidenta",
@@ -4443,7 +4444,8 @@
   "<span style=\"color: var(--erc); font-style: italic;\">National</span> <span style=\"color: var(--{party}); font-style: italic;\">Concentration</span> <span style=\"color: #b8a12b; font-style: italic;\">government</span>": null,
   "<span style=\"color: var(--pp); font-style: italic;\">Minority Government</span>": "<span style=\"color: var(--pp); font-style: italic;\">Govern en minoria</span>",
   "<span style=\"color: var(--pp); font-style: italic;\">National</span> <span style=\"color: var(--vox); font-style: italic;\">Right</span> Coalition": null,
-  "<span style=\"color: var(--psoe); font-style: italic;\">Minority Government</span>": null,
+  "<span style=\"color: var(--psoe); font-style: italic;\">Minority Government</span>": "<span style=\"color: var(--psoe); font-style: italic;\">Govern en minoria</span>",
+  "<span style=\"color: var(--psoe); font-style: italic;\">Majority Government</span>": "<span style=\"color: var(--psoe); font-style: italic;\">Govern amb majoria</span>",
   "<span style=\"color: var(--psoe); font-style: italic;\">Progressist</span> <span style=\"color: var(--up); font-style: italic;\">Coalition</span>": null,
   "<span style=\"color: var(--psoe); font-style: italic;\">Social</span>-<span style=\"color: var(--cs); font-style: italic;\">Centrist</span> Coalition": null,
   "<span style=\"color: var(--up); font-style: italic;\">Change</span> <span style=\"color: var(--psoe); font-style: italic;\">Coalition</span>": null,
@@ -5729,5 +5731,6 @@
   "The Vote of No Confidence led by {censure_candidate} has been a success! {spanish_coalition_disp} will now preside over in Moncloa.": null,
   "Yet with Susana Díaz at the forefront, the idea of a Podemos-led government seems way too out of the question for the PSOE.": null,
   "The \"continuity\" factions in the PP are too weak after everything that has happened.": null,
-  "The \"renewal\" factions in the PP are too weak after everything that has happened.": null
+  "The \"renewal\" factions in the PP are too weak after everything that has happened.": null,
+  "A Catalan \"Yes We Can\"": null
 }

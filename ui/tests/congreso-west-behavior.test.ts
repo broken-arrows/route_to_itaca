@@ -83,7 +83,7 @@ it.each([[0,false,true],[-1,false,false],[-2,false,false],[0,true,false],[2,true
  expect(q.bng_congreso_galicia_support>0).toBe(independent);
 });
 
-it('a successful June 2018 censure moves subsequent economic responsibility to PSOE and UP',()=>{
+it('a successful PSOE censure moves subsequent economic responsibility to PSOE alone',()=>{
  const a=DendryAdapter.fromJSONText(game);a.beginGame([1,2,3,4]);
  const q=a.qualities as any;
  for(const k of Object.keys(q))if(k.endsWith('_congreso_s'))q[k]=0;
@@ -98,10 +98,10 @@ it('a successful June 2018 censure moves subsequent economic responsibility to P
  const choices=a.currentFrame().choices;
  const index=choices.findIndex(c=>c.id==='spanish_censure.support');
  expect(index).toBeGreaterThanOrEqual(0);expect(choices[index].canChoose).toBe(true);a.choose(index);
- expect(q.censure_won).toBe(true);expect(q.spanish_pm).toBe('Pedro Sánchez');expect(q.spanish_coalition).toEqual(['psoe','up']);
+ expect(q.censure_won).toBe(true);expect(q.spanish_pm).toBe('Pedro Sánchez');expect(q.spanish_coalition).toEqual(['psoe']);
  const support={pp:25,psoe:25,up:20,bng:5,abstain:25};
  const good=probe('rest',{spanish_coalition:q.spanish_coalition},support).government;
  const bad=probe('rest',{spanish_coalition:q.spanish_coalition,gdp_growth:-1},support).government;
  expect(good.psoe).toBeGreaterThan(0);expect(bad.psoe).toBeLessThan(0);expect(good.pp).toBe(0);expect(bad.pp).toBe(0);
- expect(good.up).toBeGreaterThan(0);expect(bad.up).toBeLessThan(0);
+ expect(good.up).toBe(0);expect(bad.up).toBe(0);
 });

@@ -46,16 +46,47 @@ function pick(adapter: DendryAdapter, id: string) {
 
 describe('Spanish censure motions', () => {
   it.each([
+    ['psoe', 'Pedro Sánchez', 'Sánchez'],
+    ['up', 'Pablo Iglesias', 'Iglesias'],
+    ['sumar', 'Yolanda Díaz', 'Díaz'],
+  ])('records a successful %s motion once with its date and incoming president', (party, candidate, surname) => {
+    const a = setup(party === 'psoe' ? {} : {
+      psoe_congreso_s: 60, up_congreso_s: 0, [party + '_congreso_s']: 180,
+      [party + '_leader']: candidate, pp_congreso_s: 94,
+      congreso_parties: ['pp', 'psoe', party, 'erc', 'pnv'],
+    });
+    const q = a.qualities;
+    const existing = { date: '2016-06-07T00:00:00.000Z', type: 'congreso-election', label: 'Congreso Election' };
+    q.election_history_events = [existing];
+    const date = new Date(q.year, q.month - 1, (q.week || 1) * 7).toISOString();
+    pick(a, 'spanish_censure');
+    expect(q.election_history_events).toEqual([existing]);
+    pick(a, 'spanish_censure.support');
+    expect(q.censure_won).toBe(true);
+    expect(q.spanish_pm).toBe(candidate);
+    const events = [existing, { date, type: 'no-confidence', label: `Vote of No Confidence (${surname})`,
+      labelKey: 'Vote of No Confidence ({surname})', labelParams: { surname } }];
+    expect(q.election_history_events).toEqual(events);
+    const restored = DendryAdapter.fromJSONText(gameText);
+    restored.importStateJSON(a.exportStateJSON());
+    restored.qualities[party + '_leader'] = 'Another Leader';
+    restored.goToScene('spanish_censure.result');
+    restored.refreshLocale('ca', JSON.parse(readFileSync(resolve(import.meta.dirname, '../../source/locales/ca/content.json'), 'utf8')));
+    expect(restored.qualities.election_history_events).toEqual(events);
+  });
+
+  it.each([
     ['up', 100, 60], ['up', 180, 60], ['up', 60, 100], ['up', 100, 180],
     ['podemos', 100, 60], ['podemos', 180, 60], ['podemos', 60, 100], ['podemos', 100, 180],
     ['sumar', 100, 60], ['sumar', 60, 100],
-  ] as const)('forms and colours the %s coalition with %s PSOE and %s left seats', (left, psoe, leftSeats) => {
+  ] as const)('forms and colours the cabinet with %s, %s PSOE and %s left seats', (left, psoe, leftSeats) => {
     const a = setup({ psoe_congreso_s: psoe, up_congreso_s: 0, [left + '_congreso_s']: leftSeats,
       [left + '_leader']: 'Pablo Iglesias', [left + '_leader_gender']: 'm',
       congreso_parties: ['pp', 'psoe', left, 'erc', 'pnv'], pp_congreso_s: 334 - psoe - leftSeats });
-    const parties = psoe >= leftSeats ? ['psoe', left] : [left, 'psoe'];
-    const band = psoe + leftSeats >= 176 ? 'Majority' : 'Minority';
-    const name = psoe >= leftSeats ? 'Progressist Coalition' : 'Change Coalition';
+    const parties = psoe >= leftSeats ? ['psoe'] : [left, 'psoe'];
+    const seats = psoe >= leftSeats ? psoe : psoe + leftSeats;
+    const band = seats >= 176 ? 'Majority' : 'Minority';
+    const name = psoe >= leftSeats ? `${band} Government` : 'Change Coalition';
     pick(a, 'spanish_censure');
     pick(a, 'spanish_censure.support');
     expect(a.qualities.censure_won).toBe(true);
@@ -66,15 +97,16 @@ describe('Spanish censure motions', () => {
       const government = document.querySelector('.gobierno-coalition');
       expect(adapter.qualities.spanish_coalition).toEqual(parties);
       expect(government?.getAttribute('data-parties')).toBe(parties.join(' '));
-      expect(government?.getAttribute('data-summary')).toBe(`${band} government - ${psoe + leftSeats}/176`);
+      expect(government?.getAttribute('data-summary')).toBe(`${band} government - ${seats}/176`);
       expect(government?.textContent).toBe(name);
       const labels = Array.from(government!.querySelectorAll('span'));
-      expect(labels).toHaveLength(2);
+      expect(labels).toHaveLength(parties.length);
       expect(labels[0].getAttribute('style')).toContain(`color: var(--${parties[0] === 'psoe' ? 'psoe' : 'up'})`);
-      expect(labels[1].getAttribute('style')).toContain(`color: var(--${parties[0] === 'psoe' ? 'up' : 'psoe'})`);
+      if (parties.length === 2) expect(labels[1].getAttribute('style')).toContain('color: var(--psoe)');
       for (const label of labels) expect(label.getAttribute('style')).toContain('font-style: italic');
       expect(adapter.currentFrame().html).toContain(`color: var(--psoe)`);
-      expect(adapter.currentFrame().html).toContain(`color: var(--up)`);
+      if (parties.length === 2) expect(adapter.currentFrame().html).toContain('color: var(--up)');
+      else expect(document.body.textContent).toBe(`PSOE ${name}`);
     }
     checkDisplay(a);
     const restored = DendryAdapter.fromJSONText(gameText);
@@ -265,6 +297,7 @@ describe('Spanish censure motions', () => {
     expect(a.qualities.censure_yes).toBe(166);
     expect(a.qualities.censure_yes).toBeGreaterThan(a.qualities.censure_no);
     expect(a.qualities.censure_won).toBe(false);
+    expect(a.qualities.election_history_events ?? []).toEqual([]);
     expect(a.qualities.spanish_pm).toBe('Mariano Rajoy');
     expect(a.qualities.spanish_coalition).toEqual(['pp']);
     expect(a.qualities.negotiated_cash_countdown).toBe(7);
@@ -286,8 +319,12 @@ describe('Spanish censure motions', () => {
     expect(a.qualities.censure_won).toBe(true);
     expect(a.qualities.censure_yes).toBe(176);
     expect(a.qualities.spanish_pm).toBe('Pedro Sánchez');
-    expect(a.qualities.spanish_coalition).toEqual(['psoe', 'up']);
+    expect(a.qualities.spanish_coalition).toEqual(['psoe']);
+    expect(a.qualities.spanish_coalition_disp).toContain('data-summary="Minority government - 100/176"');
     expect(a.qualities.negotiated_cash_countdown).toBe(8);
+    expect(a.qualities.election_history_events).toEqual([
+      expect.objectContaining({ type: 'no-confidence', label: 'Vote of No Confidence (Sánchez)' }),
+    ]);
     expect(a.qualities.countdowns).not.toContain('negotiated_funding_psoe');
     expect(a.qualities.competence_renfe).toBe(true);
     expect(a.qualities.censure_negotiating).toBe(false);

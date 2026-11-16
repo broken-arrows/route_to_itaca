@@ -192,6 +192,13 @@ on-arrival: {!
             && Q.spanish_pm === motion.incumbent && Q.spanish_pm_party === motion.incumbentParty;
         motion.resolved = true;
         if (Q.censure_won) {
+            if (!Array.isArray(Q.election_history_events)) Q.election_history_events = [];
+            var historyDate = new Date(Q.year, Q.month - 1, (Q.week || 1) * 7).toISOString();
+            var historyLabel = G.text('Vote of No Confidence ({surname})', { surname: motion.candidate.split(' ').pop() });
+            if (!Q.election_history_events.some(function (event) { return event.type === 'no-confidence' && event.date === historyDate; })) {
+                Q.election_history_events.push({ date: historyDate, type: 'no-confidence',
+                    label: G.englishText(historyLabel), labelKey: historyLabel.key, labelParams: historyLabel.params });
+            }
             // Promises belonged to the outgoing cabinet. Retain completed laws
             // and competences; only the new commitments start delivery below.
             Q.countdowns = Q.countdowns.filter(function (name) { return !name.startsWith('negotiated_'); });
@@ -208,16 +215,20 @@ on-arrival: {!
             Q.censure_podemos_countdown = 6;
             Q.censure_podemos_trigger = false;
             if (!Q.countdowns.includes('censure_podemos')) Q.countdowns.push('censure_podemos');
-            Q.spanish_coalition = motion.kind === 'psoe' ? ['psoe', motion.left] : [motion.left, 'psoe'];
+            Q.spanish_coalition = motion.kind === 'psoe' ? ['psoe'] : [motion.left, 'psoe'];
             Q.spa_caretaker_gov = false;
             var seats = Q.spanish_coalition.reduce(function (sum, party) { return sum + (Number(Q[party + '_congreso_s']) || 0); }, 0);
             var label = motion.kind === 'psoe'
-                ? G.text('<span style="color: var(--psoe); font-style: italic;">Progressist</span> <span style="color: var(--up); font-style: italic;">Coalition</span>')
+                ? (seats >= motion.majority
+                    ? G.text('<span style="color: var(--psoe); font-style: italic;">Majority Government</span>')
+                    : G.text('<span style="color: var(--psoe); font-style: italic;">Minority Government</span>'))
                 : G.text('<span style="color: var(--up); font-style: italic;">Change</span> <span style="color: var(--psoe); font-style: italic;">Coalition</span>');
             var summary = G.text(seats >= motion.majority ? 'Majority government - {seats}/{majority}' : 'Minority government - {seats}/{majority}', {
                 seats: String(seats), majority: String(motion.majority)
             });
-            G.setText(Q, 'spanish_coalition_disp', G.governmentTooltipText('gobierno', Q.spanish_coalition, summary, label));
+            var government = G.governmentTooltipText('gobierno', Q.spanish_coalition, summary, label);
+            G.setText(Q, 'spanish_coalition_disp', motion.kind === 'psoe'
+                ? G.text('{party} {government}', { party: 'PSOE', government: government }) : government);
         } else if (Q.censure_previous_agreement) {
             for (var key of Object.keys(Q)) {
                 if (key.startsWith('congreso_coalition_negotiated_') && !(key in Q.censure_previous_agreement)) delete Q[key];

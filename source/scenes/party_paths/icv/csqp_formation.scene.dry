@@ -1,4 +1,4 @@
-title: A Catalan "Yes We Can"?
+title: A Catalan "Yes We Can"
 view-if: podemos_surged and next_election_time - time <= 4
 face-image: img/events/csqp_formation.jpg
 tags: event
@@ -101,7 +101,7 @@ on-arrival: {!
 !}
 role: event
 
-= A Catalan "Yes We Can"?
+= A Catalan "Yes We Can"
 
 With the rise of Podemos in Spain, the tide of new left parties throughout Europe, and Catalan elections right around the corner, it seems the time has come here as well. After a slow bleeding of supports and a general view of the party as outdated, ICV-EUiA has fused with new rising forces. They look to be working together with the Catalan branches of Podemos, as well as new spaces built by social movements, such as Ada Colau's BComu in Barcelona. All in all, we may be very well be witnessing a re-birth of the federal left in Catalonia. 
 

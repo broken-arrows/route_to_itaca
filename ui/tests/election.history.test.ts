@@ -219,6 +219,37 @@ describe('election history chart', () => {
   });
 });
 
+it('renders saved no-confidence labels in English and Catalan in both shells', async () => {
+  const adapter = useGameStore().adapter!;
+  const q = { history: records, parties, events: [{ date: '2015-06-07', type: 'no-confidence',
+    label: 'Vote of No Confidence (Sánchez)', labelKey: 'Vote of No Confidence ({surname})',
+    labelParams: { surname: 'Sánchez' } }] };
+  const saved = JSON.stringify(q);
+  const w = render(q);
+  vi.stubGlobal('dendryUI', { dendryEngine: adapter.engine, game: { data: { glossary: { terms: [] } } } });
+  vi.stubGlobal('ClassicI18n', undefined);
+  window.eval(read('out/html/localization.js'));
+  window.eval(read('out/html/d3.v7.min.js'));
+  window.eval(read('out/html/d3-linegraph.js'));
+  window.eval(read('out/html/widgets.js'));
+  const el = document.createElement('div');
+  el.setAttribute('data-widget', 'election-history');
+  el.setAttribute('data-props', JSON.stringify(chartProps));
+  document.body.append(el);
+  const shell = window as unknown as { mountWidgets: (root: Element, q: object) => void };
+  for (const [locale, expected] of [
+    ['en', 'Vote of No Confidence (Sánchez)'], ['ca', 'Moció de censura (Sánchez)'],
+  ]) {
+    adapter.setLocale(locale, JSON.parse(read(`source/locales/${locale}/content.json`)));
+    setLocale(locale); await nextTick();
+    shell.mountWidgets(document.body, q);
+    expect(w.get('.history-event text').text()).toBe(expected);
+    expect(el.querySelector('.history-event text')?.textContent?.trim()).toBe(expected);
+  }
+  expect(JSON.stringify(q)).toBe(saved);
+  w.unmount();
+});
+
 describe.each([
   ['parlament_election.post_election', 'party_support_records', 'parties'],
   ['congreso_election.post_election', 'party_spa_support_records', 'congreso_parties'],

@@ -60,7 +60,7 @@ const events = computed(() => {
     const date = new Date(event.date);
     if (!Number.isFinite(+date) || +date < +first) continue;
     const entry = grouped.get(+date) ?? { date, labels: [] };
-    const label = game.adapter?.translate(event.label) ?? event.label;
+    const label = game.adapter?.translate(event.labelKey ?? event.label, event.labelParams) ?? event.label;
     if (!entry.labels.includes(label)) entry.labels.push(label);
     grouped.set(+date, entry);
   }

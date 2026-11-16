@@ -14,6 +14,7 @@
   "Congreso Election": "Congreso Election",
   "Local Election": "Local Election",
   "Non-binding consultation": "Non-binding consultation",
+  "Vote of No Confidence ({surname})": "Vote of No Confidence ({surname})",
   "- {clause1}{clause2}": "- {clause1}{clause2}",
   "- {economy_budget_icf_name}. ": "- {economy_budget_icf_name}. ",
   "- {parlament_coalition_concessions_indy_text} ": "- {parlament_coalition_concessions_indy_text} ",
@@ -4425,6 +4426,7 @@
   "<span style=\"color: var(--pp); font-style: italic;\">Minority Government</span>": "<span style=\"color: var(--pp); font-style: italic;\">Minority Government</span>",
   "<span style=\"color: var(--pp); font-style: italic;\">National</span> <span style=\"color: var(--vox); font-style: italic;\">Right</span> Coalition": "<span style=\"color: var(--pp); font-style: italic;\">National</span> <span style=\"color: var(--vox); font-style: italic;\">Right</span> Coalition",
   "<span style=\"color: var(--psoe); font-style: italic;\">Minority Government</span>": "<span style=\"color: var(--psoe); font-style: italic;\">Minority Government</span>",
+  "<span style=\"color: var(--psoe); font-style: italic;\">Majority Government</span>": "<span style=\"color: var(--psoe); font-style: italic;\">Majority Government</span>",
   "<span style=\"color: var(--psoe); font-style: italic;\">Progressist</span> <span style=\"color: var(--up); font-style: italic;\">Coalition</span>": "<span style=\"color: var(--psoe); font-style: italic;\">Progressist</span> <span style=\"color: var(--up); font-style: italic;\">Coalition</span>",
   "<span style=\"color: var(--psoe); font-style: italic;\">Social</span>-<span style=\"color: var(--cs); font-style: italic;\">Centrist</span> Coalition": "<span style=\"color: var(--psoe); font-style: italic;\">Social</span>-<span style=\"color: var(--cs); font-style: italic;\">Centrist</span> Coalition",
   "<span style=\"color: var(--up); font-style: italic;\">Change</span> <span style=\"color: var(--psoe); font-style: italic;\">Coalition</span>": "<span style=\"color: var(--up); font-style: italic;\">Change</span> <span style=\"color: var(--psoe); font-style: italic;\">Coalition</span>",
@@ -5704,5 +5706,6 @@
   "The Vote of No Confidence led by {censure_candidate} has been a success! {spanish_coalition_disp} will now preside over in Moncloa.": "The Vote of No Confidence led by {censure_candidate} has been a success! {spanish_coalition_disp} will now preside over in Moncloa.",
   "Yet with Susana Díaz at the forefront, the idea of a Podemos-led government seems way too out of the question for the PSOE.": "Yet with Susana Díaz at the forefront, the idea of a Podemos-led government seems way too out of the question for the PSOE.",
   "The \"continuity\" factions in the PP are too weak after everything that has happened.": "The \"continuity\" factions in the PP are too weak after everything that has happened.",
-  "The \"renewal\" factions in the PP are too weak after everything that has happened.": "The \"renewal\" factions in the PP are too weak after everything that has happened."
+  "The \"renewal\" factions in the PP are too weak after everything that has happened.": "The \"renewal\" factions in the PP are too weak after everything that has happened.",
+  "A Catalan \"Yes We Can\"": "A Catalan \"Yes We Can\""
 }
