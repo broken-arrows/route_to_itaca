@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { imageUrl } from '../../engine/image-url';
 // PaperPage — the neutral full-page paper surface for the Desk UI's
 // non-desk phases (Desk UI Phase 2, Task 8: .superpowers/sdd/p2-task-8-brief.md).
 // One paper sheet on the stage: prose (v-html of the live frame's HTML — a
@@ -34,8 +35,7 @@ const { t } = useI18n();
 const game = useGameStore();
 const settings = useSettingsStore();
 const imageBroken = ref(false);
-const assetBase = import.meta.env.BASE_URL;
-watch(() => game.frame?.sceneId, () => { imageBroken.value = false; });
+watch(() => game.frame?.faceImage, () => { imageBroken.value = false; });
 
 const choices = computed<ChoiceView[]>(() => game.frame?.choices ?? []);
 
@@ -55,7 +55,7 @@ function onPick(i: number, choice: ChoiceView): void {
       <img
         v-if="props.variant === 'event' && settings.eventImages && game.frame?.faceImage && !imageBroken"
         class="event-image"
-        :src="`${assetBase}${game.frame.faceImage}`"
+        :src="imageUrl(game.frame.faceImage)"
         alt=""
         data-test="event-face-image"
         @error="imageBroken = true"

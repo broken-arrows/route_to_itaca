@@ -5,6 +5,7 @@ declare module 'dendrynexus-ten/lib/engine.js' {
     subtitle?: string;
     unavailableSubtitle?: string;
     canChoose: boolean;
+    choiceImage?: string;
     isDeck?: boolean;
     image?: string;
   }

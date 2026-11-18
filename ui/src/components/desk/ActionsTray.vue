@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { imageUrl } from '../../engine/image-url';
 import { computed, reactive } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGameStore } from '../../stores/game';
@@ -25,10 +26,6 @@ const advisorReady = computed(() => {
 });
 
 const broken = reactive<Record<string, boolean>>({});
-function imgSrc(card: CardView): string | null {
-  return card.image ? `${import.meta.env.BASE_URL}${card.image}` : null;
-}
-
 function onActivate(card: CardView): void {
   if (props.disabled || card.canChoose === false) return;
   emit('play', card);
@@ -57,7 +54,7 @@ function onActivate(card: CardView): void {
         @keydown.space.prevent="onActivate(card)"
       >
         <div class="portrait">
-          <img v-if="imgSrc(card) && !broken[card.id]" :src="imgSrc(card)!" alt="" @error="broken[card.id] = true" />
+          <img v-if="card.image && !broken[card.image]" :src="imageUrl(card.image)" alt="" @error="broken[card.image!] = true" />
           <div v-else class="portrait-placeholder" aria-hidden="true"></div>
         </div>
         <!-- card.title reaches this app through the adapter renderer,
@@ -97,7 +94,7 @@ function onActivate(card: CardView): void {
     >
       <span v-if="parliament.canChoose" class="ready-badge parliament-badge" data-test="parliament-ready" aria-label="Ready">!</span>
       <div class="parliament-icon">
-        <img v-if="imgSrc(parliament) && !broken[parliament.id]" :src="imgSrc(parliament)!" alt="" @error="broken[parliament.id] = true" />
+        <img v-if="parliament.image && !broken[parliament.image]" :src="imageUrl(parliament.image)" alt="" @error="broken[parliament.image!] = true" />
         <span v-else class="chamber-mark" aria-hidden="true"><i></i><i></i><i></i></span>
       </div>
       <p class="parliament-name"><Prose tag="span" :html="parliament.title" /></p>

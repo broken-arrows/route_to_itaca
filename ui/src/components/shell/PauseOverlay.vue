@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ChoicePortrait from '../ChoicePortrait.vue';
 import { computed, nextTick, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import RibbonStack from '../menu/RibbonStack.vue';
@@ -155,7 +156,7 @@ defineExpose({ resume, back });
         <Prose :html="authoredPane.bodyHtml" />
         <div v-if="visibleChoices.length" class="authored-choices">
           <button v-for="entry in visibleChoices" :key="entry.index" type="button" :disabled="!entry.choice.canChoose" @click="choose(entry.index)">
-            <Prose tag="span" :html="entry.choice.title" />
+            <ChoicePortrait v-if="entry.choice.choiceImage" :path="entry.choice.choiceImage" /><Prose tag="span" :html="entry.choice.title" />
             <small v-if="entry.choice.subtitle"><Prose tag="span" :html="entry.choice.subtitle" /></small>
           </button>
         </div>

@@ -432,8 +432,15 @@
 
   Game.prototype._fullyQualifyIdsIn = function(scene, object, names, callback) {
     var that = this;
-    async.each(names, function(name, done) {
-      that._fullyQualifyIdsInFunctionByName(scene, object, name, done);
+    var fields = names.map(function(name) { return [object, name]; });
+    ['faceImage', 'cardImage', 'choiceImage', 'setBg', 'setSprites'].forEach(function(name) {
+      var image = object[name];
+      if (image && image.branches) {
+        image.branches.forEach(function(branch) { fields.push([branch, 'predicate']); });
+      }
+    });
+    async.each(fields, function(field, done) {
+      that._fullyQualifyIdsInFunctionByName(scene, field[0], field[1], done);
     }, callback);
   };
 

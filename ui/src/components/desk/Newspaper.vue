@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ChoicePortrait from '../ChoicePortrait.vue';
 // Newspaper is a presentation of the engine's existing newspaper choice list.
 // It deliberately owns no queue, ordering, cap, filler, or transition logic:
 // the live frame remains authoritative and each headline selects the ordinary
@@ -49,7 +50,7 @@ function choose(index: number, choice: ChoiceView): void {
           >
             <span class="story-signal" aria-hidden="true">!</span>
             <div class="story-copy">
-              <h2><Prose tag="span" :html="choice.title" /></h2>
+              <h2><ChoicePortrait v-if="choice.choiceImage" :path="choice.choiceImage" /><Prose tag="span" :html="choice.title" /></h2>
               <p v-if="choice.subtitle"><Prose tag="span" :html="choice.subtitle" /></p>
             </div>
           </article>

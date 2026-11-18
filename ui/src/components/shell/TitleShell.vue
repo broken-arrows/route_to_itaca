@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ChoicePortrait from '../ChoicePortrait.vue';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import RibbonStack from '../menu/RibbonStack.vue';
@@ -55,6 +56,7 @@ const items = computed(() => [
   ...authored.value.map((choice) => ({
     id: `authored:${choice.id}`,
     title: choice.title,
+    choiceImage: choice.choiceImage,
     subtitle: choice.subtitle,
     disabled: !choice.canChoose,
     disabledReason: choice.subtitle,
@@ -216,7 +218,7 @@ onMounted(async () => { await nextTick(); await ribbons.value?.focusFirst(); });
             :disabled="!entry.choice.canChoose"
             @click="choose(entry.index)"
           >
-            <Prose tag="span" :html="entry.choice.title" />
+            <ChoicePortrait v-if="entry.choice.choiceImage" :path="entry.choice.choiceImage" /><Prose tag="span" :html="entry.choice.title" />
             <small v-if="entry.choice.subtitle"><Prose tag="span" :html="entry.choice.subtitle" /></small>
           </button>
         </div>

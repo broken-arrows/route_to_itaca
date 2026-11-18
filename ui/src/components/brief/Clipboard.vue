@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ChoicePortrait from '../ChoicePortrait.vue';
 // Live clipboard — phase 3b Task 9. Replaces the inert ClipboardFrame
 // (phase 3a): the tab rail now comes from the hub scene's own options
 // (via useBriefStore/adapter.tabScenes, never a hardcoded scene id), and each
@@ -51,7 +52,7 @@ const context = computed(() => t(`brief.context.${contextKey.value}`, ''));
           :data-test="choice.id === 'backSpecialScene' ? 'library-close' : 'library-index-choice'"
           @click="brief.chooseLibraryIndex(index)"
         >
-          <Prose tag="span" :html="choice.title" />
+          <ChoicePortrait v-if="choice.choiceImage" :path="choice.choiceImage" /><Prose tag="span" :html="choice.title" />
         </button>
       </div>
     </BriefSheet>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { imageUrl } from '../../engine/image-url';
+import ChoicePortrait from '../ChoicePortrait.vue';
 // A generic event document. Prose, images, widget markers and options all
 // arrive through the ordinary frame contract; this surface knows nothing
 // about event ids or stages and retains no record of earlier answers.
@@ -14,10 +16,9 @@ const game = useGameStore();
 const desk = useDeskStore();
 const settings = useSettingsStore();
 const choices = computed<ChoiceView[]>(() => game.frame?.choices ?? []);
-const assetBase = import.meta.env.BASE_URL;
 const imageBroken = ref(false);
 watch(
-  () => game.frame?.sceneId,
+  () => game.frame?.faceImage,
   () => { imageBroken.value = false; },
 );
 
@@ -37,7 +38,7 @@ function choose(index: number, choice: ChoiceView): void {
         <img
           v-if="settings.eventImages && game.frame?.faceImage && !imageBroken"
           class="event-image"
-          :src="`${assetBase}${game.frame.faceImage}`"
+          :src="imageUrl(game.frame.faceImage)"
           alt=""
           @error="imageBroken = true"
         />
@@ -56,7 +57,7 @@ function choose(index: number, choice: ChoiceView): void {
             @keydown.enter.prevent="choose(index, choice)"
             @keydown.space.prevent="choose(index, choice)"
           >
-            <h2 class="type-control"><Prose tag="span" :html="choice.title" /></h2>
+            <h2 class="type-control"><ChoicePortrait v-if="choice.choiceImage" :path="choice.choiceImage" /><Prose tag="span" :html="choice.title" /></h2>
             <p v-if="choice.subtitle" class="type-compact"><Prose tag="span" :html="choice.subtitle" /></p>
           </article>
         </section>

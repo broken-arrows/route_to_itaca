@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ChoicePortrait from '../ChoicePortrait.vue';
 import { computed } from 'vue';
 import { useGameStore } from '../../stores/game';
 import { useBriefStore } from '../../stores/brief';
@@ -36,7 +37,7 @@ const articlePane = computed(() => splitAuthoredPane(game.frame?.html ?? ''));
             :disabled="!choice.canChoose"
             data-test="library-article-choice"
             @click="brief.chooseLibraryArticle(index)"
-          ><Prose tag="span" :html="choice.title" /></button>
+          ><ChoicePortrait v-if="choice.choiceImage" :path="choice.choiceImage" /><Prose tag="span" :html="choice.title" /></button>
         </div>
       </div>
     </article>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { imageUrl } from '../../engine/image-url';
+import { computed, ref, watch } from 'vue';
 import type { CardView } from '../../engine/types';
 import { skinFor } from './skins';
 
@@ -25,8 +26,10 @@ const jitter = computed(() => `${JITTER_DEG[props.index % JITTER_DEG.length]}deg
 
 const imgBroken = ref(false);
 const imgSrc = computed(() =>
-  props.card.image ? `${import.meta.env.BASE_URL}${props.card.image}` : null,
+  props.card.image ? imageUrl(props.card.image) : null,
 );
+
+watch(imgSrc, () => { imgBroken.value = false; });
 
 function onClick(event: Event): void {
   const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();

@@ -776,6 +776,13 @@
     return this;
   };
 
+  DendryEngine.prototype._resolveImage = function (image) {
+    if (!image || !image.branches) return image;
+    for (var branch of image.branches) {
+      if (!branch.predicate || this._runPredicate(branch.predicate)) return branch.value;
+    }
+  };
+
   DendryEngine.prototype.displayChoices = function () {
     // TODO: dendrynexus - if the current scene is a hand, display the decks, hand, and pinned cards.
     var choices = this.getCurrentChoices();
@@ -798,11 +805,11 @@
             c.canChoose = true;
           }
           c.isDeck = true;
-          c.image = choiceScene.cardImage;
+          c.image = this._resolveImage(choiceScene.cardImage);
           decks.push(c);
         } else if (choiceScene.isPinnedCard) {
           c.isDeck = false;
-          c.image = choiceScene.cardImage;
+          c.image = this._resolveImage(choiceScene.cardImage);
           pinnedCards.push(c);
         }
       }
@@ -841,11 +848,6 @@
   DendryEngine.prototype.displaySceneContent = function (restorePage) {
     var scene = this.getCurrentScene();
     assert(scene);
-    // TODO: displaying images
-    var faceImage = null;
-    if (scene.faceImage) {
-      faceImage = scene.faceImage;
-    }
     var sceneSignal = scene.signal || this.game.sceneSignal;
     var presentation = this._presentation();
     if (sceneSignal !== undefined) {
@@ -863,7 +865,7 @@
       this.state.currentContentFaceImage = this.state.tempCurrentContentFaceImage || null;
       var restoredImage = this.state.currentContentFaceImage;
       this.ui.displayContent(this._renderPage(),
-        restoredImage ? restoredImage.image : faceImage,
+        restoredImage ? restoredImage.image : undefined,
         restoredImage ? restoredImage.offset : undefined);
     } else if (scene.newPage) {
       this.ui.newPage();
@@ -887,6 +889,7 @@
         }) });
       }
       presentation.currentContent.push(snapshot);
+      var faceImage = this._resolveImage(scene.faceImage);
       if (faceImage) {
         this.state.currentContentFaceImage = {
           image: faceImage,
@@ -969,8 +972,7 @@
       return { id: null, title: "no_card_in_deck" };
     }
     this.state.lastDrawnCard = card;
-    var image = this.game.scenes[card.id].cardImage;
-    card.image = image;
+    card.image = this._resolveImage(this.game.scenes[card.id].cardImage);
     this.state.currentHands[currentSceneId].push(card);
 
     // display the hand
@@ -1033,6 +1035,7 @@
           "game will look fine while nothing runs.",
       );
     }
+    var previousState = this.state;
     this.random = rndSeeds ? Random.fromSeeds(rndSeeds) : Random.fromUnique();
     this.state = {
       sceneId: null,
@@ -1104,6 +1107,10 @@
 
     var id = this.game.firstScene || this.state.rootSceneId;
     this.goToScene(id);
+    if (previousState && previousState.bg && !this.state.bg) this.ui.setBg(null);
+    if (previousState && previousState.sprites && !Object.keys(this.state.sprites).length) {
+      this.ui.setSprites(this.state.sprites);
+    }
 
     return this;
   };
@@ -1168,34 +1175,37 @@
     this.random = Random.fromState(this.state.currentRandomState);
     this._loadAchievements();
 
-    // Display the current state.
+    var scene = this.getCurrentScene();
+    // On load, re-render content and re-run onDisplay, mirroring normal
+    // scene entry (displaySceneContent shows content, THEN runs onDisplay,
+    // THEN choices are compiled). onArrival is deliberately NOT re-run.
+    // Ordering matters two ways:
+    //  1. displayContent MUST run before onDisplay: onDisplay actions may
+    //     include display-time view code (e.g. d3 drawing into an <svg>
+    //     that the scene's own content emits), which needs those content
+    //     elements present in the DOM — exactly as on normal entry.
+    //  2. onDisplay MUST run before _compileChoices: it can mutate
+    //     qualities a choice's view-if/choose-if depends on, so choices
+    //     must be compiled against post-onDisplay state.
+    this.ui.newPage();
+    this.ui.removeChoices();
+    // Saves predating page portraits can recover a static scene image.
+    if (this.state.currentContentFaceImage === undefined && typeof scene.faceImage === "string") {
+      this.state.currentContentFaceImage = { image: scene.faceImage, offset: 0 };
+    }
+    var restoredFaceImage = this.state.currentContentFaceImage;
+    this.ui.displayContent(this._renderPage(),
+      restoredFaceImage ? restoredFaceImage.image : undefined,
+      restoredFaceImage ? restoredFaceImage.offset : undefined);
     if (this.isGameOver()) {
       this.displayGameOver();
     } else {
-      var scene = this.getCurrentScene();
-      // On load, re-render content and re-run onDisplay, mirroring normal
-      // scene entry (displaySceneContent shows content, THEN runs onDisplay,
-      // THEN choices are compiled). onArrival is deliberately NOT re-run.
-      // Ordering matters two ways:
-      //  1. displayContent MUST run before onDisplay: onDisplay actions may
-      //     include display-time view code (e.g. d3 drawing into an <svg>
-      //     that the scene's own content emits), which needs those content
-      //     elements present in the DOM — exactly as on normal entry.
-      //  2. onDisplay MUST run before _compileChoices: it can mutate
-      //     qualities a choice's view-if/choose-if depends on, so choices
-      //     must be compiled against post-onDisplay state.
-      this.ui.newPage();
-      this.ui.removeChoices();
-      var restoredFaceImage = this.state.currentContentFaceImage;
-      this.ui.displayContent(this._renderPage(),
-        restoredFaceImage ? restoredFaceImage.image : undefined,
-        restoredFaceImage ? restoredFaceImage.offset : undefined);
       this._runActions(scene.onDisplay, "on-display");
       this.choiceCache = this._compileChoices(scene);
       this.displayChoices();
-      this.ui.setSprites(this.state.sprites);
-      this.ui.setBg(this.state.bg);
     }
+    this.ui.setSprites(this.state.sprites);
+    this.ui.setBg(this.state.bg);
     return this;
   };
 
@@ -1474,6 +1484,7 @@
       }
       if (scene.isSpecial && this.state.prevSpecialSceneId === null) {
         this.state.tempCurrentContent = this.state.currentContent.slice();
+        this.state.tempSceneMedia = { bg: this.state.bg, sprites: this.state.sprites };
         this.state.tempCurrentContentFaceImage = this.state.currentContentFaceImage || null;
         this._presentation().tempCurrentContent = localization.clone(this._presentation().currentContent);
         this._presentation().tempTitle = localization.clone(this._presentation().title);
@@ -1547,14 +1558,33 @@
     this.displaySceneContent(restorePage);
     //}
     // display background
-    if (scene.setBg) {
-      this.state.bg = scene.setBg;
-      this.ui.setBg(scene.setBg);
+    var restoredMedia = restorePage && this.state.tempSceneMedia;
+    var bg = restoredMedia ? restoredMedia.bg : this._resolveImage(scene.setBg);
+    if (bg || restoredMedia) {
+      this.state.bg = bg;
+      this.ui.setBg(bg);
     }
-    if (scene.setSprites) {
-      this.state.sprites = scene.setSprites;
-      this.ui.setSprites(scene.setSprites);
+    var sprites = restoredMedia ? restoredMedia.sprites : this._resolveImage(scene.setSprites);
+    if (sprites || restoredMedia) {
+      // A conditional branch selects a complete layout. A legacy list updates
+      // individual positions, including a per-position "none" to remove one.
+      if (!restoredMedia && Array.isArray(sprites)) {
+        var layout = new Map();
+        var previous = this.state.sprites;
+        if (!scene.setSprites.branches && previous && typeof previous === "object") {
+          var entries = Array.isArray(previous) ? previous : Object.entries(previous);
+          for (var entry of entries) layout.set(entry[0].toLowerCase(), entry);
+        }
+        for (var [loc, image] of sprites) {
+          if (image === "none" || image === "clear") layout.delete(loc.toLowerCase());
+          else layout.set(loc.toLowerCase(), [loc, image]);
+        }
+        sprites = Array.from(layout.values());
+      }
+      this.state.sprites = sprites;
+      this.ui.setSprites(sprites);
     }
+    if (restoredMedia) delete this.state.tempSceneMedia;
     if (scene.audio) {
       this.ui.audio(scene.audio);
     }
@@ -1917,7 +1947,7 @@
         finalChoice.subtitle = this._renderSnapshot(subtitleSnapshot, true);
         finalChoice.presentation.subtitle = subtitleSnapshot;
       }
-      var choiceImage = choice.choiceImage || choiceScene.choiceImage;
+      var choiceImage = this._resolveImage(choice.choiceImage) || this._resolveImage(choiceScene.choiceImage);
       if (choiceImage) {
         finalChoice.choiceImage = choiceImage;
       }

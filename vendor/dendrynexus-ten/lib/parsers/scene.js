@@ -31,7 +31,7 @@
     // Optional portrait beside this choice's title, independent of scene/card art.
     choiceImage: {
       required: false,
-      validate: null
+      validate: validators.validateImage
     },
     unavailableSubtitle: {
       required: false,
@@ -215,7 +215,7 @@
     // set background image to a given URL
     setBg: {
       required: false,
-      validate: null
+      validate: validators.validateImage
     },
     setMusic: {
       required: false,
@@ -223,7 +223,7 @@
     },
     setSprites: {
       required: false,
-      validate: validators.validateSprites
+      validate: validators.validateSpriteLayout
     },
     // TODO: do not use - i don't have a good syntax for this
     setSpriteStyles: {
@@ -274,12 +274,12 @@
     // cardImage is used for both cards and hands. As with setBg, this should be a URL.
     cardImage: {
       required: false,
-      validate: null
+      validate: validators.validateImage
     },
     // faceImage is used for displaying images in content.
     faceImage: {
       required: false,
-      validate: null
+      validate: validators.validateImage
     },
     // if the scene represents a hand
     isHand: {

@@ -48,6 +48,7 @@ export class CaptureUI {
   hand: RawCard[] = [];
   maxCards = 0;
   pinned: RawChoice[] = [];
+  sprites: Record<string, string> = {};
   bg: string | null = null;
   faceImage: string | null = null;
   faceImageOffset: number | null = null;
@@ -103,7 +104,15 @@ export class CaptureUI {
   setBg(img: string | null): void {
     this.bg = img;
   }
-  setSprites(_data: unknown): void {}
+  setSprites(data: [string, string][] | Record<string, string> | string | null): void {
+    const entries = Array.isArray(data) ? data : Object.entries(typeof data === 'object' && data || {});
+    this.sprites = {};
+    for (const [position, image] of entries) {
+      const corner = position.toLowerCase();
+      if (['topleft', 'topright', 'bottomleft', 'bottomright'].includes(corner)
+        && image && image !== 'none' && image !== 'clear') this.sprites[corner] = image;
+    }
+  }
   setSpriteStyle(_loc: unknown, _style: unknown): void {}
   audio(_audio: unknown): void {}
 

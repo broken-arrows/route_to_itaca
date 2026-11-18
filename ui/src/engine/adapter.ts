@@ -182,6 +182,7 @@ export class DendryAdapter {
         id: choice.id,
         title: this.renderer.convertLine(choice.title),
         subtitle: choice.subtitle === undefined ? undefined : this.renderer.convertLine(choice.subtitle),
+        choiceImage: choice.choiceImage,
         canChoose: !!choice.canChoose,
         tags: this.tagsFor(choice.id),
         role: this.roleFor(choice.id),
@@ -487,6 +488,7 @@ export class DendryAdapter {
         id: c.id,
         title: c.title,
         subtitle: c.subtitle ?? c.unavailableSubtitle,
+        choiceImage: c.choiceImage,
         canChoose: !!c.canChoose,
         tags: this.choiceTagsFor(c.id),
         role: this.roleFor(c.id),
@@ -520,12 +522,8 @@ export class DendryAdapter {
       })),
       gameOver: this.engine.isGameOver(),
       bg: this.ui.bg,
-      // setState's restore branch replays stored prose without forwarding the
-      // scene face-image to the UI. The image is authored static scene data,
-      // so read it here as the load-safe source of truth; CaptureUI remains a
-      // fallback for engines that supply a dynamic display image.
-      faceImage:
-        typeof scene.faceImage === 'string' ? scene.faceImage : this.ui.faceImage,
+      sprites: this.ui.sprites,
+      faceImage: this.ui.faceImage,
       signals: [...this.ui.signals],
     };
   }

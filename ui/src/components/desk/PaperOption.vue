@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ChoicePortrait from '../ChoicePortrait.vue';
 // A single option (paper slip) inside an open dossier. Spec:
 // prototype-draw-to-dossier-NOTES.md "Open dossier" (paper slips, dead
 // options dashed border/dimmed/grey/not-allowed, slight per-option
@@ -88,7 +89,7 @@ function onKeyActivate(): void {
          rules matched nothing (both rendered as inherited 16px body text,
          confirmed live 2026-07-20 — see OpenDossier.vue's cover-prose
          comment for the full mechanism). -->
-    <p class="option-title"><Prose tag="span" :html="choice.title" /></p>
+    <p class="option-title"><ChoicePortrait v-if="choice.choiceImage" :path="choice.choiceImage" /><Prose tag="span" :html="choice.title" /></p>
     <p v-if="choice.subtitle" class="option-subtitle"><Prose tag="span" :html="choice.subtitle" /></p>
     <span v-if="locked" class="lock-chip">{{ t('desk.dossier.locked') }}</span>
   </div>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ChoicePortrait from '../ChoicePortrait.vue';
 import { nextTick, ref } from 'vue';
 
 export type RibbonTone = 'gold' | 'red' | 'dark';
@@ -6,6 +7,7 @@ export type RibbonTone = 'gold' | 'red' | 'dark';
 export interface RibbonItem {
   id: string;
   title: string;
+  choiceImage?: string;
   subtitle?: string;
   disabled?: boolean;
   disabledReason?: string;
@@ -97,7 +99,7 @@ defineExpose({ focusItem, focusActive, focusFirst, dropOut });
       :data-test="`ribbon-${item.id}`"
       @click="select(item)"
     >
-      <span class="ribbon-title type-control"><slot name="title" :item="item">{{ item.title }}</slot></span>
+      <span class="ribbon-title type-control"><ChoicePortrait v-if="item.choiceImage" :path="item.choiceImage" /><slot name="title" :item="item">{{ item.title }}</slot></span>
       <span v-if="item.subtitle" class="ribbon-subtitle type-compact"><slot name="subtitle" :item="item">{{ item.subtitle }}</slot></span>
       <span v-if="item.id === activeId" class="active-mark" aria-hidden="true" />
     </button>

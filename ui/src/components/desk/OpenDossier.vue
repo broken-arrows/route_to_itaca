@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { imageUrl } from '../../engine/image-url';
+import { computed, ref, watch } from 'vue';
 import { useDeskStore } from '../../stores/desk';
 import { useGameStore } from '../../stores/game';
 import { skinFor } from './skins';
@@ -31,6 +32,7 @@ const proseHtml = computed(() => {
 });
 
 const faceArtBroken = ref(false);
+watch(() => game.frame?.faceImage, () => { faceArtBroken.value = false; });
 
 // Diegetic header labels — constant per skin (document furniture, not i18n).
 const header = computed(() => {
@@ -101,7 +103,7 @@ function onPick(i: number): void {
         class="dossier-face-art"
         data-test="dossier-face-image"
       >
-        <img :src="`${assetBase}${game.frame.faceImage}`" alt="" @error="faceArtBroken = true" />
+        <img :src="imageUrl(game.frame.faceImage)" alt="" @error="faceArtBroken = true" />
       </div>
 
       </div>

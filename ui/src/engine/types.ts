@@ -24,6 +24,7 @@ export interface GameInfo {
 }
 
 export interface ChoiceView {
+  choiceImage?: string;
   id: string;
   title: string;
   subtitle?: string;
@@ -70,6 +71,7 @@ export interface Frame {
   maxCards: number;
   pinned: CardView[];
   gameOver: boolean;
+  sprites?: Record<string, string>;
   bg: string | null;
   faceImage: string | null;
   faceImageContent?: { beforeHtml: string; afterHtml: string };

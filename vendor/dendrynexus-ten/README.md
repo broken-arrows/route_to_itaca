@@ -11,13 +11,28 @@ on the next build with no reinstall.
 
 ## What `-ten` adds on top of DendryNexus
 
+- **Conditional scene images** work with `face-image`, `card-image`, `choice-image`,
+  `set-bg`, and `set-sprites` in Classic and Desk. Write clauses in priority order.
+  The first true condition selects the value. A final unconditional value is optional.
+  If nothing matches, the property behaves as omitted. A choice can therefore
+  inherit its destination's image when its own conditions do not match.
+
+  ```dry
+  face-image: img/erc/martarovira.jpg if {! return Q.erc_leader === "Marta Rovira"; !}; img/erc/junqueras.jpg
+  set-sprites: topLeft: img/erc/junqueras.jpg, bottomRight: img/erc/martarovira.jpg if meeting; none
+  ```
+
+  Each conditional sprite branch supplies the whole layout. Plain sprite lists
+  update individual positions. Use `none` to clear the layout. The chosen face
+  image stays with its displayed page across continuations, save/load and locale
+  refresh. Drawn cards keep the art selected at draw time.
 - **`choice-image` optional scene/choice attribute**: an image URL passed through as
   `choiceImage` in choice display records (a choice override takes precedence over
   its destination scene). Classic reuses `.card` and `.card-img` for illustrated
   choices, with the title and subtitle alongside. Rows use one column unless there
   is room for two. Text-only choices follow in the ordinary `.choices` list.
   Hiding portraits returns all choices to that ordinary list. This is independent of
-  `card-image` and `face-image`. Other renderers may ignore it.
+  `card-image` and `face-image`. Desk displays the portrait alongside the choice title.
 - **`role` scene attribute**: a case-insensitive, compiler-validated enum naming which UI surface a scene
   renders on: `desk`, `deck`, `card`, `pinned-action`, `newspaper`, `event`, `info-tab`,
   `pause-item`, `main-menu-item`, `library-item`, `ending`, `default`. Additive and

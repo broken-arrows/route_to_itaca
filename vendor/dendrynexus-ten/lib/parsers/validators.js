@@ -665,6 +665,18 @@
     }
   };
 
+  // Preserve semicolons and whitespace inside JavaScript predicates.
+  function splitClauses(val) {
+    var chunks = [];
+    var inMagic = false;
+    val.split(';').forEach(function(chunk) {
+      if (inMagic) chunks[chunks.length - 1] += ';' + chunk;
+      else chunks.push(chunk);
+      inMagic = _endsInMagic(inMagic, chunk);
+    });
+    return chunks.map(function(chunk) { return chunk.trim(); });
+  }
+
   // GoTo properties take zero or more relative ids followed by
   // if-clauses with predicates, optionally concluded by a relative id
   // without and if-clause. Each of these are separated by
@@ -673,22 +685,7 @@
     assert(callback !== undefined, 'Callback required (wrong number of args?)');
     var val = propval(object, propertyName);
 
-    // Separate the value by semi-colons. Semi-colons are common in
-    // magic, so we'll have to weld chunks back together if they are
-    // mid-magic.
-    var naiveChunks = val.split(/\s*;\s*/);
-    var chunks = [];
-    var inMagic = false;
-    _.each(naiveChunks, function(chunk) {
-      if (inMagic) {
-        chunks[chunks.length - 1] = chunks[chunks.length - 1] + ';' + chunk;
-      } else {
-        chunks.push(chunk);
-      }
-      inMagic = _endsInMagic(inMagic, chunk);
-    });
-    // Not an error because dry parsing should have excluded this.
-    assert(!inMagic);
+    var chunks = splitClauses(val);
 
     // For each clause, split by the first if and validate each bit.
     var result = [];
@@ -728,22 +725,7 @@
     assert(callback !== undefined, 'Callback required (wrong number of args?)');
     var val = propval(object, propertyName);
 
-    // Separate the value by semi-colons. Semi-colons are common in
-    // magic, so we'll have to weld chunks back together if they are
-    // mid-magic.
-    var naiveChunks = val.split(/\s*;\s*/);
-    var chunks = [];
-    var inMagic = false;
-    _.each(naiveChunks, function(chunk) {
-      if (inMagic) {
-        chunks[chunks.length - 1] = chunks[chunks.length - 1] + ';' + chunk;
-      } else {
-        chunks.push(chunk);
-      }
-      inMagic = _endsInMagic(inMagic, chunk);
-    });
-    // Not an error because dry parsing should have excluded this.
-    assert(!inMagic);
+    var chunks = splitClauses(val);
 
     // For each clause, split by the first if and validate each bit.
     var result = [];
@@ -789,9 +771,10 @@
           var parts = val.split(/,/);
           for (var i = 0; i < parts.length; i++) {
               parts[i] = parts[i].trim();
-              var inner_parts = parts[i].split(/:/);
-              var loc = inner_parts[0].trim();
-              var path = inner_parts[1].trim();
+              var separator = parts[i].indexOf(':');
+              var loc = parts[i].slice(0, separator).trim();
+              var path = parts[i].slice(separator + 1).trim();
+              if (separator < 1 || !loc || !path) throw new Error('Expected sprite position: image.');
               result.push([loc, path]);
           }
           // split val on commas.
@@ -800,6 +783,41 @@
       }
       return callback(null, result);
   };
+
+  function conditionalImage(validateValue) {
+    return function(object, propertyName, callback) {
+      var value = propval(object, propertyName);
+      var condition = /\s+if(?:\s+|$)/;
+      if (!condition.test(value)) return validateValue(value, null, callback);
+
+      var chunks = splitClauses(value);
+      var index = 0;
+      async.map(chunks, function(chunk, done) {
+        var match = condition.exec(chunk);
+        var literal = (match ? chunk.slice(0, match.index) : chunk).trim();
+        var last = ++index === chunks.length;
+        if (!literal || (!match && !last)) {
+          return done(new Error('Expected an image value with an optional final fallback.'));
+        }
+        validateValue(literal, null, function(err, image) {
+          if (err) return done(err);
+          if (!match) return done(null, {value: image});
+          var source = chunk.slice(match.index + match[0].length);
+          if (!source) return done(new Error('Missing image condition.'));
+          validatePredicate(source, null, function(err, predicate) {
+            done(err, {value: image, predicate: predicate});
+          });
+        });
+      }, function(err, branches) {
+        if (err) return callback(properr(object, propertyName, err.message));
+        callback(null, {branches: branches});
+      });
+    };
+  }
+
+  var validateImage = conditionalImage(function(value, propertyName, done) {
+    done(null, value);
+  });
 
   var validateSpriteStyles = function(object, propertyName, callback) {
       var val = propval(object, propertyName);
@@ -851,6 +869,8 @@
     validateQDisplayContent: validateQDisplayContent,
     validateParagraphContent: validateParagraphContent,
     validateLineContent: validateLineContent,
+    validateImage: validateImage,
+    validateSpriteLayout: conditionalImage(validateSprites),
     validateGoTo: validateGoTo,
     validateGoToRef: validateGoToRef,
     validateFrequency: validateFrequency,

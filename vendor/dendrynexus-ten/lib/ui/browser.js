@@ -581,79 +581,30 @@
       window.setSprites(data);
       return;
     }
-    if (!this.show_portraits || data == "none" || data == "clear") {
-      $("#topLeftSprite")
-        .children()
-        .fadeOut(this.fade_time, function () {
-          $("#topLeftSprite").empty();
-        });
-      $("#topRightSprite")
-        .children()
-        .fadeOut(this.fade_time, function () {
-          $("#topRightSprite").empty();
-        });
-      $("#bottomLeftSprite")
-        .children()
-        .fadeOut(this.fade_time, function () {
-          $("#bottomLeftSprite").empty();
-        });
-      $("#bottomRightSprite")
-        .children()
-        .fadeOut(this.fade_time, function () {
-          $("#bottomRightSprite").empty();
-        });
-      return;
-    } else {
-      if (data instanceof Array) {
-        for (var i = 0; i < data.length; i++) {
-          var loc = data[i][0];
-          var img = data[i][1];
-          this.setSprite(loc, img);
-        }
-      } else if (data) {
-        for (var key in Object.keys(data)) {
-          sprites.push([key, data[key]]);
-        }
-      }
+    var entries = Array.isArray(data) ? data : Object.entries(typeof data === "object" && data || {});
+    var images = new Map(entries.map(function (entry) {
+      return [entry[0].toLowerCase(), entry[1]];
+    }));
+    for (var loc of Object.keys(this.spriteLocs)) {
+      this.setSprite(loc, this.show_portraits && images.get(loc.toLowerCase()) || "none");
     }
   };
 
   BrowserUserInterface.prototype.setSprite = function (loc, img) {
-    if (!this.show_portraits) {
-      return;
-    }
     if (window && window.setSprite) {
       window.setSprite(loc, img);
       return;
     }
-    loc = loc.toLowerCase();
-    var targetSprite;
-    if (loc == "topleft") {
-      targetSprite = $("#topLeftSprite");
-    } else if (loc == "topright") {
-      targetSprite = $("#topRightSprite");
-    } else if (loc == "bottomleft") {
-      targetSprite = $("#bottomLeftSprite");
-    } else if (loc == "bottomright") {
-      targetSprite = $("#bottomRightSprite");
-    }
-    //targetSprite.empty();
-    if (img == "none" || img == "clear") {
-      delete this.dendryEngine.state.sprites[loc];
-      targetSprite.fadeOut(this.fade_time, function () {
-        targetSprite.empty();
-      });
-      return;
+    var corner = Object.keys(this.spriteLocs).find(function (key) {
+      return key.toLowerCase() === loc.toLowerCase();
+    });
+    if (!corner) return;
+    var target = $("#" + corner + "Sprite");
+    target.stop(true, true).empty();
+    if (img === "none" || img === "clear" || !this.show_portraits) {
+      target.hide();
     } else {
-      this.dendryEngine.state.sprites[loc] = img;
-      targetSprite.fadeOut(this.fade_time, function () {
-        targetSprite.emtpy();
-        var image = new Image();
-        image.src = img;
-        targetSprite.append(image);
-        console.log("fadeIn");
-        targetSprite.fadeIn(this.fade_time);
-      });
+      target.append($("<img>").attr({ src: img, alt: "" })).show();
     }
   };
 

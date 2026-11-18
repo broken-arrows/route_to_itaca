@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { imageUrl } from '../../engine/image-url';
+import ChoicePortrait from '../ChoicePortrait.vue';
 import { computed, nextTick, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useGameStore } from '../../stores/game';
@@ -15,7 +17,6 @@ const { t } = useI18n();
 const region = ref<HTMLElement | null>(null);
 const backgroundBroken = ref(false);
 const imageBroken = ref(false);
-const base = import.meta.env.BASE_URL;
 const background = computed(() => game.frame?.bg);
 const faceImage = computed(() => game.frame?.faceImage);
 const imageContent = computed(() => game.frame?.faceImageContent ?? {
@@ -63,7 +64,7 @@ function returnToTitle(): void {
 
 <template>
   <section class="presentation-page" :class="`presentation-${game.effectiveRole}`" data-test="presentation-page">
-    <img v-if="background && !backgroundBroken" class="presentation-background" :src="`${base}${background}`" alt="" data-test="presentation-background" @error="backgroundBroken = true" />
+    <img v-if="background && background !== 'none' && background !== 'null' && !backgroundBroken" class="presentation-background" :src="imageUrl(background)" alt="" data-test="presentation-background" @error="backgroundBroken = true" />
     <main ref="region" class="presentation-region" data-test="presentation-region">
       <article class="presentation-paper">
         <header class="presentation-heading">
@@ -74,13 +75,13 @@ function returnToTitle(): void {
         <div class="presentation-prose">
           <Prose v-if="imageContent.beforeHtml" :html="imageContent.beforeHtml" />
           <div class="presentation-scene-text">
-            <img v-if="faceImage && settings.eventImages && !imageBroken" class="presentation-image" :src="`${base}${faceImage}`" alt="" data-test="presentation-face-image" @error="imageBroken = true" />
+            <img v-if="faceImage && settings.eventImages && !imageBroken" class="presentation-image" :src="imageUrl(faceImage)" alt="" data-test="presentation-face-image" @error="imageBroken = true" />
             <Prose :html="imageContent.afterHtml" />
           </div>
         </div>
         <nav v-if="choices.length && !game.frame?.gameOver" class="presentation-choices">
           <button v-for="(choice, index) in choices" :key="choice.id" type="button" :disabled="!choice.canChoose || shell.transitioning" :data-test="`presentation-choice-${index}`" @click="choose(index)">
-            <span class="choice-title"><Prose tag="span" :html="choice.title" /></span>
+            <span class="choice-title"><ChoicePortrait v-if="choice.choiceImage" :path="choice.choiceImage" /><Prose tag="span" :html="choice.title" /></span>
             <span v-if="choice.subtitle" class="choice-subtitle"><Prose tag="span" :html="choice.subtitle" /></span>
           </button>
         </nav>

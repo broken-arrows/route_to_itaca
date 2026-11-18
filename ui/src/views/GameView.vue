@@ -13,6 +13,8 @@
 // type and controls remain readable across desktop display sizes.
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { imageUrl } from '../engine/image-url';
+import { useSettingsStore } from '../stores/settings';
 import { useGameStore } from '../stores/game';
 import { useDeskStore } from '../stores/desk';
 import ResponsiveViewport from '../components/ResponsiveViewport.vue';
@@ -31,6 +33,7 @@ import SurfaceFade from '../components/shell/SurfaceFade.vue';
 
 const { t } = useI18n();
 const game = useGameStore();
+const settings = useSettingsStore();
 const desk = useDeskStore();
 const shell = useShellStore();
 const surfaceFade = ref<InstanceType<typeof SurfaceFade> | null>(null);
@@ -205,11 +208,20 @@ const pageVariant = computed<'page' | 'event' | 'ending'>(() => {
       </div>
       <PauseOverlay v-if="shell.paused" ref="pauseOverlay" />
     </template>
+    <div v-if="settings.eventImages && game.frame?.sprites && !shell.paused" class="scene-sprites" aria-hidden="true">
+      <img v-for="(image, corner) in game.frame.sprites" :key="corner" :class="corner" :src="imageUrl(image)" alt="" />
+    </div>
     </SurfaceFade>
   </ResponsiveViewport>
 </template>
 
 <style scoped>
+.scene-sprites { position: absolute; inset: 0; z-index: 50; pointer-events: none; }
+.scene-sprites img { position: absolute; max-width: min(15%, 180px); max-height: 25%; object-fit: contain; }
+.topleft, .bottomleft { left: .5rem; }
+.topright, .bottomright { right: .5rem; }
+.topleft, .topright { top: .5rem; }
+.bottomleft, .bottomright { bottom: .5rem; }
 .boot-state {
   max-width: 900px;
   margin: 0 auto;
