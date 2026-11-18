@@ -84,14 +84,19 @@
     return result;
   }
 
+  function congresoPlayerParty(Q) {
+    var party = Q.player_party;
+    if (Q.jxsi_in_congreso && Q[party + '_in_jxsi']) return 'jxsi';
+    if (Q.jxcat_in_congreso && Q[party + '_in_jxcat']) return 'jxcat';
+    return party;
+  }
+
   // Pure projection used when checking readiness and starting the selected motion.
   function spanishCensureOffer(Q, visits, kind) {
     var chamber = visits['congreso_election.post_election'] || 0;
     var S = function (p) { return Math.max(0, Number(Q[p + '_congreso_s']) || 0); };
     var left = S('sumar') ? 'sumar' : S('up') ? 'up' : 'podemos';
-    var vehicle = Q.player_party;
-    if (Q.jxsi_in_congreso && Q[vehicle + '_in_jxsi']) vehicle = 'jxsi';
-    else if (Q.jxcat_in_congreso && Q[vehicle + '_in_jxcat']) vehicle = 'jxcat';
+    var vehicle = congresoPlayerParty(Q);
     var eligible = Q.next_spanish_election_time - Q.time <= 36 && !Q.spa_caretaker_gov
         && ['pp', 'cs', 'vox'].includes(Q.spanish_pm_party)
         && !(Q.spanish_coalition || []).includes(left) && !(Q.spanish_coalition || []).includes('psoe');
@@ -179,6 +184,7 @@
   }
 
   var api = {
+    congresoPlayerParty: congresoPlayerParty,
     spanishCensurePending: spanishCensurePending,
     spanishCensureOffer: spanishCensureOffer,
     governmentTooltip: governmentTooltip,

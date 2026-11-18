@@ -56,7 +56,6 @@ view-if: year < 2017
 on-arrival: {!
     Q.roadmap_year = 2020; 
     Q[Q.parlament_current_ciu + "_relations"] -= 2; 
-    Q.cup_relations -= 5; 
     Q.erc_relations -=2; 
     Q.psc_relations += 2; 
     Q.cup_relations -= 5;

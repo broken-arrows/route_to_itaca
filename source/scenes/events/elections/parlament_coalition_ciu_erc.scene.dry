@@ -118,7 +118,7 @@ on-arrival: {!
     Q.erc_in_gob = true;
     Q.erc_supporting = true;
 
-    G.setText(Q, "position_disp", G.text("Generalitat"));
+    G.setText(Q, "position_disp", G.text("<span style='font-style: italic'>Opposition</span>"));
 
     Q.cup_in_gob = false;
     Q.cup_supporting = false;

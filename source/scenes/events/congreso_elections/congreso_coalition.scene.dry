@@ -20,9 +20,7 @@ on-arrival: {!
     if (!congresoTotal) congresoTotal = 350;
 
 
-    var playerVehicle = Q.player_party;
-    if ((Q.player_party === "erc" && Q.erc_in_jxsi) || (Q.player_party === "cup" && Q.cup_in_jxsi)) playerVehicle = "jxsi";
-    else if (Q.jxcat_in_congreso && ((Q.player_party === "erc" && Q.erc_in_jxcat) || (Q.player_party === "cup" && Q.cup_in_jxcat))) playerVehicle = "jxcat";
+    var playerVehicle = G.congresoPlayerParty(Q);
     Q.congreso_player_vehicle = playerVehicle;
     Q.congreso_player_s = S(playerVehicle);
 
