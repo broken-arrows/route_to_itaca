@@ -62,6 +62,7 @@
   };
 
   window.showOptions = function () {
+    playtestKeys = ""; // TODO: REMOVE PLAYTEST GATE.
     var save_element = document.getElementById("options");
     window.populateOptions();
     window.dendryUI.dendryEngine.touchedSettings = true;
@@ -81,6 +82,29 @@
     var save_element = document.getElementById("options");
     save_element.style.display = "none";
   };
+
+  // TODO: REMOVE PLAYTEST GATE — delete this block, the Options reset above,
+  // and restore root.start's choose-if: url_valid. Storage is browser-only.
+  var playtestKeys = "";
+  window.classicPlaytestUnlocked = false;
+  try { window.classicPlaytestUnlocked = window.localStorage.getItem("rti:classic-playtest") === "1"; } catch (_) {}
+  window.onkeydown = function (event) {
+    var engine = window.dendryUI && window.dendryUI.dendryEngine;
+    if (!engine || engine.state.sceneId !== "root.start_menu" || document.getElementById("options").style.display !== "block") {
+      playtestKeys = "";
+      return;
+    }
+    if (event.ctrlKey || event.altKey || event.metaKey || event.repeat || event.key.length !== 1) return;
+    playtestKeys = (playtestKeys + event.key.toLowerCase()).slice(-4);
+    if (playtestKeys !== "test") return;
+    window.classicPlaytestUnlocked = true;
+    try { window.localStorage.setItem("rti:classic-playtest", "1"); } catch (_) {}
+    window.hideOptions();
+    window.dendryUI.removeChoices();
+    engine.choiceCache = engine._compileChoices(engine.getCurrentScene());
+    engine.displayChoices();
+  };
+  // END TODO: REMOVE PLAYTEST GATE.
 
   window.disableBg = function () {
     window.dendryUI.disable_bg = true;

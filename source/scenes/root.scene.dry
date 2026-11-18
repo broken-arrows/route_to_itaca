@@ -843,7 +843,9 @@ on-arrival: {!
 title: New Game
 tags: starts-game
 role: setup
-choose-if: url_valid
+# TODO: REMOVE PLAYTEST GATE — restore choose-if: url_valid; delete the matching game.js block.
+choose-if: {! return Q.url_valid || window.classicPlaytestUnlocked === true; !}
+subtitle: This is still in development! Please report any and all playtesting feedback through Discord 🙏🙏🙏
 unavailable-subtitle: Route to Ítaca is currently in its early development stages. Check back soon(-ish) for the full experience!
 # unavailable-subtitle: Game loaded from an unrecognized origin, are you sure you're in the right place? TODO: put this as the right unavailable subtitle!
 on-arrival: {!
