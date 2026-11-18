@@ -422,6 +422,61 @@
   ];
   const PARLAMENT_INDY_MOVEMENT_VOTE_RESPONSE = 0.6;
 
+  // Relative sensitivities of the live ERC electoral leader. Missing profiles
+  // (including Junqueras and older saves) use the existing voter model.
+  const ERC_ELECTORAL_PROFILES = new Map([
+    ["Marta Rovira", {
+      matrix: { driver: "unemployment", targetOffset: -0.018 },
+      economy: { provinces: ["barcelona", "tarragona"], demographics: ["ind", "unemployed"], welfare: 0.25 },
+      congreso: { economy: 0.15 },
+      local: { redBelt: 2, interior: 0.75 },
+    }],
+    ["Pere Aragonès", {
+      matrix: { driver: "independence_movement", scale: 0.85 },
+      economy: { provinces: ["barcelona", "tarragona"], demographics: ["middle", "ind"], government: 0.25 },
+      congreso: { confrontation: -0.15, dialogue: 0.20 },
+      local: { services: 1.5 },
+    }],
+    ["Raül Romeva", {
+      matrix: { driver: "independence_trust", scale: 1.05, demographics: { middle: 0.10 },
+        provinces: { barcelona: 0.05, girona: 0.05 }, shared: 0.05 },
+      congreso: { confrontation: 0.06, shared: 0.09 },
+      local: { barcelona: 0.8, interior: 0.6 },
+    }],
+    ["Carme Forcadell", {
+      matrix: { driver: "independence_movement", scale: 1.12, demographics: { young: 0.08, rural: 0.08 },
+        provinces: { girona: 0.10, lleida: 0.10 } },
+      congreso: { confrontation: 0.20 },
+      local: { mobilisedRedBelt: 0.5, mobilisedInterior: 2 },
+    }],
+  ]);
+
+  function ercEconomicTarget(profile, province, demographic) {
+    return profile?.economy?.provinces.includes(province) &&
+      profile.economy.demographics.includes(demographic);
+  }
+
+  function ercInGeneralitat(Q) {
+    return (Q.cat_coalition || []).some(
+      (p) => p === "erc" || coalitionFamilies(Q, p)?.includes("il"),
+    );
+  }
+
+  function ercLocalAppeal(Q) {
+    const local = ERC_ELECTORAL_PROFILES.get(Q.erc_leader)?.local;
+    if (!local) return { carrier: "erc", barcelona: 0, redBelt: 0, interior: 0 };
+    const mobilisation = clamp(((Q.independence_movement ?? 50) - 50) / 20, 0, 1);
+    const services = local.services && ercInGeneralitat(Q)
+      ? clamp(((Q.welfare_index ?? 50) - 50) / 15, 0, 1)
+      : 0;
+    return {
+      carrier: cardCoalitionCarrier(Q, "barcelona", null, null, "erc"),
+      barcelona: local.barcelona || 0,
+      redBelt: (local.redBelt || 0) + (local.mobilisedRedBelt || 0) * mobilisation + (local.services || 0) * services,
+      interior: (local.interior || 0) + (local.mobilisedInterior || 0) * mobilisation,
+    };
+  }
+
   const PARLAMENT_SIGNALS = ["independence_movement", "independence_trust"];
 
   // Persist the last electoral observation, not the opening of the macro tick:
@@ -1731,6 +1786,10 @@
     const traceEnabled = Q.parlament_vote_trace_enabled === true;
     const responsibility = getParlamentResponsibility(Q);
     const activeParties = parlamentActiveParties(Q, PROVINCES, DEMOS);
+    const ercProfile = ERC_ELECTORAL_PROFILES.get(Q.erc_leader);
+    const ercMatrix = ercProfile?.matrix;
+    const ercDriver = PARLAMENT_VOTE_DRIVERS.indexOf(ercMatrix?.driver);
+    const IL = FAMILIES.indexOf("il");
     let traceTotalPopulation = 0;
     if (traceEnabled) {
       if (!Q.parlament_vote_trace) {
@@ -1778,6 +1837,12 @@
         const T_base = matrices.BASE_T;
         const T_demo = matrices._DELTA_T[demo] || [];
         const T_prov = matrices._DELTA_PROV[prov] || [];
+        const ercScale = (ercMatrix?.scale ?? 1) +
+          (ercMatrix?.demographics?.[demo] || 0) + (ercMatrix?.provinces?.[prov] || 0) +
+          (COALITION_PARTIES.includes(carriers.il) ? ercMatrix?.shared || 0 : 0);
+        const ercOffset = ercMatrix?.targetOffset && ercEconomicTarget(ercProfile, prov, demo)
+          ? ercMatrix.targetOffset
+          : 0;
 
         for (let i = 0; i < FAMILIES.length; i++) {
           for (let j = 0; j < d_vars.length; j++) {
@@ -1785,7 +1850,10 @@
               T_base[i][j] +
               (T_demo[i] ? T_demo[i][j] : 0) +
               (T_prov[i] ? T_prov[i][j] : 0);
-            const contribution = val * d_vars[j];
+            const coefficient = i === IL && j === ercDriver
+              ? val * ercScale + ercOffset
+              : val;
+            const contribution = coefficient * d_vars[j];
             delta_vec[i] += contribution;
             recordParlamentVoteTrace(
               Q,
@@ -1851,7 +1919,6 @@
         const FL = FAMILIES.indexOf("fl");
         const PSC = FAMILIES.indexOf("psc");
         const ABS = FAMILIES.indexOf("abs");
-        const IL = FAMILIES.indexOf("il");
         const CUP = FAMILIES.indexOf("cup");
 
         const activeFederalLeft = carriers.fl;
@@ -2626,6 +2693,7 @@
     Q._prev_spa_cat_spa = Q.cat_spa_relations;
 
     const channeling = Q.podemos_channeling || 0;
+    const ercCongreso = ERC_ELECTORAL_PROFILES.get(Q.erc_leader)?.congreso;
 
     // 2. Passive corruption decay (decay rates are event-set).
     if (Q.corruption_pp != null) {
@@ -2658,6 +2726,10 @@
       const rates =
         c === "catalunya" ? CATALUNYA_RATES : REGIONAL_RATES[c] || P;
       const has = (p) => fams.includes(p);
+      const ercBallot = c === "catalunya" && ercCongreso
+        ? cardCoalitionCarrier(Q, "congreso", c, null, "erc")
+        : null;
+      const leadership = has(ercBallot) ? ercCongreso : null;
 
       const deltas = {};
       fams.forEach((p) => (deltas[p] = 0));
@@ -2754,13 +2826,15 @@
               cardIndependenceShare(Q, "congreso", c, null, fams),
             );
           const cs_gain = mag * P.cat_spa_cs_cat;
-          const ercF = ercKey(Q, c);
+          const ercF = leadership ? ercBallot : ercKey(Q, c);
           const convF = convKey(Q, c);
+          const ercResponse = 1 + (leadership?.confrontation || 0) +
+            (ercBallot && ercBallot !== "erc" ? leadership?.shared || 0 : 0);
           for (const [donor, share] of [
             [ppF, 0.4],
             [psoeF, 0.6],
           ]) {
-            transfer(donor, ercF, indy_gain * 0.65 * share);
+            transfer(donor, ercF, indy_gain * 0.65 * share * ercResponse);
             transfer(donor, convF, indy_gain * 0.35 * share);
             transfer(donor, "cs", cs_gain * share);
           }
@@ -2769,6 +2843,26 @@
           const cs_gain = mag * rates.cat_spa_cs_pod;
           transfer(psoeF, ppF, pp_gain);
           transfer(podF, "cs", cs_gain);
+        }
+      }
+
+      if (leadership?.dialogue && d_cat_spa > 0) {
+        const recruitment = independenceRecruitmentScale(
+          cardIndependenceShare(Q, "congreso", c, null, fams),
+        );
+        transfer(psoeF, ercBallot, d_cat_spa * P.cat_spa_indy * leadership.dialogue * recruitment);
+      }
+      if (leadership?.economy) {
+        const { g, u, w } = ECON_CATALUNYA.psc;
+        const rivals = [psoeF, podF].filter(has);
+        const response = (g * d_gdp + u * d_unemp + w * d_welfare) * leadership.economy;
+        const recruitment = response > 0
+          ? independenceRecruitmentScale(cardIndependenceShare(Q, "congreso", c, null, fams))
+          : 1;
+        for (const rival of rivals) {
+          const amount = response * recruitment / rivals.length;
+          if (amount > 0) transfer(rival, ercBallot, amount);
+          else transfer(ercBallot, rival, -amount);
         }
       }
 
@@ -3422,11 +3516,18 @@
       (context.dWelfare || 0) -
       0.4 * (context.dUnemployment || 0) -
       0.2 * (context.dDissent || 0);
-    const magnitude = Math.abs(signal) * 0.045 * (context.scale ?? 1);
-    if (!magnitude) return [];
+    const ercProfile = ERC_ELECTORAL_PROFILES.get(Q.erc_leader);
+    const ercEconomy = ercEconomicTarget(ercProfile, context.province, context.demographic) && ercProfile.economy;
     const transfers = [];
     for (const [source, weight] of Object.entries(responsibility)) {
       if (!carriers[source]) continue;
+      let response = signal;
+      if (source === "il" && ercEconomy) {
+        response += (ercEconomy.welfare || 0) * (context.dWelfare || 0);
+        if (ercEconomy.government && ercInGeneralitat(Q)) response *= 1 + ercEconomy.government;
+      }
+      const magnitude = Math.abs(response) * 0.045 * (context.scale ?? 1);
+      if (!magnitude) continue;
       const routes = { ...PARLAMENT_ACCOUNTABILITY_ROUTES[source] };
       if (
         source === "il" &&
@@ -3440,8 +3541,8 @@
       for (const [alternative, share] of available) {
         transfers.push({
           mechanism: "nonlinear.government_accountability",
-          from: signal < 0 ? source : alternative,
-          to: signal < 0 ? alternative : source,
+          from: response < 0 ? source : alternative,
+          to: response < 0 ? alternative : source,
           amount: (magnitude * weight * share) / total,
         });
       }
@@ -4352,6 +4453,7 @@
 
   // source/lib/index.js forwards these helpers to the engine's G object.
   var api = {
+    ercLocalAppeal,
     applyPoliticalEffect,
     clearPoliticalEffect,
     buildBrokenBurdensTransfers,

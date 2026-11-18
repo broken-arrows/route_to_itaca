@@ -220,13 +220,18 @@
         );
       return;
     }
+    el.style.display = "grid";
+    el.style.gridTemplateColumns = "max-content minmax(0,1fr) 4.5em";
+    el.style.columnGap = ".75em";
+    el.style.rowGap = ".7em";
+    el.style.alignItems = "center";
     rows.forEach(function (row) {
       if (row.label === "Turnout") {
         var turnout = sceneNode(
           el,
           "div",
           null,
-          "text-align:center;margin:1em 0;",
+          "grid-column:1 / -1;text-align:center;margin:1em 0;",
         );
         sceneNode(turnout, "strong", sceneLabel(row.label) + ": ");
         sceneNode(turnout, "span", row.share + "%");
@@ -255,10 +260,13 @@
         el,
         "div",
         null,
-        "display:grid;grid-template-columns:4.5em minmax(0,1fr) 4.5em;align-items:center;gap:.5em;margin:.7em 0;",
+        "display:contents;",
       );
-      sceneText(block, row.label);
-      var lane = sceneNode(block, "div", null, "position:relative;");
+      var label = sceneText(block, row.label);
+      label.className = "scene-result-label";
+      label.style.cssText = "grid-column:1;white-space:nowrap;align-self:center;line-height:1.25;";
+      var lane = sceneNode(block, "div", null, "grid-column:2;position:relative;min-width:0;");
+      lane.className = "scene-result-lane";
       sceneNode(
         lane,
         "div",

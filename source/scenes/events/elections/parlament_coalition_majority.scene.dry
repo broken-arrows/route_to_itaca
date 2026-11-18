@@ -61,8 +61,6 @@ on-arrival: {!
             Q.speaker_gender = "m";
             break;
         case "jxsi":
-            Q.speaker = "Carme Forcadell";
-            Q.speaker_gender = "f";
             break;
         case "jxcat":
         case "junts":
@@ -117,6 +115,7 @@ on-arrival: {!
         Q.independence_trust -= 15;
     }
 !}
+call: parlament_coalition_setnames.jxsi_speaker
 go-to: parlament_coalition_setnames
 set-jump: display_government
 

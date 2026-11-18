@@ -97,6 +97,19 @@ on-arrival: {!
         // Joint-list ministries remain player-accessible but can also initiate NPC policy.
         if (owner && owner != player && !actors.includes(owner)) actors.push(owner);
     }
+    var ciuParties = ["ciu", "cdc", "dl", "pdcat", "junts", "jxcat"];
+    var consultationMinistry = Q.parlament_non_binding_consultations && !Q.consultation_happened && !Q.consultation_day_trigger &&
+        (Q.consultation_pending || Q.question_of_the_question_countdown > 0) && ["education", "health"].find(function (ministry) {
+            var owner = owners[ministry + "_minister_party"];
+            if (!owner || owner == player) return false;
+            var affiliation = ["jxsi", "jxcat"].includes(owner) && Q[ministry + "_minister_affiliation"];
+            if (!affiliation && owner == "jxcat" && (Q.erc_in_jxcat || Q.cup_in_jxcat)) return false;
+            return affiliation != player && ciuParties.includes(affiliation || owner);
+        });
+    var consultationHolder = consultationMinistry && consultationMinistry + "_minister_party";
+    var consultationField = consultationMinistry && "consultation_" + consultationMinistry + "_preparations";
+    var consultationTarget = consultationMinistry == "education" ? 2 : 1;
+    var consultationReady = consultationHolder && (Q[consultationField] || 0) < consultationTarget;
     var support = (Q.cat_coalition_support || []).map(current);
     var canBudget = Q.budget_year < Q.year && Q.budget_year_attempted != Q.year && !Q.budget_parlament_trigger && !Q.budget_postponed_trigger &&
         !(Q.budget_postponed_countdown > 0) && !(Q.budget_draft && Q.budget_draft_origin && Q.budget_draft_origin.year == Q.year);
@@ -144,8 +157,9 @@ on-arrival: {!
             var ministerAffiliation = ["jxsi", "jxcat"].includes(actor) ? Q[holder.replace(/_party$/, "_affiliation")] || null : null;
             if (ministerAffiliation != affiliation || ministerAffiliation == player) return;
             if (kind == "cut" && Q.npc_austerity_timer > 0) return;
-            if (kind == "cut") weight *= Math.max(0.5, -Q.generalitat_surplus);
+            if (kind == "cut") weight *= Math.max(0.5, -Q.generalitat_surplus * (market && ciuParties.includes(policyParty) ? 1.5 : 1));
             var from = kind == "space" ? to - 1 : Q[field];
+            if (kind == "consultation_preparation") from = from || 0;
             if (from === undefined && kind != "curriculum") return;
             if (from == to && kind != "curriculum") return;
             for (var record of Q.coalition_policy_commitments || []) {
@@ -161,6 +175,11 @@ on-arrival: {!
             candidateText[candidate.id] = { title: title, reason: reason, office: officeText[holder] };
             candidates.push(candidate);
         }
+        if (consultationReady)
+            add(consultationHolder, consultationField, consultationTarget, G.text("prepare extraordinary polling places for the upcoming non-binding consultation"),
+                consultationMinistry == "education" ? G.text("The Education Ministry adapt and prepare schools and other minsitry-controlled spaces to ensure voting is available to everyone") :
+                    G.text("The Health Ministry will adapt and prepare health centres and other minsitry-controlled spaces f to ensure voting is available to everyone"),
+                1000, "neutral", "consultation_preparation");
         for (var service of [["education_minister_party", "education_spending", "education", "education"], ["health_minister_party", "healthcare_spending", "healthcare", "health"]]) {
             var level = Q[service[1]];
             var consellerText = Q[service[3] + "_minister_gender"] == "m" ? G.text("Conseller of {department}{minister}", {
@@ -303,7 +322,7 @@ on-arrival: {!
     }
 
     if (!Q.npc_government_response && !Q.npc_government_initiative && actors.length && !Q.cat_caretaker_gov) {
-        var actor = actors[Math.floor(G.random(Q) * actors.length)];
+        var actor = consultationReady ? owners[consultationHolder] : actors[Math.floor(G.random(Q) * actors.length)];
         var profiles = [null];
         if (["jxsi", "jxcat"].includes(actor)) {
             profiles = fields.filter(function (field) { return owners[field] == actor; }).map(function (field) {
@@ -354,8 +373,12 @@ on-arrival: {!
     G.setText(Q, "npc_government_stop_blocker", G.text("It's not like they are in government because of us, so there's little we can do."));
     G.setText(Q, "npc_government_alternative_blocker", G.text("It's not like they are in government because of us, so there's little we can do."));
     if (initiative) {
+        var preparingConsultation = initiative.kind == "consultation_preparation";
+        var liveValue = preparingConsultation ? Q[initiative.field] || 0 : Q[initiative.field];
         valid = !Q.cat_caretaker_gov && owners[initiative.holder] == initiative.party &&
-            initiative.party != player && (initiative.kind == "space" || Q[initiative.field] == initiative.from);
+            initiative.party != player && (initiative.kind == "space" || liveValue == initiative.from);
+        if (preparingConsultation && (!consultationReady || initiative.holder != consultationHolder ||
+            initiative.field != consultationField || initiative.to != consultationTarget)) valid = false;
         if (initiative.kind == "space") {
             var spaceLaws = Q.active_mods || {};
             var permitted = initiative.to == 1 ? ["education_minister_party", "vicepresident_party", "president_party"] :
@@ -474,6 +497,8 @@ on-arrival: {!
                 // Match ordinary NPC initiatives: executive effort is represented by their shared cadence.
                 if (controlled.some(function (party) { return cabinet.includes(party); }) &&
                     (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0)) Q.burdens_done += 1;
+            } else if (initiative.kind == "consultation_preparation") {
+                Q[field] = next;
             } else {
                 var packageKey = {bnl_tourism_level:"bnl_tourism_electoral_routes",bnl_union_level:"bnl_union_electoral_routes",
                     territory_livestock:"territory_livestock_electoral_routes"}[field];
@@ -626,8 +651,9 @@ on-arrival: {!
     }
     Q.government_does_things_timer = G.governmentInitiativeTimer(Q);
     if (enactedCut) {
-        // Two initiative intervals, sampled once; non-cut initiatives do not reset it.
-        Q.npc_austerity_timer = 2 * Q.government_does_things_timer;
+        // Reuse the sampled initiative interval for the 10–12 tick CiU cooldown.
+        Q.npc_austerity_timer = ciuParties.includes(initiative.policyParty) ?
+            Math.min(12, Q.government_does_things_timer + 5) : 2 * Q.government_does_things_timer;
         if (!Q.timers.includes("npc_austerity")) Q.timers.push("npc_austerity");
     }
     Q.npc_government_initiative = null;

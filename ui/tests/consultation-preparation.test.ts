@@ -64,7 +64,7 @@ describe('consultation preparation', () => {
     expect(q.ciu_local_rb_pct).toBe(10.3);
     expect(q.ciu_local_interior_pct + q.erc_local_interior_pct).toBeCloseTo(85.9);
     enter(adapter, 'nonbinding_consultation');
-    expect(q.consultation_preparation).toBe(6);
+    expect(q.consultation_preparation).toBe(4);
   });
 
   it.each(['health', 'education'])('charges for two %s preparations and blocks further uses', ministry => {
@@ -120,16 +120,24 @@ describe('consultation preparation', () => {
   });
 
   it.each(['ciu', 'cdc', 'dl', 'pdcat', 'jxcat', 'junts', 'jxsi', 'erc', 'cup', 'psc', 'indp.'])(
-    'applies the NPC allowance once for %s and does not stack it with completed work', owner => {
+    'scores the remaining NPC allowance for %s and retains completed work', owner => {
       const { adapter, q } = setup({ player_party: 'cup', health_minister_party: owner, education_minister_party: 'psc' });
       clearLocal(q);
       enter(adapter, 'nonbinding_consultation');
-      expect(q.consultation_preparation).toBe(cooperating.includes(owner) && owner !== 'cup' ? 1 : 0);
+      expect(q.consultation_preparation).toBe(['jxsi', 'erc'].includes(owner) ? 1 : 0);
       q.consultation_health_preparations = 2;
       enter(adapter, 'nonbinding_consultation');
       expect(q.consultation_preparation).toBe(2);
     },
   );
+
+  it('uses the actual constituent to exclude passive CiU preparation in a unity list', () => {
+    const { adapter, q } = setup({ player_party: 'cup', health_minister_party: 'jxsi',
+      health_minister_affiliation: 'cdc', education_minister_party: 'jxsi', education_minister_affiliation: 'erc' });
+    clearLocal(q);
+    enter(adapter, 'nonbinding_consultation');
+    expect(q.consultation_preparation).toBe(1);
+  });
 
   it.each([[24.9, 0], [25, 1], [49.9, 1], [50, 2]])('scores pooled local holdings at %s%%', (share, points) => {
     const { adapter, q } = setup({ health_minister_party: 'erc', education_minister_party: 'erc' });
@@ -180,8 +188,8 @@ describe('consultation preparation', () => {
 
   it.each([1, 2, 3])('reduces participation and conserves the modeled electorate for question %s', question => {
     const branch = ['direct', 'double', 'convoluted'][question - 1];
-    const { adapter: good, q: success } = setup({ consultation_question: question });
-    const { adapter: bad, q: troubled } = setup({ consultation_question: question, health_minister_party: 'erc' });
+    const { adapter: good, q: success } = setup({ consultation_question: question, consultation_education_preparations: 2 });
+    const { adapter: bad, q: troubled } = setup({ consultation_question: question, consultation_health_preparations: 1 });
     choose(good, enter(good, 'nonbinding_consultation'), `nonbinding_consultation.${branch}`);
     const results = choose(bad, enter(bad, 'nonbinding_consultation'), `nonbinding_consultation.${branch}`);
     expect(success.consultation_preparation).toBe(6);
@@ -201,7 +209,7 @@ describe('consultation preparation', () => {
   });
 
   it('keeps the existing successful aftermath and completion rewards', () => {
-    const { adapter, q } = setup();
+    const { adapter, q } = setup({ consultation_education_preparations: 2 });
     const results = choose(adapter, enter(adapter, 'nonbinding_consultation'), 'nonbinding_consultation.double');
     expect(results.choices.some(choice => choice.id === 'nonbinding_consultation.troubled')).toBe(false);
     choose(adapter, results, 'nonbinding_consultation.after');

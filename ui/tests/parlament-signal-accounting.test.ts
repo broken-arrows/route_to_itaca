@@ -49,6 +49,62 @@ function coefficient(q: Record<string, any>, signal: string) {
   return c.parlament_vote_trace.mechanisms[`matrix.${signal}`].abs / (c[signal] - previous);
 }
 describe('Parlament political signal observation', () => {
+  it.each([
+    ['Carme Forcadell', 'girona', 'rural', 'independence_movement', -6, 1.30, false],
+    ['Carme Forcadell', 'barcelona', 'middle', 'independence_movement', 6, 1.12, false],
+    ['Pere Aragonès', 'tarragona', 'ind', 'independence_movement', 6, 0.85, false],
+    ['Raül Romeva', 'barcelona', 'middle', 'independence_trust', 6, 1.20, false],
+    ['Raül Romeva', 'barcelona', 'middle', 'independence_trust', 6, 1.25, true],
+  ])('applies %s’s matrix response in %s/%s', (leader, province, demographic, signal, change, scale, shared) => {
+    const baseline = structuredClone(fixture);
+    baseline.parlament_constituencies = [province];
+    baseline.parlament_demographics = [demographic];
+    gameLib.initRandom(baseline, 173);
+    gameLib.resetParlamentSignalBaseline(baseline);
+    baseline[signal] += change;
+    if (shared) {
+      const suffix = `_parlament_${province}_${demographic}_support`;
+      // Give CUP positive matrix demand so the shared list competes for donors.
+      baseline.independence_movement += 8;
+      baseline.erc_in_jxsi = true;
+      for (const party of baseline.parties) baseline[`${party}${suffix}`] = 0;
+      baseline[`jxsi${suffix}`] = 25;
+      baseline[`cup${suffix}`] = 20;
+      baseline[`psc${suffix}`] = 15;
+      baseline[`abstain${suffix}`] = 40;
+    }
+    const changed = structuredClone(baseline);
+    changed.erc_leader = leader;
+    baseline.erc_leader = 'Oriol Junqueras';
+    tick(baseline);
+    tick(changed);
+    const trace = `matrix.${signal}`;
+    const original = baseline.parlament_vote_trace.mechanisms[trace];
+    const adjusted = changed.parlament_vote_trace.mechanisms[trace];
+    expect(Math.abs(original.il)).toBeGreaterThan(.01);
+    expect(adjusted.il).toBeCloseTo(original.il * scale, 10);
+    expect(adjusted.icr).toBe(original.icr);
+    if (shared) {
+      expect(changed.erc_parlament_barcelona_middle_support).toBe(0);
+      expect(changed.jxsi_parlament_barcelona_middle_support).toBeGreaterThan(baseline.jxsi_parlament_barcelona_middle_support);
+    }
+  });
+
+  it.each([
+    ['tarragona', 'unemployed', -0.018],
+    ['girona', 'unemployed', 0],
+    ['tarragona', 'middle', 0],
+  ])('limits Rovira’s unemployment response in %s/%s', (province, demographic, coefficient) => {
+    const q = ready();
+    q.parlament_constituencies = [province];
+    q.parlament_demographics = [demographic];
+    q.erc_leader = 'Marta Rovira';
+    const unemployment = q.unemployment;
+    tick(q);
+    const change = q.parlament_vote_trace.mechanisms['matrix.unemployment']?.il ?? 0;
+    expect(change).toBeCloseTo(coefficient * (q.unemployment - unemployment), 10);
+  });
+
   it('uses the opening national valid-vote share to damp monthly external mobilization', () => {
     const q = ready();
     for (const p of q.parties) q[`${p}_parlament_girona_rural_support`] = 0;

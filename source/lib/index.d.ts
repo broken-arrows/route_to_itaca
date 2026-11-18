@@ -23,6 +23,7 @@ export interface SceneBar {
   value: string | number | null; change: number | null;
 }
 export interface GameLib {
+  ercLocalAppeal(q: Record<string, unknown>): { carrier: string; barcelona: number; redBelt: number; interior: number };
   electionResultRows(q: Record<string, unknown>, layout: string): Array<{
     id: string; label: string; colour: string; votes: number; seats: number;
     catalonia: number | null; voteChange: number | null; seatChange: number | null;

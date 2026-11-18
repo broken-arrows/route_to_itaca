@@ -243,6 +243,105 @@ describe('NPC budget authors and fiscal conversion', () => {
   });
 });
 
+describe('PSC support for another party’s budget', () => {
+  it('requires delivery and rejects an expansion that widens the inherited funding gap', () => {
+    const { adapter, q } = setup('ciu', { psc_parlament_s: 20, ciu_roadmap: 1, psc_relations: 100 });
+    propose(adapter);
+    expect(q.parlament_budget_positions.psc).toBe('no');
+
+    q.healthcare_prepared_level = 0;
+    adapter.goToScene('parlament_budget.review');
+    expect(q.parlament_budget_positions.psc).toBe('yes');
+    expect(q.parlament_budget_shortfall).toBeCloseTo(2.3);
+
+    adapter.goToScene('parlament_budget.cap_higher');
+    expect(q.parlament_budget_positions.psc).toBe('no');
+    expect(q.parlament_budget_shortfall).toBeCloseTo(3.26);
+  });
+
+  it('rejects a higher ceiling by itself even when the budget has room', () => {
+    const { adapter, q } = setup('erc', { psc_parlament_s: 20, generalitat_surplus: 2 });
+    propose(adapter);
+    expect(q.parlament_budget_projection.cap).toBe(1);
+    expect(q.parlament_budget_shortfall).toBe(0);
+    expect(q.parlament_budget_positions.psc).toBe('no');
+  });
+
+  it.each([
+    ['pending', { consultation_pending: true }, 'Pere Navarro', 1, 'no'],
+    ['held', { consultation_happened: true, consultation_preparation: 4 }, 'Pere Navarro', 1, 'no'],
+    ['held in an older save', { consultation_happened: true }, 'Pere Navarro', 1, 'no'],
+    ['cancelled', { consultation_happened: true, consultation_preparation: 3 }, 'Pere Navarro', 1, 'yes'],
+    ['pending', { consultation_pending: true }, 'Pere Navarro', 0, 'yes'],
+    ['pending', { consultation_pending: true }, 'Montserrat Tura', 1, 'yes'],
+    ['held', { consultation_happened: true, consultation_preparation: 4 }, 'Àngel Ros', 1, 'yes'],
+    ['pending', { consultation_pending: true }, 'Àngel Ros', 2, 'no'],
+  ] as const)('handles a %s consultation (%j) under %s on roadmap %s with %s', (_state, consultation, leader, roadmap, vote) => {
+    const { adapter, q } = setup('ciu', {
+      psc_parlament_s: 20, psc_leader: leader, ciu_roadmap: roadmap,
+      healthcare_prepared_level: 0, ...consultation,
+    });
+    propose(adapter);
+    expect(q.parlament_budget_positions.psc).toBe(vote);
+  });
+
+  it('negotiates and passes a budget with an affordable new transit project at roadmap 0', () => {
+    const { adapter, q } = setup('ciu', {
+      ciu_parlament_s: 50, psc_parlament_s: 20, ppc_parlament_s: 65,
+      psc_relations: 80, generalitat_surplus: 1,
+      active_mods: { territory_metro2: { active: true, def: { colour: 'gray' } } },
+    });
+    propose(adapter);
+    expect(q.parlament_budget_positions.psc).toBe('no');
+    expect(q.parlament_budget_can_pass).toBe(false);
+    const i = adapter.currentFrame().choices.findIndex(choice => choice.id === 'parlament_budget.approach_psc');
+    expect(adapter.currentFrame().choices[i]).toMatchObject({ canChoose: true, subtitle: expect.stringContaining('L1/L3') });
+    adapter.choose(i);
+    expect(q.budget_draft.projects.metro2).toBe(true);
+    expect(q.parlament_budget_positions.psc).toBe('yes');
+    expect(q.psc_relations).toBe(75);
+    expect(adapter.currentFrame().html).toContain('secured the L1/L3 expansion in return for its support.');
+    expect(q.parlament_budget_can_pass).toBe(true);
+    adapter.goToScene('parlament_budget.pass');
+    expect(q.budget_year).toBe(q.year);
+  });
+
+  it.each([
+    { psc_relations: 55 },
+    { generalitat_surplus: -2.3, tax_policy_level: 2 },
+    { ciu_roadmap: 1 },
+  ])('blocks a transit deal with %j', (overrides) => {
+    const { adapter, q } = setup('ciu', {
+      psc_parlament_s: 20, psc_relations: 80, generalitat_surplus: 1,
+      active_mods: { territory_metro2: { active: true, def: { colour: 'gray' } } },
+      ...overrides,
+    });
+    propose(adapter);
+    expect(q.parlament_budget_positions.psc).toBe('no');
+    expect(adapter.currentFrame().choices.find(choice => choice.id === 'parlament_budget.approach_psc')?.canChoose).toBe(false);
+  });
+
+  it('vetoes a service deal during a pending consultation and permits it under Ros', () => {
+    const { adapter, q } = setup('erc', {
+      player_party: 'erc', psc_parlament_s: 20, psc_relations: 80, erc_roadmap: 1, generalitat_surplus: 3,
+      healthcare_spending: 1, healthcare_prepared_level: 2, social_spending_cap: 1,
+      consultation_pending: true, psc_leader: 'Pere Navarro',
+    });
+    propose(adapter);
+    adapter.goToScene('parlament_budget.cap_lower');
+    const approach = () => adapter.currentFrame().choices.find(choice => choice.id === 'parlament_budget.approach_psc');
+    expect(approach()).toMatchObject({ canChoose: false, subtitle: expect.stringContaining('consultation') });
+
+    q.psc_leader = 'Àngel Ros';
+    adapter.goToScene('parlament_budget.review');
+    expect(approach()).toMatchObject({ canChoose: true, subtitle: expect.stringContaining('Health improvement') });
+    adapter.goToScene('parlament_budget.approach_psc');
+    expect(q.parlament_budget_projection.levels.healthcare_spending).toBe(2);
+    expect(adapter.currentFrame().html).toContain('Health improvement');
+    expect(q.parlament_budget_positions.psc).toBe('yes');
+  });
+});
+
 describe('Budget passage executive reward', () => {
   it.each([-1, 0, 1].flatMap((difficulty) =>
     [[-5, 1, 0, 0], [-2.01, 1, 0, 0], [-2, 1, 1, 0], [-1, 1, 1, 0],

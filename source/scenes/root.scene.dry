@@ -252,7 +252,7 @@ on-arrival: {!
   Q.unio_leader_gender = "m";
   G.setText(Q, "unio_ideology", G.text("Christian Democracy, Pact-Pragmatism"));
 
-  // TODO: Handle leadership changes (both for player-erc and non-player-erc)
+  // TODO: Handle leadership changes (for non-player-erc)
   G.setText(Q, "erc_ideology", G.text("Social Democracy, Independence"));
   Q.erc_leader = "Oriol Junqueras";
   Q.erc_leader_gender = "m";
@@ -1564,7 +1564,7 @@ This is a game of alternate history. While historical accuracy is a major concer
 
 For more information on the politics, government, and recent history of Catalonia, please see the Library page on the top left. If this is your first time playing the game, it is strongly recommended that you read at least some of this information.
 
-[? if debug: **DEBUG** mode is toggled (!) - you should not be seeing this unless you are testing sutff :) ?]
+[? if debug: **DEBUG** mode is toggled (!) - you should not be seeing this :) ?]
 
 - @easy_mode : <span style="color: #5B9A8D;font-weight: bold;">Easy</span> mode
 - @normal_mode : <span style="color: #C4B156;font-weight: bold;">Normal</span> mode
@@ -1688,7 +1688,7 @@ on-arrival: {!
   Q.sergi_sabria_advisor_available = 1;
   Q.raul_romera_advisor = 0; // jxsi/jxcat locked
   // Institutional Pragmatics
-  Q.pere_aragones_advisor_available = 0; // TODO: post referendum?
+  Q.pere_aragones_advisor_available = 0; // Recruitable from 2019 in post_event.
   Q.roger_torrent_advisor_available = 1;
   Q.alfred_bosch_advisor_available = 1;
   Q.ernest_maragall_advisor_available = 0; // Post PSC implosion

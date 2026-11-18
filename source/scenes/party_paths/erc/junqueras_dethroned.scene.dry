@@ -1,0 +1,467 @@
+title: Oriol Junqueras, dethroned ?!
+subtitle: The recent move by ERC to push him out of the party's advisory board raises questions on his future role as party leader.
+view-if: player_party = "erc" and year > 2012 and not junqueras_dethroned and oriol_junqueras_advisor_available = 1 and oriol_junqueras_advisor = 0
+tags: event
+role: event
+new-page: true
+face-image: img/events/junqueras_dethroned.jpeg
+on-arrival: {!
+    // TODO: think more about this: what requires each of them to run, etc. Historically it was not so straight forward??
+
+    // Snapshot the contest before its own electoral disruption. No random draws.
+    if (Q.erc_primary) return;
+    var factions = ["left", "core", "pragmatic", "civic"];
+    var weights = factions.map(function (f) { return Math.max(0, Number(Q["erc_" + f + "_strength"]) || 0); });
+    var total = weights.reduce(function (sum, n) { return sum + n; }, 0);
+    weights = total ? weights.map(function (n) { return n / total; }) : [0.25, 0.25, 0.25, 0.25];
+    var candidates = [
+        {id:"oriol_junqueras", name:"Oriol Junqueras", gender:"m", colour:"var(--erc)", appeal:[1,1.4,1.1,1]},
+        {id:"marta_rovira", name:"Marta Rovira", gender:"f", colour:"#B96E55", appeal:[50,50,25,20]},
+        {id:"pere_aragones", name:"Pere Aragonès", gender:"m", colour:"#A9821F", appeal:[10,15,55,5]},
+        {id:"raul_romeva", name:"Raül Romeva", gender:"m", colour:"#8C7355", appeal:[35,30,20,40]},
+        {id:"carme_forcadell", name:"Carme Forcadell", gender:"f", colour:"#D5B56A", appeal:[10,10,2,40]}
+    ].filter(function (c, i) {
+        return i == 0 || (Q[c.id + "_advisor_available"] == 1 && !Q[c.id + "_departed"] && (c.id != "pere_aragones" || Q.year >= 2019));
+    });
+    var roadmap = Number(Q.erc_roadmap) || 0;
+    for (var c of candidates.slice(1)) {
+        if (c.id == "pere_aragones") c.appeal[3] *= roadmap >= 3 ? 0.25 : roadmap >= 2 ? 0.5 : 1;
+        if (c.id == "carme_forcadell") {
+            c.appeal[1] *= roadmap >= 2 ? 1.25 : 0.75;
+            c.appeal[3] *= 1 + Math.max(0, (weights[3] - 0.35) * 2);
+            c.appeal[2] *= roadmap >= 2 ? 0.5 : 1;
+        }
+        // Dissent helps compatible alternatives; anger at dismissing Junqueras
+        // must not automatically turn the Core into votes against him.
+        for (var f = 0; f < factions.length; f++) {
+            var discontent = Math.max(0, Math.min(0.5, ((Number(Q["erc_" + factions[f] + "_dissent"]) || 0) - 30) / 50));
+            if ((f == 0 && ["marta_rovira", "raul_romeva"].includes(c.id)) ||
+                (f == 2 && c.id == "pere_aragones") || (f == 3 && c.id == "carme_forcadell")) c.appeal[f] *= 1 + discontent;
+        }
+    }
+    // Count ERC's attributed representatives, not its empty standalone ballot.
+    var seats = Math.max(0, Number(Q.erc_parlament_s) || 0);
+    var carrier = "erc", ercShare = 1;
+    for (var list of ["jxsi", "jxcat"]) {
+        if (!Q["erc_in_" + list]) continue;
+        carrier = list;
+        var remainder = Q["cup_in_" + list] ? 1 - (Number(Q[list + "_cup_formation_num"]) || 0) / 100 : 1;
+        ercShare = Math.max(0, Math.min(1, remainder * (Number(Q[list + "_formation_num"]) || 50) / 100));
+        seats = Math.max(0, Number(Q[list + "_parlament_s"]) || 0) * ercShare;
+        break;
+    }
+    var trust = Number.isFinite(Number(Q.independence_trust)) ? Number(Q.independence_trust) : 50;
+    var trustEffect = Math.max(-16, Math.min(16, (trust - 50) * 0.4));
+    var electoralEffect = seats > 40 ? 12 : seats > 30 ? 8 : seats < 15 ? -10 : 0;
+    var record = {factions:factions, weights:weights, candidates:candidates, seats:seats,
+        trust:trust, trustEffect:trustEffect, electoralEffect:electoralEffect, roadmap:roadmap,
+        first:[], runoff:[], started:false, resolved:false};
+    for (var c of candidates) record.first.push({id:c.id, share:0, factions:[0,0,0,0]});
+    for (var f = 0; f < factions.length; f++) {
+        // At the initial 20:40:20:30 faction balance, the neutral incumbent wins 60%.
+        var incumbent = candidates.length == 1 ? 100 : Math.max(5, Math.min(90, [55,70,60,50][f] + trustEffect + electoralEffect));
+        var alternatives = candidates.slice(1).reduce(function (sum, c) { return sum + c.appeal[f]; }, 0);
+        record.first[0].factions[f] = weights[f] * incumbent;
+        for (var i = 1; i < candidates.length; i++) record.first[i].factions[f] = weights[f] * (100 - incumbent) * candidates[i].appeal[f] / alternatives;
+    }
+    Q.erc_primary = record;
+    Q.erc_primary_needs_runoff = false;
+    Q.erc_primary_has_challenger = candidates.length > 1;
+    Q.erc_primary_displaced_advisor = "";
+    // Small, conserving demobilization, limited to ERC's share of a shared list.
+    for (var province of Q.parlament_constituencies) for (var demographic of Q.parlament_demographics) {
+        var stock = Number(Q[carrier + "_parlament_" + province + "_" + demographic + "_support"]) || 0;
+        if (stock > 0) G.cardSupportTransfer(Q, {contest:"parlament", from:carrier, to:"abstain", amount:stock * 0.01 * ercShare,
+            maxDonorFraction:0.5, constituencies:[province], demographics:[demographic]});
+    }
+!}
+
+= ​Oriol Junqueras, dethroned ?!
+
+ERC has recently re-structured the party's advisory board and, in quite the controversial move, it seems like Oriol Junqueras, undisputed party leader since the collapse of the Triparite government in 2010, has been pushed to the sidelines. One wonders if his leadership may be indeed living its last moments. When pressed, he has admitted to be considering his role within the party, and has hinted at the possibility of seeking a re-election through an extraordinary primary. If that is the case, we'll have to see to what extent the republican militancy still trusts his leadership after all...
+
+- @wait_no
+- @start_push_out
+
+@wait_no
+title: Wait a second, let's reconsider this
+subtitle: Oriol Junqueras will return to the party's advisory board.
+on-arrival: erc_primary_seat = "oriol_junqueras"
+call: junqueras_dethroned.seat_leader
+
+It may be better to reconsider after all... Oriol Junqueras has rejoined the advisory board.
+
+#  [? if erc_primary_displaced_advisor: To make space for him, [+ erc_primary_displaced_advisor +] has stepped aside, at least for now.?]
+
+- @cancel: Continue...
+
+@cancel
+on-arrival: {! Q.erc_primary = null; !}
+go-to: post_event
+
+@start_push_out
+title: It may be the time for new leaderships
+subtitle: A primary election will have to solve any disputes. \[-1 resources\]
+choose-if: party_resources >= 1 and erc_primary_has_challenger and not year < 2013 and not rubicon
+unavailable-subtitle: [? if year < 2013 or rubicon: Given the current political circumstances, the party feels like it is not the right time to open a debate on leadership. ?][? if not erc_primary_has_challenger: There really isn't an alternative candidate... ?] [? if party_resources < 1 and erc_primary_has_challenger: Not enough resources. ?]
+on-arrival: {!
+    if (!Q.erc_primary.started) {
+        Q.party_resources -= 1;
+        Q.erc_primary.started = true;
+        Q.erc_primary_first_round = null;
+        Q.erc_primary_second_round = null;
+    }
+    Q.erc_primary_campaign_runoff = false;
+    Q.erc_primary_endorsement = "";
+!}
+
+After critical voices within the party have defended the recent move to exclude him from the party's advisory board, and in quite the controversial move, Oriol Junqueras has officially resigned from the party's presidency. In his own words, to be able to fairly seek re-election by the militancy. With the whole process of leadership renovation underway within ERC, however, he will clearly not be running alone.
+
+- @back_oriol_junqueras
+- @back_marta_rovira
+- @back_pere_aragones
+- @back_raul_romeva
+- @back_carme_forcadell
+- @cast_ballot: Just let the vote happen
+
+@back_oriol_junqueras
+title: Back Oriol Junqueras
+subtitle: A bet on republican continuity after all.  \[-1 resources\]
+view-if: {! return Q.erc_primary && !(Q.erc_primary_campaign_runoff ? Q.erc_primary_second_round : Q.erc_primary_first_round) && (Q.erc_primary_campaign_runoff ? Q.erc_primary.runoff : Q.erc_primary.first).some(function (row) { return row.id == "oriol_junqueras"; }); !}
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: erc_primary_endorsement = "oriol_junqueras"
+go-to: cast_ballot
+
+We've backed Oriol Junqueras' candicacy.
+
+- @cast_ballot
+
+@back_marta_rovira
+title: Back Marta Rovira
+subtitle: The soft alternative, she has stronger backing among the party's left wing. \[-1 resources\]
+view-if: {! return Q.erc_primary && !(Q.erc_primary_campaign_runoff ? Q.erc_primary_second_round : Q.erc_primary_first_round) && (Q.erc_primary_campaign_runoff ? Q.erc_primary.runoff : Q.erc_primary.first).some(function (row) { return row.id == "marta_rovira"; }); !}
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: erc_primary_endorsement = "marta_rovira"
+go-to: cast_ballot
+
+We've backed Marta Rovira' candicacy.
+
+- @cast_ballot
+
+@back_pere_aragones
+title: Back Pere Aragonès
+subtitle: The personification of pragmatism and institutional know-how. \[-1 resources\]
+view-if: {! return Q.erc_primary && !(Q.erc_primary_campaign_runoff ? Q.erc_primary_second_round : Q.erc_primary_first_round) && (Q.erc_primary_campaign_runoff ? Q.erc_primary.runoff : Q.erc_primary.first).some(function (row) { return row.id == "pere_aragones"; }); !}
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: erc_primary_endorsement = "pere_aragones"
+
+We've backed Pere Aragonès' candicacy.
+
+- @cast_ballot
+
+
+@back_raul_romeva
+title: Back Raül Romeva
+subtitle: A uniting figure across the independence movement. \[-1 resources\]
+view-if: {! return Q.erc_primary && !(Q.erc_primary_campaign_runoff ? Q.erc_primary_second_round : Q.erc_primary_first_round) && (Q.erc_primary_campaign_runoff ? Q.erc_primary.runoff : Q.erc_primary.first).some(function (row) { return row.id == "raul_romeva"; }); !}
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: erc_primary_endorsement = "raul_romeva"
+go-to: cast_ballot
+
+We've backed Raül Romeva's candicacy.
+
+- @cast_ballot
+
+@back_carme_forcadell
+title: Back Carme Forcadell
+subtitle: An undisputed leader of street mobilization and pushing for independence. \[-1 resources\]
+view-if: {! return Q.erc_primary && !(Q.erc_primary_campaign_runoff ? Q.erc_primary_second_round : Q.erc_primary_first_round) && (Q.erc_primary_campaign_runoff ? Q.erc_primary.runoff : Q.erc_primary.first).some(function (row) { return row.id == "carme_forcadell"; }); !}
+choose-if: party_resources >= 1
+unavailable-subtitle: Not enough resources.
+on-arrival: erc_primary_endorsement = "carme_forcadell"
+
+We've backed Carme Forcadell's candicacy.
+
+- @cast_ballot
+
+@cast_ballot
+title: The militancy votes...
+on-arrival: {!
+    var record = Q.erc_primary;
+    var isRunoff = Q.erc_primary_campaign_runoff;
+    var round = isRunoff ? "runoff" : "first";
+    var cast = isRunoff ? "runoffCast" : "firstCast";
+    if (!record || !record.started || record.resolved || record[cast]) return;
+    var ballot = record[round];
+    if (!ballot.length) return;
+    var candidates = record.candidates;
+    var endorsed = ballot.find(function (row) { return row.id == Q.erc_primary_endorsement; });
+    if (endorsed && Q.party_resources >= 1) {
+        Q.party_resources -= 1;
+        // Transfer a small share within each faction, preserving its total vote.
+        for (var row of ballot) {
+            if (row == endorsed) continue;
+            for (var f = 0; f < row.factions.length; f++) {
+                var gain = row.factions[f] * 0.08;
+                row.factions[f] -= gain;
+                endorsed.factions[f] += gain;
+            }
+        }
+    }
+    record[cast] = true;
+    Q.erc_primary_endorsement = "";
+    function rank(ballot) {
+        for (var row of ballot) row.share = row.factions.reduce(function (sum, n) { return sum + n; }, 0);
+        // Stable nomination order settles exact ties, with the incumbent first.
+        return ballot.sort(function (a, b) { return b.share - a.share || candidates.findIndex(function (c) { return c.id == a.id; }) - candidates.findIndex(function (c) { return c.id == b.id; }); });
+    }
+
+    // Largest remainders give visible percentages summing to exactly 100.00.
+    function bars(ballot, round) {
+        var units = ballot.map(function (row, i) { var value = row.share * 100; return {i:i, value:Math.floor(value), remainder:value - Math.floor(value)}; });
+        var left = 10000 - units.reduce(function (sum, row) { return sum + row.value; }, 0);
+        var sorted = units.slice().sort(function (a, b) { return b.remainder - a.remainder || a.i - b.i; });
+        for (var i = 0; i < left; i++) sorted[i % sorted.length].value++;
+        return {rows:ballot.map(function (row, i) {
+            var c = candidates.find(function (candidate) { return candidate.id == row.id; });
+            var key = "erc_primary_" + round + "_" + row.id;
+            Q[key] = units[i].value / 100;
+            return {label:c.name, shareFrom:key, colour:c.colour};
+        })};
+    }
+
+    rank(ballot);
+    if (!isRunoff) {
+        Q.erc_primary_first_round = bars(ballot, "first");
+        var factions = record.factions;
+        var trustEffect = record.trustEffect, electoralEffect = record.electoralEffect;
+        var roadmap = record.roadmap ?? Q.erc_roadmap;
+        record.needsRunoff = record.first[0].share <= 50 + 1e-9 && candidates.length > 1;
+        if (record.needsRunoff) {
+            record.runoff = record.first.slice(0, 2).map(function (row) { return {id:row.id, share:0, factions:row.factions.slice()}; });
+            var order = ["oriol_junqueras", "marta_rovira", "pere_aragones", "raul_romeva", "carme_forcadell"];
+            // Second preferences, not a unified anti-incumbent bloc.
+            var transfers = [[0,6,4,4,2], [4,0,5,7,4], [6,7,0,4,1], [3,7,4,0,7], [4,6,1,8,0]];
+            var fit = [[1,1.4,1.1,1], [1.5,1.1,1.1,0.8], [0.8,0.8,1.6,0.35], [1.1,1,1,1.2], [0.9,0.6,0.3,1.7]];
+            for (var row of record.first.slice(2)) for (var f = 0; f < factions.length; f++) {
+                var preferences = record.runoff.map(function (finalist) {
+                    var target = order.indexOf(finalist.id);
+                    var value = transfers[order.indexOf(row.id)][target] * fit[target][f];
+                    if (target == 0) value *= Math.max(0.35, Math.min(1.6, 1 + (trustEffect + electoralEffect) / 45));
+                    if (target == 2 && f == 3 && roadmap >= 2) value *= 0.5;
+                    return value;
+                });
+                var sum = preferences[0] + preferences[1];
+                for (var i = 0; i < 2; i++) record.runoff[i].factions[f] += row.factions[f] * preferences[i] / sum;
+            }
+            rank(record.runoff);
+        }
+        Q.erc_primary_needs_runoff = record.needsRunoff;
+        if (record.needsRunoff) {
+            // Keep the runoff baseline in the save, but publish it only after campaigning.
+            record.winner = null;
+            record.winningShare = null;
+            return;
+        }
+    } else {
+        Q.erc_primary_second_round = bars(ballot, "second");
+    }
+    record.winner = ballot[0].id;
+    record.winningShare = ballot[0].share;
+!}
+go-to: first_ballot if not erc_primary_campaign_runoff and not erc_primary_second_round; runoff_ballot if erc_primary_campaign_runoff or erc_primary_second_round
+
+@first_ballot
+go-to: runoff if erc_primary_needs_runoff; result if not erc_primary_needs_runoff
+
+{!<div data-widget="result-bars" data-props='{"configFrom":"erc_primary_first_round"}'></div>!}
+
+@runoff
+on-arrival: {!
+    Q.erc_primary_campaign_runoff = true;
+    Q.erc_primary_endorsement = "";
+    if (!Q.erc_primary.runoffCast) Q.erc_primary_second_round = null;
+!}
+
+With such a result, it is still not enough to close up the race, and a second round will be held. 
+
+- @back_oriol_junqueras
+- @back_marta_rovira
+- @back_pere_aragones
+- @back_raul_romeva
+- @back_carme_forcadell
+- @cast_ballot: Just let the vote happen
+
+@runoff_ballot
+go-to: result
+
+{!<div data-widget="result-bars" data-props='{"configFrom":"erc_primary_second_round"}'></div>!}
+
+@result
+on-arrival: {!
+    var primary = Q.erc_primary;
+    if (primary?.winner && !primary.resolved) {
+        primary.resolved = true;
+        Q.junqueras_dethroned = true;
+        var winner = primary.candidates.find(function (c) { return c.id == primary.winner; });
+        G.setText(Q, "erc_primary_winner_name", G.literalText(winner.name));
+        Q.erc_primary_winner_gender = winner.gender;
+        Q.erc_primary_seat = winner.id;
+        Q.junqueras_reelected = winner.id == "oriol_junqueras";
+        if (!Q.junqueras_reelected) {
+            Q.oriol_junqueras_advisor = 0;
+            Q.oriol_junqueras_advisor_available = 0;
+            // A party primary does not reverse a public-office disqualification.
+            var disqualified = Q.consultation_verdict && Q.consultation_verdict.defendants.some(function (d) { return d.name == winner.name; });
+            if (!disqualified) {
+                Q.erc_leader = winner.name;
+                Q.erc_leader_gender = winner.gender;
+            }
+        }
+        var final = primary.needsRunoff ? primary.runoff : primary.first;
+        var votes = final.find(function (row) { return row.id == winner.id; });
+        var profile = {
+            oriol_junqueras: {dissent:[2,-3,0,2], relations:{}},
+            marta_rovira: {dissent:[-4,4,0,0], relations:{cup:3, [Q.parlament_current_icv]:4}},
+            pere_aragones: {dissent:[1,1,-4,Q.erc_roadmap == 3 ? 3 : 6], relations:{psc:4, cup:-3}},
+            raul_romeva: {dissent:[0,-2,1,-2], relations:{[Q.parlament_current_ciu]:4, cup:3}},
+            carme_forcadell: {dissent:[0,2,6,-5], relations:{cup:4}}
+        }[winner.id];
+        var closeResult = Math.max(0, Math.min(1, (65 - primary.winningShare) / 15));
+        var pragmaticDissent = Q.erc_pragmatic_dissent;
+        var disappointed = [];
+        for (var f = 0; f < primary.factions.length; f++) {
+            var weight = primary.weights[f];
+            var approval = weight ? votes.factions[f] / (100 * weight) : 0;
+            disappointed.push(weight * (1 - approval));
+            if (!weight) continue;
+            var change = profile.dissent[f] + 14 * (0.5 - approval) + 3 * closeResult * (1 - approval);
+            var key = "erc_" + primary.factions[f] + "_dissent";
+            Q[key] = Math.max(0, Math.min(100, (Number(Q[key]) || 0) + change));
+        }
+        for (var [party, change] of Object.entries(profile.relations)) {
+            var relation = party + "_relations";
+            if (Number.isFinite(Q[relation])) Q[relation] = Math.max(0, Math.min(100, Q[relation] + change));
+        }
+
+        // The opening loss still applies. Only a concluded primary adds this shock.
+        var carrier = ["jxsi", "jxcat"].find(function (list) { return Q["erc_in_" + list]; }) || "erc";
+        var ercShare = 1;
+        if (carrier != "erc") {
+            var remainder = Q["cup_in_" + carrier] ? 1 - (Number(Q[carrier + "_cup_formation_num"]) || 0) / 100 : 1;
+            ercShare = Math.max(0, Math.min(1, remainder * (Number(Q[carrier + "_formation_num"]) || 50) / 100));
+        }
+        var destinations = [Q.parlament_current_icv, Q.parlament_current_ciu, "psc", "cup"].map(function (party) {
+            var live = party && party != carrier && Q.parties.includes(party) && !Q[party + "_in_" + carrier] &&
+                Q.parlament_constituencies.some(function (province) {
+                    return Q.parlament_demographics.some(function (demographic) {
+                        return Q[party + "_parlament_" + province + "_" + demographic + "_support"] > 0;
+                    });
+                });
+            return live ? party : "abstain";
+        });
+        var disappointedTotal = disappointed.reduce(function (sum, n) { return sum + n; }, 0);
+        var shares = {abstain: disappointedTotal > 0 ? 0.5 : 1};
+        if (disappointedTotal > 0) for (var f = 0; f < disappointed.length; f++) {
+            var to = destinations[f];
+            shares[to] = (shares[to] || 0) + 0.5 * disappointed[f] / disappointedTotal;
+        }
+        for (var province of Q.parlament_constituencies) for (var demographic of Q.parlament_demographics) {
+            var stock = Number(Q[carrier + "_parlament_" + province + "_" + demographic + "_support"]) || 0;
+            var loss = stock * ercShare * (0.02 + 0.03 * closeResult);
+            if (loss <= 0) continue;
+            for (var [to, share] of Object.entries(shares)) if (share > 0) {
+                G.cardSupportTransfer(Q, {contest:"parlament", from:carrier, to:to, amount:loss * share,
+                    maxDonorFraction:0.5, constituencies:[province], demographics:[demographic]});
+            }
+        }
+
+        // seat_leader recounts the board after the departures.
+        var departures = [
+            ["elisenda_paluzie", "erc_primary_paluzie_departed",
+                ["oriol_junqueras", "pere_aragones"].includes(winner.id) && Q.erc_roadmap != 3],
+            ["joan_laporta", "erc_primary_laporta_departed", winner.id != "carme_forcadell"],
+            ["alfred_bosch", "erc_primary_bosch_departed",
+                winner.id == "carme_forcadell" && Q.erc_roadmap == 3 && pragmaticDissent >= 49]
+        ];
+        for (var [advisor, notice, shouldLeave] of departures) {
+            if (!shouldLeave || Q[advisor + "_departed"] ||
+                !(Q[advisor + "_advisor"] || Q[advisor + "_advisor_available"])) continue;
+            Q[advisor + "_advisor"] = 0;
+            Q[advisor + "_advisor_available"] = 0;
+            Q[advisor + "_departed"] = true;
+            Q[notice] = true;
+        }
+        if (winner.id == "carme_forcadell" && Q.speaker == winner.name) {
+            var occupied = [Q.president, Q.vicepresident, Q.economy_minister, Q.interior_minister,
+                Q.health_minister, Q.education_minister, Q.bnl_minister, Q.foreign_minister, Q.territory_minister];
+            var disqualified = (Q.consultation_verdict?.defendants || []).map(function (person) { return person.name; });
+            var candidates = Q.year >= 2017 ? ["Roger Torrent", "Anna Simó"] : ["Anna Simó", "Roger Torrent"];
+            Q.speaker = candidates.concat(["Lluís Corominas", "Alba Vergés", "Montserrat Fornells"]).find(function (name) {
+                return !occupied.includes(name) && !disqualified.includes(name);
+            });
+            Q.speaker_gender = ["Anna Simó", "Alba Vergés", "Montserrat Fornells"].includes(Q.speaker) ? "f" : "m";
+            G.setText(Q, "erc_primary_new_speaker", G.literalText(Q.speaker));
+        }
+    }
+!}
+call: junqueras_dethroned.seat_leader
+
+[+ erc_primary_winner_name +] has won the party primary. 
+
+[? if erc_primary_winner_name = "Oriol Junqueras" : It seems like, after all, Oriol Junqueras will keep its post. While some purges of dissenters may be expected, and some have already handed their resignations, the turth is most of the party has folded back into the old structures and ways of doing. ?]
+[? if erc_primary_winner_name = "Marta Rovira" : While not a monumental change in party phiolosophy, Marta Rovira embodies a spirit of certain renewal, hinting a slight move to the left for the party, less willing to tolerate any deviations to the right just for National liberation.  ?]
+[? if erc_primary_winner_name = "Pere Aragonès" : In a very continuist leadership change, Pere Aragonès' leadership makes ERC a party much more clearly focused on managing government and achieving success on that front than on the streets or in big clashes with the Spanish state.  ?]
+[? if erc_primary_winner_name = "Raül Romeva" : In what feels like a enormous win for National Unity, Raül Romeva is clear in his ambitions towards a more united pro-independence front across factions and party lines. ?]
+[? if erc_primary_winner_name = "Carme Forcadell" : In what feels like a enormous win for National Unity, the former ANC president is setting a clear independence horizon, pushing ERC ever closer to open confrontation with the Spanish government. [? if erc_primary_new_speaker: For now, she has stepped down as Speaker of the House, with [+ erc_primary_new_speaker +] taking over. ?] ?]
+
+[? if erc_primary_paluzie_departed: Given the elected leadership's "lack of commitment" towards independence, Elisenda Paluzie has anounced her resignation from the party. We can expect her to return to independence grassroots organizing in force. ?]
+
+[? if erc_primary_laporta_departed: After leaving SI and coming to ERC, this leadership contest seems to have been the last straw for Joan Laporta. Who knows what's his future from now onwards. Maybe back to sports? ?]
+
+[? if erc_primary_bosch_departed: Given ERC's "radicalization", Alfred Bosch has announce his resignation. After this many years in the party, maybe it is time for retirement after all... ?]
+
+
+
+# [? if erc_primary_displaced_advisor: [+ erc_primary_displaced_advisor +] leaves??]
+
+- @post_event: A new [? if erc_primary_winner_name = "Oriol Junqueras" : old ?] ERC...
+
+@seat_leader
+on-arrival: {!
+    // Restore/seat the leader once; displace the least senior available name
+    // only if needed, following the original scene's advisory-board fallback.
+    var roster = [
+        ["sergi_sabria","core","Sergi Sabrià"], ["carles_mundo","civic","Carles Mundó"],
+        ["joan_laporta","civic","Joan Laporta"], ["joan_josep_nuet","left","Joan Josep Nuet"],
+        ["elisenda_paluzie","civic","Elisenda Paluzie"], ["alfred_bosch","pragmatic","Alfred Bosch"],
+        ["ernest_maragall","pragmatic","Ernest Maragall"], ["teresa_jorda","left","Teresa Jordà"],
+        ["dolors_bassa","left","Dolors Bassa"], ["roger_torrent","pragmatic","Roger Torrent"],
+        ["gabriel_rufian","core","Gabriel Rufián"], ["raul_romeva","core","Raül Romeva"],
+        ["carme_forcadell","civic","Carme Forcadell"], ["pere_aragones","pragmatic","Pere Aragonès"],
+        ["joan_tarda","core","Joan Tardà"], ["marta_rovira","left","Marta Rovira"],
+        ["oriol_junqueras","core","Oriol Junqueras"]
+    ];
+    var winner = roster.find(function (a) { return a[0] == Q.erc_primary_seat; });
+    if (!winner) return;
+    Q.n_advisors = roster.filter(function (a) { return !!Q[a[0] + "_advisor"]; }).length;
+    if (Q[winner[0] + "_advisor"]) return;
+    if (Q.n_advisors >= (Number(Q.max_advisors) || 3)) {
+        var displaced = roster.find(function (a) { return a[0] != winner[0] && Q[a[0] + "_advisor"]; });
+        Q[displaced[0] + "_advisor"] = 0;
+        Q.n_advisors--;
+        Q["erc_" + displaced[1] + "_dissent"] += 7;
+        G.setText(Q, "erc_primary_displaced_advisor", G.literalText(displaced[2]));
+    }
+    Q[winner[0] + "_advisor"] = 1;
+    Q.n_advisors++;
+    var dissent = "erc_" + winner[1] + "_dissent";
+    Q[dissent] = Math.max(0, Q[dissent] - 4);
+!}
+
+
+# TODO: more effects and limitations when having certain party leaders (e.g. forcadell not allowing an expansion of the roadmap deadline, etc)

@@ -168,11 +168,8 @@ go-to: post_speaker
 
 @jxsi_speaker
 title: Elect a JxSí Speaker of the House
-on-arrival: {!
-    Q.speaker_party = "jxsi";
-    Q.speaker = "Carme Forcadell";
-    Q.speaker_gender = "f";
-!}
+on-arrival: speaker_party = "jxsi"
+call: parlament_coalition_setnames.jxsi_speaker
 go-to: post_speaker
 
 @jxcat_speaker

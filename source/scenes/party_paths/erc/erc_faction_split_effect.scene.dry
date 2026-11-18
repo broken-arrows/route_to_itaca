@@ -70,6 +70,9 @@ on-arrival: {!
         Q.erc_redbelt_mod = (Number(Q.erc_redbelt_mod) || 0) - 10 * rate;
         Q.erc_interior_mod = (Number(Q.erc_interior_mod) || 0) - 10 * rate;
         for (var advisor of departures[faction]) {
+            if ((Q.erc_primary?.resolved && Q.erc_primary.winner == advisor) ||
+                (advisor == 'carme_forcadell' && Q.erc_leader == 'Carme Forcadell') ||
+                (advisor == 'raul_romeva' && Q.erc_leader == 'Raül Romeva')) continue;
             // Maragall can still bring a new network from outside after this rupture.
             if (advisor == 'ernest_maragall' && !Q[advisor + '_advisor_available'] && !Q[advisor + '_advisor']) continue;
             if (Q[advisor + '_advisor']) Q.n_advisors = Math.max(0, Q.n_advisors - 1);

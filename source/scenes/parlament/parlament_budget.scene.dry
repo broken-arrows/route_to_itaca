@@ -201,8 +201,31 @@ on-arrival: {!
                 if (Q[member + "_in_" + party]) roadmap = Math.max(roadmap, Number(Q[member + "_roadmap"]) || 0);
     }
     Q.parlament_budget_government_roadmap = roadmap;
-    var pscFacesIndyCabinet = !cabinet.includes("psc") && roadmap >= 1 &&
+    var pscInOpposition = !cabinet.includes("psc");
+    var pscFacesIndyCabinet = pscInOpposition && roadmap >= 1 &&
         cabinet.some(function (p) { return ["erc", "cup", "jxsi", "jxcat"].includes(p); });
+    // The consultation scene also sets consultation_happened on cancellation.
+    var consultationHeld = Q.consultation_happened && (Q.consultation_preparation == null || Q.consultation_preparation >= 4);
+    var pscConsultationVeto = pscInOpposition && roadmap >= 1 &&
+        (Q.consultation_pending || consultationHeld) && !["Montserrat Tura", "Àngel Ros"].includes(Q.psc_leader);
+    var transitProjects = {
+        metro2:G.text("the L1/L3 expansion"), metro1:G.text("the L9/L10"),
+        rail2:G.text("the Tarragona and Girona train-trams"), tmobilitat2:G.text("Catalonia-wide T-mobilitat"),
+        rail1:G.text("the Lleida-La Pobla railway")
+    };
+    function pscAcceptsFunding(p) {
+        return p.shortfall <= Math.max(0, -origin.surplus_at_draft) + 1e-9;
+    }
+    function pscConcessions(proposal, p, previous, previousProjection) {
+        var gains = spending.filter(function (kind) { return p.levels[kind] > previousProjection.levels[kind]; });
+        if (roadmap == 0) gains = gains.concat(Object.keys(transitProjects).filter(function (key) {
+            return proposal.projects[key] && !previous.projects[key];
+        }));
+        return gains;
+    }
+    function pscConcessionText(gains) {
+        return G.joinText(gains.map(function (gain) { return commitmentNames[gain] || transitProjects[gain]; }), ", ");
+    }
     function promised(party, kind, p) {
         return commitments.some(function (r) {
             return r.kind == kind && belongs(party, r.signatories || []) && matches(r, p) &&
@@ -242,9 +265,12 @@ on-arrival: {!
             if (!exceptional) reasons.push("Their leadership is against the Generalitat's current independence roadmap.");
             else if (!expanding || p.tax < 1) reasons.push("Their leadership expects expanded social funding and a credible tax package.");
         }
-        if (party == "psc" && !isNpcAuthor(party) && Q.year >= 2013 && roadmap > 1) {
-            if (Q.psc_leader != "Montserrat Tura") reasons.push("The PSC will not support this government's independence roadmap.");
-            else if (!expanding || p.tax < 1 || proposal.projects.b40) reasons.push("The PSC expoects greater funding for public services.");
+        if (party == "psc" && !isNpcAuthor(party)) {
+            if (pscConsultationVeto) reasons.push(G.text("The PSC opposes the Generalitat's push for independence."));
+            else if (Q.year >= 2013 && roadmap > 1) {
+                if (Q.psc_leader != "Montserrat Tura") reasons.push("The PSC will not support this government's independence roadmap.");
+                else if (!expanding || p.tax < 1 || proposal.projects.b40) reasons.push("The PSC expects greater funding for public services.");
+            }
         }
         if (["ppc", "cs"].includes(party) && !isNpcAuthor(party) && Q.year >= 2013 && roadmap > 0)
             reasons.push("Their leadership is against the Generalitat's current independence roadmap.");
@@ -255,8 +281,7 @@ on-arrival: {!
         var tax = projection.tax;
         var capChange = projection.cap - origin.enacted_social_spending_cap;
         var expanding = capChange > 0 || spending.some(function (kind) { return projection.levels[kind] > Q[kind]; });
-        var metro = draft.projects.metro1 || draft.projects.metro2 || draft.projects.rail1 ||
-            draft.projects.rail2 || draft.projects.tmobilitat2;
+        var metro = Object.keys(transitProjects).some(function (key) { return draft.projects[key]; });
         if (["ciu", "cdc", "dl", "pdcat", "junts", "unio"].includes(party))
             return acceptsFunding(party, projection, 0) && (capChange <= 0 || promised(party, "social_spending_cap", projection) ||
                 isNpcAuthor(party) && projection.cap <= origin.social_spending_cap) &&
@@ -266,13 +291,25 @@ on-arrival: {!
         if (party == "erc") return (tax >= 1 || agreedTax) && (projection.cap >= Math.min(0, origin.enacted_social_spending_cap) || agreedCap) ? "yes" : "no";
         if (party == "cup") return (expanding || projection.cap >= 1 || agreedCap) && (tax >= 2 || tax >= 1 && (draft.projects.metro2 || draft.projects.rail2 || draft.projects.tmobilitat2 || draft.projects.water3) || agreedTax) ? "yes" : "no";
         if (["icv", "csqp", "cecp", "ecp"].includes(party)) return (expanding || projection.cap >= 1 || agreedCap) && (tax >= 1 || agreedTax) ? "yes" : "no";
-        if (party == "psc") return (pscFacesIndyCabinet ? expanding && (tax == 1 || tax == 2 && metro) :
-            (projection.cap >= Math.min(0, origin.enacted_social_spending_cap) || agreedCap) && (tax >= 0 || agreedTax) && (tax < 2 || metro || agreedTax)) ? "yes" : "no";
+        if (party == "psc") {
+            if (pscInOpposition && (!pscAcceptsFunding(projection) ||
+                !spending.some(function (kind) { return projection.levels[kind] > Q[kind]; }))) return "no";
+            return (pscFacesIndyCabinet ? tax == 1 || tax == 2 && metro :
+                (projection.cap >= Math.min(0, origin.enacted_social_spending_cap) || agreedCap) &&
+                (tax >= 0 || agreedTax) && (tax < 2 || metro || agreedTax)) ? "yes" : "no";
+        }
         if (["ppc", "cs"].includes(party)) return (capChange <= 0 || agreedCap || isNpcAuthor(party) && projection.cap <= origin.social_spending_cap) &&
             (tax <= 0 || agreedTax || isNpcAuthor(party) && tax <= origin.tax_policy_level) && acceptsFunding(party, projection, 0) ? "yes" : "no";
         return party == "si" ? "abstain" : "no";
     }
     var deals = Q.parlament_budget_deals;
+    var pscDeal = deals.find(function (deal) { return deal.party == "psc"; });
+    // Older budget deals have no recorded concessions. Recover them against the submitted draft.
+    var pscGains = pscDeal ? pscDeal.concessions || pscConcessions(draft, projection, origin, submittedProjection) : [];
+    if (pscDeal && (!pscGains.length || !pscAcceptsFunding(projection) || hardVetoReasons("psc", draft, projection).length)) {
+        deals = Q.parlament_budget_deals = deals.filter(function (deal) { return deal.party != "psc"; });
+        pscGains = [];
+    }
     var playerVehicle = Q.player_in_jxsi && Q.jxsi_parlament_s > 0 ? "jxsi" :
         Q.player_in_jxcat && Q.jxcat_parlament_s > 0 ? "jxcat" : Q.player_party;
     function position(party) {
@@ -331,9 +368,33 @@ on-arrival: {!
     G.setText(Q, "parlament_budget_ciu_label", ciuTarget == "cdc" && (Q.jxsi_parlament_s > 0 || Q.jxcat_parlament_s > 0) ? G.text("the CDC wing of the unity list") : G.literalText(labels[ciuTarget]));
     Q.parlament_budget_icv_target = Q.parlament_current_icv;
     Q.parlament_budget_deal_proposals = {};
+    function pscSupportProposal() {
+        var candidates = [{tax_policy_level:draft.tax_policy_level,
+            social_spending_cap:Math.min(capMax, draft.social_spending_cap + 1), projects:Object.assign({}, draft.projects)}];
+        if (roadmap == 0) for (var key of Object.keys(transitProjects)) {
+            if (!available[key] || draft.projects[key]) continue;
+            var projects = Object.assign({}, draft.projects);
+            projects[key] = true;
+            candidates.push({tax_policy_level:draft.tax_policy_level, social_spending_cap:draft.social_spending_cap, projects:projects});
+        }
+        var fallback = draft;
+        for (var proposed of candidates) {
+            var p = project(proposed);
+            if (!pscConcessions(proposed, p, draft, projection).length) continue;
+            if (pscAcceptsFunding(p) && !hardVetoReasons("psc", proposed, p).length) return proposed;
+            if (fallback == draft) fallback = proposed;
+            if (proposed.tax_policy_level < taxMax) {
+                var higherTax = Object.assign({}, proposed, {tax_policy_level:proposed.tax_policy_level + 1});
+                var higherTaxProjection = project(higherTax);
+                if (pscAcceptsFunding(higherTaxProjection) && !hardVetoReasons("psc", higherTax, higherTaxProjection).length) return higherTax;
+            }
+        }
+        return fallback;
+    }
     function supportOffer(party) {
         var business = ["ciu", "cdc", "dl", "pdcat", "junts"].includes(party);
-        var proposed = {tax_policy_level:draft.tax_policy_level, social_spending_cap:draft.social_spending_cap, projects:Object.assign({}, draft.projects)};
+        var proposed = party == "psc" ? pscSupportProposal() :
+            {tax_policy_level:draft.tax_policy_level, social_spending_cap:draft.social_spending_cap, projects:Object.assign({}, draft.projects)};
         var terms = [];
         if (business) {
             proposed.tax_policy_level = Math.max(taxMin, draft.tax_policy_level - 1);
@@ -346,7 +407,7 @@ on-arrival: {!
             if (available.water2) proposed.projects.water2 = true;
             if (available.rail1) proposed.projects.rail1 = true;
             if (available.icf && Q.bnl_icf_prepared_branch == "guarantees") proposed.projects.icf = true;
-        } else {
+        } else if (party != "psc") {
             proposed.tax_policy_level = Math.min(taxMax, draft.tax_policy_level + 1);
             proposed.social_spending_cap = Math.min(capMax, draft.social_spending_cap + 1);
             if (["cup", "icv", "csqp", "cecp", "ecp"].includes(party)) proposed.projects.b40 = false;
@@ -365,11 +426,17 @@ on-arrival: {!
         for (var key of Object.keys(projectIds)) if (proposed.projects[key] != draft.projects[key]) terms.push((proposed.projects[key] ? "Fund " : "Remove ") + projectNames[key] + ".");
         var p = project(proposed);
         var reasons = hardVetoReasons(party, proposed, p);
-        if (!terms.length && basePosition(party) == "no") reasons.push("No acceptable policy concession seem possible with them at the moment...");
+        var concessions = [];
+        if (party == "psc") {
+            concessions = pscConcessions(proposed, p, draft, projection);
+            if (!concessions.length) reasons.push(G.text("The PSC expects concrete concessions."));
+            else if (!pscAcceptsFunding(p)) reasons.push(G.text("The funding gap is too large for the PSC to accept this budget."));
+            if (concessions.length) proposed.concessions = concessions;
+        } else if (!terms.length && basePosition(party) == "no") reasons.push("No acceptable policy concession seem possible with them at the moment...");
         var threshold = party == "cup" && ["Endavant", "Third Sector"].includes(Q.cup_faction) ? 65 : 55;
         if ((Number(Q[party + "_relations"]) || 0) <= threshold) reasons.push("Our relations with " + (labels[party] || party) + " are not good enough.");
         Q.parlament_budget_deal_proposals[party] = proposed;
-        return {possible:!reasons.length, reason:reasons.join(" "), terms:terms.join(" ") || "Support the existing terms."};
+        return {possible:!reasons.length, reasons:reasons, terms:terms.join(" ") || "Support the existing terms.", concessions:concessions};
     }
     var approachParties = {cup:"cup", psc:"psc", erc:"erc", icv:Q.parlament_budget_icv_target, ciu:ciuTarget};
     for (var key of Object.keys(approachParties)) {
@@ -381,9 +448,12 @@ on-arrival: {!
         var offer = supportOffer(party);
         Q["parlament_budget_can_approach_" + key] = eligible && party != Q.player_party && !ownBallot && hasSeats(party) && position(party) != "yes" && !deals.some(function (d) { return d.party == party; });
         Q["parlament_budget_" + key + "_deal_possible"] = offer.possible;
-        Q["parlament_budget_" + key + "_block_reason"] = offer.reason;
-        Q["parlament_budget_" + key + "_deal_terms"] = offer.terms;
+        G.setText(Q, "parlament_budget_" + key + "_block_reason", G.joinText(offer.reasons, " "));
+        if (key == "psc" && offer.concessions.some(function (gain) { return spending.includes(gain); }))
+            G.setText(Q, "parlament_budget_psc_deal_terms", G.joinText([pscConcessionText(offer.concessions), offer.terms], ". "));
+        else G.setText(Q, "parlament_budget_" + key + "_deal_terms", G.literalText(offer.terms));
     }
+    G.setText(Q, "parlament_budget_psc_deal_concession", pscConcessionText(pscGains));
     Q.parlament_budget_deal_names = deals.map(function (d) { return labels[d.party]; }).join(", ");
     Q.parlament_budget_npc_deal_count = deals.length;
     Q.parlament_budget_constituency_weights = {barcelona:1.05, girona:0.95, lleida:0.90, tarragona:1.10};
@@ -443,6 +513,7 @@ on-arrival: {!
 <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_budget_vote_result"}'></div>
 
 [? if parlament_budget_npc_deal_count > 0: Support has been negotiated with [+ parlament_budget_deal_names +]. **Further amendments void these agreements.**?]
+[? if parlament_budget_psc_deal_concession: The PSC has demanded proper funding for [+ parlament_budget_psc_deal_concession +] in return for its support.?]
 [? if parlament_budget_player_vote = "yes" and parlament_budget_player_default = "no": Our support for this compromise may cause internal dissent if it passes.?]
 
 - @pass
@@ -730,7 +801,9 @@ on-arrival: {!
             Object.keys(proposal.projects).every(function (key) { return deal.projects[key] == proposal.projects[key]; });
     });
     Q.budget_draft = {tax_policy_level:proposal.tax_policy_level, social_spending_cap:proposal.social_spending_cap, projects:Object.assign({}, proposal.projects)};
-    Q.parlament_budget_deals.push({party:party, tax:proposal.tax_policy_level, cap:proposal.social_spending_cap, projects:Object.assign({}, proposal.projects)});
+    var deal = {party:party, tax:proposal.tax_policy_level, cap:proposal.social_spending_cap, projects:Object.assign({}, proposal.projects)};
+    if (party == "psc") deal.concessions = proposal.concessions;
+    Q.parlament_budget_deals.push(deal);
     Q.parlament_budget_changes_made = true;
     Q[party + "_relations"] -= 5;
 !}

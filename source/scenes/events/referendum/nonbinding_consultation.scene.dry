@@ -6,13 +6,16 @@ tags: event
 view-if: consultation_day_trigger
 max-visits: 1
 on-arrival: {!
-    var cooperatingParties = ["ciu", "cdc", "dl", "pdcat", "jxcat", "junts", "jxsi", "erc", "cup"];
+    var ciuParties = ["ciu", "cdc", "dl", "pdcat", "jxcat", "junts"];
+    var cooperatingParties = ciuParties.concat("jxsi", "erc", "cup");
     var controlledParties = [Q.player_party].concat(Q.player_in_jxsi ? ["jxsi"] : [], Q.player_in_jxcat ? ["jxcat"] : []);
     Q.consultation_preparation = 0;
     for (var ministry of ["health", "education"]) {
         var owner = Q[ministry + "_minister_party"];
-        var npcPreparation = !controlledParties.includes(owner) && cooperatingParties.includes(owner) ? 1 : 0;
-        // A change of minister does not erase work or add the NPC allowance twice.
+        var affiliation = ["jxsi", "jxcat"].includes(owner) && Q[ministry + "_minister_affiliation"];
+        var npcPreparation = !ciuParties.includes(affiliation || owner) &&
+            !controlledParties.includes(owner) && cooperatingParties.includes(owner) ? 1 : 0;
+        // Keep completed work through minister changes and count the allowance at most once.
         Q.consultation_preparation += Math.max(Q["consultation_" + ministry + "_preparations"] || 0, npcPreparation);
     }
     for (var area of ["rb", "interior"]) {

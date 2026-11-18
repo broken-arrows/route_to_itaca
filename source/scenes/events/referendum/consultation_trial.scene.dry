@@ -45,7 +45,10 @@ on-arrival: {!
             : party == "cup" ? [["Mireia Boya", "f"], ["Dolors Sabater", "f"], ["Mireia Vehí", "f"], ["Anna Gabriel", "f"], ["Sergi Saladié", "m"], ["Eulàlia Reguant", "f"]]
             : [["Neus Munté", "f"], ["Jordi Turull", "m"], ["Meritxell Ruiz", "f"], ["Clara Ponsatí", "f"], ["Francesc Homs", "m"], ["Lluís Corominas", "m"]];
         if (person.office == "education_minister") candidates = candidates.slice(2).concat(candidates.slice(0, 2));
-        var successor = candidates.find(function (candidate) { return !disqualified.includes(candidate[0]) && !reserved.includes(candidate[0]); });
+        var successor = candidates.find(function (candidate) {
+            return !disqualified.includes(candidate[0]) && !reserved.includes(candidate[0]) &&
+                (candidate[0] != "Alfred Bosch" || !Q.alfred_bosch_departed);
+        });
         person.successor = successor[0];
         person.successorGender = successor[1];
         reserved.push(successor[0]);

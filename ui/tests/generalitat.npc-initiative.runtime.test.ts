@@ -243,12 +243,12 @@ describe('NPC cabinet scheduling', () => {
     if(scope==='external_support') expect(f.q.cat_coalition_support).toContain('erc');
   });
 
-  it('shares a twice-pace cut cooldown across ministries and persists it through save/load', () => {
+  it('shares the CiU cut cooldown across ministries and persists it through save/load', () => {
     const f=setup({education_minister_party:'ciu',economy_minister_party:'ciu',territory_minister_party:'ciu'});
     propose(f,'healthcare_spending',-2);
     answer(f,'accept');
     const cooldown=f.q.npc_austerity_timer;
-    expect(cooldown).toBe(2*f.q.government_does_things_timer);
+    expect(cooldown).toBe(12);
     expect(f.q.timers.filter((id:string)=>id==='npc_austerity')).toHaveLength(1);
     const loaded=DendryAdapter.fromJSONText(gameText);
     loaded.importStateJSON(f.adapter.exportStateJSON());
@@ -262,6 +262,14 @@ describe('NPC cabinet scheduling', () => {
     expect(f.candidates().some(item=>item.kind==='cut')).toBe(false);
     f.q.npc_austerity_timer=0;
     expect(f.candidates().some(item=>item.field==='education_spending' && item.kind==='cut')).toBe(true);
+  });
+
+  it.each([[5, 10], [6, 11], [7, 12]])('reuses a %s-month initiative interval for a %s-month CiU cooldown', (interval, cooldown) => {
+    const f = setup();
+    propose(f, 'healthcare_spending', -2);
+    vi.spyOn(f.adapter.engine.gameLib as unknown as typeof gameLib, 'governmentInitiativeTimer').mockReturnValue(interval);
+    answer(f, 'accept');
+    expect(f.q.npc_austerity_timer).toBe(cooldown);
   });
 
   it('starts no cut cooldown for stopped proposals and revalidates a queued cut', () => {
@@ -550,7 +558,45 @@ describe('NPC cabinet scheduling', () => {
 });
 
 describe('NPC ideology, portfolios and agreements', () => {
-  it.each([[-0.01, 2], [-0.5, 2], [-1, 4], [-2.3, 9.2], [-5, 20]])
+  it('prioritizes CiU Education over Health in a coalition and records its polling places', () => {
+    const f = setup({ cat_coalition: ['psc', 'ciu', 'erc'], president_party: 'psc',
+      education_minister_party: 'ciu', parlament_non_binding_consultations: true, consultation_pending: true });
+    const random = vi.spyOn(f.adapter.engine.gameLib as unknown as typeof gameLib, 'random').mockReturnValue(0.1);
+    expect(due(f)).toMatchObject({ party: 'ciu', field: 'consultation_education_preparations', to: 2, weight: 1000 });
+    answer(f, 'accept');
+    expect(f.q.consultation_education_preparations).toBe(2);
+    expect(f.q.consultation_health_preparations).toBe(0);
+    expect(f.q.party_resources).toBe(4);
+    expect(f.q.burdens_done).toBe(0);
+    expect(due(f)?.kind).not.toBe('consultation_preparation');
+    random.mockRestore();
+    f.adapter.goToScene('nonbinding_consultation');
+    expect(f.q.consultation_preparation).toBe(6);
+  });
+
+  it.each(['jxsi', 'jxcat'])('uses CiU Health ahead of the question when a partner holds Education in %s', list => {
+    const f = setup({ cat_coalition: [list], [`player_in_${list}`]: true, [`erc_in_${list}`]: true,
+      ...Object.fromEntries(offices.map(field => [field, list])), education_minister_affiliation: 'erc',
+      health_minister_affiliation: 'cdc', parlament_non_binding_consultations: true, question_of_the_question_countdown: 2 });
+    delete f.q.consultation_health_preparations;
+    expect(due(f)).toMatchObject({ policyParty: 'cdc', field: 'consultation_health_preparations', from: 0, to: 1 });
+    answer(f, 'accept');
+    expect(f.q.consultation_health_preparations).toBe(1);
+    expect(f.q.consultation_education_preparations).toBe(0);
+  });
+
+  it('drops a pending preparation on polling day or when CiU loses both ministries', () => {
+    const f = setup({ parlament_non_binding_consultations: true, consultation_pending: true });
+    expect(due(f)).toMatchObject({ kind: 'consultation_preparation', holder: 'health_minister_party' });
+    f.q.consultation_day_trigger = true;
+    answer(f, 'accept');
+    expect(f.q.consultation_health_preparations).toBe(0);
+    f.q.consultation_day_trigger = false;
+    f.q.health_minister_party = 'erc';
+    expect(due(f)?.kind).not.toBe('consultation_preparation');
+  });
+
+  it.each([[-0.01, 2], [-0.5, 3], [-1, 6], [-2.3, 13.8], [-5, 30]])
   ('weights CiU service and pay cuts at surplus %s with weight %s', (surplus, weight) => {
     const f = setup({ education_minister_party: 'ciu', economy_minister_party: 'ciu',
       generalitat_surplus: surplus });

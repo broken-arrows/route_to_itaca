@@ -110,6 +110,8 @@ if (Q.month >= 13) {
     Q.year += 1;
 }
 
+if (Q.player_party == "erc" && Q.year >= 2019 && !Q.pere_aragones_departed) Q.pere_aragones_advisor_available = 1;
+
 // External monetary support begins in March 2015, including late-loaded saves.
 // Resolve after the calendar advances and before the monthly economic tick.
 if (!Q.ecb_qe && (Q.year > 2015 || (Q.year === 2015 && Q.month >= 3))) {

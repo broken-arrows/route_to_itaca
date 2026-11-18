@@ -528,7 +528,7 @@ on-arrival: {!
             if (Q.raul_romeva_advisor_available) {
                 Q.parlament_coalition_proposal_foreign_name = "Raül Romeva";
                 Q.parlament_coalition_proposal_foreign_gender = "m";
-            } else if (Q.alfred_bosch_advisor_available) {
+            } else if (Q.alfred_bosch_advisor_available && !Q.alfred_bosch_departed) {
                 Q.parlament_coalition_proposal_foreign_name = "Alfred Bosch";
                 Q.parlament_coalition_proposal_foreign_gender = "m";
             } else {
@@ -622,12 +622,52 @@ on-arrival: {!
             Q.parlament_coalition_proposal_territory_gender = "f";
             break;
     }
+    var disqualified = (Q.consultation_verdict?.defendants || []).map(function (person) { return person.name; });
+    var president = Q.parlament_coalition_proposal_president_name;
+    var vp = Q.parlament_coalition_proposal_vp_name;
+    var vpParty = Q.parlament_coalition_proposal_vp;
+    var ercVp = vpParty == "erc" || (["jxsi", "jxcat"].includes(vpParty) && Q["erc_in_" + vpParty] &&
+        [Q.erc_leader, "Marta Rovira", "Pere Aragonès"].includes(vp));
+    if (ercVp && (vp == president || vp == Q.speaker || disqualified.includes(vp))) {
+        var replacement = [["Marta Rovira", "f"], ["Pere Aragonès", "m"], ["Anna Simó", "f"], ["Josep Huguet", "m"]].find(function (candidate) {
+            return ![president, Q.speaker].includes(candidate[0]) && !disqualified.includes(candidate[0]);
+        });
+        if (replacement) {
+            Q.parlament_coalition_proposal_vp_name = replacement[0];
+            Q.parlament_coalition_proposal_vp_gender = replacement[1];
+        }
+    }
+
+    var seniorOffices = [president, Q.parlament_coalition_proposal_vp_name, Q.speaker].concat(disqualified);
+    var economy = Q.parlament_coalition_proposal_economy_name;
+    if (["Pere Aragonès", "Marta Rovira", "Josep Huguet"].includes(economy) && seniorOffices.includes(economy)) {
+        var replacement = [["Josep Huguet", "m"], ["Marta Rovira", "f"], ["Lluís Salvadó", "m"]].find(function (candidate) {
+            return !seniorOffices.includes(candidate[0]);
+        });
+        if (replacement) {
+            Q.parlament_coalition_proposal_economy_name = replacement[0];
+            Q.parlament_coalition_proposal_economy_gender = replacement[1];
+        }
+    }
+
+    if (Q.parlament_coalition_proposal_foreign_name == "Raül Romeva" && (seniorOffices.includes("Raül Romeva") || Q.raul_romeva_departed)) {
+        var candidates = [["Meritxell Serret", "f"], ["Bernat Solé", "m"]];
+        if (Q.alfred_bosch_advisor_available && !Q.alfred_bosch_departed) candidates.unshift(["Alfred Bosch", "m"]);
+        var replacement = candidates.find(function (candidate) {
+            return !seniorOffices.includes(candidate[0]) && candidate[0] != Q.parlament_coalition_proposal_territory_name;
+        });
+        if (replacement) {
+            Q.parlament_coalition_proposal_foreign_name = replacement[0];
+            Q.parlament_coalition_proposal_foreign_gender = replacement[1];
+        }
+    }
+
     if (Q.parlament_coalition_sovereignty_kind && Q.parlament_coalition_proposal_president_name) {
         for (var office of ["vp", "interior", "economy", "foreign", "health", "education", "territory", "bnl"]) {
             var key = "parlament_coalition_proposal_" + office;
             if (Q[key + "_name"] == Q.parlament_coalition_proposal_president_name) {
                 Q[key + "_name"] = Q[key] == "erc"
-                    ? (office == "foreign" ? "Alfred Bosch" : "Marta Rovira")
+                    ? (office == "foreign" ? (Q.alfred_bosch_departed ? "Bernat Solé" : "Alfred Bosch") : "Marta Rovira")
                     : (office == "foreign" ? "Francesc Homs" : "Jordi Turull");
                 Q[key + "_gender"] = Q[key + "_name"] == "Marta Rovira" ? "f" : "m";
             }
@@ -635,7 +675,8 @@ on-arrival: {!
     }
     
     var offices = ["president", "vp", "economy", "interior", "health", "education", "bnl", "foreign", "territory"];
-    var ercNames = ["Oriol Junqueras", "Marta Rovira", "Pere Aragonès", "Josep Huguet", "Toni Comín", "Dolors Bassa", "Roger Torrent", "Raül Romeva"];
+    var ercNames = ["Oriol Junqueras", "Marta Rovira", "Pere Aragonès", "Josep Huguet", "Toni Comín", "Dolors Bassa",
+        "Roger Torrent", "Raül Romeva", "Carme Forcadell", "Anna Simó", "Lluís Salvadó", "Alfred Bosch", "Meritxell Serret", "Bernat Solé"];
     for (var office of offices) {
         var key = "parlament_coalition_proposal_" + office;
         var list = Q[key];
@@ -659,17 +700,21 @@ on-arrival: {!
     }
     // Keep disqualified officials out of newly proposed cabinets.
     if (Q.consultation_verdict) {
-        var disqualified = Q.consultation_verdict.defendants.map(function (person) { return person.name; });
         for (var office of offices) {
             var key = "parlament_coalition_proposal_" + office;
             var defendant = Q.consultation_verdict.defendants.find(function (person) { return person.name == Q[key + "_name"]; });
             if (!defendant) continue;
             var party = Q[key + "_affiliation"] || Q[key];
-            var alternatives = party == "erc" ? [["Pere Aragonès", "m"], ["Anna Simó", "f"], ["Josep Huguet", "m"], ["Josep Bargalló", "m"], ["Josep Gonzàlez-Cambray", "m"], ["Alfred Bosch", "m"]]
+            var alternatives = party == "erc" ? [["Pere Aragonès", "m"], ["Anna Simó", "f"], ["Josep Huguet", "m"], ["Josep Bargalló", "m"], ["Josep Gonzàlez-Cambray", "m"], ["Alfred Bosch", "m"], ["Juli Fernández", "m"], ["Lluís Salvadó", "m"], ["Bernat Solé", "m"]]
                 : party == "cup" ? [["Mireia Boya", "f"], ["Dolors Sabater", "f"], ["Mireia Vehí", "f"], ["Anna Gabriel", "f"], ["Sergi Saladié", "m"], ["Eulàlia Reguant", "f"]]
                 : [["Jordi Turull", "m"], ["Meritxell Ruiz", "f"], ["Francesc Homs", "m"], ["Clara Ponsatí", "f"], ["Neus Munté", "f"], ["Lluís Corominas", "m"]];
             var successor = [[defendant.successor, defendant.successorGender]].concat(alternatives).find(function (candidate) {
-                return !disqualified.includes(candidate[0]) && candidate[0] != Q.speaker && (office == "president" || candidate[0] != Q.parlament_coalition_proposal_president_name);
+                if (disqualified.includes(candidate[0]) || candidate[0] == Q.speaker) return false;
+                if (candidate[0] == "Alfred Bosch" && Q.alfred_bosch_departed) return false;
+                if (office != "president" && candidate[0] == Q.parlament_coalition_proposal_president_name) return false;
+                return party != "erc" || !offices.some(function (other) {
+                    return other != office && Q["parlament_coalition_proposal_" + other + "_name"] == candidate[0];
+                });
             });
             Q[key + "_name"] = successor[0];
             Q[key + "_gender"] = successor[1];
@@ -679,3 +724,16 @@ on-arrival: {!
 go-to: jumpScene
 
 {!<div data-widget="cabinet-proposal"></div>!}
+
+@jxsi_speaker
+on-arrival: {!
+    // TODO: check - which scenes call this? is this the right way to do things? I feel we have some parallel things going on here
+    if (Q.speaker_party != "jxsi") return;
+    var disqualified = (Q.consultation_verdict?.defendants || []).map(function (person) { return person.name; });
+    var alternatives = Q.year >= 2017 ? ["Roger Torrent", "Anna Simó"] : ["Anna Simó", "Roger Torrent"];
+    Q.speaker = ["Carme Forcadell"].concat(alternatives, ["Lluís Corominas", "Alba Vergés"]).find(function (name) {
+        return name != Q.erc_leader && name != Q.jxsi_leader && !disqualified.includes(name) &&
+            (name != "Carme Forcadell" || (!Q.carme_forcadell_departed && Q.erc_primary_winner_name != name));
+    });
+    Q.speaker_gender = ["Carme Forcadell", "Anna Simó", "Alba Vergés"].includes(Q.speaker) ? "f" : "m";
+!}

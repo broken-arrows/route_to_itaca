@@ -675,6 +675,8 @@ var BCN_SEATS = 41;
 var BCN_THRESHOLD = 5.0;
 var bcn = {};
 for (var p of BCN_PARTIES) bcn[p] = Q[p + "_local_barcelona_support"] || 0.0;
+var ercLeadership = G.ercLocalAppeal(Q);
+if (bcn[ercLeadership.carrier] > 0) bcn[ercLeadership.carrier] += ercLeadership.barcelona;
 
 // Trias candidacy bonus: strong CiU incumbent in 2015, not in 2019. Follow
 // the Parliament family's current carrier instead of reviving a ghost CiU list.
@@ -749,7 +751,8 @@ var cs_rb = _cl(
 var erc_rb = _cl(
     _cl(it - 12, 0, 48) * rb.erc_trust_coeff
     + _cl(im - 30, 0, 40) * rb.erc_im_coeff
-    + (Number.isFinite(Q.erc_redbelt_mod) ? Q.erc_redbelt_mod : -10),
+    + (Number.isFinite(Q.erc_redbelt_mod) ? Q.erc_redbelt_mod : -10)
+    + ercLeadership.redBelt,
     0, 100);
 
 var comuns_rb = _cl(
@@ -787,7 +790,8 @@ var erc_int = _cl(
     _cl(it - 10, 0, 50) * intr.erc_trust_coeff
     + _cl(im - 25, 0, 45) * intr.erc_im_coeff
     + intr.erc_base_bonus
-    + (Q.erc_interior_mod),
+    + (Q.erc_interior_mod)
+    + ercLeadership.interior,
     0, 100);
 
 var cup_int = _cl(
