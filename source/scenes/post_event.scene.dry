@@ -421,8 +421,7 @@ if (has_time_passed) {
 
     // 2.5. Countdown updating.
     for (var countdown of Q.countdowns) {
-        // Satellite deployment is measured in months, including during Rubicon.
-        if (["space_test", "space_communications"].includes(countdown) && Q.year * 12 + Q.month == calendarMonthBefore) continue;
+               
         if (Q[countdown + "_countdown"] >= 0) {
             Q[countdown + "_countdown"] -= 1;
             // countdowns at -1 are actually usefull for visualizations

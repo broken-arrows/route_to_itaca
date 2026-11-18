@@ -657,7 +657,24 @@ on-arrival: {!
         }
         Q[key + "_affiliation"] = ercNames.includes(Q[key + "_name"]) || Q[key + "_name"] == Q.erc_leader ? "erc" : "cdc";
     }
-
+    // Keep disqualified officials out of newly proposed cabinets.
+    if (Q.consultation_verdict) {
+        var disqualified = Q.consultation_verdict.defendants.map(function (person) { return person.name; });
+        for (var office of offices) {
+            var key = "parlament_coalition_proposal_" + office;
+            var defendant = Q.consultation_verdict.defendants.find(function (person) { return person.name == Q[key + "_name"]; });
+            if (!defendant) continue;
+            var party = Q[key + "_affiliation"] || Q[key];
+            var alternatives = party == "erc" ? [["Pere Aragonès", "m"], ["Anna Simó", "f"], ["Josep Huguet", "m"], ["Josep Bargalló", "m"], ["Josep Gonzàlez-Cambray", "m"], ["Alfred Bosch", "m"]]
+                : party == "cup" ? [["Mireia Boya", "f"], ["Dolors Sabater", "f"], ["Mireia Vehí", "f"], ["Anna Gabriel", "f"], ["Sergi Saladié", "m"], ["Eulàlia Reguant", "f"]]
+                : [["Jordi Turull", "m"], ["Meritxell Ruiz", "f"], ["Francesc Homs", "m"], ["Clara Ponsatí", "f"], ["Neus Munté", "f"], ["Lluís Corominas", "m"]];
+            var successor = [[defendant.successor, defendant.successorGender]].concat(alternatives).find(function (candidate) {
+                return !disqualified.includes(candidate[0]) && candidate[0] != Q.speaker && (office == "president" || candidate[0] != Q.parlament_coalition_proposal_president_name);
+            });
+            Q[key + "_name"] = successor[0];
+            Q[key + "_gender"] = successor[1];
+        }
+    }
 !}
 go-to: jumpScene
 

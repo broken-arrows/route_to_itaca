@@ -1,0 +1,126 @@
+title: Supreme Court rules on Non-Binding Consultation leadership
+subtitle: [+ {! return (Q.consultation_officials || []).map(function (person) { return person.name; }).filter(function (name, index, names) { return name && names.indexOf(name) == index; }).join(", ") !} +] to receive the verdict regarding their role in organizing "unlawful" vote.
+new-page: true
+tags: event
+role: event
+view-if: consultation_trial_trigger and not consultation_verdict
+face-image: img/events/9n_trial.jpeg
+max-visits: 1
+on-arrival: {!
+    if (!Q.consultation_officials || Q.consultation_verdict) return;
+    var ciu = Q.parlament_current_ciu;
+    Q.consultation_verdict = {
+        year: Q.year,
+        defendants: Q.consultation_officials.filter(function (person, index, people) {
+            return person.name && people.findIndex(function (other) { return other.name == person.name; }) == index;
+        }).map(function (person) {
+            var defendant = Object.assign({}, person);
+            if (person.name == "Artur Mas") {
+                defendant.successor = Q[ciu + "_roadmap"] > 1 ? "Carles Puigdemont" : "Neus Munté";
+                defendant.successorGender = defendant.successor == "Neus Munté" ? "f" : "m";
+            } else if (person.name == "Oriol Junqueras") {
+                defendant.successor = Q.year <= 2018 ? "Marta Rovira" : "Pere Aragonès";
+                defendant.successorGender = Q.year <= 2018 ? "f" : "m";
+            }
+            return defendant;
+        })
+    };
+    var defendants = Q.consultation_verdict.defendants;
+    var disqualified = defendants.map(function (person) { return person.name; });
+    // TODO: Discuss how presidential disqualification should work during Rubicon + if leadership really changes
+    Q.consultation_trial_snap_election = !Q.rubicon && disqualified.includes(Q.president);
+    if (Q.consultation_trial_snap_election && Q.vicepresident && !disqualified.includes(Q.vicepresident)) {
+        Q.president = Q.vicepresident;
+        Q.president_gender = Q.vicepresident_gender;
+        Q.president_party = Q.vicepresident_party;
+        Q.president_affiliation = Q.vicepresident_affiliation || null;
+    }
+    var reserved = defendants.map(function (person) { return person.successor; }).filter(function (name) { return name && !disqualified.includes(name); });
+    for (var person of defendants) {
+        if (person.successor && !disqualified.includes(person.successor)) continue;
+        var party = person.affiliation || person.party;
+        if (["jxsi", "jxcat"].includes(party) && ["Oriol Junqueras", "Marta Rovira", "Pere Aragonès"].includes(person.name)) party = "erc";
+        var candidates = party == "erc"
+            ? [["Marta Rovira", "f"], ["Pere Aragonès", "m"], ["Josep Bargalló", "m"], ["Josep Gonzàlez-Cambray", "m"], ["Anna Simó", "f"], ["Alfred Bosch", "m"]]
+            : party == "cup" ? [["Mireia Boya", "f"], ["Dolors Sabater", "f"], ["Mireia Vehí", "f"], ["Anna Gabriel", "f"], ["Sergi Saladié", "m"], ["Eulàlia Reguant", "f"]]
+            : [["Neus Munté", "f"], ["Jordi Turull", "m"], ["Meritxell Ruiz", "f"], ["Clara Ponsatí", "f"], ["Francesc Homs", "m"], ["Lluís Corominas", "m"]];
+        if (person.office == "education_minister") candidates = candidates.slice(2).concat(candidates.slice(0, 2));
+        var successor = candidates.find(function (candidate) { return !disqualified.includes(candidate[0]) && !reserved.includes(candidate[0]); });
+        person.successor = successor[0];
+        person.successorGender = successor[1];
+        reserved.push(successor[0]);
+    }
+    // Remember which current party leaders need a follow-up scene.
+    for (var party of ["ciu", "erc", "cup"]) {
+        var current = party == "ciu" ? ciu : party;
+        var leader = Q[current + "_leader"];
+        Q["consultation_trial_" + party + "_leadership_changed"] = disqualified.includes(leader);
+        G.setText(Q, "consultation_trial_" + party + "_previous_leader", G.literalText(leader));
+    }
+    // Apply the verdict once to current officeholders and party leaders.
+    var keys = ["president", "vicepresident", "speaker", "economy_minister", "interior_minister", "health_minister", "education_minister", "bnl_minister", "foreign_minister", "territory_minister"];
+    for (var key of keys.concat(Q.parties.map(function (party) { return party + "_leader"; }))) {
+        var person = defendants.find(function (defendant) { return defendant.name == Q[key]; });
+        if (person) {
+            Q[key] = person.successor;
+            Q[key + "_gender"] = person.successorGender;
+        }
+    }
+    // If the new president was already a minister, refill the vacated post.
+    for (var key of keys.slice(1)) {
+        if (Q[key] != Q.president) continue;
+        var erc = (Q[key + "_affiliation"] || Q[key + "_party"]) == "erc";
+        var alternatives = erc ? [["Pere Aragonès", "m"], ["Anna Simó", "f"], ["Josep Huguet", "m"]]
+            : [["Jordi Turull", "m"], ["Francesc Homs", "m"], ["Lluís Corominas", "m"]];
+        var successor = alternatives.find(function (candidate) { return !disqualified.includes(candidate[0]) && !keys.some(function (other) { return Q[other] == candidate[0]; }); });
+        Q[key] = successor[0];
+        Q[key + "_gender"] = successor[1];
+    }
+    Q.parlament_current_ciu_leader = Q[ciu + "_leader"];
+    Q.consultation_trial_trigger = false;
+    // Keep each original office's identity, even when one person held two posts.
+    for (var role of [["president", "president"], ["vp", "vicepresident"], ["education", "education_minister"]]) {
+        var official = Q.consultation_officials.find(function (person) { return person.office == role[1]; });
+        var field = "consultation_trial_" + role[0];
+        G.setText(Q, field, G.literalText(official ? official.name : ""));
+        Q[field + "_gender"] = official ? official.gender : null;
+    }
+!}
+
+= Supreme Court rules on Non-Binding Consultation leadership
+
+After the Constitutional Court ruled the Law on Non-binding consultations to be against the Constitution, the fact is that Generalitat under [? if consultation_trial_president_gender = "m": President ?][? if consultation_trial_president_gender = "f": Presidenta ?][+ consultation_trial_president +] pushed ahead with its plans either way. Now the Supreme Court rules over the responsibilities of those identified as the "main" organizers: [? if consultation_trial_president_gender = "m": President ?][? if consultation_trial_president_gender = "f": Presidenta ?][+ consultation_trial_president +], [? if consultation_trial_vp_gender = "m": Vicepresident ?][? if consultation_trial_vp_gender = "f": Vicepresidenta ?][+ consultation_trial_vp +], and [? if consultation_trial_education_gender = "m": Conseller ?][? if consultation_trial_education_gender = "f": Consellera ?] of Education [+ consultation_trial_education +]. Hearing the demands of the State's Attorney General, and despite the defendant's arguing of the legality of the consultation, and the fact that none of them personally benefited economically from organizing the vote, the Court has now found them guilty of disobedience, prevarication, embezzlement, and misallocation of public funds. 
+
+The consequences of such a trial cannot be understated. The three of them will have to pay fines in the millions, for which the ANC and Òmnium Cultural have already started crowdfunding campaigns. Even more relevantly, the three of them have been barred from running for public office for the next decade. While this matter will, in time, reach the European Court of Human Rights, its slow mechanisms mean that, for the time being, [+ consultation_trial_president +], [+ consultation_trial_vp +], and [+ consultation_trial_education +] may have seen their last days at the very forefront of Catalan politics. [? if consultation_trial_president = president: The domino effect of such a ruling is not going to be a small one: [? if consultation_trial_president_gender = "m": President ?][? if consultation_trial_president_gender = "f": Presidenta ?][+ consultation_trial_president +] is now legally forced to step down, something not seen since the times of the Second Republic. ?]
+
+- @continue: Shame on Spain
+
+@continue
+go-to: ciu_leadership if consultation_trial_ciu_leadership_changed; erc_continue if not consultation_trial_ciu_leadership_changed
+
+@ciu_leadership
+
+With [+ consultation_trial_ciu_previous_leader +] barred from running for public office, [+ parlament_current_ciu +] has been forced to re-think their strategy. [+ consultation_trial_ciu_previous_leader +] may surely still have a strong position in the party leadership, but it will have to be [+ parlament_current_ciu_leader +] the one to be the official presidential candidate.
+
+- @erc_continue: Continue...
+
+@erc_continue
+go-to: erc_leadership if consultation_trial_erc_leadership_changed; cup_continue if not consultation_trial_erc_leadership_changed
+
+@erc_leadership
+
+With [+ consultation_trial_erc_previous_leader +] barred from running for public office, ERC has been forced to re-think their strategy. [+ consultation_trial_erc_previous_leader +] may surely still have a strong position in the party leadership, but it will have to be [+ erc_leader +] the one to be the official presidential candidate.
+
+- @cup_continue: Continue...
+
+@cup_continue
+go-to: cup_leadership if consultation_trial_cup_leadership_changed; finish if not consultation_trial_cup_leadership_changed
+
+@cup_leadership
+
+With [+ consultation_trial_cup_previous_leader +] barred from running for public office, the CUP has been forced to re-think their strategy. Changing leaderships is already part of the CUP's nature, but such a forced one was clearly unexpected. While we can expect [+ consultation_trial_cup_previous_leader +] to surely still play a role in upcoming party campaigns, will have to be [+ cup_leader +] the one to be the official presidential candidate.
+
+- @finish: Continue...
+
+@finish
+go-to: snap_election if consultation_trial_snap_election; post_event if not consultation_trial_snap_election

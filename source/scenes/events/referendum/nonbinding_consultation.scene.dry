@@ -27,8 +27,19 @@ on-arrival: {!
     Q.consultation_pending = false;
     Q.roadmap_year = 0;
     if (Q.consultation_preparation >= 4) {
+        // Responsibility belongs to the officials who actually held the vote.
+        if (!Q.consultation_officials) {
+            Q.consultation_officials = ["president", "vicepresident", "education_minister"].map(function (office) {
+                return { office: office, name: Q[office], party: Q[office + "_party"],
+                    affiliation: Q[office + "_affiliation"] || null, gender: Q[office + "_gender"] };
+            });
+            Q.consultation_trial_countdown = 18;
+            if (!Q.countdowns.includes("consultation_trial")) Q.countdowns.push("consultation_trial");
+        }
         this.achieve("calcotada");
         Q.burdens_done += 1;
+        Q.consultation_year = Q.year;
+        Q.consultation_month = Q.month;
     }
     // Persist the actual playthrough date for chart annotations, once per event.
     if (!Array.isArray(Q.election_history_events)) Q.election_history_events = [];
