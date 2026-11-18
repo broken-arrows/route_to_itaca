@@ -55,7 +55,7 @@ function continueVerdict(adapter: DendryAdapter) {
 }
 
 describe('consultation verdict', () => {
-  it('shows each changed party leadership on its own page before calling elections', () => {
+  it('shows changed party leadership in order before calling elections', () => {
     const { adapter, q } = setup({ vicepresident: 'Oriol Junqueras', vicepresident_party: 'erc' });
     hold(adapter, q);
     convict(adapter, q);
@@ -72,9 +72,9 @@ describe('consultation verdict', () => {
     expect(second.sceneId).toBe('consultation_trial.erc_leadership');
     expect(second.html).toContain('Oriol Junqueras');
     expect(second.html).toContain('Marta Rovira');
-    expect(second.html).not.toContain('Artur Mas');
+    expect(second.html.match(/Artur Mas/g)).toHaveLength(first.html.match(/Artur Mas/g)!.length);
     expect(restored.qualities.time).toBe(time);
-    expect(restored.choose(0).sceneId).toBe('snap_election');
+    expect(restored.choose(0)).toMatchObject({ sceneId: 'snap_election', title: 'Early election follows the 9N verdict' });
     expect(restored.qualities.cat_caretaker_gov).toBe(true);
   });
 
@@ -196,7 +196,7 @@ describe('consultation verdict', () => {
   });
 
   it.each([
-    ['ciu', 0, 'Neus Munté', 'f'], ['cdc', 1, 'Neus Munté', 'f'],
+    ['ciu', 0, 'Francesc Homs', 'm'], ['cdc', 1, 'Francesc Homs', 'm'],
     ['pdcat', 2, 'Carles Puigdemont', 'm'], ['junts', 3, 'Carles Puigdemont', 'm'],
   ])('replaces Mas using the live %s roadmap %s', (party, roadmap, name, gender) => {
     const { adapter, q } = setup();
@@ -235,7 +235,7 @@ describe('consultation verdict', () => {
     expect(restored.qualities.erc_leader).toBe(name);
   });
 
-  it('promotes Munté from her current portfolio when replacing Mas on a moderate roadmap', () => {
+  it('promotes Munté as acting president and awards the achievement on investiture', () => {
     const { adapter, q } = setup({ ciu_roadmap: 1 });
     hold(adapter, q);
     q.vicepresident = 'Neus Munté';
@@ -243,6 +243,21 @@ describe('consultation verdict', () => {
     expect(q.president).toBe('Neus Munté');
     expect(q.vicepresident).not.toBe('Neus Munté');
     expect(q.vicepresident).not.toBe('Joana Ortega');
+    expect(q.ciu_leader).toBe('Francesc Homs');
+    expect(continueVerdict(adapter).sceneId).toBe('snap_election');
+    adapter.choose(0);
+    expect(q.cat_caretaker_gov).toBe(true);
+    expect(q.game_achievement_moneda_de_canvi).toBeUndefined();
+
+    Object.assign(q, {
+      cat_coalition: ['ciu'], cat_coalition_support: [], cat_coalition_abstain: [],
+      parlament_coalition_proposal_president: 'ciu',
+      parlament_coalition_proposal_president_name: 'Neus Munté',
+      parlament_coalition_proposal_president_gender: 'f',
+    });
+    enter(adapter, 'parlament_coalition_resolve');
+    expect(q.cat_caretaker_gov).toBe(false);
+    expect(q.game_achievement_moneda_de_canvi).toBe(1);
   });
 
   it('updates shared-list leadership and preserves constituent affiliations and ministry allocations', () => {
@@ -274,8 +289,10 @@ describe('consultation verdict', () => {
   it('removes a former VP who has since become president, and a former education minister now serving as Speaker', () => {
     const { adapter, q } = setup({ vicepresident: 'Oriol Junqueras', vicepresident_party: 'erc' });
     hold(adapter, q);
-    Object.assign(q, { president: 'Oriol Junqueras', president_party: 'erc', vicepresident: 'Carles Puigdemont', vicepresident_party: 'ciu', vicepresident_gender: 'm', speaker: 'Irene Rigau' });
-    convict(adapter, q);
+    Object.assign(q, { president: 'Oriol Junqueras', president_party: 'erc', vicepresident: 'Carles Puigdemont', vicepresident_party: 'ciu', vicepresident_gender: 'm', speaker: 'Irene Rigau', snap_budget_distrust: true, budget_failed_times: 2 });
+    const prose = document.createElement('div');
+    prose.innerHTML = convict(adapter, q).html;
+    expect(prose.textContent).toContain('Oriol Junqueras is now legally forced to step down');
     expect(q.president).toBe('Carles Puigdemont');
     expect(q.president_party).toBe('ciu');
     expect(q.vicepresident).not.toBe('Carles Puigdemont');
@@ -283,7 +300,24 @@ describe('consultation verdict', () => {
     expect(q.education_minister).not.toBe('Irene Rigau');
     const frame = continueVerdict(adapter);
     expect(frame.sceneId).toBe('snap_election');
+    prose.innerHTML = frame.html;
+    expect(prose.textContent).toContain('has forced Oriol Junqueras from office');
+    expect(prose.textContent).toContain('Carles Puigdemont will lead the Generalitat in an acting capacity');
+    expect(prose.textContent).not.toContain('Repeated failures to pass');
     expect(q.cat_caretaker_gov).toBe(true);
+    const catalog = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../source/locales/ca/content.json'), 'utf8'));
+    const translated = adapter.refreshLocale('ca', catalog)!;
+    expect(translated.title).toBe(catalog[frame.title!]);
+    prose.innerHTML = translated.html;
+    expect(prose.textContent).toContain('ha obligat Oriol Junqueras a deixar el càrrec');
+    adapter.refreshLocale('en', {});
+    adapter.choose(0);
+    // Older saves retain the verdict's routing flag after the trial is over.
+    q.consultation_trial_snap_election = true;
+    q.budget_failed_times = 1;
+    const laterElection = enter(adapter, 'snap_election');
+    expect(laterElection.title).toBe('New Parlament elections called!');
+    expect(laterElection.html).toContain('Repeated failures to pass');
   });
 
   it('promotes an eligible current VP with her party and affiliation, then uses the ordinary snap-election scene', () => {
@@ -328,6 +362,25 @@ describe('consultation verdict', () => {
     expect(continueVerdict(adapter).sceneId).not.toBe('snap_election');
     expect(q.cat_caretaker_gov).not.toBe(true);
     expect([q.next_election_year, q.next_election_month, q.next_election_time]).toEqual(election);
+  });
+
+  it('replaces a disqualified caretaker without rescheduling elections or counting an acting president', () => {
+    const { adapter, q } = setup({ ciu_roadmap: 1 });
+    hold(adapter, q);
+    Object.assign(q, {
+      cat_caretaker_gov: true, vicepresident: 'Marta Rovira', vicepresident_party: 'erc', vicepresident_gender: 'f',
+      next_election_year: 2014, next_election_month: 12, next_election_week: 1, next_election_time: q.time + 1,
+    });
+    const time = q.time;
+    convict(adapter, q);
+    expect(q.president).toBe('Marta Rovira');
+    expect(q.president_party).toBe('erc');
+    expect(q.vicepresident).not.toBe('Marta Rovira');
+    expect(q.ciu_leader).toBe('Francesc Homs');
+    expect(continueVerdict(adapter).sceneId).not.toBe('snap_election');
+    expect(q.cat_caretaker_gov).toBe(true);
+    expect([q.next_election_year, q.next_election_month, q.next_election_week, q.next_election_time]).toEqual([2014, 12, 1, time + 1]);
+    expect(q.woman_generalitat_presidenta_ever).toBe(false);
   });
 
   it('skips the presidential snap-election path during Rubicon', () => {
@@ -383,12 +436,13 @@ describe('consultation verdict', () => {
     expect(shared.consultation_verdict.defendants).toHaveLength(2);
   });
 
-  it('can replace a later cabinet when Munté and Ruiz are themselves among the defendants', () => {
-    const { adapter, q } = setup({ ciu_roadmap: 1, vicepresident: 'Neus Munté', education_minister: 'Meritxell Ruiz' });
+  it.each(['Neus Munté', 'Francesc Homs'])('can replace a later cabinet when %s and Ruiz are among the defendants', (vicepresident) => {
+    const { adapter, q } = setup({ ciu_roadmap: 1, vicepresident, education_minister: 'Meritxell Ruiz' });
     hold(adapter, q);
     convict(adapter, q);
     const banned = q.consultation_verdict.defendants.map((person: Q) => person.name);
     for (const office of ['president', 'vicepresident', 'education_minister']) expect(banned).not.toContain(q[office]);
+    expect(banned).not.toContain(q.ciu_leader);
   });
 
   it('leaves an old save without recorded organisers alone', () => {

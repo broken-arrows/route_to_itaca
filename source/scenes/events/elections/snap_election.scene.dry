@@ -105,12 +105,14 @@ on-arrival: {!
     console.info("Set new election date for ", Q.next_election_month, Q.next_election_year, ", week", Q.next_election_week);
 !}
 role: event
-on-departure: snap_budget_distrust = false
+on-departure: {!
+    Q.snap_budget_distrust = false;
+    Q.snap_consultation_trial = false;
+!}
 
 = New Parlament elections called!
 
-[? if president_gender = "m": President?][? if president_gender = "f": Presidenta?] [+ president +] seems to have run out of options, and the current [+ cat_coalition_disp_old +] will be no more. [? if snap_budget_distrust: Repeated failures to pass the Generalitat's budget, componded by trust erosion in the other members of the coalition, seem to have been the main reason motivating this decision. ?][? if not snap_budget_distrust and budget_failed_times > 0: Repeated failures to pass the Generalitat's budget seem to have been the main reason motivating this decision. ?]
-The Parlament has now been dissolved, and the next elections will be held in two months time, on [+ next_election_month : month +], [+ next_election_year +].
+[? if snap_consultation_trial: The ruling on the 9N consultation has forced [? if consultation_trial_outgoing_president: [+ consultation_trial_outgoing_president +]?][? if not consultation_trial_outgoing_president: the sitting president?] from office, leaving the Generalitat in a truly bizzar position, where [+ president +] is set to lead it following succession rules. In a predictable, yet truly unprecedented move, snap elections have been called to properly resolve the situation, where voters will have to choose how to proceed from now on in [+ next_election_month : month +], [+ next_election_year +].?][? if not snap_consultation_trial: [? if president_gender = "m": President?][? if president_gender = "f": Presidenta?] [+ president +] seems to have run out of options, and the current [+ cat_coalition_disp_old +] will be no more. [? if snap_budget_distrust: Repeated failures to pass the Generalitat's budget, componded by trust erosion in the other members of the coalition, seem to have been the main reason motivating this decision. ?][? if not snap_budget_distrust and budget_failed_times > 0: Repeated failures to pass the Generalitat's budget seem to have been the main reason motivating this decision. ?] The Parlament has now been dissolved, and the next elections will be held in two months time, on [+ next_election_month : month +], [+ next_election_year +].?]
 
 Until then, the functions of the Generalitat will be limited, and handled by a [+ cat_coalition_disp +].
 

@@ -275,6 +275,7 @@ view-if: consultation_preparation >= 6 and consultation_yes_pc > consultation_no
 on-arrival: {!
     if (!Q.countdowns.includes("unio_breakup")) Q.countdowns.push("unio_breakup");
     if (!Q.countdowns.includes("jxsi_formation")) Q.countdowns.push("jxsi_formation");
+    if (!Q.countdowns.includes("plebiscite_election")) Q.countdowns.push("plebiscite_election");
     Q.unio_breakup_countdown = 3;
     Q.jxsi_formation_countdown = 5;
     Q.plebiscite_election_countdown = 4;

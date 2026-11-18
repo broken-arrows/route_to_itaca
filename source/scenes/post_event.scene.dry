@@ -582,10 +582,12 @@ if (has_time_passed || Q.coalition_rupture_recheck || unityList) {
 if (!Q.podemos_actually_podemos && (Q.spanish_coalition.includes("podemos") || Q.spanish_coalition.includes("up"))) {
     Q.podemos_actually_podemos = true;
 }
-if (Q.president_gender == "f" && Q.president != "Neus Munté") {
-    Q.woman_generalitat_presidenta_ever = true;
-} else if (Q.president == "Neus Munté" && !Q.woman_generalitat_presidenta_ever) {
-    this.achieve("moneda_de_canvi");
+if (!Q.cat_caretaker_gov) {
+    if (Q.president_gender == "f" && Q.president != "Neus Munté") {
+        Q.woman_generalitat_presidenta_ever = true;
+    } else if (Q.president == "Neus Munté" && !Q.woman_generalitat_presidenta_ever) {
+        this.achieve("moneda_de_canvi");
+    }
 }
 if (Q.territory_rail2_countdown <= 0 && Q.territory_metro2_countdown <= 0) {
     this.achieve("frikitrens");

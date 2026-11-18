@@ -28,6 +28,7 @@
     "consultation_trial_president": "consultation_trial_president_gender",
     "consultation_trial_vp": "consultation_trial_vp_gender",
     "consultation_trial_education": "consultation_trial_education_gender",
+    "consultation_trial_outgoing_president": "consultation_trial_outgoing_president_gender",
     "president": "president_gender",
     "speaker": "speaker_gender",
     "vicepresident": "vicepresident_gender",

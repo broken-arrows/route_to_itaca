@@ -16,8 +16,8 @@ on-arrival: {!
         }).map(function (person) {
             var defendant = Object.assign({}, person);
             if (person.name == "Artur Mas") {
-                defendant.successor = Q[ciu + "_roadmap"] > 1 ? "Carles Puigdemont" : "Neus Munté";
-                defendant.successorGender = defendant.successor == "Neus Munté" ? "f" : "m";
+                defendant.successor = Q[ciu + "_roadmap"] > 1 ? "Carles Puigdemont" : "Francesc Homs";
+                defendant.successorGender = "m";
             } else if (person.name == "Oriol Junqueras") {
                 defendant.successor = Q.year <= 2018 ? "Marta Rovira" : "Pere Aragonès";
                 defendant.successorGender = Q.year <= 2018 ? "f" : "m";
@@ -27,9 +27,13 @@ on-arrival: {!
     };
     var defendants = Q.consultation_verdict.defendants;
     var disqualified = defendants.map(function (person) { return person.name; });
+    var presidentDisqualified = disqualified.includes(Q.president);
+    G.setText(Q, "consultation_trial_outgoing_president", G.literalText(presidentDisqualified ? Q.president : ""));
+    Q.consultation_trial_outgoing_president_gender = presidentDisqualified ? Q.president_gender : null;
     // TODO: Discuss how presidential disqualification should work during Rubicon + if leadership really changes
-    Q.consultation_trial_snap_election = !Q.rubicon && disqualified.includes(Q.president);
-    if (Q.consultation_trial_snap_election && Q.vicepresident && !disqualified.includes(Q.vicepresident)) {
+    var presidentialSuccession = !Q.rubicon && presidentDisqualified;
+    Q.consultation_trial_snap_election = presidentialSuccession && !Q.cat_caretaker_gov;
+    if (presidentialSuccession && Q.vicepresident && !disqualified.includes(Q.vicepresident)) {
         Q.president = Q.vicepresident;
         Q.president_gender = Q.vicepresident_gender;
         Q.president_party = Q.vicepresident_party;
@@ -94,7 +98,7 @@ on-arrival: {!
 
 After the Constitutional Court ruled the Law on Non-binding consultations to be against the Constitution, the fact is that Generalitat under [? if consultation_trial_president_gender = "m": President ?][? if consultation_trial_president_gender = "f": Presidenta ?][+ consultation_trial_president +] pushed ahead with its plans either way. Now the Supreme Court rules over the responsibilities of those identified as the "main" organizers: [? if consultation_trial_president_gender = "m": President ?][? if consultation_trial_president_gender = "f": Presidenta ?][+ consultation_trial_president +], [? if consultation_trial_vp_gender = "m": Vicepresident ?][? if consultation_trial_vp_gender = "f": Vicepresidenta ?][+ consultation_trial_vp +], and [? if consultation_trial_education_gender = "m": Conseller ?][? if consultation_trial_education_gender = "f": Consellera ?] of Education [+ consultation_trial_education +]. Hearing the demands of the State's Attorney General, and despite the defendant's arguing of the legality of the consultation, and the fact that none of them personally benefited economically from organizing the vote, the Court has now found them guilty of disobedience, prevarication, embezzlement, and misallocation of public funds. 
 
-The consequences of such a trial cannot be understated. The three of them will have to pay fines in the millions, for which the ANC and Òmnium Cultural have already started crowdfunding campaigns. Even more relevantly, the three of them have been barred from running for public office for the next decade. While this matter will, in time, reach the European Court of Human Rights, its slow mechanisms mean that, for the time being, [+ consultation_trial_president +], [+ consultation_trial_vp +], and [+ consultation_trial_education +] may have seen their last days at the very forefront of Catalan politics. [? if consultation_trial_president = president: The domino effect of such a ruling is not going to be a small one: [? if consultation_trial_president_gender = "m": President ?][? if consultation_trial_president_gender = "f": Presidenta ?][+ consultation_trial_president +] is now legally forced to step down, something not seen since the times of the Second Republic. ?]
+The consequences of such a trial cannot be understated. The three of them will have to pay fines in the millions, for which the ANC and Òmnium Cultural have already started crowdfunding campaigns. Even more relevantly, the three of them have been barred from running for public office for the next decade. While this matter will, in time, reach the European Court of Human Rights, its slow mechanisms mean that, for the time being, [+ consultation_trial_president +], [+ consultation_trial_vp +], and [+ consultation_trial_education +] may have seen their last days at the very forefront of Catalan politics. [? if consultation_trial_outgoing_president: The domino effect of such a ruling is not going to be a small one: [? if consultation_trial_outgoing_president_gender = "m": President ?][? if consultation_trial_outgoing_president_gender = "f": Presidenta ?][+ consultation_trial_outgoing_president +] is now legally forced to step down, something not seen since the times of the Second Republic. ?]
 
 - @continue: Shame on Spain
 
@@ -126,4 +130,8 @@ With [+ consultation_trial_cup_previous_leader +] barred from running for public
 - @finish: Continue...
 
 @finish
-go-to: snap_election if consultation_trial_snap_election; post_event if not consultation_trial_snap_election
+on-arrival: {!
+    Q.snap_consultation_trial = Q.consultation_trial_snap_election && !Q.cat_caretaker_gov;
+    Q.consultation_trial_snap_election = false;
+!}
+go-to: snap_election if snap_consultation_trial; post_event if not snap_consultation_trial
