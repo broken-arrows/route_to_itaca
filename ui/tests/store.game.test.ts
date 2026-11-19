@@ -10,6 +10,7 @@ describe('game store', () => {
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.useRealTimers();
   });
 
@@ -112,6 +113,29 @@ describe('game store', () => {
     store.removeSlot('manual-3');
 
     expect(store.createManualSave()).toMatchObject({ ok: true, slot: 'manual-3' });
+  });
+
+  it('requests storage after a manual save and keeps saving and loading after denial', async () => {
+    const store = bootedStore();
+    let manualSaveWasReady = false;
+    const persist = vi.fn(async () => {
+      manualSaveWasReady = store.listSlots().some(({ slot, status }) => slot === 'manual-2' && status === 'ready');
+      return false;
+    });
+    vi.stubGlobal('navigator', { storage: { persist } });
+
+    expect(store.saveAutosave()).toMatchObject({ ok: true });
+    const autosave = store.exportSlot('auto-1');
+    if (!autosave.ok) throw new Error('Unable to export the test autosave');
+    expect(store.importManualSave(autosave.data)).toMatchObject({ ok: true, slot: 'manual-1' });
+    expect(persist).not.toHaveBeenCalled();
+
+    expect(store.createManualSave()).toMatchObject({ ok: true, slot: 'manual-2' });
+    expect(manualSaveWasReady).toBe(true);
+    await Promise.resolve();
+    expect(store.loadSlot('manual-2')).toEqual({ status: 'loaded' });
+    expect(store.createManualSave()).toMatchObject({ ok: true, slot: 'manual-3' });
+    expect(persist).toHaveBeenCalledOnce();
   });
 
   it('lists autosaves first and manual saves by descending savedAt', () => {

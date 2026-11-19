@@ -210,7 +210,9 @@ export const useGameStore = defineStore('game', () => {
       resources: typeof qs.party_resources === 'number' ? qs.party_resources : null,
     };
     if (!saves) return { ok: false, error: { code: 'persistence-unconfigured' } };
-    return saves.write(slot, JSON.parse(a.exportStateJSON()), meta as unknown as Record<string, unknown>);
+    const result = saves.write(slot, JSON.parse(a.exportStateJSON()), meta as unknown as Record<string, unknown>);
+    if (result.ok && MANUAL_SLOT.test(slot)) void saves.requestPersistentStorage();
+    return result;
   }
 
   // Canonical autosave ordering is positional, not a flip-flop: auto-1 is

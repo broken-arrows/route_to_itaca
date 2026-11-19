@@ -38,6 +38,7 @@ declare module 'dendrynexus-ten/lib/persistence.js' {
       state: unknown,
       meta?: Record<string, unknown>,
     ): { ok: true; record: SaveRecord } | { ok: false; error: PersistenceError };
+    requestPersistentStorage(): Promise<void>;
     read(slot: string): ReadResult;
     list(): Exclude<ReadResult, { status: 'missing' }>[];
     remove(slot: string):

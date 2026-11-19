@@ -1022,13 +1022,16 @@
   };
 
   BrowserUserInterface.prototype.saveSlot = function (slot) {
+    var name = canonicalSlot(slot);
     var result = this.saveStore.write(
-      canonicalSlot(slot),
+      name,
       this.dendryEngine.getExportableState(),
       this._saveMetadata(),
     );
     if (!result.ok) {
       this._displaySaveError("Save", result, true);
+    } else if (/^manual-[1-9]\d*$/.test(name)) {
+      void this.saveStore.requestPersistentStorage();
     }
     this.populateSaveSlots(this.max_slots, 2);
   };

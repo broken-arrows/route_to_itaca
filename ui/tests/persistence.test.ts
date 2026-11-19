@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const require = createRequire(import.meta.url);
 const { createSaveStore } = require(
@@ -13,6 +13,7 @@ const { createSaveStore } = require(
   }): {
     serialize(state: unknown, meta?: Record<string, unknown>): any;
     write(slot: string, state: unknown, meta?: Record<string, unknown>): any;
+    requestPersistentStorage(): Promise<void>;
     read(slot: string): any;
     list(): any[];
     remove(slot: string): any;
@@ -23,6 +24,26 @@ const { createSaveStore } = require(
 
 describe('shared save persistence', () => {
   beforeEach(() => localStorage.clear());
+  afterEach(() => vi.unstubAllGlobals());
+
+  it('coordinates overlapping requests for the same origin', async () => {
+    const persist = vi.fn().mockResolvedValue(true);
+    let queue = Promise.resolve();
+    const request = vi.fn((_name: string, callback: () => Promise<void>) => {
+      queue = queue.then(callback);
+      return queue;
+    });
+    vi.stubGlobal('navigator', { storage: { persist }, locks: { request } });
+    const options = { storage: localStorage, gameVersion: '0.1.0', now: () => new Date() };
+    const first = createSaveStore({ ...options, ifid: 'first' });
+    const second = createSaveStore({ ...options, ifid: 'second' });
+
+    await Promise.all([first.requestPersistentStorage(), second.requestPersistentStorage()]);
+
+    expect(request).toHaveBeenCalledTimes(2);
+    expect(request.mock.calls[0][0]).toBe(request.mock.calls[1][0]);
+    expect(persist).toHaveBeenCalledOnce();
+  });
 
   it('writes and reads the canonical versioned envelope', () => {
     const store = createSaveStore({

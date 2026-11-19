@@ -3,6 +3,7 @@
 var fflate = require("fflate");
 var SAVE_FORMAT_VERSION = 1;
 var COMPRESSED_PREFIX = "dnt-zlib-v1:";
+var PERSISTENCE_REQUEST_KEY = "dnt:persistent-storage-requested";
 
 function compressSave(json) {
   var bytes = fflate.zlibSync(fflate.strToU8(json));
@@ -178,6 +179,33 @@ function createSaveStore(options) {
     if (!save.ok) return save;
     var result = writeData(key, save.data);
     return result.ok ? { ok: true, record: save.record } : result;
+  }
+
+  async function requestPersistentStorage() {
+    try {
+      if (
+        typeof navigator === "undefined" ||
+        storage.getItem(PERSISTENCE_REQUEST_KEY) !== null
+      )
+        return;
+      var manager = navigator.storage;
+      if (!manager || typeof manager.persist !== "function") return;
+
+      function requestOnce() {
+        if (storage.getItem(PERSISTENCE_REQUEST_KEY) !== null) return;
+        storage.setItem(PERSISTENCE_REQUEST_KEY, "1");
+        return manager.persist();
+      }
+
+      var locks = navigator.locks;
+      if (locks && typeof locks.request === "function") {
+        await locks.request(PERSISTENCE_REQUEST_KEY, requestOnce);
+      } else {
+        await requestOnce();
+      }
+    } catch (error) {
+      // The manual save is already stored. Permission is best effort.
+    }
   }
 
   function writeData(key, json) {
@@ -379,6 +407,7 @@ function createSaveStore(options) {
   return {
     serialize: serialize,
     write: write,
+    requestPersistentStorage: requestPersistentStorage,
     read: read,
     list: list,
     remove: remove,

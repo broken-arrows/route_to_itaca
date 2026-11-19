@@ -98,6 +98,21 @@ describe('old-shell persistence adapter', () => {
     expect(ui.dendryEngine.setState).toHaveBeenCalledWith(envelope.state);
   });
 
+  it('keeps the manual save loadable if the permission request rejects', async () => {
+    const ui = makeUi();
+    const persist = vi.fn().mockRejectedValue(new DOMException('Unavailable', 'SecurityError'));
+    vi.stubGlobal('navigator', { storage: { persist } });
+
+    ui.saveSlot(0);
+    expect(persist).toHaveBeenCalledOnce();
+    await Promise.resolve();
+    ui.loadSlot(0);
+    expect(ui.dendryEngine.setState).toHaveBeenCalledOnce();
+
+    makeUi().saveSlot(1);
+    expect(persist).toHaveBeenCalledOnce();
+  });
+
   it('rotates the newest autosave to auto-2 without changing its envelope', () => {
     const ui = makeUi();
     ui.dendryEngine.getExportableState
@@ -116,6 +131,8 @@ describe('old-shell persistence adapter', () => {
 
   it.each(['manual save', 'autosave rotation'])('offers an importable snapshot of the current game if a %s write fails', async (action) => {
     const ui = makeUi();
+    const persist = vi.fn().mockResolvedValue(true);
+    vi.stubGlobal('navigator', { storage: { persist } });
     const showMessage = vi.fn<(message: string, download: () => void) => void>();
     vi.stubGlobal('showClassicMessage', showMessage);
     const createObjectURL = vi.fn<(file: Blob) => string>().mockReturnValue('blob:test');
@@ -132,6 +149,7 @@ describe('old-shell persistence adapter', () => {
     else ui.saveSlot(3);
 
     expect(showMessage).toHaveBeenCalledWith(expect.stringContaining('Exceeded the quota.'), expect.any(Function));
+    expect(persist).not.toHaveBeenCalled();
     expect(click).not.toHaveBeenCalled();
     expect(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-4')).toBeNull();
 
