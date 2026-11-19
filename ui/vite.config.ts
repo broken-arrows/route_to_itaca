@@ -2,14 +2,18 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { dirname, join } from 'node:path';
 import { gameAssets } from './vite-plugin-game-assets';
+
+const require = createRequire(import.meta.url);
 
 export default defineConfig({
   base: './',
   // Serve canonical source/img and runtime catalogs in development; validate
   // and publish them beside the compiled game in a standalone production build.
   plugins: [vue(), gameAssets(), {
-    name: 'ui-font-licenses',
+    name: 'ui-licenses',
     generateBundle() {
       for (const family of ['cooper-hewitt', 'raleway', 'mazius']) {
         this.emitFile({
@@ -18,6 +22,11 @@ export default defineConfig({
           source: readFileSync(new URL(`./src/assets/fonts/${family}/LICENSE.txt`, import.meta.url), 'utf8'),
         });
       }
+      this.emitFile({
+        type: 'asset',
+        fileName: 'licenses/fflate.txt',
+        source: readFileSync(join(dirname(require.resolve('fflate/package.json')), 'LICENSE'), 'utf8'),
+      });
     },
   }],
   server: {

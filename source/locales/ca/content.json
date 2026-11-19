@@ -5809,5 +5809,20 @@
   "With the growth of the party, its only natural to see some shifts and additions to the party's most-well-known names. {clause1}": null,
   "The domino effect of such a ruling is not going to be a small one: {clause1}{clause2}{consultation_trial_outgoing_president} is now legally forced to step down, something not seen since the times of the Second Republic. ": null,
   "The ruling on the 9N consultation has forced {clause1}{clause2} from office, leaving the Generalitat in a truly bizzar position, where {president} is set to lead it following succession rules. In a predictable, yet truly unprecedented move, snap elections have been called to properly resolve the situation, where voters will have to choose how to proceed from now on in {next_election_month}, {next_election_year}.": null,
-  "the sitting president": null
+  "the sitting president": null,
+  "· Improved saving and error catching for broken saves.": "· Millores en els processos per desar i carregar partides, així com per recuperació d'errors degut a partides desades trencades.",
+  "· Misc fixes and balance updates based on playtesting.": "· Múltiples errors i problemes solucionats, tan de codi com de balanç del joc, basat en les lliçons apreses gràcies als verificadors del joc.",
+  "{party} expects greater funding for public services, or a social project.": null,
+  "{party} opposes a higher spending cap while the Generalitat remains in deficit.": null,
+  "{party} opposes the building of the Fourth Belt.": null,
+  "{party} will not accept compulsory cuts to public services.": null,
+  "<strong>{emphasis1}</strong> - <em>{emphasis2}</em> - (November 2026)": "<strong>{emphasis1}</strong> - <em>{emphasis2}</em> - (Novembre 2026)",
+  "CiU will not approve of such a radical tax increase.": null,
+  "Every party in government must approve the budget.": null,
+  "Gaining their confidence back is going to be an uphill battle, specially given our reputation as the true, hardcore, pro-independence party.": null,
+  "pre-release closed alpha": null,
+  "The proposed budget goes against the governing agreement.": null,
+  "v0.1.0": null,
+  "v0.1.1": null,
+  "v0.1.1 - alpha": null
 }

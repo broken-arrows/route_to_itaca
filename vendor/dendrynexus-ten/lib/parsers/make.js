@@ -15,7 +15,7 @@
   // ----------------------------------------------------------------------
   // Routines to author schema.
   var extendSchema = function(orig, additional) {
-    return _.assign(_.clone(orig, true), additional);
+    return _.assign(_.cloneDeep(orig), additional);
   };
 
   // ----------------------------------------------------------------------

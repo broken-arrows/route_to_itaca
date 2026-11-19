@@ -18,18 +18,19 @@
     "acorn": "^8.19.0",
     "argparse": "1.0.x",
     "async": "1.x.x",
-    "browserify": "10.x.x",
     "colors": "1.1.x",
     "dive": "0.4.x",
-    "handlebars": "3.0.x",
-    "lodash": "3.10.x",
+    "esbuild": "^0.28.2",
+    "fflate": "0.8.3",
+    "handlebars": "^4.7.10",
+    "lodash": "^4.18.1",
     "mkdirp": "0.5.x",
     "prompt": "0.2.x",
     "terser": "^5.31.0",
     "wordwrap": "1.0.x"
   },
   "engines": {
-    "node": ">=16.7"
+    "node": ">=18"
   },
   "bin": {
     "dendrynexus-ten": "lib/cli/main.js"

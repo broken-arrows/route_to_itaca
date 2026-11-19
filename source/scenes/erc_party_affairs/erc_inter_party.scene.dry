@@ -80,7 +80,7 @@ The JxSí coalition is a naturally unstable one, but in the name of National Uni
 @jxcat_relations
 subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
 choose-if: (erc_advisor_action or party_resources >= 1)
-view-if: jxcat_formed and not jxcat_dissolved
+view-if: jxcat_formed and not jxcat_dissolved and not erc_in_jxcat
 unavailable-subtitle: Not enough resources
 on-arrival: {!
     if (!Q.erc_advisor_action) Q.party_resources -= 1;
@@ -378,7 +378,7 @@ ICV-EUiA has been a longstanding ally of ERC, we a lot of shared goals on Republ
 @csqp_relations
 subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
 choose-if: (erc_advisor_action or party_resources >= 1)
-view-if: csqp_formed
+view-if: csqp_formed and not cecp_formed and not ecp_formed
 unavailable-subtitle: Not enough resources
 on-arrival: {!
     if (!Q.erc_advisor_action) Q.party_resources -= 1;
@@ -418,7 +418,7 @@ CSQP feels like a natural ally of ERC in many ways. We a lot of shared goals on 
 @cecp_relations
 subtitle: [? if not erc_advisor_action: \[-1 resources\] ?]
 choose-if: (erc_advisor_action or party_resources >= 1)
-view-if: cecp_formed
+view-if: cecp_formed and not ecp_formed
 unavailable-subtitle: Not enough resources
 on-arrival: {!
     if (!Q.erc_advisor_action) Q.party_resources -= 1;

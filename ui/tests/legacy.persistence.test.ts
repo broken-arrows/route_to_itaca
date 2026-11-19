@@ -41,7 +41,7 @@ describe('old-shell persistence adapter', () => {
     const ui = makeUi();
     ui.saveSlot(0);
     const key = 'dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1';
-    const record = JSON.parse(localStorage.getItem(key)!);
+    const record = JSON.parse(ui.saveStore.export('manual-1').data);
     record.state.qualities.resources = 999;
     localStorage.setItem(key, JSON.stringify(record));
     ui.loadSlot(0);
@@ -84,7 +84,7 @@ describe('old-shell persistence adapter', () => {
     const ui = makeUi();
     ui.saveSlot(0);
 
-    const envelope = JSON.parse(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1')!);
+    const envelope = JSON.parse(ui.saveStore.export('manual-1').data);
     expect(envelope).toMatchObject({
       saveFormatVersion: 1,
       gameVersion: '0.1.0',
@@ -105,13 +105,13 @@ describe('old-shell persistence adapter', () => {
       .mockReturnValueOnce({ sceneId: 'second' });
     ui.dendryEngine.state.sceneId = 'first';
     ui.autosave();
-    const firstEnvelope = localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:auto-1');
+    const firstEnvelope = ui.saveStore.export('auto-1').data;
 
     ui.dendryEngine.state.sceneId = 'second';
     ui.autosave();
 
-    expect(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:auto-2')).toBe(firstEnvelope);
-    expect(JSON.parse(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:auto-1')!).state.sceneId).toBe('second');
+    expect(ui.saveStore.export('auto-2').data).toBe(firstEnvelope);
+    expect(JSON.parse(ui.saveStore.export('auto-1').data).state.sceneId).toBe('second');
   });
 
   it.each(['manual save', 'autosave rotation'])('offers an importable snapshot of the current game if a %s write fails', async (action) => {

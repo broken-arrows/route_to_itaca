@@ -13,19 +13,15 @@ describe('the old shell hemicycle handler', () => {
   let renderedData: unknown;
 
   beforeEach(() => {
-    const enter = {
-      fromCenter: vi.fn(),
-      smallToBig: vi.fn(),
-    };
-    enter.fromCenter.mockReturnValue(enter);
+    fromCenter = vi.fn();
+    smallToBig = vi.fn();
+    const enter = { fromCenter, smallToBig };
+    fromCenter.mockReturnValue(enter);
     const exit = {
       toCenter: vi.fn(),
       bigToSmall: vi.fn(),
     };
     exit.toCenter.mockReturnValue(exit);
-    fromCenter = enter.fromCenter;
-    smallToBig = vi.fn();
-    enter.smallToBig = smallToBig;
     const parliament = Object.assign(vi.fn(), {
       width: vi.fn().mockReturnThis(),
       height: vi.fn().mockReturnThis(),

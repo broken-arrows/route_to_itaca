@@ -1,6 +1,19 @@
 "use strict";
 
+var fflate = require("fflate");
 var SAVE_FORMAT_VERSION = 1;
+var COMPRESSED_PREFIX = "dnt-zlib-v1:";
+
+function compressSave(json) {
+  var bytes = fflate.zlibSync(fflate.strToU8(json));
+  return COMPRESSED_PREFIX + btoa(fflate.strFromU8(bytes, true));
+}
+
+function decompressSave(value) {
+  var bytes = fflate.strToU8(atob(value.slice(COMPRESSED_PREFIX.length)), true);
+  return fflate.strFromU8(fflate.unzlibSync(bytes));
+}
+
 function storageNamespace(ifid) {
   if (typeof ifid !== "string" || !ifid.trim()) {
     throw new TypeError("ifid must be a non-empty string");
@@ -163,12 +176,23 @@ function createSaveStore(options) {
     var key = keyFor(slot);
     var save = serialize(state, meta);
     if (!save.ok) return save;
+    var result = writeData(key, save.data);
+    return result.ok ? { ok: true, record: save.record } : result;
+  }
+
+  function writeData(key, json) {
+    var encoded;
     try {
-      storage.setItem(key, save.data);
+      encoded = compressSave(json);
+    } catch (error) {
+      return { ok: false, error: errorResult("serialize-failed", error) };
+    }
+    try {
+      storage.setItem(key, encoded);
     } catch (error) {
       return { ok: false, error: errorResult("storage-write-failed", error) };
     }
-    return { ok: true, record: save.record };
+    return { ok: true };
   }
 
   function read(slot) {
@@ -185,6 +209,18 @@ function createSaveStore(options) {
     }
     if (raw === null) {
       return { status: "missing", slot: slot };
+    }
+    if (raw.indexOf(COMPRESSED_PREFIX) === 0) {
+      try {
+        raw = decompressSave(raw);
+      } catch (error) {
+        return {
+          status: "corrupt",
+          slot: slot,
+          raw: raw,
+          error: errorResult("invalid-compressed-save", error),
+        };
+      }
     }
     var parsed;
     try {
@@ -228,7 +264,7 @@ function createSaveStore(options) {
     };
   }
 
-  function list() {
+  function slotNames() {
     var slots = [];
     for (var i = 0; i < storage.length; i++) {
       var key = storage.key(i);
@@ -241,9 +277,49 @@ function createSaveStore(options) {
       }
     }
     slots.sort();
-    return slots.map(read).filter(function (entry) {
-      return entry.status !== "missing";
+    return slots;
+  }
+
+  function compactLegacySaves() {
+    var slots;
+    try {
+      slots = slotNames();
+    } catch (error) {
+      return;
+    }
+    slots.forEach(function (slot) {
+      var key = keyFor(slot);
+      try {
+        var raw = storage.getItem(key);
+        if (raw === null || raw.indexOf(COMPRESSED_PREFIX) === 0) return;
+        var parsed = JSON.parse(raw);
+        if (
+          !isEnvelope(parsed) ||
+          parsed.saveFormatVersion !== SAVE_FORMAT_VERSION
+        )
+          return;
+        var compacted = compressSave(raw);
+        // Replace in place only after verifying the original bytes and checking
+        // that the slot still contains the value we started from.
+        if (
+          compacted.length < raw.length &&
+          decompressSave(compacted) === raw &&
+          storage.getItem(key) === raw
+        ) {
+          storage.setItem(key, compacted);
+        }
+      } catch (error) {
+        // The original record remains available even if compaction fails.
+      }
     });
+  }
+
+  function list() {
+    return slotNames()
+      .map(read)
+      .filter(function (entry) {
+        return entry.status !== "missing";
+      });
   }
 
   function remove(slot) {
@@ -286,11 +362,8 @@ function createSaveStore(options) {
     } catch (error) {
       return { ok: false, error: errorResult("serialize-failed", error) };
     }
-    try {
-      storage.setItem(key, canonical);
-    } catch (error) {
-      return { ok: false, error: errorResult("storage-write-failed", error) };
-    }
+    var result = writeData(key, canonical);
+    if (!result.ok) return result;
     if (record.saveFormatVersion !== SAVE_FORMAT_VERSION) {
       return { ok: true, status: "unsupported", record: record };
     }
@@ -302,6 +375,7 @@ function createSaveStore(options) {
     };
   }
 
+  compactLegacySaves();
   return {
     serialize: serialize,
     write: write,

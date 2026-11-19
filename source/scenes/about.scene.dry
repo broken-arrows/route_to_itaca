@@ -1,5 +1,5 @@
 title: About
-subtitle: v0.1.0 - alpha
+subtitle: v0.1.1 - alpha
 go-to: force_new_page_about
 role: main-menu-item
 
@@ -69,17 +69,21 @@ Any and all reports are most welcome!
 
 = changelog
 
-No playable game has been released yet!
+**v0.1.1**
 
-= Future Plans
+· Improved saving and error catching for broken saves.
 
-**v0.1.0 ** - *pre-release alpha* - (late 2026 / early 2027?)
+· Misc fixes and balance updates based on playtesting.
+
+**v0.1.0** - *pre-release closed alpha* - (November 2026)
 
 · Easy, Medium, Hard, and Historical game modes
 
 · Playable ERC.
 
 · First achievement batch.
+
+= Future Plans
 
 **v0.2.0** - *pre-release beta* - TBD
 

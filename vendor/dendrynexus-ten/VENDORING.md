@@ -28,6 +28,8 @@ In-tree fork of [dendrynexus](https://github.com/aucchen/dendrynexus), based on
   See [LOCALIZATION.md](LOCALIZATION.md) for the authoring/runtime contract.
 - **Face images:** saved paragraph offsets accompany `displayContent` as its
   optional third argument, including load and special-scene returns.
+- **Classic bundle:** `make-html` bundles the browser entry point with esbuild
+  and uses Terser for minification. The CLI requires Node 18 or later.
 - **Assets:** `make-html --publish-game-lib --publish-game-assets` publishes from
   `source/lib`, `source/img` and runtime locale catalogs. Missing required assets
   fail; untranslated entries warn and fall back to English. Shared asset tooling

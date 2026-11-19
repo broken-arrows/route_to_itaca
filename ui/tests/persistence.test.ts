@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const require = createRequire(import.meta.url);
 const { createSaveStore } = require(
@@ -11,6 +11,7 @@ const { createSaveStore } = require(
     gameVersion: string;
     now: () => Date;
   }): {
+    serialize(state: unknown, meta?: Record<string, unknown>): any;
     write(slot: string, state: unknown, meta?: Record<string, unknown>): any;
     read(slot: string): any;
     list(): any[];
@@ -34,7 +35,8 @@ describe('shared save persistence', () => {
     expect(store.write('manual-1', { sceneId: 'root' }, { sceneId: 'root' })).toMatchObject({
       ok: true,
     });
-    expect(JSON.parse(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1')!)).toEqual({
+    expect(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1')).toMatch(/^dnt-zlib-v1:/);
+    expect(JSON.parse(store.export('manual-1').data)).toEqual({
       saveFormatVersion: 1,
       gameVersion: '0.1.0',
       meta: { sceneId: 'root', savedAt: '2026-08-11T10:15:00.000Z' },
@@ -46,6 +48,40 @@ describe('shared save persistence', () => {
       compatibility: 'compatible',
       record: { state: { sceneId: 'root' } },
     });
+  });
+
+  it('compacts existing saves in place and exports the exact old JSON', () => {
+    const options = {
+      storage: localStorage,
+      ifid: 'migration',
+      gameVersion: '0.1.0',
+      now: () => new Date('2026-08-11T10:15:00.000Z'),
+    };
+    const original = createSaveStore(options);
+    const state = { sceneId: 'root', achievementsEligible: true, title: 'Ítaca 🗳️'.repeat(300) };
+    const legacy = JSON.stringify(JSON.parse(original.serialize(state).data), null, 2);
+    const key = 'dnt:migration:save:manual-4';
+    localStorage.setItem(key, legacy);
+    localStorage.setItem('dnt:migration:save:broken', '{');
+    localStorage.setItem('dnt:other:save:manual-4', legacy);
+
+    const rejectWrites = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('Exceeded the quota.', 'QuotaExceededError');
+    });
+    try {
+      expect(createSaveStore(options).export('manual-4')).toEqual({ ok: true, data: legacy });
+      expect(localStorage.getItem(key)).toBe(legacy);
+    } finally {
+      rejectWrites.mockRestore();
+    }
+
+    const store = createSaveStore(options);
+    expect(localStorage.getItem(key)).toMatch(/^dnt-zlib-v1:/);
+    expect(localStorage.getItem(key)!.length).toBeLessThan(legacy.length);
+    expect(store.export('manual-4')).toEqual({ ok: true, data: legacy });
+    expect(store.read('manual-4').record.state).toEqual(state);
+    expect(localStorage.getItem('dnt:migration:save:broken')).toBe('{');
+    expect(localStorage.getItem('dnt:other:save:manual-4')).toBe(legacy);
   });
 
   it('rejects invalid IFIDs and empty slots', () => {
@@ -290,6 +326,7 @@ describe('shared save persistence', () => {
 
     const exported = store.export('manual-1');
     expect(exported.ok).toBe(true);
+    expect(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-1')).toMatch(/^dnt-zlib-v1:/);
     expect(JSON.parse(exported.data)).toEqual({
       saveFormatVersion: 1,
       gameVersion: '0.1.7',
@@ -337,15 +374,19 @@ describe('shared save persistence', () => {
     expect(JSON.parse(store.export('future').data)).toEqual(JSON.parse(serialized));
   });
 
-  it('exports corrupt raw data for recovery and removes slots idempotently', () => {
-    localStorage.setItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:broken', '{');
+  it.each([
+    ['{', 'invalid-json'],
+    ['dnt-zlib-v1:bm90IHpsaWI=', 'invalid-compressed-save'],
+  ])('exports corrupt data %s for recovery and removes slots idempotently', (data, code) => {
+    localStorage.setItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:broken', data);
     const store = createSaveStore({
       storage: localStorage,
       ifid: 'a513a6fa-16c8-4cdf-a385-0e359a976a66',
       gameVersion: '0.1.0',
       now: () => new Date(),
     });
-    expect(store.export('broken')).toEqual({ ok: true, data: '{' });
+    expect(store.read('broken')).toMatchObject({ status: 'corrupt', error: { code } });
+    expect(store.export('broken')).toEqual({ ok: true, data });
     expect(store.remove('broken')).toEqual({ ok: true, existed: true });
     expect(store.remove('broken')).toEqual({ ok: true, existed: false });
     expect(store.read('broken')).toEqual({ status: 'missing', slot: 'broken' });

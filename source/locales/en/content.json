@@ -5784,5 +5784,20 @@
   "With the growth of the party, its only natural to see some shifts and additions to the party's most-well-known names. {clause1}": "With the growth of the party, its only natural to see some shifts and additions to the party's most-well-known names. {clause1}",
   "The domino effect of such a ruling is not going to be a small one: {clause1}{clause2}{consultation_trial_outgoing_president} is now legally forced to step down, something not seen since the times of the Second Republic. ": "The domino effect of such a ruling is not going to be a small one: {clause1}{clause2}{consultation_trial_outgoing_president} is now legally forced to step down, something not seen since the times of the Second Republic. ",
   "The ruling on the 9N consultation has forced {clause1}{clause2} from office, leaving the Generalitat in a truly bizzar position, where {president} is set to lead it following succession rules. In a predictable, yet truly unprecedented move, snap elections have been called to properly resolve the situation, where voters will have to choose how to proceed from now on in {next_election_month}, {next_election_year}.": "The ruling on the 9N consultation has forced {clause1}{clause2} from office, leaving the Generalitat in a truly bizzar position, where {president} is set to lead it following succession rules. In a predictable, yet truly unprecedented move, snap elections have been called to properly resolve the situation, where voters will have to choose how to proceed from now on in {next_election_month}, {next_election_year}.",
-  "the sitting president": "the sitting president"
+  "the sitting president": "the sitting president",
+  "· Improved saving and error catching for broken saves.": "· Improved saving and error catching for broken saves.",
+  "· Misc fixes and balance updates based on playtesting.": "· Misc fixes and balance updates based on playtesting.",
+  "{party} expects greater funding for public services, or a social project.": "{party} expects greater funding for public services, or a social project.",
+  "{party} opposes a higher spending cap while the Generalitat remains in deficit.": "{party} opposes a higher spending cap while the Generalitat remains in deficit.",
+  "{party} opposes the building of the Fourth Belt.": "{party} opposes the building of the Fourth Belt.",
+  "{party} will not accept compulsory cuts to public services.": "{party} will not accept compulsory cuts to public services.",
+  "<strong>{emphasis1}</strong> - <em>{emphasis2}</em> - (November 2026)": "<strong>{emphasis1}</strong> - <em>{emphasis2}</em> - (November 2026)",
+  "CiU will not approve of such a radical tax increase.": "CiU will not approve of such a radical tax increase.",
+  "Every party in government must approve the budget.": "Every party in government must approve the budget.",
+  "Gaining their confidence back is going to be an uphill battle, specially given our reputation as the true, hardcore, pro-independence party.": "Gaining their confidence back is going to be an uphill battle, specially given our reputation as the true, hardcore, pro-independence party.",
+  "pre-release closed alpha": "pre-release closed alpha",
+  "The proposed budget goes against the governing agreement.": "The proposed budget goes against the governing agreement.",
+  "v0.1.0": "v0.1.0",
+  "v0.1.1": "v0.1.1",
+  "v0.1.1 - alpha": "v0.1.1 - alpha"
 }

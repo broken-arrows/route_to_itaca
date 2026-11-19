@@ -13,6 +13,7 @@ const engine = () => new DendryEngine(new NullUserInterface(), {
 });
 function save() {
   const state = {
+    sceneId: 'root',
     qualities: { resources: 10, game_achievement_previous: 1 }, achievements: {},
     achievementsEligible: true, currentRandomState: [1, 2, 3, 4, 5], gameOver: true,
   };

@@ -91,7 +91,9 @@ describe('game store', () => {
     const store = bootedStore();
     store.choose(0);
     store.saveSlot('manual-1');
-    const saved = JSON.parse(localStorage.getItem('dnt:test-game:save:manual-1')!);
+    const exported = store.exportSlot('manual-1');
+    if (!exported.ok) throw new Error('Unable to export the test save');
+    const saved = JSON.parse(exported.data);
     saved.gameVersion = '0.2.0';
     localStorage.setItem('dnt:test-game:save:manual-1', JSON.stringify(saved));
 
