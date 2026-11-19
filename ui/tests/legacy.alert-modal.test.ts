@@ -10,6 +10,7 @@ describe('old-shell alert modal', () => {
 
   afterEach(() => {
     window.alert = originalAlert;
+    Reflect.deleteProperty(window, 'showClassicMessage');
     document.body.replaceChildren();
     vi.restoreAllMocks();
   });
@@ -38,5 +39,27 @@ describe('old-shell alert modal', () => {
       'Import failed.\nUnreadable save.',
     );
     expect(showModal).toHaveBeenCalledOnce();
+  });
+
+  it('only shows the download action on messages that supply it', () => {
+    document.body.innerHTML = `
+      <dialog id="message_dialog">
+        <p id="message_dialog_text"></p>
+        <button type="button" id="message_dialog_download" hidden>Download</button>
+      </dialog>
+    `;
+    const dialog = document.getElementById('message_dialog') as HTMLDialogElement;
+    dialog.showModal = vi.fn();
+    const download = document.getElementById('message_dialog_download') as HTMLButtonElement;
+    const action = vi.fn();
+
+    new Function(gameJs + '\nwindow.showClassicMessage("Save failed.", arguments[0]);')(action);
+    expect(download.hidden).toBe(false);
+    download.click();
+    expect(action).toHaveBeenCalledOnce();
+
+    window.alert('Loaded.');
+    expect(download.hidden).toBe(true);
+    expect(download.onclick).toBeNull();
   });
 });

@@ -5,7 +5,7 @@ role: event
 tags: event
 face-image: img/events/generalitat_premsa.jpg
 view-if: {!
-    return G.governmentPlayerControl(Q) < 1 && !Q.cat_caretaker_gov && !(Q.government_does_things_timer > 0) &&
+    return G.governmentPlayerControl(Q) < 1 && !Q.plebiscite_election_trigger && !Q.cat_caretaker_gov && !(Q.government_does_things_timer > 0) &&
         (Q.cat_coalition || []).some(function (party) {
             party = party == "ciu" ? Q.parlament_current_ciu || party : party == "federal_left" ? Q.parlament_current_icv || party : party;
             return party != Q.player_party;

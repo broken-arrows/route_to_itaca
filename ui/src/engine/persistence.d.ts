@@ -29,6 +29,10 @@ declare module 'dendrynexus-ten/lib/persistence.js' {
         compatibility: SaveCompatibility;
       };
   export interface SaveStore {
+    serialize(
+      state: unknown,
+      meta?: Record<string, unknown>,
+    ): { ok: true; record: SaveRecord; data: string } | { ok: false; error: PersistenceError };
     write(
       slot: string,
       state: unknown,

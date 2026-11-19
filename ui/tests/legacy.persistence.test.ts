@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const require = createRequire(import.meta.url);
 (globalThis as any).jQuery = vi.fn();
@@ -58,6 +58,11 @@ describe('old-shell persistence adapter', () => {
     vi.spyOn(window, 'confirm').mockReturnValue(true);
   });
 
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+  });
+
   it('derives its save and settings keys from the compiled IFID', () => {
     const ui = Object.create(BrowserUserInterface.prototype);
     ui.game = { info: { ifid: 'GAME-A', version: '1.0.0' } };
@@ -107,6 +112,46 @@ describe('old-shell persistence adapter', () => {
 
     expect(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:auto-2')).toBe(firstEnvelope);
     expect(JSON.parse(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:auto-1')!).state.sceneId).toBe('second');
+  });
+
+  it.each(['manual save', 'autosave rotation'])('offers an importable snapshot of the current game if a %s write fails', async (action) => {
+    const ui = makeUi();
+    const showMessage = vi.fn<(message: string, download: () => void) => void>();
+    vi.stubGlobal('showClassicMessage', showMessage);
+    const createObjectURL = vi.fn<(file: Blob) => string>().mockReturnValue('blob:test');
+    vi.stubGlobal('URL', { createObjectURL, revokeObjectURL: vi.fn() });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => undefined);
+    const state = { sceneId: 'current', qualities: { resources: 7 }, achievementsEligible: true };
+    if (action === 'autosave rotation') ui.saveStore.write('auto-1', { sceneId: 'older' });
+    ui.dendryEngine.state = state;
+    ui.dendryEngine.getExportableState.mockReturnValue(state);
+    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('Exceeded the quota.', 'QuotaExceededError');
+    });
+    if (action === 'autosave rotation') ui.autosave();
+    else ui.saveSlot(3);
+
+    expect(showMessage).toHaveBeenCalledWith(expect.stringContaining('Exceeded the quota.'), expect.any(Function));
+    expect(click).not.toHaveBeenCalled();
+    expect(localStorage.getItem('dnt:a513a6fa-16c8-4cdf-a385-0e359a976a66:save:manual-4')).toBeNull();
+
+    vi.useFakeTimers({ toFake: ['setTimeout'] });
+    showMessage.mock.calls[0][1]();
+    expect(click).toHaveBeenCalledOnce();
+    expect(click.mock.contexts[0]).toHaveProperty('download', 'route-to-itaca.dnt');
+    const data = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result));
+      reader.onerror = () => reject(reader.error);
+      reader.readAsText(createObjectURL.mock.calls[0][0]);
+    });
+    vi.runAllTimers();
+    setItem.mockRestore();
+    expect(ui.saveStore.import('manual-4', data).ok).toBe(true);
+    expect(ui.saveStore.read('manual-4').record).toMatchObject({
+      meta: { sceneId: 'current' },
+      state,
+    });
   });
 
   it('requires confirmation for an incompatible game version', () => {

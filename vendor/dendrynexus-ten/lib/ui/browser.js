@@ -15,7 +15,9 @@
   // Optional shell-owned catalog; generic games retain their original labels.
   var tr = function (text, params) {
     if (window.ClassicI18n) return window.ClassicI18n.text(text, params);
-    return text.replace(/\{(\w+)\}/g, function (m, key) { return params && params[key] !== undefined ? params[key] : m; });
+    return text.replace(/\{(\w+)\}/g, function (m, key) {
+      return params && params[key] !== undefined ? params[key] : m;
+    });
   };
   var canonicalSlot = function (slot) {
     if (slot === "a0") {
@@ -96,7 +98,9 @@
 
   // Install once before rendering; stateful formatters retain fragment continuity.
   BrowserUserInterface.prototype.setTextFormatter = function (formatText) {
-    this.contentToHTML = contentToHTML.createRenderer({ formatText: formatText });
+    this.contentToHTML = contentToHTML.createRenderer({
+      formatText: formatText,
+    });
   };
 
   BrowserUserInterface.prototype._configurePersistence = function () {
@@ -225,13 +229,19 @@
       $titleHolder.html(title);
       if (choice.choiceImage && this.show_portraits) {
         // Reuse the shell's card frame, art sizing and hover treatment.
-        var $card = $("<a>").addClass("card").attr("aria-label", $("<span>").html(title).text());
+        var $card = $("<a>")
+          .addClass("card")
+          .attr("aria-label", $("<span>").html(title).text());
         if (choice.canChoose) {
           $card.attr({ href: "#", "data-choice": i });
         } else {
           $card.attr("aria-disabled", "true");
         }
-        $card.append($("<img>").addClass("card-img").attr({ src: choice.choiceImage, alt: "" }));
+        $card.append(
+          $("<img>")
+            .addClass("card-img")
+            .attr({ src: choice.choiceImage, alt: "" }),
+        );
         $subtitleHolder = $("<div>").addClass("choice-description");
         $subtitleHolder.append($("<div>").addClass("choice-title").html(title));
         $li.empty().append($card).append($subtitleHolder);
@@ -332,7 +342,8 @@
     if (!value) return tr(fallback);
     if (engine.gameLib && engine.gameLib.getText) {
       var recipe = engine.gameLib.getText(engine.state.qualities, field);
-      if (recipe.kind !== 'literal') return engine._renderSnapshot({ nodes: [recipe] })[0];
+      if (recipe.kind !== "literal")
+        return engine._renderSnapshot({ nodes: [recipe] })[0];
     }
     return engine.translate(tr(value));
   };
@@ -355,7 +366,9 @@
       $handEl = $("<ul>").addClass("hand");
       this.$content.append($("<hr>"));
       this.$content.append(
-        $("<p>").addClass("hand-description").text(this._description("handDescription", handDescription)),
+        $("<p>")
+          .addClass("hand-description")
+          .text(this._description("handDescription", handDescription)),
       );
     } else {
       $handEl.empty();
@@ -370,7 +383,9 @@
         var $cardLink = $("<a>")
           .addClass("card")
           .attr({ href: "#", "card-id": card.id, title: card.title });
-        var $title = $("<span>").addClass("card-caption").html(this.contentToHTML.convertLine(card.title));
+        var $title = $("<span>")
+          .addClass("card-caption")
+          .html(this.contentToHTML.convertLine(card.title));
         // if there is an image, set the image; otherwise, set image to a gradient?
         if (card.image) {
           var $cardImage = $("<img>")
@@ -413,7 +428,9 @@
     }
     this.$content.append($("<hr>"));
     this.$content.append(
-      $("<p>").addClass("deck-description").text(this._description("deckDescription", deckDescription)),
+      $("<p>")
+        .addClass("deck-description")
+        .text(this._description("deckDescription", deckDescription)),
     );
     var $decksEl = $("<ul>").addClass("decks");
     for (var deck of decks) {
@@ -422,7 +439,9 @@
       var $deckLink = $("<a>")
         .addClass("card")
         .attr({ href: "#", "card-id": deck.id, title: deck.title });
-      var $title = $("<span>").addClass("card-caption").html(this.contentToHTML.convertLine(deck.title));
+      var $title = $("<span>")
+        .addClass("card-caption")
+        .html(this.contentToHTML.convertLine(deck.title));
       // if there is an image, set the image; otherwise, set image to a gradient?
       if (deck.image) {
         var $deckImage = $("<img>")
@@ -469,7 +488,11 @@
     }
     this.$content.append($("<hr>"));
     this.$content.append(
-      $("<p>").addClass("pinned-text-description").text(this._description("pinnedCardsDescription", pinnedCardsDescription)),
+      $("<p>")
+        .addClass("pinned-text-description")
+        .text(
+          this._description("pinnedCardsDescription", pinnedCardsDescription),
+        ),
     );
     if (this.dendryEngine.state.qualities.pinnedParlamentDescription) {
       pinnedParlamentDescription =
@@ -477,7 +500,12 @@
       this.$content.append(
         $("<p>")
           .addClass("pinned-text-description")
-          .text(this._description("pinnedParlamentDescription", pinnedParlamentDescription)),
+          .text(
+            this._description(
+              "pinnedParlamentDescription",
+              pinnedParlamentDescription,
+            ),
+          ),
       );
     }
     var $cardsEl = $("<ul>").addClass("pinned-cards");
@@ -487,7 +515,9 @@
       var $cardLink = $("<a>")
         .addClass("card")
         .attr({ href: "#", "card-id": card.id, title: card.title });
-      var $title = $("<span>").addClass("card-caption").html(this.contentToHTML.convertLine(card.title));
+      var $title = $("<span>")
+        .addClass("card-caption")
+        .html(this.contentToHTML.convertLine(card.title));
       // if there is an image, set the image; otherwise, set image to a gradient?
       if (card.image) {
         var $cardImage = $("<img>")
@@ -581,12 +611,19 @@
       window.setSprites(data);
       return;
     }
-    var entries = Array.isArray(data) ? data : Object.entries(typeof data === "object" && data || {});
-    var images = new Map(entries.map(function (entry) {
-      return [entry[0].toLowerCase(), entry[1]];
-    }));
+    var entries = Array.isArray(data)
+      ? data
+      : Object.entries((typeof data === "object" && data) || {});
+    var images = new Map(
+      entries.map(function (entry) {
+        return [entry[0].toLowerCase(), entry[1]];
+      }),
+    );
     for (var loc of Object.keys(this.spriteLocs)) {
-      this.setSprite(loc, this.show_portraits && images.get(loc.toLowerCase()) || "none");
+      this.setSprite(
+        loc,
+        (this.show_portraits && images.get(loc.toLowerCase())) || "none",
+      );
     }
   };
 
@@ -881,9 +918,46 @@
     return { sceneId: this.dendryEngine.state.sceneId };
   };
 
-  BrowserUserInterface.prototype._displaySaveError = function (action, result) {
-    var detail = result && result.error && result.error.message;
-    window.alert(tr("{action} failed.", { action: tr(action) }) + (detail ? "\n" + detail : ""));
+  function downloadSave(data, filename) {
+    var link = document.createElement("a");
+    var url = URL.createObjectURL(
+      new Blob([data], { type: "application/json" }),
+    );
+    link.href = url;
+    link.download = filename;
+    link.click();
+    setTimeout(function () {
+      URL.revokeObjectURL(url);
+    }, 1000);
+  }
+
+  BrowserUserInterface.prototype._displaySaveError = function (
+    action,
+    result,
+    offerCurrentGame,
+  ) {
+    var error = result && result.error;
+    var message = tr("{action} failed.", { action: tr(action) });
+    if (error && error.message) message += "\n" + error.message;
+    if (
+      offerCurrentGame &&
+      error &&
+      error.code === "storage-write-failed" &&
+      !this.dendryEngine.state.disableSaves &&
+      window.showClassicMessage
+    ) {
+      var save = this.saveStore.serialize(
+        this.dendryEngine.getExportableState(),
+        this._saveMetadata(),
+      );
+      if (save.ok) {
+        window.showClassicMessage(message, function () {
+          downloadSave(save.data, "route-to-itaca.dnt");
+        });
+        return;
+      }
+    }
+    window.alert(message);
   };
 
   BrowserUserInterface.prototype._loadSaveResult = function (result) {
@@ -898,13 +972,17 @@
       return false;
     }
     if (result.status === "corrupt" || result.status === "unreadable") {
-      window.alert(tr("This save is corrupt or unreadable and cannot be loaded."));
+      window.alert(
+        tr("This save is corrupt or unreadable and cannot be loaded."),
+      );
       return false;
     }
     if (
       result.compatibility !== "compatible" &&
       !window.confirm(
-        tr("This save was created with a different or unknown game version. Load it anyway?"),
+        tr(
+          "This save was created with a different or unknown game version. Load it anyway?",
+        ),
       )
     ) {
       return false;
@@ -925,7 +1003,7 @@
       // Import preserves the complete previous envelope, including savedAt.
       var rotated = this.saveStore.import("auto-2", previous.data);
       if (!rotated.ok) {
-        this._displaySaveError("Autosave rotation", rotated);
+        this._displaySaveError("Autosave rotation", rotated, true);
         return;
       }
     } else if (previous.error.code !== "missing-save") {
@@ -938,7 +1016,7 @@
       this._saveMetadata(),
     );
     if (!result.ok) {
-      this._displaySaveError("Autosave", result);
+      this._displaySaveError("Autosave", result, true);
     }
     this.populateSaveSlots(this.max_slots, 2);
   };
@@ -950,7 +1028,7 @@
       this._saveMetadata(),
     );
     if (!result.ok) {
-      this._displaySaveError(tr("Save"), result);
+      this._displaySaveError("Save", result, true);
     }
     this.populateSaveSlots(this.max_slots, 2);
   };
@@ -972,11 +1050,7 @@
   BrowserUserInterface.prototype.exportSlot = function (slot) {
     var result = this.saveStore.export(canonicalSlot(slot));
     if (result.ok) {
-      var a = document.createElement("a");
-      var file = new Blob([result.data], { type: "application/json" });
-      a.href = URL.createObjectURL(file);
-      a.download = "save.dnt";
-      a.click();
+      downloadSave(result.data, "save.dnt");
     } else {
       this._displaySaveError("Export", result);
     }
@@ -1065,10 +1139,15 @@
         var savedAt = new Date(meta.savedAt);
         var timestamp = isNaN(savedAt.getTime())
           ? String(meta.savedAt || "")
-          : savedAt.toLocaleString((window.ClassicI18n && window.ClassicI18n.locale) || "en", that.DateOptions);
+          : savedAt.toLocaleString(
+              (window.ClassicI18n && window.ClassicI18n.locale) || "en",
+              that.DateOptions,
+            );
         var state = entry.record.state;
         var label =
-          String(meta.sceneId || (state && state.sceneId) || tr("Unknown scene")) +
+          String(
+            meta.sceneId || (state && state.sceneId) || tr("Unknown scene"),
+          ) +
           "\n(" +
           timestamp +
           ")";
@@ -1192,19 +1271,27 @@
 
   BrowserUserInterface.prototype._registerEvents = function () {
     var that = this;
-    this.$content.on("click", "ul.choices li a, ul.choice-cards a[data-choice]", function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      var choice = parseInt($(this).attr("data-choice"));
-      that.dendryEngine.choose(choice);
-      return false;
-    });
-    this.$content.on("click", "ul.choices li, ul.choice-cards > li", function (event) {
-      event.preventDefault();
-      event.stopPropagation();
-      $("a[data-choice]", this).first().click();
-      return false;
-    });
+    this.$content.on(
+      "click",
+      "ul.choices li a, ul.choice-cards a[data-choice]",
+      function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var choice = parseInt($(this).attr("data-choice"));
+        that.dendryEngine.choose(choice);
+        return false;
+      },
+    );
+    this.$content.on(
+      "click",
+      "ul.choices li, ul.choice-cards > li",
+      function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        $("a[data-choice]", this).first().click();
+        return false;
+      },
+    );
     // dendrynexus - onclick for decks and cards
     this.$content.on("click", "ul.decks li a", function (event) {
       event.preventDefault();

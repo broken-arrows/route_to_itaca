@@ -9,16 +9,27 @@
   var ui;
 
   var browserAlert = window.alert.bind(window);
-  window.alert = function (message) {
+  window.showClassicMessage = function (message, downloadSave) {
     var dialog = document.getElementById("message_dialog");
     var text = document.getElementById("message_dialog_text");
+    var download = document.getElementById("message_dialog_download");
     if (!dialog || !text || typeof dialog.showModal !== "function") {
       browserAlert(message);
       return;
     }
     text.textContent = String(message == null ? "" : message);
     if (dialog.open) dialog.close();
+    if (download) {
+      download.hidden = !downloadSave;
+      download.onclick = downloadSave || null;
+      dialog.onclose = function () {
+        if (!dialog.open) download.onclick = null;
+      };
+    }
     dialog.showModal();
+  };
+  window.alert = function (message) {
+    window.showClassicMessage(message);
   };
 
   var DateOptions = {

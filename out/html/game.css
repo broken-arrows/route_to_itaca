@@ -1663,6 +1663,8 @@ table {
 }
 .message-dialog__actions {
   display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
   justify-content: flex-end;
   margin-top: 0.9em;
 }

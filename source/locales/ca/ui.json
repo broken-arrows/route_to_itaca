@@ -352,6 +352,7 @@
       "Saving and loading is currently disabled.": "Desar i carregar partides anteriors no està permès en mode Històric.",
       "Game Over (reload to read again)": "Final de la partida (refresqueu la pàgina per tornar a començar)",
       "{action} failed.": "{action} ha fallat.",
+      "Download current save": "Baixa la partida actual",
       "Autosave rotation": "Partida deasada automàticament rotada",
       "Autosave": "Partida desada automàticament",
       "Import": "Importa",

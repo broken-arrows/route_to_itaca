@@ -352,6 +352,7 @@
       "Saving and loading is currently disabled.": "Saving and loading is currently disabled.",
       "Game Over (reload to read again)": "Game Over (reload to read again)",
       "{action} failed.": "{action} failed.",
+      "Download current save": "Download current save",
       "Autosave rotation": "Autosave rotation",
       "Autosave": "Autosave",
       "Import": "Import",

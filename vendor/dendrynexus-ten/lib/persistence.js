@@ -1,37 +1,42 @@
-'use strict';
+"use strict";
 
 var SAVE_FORMAT_VERSION = 1;
 function storageNamespace(ifid) {
-  if (typeof ifid !== 'string' || !ifid.trim()) {
-    throw new TypeError('ifid must be a non-empty string');
+  if (typeof ifid !== "string" || !ifid.trim()) {
+    throw new TypeError("ifid must be a non-empty string");
   }
-  return 'dnt:' + encodeURIComponent(ifid.trim().toLowerCase());
+  return "dnt:" + encodeURIComponent(ifid.trim().toLowerCase());
 }
 
 function errorResult(code, error, details) {
-  return Object.assign({
-    code: code,
-    message: error && error.message ? error.message : String(error || code),
-    cause: error,
-  }, details || {});
+  return Object.assign(
+    {
+      code: code,
+      message: error && error.message ? error.message : String(error || code),
+      cause: error,
+    },
+    details || {},
+  );
 }
 
 function parseVersion(value) {
-  if (typeof value !== 'string') return null;
-  var core = value.split('-', 1)[0];
+  if (typeof value !== "string") return null;
+  var core = value.split("-", 1)[0];
   if (!/^\d+\.\d+(?:\.\d+)?$/.test(core)) return null;
-  return core.split('.').map(function(part) { return Number(part); });
+  return core.split(".").map(function (part) {
+    return Number(part);
+  });
 }
 
 function compatibilityBetween(savedVersion, currentVersion) {
   var saved = parseVersion(savedVersion);
   var current = parseVersion(currentVersion);
-  if (!saved || !current) return 'unknown';
-  if (saved.length !== current.length) return 'incompatible';
+  if (!saved || !current) return "unknown";
+  if (saved.length !== current.length) return "incompatible";
   for (var i = 0; i < saved.length - 1; i++) {
-    if (saved[i] !== current[i]) return 'incompatible';
+    if (saved[i] !== current[i]) return "incompatible";
   }
-  return 'compatible';
+  return "compatible";
 }
 
 function hasOwn(object, property) {
@@ -39,29 +44,31 @@ function hasOwn(object, property) {
 }
 
 function isEnvelope(record) {
-  return !!record &&
-    typeof record === 'object' &&
+  return (
+    !!record &&
+    typeof record === "object" &&
     !Array.isArray(record) &&
-    hasOwn(record, 'saveFormatVersion') &&
-    typeof record.saveFormatVersion === 'number' &&
+    hasOwn(record, "saveFormatVersion") &&
+    typeof record.saveFormatVersion === "number" &&
     isFinite(record.saveFormatVersion) &&
     Math.floor(record.saveFormatVersion) === record.saveFormatVersion &&
     record.saveFormatVersion > 0 &&
-    hasOwn(record, 'meta') &&
+    hasOwn(record, "meta") &&
     !!record.meta &&
-    typeof record.meta === 'object' &&
+    typeof record.meta === "object" &&
     !Array.isArray(record.meta) &&
-    hasOwn(record, 'state');
+    hasOwn(record, "state")
+  );
 }
 
 function canonicalRecord(record) {
   var result = {
     saveFormatVersion: record.saveFormatVersion,
-    gameVersion: hasOwn(record, 'gameVersion') ? record.gameVersion : null,
+    gameVersion: hasOwn(record, "gameVersion") ? record.gameVersion : null,
     meta: Object.assign({}, record.meta),
     state: record.state,
   };
-  if (hasOwn(record, 'checksum')) result.checksum = record.checksum;
+  if (hasOwn(record, "checksum")) result.checksum = record.checksum;
   return result;
 }
 
@@ -69,11 +76,19 @@ function canonicalRecord(record) {
 // order so formatting and object-key order do not affect eligibility.
 function checksum(record) {
   function stable(value) {
-    if (value === null || typeof value !== 'object') return JSON.stringify(value);
-    if (Array.isArray(value)) return '[' + value.map(stable).join(',') + ']';
-    return '{' + Object.keys(value).sort().map(function(key) {
-      return JSON.stringify(key) + ':' + stable(value[key]);
-    }).join(',') + '}';
+    if (value === null || typeof value !== "object")
+      return JSON.stringify(value);
+    if (Array.isArray(value)) return "[" + value.map(stable).join(",") + "]";
+    return (
+      "{" +
+      Object.keys(value)
+        .sort()
+        .map(function (key) {
+          return JSON.stringify(key) + ":" + stable(value[key]);
+        })
+        .join(",") +
+      "}"
+    );
   }
   var content = stable({
     saveFormatVersion: record.saveFormatVersion,
@@ -85,12 +100,13 @@ function checksum(record) {
   for (var i = 0; i < content.length; i++) {
     hash = Math.imul(hash ^ content.charCodeAt(i), 16777619);
   }
-  return 'fnv1a32-v1:' + ('00000000' + (hash >>> 0).toString(16)).slice(-8);
+  return "fnv1a32-v1:" + ("00000000" + (hash >>> 0).toString(16)).slice(-8);
 }
 
 function applyIntegrity(record) {
-  var valid = typeof record.checksum === 'string' && record.checksum === checksum(record);
-  if (!valid && record.state && typeof record.state === 'object') {
+  var valid =
+    typeof record.checksum === "string" && record.checksum === checksum(record);
+  if (!valid && record.state && typeof record.state === "object") {
     record.state.achievementsEligible = false;
   }
   return valid;
@@ -98,49 +114,61 @@ function applyIntegrity(record) {
 
 function createSaveStore(options) {
   if (!options || !options.storage) {
-    throw new TypeError('storage is required');
+    throw new TypeError("storage is required");
   }
   var storage = options.storage;
   var namespace = storageNamespace(options.ifid);
   var gameVersion = options.gameVersion;
-  var now = options.now || function() { return new Date(); };
-  var prefix = namespace + ':save:';
+  var now =
+    options.now ||
+    function () {
+      return new Date();
+    };
+  var prefix = namespace + ":save:";
 
   function keyFor(slot) {
-    if (typeof slot !== 'string' || slot.length === 0) {
-      throw new TypeError('slot must be a non-empty string');
+    if (typeof slot !== "string" || slot.length === 0) {
+      throw new TypeError("slot must be a non-empty string");
     }
     return prefix + slot;
   }
 
-  function write(slot, state, meta) {
-    var key = keyFor(slot);
+  function serialize(state, meta) {
     var record;
     var serialized;
     try {
       record = {
         saveFormatVersion: SAVE_FORMAT_VERSION,
         gameVersion: gameVersion == null ? null : gameVersion,
-        meta: Object.assign({}, meta || {}, { savedAt: new Date(now()).toISOString() }),
+        meta: Object.assign({}, meta || {}, {
+          savedAt: new Date(now()).toISOString(),
+        }),
         state: state,
       };
       serialized = JSON.stringify(record);
       if (!isEnvelope(JSON.parse(serialized))) {
-        throw new TypeError('save envelope is not JSON-serializable');
+        throw new TypeError("save envelope is not JSON-serializable");
       }
       // Hash the JSON snapshot, after accessors/toJSON/undefined normalization.
       record = JSON.parse(serialized);
       record.checksum = checksum(record);
       serialized = JSON.stringify(record);
     } catch (error) {
-      return { ok: false, error: errorResult('serialize-failed', error) };
+      return { ok: false, error: errorResult("serialize-failed", error) };
     }
+    return { ok: true, record: record, data: serialized };
+  }
+
+  function write(slot, state, meta) {
+    var key = keyFor(slot);
+    var save = serialize(state, meta);
+    if (!save.ok) return save;
     try {
-      storage.setItem(key, serialized);
+      storage.setItem(key, save.data);
     } catch (error) {
-      return { ok: false, error: errorResult('storage-write-failed', error) };
+      return { ok: false, error: errorResult("storage-write-failed", error) };
     }
-    return { ok: true, record: record };
+    return { ok: true, record: save.record };
   }
 
   function read(slot) {
@@ -150,41 +178,41 @@ function createSaveStore(options) {
       raw = storage.getItem(key);
     } catch (error) {
       return {
-        status: 'unreadable',
+        status: "unreadable",
         slot: slot,
-        error: errorResult('storage-read-failed', error),
+        error: errorResult("storage-read-failed", error),
       };
     }
     if (raw === null) {
-      return { status: 'missing', slot: slot };
+      return { status: "missing", slot: slot };
     }
     var parsed;
     try {
       parsed = JSON.parse(raw);
     } catch (error) {
       return {
-        status: 'corrupt',
+        status: "corrupt",
         slot: slot,
         raw: raw,
-        error: errorResult('invalid-json', error),
+        error: errorResult("invalid-json", error),
       };
     }
     if (!isEnvelope(parsed)) {
       return {
-        status: 'corrupt',
+        status: "corrupt",
         slot: slot,
         raw: raw,
-        error: errorResult('invalid-envelope'),
+        error: errorResult("invalid-envelope"),
       };
     }
     var record = canonicalRecord(parsed);
     if (record.saveFormatVersion !== SAVE_FORMAT_VERSION) {
       return {
-        status: 'unsupported',
+        status: "unsupported",
         slot: slot,
         raw: raw,
         record: record,
-        error: errorResult('unsupported-save-format', null, {
+        error: errorResult("unsupported-save-format", null, {
           actual: record.saveFormatVersion,
           supported: SAVE_FORMAT_VERSION,
         }),
@@ -192,7 +220,7 @@ function createSaveStore(options) {
     }
     applyIntegrity(record);
     return {
-      status: 'ready',
+      status: "ready",
       slot: slot,
       raw: raw,
       record: record,
@@ -204,12 +232,18 @@ function createSaveStore(options) {
     var slots = [];
     for (var i = 0; i < storage.length; i++) {
       var key = storage.key(i);
-      if (typeof key === 'string' && key.indexOf(prefix) === 0 && key.length > prefix.length) {
+      if (
+        typeof key === "string" &&
+        key.indexOf(prefix) === 0 &&
+        key.length > prefix.length
+      ) {
         slots.push(key.slice(prefix.length));
       }
     }
     slots.sort();
-    return slots.map(read).filter(function(entry) { return entry.status !== 'missing'; });
+    return slots.map(read).filter(function (entry) {
+      return entry.status !== "missing";
+    });
   }
 
   function remove(slot) {
@@ -219,16 +253,16 @@ function createSaveStore(options) {
       storage.removeItem(key);
       return { ok: true, existed: existed };
     } catch (error) {
-      return { ok: false, error: errorResult('storage-remove-failed', error) };
+      return { ok: false, error: errorResult("storage-remove-failed", error) };
     }
   }
 
   function exportSave(slot) {
     var entry = read(slot);
-    if (entry.status === 'missing') {
-      return { ok: false, error: errorResult('missing-save') };
+    if (entry.status === "missing") {
+      return { ok: false, error: errorResult("missing-save") };
     }
-    if (entry.status === 'unreadable') {
+    if (entry.status === "unreadable") {
       return { ok: false, error: entry.error };
     }
     return { ok: true, data: entry.raw };
@@ -240,35 +274,36 @@ function createSaveStore(options) {
     try {
       parsed = JSON.parse(serialized);
     } catch (error) {
-      return { ok: false, error: errorResult('invalid-json', error) };
+      return { ok: false, error: errorResult("invalid-json", error) };
     }
     if (!isEnvelope(parsed)) {
-      return { ok: false, error: errorResult('invalid-envelope') };
+      return { ok: false, error: errorResult("invalid-envelope") };
     }
     var record = canonicalRecord(parsed);
     var canonical;
     try {
       canonical = JSON.stringify(record);
     } catch (error) {
-      return { ok: false, error: errorResult('serialize-failed', error) };
+      return { ok: false, error: errorResult("serialize-failed", error) };
     }
     try {
       storage.setItem(key, canonical);
     } catch (error) {
-      return { ok: false, error: errorResult('storage-write-failed', error) };
+      return { ok: false, error: errorResult("storage-write-failed", error) };
     }
     if (record.saveFormatVersion !== SAVE_FORMAT_VERSION) {
-      return { ok: true, status: 'unsupported', record: record };
+      return { ok: true, status: "unsupported", record: record };
     }
     return {
       ok: true,
-      status: 'ready',
+      status: "ready",
       record: record,
       compatibility: compatibilityBetween(record.gameVersion, gameVersion),
     };
   }
 
   return {
+    serialize: serialize,
     write: write,
     read: read,
     list: list,
