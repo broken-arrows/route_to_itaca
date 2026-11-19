@@ -176,6 +176,8 @@ Quietly and hoping it flies under the radar, we are now talking about fulfilling
 
 
 @change_cup
+# TODO: Author the CUP strategy-change choices. The existing choices only adjust the deadline.
+# TODO: Give CUP players their own faction effects on deadline changes. The shared choices currently update ERC factions.
 title: Let's revisit our own Roadmap
 subtitle: [? if roadmap_year = 0: We don't have any date goal for our roadmap, which is kind of expected of such a plan. We may want to set one up. ?]
 view-if: player_party = "cup" and not cup_in_jxsi and not cup_in_jxcat
@@ -259,7 +261,7 @@ subtitle: \[-1 resources\]
 choose-if: party_resources >= 1
 view-if: player_party = "cup"
 unavailable-subtitle: Not enough resources. 
-# TODO: Same as above but with CUP party relations
+# TODO: Implement the CUP player's relation-building choice for the selected party.
 
 @move_erc
 title: Discuss the Roadmap with ERC

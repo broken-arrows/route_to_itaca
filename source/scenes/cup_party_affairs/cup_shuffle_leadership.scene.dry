@@ -1,5 +1,7 @@
 title: Shuffle Leadership
 new-page: true
+# TODO: Make the CUP reshuffle cooldown tick and apply the advertised faction effects when appointing or dismissing advisors.
+# TODO: Make the CUP reshuffle available on Hard when the player belongs to a unity list.
 view-if: cup_shuffle_leadership_timer <= 0  and player_party = "cup" and difficulty > 0
 on-arrival: cup_shuffle_leadership_timer += 4; month_actions += 1 if difficulty > 0
 frequency: 100
@@ -176,6 +178,7 @@ Antonio Baños has been added as an advisor.
 title: Mireia Boya e Busquet
 choice-image: img/cup/mireiaboya.jpg
 subtitle: An ambientologist, she represents the Aranese-Occitan minority of Catalonia and leads fights on environmentalism, territorial defence, minority rights.
+# TODO: Use the same Mireia Boya advisor qualities in CUP appointment, dismissal and her pinned card.
 choose-if: mieria_boya_advisor = 0
 unavailable-subtitle: Already an advisor
 view-if: n_advisors < max_advisors and mieria_boya_advisor_available = 1

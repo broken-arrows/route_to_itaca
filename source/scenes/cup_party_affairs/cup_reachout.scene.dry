@@ -1,4 +1,5 @@
 title: Building bridges with Compromís
+# TODO: Design the wider CUP outreach card around the existing Compromís contact.
 new-page: true
 view-if: player_party = "cup" and not compromis_reached_out_ever and (not cup_reachout_timer or cup_reachout_timer <= 0)
 on-arrival: {!

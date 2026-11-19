@@ -178,7 +178,7 @@ choose-if: party_resources >= 1
 unavailable-subtitle: Not enough resources.
 go-to: erc_campaigning.local_election
 
-# TODO: text + cases for jxsi/jxcat going together in local elections, etc
+# TODO: Add local-election campaigning for CUP players in a unity list and handle whether the list runs locally.
 
 @congreso_election
 view-if: next_spanish_election_time - time <= 12 and (jxsi_in_congreso or jxcat_in_congreso)

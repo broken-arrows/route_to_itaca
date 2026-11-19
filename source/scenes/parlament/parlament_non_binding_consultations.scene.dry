@@ -107,6 +107,7 @@ on-arrival: {!
         if (!Q.countdowns.includes("constitutional_consultations")) Q.countdowns.push("constitutional_consultations");
         Q.constitutional_consultations_countdown = 2;
 
+        // TODO: Recognize CUP and ERC control of a unity-list presidency when scheduling the consultation question.
         if (Q.president_party != Q.player_party) {
             Q.consultation_pending = true;
             if (!Q.countdowns.includes("question_of_the_question")) Q.countdowns.push("question_of_the_question");

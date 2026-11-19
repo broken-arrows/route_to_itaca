@@ -3,6 +3,7 @@ subtitle: The non-binding consultation needs to ask a question, but which one?
 face-image: img/events/consultation_question.jpg
 new-page: true
 tags: event
+# TODO: Handle JxSí and JxCat presidencies in the scheduled consultation event. Use control of the presidency for the CUP player's wording and resource costs.
 view-if: congreso_decidir_trigger and question_of_the_question_trigger and (not consultation_happened) and (president_party == "ciu" or president_party == "cdc" or president_party == "erc" or president_party == "cup" or president_party == "dl" or president_party == "pdcat")
 max-visits: 1
 on-arrival: {!

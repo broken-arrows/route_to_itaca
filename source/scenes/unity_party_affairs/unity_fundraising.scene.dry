@@ -12,6 +12,7 @@ role: card-party
 Fact is, even as a part of a coalition as big as jxsi, we still needs resources to work. [? if party_income < 2: Right now, the vast majority of our funding comes from public subsidies, which are dependant on our electoral results. ?][? if party_income > 2: Despite a part of our funding still coming from public subsidies, our recent party affiliation rates hike means we are less dependant on those than what we used to be. ?] While we can tweak internal [+ player_party +] membership dues, changing public party subsidies is out of the table for as long as we're a part of the jxsi coalition.
 
 # TODO: jxcat equivalent where the union is more formalized and allows for actual increase in rates
+# TODO: Give the CUP player a way to adjust party dues under the unity list's funding rules.
 
 - @raise_rates_erc
 - @lower_rates_erc

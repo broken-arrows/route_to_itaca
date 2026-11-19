@@ -7,8 +7,7 @@ role: event
 
 @cup_roadmap
 new-page: true
-# TODO: non-erc case
-
+# TODO: proper CUP path for this
 
 
 @erc_roadmap

@@ -1,5 +1,6 @@
 title: Together for the Congreso?
 subtitle: ERC and JxCat must decide whether to extend their coalition to the Spanish election
+# TODO: Add a CUP branch for extending JxCat to Congreso once the campaign can continue after the CUP player joins JxCat.
 view-if: player_party == "erc" and jxcat_formed and erc_in_jxcat and not jxcat_in_congreso and next_spanish_election_time - time <= 6 and next_spanish_election_time - time >= 3
 tags: event
 new-page: true

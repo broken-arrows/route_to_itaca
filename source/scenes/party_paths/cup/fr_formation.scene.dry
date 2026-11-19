@@ -5,6 +5,8 @@ tags: event
 new-page: true
 max-visits: 1
 on-arrival: {!
+    // TODO: cup pov?
+
     Q.fr_formed = true;
     Q.spa_fr_active = true;
     G.spaSupportInject(Q, 'fr', 'catalunya', 1.0, 'ciu');

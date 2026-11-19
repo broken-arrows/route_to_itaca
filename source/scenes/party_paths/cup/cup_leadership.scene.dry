@@ -4,6 +4,8 @@ view-if: year > 2012 and cup_leadership_timer = 0 and player_party != "cup" and 
 tags: event
 new-page: true
 on-arrival: {!
+    // TODO: CUP POV
+
     Q.cup_leadership_timer = 10;
 
     Q.cup_poble_lliure_points = 0;

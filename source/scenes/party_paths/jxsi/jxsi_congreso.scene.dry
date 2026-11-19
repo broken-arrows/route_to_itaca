@@ -1,5 +1,6 @@
 title: Unity lists in the Congreso?
 subtitle: Maybe jxsi work out in the Spanish General election...
+# TODO: Decide whether a JxSí list containing CUP can extend to Congreso and how the CUP player participates in that decision.
 view-if: 1==0
 # view-if: jxsi_formed and not jxsi_dissolved and next_spanish_election_time - time <= 6
 tags: event
