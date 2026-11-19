@@ -786,6 +786,8 @@ go-to: budget_review
 new-page: true
 on-arrival: {!
     var proposal = Q.economy_budget_proposal;
+    var review = G.budgetCabinetReview(Q, proposal);
+    G.setText(Q, "economy_budget_cabinet_objections", G.budgetCabinetSummary(G, review.objections));
     var taxNames = [G.text("Very low"), G.text("Low"), G.text("Moderate"), G.text("High"), G.text("Very high")];
     var capNames = [G.text("Further austerity"), G.text("Maintain reduced services"),
         G.text("Restored, ordinary services"), G.text("Expanded services and improved pay"),
@@ -874,6 +876,8 @@ Projects:
 [? if economy_budget_digital: - Digital administrative continuity. ?]
 [? if economy_budget_universal: - Universal healthcare access. ?]
 [? if economy_budget_space: - Satellite communications programme. ?]
+
+[? if economy_budget_cabinet_objections: [+ economy_budget_cabinet_objections +]?]
 
 While this is our proposal, passing it through the Parlament may require some tweaks to gather enough support, but we'll cross that bridge once we get there.
 

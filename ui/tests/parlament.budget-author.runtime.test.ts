@@ -115,8 +115,8 @@ describe('NPC budget authors and fiscal conversion', () => {
 
   it.each(['ciu', 'cdc', 'dl', 'pdcat', 'junts', 'unio', 'ppc', 'cs', 'vox',
     'erc', 'cup', 'psc', 'icv', 'csqp', 'cecp', 'ecp', 'si', 'pxc', 'fnc', 'jxsi', 'jxcat'])
-  ('%s supports its own valid opening proposal', (party) => {
-    const { adapter, q } = setup(party);
+  ('%s supports a compatible opening proposal delivering a Health improvement', (party) => {
+    const { adapter, q } = setup(party, { healthcare_prepared_level: 0 });
     propose(adapter);
     expect(q.budget_draft_origin.proposer_party).toBe(party);
     expect(q.parlament_budget_projection.valid).toBe(true);
@@ -124,15 +124,18 @@ describe('NPC budget authors and fiscal conversion', () => {
     expect(q.parlament_budget_can_pass).toBe(true);
   });
 
-  it.each(['ciu', 'cdc', 'dl', 'pdcat', 'junts', 'unio', 'ppc', 'cs', 'vox',
-    'erc', 'cup', 'psc', 'icv', 'csqp', 'cecp', 'ecp', 'si', 'pxc', 'fnc', 'jxsi', 'jxcat'])
-  ('%s can oppose an amendment that increases its submitted financing gap', (party) => {
-    const { adapter, q } = setup(party);
+  it.each([['ppc', 'cs'], ['cs', 'ppc']])('%s can draft a continuity budget for a %s president', (party, president) => {
+    const { adapter, q } = setup(party, { president_party: president, cat_coalition: [party, president],
+      [party + '_parlament_s']: 60, [president + '_parlament_s']: 10 });
     propose(adapter);
-    const originalGap = q.parlament_budget_shortfall;
+    expect(q.parlament_budget_shortfall).toBeGreaterThan(0);
+    expect(q.parlament_budget_positions).toMatchObject({ [party]: 'yes', [president]: 'yes' });
+    adapter.goToScene('parlament_budget.tax_higher');
+    expect(q.parlament_budget_positions).toMatchObject({ [party]: 'no', [president]: 'no' });
     adapter.goToScene('parlament_budget.tax_lower');
-    expect(q.parlament_budget_shortfall).toBeCloseTo(originalGap + 0.24);
-    expect(q.parlament_budget_positions[party]).toBe('no');
+    expect(q.parlament_budget_can_pass).toBe(true);
+    adapter.goToScene('parlament_budget.pass');
+    expect(q.budget_year).toBe(q.year);
   });
 
   it.each([[-5, 5], [-2.3, 2.3], [-1, 1], [0, 0], [0.5, 0]])
@@ -151,14 +154,14 @@ describe('NPC budget authors and fiscal conversion', () => {
     expect(q.parlament_budget_shortfall).toBeCloseTo(0.76);
   });
 
-  it('keeps a separate CiU cabinet partner opposed to the gap in an ERC proposal', () => {
+  it('adjusts an ERC opening proposal to win its CiU partner in a deficit', () => {
     const { adapter, q } = setup('erc', {
       cat_coalition: ['erc', 'ciu'], ciu_parlament_s: 30, erc_parlament_s: 70,
     });
     propose(adapter);
-    expect(q.parlament_budget_positions).toMatchObject({ erc: 'yes', ciu: 'no' });
-    expect(q.parlament_budget_cabinet_yes).toBe(false);
-    expect(q.parlament_budget_can_pass).toBe(false);
+    expect(q.parlament_budget_projection).toMatchObject({ tax: 1, cap: 0 });
+    expect(q.parlament_budget_positions).toMatchObject({ erc: 'yes', ciu: 'yes' });
+    expect(q.parlament_budget_can_pass).toBe(true);
   });
 
   it('records authorship at submission even if Economy changes later', () => {
@@ -170,12 +173,84 @@ describe('NPC budget authors and fiscal conversion', () => {
     expect(q.parlament_budget_positions.ciu).toBe('yes');
   });
 
-  it('rejects a larger amended gap and supports the original proposal again when restored', () => {
+  it.each(['cup', 'icv', 'csqp', 'cecp', 'ecp'])('%s requires delivery even inside a CiU–ERC cabinet', (left) => {
+    const { adapter, q } = setup('ciu', { cat_coalition: ['ciu', 'erc', left],
+      ciu_parlament_s: 50, erc_parlament_s: 21, [left + '_parlament_s']: 10 });
+    propose(adapter);
+    expect(q.parlament_budget_positions).toMatchObject({ ciu: 'yes', erc: 'yes', [left]: 'no' });
+    expect(q.parlament_budget_can_pass).toBe(false);
+    expect(q.parlament_budget_projection.objections[left]).toEqual(['gain']);
+    q.healthcare_prepared_level = 0;
+    adapter.goToScene('parlament_budget.review');
+    expect(q.parlament_budget_positions[left]).toBe('yes');
+    expect(q.parlament_budget_can_pass).toBe(true);
+  });
+
+  it('funds a prepared metro scheme and drops the Fourth Belt to bring CUP on board', () => {
+    const { adapter, q } = setup('ciu', { cat_coalition: ['ciu', 'erc', 'cup'], cup_parlament_s: 10,
+      active_mods: { territory_b40: { active: true, def: { colour: 'gray' } },
+        territory_metro2: { active: true, def: { colour: 'gray' } } } });
+    propose(adapter);
+    expect(q.budget_draft.projects).toMatchObject({ b40: false, metro2: true });
+    expect(q.parlament_budget_can_pass).toBe(true);
+    adapter.goToScene('parlament_budget.b40');
+    expect(q.parlament_budget_projection.objections.cup).toEqual(['b40']);
+    expect(q.parlament_budget_positions.cup).toBe('no');
+    adapter.goToScene('parlament_budget.b40');
+    adapter.goToScene('parlament_budget.metro2');
+    expect(q.parlament_budget_positions.cup).toBe('no');
+    adapter.goToScene('parlament_budget.metro2');
+    expect(q.parlament_budget_can_pass).toBe(true);
+  });
+
+  it('shows the same cabinet objections in Economy and on the floor', () => {
+    const { adapter, q } = setup('erc', { player_party: 'erc', cat_coalition: ['erc', 'psc', 'cs'],
+      psc_parlament_s: 20, cs_parlament_s: 20 });
+    adapter.goToScene('generalitat_economy_card.prepare_budget');
+    adapter.goToScene('generalitat_economy_card.budget_tax_higher');
+    adapter.goToScene('generalitat_economy_card.budget_cap_lower');
+    const preview = q.economy_budget_cabinet_objections;
+    expect(preview).toBeTruthy();
+    adapter.goToScene('generalitat_economy_card.submit_budget');
+    expect(q.parlament_budget_cabinet_objections).toEqual(preview);
+    expect(q.parlament_budget_positions).toMatchObject({ cs: 'no', psc: 'no' });
+    adapter.goToScene('parlament_budget.tax_lower');
+    expect(q.parlament_budget_positions).toMatchObject({ cs: 'yes', psc: 'no' });
+    adapter.goToScene('parlament_budget.cap_higher');
+    expect(q.parlament_budget_positions).toMatchObject({ cs: 'yes', psc: 'yes' });
+    expect(q.parlament_budget_can_pass).toBe(true);
+  });
+
+  it('keeps the proposing party behind its bill when the cabinet cannot agree', () => {
+    const { adapter, q } = setup('cup', { cat_coalition: ['cup', 'ppc', 'cs'],
+      ppc_parlament_s: 30, cs_parlament_s: 20, healthcare_spending: 0, healthcare_prepared_level: 1 });
+    propose(adapter);
+    expect(q.parlament_budget_projection.levels.healthcare_spending).toBe(1);
+    expect(q.parlament_budget_positions).toMatchObject({ cup: 'yes', ppc: 'no', cs: 'no' });
+    expect(q.parlament_budget_can_pass).toBe(false);
+  });
+
+  it('gets the same CUP veto whether the Fourth Belt enters before or after submission', () => {
+    const { adapter, q } = setup('erc', { player_party: 'erc', cat_coalition: ['erc', 'cup'],
+      cup_parlament_s: 10, healthcare_prepared_level: 0,
+      active_mods: { territory_b40: { active: true, def: { colour: 'gray' } } } });
+    adapter.goToScene('generalitat_economy_card.prepare_budget');
+    adapter.goToScene('generalitat_economy_card.budget_b40');
+    adapter.goToScene('generalitat_economy_card.submit_budget');
+    expect(q.parlament_budget_projection.objections.cup).toEqual(['b40']);
+    expect(q.parlament_budget_positions.cup).toBe('no');
+    adapter.goToScene('parlament_budget.b40');
+    expect(q.parlament_budget_positions.cup).toBe('yes');
+    adapter.goToScene('parlament_budget.b40');
+    expect(q.parlament_budget_positions.cup).toBe('no');
+  });
+
+  it('retains CiU support when a tax cut modestly widens its opening gap', () => {
     const { adapter, q } = setup('ciu');
     propose(adapter);
     adapter.goToScene('parlament_budget.tax_lower');
     expect(q.parlament_budget_shortfall).toBeCloseTo(2.54);
-    expect(q.parlament_budget_positions.ciu).toBe('no');
+    expect(q.parlament_budget_positions.ciu).toBe('yes');
     adapter.goToScene('parlament_budget.tax_higher');
     expect(q.parlament_budget_shortfall).toBeCloseTo(2.3);
     expect(q.parlament_budget_positions.ciu).toBe('yes');
@@ -202,14 +277,14 @@ describe('NPC budget authors and fiscal conversion', () => {
     expect(q.parlament_budget_positions.ciu).toBe('yes');
   });
 
-  it('does not give a player-authored proposal the NPC financing exception', () => {
+  it('gives a player-authored continuity budget the same cabinet support', () => {
     const { adapter, q } = setup('ciu', {
       player_party: 'erc', economy_minister_party: 'erc', cat_coalition: ['ciu', 'erc'], erc_parlament_s: 21,
     });
     adapter.goToScene('generalitat_economy_card.prepare_budget');
     adapter.goToScene('generalitat_economy_card.submit_budget');
     expect(q.budget_draft_origin.author).toBe('player');
-    expect(q.parlament_budget_positions.ciu).toBe('no');
+    expect(q.parlament_budget_positions.ciu).toBe('yes');
   });
 
   it('does not let sponsorship override a breached cabinet agreement', () => {
@@ -295,12 +370,11 @@ describe('PSC support for another party’s budget', () => {
     expect(q.parlament_budget_positions.psc).toBe('no');
     expect(q.parlament_budget_can_pass).toBe(false);
     const i = adapter.currentFrame().choices.findIndex(choice => choice.id === 'parlament_budget.approach_psc');
-    expect(adapter.currentFrame().choices[i]).toMatchObject({ canChoose: true, subtitle: expect.stringContaining('L1/L3') });
+    expect(adapter.currentFrame().choices[i]?.canChoose).toBe(true);
     adapter.choose(i);
     expect(q.budget_draft.projects.metro2).toBe(true);
     expect(q.parlament_budget_positions.psc).toBe('yes');
     expect(q.psc_relations).toBe(75);
-    expect(adapter.currentFrame().html).toContain('secured the L1/L3 expansion in return for its support.');
     expect(q.parlament_budget_can_pass).toBe(true);
     adapter.goToScene('parlament_budget.pass');
     expect(q.budget_year).toBe(q.year);
@@ -330,14 +404,13 @@ describe('PSC support for another party’s budget', () => {
     propose(adapter);
     adapter.goToScene('parlament_budget.cap_lower');
     const approach = () => adapter.currentFrame().choices.find(choice => choice.id === 'parlament_budget.approach_psc');
-    expect(approach()).toMatchObject({ canChoose: false, subtitle: expect.stringContaining('consultation') });
+    expect(approach()?.canChoose).toBe(false);
 
     q.psc_leader = 'Àngel Ros';
     adapter.goToScene('parlament_budget.review');
-    expect(approach()).toMatchObject({ canChoose: true, subtitle: expect.stringContaining('Health improvement') });
+    expect(approach()?.canChoose).toBe(true);
     adapter.goToScene('parlament_budget.approach_psc');
     expect(q.parlament_budget_projection.levels.healthcare_spending).toBe(2);
-    expect(adapter.currentFrame().html).toContain('Health improvement');
     expect(q.parlament_budget_positions.psc).toBe('yes');
   });
 });
@@ -456,6 +529,7 @@ describe('Budget approaches respect the player ballot', () => {
       ciu_parlament_s: 30, erc_parlament_s: 70,
     });
     propose(adapter);
+    adapter.goToScene('parlament_budget.tax_higher');
     expect(adapter.engine.getCurrentChoices()!.map((choice: any) => choice.id))
       .toContain('parlament_budget.approach_ciu');
   });

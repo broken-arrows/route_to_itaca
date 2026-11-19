@@ -1,6 +1,10 @@
 (function () {
-  var tr = function (text, params) { return window.ClassicI18n ? window.ClassicI18n.text(text, params) : text; };
-  var tc = function (text, params) { return window.ClassicI18n ? window.ClassicI18n.content(text, params) : text; };
+  var tr = function (text, params) {
+    return window.ClassicI18n ? window.ClassicI18n.text(text, params) : text;
+  };
+  var tc = function (text, params) {
+    return window.ClassicI18n ? window.ClassicI18n.content(text, params) : text;
+  };
   var game;
   var ui;
 
@@ -35,7 +39,9 @@
     dendryUI.dendryEngine.setGameLib(window.RTI_GAME_LIB);
 
     if (window.ClassicI18n) {
-      window.classicLocaleReady = window.ClassicI18n.init(ui).then(function () { ui.dendryEngine.beginGame(); });
+      window.classicLocaleReady = window.ClassicI18n.init(ui).then(function () {
+        ui.dendryEngine.beginGame();
+      });
     }
     // I want these settings on by default, but the engine does not have a way to set them and I don't fancy touching that sht.
     if (!window.dendryUI.dendryEngine.touchedSettings) {
@@ -83,22 +89,37 @@
     save_element.style.display = "none";
   };
 
-  // TODO: REMOVE PLAYTEST GATE — delete this block, the Options reset above,
-  // and restore root.start's choose-if: url_valid. Storage is browser-only.
+  // TODO: REMOVE PLAYTEST GATE — delete this block, the Options reset above, and the gate in root.start
   var playtestKeys = "";
   window.classicPlaytestUnlocked = false;
-  try { window.classicPlaytestUnlocked = window.localStorage.getItem("rti:classic-playtest") === "1"; } catch (_) {}
+  try {
+    window.classicPlaytestUnlocked =
+      window.localStorage.getItem("rti:classic-playtest") === "1";
+  } catch (_) {}
   window.onkeydown = function (event) {
     var engine = window.dendryUI && window.dendryUI.dendryEngine;
-    if (!engine || engine.state.sceneId !== "root.start_menu" || document.getElementById("options").style.display !== "block") {
+    if (
+      !engine ||
+      engine.state.sceneId !== "root.start_menu" ||
+      document.getElementById("options").style.display !== "block"
+    ) {
       playtestKeys = "";
       return;
     }
-    if (event.ctrlKey || event.altKey || event.metaKey || event.repeat || event.key.length !== 1) return;
+    if (
+      event.ctrlKey ||
+      event.altKey ||
+      event.metaKey ||
+      event.repeat ||
+      event.key.length !== 1
+    )
+      return;
     playtestKeys = (playtestKeys + event.key.toLowerCase()).slice(-4);
     if (playtestKeys !== "test") return;
     window.classicPlaytestUnlocked = true;
-    try { window.localStorage.setItem("rti:classic-playtest", "1"); } catch (_) {}
+    try {
+      window.localStorage.setItem("rti:classic-playtest", "1");
+    } catch (_) {}
     window.hideOptions();
     window.dendryUI.removeChoices();
     engine.choiceCache = engine._compileChoices(engine.getCurrentScene());
@@ -403,7 +424,8 @@
   function syncMenuFooter() {
     var footer = document.getElementById("menu-footer");
     if (footer) {
-      footer.hidden = window.dendryUI.dendryEngine.state.sceneId !== "root.start_menu";
+      footer.hidden =
+        window.dendryUI.dendryEngine.state.sceneId !== "root.start_menu";
     }
   }
 
@@ -450,7 +472,9 @@
       engine._runActions(scene.onArrival);
       sidebarSnapshot = engine._captureDisplayContent(scene.content, true);
     }
-    var displayContent = sidebarSnapshot ? engine._renderSnapshot(sidebarSnapshot) : [];
+    var displayContent = sidebarSnapshot
+      ? engine._renderSnapshot(sidebarSnapshot)
+      : [];
     $("#qualities").append(dendryUI.contentToHTML.convert(displayContent));
     // Widget protocol host (out/html/widgets.js): scans for [data-widget]
     // and dispatches to the renderers above by name — replaces what used to
@@ -688,11 +712,15 @@
   window.dendryModifyUI = main;
   window.hideClassicTooltip = function () {
     hideTip();
-    document.querySelectorAll('.parliament-tooltip').forEach(function (tip) { tip.classList.remove('visible'); });
-    document.querySelectorAll('[data-achievement-title]').forEach(function (toast) {
-      var title = toast.querySelector('.achievement-title');
-      if (title) title.textContent = tc(toast.dataset.achievementTitle);
+    document.querySelectorAll(".parliament-tooltip").forEach(function (tip) {
+      tip.classList.remove("visible");
     });
+    document
+      .querySelectorAll("[data-achievement-title]")
+      .forEach(function (toast) {
+        var title = toast.querySelector(".achievement-title");
+        if (title) title.textContent = tc(toast.dataset.achievementTitle);
+      });
     updateLabel();
   };
   console.log("Modifying stats: see dendryUI.dendryEngine.state.qualities");
@@ -807,9 +835,10 @@
   }
 
   function renderCoalitionTipContent(details) {
-    const summaryText = window.RTI_GAME_LIB && window.RTI_GAME_LIB.localizeGovernmentSummary
-      ? window.RTI_GAME_LIB.localizeGovernmentSummary(details.summary, tc)
-      : details.summary;
+    const summaryText =
+      window.RTI_GAME_LIB && window.RTI_GAME_LIB.localizeGovernmentSummary
+        ? window.RTI_GAME_LIB.localizeGovernmentSummary(details.summary, tc)
+        : details.summary;
     const summary = summaryText
       ? `<span class='mytooltip-sub-text'>${summaryText}</span>`
       : "";

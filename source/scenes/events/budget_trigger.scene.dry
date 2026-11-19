@@ -85,6 +85,43 @@ on-arrival: {!
             if (margin >= 0) break;
         }
     }
+    // Start with Economy's preferred package. Offer a concession only if it wins a cabinet vote.
+    var preferred = {tax_policy_level:tax, social_spending_cap:cap, projects:projects};
+    function opponents(proposal) {
+        var objections = G.budgetCabinetReview(Q, proposal).objections;
+        return Object.keys(objections).filter(function (member) { return objections[member].length; });
+    }
+    var best = preferred;
+    var opposed = opponents(best);
+    if (opposed.length) {
+        var projectOptions = [projects];
+        var socialProjects = Object.assign({}, projects, {b40:false});
+        if (projects.b40) projectOptions.push(Object.assign({}, socialProjects));
+        if (!["metro1","metro2","rail1","rail2","tmobilitat2","water3","universal"].some(function (key) { return projects[key]; })) {
+            for (var option of [["metro1","territory_metro1"],["metro2","territory_metro2"],["rail1","territory_rail1"],
+                ["rail2","territory_rail2"],["tmobilitat2","territory_tmobilitat2"],["water3","territory_water3"]]) {
+                if (prepared(option[1])) { socialProjects[option[0]] = true; break; }
+            }
+        }
+        projectOptions.push(socialProjects);
+        var capLimit = Q.fla_escalated ? (Q.fla_severe ? -1 : 0) : 3;
+        var capOptions = [cap, Math.min(Q.social_spending_cap, capLimit), Math.min(capLimit, Q.social_spending_cap + 1)];
+        var taxOptions = [tax, Q.tax_policy_level, Math.min(1, Q.tax_policy_level + 2)];
+        for (var terms of projectOptions) for (var candidateCap of capOptions) for (var candidateTax of taxOptions) {
+            if (!opposed.length || Math.abs(candidateTax - Q.tax_policy_level) > 2 ||
+                candidateCap < Math.max(Q.education_spending, Q.healthcare_spending, Q.public_salary_level)) continue;
+            var alternative = {tax_policy_level:candidateTax, social_spending_cap:candidateCap, projects:terms};
+            var against = opponents(alternative);
+            if (!opposed.includes(party) && against.includes(party)) continue;
+            if (against.length < opposed.length || against.length == opposed.length && opposed.includes(party) && !against.includes(party)) {
+                best = alternative;
+                opposed = against;
+            }
+        }
+    }
+    tax = best.tax_policy_level;
+    cap = best.social_spending_cap;
+    projects = best.projects;
     Q.budget_draft_origin = {author:"npc", proposer_party:Q.economy_minister_party, proposer_policy_party:party,
         year:Q.year, tax_policy_level:tax, social_spending_cap:cap,
         enacted_tax_policy_level:Q.tax_policy_level, enacted_social_spending_cap:Q.social_spending_cap,
