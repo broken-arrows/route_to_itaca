@@ -857,3 +857,46 @@ describe('NPC initiative responses and enactment', () => {
     expect(protested.psc_parlament_barcelona_middle_support).toBeCloseTo(raw.psc_parlament_barcelona_middle_support);
   });
 });
+
+describe('NPC initiative framing for the player', () => {
+  function choiceTitle(frame: { choices: { id: string; title: string }[] }, name: string) {
+    return frame.choices.find(c => c.id === `${scene}.${name}`)?.title;
+  }
+
+  it('welcomes an initiative serving the player’s voters without removing protest or persuasion', () => {
+    const f = setup({ vicepresident_party: 'ciu', vp_digital_level: 0 });
+    const frame = propose(f, 'vp_digital_level', 1);
+    expect(f.q.npc_government_welcome).toBe(true);
+    expect(choiceTitle(frame, 'accept')).toBe('A welcome initiative');
+    expect(choiceTitle(frame, 'protest')).toBeDefined();
+    expect(choiceTitle(frame, 'stop')).toBeDefined();
+    const burdens = f.q.burdens_done;
+    answer(f, 'accept');
+    expect(f.q.vp_digital_level).toBe(1);
+    // The shared classification still credits governing burdens on enactment.
+    expect(f.q.burdens_done).toBe(burdens + 1);
+  });
+
+  it('keeps the reluctant wording for a cut', () => {
+    const f = setup();
+    const frame = propose(f, 'healthcare_spending', -2);
+    expect(f.q.npc_government_welcome).toBe(false);
+    expect(choiceTitle(frame, 'accept')).toBe('We can\'t but accept this new development');
+  });
+
+  it('only mentions our alternative when the tax budget came from it', () => {
+    const fixture = { cat_coalition: ['psc', 'erc'], president_party: 'psc', economy_minister_party: 'psc',
+      health_minister_party: 'psc', psc_ideology: 'Centrist Social Democracy, Federalism', psc_relations: 60,
+      generalitat_surplus: -2.5, budget_year: 2012, budget_year_attempted: 2012, tax_policy_level: 0 };
+    const accepted = setup(fixture);
+    propose(accepted, 'tax_policy_level', 1);
+    answer(accepted, 'accept');
+    expect(accepted.q.npc_government_outcome).toContain('has submitted a regional-tax proposal');
+    expect(accepted.q.npc_government_outcome).not.toContain('alternative');
+    vi.restoreAllMocks();
+    const redirected = setup(fixture);
+    propose(redirected, 'healthcare_spending', -2);
+    answer(redirected, 'alternative');
+    expect(redirected.q.npc_government_outcome).toContain('Following our alternative proposal');
+  });
+});

@@ -27,7 +27,6 @@ on-arrival: {!
         Q.last_advisor_action = 1;
         Q.advisor_action_timer = 6;
         if (Q.difficulty >= 0) Q.month_actions += 1;
-        Q.erc_media_timer = 6;
     }
 !}
 go-to: erc_media.unofficial if erc_advisor_action and (not erc_bside_pending); root if not erc_advisor_action
@@ -43,7 +42,6 @@ on-arrival: {!
         Q.last_advisor_action = 1;
         Q.advisor_action_timer = 6;
         if (Q.difficulty >= 0) Q.month_actions += 1;
-        Q.erc_media_timer = 6;
     }
 !}
 go-to: erc_media.campaign if erc_advisor_action; root if not erc_advisor_action
@@ -59,7 +57,6 @@ on-arrival: {!
         Q.last_advisor_action = 1;
         Q.advisor_action_timer = 6;
         if (Q.difficulty >= 0) Q.month_actions += 1;
-        Q.erc_media_timer = 6;
     }
 !}
 go-to: erc_media.social_media_2 if erc_advisor_action and social_media = 1; erc_media.social_media_3 if erc_advisor_action and social_media = 2 and year >= 2015; erc_media.social_media_4 if erc_advisor_action and social_media >= 3 and year >= 2016; root if not erc_advisor_action

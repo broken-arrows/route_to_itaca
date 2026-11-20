@@ -26,7 +26,7 @@ go-to: fallback if npc_government_initiative == null
 - @stop
 
 @accept
-title: [? if npc_government_can_influence: We can't but accept this new development?][? if not npc_government_can_influence: [+ npc_government_party +] proceeds with their plans?]
+title: [? if npc_government_welcome: A welcome initiative!?][? if not npc_government_welcome and npc_government_can_influence: We can't but accept this new development?][? if not npc_government_welcome and not npc_government_can_influence: [+ npc_government_party +] proceeds with their plans?]
 on-arrival: npc_government_response = "accept"
 go-to: resolve
 
@@ -366,6 +366,15 @@ on-arrival: {!
     Q.npc_government_can_protest = false;
     Q.npc_government_stop_cost = 2;
     Q.npc_government_is_cut = !!initiative && initiative.kind == "cut";
+    // Initiatives serving the player's voters: welcomed in the event and credited towards governing burdens.
+    function servesVoters(initiative) {
+        var field = initiative.field, next = initiative.to;
+        return initiative.profile == "services" && next > initiative.from || initiative.kind == "access" || initiative.kind == "inspection" ||
+            initiative.kind == "sexual" || initiative.kind == "digital" || initiative.kind == "atc" || initiative.kind == "icf" || initiative.kind == "curriculum" ||
+            field == "territory_renewables" || field == "territory_water" || field == "territory_tmobilitat" ||
+            field == "bnl_tourism_level" && next < initiative.from;
+    }
+    Q.npc_government_welcome = !!initiative && servesVoters(initiative);
     Q.npc_government_breaks_agreement = !!initiative && (Q.coalition_policy_commitments || []).some(function (record) {
         return !["retired", "penalized"].includes(record.status) && record.kind == initiative.field &&
             Number.isFinite(record.target) && initiative.to < initiative.from && initiative.to < record.target;
@@ -480,7 +489,9 @@ on-arrival: {!
                     initiative_protest_party:response == "protest" ? Q.player_party : null};
                 Q.budget_draft = {tax_policy_level:tax, social_spending_cap:cap, projects:projects};
                 Q.npc_government_budget_pending = true;
-                G.setText(Q, "npc_government_outcome", G.text("Following our alternative proposal, {party} has submitted a regional-tax proposal for the coming annual budget. We'll have to see if it passes, though.", {
+                G.setText(Q, "npc_government_outcome", response == "alternative" ? G.text("Following our alternative proposal, {party} has submitted a regional-tax proposal for the coming annual budget. We'll have to see if it passes, though.", {
+                    party: G.nameText("party", responseParty)
+                }) : G.text("{party} has submitted a regional-tax proposal for the coming annual budget. We'll have to see if it passes, though.", {
                     party: G.nameText("party", responseParty)
                 }));
             } else if (initiative.kind == "space") {
@@ -540,10 +551,7 @@ on-arrival: {!
                 if (field == "territory_renewables") Q.climate_transition_points = (Q.climate_transition_points || 0) + 1;
                 // Burdens concern the player's voters, independently of signed agreements.
                 var inCabinet = controlled.some(function (party) { return cabinet.includes(party); });
-                var protective = initiative.profile == "services" && next > initiative.from || initiative.kind == "access" || initiative.kind == "inspection" ||
-                    initiative.kind == "sexual" || initiative.kind == "digital" || initiative.kind == "atc" || initiative.kind == "icf" || initiative.kind == "curriculum" ||
-                    field == "territory_renewables" || field == "territory_water" || field == "territory_tmobilitat" ||
-                    field == "bnl_tourism_level" && next < initiative.from;
+                var protective = servesVoters(initiative);
                 if (inCabinet && protective && (Q.burdens_start_countdown > 0 || Q.burdens_start_trigger || Q.burdens_goal > 0 && Q.burdens_time > 0)) Q.burdens_done += 1;
                 if (inCabinet && (initiative.kind == "cut" || field == "bnl_tourism_level" && next > initiative.from && (initiative.from < 0 || Q.player_party == "cup") ||
                     field == "bnl_union_level" && next < initiative.from && (initiative.from > 0 || Q.player_party == "cup") ||

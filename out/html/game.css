@@ -714,7 +714,9 @@ blockquote + blockquote.attribution {
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 2;
+  /* Above every positioned in-content widget layer (coalition/vote majority
+     lines, map legends, poll overlays), below tooltips (1000) and toasts. */
+  z-index: 900;
   overflow-y: auto;
 }
 
