@@ -1208,11 +1208,14 @@ if (Q.territory_rail2_trigger) {
 
 if (!Q.hidden_right_consolidation && (Q.year == 2019 && Q.month == 10)) {
     Q.hidden_right_consolidation = true;
-    // TODO: un-hardcode this? how? via condition of cs giving too much to the pp??
-    G.spaSupportInject(Q, 'vox', 'all', 3.5, 'cs');
-    G.spaSupportInject(Q, 'vox', 'all', 2.0, 'abstain');
-    G.spaSupportInject(Q, 'pp',  'all', 8.0, 'cs');
-    G.spaSupportInject(Q, 'pp',  'all', 3.0, 'abstain');
+    var conflict = Math.max(0, Math.min(1, (50 - (Number(Q.cat_spa_relations) || 0)) / 45));
+    var pressure = (0.5 + 0.5 * conflict) * (['pp', 'cs', 'vox'].includes(Q.spanish_pm_party) ? 0.75 : 1);
+    for (var c of Q.congreso_constituencies) {
+        var cs = Number(Q['cs_congreso_' + c + '_support']) || 0;
+        if (cs <= 0) continue;
+        G.spaSupportInject(Q, 'vox', c, cs * 0.31 * pressure, 'cs');
+        G.spaSupportInject(Q, 'pp', c, cs * (0.59 - 0.31 * pressure), 'cs');
+    }
 }
 if (!Q.hidden_cc_surge && ((Q.year == 2019 && Q.month == 2) || (Q.social_dissent > 90))) {
     // TBD: More/different options to trigger this?
@@ -1226,8 +1229,16 @@ if (!Q.hidden_prc_surge && ((Q.year == 2019 && Q.month == 2) || (Q.year > 2015 &
 if ((!Q.hidden_vox_surge) && (Q.year == 2019 || (Q.year >= 2017 && Q.next_spanish_election_time - Q.time <= 6))) {
     Q.hidden_vox_surge = true;
     Q.vox_active = true;
-    G.spaSupportInject(Q, 'vox', 'all', 4.0, 'pp');
-    G.spaSupportInject(Q, 'vox', 'all', 0.5, 'cs');
+    var conflict = Math.max(0, Math.min(1, (50 - (Number(Q.cat_spa_relations) || 0)) / 45));
+    var pressure = (0.5 + 0.5 * conflict) * (['pp', 'cs', 'vox'].includes(Q.spanish_pm_party) ? 0.75 : 1);
+    G.spaSupportInject(Q, 'vox', 'all', 3.0 * pressure, 'pp');
+    G.spaSupportInject(Q, 'vox', 'all', 0.5 * pressure, 'cs');
+    var lead = Math.max(0.3, Math.min(1, Number(Q.psoe_leadership_mult) || 0.8));
+    var mobilization = Math.min(1.5, (Number(Q.vox_congreso_rest_support) || 0) / 7.4) * lead;
+    if (mobilization > 0) {
+        G.spaSupportInject(Q, 'psoe', 'all', 2.5 * mobilization, 'abstain');
+        G.spaSupportInject(Q, 'psoe', 'all', 1.0 * mobilization, 'podemos');
+    }
 }
 if ((!Q.hidden_bng_surge) && (Q.year == 2019)) {
     Q.hidden_bng_surge = true;  

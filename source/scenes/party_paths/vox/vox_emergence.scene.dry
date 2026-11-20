@@ -6,10 +6,12 @@ face-image: img/events/vox_surge.jpg
 max-visits: 1
 on-arrival: {!
     Q.vox_active = true;
+    var conflict = Math.max(0, Math.min(1, (50 - (Number(Q.cat_spa_relations) || 0)) / 45));
+    var pressure = (0.5 + 0.5 * conflict) * (['pp', 'cs', 'vox'].includes(Q.spanish_pm_party) ? 0.75 : 1);
     for (var c of Q.congreso_constituencies) {
         if (c === 'navarra') continue; // Navarra right runs via PP/UPN/NSuma dynamics
         var pp = Q['pp_congreso_' + c + '_support'] || 0;
-        var drain = Math.min(8.0, pp * 0.22);
+        var drain = Math.min(5.5, pp * 0.15) * pressure;
         Q['pp_congreso_' + c + '_support'] = pp - drain;
         Q['vox_congreso_' + c + '_support'] = (Q['vox_congreso_' + c + '_support'] || 0) + drain;
     }

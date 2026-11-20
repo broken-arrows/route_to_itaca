@@ -1,10 +1,11 @@
 title: Return card to hand
-view-if: difficulty <= 0 and not last_advisor_action
+view-if: {! var card = this.state.lastPlayedCard, at = this.state.sceneId || ''; return Q.difficulty <= 0 && !Q.last_advisor_action && !!card && (at === card.id || at.indexOf(card.id + '.') === 0); !}
 go-to: root
 on-arrival: {!
-Q.month_actions -= 1;
     // return card to hand
     var card = this.state.lastPlayedCard;
+    if (card) {
+    Q.month_actions -= 1;
     card.image = card.cardImage;
     if (Q.difficulty == 0) {
         this.state.currentHands['main'].push(card);
@@ -33,5 +34,6 @@ Q.month_actions -= 1;
     // reduce visit count
     if (this.state.visits[card.id]) {
         this.state.visits[card.id] -= 1;
+    }
     }
 !}

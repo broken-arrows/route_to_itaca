@@ -23,7 +23,7 @@ on-arrival: {!
     console.error("Page loaded from unexpected origin:", window.location.href);
   }
 
-  Q.url_valid = local_file || valid_url || window.classicPlaytestUnlocked; // TODO: remove the playtest unlock path
+  Q.url_valid = local_file || valid_url || window.classicPlaytestUnlocked === true; // TODO: remove the playtest unlock path
 
   Q.debug = local_file; // Playing the game locally means debug becomes available. TBD: Change?
 

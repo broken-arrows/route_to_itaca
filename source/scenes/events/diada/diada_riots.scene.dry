@@ -25,8 +25,8 @@ go-to: resolve
 @protest
 title: Side with the protesters!
 subtitle: We'll use our platform to defend them and denounce police brutality.
-choose-if: not broken_roadmap and not ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob))
-unavailable-subtitle: [? if broken_roadmap: Our credibility is at a low point as our promises regarding independence have gone unfulfilled. ?][? if (player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob): We are part of the government! ?]
+choose-if: not broken_roadmap and not burdens_broken and not ((player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob))
+unavailable-subtitle: [? if broken_roadmap: Our credibility is at a low point as our promises regarding independence have gone unfulfilled. ?][? if burdens_broken: Having broken our social commitments in government, we can hardly speak for the protesters. ?][? if (player_party = "erc" and erc_in_gob) or (player_party = "cup" and cup_in_gob) or (player_in_jxsi and jxsi_in_gob) or (player_in_jxcat and jxcat_in_gob): We are part of the government! ?]
 on-arrival: diada_riots_response = "protest"
 go-to: resolve
 

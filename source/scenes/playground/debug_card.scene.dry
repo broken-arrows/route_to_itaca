@@ -280,7 +280,7 @@ Injected parlament 2012 situation!
 @cat_2015
 title: Parlament 2015 election
 subtitle: Only affects parlament party supports and related variables
-call: election_simulation.2015_5
+call: election_simulation.2015_9
 
 Injected parlament 2015 situation!
 

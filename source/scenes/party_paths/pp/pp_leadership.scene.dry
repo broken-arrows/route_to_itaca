@@ -5,7 +5,7 @@ new-page: true
 face-image: img/events/rajoy_end.jpg
 max-visits: 1
 on-arrival: {!
-    Q.pp_party_congress_gob_alone = Q.spanish_coalition.includes("pp") && Q.spanish_coaltion.length == 1;
+    Q.pp_party_congress_gob_alone = Q.spanish_coalition.includes("pp") && Q.spanish_coalition.length == 1;
 
     Q.pp_party_congress_casado = false;
     if ((!Q.spanish_coalition.includes("pp")) || (Q.pp_congreso_rest_support < (Q.cs_congreso_rest_support + Q.vox_congreso_rest_support))) {
