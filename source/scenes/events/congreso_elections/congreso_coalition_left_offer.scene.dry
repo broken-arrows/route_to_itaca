@@ -123,7 +123,8 @@ title: The negotiations fall apart
 subtitle: The PSOE and [? if iu_in_up: Unidas Podemos?][? if not iu_in_up: Podemos ?] are, after all, too apart at the moment...
 on-arrival: {!
     Q.congreso_left_offer_pending = false;
-    if (Q.congreso_left_gamble_offered) Q.congreso_left_gamble_tried = true;
+    // Walking away only gives the gamble up when a move was actually open.
+    if (Q.congreso_left_gamble_offered && Q.congreso_left_gamble_choosable) Q.congreso_left_gamble_tried = true;
 !}
 go-to: congreso_coalition_barons if congreso_coalition_barons_flag = 1; congreso_coalition if congreso_coalition_barons_flag != 1
 

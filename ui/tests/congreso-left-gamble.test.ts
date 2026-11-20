@@ -57,6 +57,11 @@ function choose(adapter: DendryAdapter, frame: Frame, id: string) {
   if (index < 0) throw new Error(`${id} not choosable; have ${JSON.stringify(frame.choices.map((c) => [c.id, c.canChoose]))}`);
   return adapter.choose(index);
 }
+// The offer page itself, which is listed whenever the gamble is on offer.
+function offerPage(overrides: Record<string, unknown>) {
+  const run = enter(overrides);
+  return { ...run, offer: choose(run.adapter, run.frame, 'congreso_coalition.left_gamble') };
+}
 function gamble(overrides: Record<string, unknown>) {
   const run = enter(overrides);
   const offer = choose(run.adapter, run.frame, 'congreso_coalition.left_gamble');
@@ -89,9 +94,13 @@ describe('Congreso left gamble', () => {
 
     expect(gamble({ ...base, psc_relations: psc - 1 }).q.congreso_left_agreement).toBeFalsy();
     expect(gamble({ ...base, cecp_relations: ally - 1 }).q.congreso_left_agreement).toBeFalsy();
-    // Without a choosable gamble the deadlock goes straight to the revolt.
-    expect(enter({ ...base, erc_roadmap: roadmap + 1 }).frame.sceneId).toBe('congreso_coalition_barons');
-    expect(enter({ ...base, party_resources: cost - 1 }).frame.sceneId).toBe('congreso_coalition_barons');
+    // Out of terms, the gamble is still listed but the ERC vote inside it is disabled.
+    const roadmapOffer = offerPage({ ...base, erc_roadmap: roadmap + 1 }).offer;
+    expect(choice(roadmapOffer, 'congreso_coalition_left_offer.erc_votes')?.canChoose).toBe(false);
+    expect(choice(roadmapOffer, 'congreso_coalition_left_offer.erc_votes')?.subtitle).toMatch(/roadmap/i);
+    const broke = offerPage({ ...base, party_resources: cost - 1 }).offer;
+    expect(choice(broke, 'congreso_coalition_left_offer.erc_votes')?.canChoose).toBe(false);
+    expect(choice(broke, 'congreso_coalition_left_offer.erc_votes')?.subtitle).toMatch(/Not enough resources/);
   });
 
   it('charges the betrayal on success, more heavily with strong civic ties', () => {
@@ -111,11 +120,35 @@ describe('Congreso left gamble', () => {
   it('lets an ERC inside JxSí only for the Parlament gamble', () => {
     const { q } = gamble({ ...barons, erc_in_jxsi: true, jxsi_in_congreso: false });
     expect(q.congreso_left_agreement?.kind).toBe('erc');
-    expect(enter({ ...barons, erc_in_jxsi: true, jxsi_in_congreso: true }).frame.sceneId).toBe('congreso_coalition_barons');
+    const { offer } = offerPage({ ...barons, erc_in_jxsi: true, jxsi_in_congreso: true });
+    expect(choice(offer, 'congreso_coalition_left_offer.erc_votes')?.canChoose).toBe(false);
+    expect(choice(offer, 'congreso_coalition_left_offer.erc_votes')?.subtitle).toMatch(/joint Congreso list/);
   });
 
-  it("sends a CUP player without the Compromís route straight to the revolt", () => {
-    expect(enter({ ...barons, player_party: 'cup' }).frame.sceneId).toBe('congreso_coalition_barons');
+  it('lists the gamble for a CUP player without the Compromís route, with nothing open inside', () => {
+    const { adapter, q, offer } = offerPage({ ...barons, player_party: 'cup' });
+    expect(choice(offer, 'congreso_coalition_left_offer.erc_votes')).toBeUndefined();
+    expect(choice(offer, 'congreso_coalition_left_offer.compromis')?.canChoose).toBe(false);
+    expect(choice(offer, 'congreso_coalition_left_offer.compromis')?.subtitle).toMatch(/necessary contacts/);
+    expect(choose(adapter, offer, 'congreso_coalition_left_offer.failure').sceneId).toBe('congreso_coalition_barons');
+    expect(q.party_resources).toBe(2);
+  });
+
+  it('keeps the gamble from players with no move inside it', () => {
+    const { frame } = enter({ ...barons, player_party: 'ciu' });
+    expect(choice(frame, 'congreso_coalition.left_gamble')).toBeUndefined();
+    expect(choice(frame, 'congreso_coalition_progressive.progressive')).toBeDefined();
+  });
+
+  it('keeps an unaffordable December 2015 gamble on offer after walking away', () => {
+    // As in a real save: ERC is one resource short and the PSC is cool.
+    const { adapter, q, offer } = offerPage({ ...december2015, party_resources: 1, psc_relations: 51 });
+    expect(choice(offer, 'congreso_coalition_left_offer.erc_votes')?.canChoose).toBe(false);
+    expect(choice(offer, 'congreso_coalition_left_offer.compromis')?.canChoose).toBe(false);
+    const list = choose(adapter, offer, 'congreso_coalition_left_offer.failure');
+    expect(q.congreso_left_gamble_tried).toBeFalsy();
+    expect(choice(list, 'congreso_coalition.left_gamble')?.canChoose).toBe(true);
+    expect(choice(list, 'congreso_coalition_psoe_cs.wtf')?.canChoose).toBe(true);
   });
 
   // PSOE + Podemos clear investiture without any Catalan or Basque party.
@@ -132,8 +165,12 @@ describe('Congreso left gamble', () => {
 
   it('holds the Compromís route to the difficulty terms', () => {
     const hard = { ...mediation, difficulty: 1, party_resources: 3, cecp_relations: 65 };
-    expect(enter({ ...hard, psc_relations: 74 }).frame.sceneId).toBe('congreso_coalition_barons');
-    expect(enter({ ...hard, psc_relations: 75, party_resources: 2 }).frame.sceneId).toBe('congreso_coalition_barons');
+    const cool = offerPage({ ...hard, psc_relations: 74 }).offer;
+    expect(choice(cool, 'congreso_coalition_left_offer.compromis')?.canChoose).toBe(false);
+    expect(choice(cool, 'congreso_coalition_left_offer.compromis')?.subtitle).toMatch(/PSC.*not good enough/);
+    const broke = offerPage({ ...hard, psc_relations: 75, party_resources: 2 }).offer;
+    expect(choice(broke, 'congreso_coalition_left_offer.compromis')?.canChoose).toBe(false);
+    expect(choice(broke, 'congreso_coalition_left_offer.compromis')?.subtitle).toMatch(/Not enough resources/);
     const { adapter, q, frame } = enter({ ...hard, psc_relations: 75 });
     choose(adapter, choose(adapter, frame, 'congreso_coalition.left_gamble'), 'congreso_coalition_left_offer.compromis');
     expect(q.party_resources).toBe(0);

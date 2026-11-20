@@ -490,12 +490,13 @@ on-arrival: {!
     }
 
     // ── Left gamble: back a Sánchez-led government with Podemos ──────────────
-    // Offered once per game - Compromis' attempted mediation to avoid a deadlock
+    // Offered once per game - Compromis' attempted mediation to avoid a deadlock.
     Q.compromis_reached_out_ever = !!(Q.compromis_reached_out_ever
         || this.state.visits['erc_reachout.compromis_reach'] || this.state.visits['erc_reachout.campaign_compromis']);
     Q.congreso_left_gamble_offered = (Q.congreso_coalition_psoe_cs_wtf || Q.congreso_coalition_barons_flag == 1)
         && !Q.congreso_coalition_majority_reach && psoeLeadsLeft && leftSeats > 0
-        && Q.psoe_leader == "Pedro Sánchez" && !Q.psoe_barons_revolted && !Q.congreso_left_gamble_tried;
+        && Q.psoe_leader == "Pedro Sánchez" && !Q.psoe_barons_revolted && !Q.congreso_left_gamble_tried
+        && (Q.player_party == 'erc' || Q.player_party == 'cup');
     if (Q.congreso_left_gamble_offered) {
         var passesOffer = function (members) {
             var yes = 0, abstain = 0;
@@ -685,7 +686,7 @@ on-arrival: {!
         ]
     };
 !}
-go-to: coalition_list if congreso_coalition_barons_flag != 1 or congreso_left_gamble_choosable; congreso_coalition_barons if congreso_coalition_barons_flag = 1 and not congreso_left_gamble_choosable
+go-to: coalition_list
 
 = Coalitions and Negotiations
 
@@ -724,7 +725,7 @@ go-to: congreso_coalition_barons
 @left_gamble
 title: <span class="gobierno-coalition" data-parties="psoe [+ congreso_left_carrier +]" data-summary="[? if psoe_congreso_s + congreso_left_carrier_s >= congreso_s_majority: Majority government?][? if psoe_congreso_s + congreso_left_carrier_s < congreso_s_majority: Minority government?] - [+ psoe_congreso_s + congreso_left_carrier_s +]/[+ congreso_s_majority +]"><span style="color: var(--psoe); font-style: italic;">Progressist</span> <span style="color: var(--up); font-style: italic;">Coalition</span></span> (PSOE - [? if congreso_left_carrier == "up": UP?][?if congreso_left_carrier != "up": [+ congreso_left_carrier +]?])
 subtitle: Not all within the PSOE are convinced by such a pact. We'll need to thread carefully. 
-view-if: congreso_left_gamble_choosable
+view-if: congreso_left_gamble_offered
 go-to: congreso_coalition_left_offer
 
 @new_congreso_elections
