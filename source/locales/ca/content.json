@@ -4990,7 +4990,7 @@
   "<span style='color: var(--jxcat); font-style: italic;'>sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span>": "<span style='color: var(--erc); font-style: italic;'>Govern</span> <span style='color: var(--jxcat); font-style: italic;'>Sobiranista</span>",
   "Mariano Rajoy will lead a PP {government} with the support of csspa, CC-PNC, and the toleration of a broken PSOE.": "Mariano Rajoy presidirà un {government} del PP amb el suport de csspa, i CC-PNC, tolerat per un trencadíssim PSOE.",
   "<span style='color: #1d84ce;'>minority government</span>": "<span style='color: #1d84ce;'>Govern en minoria</span>",
-  "Pedro Sánchez will lead a {government} (PSOE-UP) with the support of EAJ-PNV, Más País, BNG, CC-PNC, texiste and the toleration of ERC and EH Bildu. ": "Pedro Sánchez presidirà un {government} (PSOE-UP) amb el suport de EAJ-PNV, Más País, BNG, CC-PNC, i texiste; tolerat per ERC i EH Bildu. ",
+  "Pedro Sánchez will lead a {government} (PSOE-UP) with the support of EAJ-PNV, Más País, BNG, texiste and the toleration of ERC and EH Bildu. ": "Pedro Sánchez presidirà un {government} (PSOE-UP) amb el suport de EAJ-PNV, Más País, BNG i texiste; tolerat per ERC i EH Bildu. ",
   "<span style='color: #da291c; font-weight: bold;'>progressist</span> <span style='color: #5a205a; font-weight: bold;'>government</span>": "<span style='color: #da291c; font-weight: bold;'>Govern</span> <span style='color: #5a205a; font-weight: bold;'>Progressista</span>",
   "New!": "Nou!",
   "{party} minority Government": "Govern en minoria - {party}",
@@ -5852,5 +5852,6 @@
   "A welcome initiative!": null,
   "jxsi has become too party-centric, rather than a civic list, for the CUP to accept. ": null,
   "The factions in our party are too divided to agree to join jxsi. ": null,
-  "We don't have good enough relations with {clause1}{clause2}{clause3}. ": null
+  "We don't have good enough relations with {clause1}{clause2}{clause3}. ": null,
+  "How did we get here???": null
 }

@@ -2743,7 +2743,10 @@ Q.congreso_s_majority = Math.floor(congreso_size/2) + 1;
 
 console.log("Total seats: " + congreso_size + ", majority: " + Q.congreso_s_majority);
 
-if (Q.pdcat_congreso_showviz) {
+var simDate = Q.election_simulation_date[0] * 100 + Q.election_simulation_date[1];
+Q.election_simulation_congreso_outcome = ({201512: 1, 201606: 2, 201904: 3, 201911: 4})[simDate] || 0;
+
+if (Q.election_simulation_congreso_outcome == 2) {
     G.setText(Q, "election_simulation_pp_formation", "Mariano Rajoy will lead a PP {government} with the support of csspa, CC-PNC, and the toleration of a broken PSOE.", {
         government: G.governmentTooltipText("gobierno", ["pp"],
             G.text("Minority government - {seats}/{majority}", {
@@ -2753,8 +2756,8 @@ if (Q.pdcat_congreso_showviz) {
     });
 }
 
-if (Q.jxcat_congreso_showviz && !Q.fr_congreso_showviz) {
-    G.setText(Q, "election_simulation_psoe_up_formation", "Pedro Sánchez will lead a {government} (PSOE-UP) with the support of EAJ-PNV, Más País, BNG, CC-PNC, texiste and the toleration of ERC and EH Bildu. ", {
+if (Q.election_simulation_congreso_outcome == 4) {
+    G.setText(Q, "election_simulation_psoe_up_formation", "Pedro Sánchez will lead a {government} (PSOE-UP) with the support of EAJ-PNV, Más País, BNG, texiste and the toleration of ERC and EH Bildu. ", {
         government: G.governmentTooltipText("gobierno", ["psoe","up"],
             G.text("Minority government - {seats}/{majority}", {
                 seats: Q.psoe_congreso_s + Q.up_congreso_s, majority: Q.congreso_s_majority
@@ -3074,12 +3077,12 @@ Author's note: Congreso election simulations are more imperfect than Parlament o
 
 **Government Formation**
 
-[? if dl_congreso_showviz: No candidacy has been able to secure enough support to form a new government. New elections will happen in **June 2016**. ?]
-[? if pdcat_congreso_showviz: [+ election_simulation_pp_formation +]?]
-[? if jxcat_congreso_showviz and fr_congreso_showviz: No candidacy has been able to secure enough support to form a new government. New elections will happen in **November 2019**. ?]
-[? if jxcat_congreso_showviz and not fr_congreso_showviz: [+ election_simulation_psoe_up_formation +]?]
+[? if election_simulation_congreso_outcome = 1: No candidacy has been able to secure enough support to form a new government. New elections will happen in **June 2016**. ?]
+[? if election_simulation_congreso_outcome = 2: [+ election_simulation_pp_formation +]?]
+[? if election_simulation_congreso_outcome = 3: No candidacy has been able to secure enough support to form a new government. New elections will happen in **November 2019**. ?]
+[? if election_simulation_congreso_outcome = 4: [+ election_simulation_psoe_up_formation +]?]
 
-[? if not (dl_congreso_showviz or pdcat_congreso_showviz or jxcat_congreso_showviz): How did we get here??? ?]
+[? if election_simulation_congreso_outcome = 0: How did we get here??? ?]
 
 - @election_simulation: Reset simulation
 

@@ -867,7 +867,7 @@ describe('NPC initiative framing for the player', () => {
     const f = setup({ vicepresident_party: 'ciu', vp_digital_level: 0 });
     const frame = propose(f, 'vp_digital_level', 1);
     expect(f.q.npc_government_welcome).toBe(true);
-    expect(choiceTitle(frame, 'accept')).toBe('A welcome initiative');
+    expect(choiceTitle(frame, 'accept')).toBe('A welcome initiative!');
     expect(choiceTitle(frame, 'protest')).toBeDefined();
     expect(choiceTitle(frame, 'stop')).toBeDefined();
     const burdens = f.q.burdens_done;

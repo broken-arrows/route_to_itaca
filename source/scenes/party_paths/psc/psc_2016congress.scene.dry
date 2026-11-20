@@ -23,7 +23,12 @@ view-if: psc_leader = "Miquel Iceta"
 choose-if: psc_parlament_s >= 10 or (party_resources >= 1 and psc_relations >= 50)
 unavailable-subtitle: [? if party_resources < 1 and psc_parlament_s < 10: Not enough resources. ?][? if psc_relations < 50 and psc_parlament_s < 10: We don't have good enough relations with the PSC. ?]
 subtitle: [? if psc_parlament_s >= 10: Without any intervention, that's bound to happen. ?][? if party_resources >= 1 and psc_parlament_s < 10: \[-1 resources\] ?]
-on-arrival: party_resources -= 1; psc_relations += 5;
+on-arrival: {!
+    if (!(Q.psc_parlament_s >= 10)) {
+        Q.party_resources -= 1;
+        Q.psc_relations += 5;
+    }
+!}
 
 Despite the challenge, Miquel Iceta seems to have manage to subdue internal criticism and lean on his allies to win the internal primaries. Questioning his leadership again may be hard from now on, leaving him free reign to further push his agenda of further collaboration and integration into the PSOE.
 
@@ -34,7 +39,12 @@ view-if: psc_leader = "Montserrat Tura"
 choose-if: psc_parlament_s >= 24 or (party_resources >= 1 and psc_relations >= 55)
 unavailable-subtitle: [? if party_resources < 1 and psc_parlament_s < 24: Not enough resources. ?][? if psc_relations < 55 and psc_parlament_s < 24: We don't have good enough relations with the PSC. ?]
 subtitle: [? if psc_parlament_s >= 24: Without any intervention, that's bound to happen. ?][? if party_resources >= 1 and psc_parlament_s < 24: Given her results, without our intervention he might lose his spot. \[-1 resources\] ?]
-on-arrival: party_resources -= 1; psc_relations += 5;
+on-arrival: {!
+    if (!(Q.psc_parlament_s >= 24)) {
+        Q.party_resources -= 1;
+        Q.psc_relations += 5;
+    }
+!}
 
 Despite the challenge, Montserrat Tura seems to have manage to subdue internal criticism and lean on her allies to win the internal primaries. Questioning her leadership again may be hard from now on, and it seems like the PSC-PSOE split will be here to stay.
 
@@ -45,7 +55,12 @@ view-if: psc_leader = "Àngel Ros"
 choose-if: psc_parlament_s >= 24 or (party_resources >= 1 and psc_relations >= 40)
 unavailable-subtitle: [? if party_resources < 1 and psc_parlament_s < 24: Not enough resources. ?][? if psc_relations < 40 and psc_parlament_s < 24: We don't have good enough relations with the PSC. ?]
 subtitle: [? if psc_parlament_s >= 24: Without any intervention, that's bound to happen. ?][? if party_resources >= 1 and psc_parlament_s < 24: Given his results, without our intervention he might lose his spot. \[-1 resources\] ?]
-on-arrival: party_resources -= 1; psc_relations += 5;
+on-arrival: {!
+    if (!(Q.psc_parlament_s >= 24)) {
+        Q.party_resources -= 1;
+        Q.psc_relations += 5;
+    }
+!}
 
 
 Despite the challenge, angel ros seems to have manage to subdue internal criticism and lean on his allies to win the internal primaries. Questioning his leadership again may be hard from now on, and it seems like the PSC-PSOE split will, at least for now, remain.

@@ -306,10 +306,16 @@ describe('consultation verdict', () => {
     expect(prose.textContent).not.toContain('Repeated failures to pass');
     expect(q.cat_caretaker_gov).toBe(true);
     const catalog = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../source/locales/ca/content.json'), 'utf8'));
-    const translated = adapter.refreshLocale('ca', catalog)!;
+    // The shipped Catalan entry for this paragraph is still untranslated (null); supply a
+    // test-only translation so the check covers parameter binding, not catalog coverage.
+    const rulingKey = Object.keys(catalog).find(k => k.startsWith('The ruling on the 9N consultation has forced'));
+    expect(rulingKey).toBeDefined();
+    const testCatalog = { ...catalog, [rulingKey!]: 'La sentència sobre la consulta del 9N ha obligat {clause1}{clause2} a deixar el càrrec, i {president} la presidirà fins a les eleccions de {next_election_month} de {next_election_year}.' };
+    const translated = adapter.refreshLocale('ca', testCatalog)!;
     expect(translated.title).toBe(catalog[frame.title!]);
     prose.innerHTML = translated.html;
     expect(prose.textContent).toContain('ha obligat Oriol Junqueras a deixar el càrrec');
+    expect(prose.textContent).toContain('Carles Puigdemont la presidirà');
     adapter.refreshLocale('en', {});
     adapter.choose(0);
     // Older saves retain the verdict's routing flag after the trial is over.

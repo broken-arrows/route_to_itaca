@@ -4963,7 +4963,7 @@
   "<span style='color: var(--jxcat); font-style: italic;'>sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span>": "<span style='color: var(--jxcat); font-style: italic;'>sovereignty</span> <span style='color: var(--erc); font-style: italic;'>government</span>",
   "Mariano Rajoy will lead a PP {government} with the support of csspa, CC-PNC, and the toleration of a broken PSOE.": "Mariano Rajoy will lead a PP {government} with the support of csspa, CC-PNC, and the toleration of a broken PSOE.",
   "<span style='color: #1d84ce;'>minority government</span>": "<span style='color: #1d84ce;'>minority government</span>",
-  "Pedro Sánchez will lead a {government} (PSOE-UP) with the support of EAJ-PNV, Más País, BNG, CC-PNC, texiste and the toleration of ERC and EH Bildu. ": "Pedro Sánchez will lead a {government} (PSOE-UP) with the support of EAJ-PNV, Más País, BNG, CC-PNC, texiste and the toleration of ERC and EH Bildu. ",
+  "Pedro Sánchez will lead a {government} (PSOE-UP) with the support of EAJ-PNV, Más País, BNG, texiste and the toleration of ERC and EH Bildu. ": "Pedro Sánchez will lead a {government} (PSOE-UP) with the support of EAJ-PNV, Más País, BNG, texiste and the toleration of ERC and EH Bildu. ",
   "<span style='color: #da291c; font-weight: bold;'>progressist</span> <span style='color: #5a205a; font-weight: bold;'>government</span>": "<span style='color: #da291c; font-weight: bold;'>progressist</span> <span style='color: #5a205a; font-weight: bold;'>government</span>",
   "New!": "New!",
   "{party} minority Government": "{party} minority Government",
@@ -5828,5 +5828,6 @@
   "A welcome initiative!": "A welcome initiative!",
   "jxsi has become too party-centric, rather than a civic list, for the CUP to accept. ": "jxsi has become too party-centric, rather than a civic list, for the CUP to accept. ",
   "The factions in our party are too divided to agree to join jxsi. ": "The factions in our party are too divided to agree to join jxsi. ",
-  "We don't have good enough relations with {clause1}{clause2}{clause3}. ": "We don't have good enough relations with {clause1}{clause2}{clause3}. "
+  "We don't have good enough relations with {clause1}{clause2}{clause3}. ": "We don't have good enough relations with {clause1}{clause2}{clause3}. ",
+  "How did we get here???": "How did we get here???"
 }
