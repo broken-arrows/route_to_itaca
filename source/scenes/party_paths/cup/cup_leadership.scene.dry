@@ -70,11 +70,11 @@ Even if names change around, the general currents within the party keep falling 
 
 @third_sector
 title: A Third Sector, consensus-figure candidate
-subtitle: The default, party-unity choice. [? if cup_third_sector_points = 2: \[-1 resources\]?]
+subtitle: The default, party-unity choice. [? if cup_third_sector_points = 3: \[-1 resources\]?]
 choose-if: cup_third_sector_points <= 2 or (cup_third_sector_points = 3 and party_resources >= 1 and cup_relations >= 55)
-unavailable-subtitle: [? if cup_third_sector_points > 2: Other party factions are too strong at the moment. ?][? if cup_relations < 55: We don't have good enough relations with the CUP. ?][? if party_resources < 1: Not enough resources. ?]
+unavailable-subtitle: [? if cup_third_sector_points > 3: Other party factions are too strong at the moment. ?][? if cup_third_sector_points = 3 and cup_relations < 55: We don't have good enough relations with the CUP. ?][? if cup_third_sector_points = 3 and party_resources < 1: Not enough resources. ?]
 on-arrival: {!
-    if (Q.cup_third_sector_points == 2) {
+    if (Q.cup_third_sector_points == 3) {
         Q.party_resources -= 1;
     }
     G.setText(Q, "cup_faction", "Third Sector");
@@ -112,11 +112,11 @@ on-arrival: {!
 
 @endavant
 title: An Endavant leadership
-subtitle: The CUP's focus will be on the streets, with institutional presence being secondary. [? if cup_endavant_points = cup_poble_lliure_points: \[-1 resources\]?]
+subtitle: The CUP's focus will be on the streets, with institutional presence being secondary. [? if cup_endavant_points = cup_poble_lliure_points + 1: \[-1 resources\]?]
 choose-if: cup_endavant_points > cup_poble_lliure_points + 1 or (cup_endavant_points >= cup_poble_lliure_points+1 and party_resources >= 1 and cup_relations >= 55)
-unavailable-subtitle: [? if cup_endavant_points < cup_poble_lliure_points: Endavant is not strong enough at the moment. ?][? if cup_relations < 55: We don't have good enough relations with the CUP. ?][? if party_resources < 1: Not enough resources. ?]
+unavailable-subtitle: [? if cup_endavant_points < cup_poble_lliure_points + 1: Endavant is not strong enough at the moment. ?][? if cup_endavant_points = cup_poble_lliure_points + 1 and cup_relations < 55: We don't have good enough relations with the CUP. ?][? if cup_endavant_points = cup_poble_lliure_points + 1 and party_resources < 1: Not enough resources. ?]
 on-arrival: {!
-    if (Q.cup_poble_lliure_points == Q.cup_endavant_points) {
+    if (Q.cup_endavant_points == Q.cup_poble_lliure_points + 1) {
         Q.party_resources -= 1;
     }
     Q.cup_faction = "Endavant";
@@ -158,11 +158,11 @@ on-arrival: {!
 
 @poble_lliure
 title: A Poble Lliure leadership
-subtitle: The CUP will focus on bringing the street's force to the halls of institutional power. [? if cup_endavant_points = cup_poble_lliure_points: \[-1 resources\]?]
+subtitle: The CUP will focus on bringing the street's force to the halls of institutional power. [? if cup_poble_lliure_points = cup_endavant_points + 1: \[-1 resources\]?]
 choose-if: cup_endavant_points+1 < cup_poble_lliure_points or (cup_endavant_points+1 <= cup_poble_lliure_points and party_resources >= 1 and cup_relations >= 55)
-unavailable-subtitle: [? if cup_endavant_points < cup_poble_lliure_points: Poble Lliure is not strong enough at the moment. ?][? if cup_relations < 55: We don't have good enough relations with the CUP. ?][? if party_resources < 1: Not enough resources. ?]
+unavailable-subtitle: [? if cup_poble_lliure_points < cup_endavant_points + 1: Poble Lliure is not strong enough at the moment. ?][? if cup_poble_lliure_points = cup_endavant_points + 1 and cup_relations < 55: We don't have good enough relations with the CUP. ?][? if cup_poble_lliure_points = cup_endavant_points + 1 and party_resources < 1: Not enough resources. ?]
 on-arrival: {!
-    if (Q.cup_poble_lliure_points == Q.cup_endavant_points) {
+    if (Q.cup_poble_lliure_points == Q.cup_endavant_points + 1) {
         Q.party_resources -= 1;
     }
     Q.cup_faction = "Poble Lliure";

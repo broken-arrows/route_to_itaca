@@ -493,7 +493,7 @@ on-arrival: {!
     // Offered once per game - Compromis' attempted mediation to avoid a deadlock.
     Q.compromis_reached_out_ever = !!(Q.compromis_reached_out_ever
         || this.state.visits['erc_reachout.compromis_reach'] || this.state.visits['erc_reachout.campaign_compromis']);
-    Q.congreso_left_gamble_offered = (Q.congreso_coalition_psoe_cs_wtf || Q.congreso_coalition_barons_flag == 1)
+    Q.congreso_left_gamble_offered = Q.congreso_coalition_barons_flag == 1 && !Q.congreso_coalition_psoe_cs_wtf
         && !Q.congreso_coalition_majority_reach && psoeLeadsLeft && leftSeats > 0
         && Q.psoe_leader == "Pedro Sánchez" && !Q.psoe_barons_revolted && !Q.congreso_left_gamble_tried
         && (Q.player_party == 'erc' || Q.player_party == 'cup');

@@ -140,15 +140,15 @@ describe('Congreso left gamble', () => {
     expect(choice(frame, 'congreso_coalition_progressive.progressive')).toBeDefined();
   });
 
-  it('keeps an unaffordable December 2015 gamble on offer after walking away', () => {
-    // As in a real save: ERC is one resource short and the PSC is cool.
-    const { adapter, q, offer } = offerPage({ ...december2015, party_resources: 1, psc_relations: 51 });
-    expect(choice(offer, 'congreso_coalition_left_offer.erc_votes')?.canChoose).toBe(false);
-    expect(choice(offer, 'congreso_coalition_left_offer.compromis')?.canChoose).toBe(false);
-    const list = choose(adapter, offer, 'congreso_coalition_left_offer.failure');
-    expect(q.congreso_left_gamble_tried).toBeFalsy();
-    expect(choice(list, 'congreso_coalition.left_gamble')?.canChoose).toBe(true);
-    expect(choice(list, 'congreso_coalition_psoe_cs.wtf')?.canChoose).toBe(true);
+  it('does not offer the gamble while PSOE–Cs (wtf) is on the table', () => {
+    const { q, frame } = enter(december2015);
+    expect(q.congreso_coalition_psoe_cs_wtf).toBe(true);
+    expect(q.congreso_left_gamble_offered).toBe(false);
+    expect(choice(frame, 'congreso_coalition.left_gamble')).toBeUndefined();
+    expect(choice(frame, 'congreso_coalition.barons_intervene')).toBeUndefined();
+    expect(choice(frame, 'congreso_coalition_psoe_cs.wtf')?.canChoose).toBe(true);
+    // The ordinary progressive option is listed but blocked by the PSOE–Cs plan.
+    expect(choice(frame, 'congreso_coalition_progressive.progressive')?.canChoose).toBe(false);
   });
 
   // PSOE + Podemos clear investiture without any Catalan or Basque party.
@@ -188,19 +188,6 @@ describe('Congreso left gamble', () => {
     expect(choose(adapter, offer, 'congreso_coalition_left_offer.failure').sceneId).toBe('congreso_coalition_barons');
     expect(q.congreso_left_gamble_tried).toBe(true);
     expect(q.party_resources).toBe(2);
-  });
-
-  it('falls back to the list after a failed December 2015 gamble and never offers it again', () => {
-    expect(choice(enter(december2015).frame, 'congreso_coalition.barons_intervene')).toBeUndefined();
-    const { adapter, q, after } = gamble({ ...december2015, psc_relations: 60 });
-    // @failure has no page of its own: its go-to returns straight to the list.
-    const list = after;
-    expect(q.psoe_barons_revolted).toBeFalsy();
-    expect(choice(list, 'congreso_coalition_psoe_cs.wtf')?.canChoose).toBe(true);
-    expect(choice(list, 'congreso_coalition.left_gamble')).toBeUndefined();
-
-    Object.assign(q, barons);
-    expect(choice(adapter.goToScene('congreso_coalition'), 'congreso_coalition.left_gamble')).toBeUndefined();
   });
 
   it('ignores a left agreement left over from an earlier chamber', () => {
@@ -250,7 +237,6 @@ describe('Congreso left gamble', () => {
 
   it('shows the gamble in place of the progressive government, not beside it', () => {
     expect(choice(enter(barons).frame, 'congreso_coalition_progressive.progressive')).toBeUndefined();
-    expect(choice(enter(december2015).frame, 'congreso_coalition_progressive.progressive')).toBeUndefined();
     // Once the barons have revolted there is no gamble, and the ordinary option returns.
     const after = enter({ ...barons, psoe_barons_revolted: true }).frame;
     expect(choice(after, 'congreso_coalition.left_gamble')).toBeUndefined();
