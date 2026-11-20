@@ -5849,5 +5849,8 @@
   "The Parlament has rejected our proposed law. Energy poverty remains unaddressed, and we'll have to find our footing to try to pass it again at a more favourable time. ": null,
   "The Parlament has rejected the bill, to the dismay of many of our representatives and many in the social housing pressure groups back on the streets. ": null,
   "{party} has submitted a regional-tax proposal for the coming annual budget. We'll have to see if it passes, though.": null,
-  "A welcome initiative!": null
+  "A welcome initiative!": null,
+  "jxsi has become too party-centric, rather than a civic list, for the CUP to accept. ": null,
+  "The factions in our party are too divided to agree to join jxsi. ": null,
+  "We don't have good enough relations with {clause1}{clause2}{clause3}. ": null
 }

@@ -524,7 +524,7 @@ on-arrival: {!
     Q.cat_coalition_includes_psc = Q.cat_coalition.includes("psc");
     Q.cat_coalition_includes_erc = Q.cat_coalition.includes("erc");
 !}
-go-to: psc_relations_iceta if psc_leader = "Miquel Iceta"; psc_relations_parlon if psc_leader = "Nuria Parlon"; psc_relations_navarro if psc_leader = "Pere Navarro"; psc_relations_ros if psc_leader = "Àngel Ros"; psc_relations_tura if psc_leader = "Monsterrat Tura"
+go-to: psc_relations_iceta if psc_leader = "Miquel Iceta"; psc_relations_parlon if psc_leader = "Núria Parlon"; psc_relations_navarro if psc_leader = "Pere Navarro"; psc_relations_ros if psc_leader = "Àngel Ros"; psc_relations_tura if psc_leader = "Montserrat Tura"
 
 @psc_relations_iceta
 on-arrival: {!
