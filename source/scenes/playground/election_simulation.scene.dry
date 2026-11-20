@@ -46,6 +46,7 @@ The Election Simulation system is an in-game tool used for debugging and testing
 
 @2015_5
 on-arrival: {!
+    Q.election_simulation_date = [2015, 5];
     for (var p of Q.parties_bcn) {
     Q[p + "_local_barcelona_support"] = 0.0;
     }
@@ -330,12 +331,12 @@ on-arrival: {!
     Q.ppc_parlament_tarragona_unemployed_support = 4.2;
     Q.abstain_parlament_tarragona_unemployed_support = 31.7;
 !}
-go-to: election_algorithm.local_elections
+go-to: run_local
 set-jump: post_election_sim_local
 
 @2019_5
 on-arrival: {!
-    Q.year == 2019;
+    Q.election_simulation_date = [2019, 5];
     for (var p of Q.parties_bcn) {
        Q[p + "_local_barcelona_support"] = 0.0;
     }
@@ -383,6 +384,9 @@ on-arrival: {!
     Q.cupbcn_leader = "Anna Saliente";
     Q.pp_leader = "Pablo Casado";
     Q.parlament_current_icv = "ecp";
+    // JxCat carries the CiU family by 2019; left at root's "ciu", Trias's
+    // candidacy bonus would revive a CiU list that no longer stands.
+    Q.parlament_current_ciu = "jxcat";
 
     Q.bcomu_local_barcelona_support    = 20.8;
     Q.ciu_local_barcelona_support      =  0;
@@ -652,7 +656,7 @@ on-arrival: {!
     Q.vox_parlament_tarragona_unemployed_support = 0.3;
     Q.abstain_parlament_tarragona_unemployed_support = 23.1;
 !}
-go-to: election_algorithm.local_elections
+go-to: run_local
 set-jump: post_election_sim_local
 
 @2012_11
@@ -1492,6 +1496,7 @@ set-jump: post_election_sim
 
 @2015_12
 on-arrival: {!
+    Q.election_simulation_date = [2015, 12];
     // reset all support
     for (var c of Q.congreso_constituencies) {
         for (var p of Q["congreso_parties_" + c]) {
@@ -1647,11 +1652,12 @@ on-arrival: {!
     Q.upyd_congreso_valencia_support = 0.50;
     Q.vox_congreso_valencia_support = 0.21;
 !}
-go-to: election_algorithm.esp_congreso
+go-to: run_congreso
 set-jump: post_election_sim_congreso
 
 @2016_6
 on-arrival: {!
+    Q.election_simulation_date = [2016, 6];
     for (var c of Q.congreso_constituencies) {
         for (var p of Q["congreso_parties_" + c]) {
             Q[p + "_congreso_" + c + "_support"] = 0.0;
@@ -1797,7 +1803,7 @@ on-arrival: {!
     Q.upyd_congreso_valencia_support = 0.16;
     Q.vox_congreso_valencia_support = 0.18;
 !}
-go-to: election_algorithm.esp_congreso
+go-to: run_congreso
 set-jump: post_election_sim_congreso
 
 @2017_12
@@ -2137,6 +2143,7 @@ set-jump: post_election_sim
 
 @2019_4
 on-arrival: {!
+    Q.election_simulation_date = [2019, 4];
     for (var c of Q.congreso_constituencies) {
         for (var p of Q["congreso_parties_" + c]) {
             Q[p + "_congreso_" + c + "_support"] = 0.0;
@@ -2282,11 +2289,12 @@ on-arrival: {!
     Q.up_congreso_valencia_support = 11.08;
     Q.vox_congreso_valencia_support = 9.36;
 !}
-go-to: election_algorithm.esp_congreso
+go-to: run_congreso
 set-jump: post_election_sim_congreso
 
 @2019_11
 on-arrival: {!
+    Q.election_simulation_date = [2019, 11];
     for (var c of Q.congreso_constituencies) {
         for (var p of Q["congreso_parties_" + c]) {
             Q[p + "_congreso_" + c + "_support"] = 0.0;
@@ -2443,8 +2451,24 @@ on-arrival: {!
     Q.vox_congreso_valencia_support = 13.78;
 
 !}
+go-to: run_congreso
+set-jump: post_election_sim_congreso
+
+@run_congreso
+on-arrival: {!
+    Q.year = Q.election_simulation_date[0];
+    Q.month = Q.election_simulation_date[1];
+!}
 go-to: election_algorithm.esp_congreso
 set-jump: post_election_sim_congreso
+
+@run_local
+on-arrival: {!
+    Q.year = Q.election_simulation_date[0];
+    Q.month = Q.election_simulation_date[1];
+!}
+go-to: election_algorithm.local_elections
+set-jump: post_election_sim_local
 
 @post_election_sim
 set-bg: img/parlament_de_catalunya.jpg

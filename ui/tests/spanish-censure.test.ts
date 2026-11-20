@@ -21,7 +21,7 @@ function setup(overrides: Record<string, unknown> = {}) {
     psoe_congreso_s: 100, up_congreso_s: 60, erc_congreso_s: 10, pnv_congreso_s: 6, pp_congreso_s: 174,
     spanish_pm: 'Mariano Rajoy', spanish_pm_party: 'pp', spanish_coalition: ['pp'], spa_caretaker_gov: false,
     psoe_leader: 'Pedro Sánchez', up_leader: 'Pablo Iglesias', up_leader_gender: 'm',
-    corruption_pp: 55, cat_spa_relations: 55, party_resources: 10,
+    corruption_pp: 70, cat_spa_relations: 55, party_resources: 10,
     psc_relations: 80, parlament_current_icv: 'icv', icv_relations: 80,
     parlament_current_ciu: 'pdcat', pdcat_roadmap: 2, pdcat_relations: 80,
     erc_in_jxsi: false, erc_in_jxcat: false, jxcat_in_congreso: false,
@@ -179,13 +179,15 @@ describe('Spanish censure motions', () => {
     expect(config.outcomes.reduce((total: number, outcome: any) => total + outcome.votes, 0)).toBe(350);
   });
 
-  it.each<[string, Record<string, number>]>([
+  // PSOE files only a winnable motion. Where PP and Cs hold 176, the verdict
+  // brings a Podemos protest motion instead.
+  it.each<[string, Record<string, number>, string]>([
     ['congreso_coalition_grand.toleration', { pp_congreso_s: 137, psoe_congreso_s: 85,
       up_congreso_s: 71, cs_congreso_s: 32, erc_congreso_s: 9, pdcat_congreso_s: 8,
-      pnv_congreso_s: 5, ehbildu_congreso_s: 2, cc_congreso_s: 1 }],
+      pnv_congreso_s: 5, ehbildu_congreso_s: 2, cc_congreso_s: 1 }, 'psoe'],
     ['congreso_coalition_right.pp_cs', { pp_congreso_s: 130, psoe_congreso_s: 100,
-      up_congreso_s: 60, cs_congreso_s: 46, erc_congreso_s: 8, pnv_congreso_s: 6 }],
-  ])('ends caretaker status through %s and permits a later Gürtel motion', (formation, seats) => {
+      up_congreso_s: 60, cs_congreso_s: 46, erc_congreso_s: 8, pnv_congreso_s: 6 }, 'podemos'],
+  ])('ends caretaker status through %s and permits a later Gürtel motion', (formation, seats, challenger) => {
     const a = setup({ ...seats, year: 2016, month: 4, time: 44,
       next_spanish_election_time: 46, corruption_pp: 44,
       psoe_leader: 'Susana Díaz', congreso_coalition_grand_ok: true });
@@ -203,8 +205,9 @@ describe('Spanish censure motions', () => {
     expect(available(a, 'psoe')).toBe(false);
     a.goToScene('gurtel_verdict');
     pick(a, 'post_event');
-    expect(available(a, 'psoe')).toBe(true);
+    expect(available(a, challenger)).toBe(true);
     pick(a, 'spanish_censure');
+    expect(a.qualities.censure_current.kind).toBe(challenger);
     expect(a.qualities.censure_current.incumbentParty).toBe('pp');
   });
 
@@ -267,6 +270,14 @@ describe('Spanish censure motions', () => {
     expect(available(setup({ spanish_pm_party: 'psoe' }), 'psoe')).toBe(false);
     expect(available(setup({ spanish_coalition: ['pp', 'psoe'] }), 'psoe')).toBe(false);
     expect(available(setup(), 'psoe')).toBeTruthy();
+  });
+
+  it('waits for a Gürtel-scale scandal before PSOE files a winnable motion', () => {
+    const quiet = setup({ corruption_pp: 45 });
+    expect(quiet.qualities.censure_pending).not.toBe('psoe');
+    expect(available(setup({ corruption_pp: 60 }), 'psoe')).toBe(true);
+    // A non-PP incumbent has no scandal track, so viability alone suffices.
+    expect(available(setup({ corruption_pp: 0, spanish_pm_party: 'cs', spanish_coalition: ['cs'], cs_congreso_s: 100, pp_congreso_s: 74 }), 'psoe')).toBe(true);
   });
 
   it('starts the existing countdown on formation and keeps an expired opportunity', () => {

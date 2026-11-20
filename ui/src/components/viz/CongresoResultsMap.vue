@@ -12,11 +12,16 @@ const hoveredRest = ref(false);
 const { markup, failed } = useElectionSvg('congreso-results.svg');
 const model = computed(() => gameLib.congresoResultsMap(props.q));
 const ink = usePartyInk();
-const { t } = useI18n();
+const { t, te } = useI18n();
 const partyTerm = usePartyTerm();
-const panel = computed(() => selected.value ? model.value.panels[selected.value] : null);
+// Regions open the panel the model names: a constituency, a rest-of-Spain
+// community, or (for saves without community results) the pooled rest panel.
+const panel = computed(() => selected.value ? model.value.panels[selected.value] ?? null : null);
+const panelName = computed(() => {
+  const key = `widgets.map.regions.${selected.value}`;
+  return te(key) ? t(key) : panel.value?.name ?? '';
+});
 const maxSeats = computed(() => Math.max(1, ...(panel.value?.rows ?? []).map(row => row.seats)));
-const restIds = new Set(model.value.regions.filter(row => row.constituency === 'rest').map(row => row.id));
 
 function regionFor(target: EventTarget | null) {
   let node = target instanceof Element ? target : null;
@@ -30,10 +35,10 @@ function regionFor(target: EventTarget | null) {
 }
 function select(event: MouseEvent) {
   const region = regionFor(event.target);
-  if (region) selected.value = region.constituency;
+  if (region) selected.value = region.panel;
 }
 function hover(event: MouseEvent) {
-  hoveredRest.value = regionFor(event.target)?.constituency === 'rest';
+  hoveredRest.value = regionFor(event.target)?.panel === 'rest';
 }
 function paint() {
   const svg = root.value?.querySelector('svg');
@@ -52,8 +57,8 @@ function paint() {
     if (term) node.setAttribute('data-term', term.id);
     else node.removeAttribute('data-term');
     node.classList.toggle('term-hoverable', !!term?.tooltip);
-    node.classList.toggle('selected', selected.value === region.constituency);
-    node.classList.toggle('rest-hover', hoveredRest.value && restIds.has(region.id));
+    node.classList.toggle('selected', selected.value === region.panel);
+    node.classList.toggle('rest-hover', hoveredRest.value && region.panel === 'rest');
   }
 }
 watch([markup, model, selected, hoveredRest], async () => { await nextTick(); paint(); }, { immediate: true });
@@ -65,8 +70,8 @@ watch([markup, model, selected, hoveredRest], async () => { await nextTick(); pa
     <p v-else-if="failed" class="map-message">{{ t('widgets.map.unavailable') }}</p>
     <div class="result-panel" aria-live="polite">
       <template v-if="panel">
-        <div class="panel-title"><b>{{ panel.name }}</b><small>{{ t('widgets.seats', { count: panel.seats }, panel.seats) }}</small></div>
-        <div v-if="panel.rows.length" class="bars" role="img" :aria-label="t('widgets.map.distribution', { region: panel.name })">
+        <div class="panel-title"><b>{{ panelName }}</b><small>{{ t('widgets.seats', { count: panel.seats }, panel.seats) }}</small></div>
+        <div v-if="panel.rows.length" class="bars" role="img" :aria-label="t('widgets.map.distribution', { region: panelName })">
           <div v-for="row in panel.rows" :key="row.party" class="bar-column">
             <strong>{{ row.seats }}</strong>
             <span class="bar" :style="{ height: `${Math.max(3, Math.round(row.seats / maxSeats * 70))}%`, background: ink(row.party) }" />

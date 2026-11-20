@@ -430,8 +430,9 @@ describe('NPC cabinet scheduling', () => {
       expect(f.q.healthcare_spending).toBe(-2);
     });
 
+    // On Hard, persuasion below 65 relations costs 2 (Normal charges 1 from 55).
     it('uses ERC relations for a CUP member responding to an ERC minister', () => {
-      const f = joint({player_party:'cup', ['cup_in_' + list]:true, erc_relations:60,
+      const f = joint({player_party:'cup', ['cup_in_' + list]:true, erc_relations:60, difficulty:1,
         health_minister_affiliation:'erc', erc_ideology:'Social Democracy, Pragmatic Independence'});
       propose(f, 'healthcare_spending', 0, list);
       expect(f.q.npc_government_party).toBe('erc');
@@ -709,8 +710,10 @@ describe('NPC initiative responses and enactment', () => {
     expect(protested.q.coalition_rupture_recheck).toBe(true);
   });
 
-  it.each([[55, 2], [64, 2], [65, 1], [80, 1]])('stopping at %i relations costs %i resources', (relations, cost) => {
-    const f = setup({ ciu_relations: relations });
+  // Normal charges 1 from 55 relations; Hard keeps 2 until 65.
+  it.each([[0, 55, 1], [0, 64, 1], [0, 80, 1], [1, 55, 2], [1, 64, 2], [1, 65, 1], [1, 80, 1]])(
+    'stopping at difficulty %i and %i relations costs %i resources', (difficulty, relations, cost) => {
+    const f = setup({ difficulty, ciu_relations: relations });
     due(f);
     answer(f, 'stop');
     expect(f.q.healthcare_spending).toBe(-1);
@@ -721,7 +724,7 @@ describe('NPC initiative responses and enactment', () => {
     expect(f.q.party_resources).toBe(4 - cost);
   });
 
-  it.each([{ ciu_relations: 54 }, { party_resources: 1 }, { cat_coalition: ['ciu'], cat_coalition_support: [], ciu_relations: 80 }])(
+  it.each([{ ciu_relations: 54 }, { party_resources: 0 }, { difficulty: 1, party_resources: 1 }, { cat_coalition: ['ciu'], cat_coalition_support: [], ciu_relations: 80 }])(
     'guards disabled stop responses at resolution: %j', overrides => {
       const f = setup(overrides);
       due(f);

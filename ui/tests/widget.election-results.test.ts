@@ -100,3 +100,99 @@ describe('generic election result widgets', () => {
     expect(wrapper.findAll('.party-tour-logos')).toHaveLength(firstGroups);
   });
 });
+
+// Rest-of-Spain map communities. Andalusia carries a distinctive result; the
+// others share a one-seat placeholder so every region has its own record.
+const REST_IDS = ['madrid', 'andalusia', 'extremadura', 'castile_la_mancha', 'castile_and_leon', 'murcia',
+  'la_rioja', 'aragon', 'asturias', 'cantabria', 'canary_islands', 'ceuta', 'melilla'];
+function communityQ() {
+  const communities: Record<string, unknown> = Object.fromEntries(REST_IDS.map(id =>
+    [id, { total: 1, seats: { pp: 1, psoe: 0 }, votes: { pp: 2, psoe: 1 } }]));
+  communities.andalusia = { total: 61, seats: { pp: 22, psoe: 25, podemos: 14, cs: 0 },
+    votes: { pp: 280, psoe: 300, podemos: 200, cs: 20 } };
+  return { ...pooledRestQ(), congreso_rest_communities: communities, congreso_prov_andalusia_wp: 'psoe' };
+}
+// A save from before community results: only the pooled electorate and winners.
+function pooledRestQ() {
+  return {
+    ...Object.fromEntries(REST_IDS.map(id => [`congreso_prov_${id}_wp`, 'pp'])),
+    congreso_parties_rest: ['pp', 'psoe', 'cs'],
+    pp_congreso_s_rest: 120, psoe_congreso_s_rest: 96, cs_congreso_s_rest: 0,
+    pp_congreso_rest_support: 30, psoe_congreso_rest_support: 25, cs_congreso_rest_support: 2,
+    congreso_seats: { rest: 216 },
+  };
+}
+
+describe('Congreso rest-of-Spain community panels', () => {
+  it('opens each community on its own and localizes its name', async () => {
+    const model = gameLib.congresoResultsMap(communityQ());
+    expect(model.panels.rest).toBeUndefined();
+    expect(model.panels.andalusia.rows.map(row => [row.party, row.seats])).toEqual([['psoe', 25], ['pp', 22], ['podemos', 14]]);
+    expect(model.panels.andalusia.rows[0].support).toBeCloseTo(37.5);
+    const wrapper = mount(CongresoResultsMap, { global: { plugins: [i18n] }, props: { q: { ...useGameStore().q, ...communityQ() } } });
+    await flushPromises();
+    await wrapper.find('#andalusia').trigger('mousemove');
+    expect(wrapper.find('#madrid').classes()).not.toContain('rest-hover');
+    await wrapper.find('#andalusia').trigger('click');
+    expect(wrapper.find('.panel-title').text()).toContain('Andalusia');
+    expect(wrapper.find('.panel-title').text()).toContain('61 seats');
+    expect(wrapper.findAll('.bar-column').map(column => column.find('strong').text())).toEqual(['25', '22', '14']);
+    expect(wrapper.find('#andalusia').classes()).toContain('selected');
+    expect(wrapper.find('#madrid').classes()).not.toContain('selected');
+    i18n.global.locale.value = 'ca';
+    try {
+      await wrapper.find('#castile_la_mancha').trigger('click');
+      expect(wrapper.find('.panel-title').text()).toContain('Castella-la Manxa');
+      await wrapper.find('#catalonia').trigger('click');
+      expect(wrapper.find('.panel-title b').text()).toBe('Catalunya');
+    } finally { i18n.global.locale.value = 'en'; }
+  });
+
+  it('falls back to the pooled rest panel for saves without community results', async () => {
+    const model = gameLib.congresoResultsMap(pooledRestQ());
+    expect(model.regions.filter(region => region.constituency === 'rest').every(region => region.panel === 'rest')).toBe(true);
+    expect(Object.keys(model.panels)).not.toContain('madrid');
+    const wrapper = mount(CongresoResultsMap, { global: { plugins: [i18n] }, props: { q: { ...useGameStore().q, ...pooledRestQ() } } });
+    await flushPromises();
+    await wrapper.find('#madrid').trigger('mousemove');
+    expect(wrapper.find('#andalusia').classes()).toContain('rest-hover');
+    await wrapper.find('#madrid').trigger('click');
+    expect(wrapper.find('.panel-title').text()).toContain('Rest of Spain');
+    expect(wrapper.find('.panel-title').text()).toContain('216 seats');
+    expect(wrapper.findAll('.bar-column')).toHaveLength(2);
+    expect(wrapper.find('#andalusia').classes()).toContain('selected');
+  });
+
+  it('gives the classic shell the same panels from the shared model', () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {});
+    (window as any).RTI_GAME_LIB = gameLib;
+    try {
+      new Function(readFileSync(resolve(here, 'out/html/cat_maps.js'), 'utf8'))();
+      const render = (q: Record<string, unknown>) => {
+        document.body.innerHTML = '<div id="congreso-map-widget"></div>';
+        (window as any).initCongresoMap('congreso-map-widget', q);
+        return document.getElementById('congreso-map-widget')!;
+      };
+      let map = render(communityQ());
+      (map.querySelector('#andalusia') as SVGElement).dispatchEvent(new Event('mouseenter'));
+      expect(map.querySelector('#madrid')!.classList.contains('rest-hover')).toBe(false);
+      (map.querySelector('#andalusia') as SVGElement).dispatchEvent(new MouseEvent('click'));
+      expect(map.querySelector('.cong-title')!.textContent).toBe('Andalusia61 seats');
+      expect([...map.querySelectorAll('.cong-seats-n')].map(node => node.textContent)).toEqual(['25', '22', '14']);
+      expect(map.querySelector('#madrid')!.classList.contains('selected')).toBe(false);
+      (map.querySelector('#ceuta') as SVGElement).dispatchEvent(new MouseEvent('click'));
+      expect(map.querySelector('.cong-title')!.textContent).toBe('Ceuta1 seat');
+
+      map = render(pooledRestQ());
+      (map.querySelector('#madrid') as SVGElement).dispatchEvent(new MouseEvent('click'));
+      expect(map.querySelector('.cong-title')!.textContent).toBe('Rest of Spain216 seats');
+      expect(map.querySelectorAll('.cong-col')).toHaveLength(2);
+      expect(map.querySelector('#andalusia')!.classList.contains('selected')).toBe(true);
+    } finally {
+      log.mockRestore();
+      delete (window as any).RTI_GAME_LIB;
+      for (const name of ['initCatLocalMap', 'initCongresoMap', 'initCongresoPartyTour']) delete (window as any)[name];
+      document.body.innerHTML = '';
+    }
+  });
+});

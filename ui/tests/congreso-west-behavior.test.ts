@@ -91,7 +91,7 @@ it('a successful PSOE censure moves subsequent economic responsibility to PSOE a
   next_spanish_election_time:94,congreso_seats:{total:350},congreso_s_majority:176,
   congreso_parties:['pp','psoe','up','erc','pnv'],psoe_congreso_s:100,up_congreso_s:60,erc_congreso_s:10,pnv_congreso_s:6,pp_congreso_s:174,
   spanish_pm:'Mariano Rajoy',spanish_pm_party:'pp',spanish_coalition:['pp'],spa_caretaker_gov:false,
-  psoe_leader:'Pedro Sánchez',up_leader:'Pablo Iglesias',corruption_pp:55,cat_spa_relations:55,party_resources:10,
+  psoe_leader:'Pedro Sánchez',up_leader:'Pablo Iglesias',corruption_pp:70,cat_spa_relations:55,party_resources:10,
   psc_relations:80,parlament_current_icv:'icv',icv_relations:80,parlament_current_ciu:'pdcat',pdcat_roadmap:2,
   erc_in_jxsi:false,erc_in_jxcat:false,countdowns:[]});
  a.goToScene('post_event');a.goToScene('spanish_censure');

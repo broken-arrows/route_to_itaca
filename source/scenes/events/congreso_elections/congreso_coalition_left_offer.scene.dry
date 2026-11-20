@@ -1,7 +1,6 @@
 title: The final chance for a different agreement
 subtitle: There may still be a way to bring the PSOE and the left back to the negotiating table.
 new-page: true
-max-visits: 1
 role: event
 face-image: img/events/rivera_sanchez.jpg
 
@@ -16,24 +15,20 @@ Investiture negotiations are running around the clock in Madrid. While [? if iu_
 @erc_votes
 title: Maybe we could offer our vote without demanding a referendum?
 view-if: player_party = "erc"
-choose-if: congreso_left_offer_pending and congreso_left_offer_erc_possible
-subtitle: Rather understandably, many of our voters will see it as a betrayal. \[-2 resources\]
-unavailable-subtitle: [? if erc_in_jxsi or erc_in_jxcat: We are currently part of a electoral coalition explicitly working towards a referendum. ?][? if erc_roadmap >= 2: Our current roadmap goes even beyond a vote on agreement. ?][? if erc_civic_strength >= 15: Our party's civil organization alliances are too strong at the moment, and are blocking this possibility. ?][? if psc_relations < 65: Our relations with the PSC are not good enough. ?][? if {! return (Q[Q.parlament_current_icv + '_relations'] || 0) < 65; !}: Our relations with [+ parlament_current_icv +] are not good enough. ?][? if {! return Q[Q.parlament_current_icv + '_leader'] == 'Arcadi Oliveres'; !}: This is still a demand by Arcadi Oliveres' [+ parlament_current_icv +] anyway. ?][? if {! return (Q.podemos_ideology || '').includes('Confederalism'); !}: This is still a demand by Podemos. ?][? if erc_congreso_s <= 0: We have no seats in the Congreso. ?][? if erc_congreso_s > 0 and not congreso_left_offer_erc_arith: Even with our votes, the numbers do not add up. ?][? if party_resources < 2: Not enough resources. ?]
+choose-if: congreso_left_gamble_can_attempt
+subtitle: Rather understandably, many of our voters will see it as a betrayal, and it will only hold if the numbers add up and the PSC and [+ parlament_current_icv +] are truly on board. \[-[+ congreso_left_gamble_cost +] resources\]
+unavailable-subtitle: [? if erc_congreso_s <= 0: We have no seats in the Congreso. ?][? if (erc_in_jxsi and jxsi_in_congreso) or (erc_in_jxcat and jxcat_in_congreso): We are part of a joint Congreso list explicitly working towards independence. ?][? if erc_roadmap > congreso_left_gamble_max_roadmap: Our current roadmap goes too far beyond a vote on agreement. ?][? if party_resources < congreso_left_gamble_cost: Not enough resources. ?]
 on-arrival: {!
-    var yes = 0, abstain = 0, total = 0;
-    for (var c in Q.congreso_seats) total += Q.congreso_seats[c];
-    for (var member of Q.congreso_left_offer_erc_members || []) {
-        var seats = Q[member.party + '_congreso_s'] || 0;
-        if (member.type == 'abstain') abstain += seats; else yes += seats;
+    // The gamble is tried once per game and costs its resources either way;
+    // the betrayal only lands if the deal holds.
+    if (Q.congreso_left_gamble_can_attempt && !Q.congreso_left_gamble_tried) {
+        Q.congreso_left_gamble_tried = true;
+        Q.party_resources -= Q.congreso_left_gamble_cost;
     }
-    if (Q.congreso_left_offer_pending && Q.congreso_left_offer_erc_possible && !Q.congreso_left_agreement
-        && yes > (total || 350) - yes - abstain
-        && Q.player_party == 'erc' && Q.erc_congreso_s > 0 && !Q.erc_in_jxsi && !Q.erc_in_jxcat
-        && Q[Q.parlament_current_icv + '_leader'] != 'Arcadi Oliveres' && !(Q.podemos_ideology || '').includes('Confederalism')
-        && Q.erc_civic_strength < 15 && Q.erc_roadmap < 2 && Q.psc_relations >= 65
-        && Q[Q.parlament_current_icv + '_relations'] >= 65 && Q.party_resources >= 2) {
-        Q.party_resources -= 2;
-        Q.erc_civic_dissent += 20;
+    if (Q.congreso_left_gamble_succeeds && !Q.congreso_left_agreement) {
+        // Strong civic ties make the betrayal costlier.
+        var penalty = Q.erc_civic_strength >= 15 ? 1.5 : 1;
+        Q.erc_civic_dissent += 20 * penalty;
         Q.cup_relations -= 10;
         Q.congreso_left_agreement = {
             kind: 'erc', members: Q.congreso_left_offer_erc_members,
@@ -62,7 +57,7 @@ on-arrival: {!
         };
         for (var c of Q.parlament_constituencies) {
             for (var d of Q.parlament_demographics) {
-                var amount = (Q['erc_parlament_' + c + '_' + d + '_support'] || 0) * loss[d] * province[c];
+                var amount = (Q['erc_parlament_' + c + '_' + d + '_support'] || 0) * loss[d] * province[c] * penalty;
                 var ciuShare = Math.max(0.2, Math.min(moderateCiu ? 0.49 : 0.7,
                     (moderateCiu ? 0.4 : 0.56) + demoCiu[d] + provinceCiu[c]));
                 G.cardSupportTransfer(Q, { contest: 'parlament', from: 'erc', to: Q.parlament_current_ciu, amount: amount * ciuShare,
@@ -74,19 +69,19 @@ on-arrival: {!
         // These electorates have their own stocks; neither transfer projects the
         // realized Parlament loss into another contest. No new CUP ballot is created.
         var ciuShare = moderateCiu ? 0.4 : 0.56;
-        var congresoLoss = (Q.erc_congreso_catalunya_support || 0) * 0.20;
+        var congresoLoss = (Q.erc_congreso_catalunya_support || 0) * 0.20 * penalty;
         var radical = Q.spa_cup_active ? 'cup' : Q.spa_fr_active ? 'fr' : 'abstain';
         G.cardSupportTransfer(Q, { contest: 'congreso', from: 'erc', to: ciuCarrier('congreso'), amount: congresoLoss * ciuShare,
             maxDonorFraction: 0.5, constituencies: ['catalunya'] });
         G.cardSupportTransfer(Q, { contest: 'congreso', from: 'erc', to: radical, amount: congresoLoss * (1 - ciuShare),
             maxDonorFraction: 0.5, constituencies: ['catalunya'] });
-        var localLoss = (Q.erc_local_barcelona_support || 0) * 0.18;
+        var localLoss = (Q.erc_local_barcelona_support || 0) * 0.18 * penalty;
         var localCiuShare = moderateCiu ? 0.32 : 0.52;
         G.cardSupportTransfer(Q, { contest: 'barcelona', from: 'erc', to: ciuCarrier('barcelona'), amount: localLoss * localCiuShare, maxDonorFraction: 0.5 });
         G.cardSupportTransfer(Q, { contest: 'barcelona', from: 'erc', to: 'cup', amount: localLoss * (1 - localCiuShare), maxDonorFraction: 0.5 });
     }
 !}
-go-to: congreso_coalition if {! return !Q.congreso_left_agreement; !}
+go-to: congreso_coalition_barons if {! return !Q.congreso_left_agreement && Q.congreso_coalition_barons_flag == 1; !}; failure if {! return !Q.congreso_left_agreement && Q.congreso_coalition_barons_flag != 1; !}
 
 In what is seen as a betrayal of the ideals our party stands for, ERC will vote for a PSOE-led government, renouncing to even open negotiations for a referendum on independence. While sure this has pushed the PP and [+ pp_leader +] out of the Gobierno, we can bet many of our voters will not see this as a worth deal.
 
@@ -95,8 +90,8 @@ In what is seen as a betrayal of the ideals our party stands for, ERC will vote 
 @compromis
 title: Let's support Compromís's efforts to mediate an agreement
 choose-if: congreso_left_offer_pending and congreso_left_offer_compromis_possible
-subtitle: Maybe with a push from our end, a minimum programme can at least be agreed upon. \[-1 resources\]
-unavailable-subtitle: [? if not compromis_reached_out_ever: We have not built the necessary contacts with Compromís. ?][? if psc_relations < 65: Our relations with the PSC are not good enough. ?][? if {! return (Q[Q.parlament_current_icv + '_relations'] || 0) < 65; !}: Our relations with [+ parlament_current_icv +] are not good enough. ?][? if not congreso_left_offer_compromis_arith: There is not a viable majority without any party demanding a referendum joining in. ?][? if party_resources < 1: Not enough resources. ?]
+subtitle: Maybe with a push from our end, a minimum programme can at least be agreed upon. \[-[+ congreso_left_gamble_cost +] resources\]
+unavailable-subtitle: [? if not compromis_reached_out_ever: We have not built the necessary contacts with Compromís. ?][? if psc_relations < congreso_left_gamble_psc_min: Our relations with the PSC are not good enough. ?][? if {! return (Q[Q.parlament_current_icv + '_relations'] || 0) < Q.congreso_left_gamble_ally_min; !}: Our relations with [+ parlament_current_icv +] are not good enough. ?][? if not congreso_left_offer_compromis_arith: There is not a viable majority without any party demanding a referendum joining in. ?][? if party_resources < congreso_left_gamble_cost: Not enough resources. ?]
 on-arrival: {!
     var yes = 0, abstain = 0, total = 0;
     for (var c in Q.congreso_seats) total += Q.congreso_seats[c];
@@ -107,8 +102,9 @@ on-arrival: {!
     if (Q.congreso_left_offer_pending && Q.congreso_left_offer_compromis_possible && !Q.congreso_left_agreement
         && yes > (total || 350) - yes - abstain
         && (Q.player_party == 'erc' || Q.player_party == 'cup') && Q.compromis_reached_out_ever
-        && Q.psc_relations >= 65 && Q[Q.parlament_current_icv + '_relations'] >= 65 && Q.party_resources >= 1) {
-        Q.party_resources -= 1;
+        && Q.party_resources >= Q.congreso_left_gamble_cost) {
+        Q.party_resources -= Q.congreso_left_gamble_cost;
+        Q.congreso_left_gamble_tried = true;
         Q.congreso_left_agreement = {
             kind: 'compromis', members: Q.congreso_left_offer_compromis_members,
             chamber: this.state.visits['congreso_election.post_election'] || 0
@@ -125,8 +121,11 @@ With a bit of a push from our end, Compromís has managed to bring the PSOE and 
 @failure
 title: The negotiations fall apart
 subtitle: The PSOE and [? if iu_in_up: Unidas Podemos?][? if not iu_in_up: Podemos ?] are, after all, too apart at the moment...
-on-arrival: congreso_left_offer_pending = false
-go-to: congreso_coalition
+on-arrival: {!
+    Q.congreso_left_offer_pending = false;
+    if (Q.congreso_left_gamble_offered) Q.congreso_left_gamble_tried = true;
+!}
+go-to: congreso_coalition_barons if congreso_coalition_barons_flag = 1; congreso_coalition if congreso_coalition_barons_flag != 1
 
 @resolve
 on-arrival: {!

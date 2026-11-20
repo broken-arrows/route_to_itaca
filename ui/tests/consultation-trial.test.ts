@@ -74,7 +74,7 @@ describe('consultation verdict', () => {
     expect(second.html).toContain('Marta Rovira');
     expect(second.html.match(/Artur Mas/g)).toHaveLength(first.html.match(/Artur Mas/g)!.length);
     expect(restored.qualities.time).toBe(time);
-    expect(restored.choose(0)).toMatchObject({ sceneId: 'snap_election', title: 'Early election follows the 9N verdict' });
+    expect(restored.choose(0)).toMatchObject({ sceneId: 'snap_election', title: 'New Parlament elections called!' });
     expect(restored.qualities.cat_caretaker_gov).toBe(true);
   });
 
@@ -302,7 +302,7 @@ describe('consultation verdict', () => {
     expect(frame.sceneId).toBe('snap_election');
     prose.innerHTML = frame.html;
     expect(prose.textContent).toContain('has forced Oriol Junqueras from office');
-    expect(prose.textContent).toContain('Carles Puigdemont will lead the Generalitat in an acting capacity');
+    expect(prose.textContent).toContain('Carles Puigdemont is set to lead it following succession rules');
     expect(prose.textContent).not.toContain('Repeated failures to pass');
     expect(q.cat_caretaker_gov).toBe(true);
     const catalog = JSON.parse(readFileSync(resolve(import.meta.dirname, '../../source/locales/ca/content.json'), 'utf8'));

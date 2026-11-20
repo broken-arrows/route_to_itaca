@@ -21,10 +21,13 @@
   "use strict";
   function tr(text, params) {
     if (window.ClassicI18n) return window.ClassicI18n.text(text, params);
-    return text.replace(/\{(\w+)\}/g, function (m, key) { return params && params[key] !== undefined ? params[key] : m; });
+    return text.replace(/\{(\w+)\}/g, function (m, key) {
+      return params && params[key] !== undefined ? params[key] : m;
+    });
   }
-  function tc(text) { return window.ClassicI18n ? window.ClassicI18n.content(text) : text; }
-
+  function tc(text) {
+    return window.ClassicI18n ? window.ClassicI18n.content(text) : text;
+  }
 
   // ─── VEGUERIES CAPITALS (have a [cityId]-extras label element in the SVG) ──
   const VEGUERIES_CAPITALS = new Set([
@@ -1137,47 +1140,7 @@
   window.initCatLocalMap = initCatLocalMap;
 
   // ─── CONGRESO (SPANISH GENERAL ELECTION) MAP ──────────────────────────────
-  // Same painter pattern as the local map: the algorithm scene
-  // (election_algorithm @esp_congreso) is the single source of truth and writes
-  //   • Q["congreso_<constituency>_wp"]      — seat leader of a simulated region
-  //   • Q["congreso_prov_<svgId>_wp"]        — synthetic winner of a 'rest' province
-  //   • Q["<party>_congreso_s_<constituency>"] — per-region seats (incl. "rest")
-  // This file just reads them.
 
-  // SVG region id → simulated congreso constituency key
-  const CONGRESO_REGION_IDS = {
-    catalonia: "catalunya",
-    valencia: "valencia",
-    balearic_islands: "balears",
-    navarre: "navarra",
-    basque_country: "euskadi",
-    galicia: "galicia",
-  };
-  // SVG province ids that roll up into the synthetic "rest" constituency
-  const CONGRESO_REST_PROVINCE_IDS = [
-    "madrid",
-    "andalusia",
-    "extremadura",
-    "castile_la_mancha",
-    "castile_and_leon",
-    "murcia",
-    "la_rioja",
-    "aragon",
-    "asturias",
-    "cantabria",
-    "canary_islands",
-    "ceuta",
-    "melilla",
-  ];
-  const CONGRESO_NAMES = {
-    catalunya: "Catalonia",
-    valencia: "Valencia",
-    balears: "Balearic Islands",
-    navarra: "Navarre",
-    euskadi: "Basque Country",
-    galicia: "Galicia",
-    rest: "Rest of Spain",
-  };
   const CONGRESO_NEUTRAL = "#d9d9d9";
 
   // Border system mirrors the parlament map's `.province`: thin black stroke that
@@ -1199,7 +1162,9 @@
       .congreso-map .congreso-sim:hover { opacity: 0.7; stroke-width: 1.1 !important; }
       .congreso-map .congreso-rest.rest-hover { opacity: 0.7; stroke-width: 1.1 !important; }
       .congreso-map .congreso-region.selected { stroke-width: 1.7 !important; }
-      .congreso-map #_congmap-panel { position: relative; margin-top: 0.5em; }
+      /* The bars' negative margin lifts this full-width box over the map's
+         lower edge, where the Canary Islands inset sits; let clicks through. */
+      .congreso-map #_congmap-panel { position: relative; margin-top: 0.5em; pointer-events: none; }
       .congreso-map .cong-title {
         position: absolute; right: 0; top: -2em;
         text-align: right; line-height: 1.05;
@@ -1221,6 +1186,7 @@
       .congreso-map .cong-label {
         overflow: visible; white-space: nowrap;
         font-size: 9px; line-height: 1; text-align: center;
+        pointer-events: auto;
       }
       .congreso-map .cong-bar { width: 80%; border-radius: 3px 3px 0 0; }
       .congreso-map .cong-seats-n { font-weight: 600; font-size: 11px; }
@@ -1239,33 +1205,19 @@
     }
   }
 
-  // Per-constituency seat bars (no table) — same bar system as cat_polls. The
-  // constituency title is floated to the top-right and lifted ~3em to reclaim
-  // vertical space over the map.
-  function renderCongresoBars(panel, constituency, Q) {
-    const parties = Q["congreso_parties_" + constituency] || [];
-    const rows = [];
-    for (const p of parties) {
-      const s = Q[p + "_congreso_s_" + constituency] || 0;
-      if (s > 0)
-        rows.push({
-          party: p,
-          seats: s,
-          pv: Q[p + "_congreso_" + constituency + "_support"] || 0,
-        });
-    }
-    rows.sort((a, b) => b.pv - a.pv || b.seats - a.seats);
+  // Per-panel seat bars (no table) — same bar system as cat_polls.
+  function renderCongresoBars(panel, data) {
+    const rows = data.rows || [];
     const maxSeats = rows.length
       ? rows.reduce((m, r) => Math.max(m, r.seats), 0)
       : 1;
-    const totalSeats =
-      (Q.congreso_seats && Q.congreso_seats[constituency]) || 0;
-    const name = tr(CONGRESO_NAMES[constituency] || constituency);
+    const name = tr(data.name);
 
-    const title = `<div class="cong-title">${name}<span class="cong-seats">${tr("{count} seats", { count: totalSeats })}</span></div>`;
+    const title = `<div class="cong-title">${name}<span class="cong-seats">${tr(data.seats === 1 ? "{count} seat" : "{count} seats", { count: data.seats })}</span></div>`;
 
     if (!rows.length) {
-      panel.innerHTML = title + `<div class="cong-empty">${tr("No results yet.")}</div>`;
+      panel.innerHTML =
+        title + `<div class="cong-empty">${tr("No results yet.")}</div>`;
       return;
     }
 
@@ -1314,6 +1266,7 @@
     const panel = container.querySelector("#_congmap-panel");
     panel.innerHTML = `<div class="cong-empty">${tr("Click a region to see its seat distribution.")}</div>`;
 
+    const model = window.RTI_GAME_LIB.congresoResultsMap(Q);
     const allRegions = [];
     const restEls = [];
 
@@ -1321,41 +1274,32 @@
       for (const el of allRegions) el.classList.remove("selected");
     }
 
-    // Simulated constituencies — real per-region data; per-region hover + select
-    for (const svgId in CONGRESO_REGION_IDS) {
-      const c = CONGRESO_REGION_IDS[svgId];
-      const el = svg.querySelector("#" + svgId);
+    for (const region of model.regions) {
+      const el = svg.querySelector("#" + region.id);
       if (!el) continue;
-      const winner = Q["congreso_" + c + "_wp"] || null;
       congresoFill(
         el,
-        winner ? getPartyColor(winner) : CONGRESO_NEUTRAL,
-        winner ? 0.9 : 0.45,
+        region.winner ? getPartyColor(region.winner) : CONGRESO_NEUTRAL,
+        region.winner ? 0.9 : 0.45,
       );
-      el.classList.add("congreso-region", "congreso-sim");
+      const data = model.panels[region.panel];
+      const pooled = region.panel === "rest";
+      el.classList.add(
+        "congreso-region",
+        pooled ? "congreso-rest" : "congreso-sim",
+      );
       allRegions.push(el);
+      if (pooled) {
+        restEls.push(el);
+        continue;
+      }
       el.addEventListener("click", () => {
         clearSelection();
         el.classList.add("selected");
-        renderCongresoBars(panel, c, Q);
+        if (data) renderCongresoBars(panel, data);
       });
     }
 
-    // "rest" provinces — synthetic winners. Hover/click acts on the WHOLE bloc, and
-    // any of them opens the aggregate "rest of Spain" bars.
-    for (const pid of CONGRESO_REST_PROVINCE_IDS) {
-      const el = svg.querySelector("#" + pid);
-      if (!el) continue;
-      const winner = Q["congreso_prov_" + pid + "_wp"] || null;
-      congresoFill(
-        el,
-        winner ? getPartyColor(winner) : CONGRESO_NEUTRAL,
-        winner ? 0.9 : 0.45,
-      );
-      el.classList.add("congreso-region", "congreso-rest");
-      allRegions.push(el);
-      restEls.push(el);
-    }
     for (const el of restEls) {
       el.addEventListener("mouseenter", () => {
         for (const r of restEls) r.classList.add("rest-hover");
@@ -1366,7 +1310,7 @@
       el.addEventListener("click", () => {
         clearSelection();
         for (const r of restEls) r.classList.add("selected");
-        renderCongresoBars(panel, "rest", Q);
+        if (model.panels.rest) renderCongresoBars(panel, model.panels.rest);
       });
     }
   }
@@ -1387,7 +1331,6 @@
     mpais: "img/parties/logo_mpais.svg",
     nsuma: "img/parties/logo_nsuma.png",
     upyd: "img/parties/logo_upyd.svg",
-
     erc: "img/parties/logo_erc.png",
     ciu: "img/parties/logo_ciu.png",
     cdc: "img/parties/logo_cdc.png",

@@ -37,6 +37,13 @@ describe('Phase 5D election simulator', () => {
     const model = game.qualities[key] as { seats: Array<{ seats: number }> };
     expect(model.seats.reduce((sum, party) => sum + party.seats, 0)).toBe(seats);
     expect(frame.html).toContain('data-widget="hemicycle"');
+    // Congreso district sizes and local rules depend on the date; Parlament does not read it.
+    if (family !== 'parlament') expect([game.qualities.year, game.qualities.month]).toEqual(id.split('_').map(Number));
+    if (family === 'congreso') {
+      const sizes = id === '2015_12' ? { rest: 217, castile_and_leon: 32 } : { rest: 216, castile_and_leon: 31 };
+      expect(game.qualities.congreso_seats.rest).toBe(sizes.rest);
+      expect(game.qualities.congreso_rest_communities.castile_and_leon.total).toBe(sizes.castile_and_leon);
+    }
     if (family === 'local') {
       const localChoice = frame.choices.findIndex((entry) => entry.id === 'election_simulation.local_cat_results');
       expect(localChoice).toBeGreaterThanOrEqual(0);

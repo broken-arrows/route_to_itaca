@@ -24,7 +24,7 @@ type Q = Record<string, any>;
 /** Boot a real game state, then hold every macro driver constant so the only
  *  force acting on support is step 4j. Any drift observed is noise, by
  *  construction. */
-function quietGame({ activateTe = true } = {}): Q {
+function quietGame({ activateTe = true, seed = 0 } = {}): Q {
   const prevWindow = (globalThis as any).window;
   (globalThis as any).window = { location: { protocol: 'http:', hostname: '127.0.0.1', href: 'http://127.0.0.1/' } };
   const prevLog = console.log;
@@ -55,6 +55,9 @@ function quietGame({ activateTe = true } = {}): Q {
     q.podemos_channeling = 0;
     q.corruption_pp = 0;
     q.corruption_psoe = 0;
+    // Each trial runs on its own fixed stream of the engine's seeded RNG, so a
+    // result reproduces exactly and a failure means the behaviour changed.
+    q.game_random_seed = q.game_random_state = (seed * 2654435761) >>> 0;
     if (activateTe) {
       // Noise checks need an eligible minor party, rather than seeding one
       // whose authored entry gate is still closed.
@@ -111,7 +114,7 @@ describe('congreso noise', () => {
     const start = sup(quietGame(), party, c);
     const finals: number[] = [];
     for (let t = 0; t < TRIALS; t++) {
-      const q = quietGame();
+      const q = quietGame({ seed: t });
       tick(q, MONTHS);
       finals.push(sup(q, party, c));
     }
@@ -137,7 +140,7 @@ describe('congreso noise', () => {
     // `te` sits at 0.05 and died in 32-39% of runs under the walk, permanently:
     // support 0 drops it out of `activeParties`, so it can never recover.
     for (let t = 0; t < TRIALS; t++) {
-      const q = quietGame();
+      const q = quietGame({ seed: t });
       tick(q, MONTHS);
       expect(sup(q, 'te', 'rest')).toBeGreaterThan(0);
       expect(sup(q, 'prc', 'rest')).toBeGreaterThan(0);

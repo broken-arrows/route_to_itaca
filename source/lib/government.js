@@ -285,15 +285,19 @@
       (kind === "psoe" || Math.max(socialists, offer.mediationTarget) > 0)
     )
       potential += S("pnv");
+    // PSOE only files a motion it can win
+    var psoeReason = Q.spanish_pm_party !== "pp" || corruption >= 60;
     offer.ready =
       eligible &&
       S(party) >= 60 &&
       candidate &&
       candidate !== "???" &&
       !(Q.censure_attempted || {})[kind] &&
-      (corruption >= 50 ||
-        potential >= majority ||
-        (kind === "podemos" && Q.censure_podemos_trigger));
+      (kind === "psoe"
+        ? potential >= majority && psoeReason
+        : corruption >= 50 ||
+          potential >= majority ||
+          Q.censure_podemos_trigger);
     return offer;
   }
 

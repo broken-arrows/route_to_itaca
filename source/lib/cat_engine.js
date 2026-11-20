@@ -425,35 +425,66 @@
   // Relative sensitivities of the live ERC electoral leader. Missing profiles
   // (including Junqueras and older saves) use the existing voter model.
   const ERC_ELECTORAL_PROFILES = new Map([
-    ["Marta Rovira", {
-      matrix: { driver: "unemployment", targetOffset: -0.018 },
-      economy: { provinces: ["barcelona", "tarragona"], demographics: ["ind", "unemployed"], welfare: 0.25 },
-      congreso: { economy: 0.15 },
-      local: { redBelt: 2, interior: 0.75 },
-    }],
-    ["Pere Aragonès", {
-      matrix: { driver: "independence_movement", scale: 0.85 },
-      economy: { provinces: ["barcelona", "tarragona"], demographics: ["middle", "ind"], government: 0.25 },
-      congreso: { confrontation: -0.15, dialogue: 0.20 },
-      local: { services: 1.5 },
-    }],
-    ["Raül Romeva", {
-      matrix: { driver: "independence_trust", scale: 1.05, demographics: { middle: 0.10 },
-        provinces: { barcelona: 0.05, girona: 0.05 }, shared: 0.05 },
-      congreso: { confrontation: 0.06, shared: 0.09 },
-      local: { barcelona: 0.8, interior: 0.6 },
-    }],
-    ["Carme Forcadell", {
-      matrix: { driver: "independence_movement", scale: 1.12, demographics: { young: 0.08, rural: 0.08 },
-        provinces: { girona: 0.10, lleida: 0.10 } },
-      congreso: { confrontation: 0.20 },
-      local: { mobilisedRedBelt: 0.5, mobilisedInterior: 2 },
-    }],
+    [
+      "Marta Rovira",
+      {
+        matrix: { driver: "unemployment", targetOffset: -0.018 },
+        economy: {
+          provinces: ["barcelona", "tarragona"],
+          demographics: ["ind", "unemployed"],
+          welfare: 0.25,
+        },
+        congreso: { economy: 0.15 },
+        local: { redBelt: 2, interior: 0.75 },
+      },
+    ],
+    [
+      "Pere Aragonès",
+      {
+        matrix: { driver: "independence_movement", scale: 0.85 },
+        economy: {
+          provinces: ["barcelona", "tarragona"],
+          demographics: ["middle", "ind"],
+          government: 0.25,
+        },
+        congreso: { confrontation: -0.15, dialogue: 0.2 },
+        local: { services: 1.5 },
+      },
+    ],
+    [
+      "Raül Romeva",
+      {
+        matrix: {
+          driver: "independence_trust",
+          scale: 1.05,
+          demographics: { middle: 0.1 },
+          provinces: { barcelona: 0.05, girona: 0.05 },
+          shared: 0.05,
+        },
+        congreso: { confrontation: 0.06, shared: 0.09 },
+        local: { barcelona: 0.8, interior: 0.6 },
+      },
+    ],
+    [
+      "Carme Forcadell",
+      {
+        matrix: {
+          driver: "independence_movement",
+          scale: 1.12,
+          demographics: { young: 0.08, rural: 0.08 },
+          provinces: { girona: 0.1, lleida: 0.1 },
+        },
+        congreso: { confrontation: 0.2 },
+        local: { mobilisedRedBelt: 0.5, mobilisedInterior: 2 },
+      },
+    ],
   ]);
 
   function ercEconomicTarget(profile, province, demographic) {
-    return profile?.economy?.provinces.includes(province) &&
-      profile.economy.demographics.includes(demographic);
+    return (
+      profile?.economy?.provinces.includes(province) &&
+      profile.economy.demographics.includes(demographic)
+    );
   }
 
   function ercInGeneralitat(Q) {
@@ -464,16 +495,26 @@
 
   function ercLocalAppeal(Q) {
     const local = ERC_ELECTORAL_PROFILES.get(Q.erc_leader)?.local;
-    if (!local) return { carrier: "erc", barcelona: 0, redBelt: 0, interior: 0 };
-    const mobilisation = clamp(((Q.independence_movement ?? 50) - 50) / 20, 0, 1);
-    const services = local.services && ercInGeneralitat(Q)
-      ? clamp(((Q.welfare_index ?? 50) - 50) / 15, 0, 1)
-      : 0;
+    if (!local)
+      return { carrier: "erc", barcelona: 0, redBelt: 0, interior: 0 };
+    const mobilisation = clamp(
+      ((Q.independence_movement ?? 50) - 50) / 20,
+      0,
+      1,
+    );
+    const services =
+      local.services && ercInGeneralitat(Q)
+        ? clamp(((Q.welfare_index ?? 50) - 50) / 15, 0, 1)
+        : 0;
     return {
       carrier: cardCoalitionCarrier(Q, "barcelona", null, null, "erc"),
       barcelona: local.barcelona || 0,
-      redBelt: (local.redBelt || 0) + (local.mobilisedRedBelt || 0) * mobilisation + (local.services || 0) * services,
-      interior: (local.interior || 0) + (local.mobilisedInterior || 0) * mobilisation,
+      redBelt:
+        (local.redBelt || 0) +
+        (local.mobilisedRedBelt || 0) * mobilisation +
+        (local.services || 0) * services,
+      interior:
+        (local.interior || 0) + (local.mobilisedInterior || 0) * mobilisation,
     };
   }
 
@@ -1029,9 +1070,20 @@
     if (Q.fnc_parlament_s > 0 && requestedMatrix.vox > 0 && carriers.fnc) {
       const diverted = 0.3 * requestedMatrix.vox;
       requestedMatrix.vox -= diverted;
-      requestedMatrix[carriers.fnc] = (requestedMatrix[carriers.fnc] || 0) + diverted;
-      recordParlamentVoteTrace(Q, "correction.fnc_vox_appeal", "vox", -diverted * traceWeight);
-      recordParlamentVoteTrace(Q, "correction.fnc_vox_appeal", "fnc", diverted * traceWeight);
+      requestedMatrix[carriers.fnc] =
+        (requestedMatrix[carriers.fnc] || 0) + diverted;
+      recordParlamentVoteTrace(
+        Q,
+        "correction.fnc_vox_appeal",
+        "vox",
+        -diverted * traceWeight,
+      );
+      recordParlamentVoteTrace(
+        Q,
+        "correction.fnc_vox_appeal",
+        "fnc",
+        diverted * traceWeight,
+      );
     }
     const gainTotal = Object.values(requestedMatrix).reduce(
       (n, v) => n + Math.max(0, v),
@@ -1060,26 +1112,57 @@
         amount = -amount;
       }
       const source = carriers[from];
-      const destinations = [{ to, amount, mechanism, onSettled: request.onSettled,
-        returningAmount: request.returningAmount }];
+      const destinations = [
+        {
+          to,
+          amount,
+          mechanism,
+          onSettled: request.onSettled,
+          returningAmount: request.returningAmount,
+        },
+      ];
       if (carriers[to] === "vox" && Q.fnc_parlament_s > 0 && carriers.fnc) {
         destinations[0].amount *= 0.7;
-        destinations.push({ to: "fnc", amount: amount * 0.3,
-          mechanism: "nonlinear.fnc_vox_competition", returningAmount: 0 });
+        destinations.push({
+          to: "fnc",
+          amount: amount * 0.3,
+          mechanism: "nonlinear.fnc_vox_competition",
+          returningAmount: 0,
+        });
       }
       for (const route of destinations) {
         const destination = carriers[route.to];
         let amount = route.amount;
-        recordParlamentVoteTrace(Q, `requested.${route.mechanism}`, from, -amount * traceWeight);
-        recordParlamentVoteTrace(Q, `requested.${route.mechanism}`, route.to, amount * traceWeight);
+        recordParlamentVoteTrace(
+          Q,
+          `requested.${route.mechanism}`,
+          from,
+          -amount * traceWeight,
+        );
+        recordParlamentVoteTrace(
+          Q,
+          `requested.${route.mechanism}`,
+          route.to,
+          amount * traceWeight,
+        );
         // Unavailable destinations and transfers back into the donor retain voters.
         if (!source || !destination || source === destination) continue;
         if (isIndependenceRecruitment(source, destination)) {
-          const returning = Math.min(amount, Math.max(0, route.returningAmount || 0));
+          const returning = Math.min(
+            amount,
+            Math.max(0, route.returningAmount || 0),
+          );
           amount = returning + (amount - returning) * recruitmentScale;
         }
-        requests.push({ from, to: route.to, source, destination, amount,
-          mechanism: route.mechanism, onSettled: route.onSettled });
+        requests.push({
+          from,
+          to: route.to,
+          source,
+          destination,
+          amount,
+          mechanism: route.mechanism,
+          onSettled: route.onSettled,
+        });
         outgoing[source] = (outgoing[source] || 0) + amount;
       }
     }
@@ -1837,12 +1920,17 @@
         const T_base = matrices.BASE_T;
         const T_demo = matrices._DELTA_T[demo] || [];
         const T_prov = matrices._DELTA_PROV[prov] || [];
-        const ercScale = (ercMatrix?.scale ?? 1) +
-          (ercMatrix?.demographics?.[demo] || 0) + (ercMatrix?.provinces?.[prov] || 0) +
-          (COALITION_PARTIES.includes(carriers.il) ? ercMatrix?.shared || 0 : 0);
-        const ercOffset = ercMatrix?.targetOffset && ercEconomicTarget(ercProfile, prov, demo)
-          ? ercMatrix.targetOffset
-          : 0;
+        const ercScale =
+          (ercMatrix?.scale ?? 1) +
+          (ercMatrix?.demographics?.[demo] || 0) +
+          (ercMatrix?.provinces?.[prov] || 0) +
+          (COALITION_PARTIES.includes(carriers.il)
+            ? ercMatrix?.shared || 0
+            : 0);
+        const ercOffset =
+          ercMatrix?.targetOffset && ercEconomicTarget(ercProfile, prov, demo)
+            ? ercMatrix.targetOffset
+            : 0;
 
         for (let i = 0; i < FAMILIES.length; i++) {
           for (let j = 0; j < d_vars.length; j++) {
@@ -1850,9 +1938,8 @@
               T_base[i][j] +
               (T_demo[i] ? T_demo[i][j] : 0) +
               (T_prov[i] ? T_prov[i][j] : 0);
-            const coefficient = i === IL && j === ercDriver
-              ? val * ercScale + ercOffset
-              : val;
+            const coefficient =
+              i === IL && j === ercDriver ? val * ercScale + ercOffset : val;
             const contribution = coefficient * d_vars[j];
             delta_vec[i] += contribution;
             recordParlamentVoteTrace(
@@ -2042,16 +2129,27 @@
           if (extra_cup > 0) {
             // Keep donor identities: a net-vector split would inadvertently
             // give ERC the same FNC affinity as the conservative electorate.
-            for (const [from, share] of [["icr", 0.7], ["il", 0.3]]) {
+            for (const [from, share] of [
+              ["icr", 0.7],
+              ["il", 0.3],
+            ]) {
               const split = splitParlamentDisappointmentGain(
-                Q, from, extra_cup * share, disappointmentProfile,
+                Q,
+                from,
+                extra_cup * share,
+                disappointmentProfile,
               );
               for (const to of ["cup", "fnc"]) {
-                if (split[to] > 0) transfers.push({
-                  from, to, amount: split[to],
-                  mechanism: to === "cup" ? "nonlinear.cup_trust"
-                    : "nonlinear.fnc_disappointment_diversion",
-                });
+                if (split[to] > 0)
+                  transfers.push({
+                    from,
+                    to,
+                    amount: split[to],
+                    mechanism:
+                      to === "cup"
+                        ? "nonlinear.cup_trust"
+                        : "nonlinear.fnc_disappointment_diversion",
+                  });
               }
             }
           } else {
@@ -2726,9 +2824,10 @@
       const rates =
         c === "catalunya" ? CATALUNYA_RATES : REGIONAL_RATES[c] || P;
       const has = (p) => fams.includes(p);
-      const ercBallot = c === "catalunya" && ercCongreso
-        ? cardCoalitionCarrier(Q, "congreso", c, null, "erc")
-        : null;
+      const ercBallot =
+        c === "catalunya" && ercCongreso
+          ? cardCoalitionCarrier(Q, "congreso", c, null, "erc")
+          : null;
       const leadership = has(ercBallot) ? ercCongreso : null;
 
       const deltas = {};
@@ -2828,7 +2927,9 @@
           const cs_gain = mag * P.cat_spa_cs_cat;
           const ercF = leadership ? ercBallot : ercKey(Q, c);
           const convF = convKey(Q, c);
-          const ercResponse = 1 + (leadership?.confrontation || 0) +
+          const ercResponse =
+            1 +
+            (leadership?.confrontation || 0) +
             (ercBallot && ercBallot !== "erc" ? leadership?.shared || 0 : 0);
           for (const [donor, share] of [
             [ppF, 0.4],
@@ -2850,17 +2951,25 @@
         const recruitment = independenceRecruitmentScale(
           cardIndependenceShare(Q, "congreso", c, null, fams),
         );
-        transfer(psoeF, ercBallot, d_cat_spa * P.cat_spa_indy * leadership.dialogue * recruitment);
+        transfer(
+          psoeF,
+          ercBallot,
+          d_cat_spa * P.cat_spa_indy * leadership.dialogue * recruitment,
+        );
       }
       if (leadership?.economy) {
         const { g, u, w } = ECON_CATALUNYA.psc;
         const rivals = [psoeF, podF].filter(has);
-        const response = (g * d_gdp + u * d_unemp + w * d_welfare) * leadership.economy;
-        const recruitment = response > 0
-          ? independenceRecruitmentScale(cardIndependenceShare(Q, "congreso", c, null, fams))
-          : 1;
+        const response =
+          (g * d_gdp + u * d_unemp + w * d_welfare) * leadership.economy;
+        const recruitment =
+          response > 0
+            ? independenceRecruitmentScale(
+                cardIndependenceShare(Q, "congreso", c, null, fams),
+              )
+            : 1;
         for (const rival of rivals) {
-          const amount = response * recruitment / rivals.length;
+          const amount = (response * recruitment) / rivals.length;
           if (amount > 0) transfer(rival, ercBallot, amount);
           else transfer(ercBallot, rival, -amount);
         }
@@ -3517,14 +3626,17 @@
       0.4 * (context.dUnemployment || 0) -
       0.2 * (context.dDissent || 0);
     const ercProfile = ERC_ELECTORAL_PROFILES.get(Q.erc_leader);
-    const ercEconomy = ercEconomicTarget(ercProfile, context.province, context.demographic) && ercProfile.economy;
+    const ercEconomy =
+      ercEconomicTarget(ercProfile, context.province, context.demographic) &&
+      ercProfile.economy;
     const transfers = [];
     for (const [source, weight] of Object.entries(responsibility)) {
       if (!carriers[source]) continue;
       let response = signal;
       if (source === "il" && ercEconomy) {
         response += (ercEconomy.welfare || 0) * (context.dWelfare || 0);
-        if (ercEconomy.government && ercInGeneralitat(Q)) response *= 1 + ercEconomy.government;
+        if (ercEconomy.government && ercInGeneralitat(Q))
+          response *= 1 + ercEconomy.government;
       }
       const magnitude = Math.abs(response) * 0.045 * (context.scale ?? 1);
       if (!magnitude) continue;
@@ -3693,23 +3805,44 @@
         if (!Number.isFinite(actual) || actual < 0)
           cardTransferError("calculated transfer is invalid");
         let diversion;
-        if (contest === "parlament" && to === "vox" && Q.fnc_parlament_s > 0 && lineup.includes("fnc")) {
+        if (
+          contest === "parlament" &&
+          to === "vox" &&
+          Q.fnc_parlament_s > 0 &&
+          lineup.includes("fnc")
+        ) {
           let diverted = actual * 0.3;
           actual -= diverted;
           if (from !== "fnc") {
-            const fncKey = cardSupportKey(contest, "fnc", constituency, demographic);
+            const fncKey = cardSupportKey(
+              contest,
+              "fnc",
+              constituency,
+              demographic,
+            );
             const fncCurrent = Q[fncKey];
             if (!Number.isFinite(fncCurrent) || fncCurrent < 0)
-              cardTransferError(fncKey + " must hold finite, non-negative support");
+              cardTransferError(
+                fncKey + " must hold finite, non-negative support",
+              );
             if (isIndependenceRecruitment(from, "fnc")) {
               if (nationalIndependenceShare === undefined)
                 nationalIndependenceShare = cardNationalIndependenceShare(Q);
-              diverted *= independenceRecruitmentScale(nationalIndependenceShare);
+              diverted *= independenceRecruitmentScale(
+                nationalIndependenceShare,
+              );
             }
             diversion = { key: fncKey, current: fncCurrent, amount: diverted };
           }
         }
-        transfers.push({ toKey, fromKey, toCurrent, fromCurrent, actual, diversion });
+        transfers.push({
+          toKey,
+          fromKey,
+          toCurrent,
+          fromCurrent,
+          actual,
+          diversion,
+        });
       }
     }
 
@@ -3729,7 +3862,8 @@
       Q[transfer.fromKey] = nextFrom;
       Q[transfer.toKey] = nextTo;
       if (transfer.diversion)
-        Q[transfer.diversion.key] = transfer.diversion.current + transfer.diversion.amount;
+        Q[transfer.diversion.key] =
+          transfer.diversion.current + transfer.diversion.amount;
       totalTransferred += spent;
     }
     return totalTransferred;
@@ -4275,31 +4409,54 @@
     const demographics = Q.parlament_demographics || [];
     let valid = 0;
     let cup = 0;
-    for (const province of provinces) for (const demo of demographics) {
-      const population = Math.max(0, Number(Q[`parlament_${province}_${demo}_pop`]) || 0);
-      for (const party of new Set(Q.parties || [])) {
-        if (party === "abstain") continue;
-        const votes = population * Math.max(0,
-          Number(Q[`${party}_parlament_${province}_${demo}_support`]) || 0);
-        valid += votes;
-        if (party === "cup") cup += votes;
+    for (const province of provinces)
+      for (const demo of demographics) {
+        const population = Math.max(
+          0,
+          Number(Q[`parlament_${province}_${demo}_pop`]) || 0,
+        );
+        for (const party of new Set(Q.parties || [])) {
+          if (party === "abstain") continue;
+          const votes =
+            population *
+            Math.max(
+              0,
+              Number(Q[`${party}_parlament_${province}_${demo}_support`]) || 0,
+            );
+          valid += votes;
+          if (party === "cup") cup += votes;
+        }
       }
-    }
-    const share = valid > 0 ? 100 * cup / valid : 0;
+    const share = valid > 0 ? (100 * cup) / valid : 0;
     const pressure = Math.max(0, share - 6) / 2;
     const sizeFactor = 0.35 + 0.65 / (1 + pressure * pressure);
     const carriers = parlamentFamilyCarriers(Q, provinces[0], demographics[0]);
-    const hasCup = (parties) => (parties || []).some(
-      (p) => p === "cup" || (coalitionFamilies(Q, p) || []).includes("cup"));
-    let credibility = hasCup(Q.cat_coalition) ? 0.25
-      : hasCup(Q.cat_coalition_support) ? 0.6
-        : hasCup(Q.cat_coalition_abstain) ? 0.85 : 1;
-    if (carriers.cup !== "cup" || (Q.player_party === "cup" && Q.broken_roadmap))
+    const hasCup = (parties) =>
+      (parties || []).some(
+        (p) => p === "cup" || (coalitionFamilies(Q, p) || []).includes("cup"),
+      );
+    let credibility = hasCup(Q.cat_coalition)
+      ? 0.25
+      : hasCup(Q.cat_coalition_support)
+        ? 0.6
+        : hasCup(Q.cat_coalition_abstain)
+          ? 0.85
+          : 1;
+    if (
+      carriers.cup !== "cup" ||
+      (Q.player_party === "cup" && Q.broken_roadmap)
+    )
       credibility = 0;
-    return { share, sizeFactor, credibility, cupFactor: sizeFactor * credibility,
-      frustrationSquared: clamp(Q.parlament_disappointment?.frustration || 0, 0, 1) ** 2,
+    return {
+      share,
+      sizeFactor,
+      credibility,
+      cupFactor: sizeFactor * credibility,
+      frustrationSquared:
+        clamp(Q.parlament_disappointment?.frustration || 0, 0, 1) ** 2,
       fncAvailable: Q.fnc_formed === true && Q.pxc_dissolved === true,
-      breachMultiplier: Q.broken_roadmap ? 1.5 : 1 };
+      breachMultiplier: Q.broken_roadmap ? 1.5 : 1,
+    };
   }
 
   // Only a portion of blocked CUP recruitment finds FNC. The monthly remainder
@@ -4308,8 +4465,12 @@
     profile = profile || getParlamentDisappointmentProfile(Q);
     const cup = amount * profile.cupFactor;
     const affinity = from === "icr" ? 0.5 : from === "il" ? 0.1 : 0;
-    const fnc = profile.fncAvailable ? (amount - cup) * affinity *
-      profile.frustrationSquared * profile.breachMultiplier : 0;
+    const fnc = profile.fncAvailable
+      ? (amount - cup) *
+        affinity *
+        profile.frustrationSquared *
+        profile.breachMultiplier
+      : 0;
     return { cup, fnc, retained: amount - cup - fnc };
   }
 
@@ -4350,7 +4511,8 @@
     }
     const requests = [];
     const scale = clamp(context.scale ?? 1, 0, 2);
-    const profile = context.disappointmentProfile || getParlamentDisappointmentProfile(Q);
+    const profile =
+      context.disappointmentProfile || getParlamentDisappointmentProfile(Q);
     for (const family of ["icr", "il"]) {
       const stock = state.cells[key][family];
       const source = carriers[family];
@@ -4370,7 +4532,10 @@
       // CUP also responds to current low trust, but its event response remains
       // the faster channel. FNC needs both accumulated and current frustration.
       const split = splitParlamentDisappointmentGain(
-        Q, family, 0.02 * state.pressure, profile,
+        Q,
+        family,
+        0.02 * state.pressure,
+        profile,
       );
       request("cup", split.cup, "nonlinear.cup_sustained_disappointment");
       request("fnc", split.fnc, "nonlinear.fnc_disappointment_diversion");
@@ -4451,9 +4616,261 @@
     return requests;
   }
 
+  // --- Congreso district magnitudes (LOREG art. 162) -------------------------
+  // Official municipal-register population on 1 January (INE table 2852),
+  // 2010-2021, keyed by the district names election_algorithm uses.
+  const CONGRESO_POPULATION_FIRST_YEAR = 2010;
+  const CONGRESO_POPULATION = {
+    Barcelona: [
+      5511147, 5529099, 5552050, 5540925, 5523784, 5523922, 5542680, 5576037,
+      5609350, 5664579, 5743402, 5714730,
+    ],
+    Girona: [
+      753046, 756810, 761627, 761632, 756156, 753054, 753576, 755716, 761947,
+      771044, 781788, 786596,
+    ],
+    Lleida: [
+      439768, 442308, 443032, 440915, 438001, 436029, 434041, 432384, 432866,
+      434930, 438517, 439727,
+    ],
+    Tarragona: [
+      808420, 811401, 814199, 810178, 800962, 795101, 792299, 791693, 795902,
+      804664, 816772, 822309,
+    ],
+    "Alicante/Alacant": [
+      1926285, 1934127, 1943910, 1945642, 1868438, 1855047, 1836459, 1825332,
+      1838819, 1858683, 1879888, 1881762,
+    ],
+    "Castellón/Castelló": [
+      604274, 604344, 604564, 601699, 587508, 582327, 579245, 575470, 576898,
+      579962, 585590, 587064,
+    ],
+    "Valencia/València": [
+      2581147, 2578719, 2580792, 2566474, 2548898, 2543315, 2544264, 2540707,
+      2547986, 2565124, 2591875, 2589312,
+    ],
+    "Balears (Illes)": [
+      1106049, 1113114, 1119439, 1111674, 1103442, 1104479, 1107220, 1115999,
+      1128908, 1149460, 1171543, 1173008,
+    ],
+    Navarra: [
+      636924, 642051, 644566, 644477, 640790, 640476, 640647, 643234, 647554,
+      654214, 661197, 661537,
+    ],
+    "Araba/Álava": [
+      317352, 319227, 322557, 321417, 321932, 323648, 324126, 326574, 328868,
+      331549, 333940, 333626,
+    ],
+    Bizkaia: [
+      1153724, 1155772, 1158439, 1156447, 1151905, 1148775, 1147576, 1148302,
+      1149628, 1152651, 1159443, 1154334,
+    ],
+    Gipuzkoa: [
+      707263, 709607, 712097, 713818, 715148, 716834, 717832, 719282, 720592,
+      723576, 727121, 726033,
+    ],
+    "Coruña (A)": [
+      1146458, 1147124, 1143911, 1138161, 1132735, 1127196, 1122799, 1120294,
+      1119351, 1119596, 1121815, 1120134,
+    ],
+    Lugo: [
+      353504, 351530, 348902, 346005, 342748, 339386, 336527, 333634, 331327,
+      329587, 327946, 326013,
+    ],
+    Ourense: [
+      335219, 333257, 330257, 326724, 322293, 318391, 314853, 311680, 309293,
+      307651, 306650, 305223,
+    ],
+    Pontevedra: [
+      962472, 963511, 958428, 955050, 950919, 947374, 944346, 942731, 941772,
+      942665, 945408, 944275,
+    ],
+    Albacete: [
+      401682, 402318, 402837, 400007, 396987, 394580, 392118, 390032, 388786,
+      388167, 388270, 386464,
+    ],
+    Almería: [
+      695560, 702819, 704219, 699329, 701688, 701211, 704297, 706672, 709340,
+      716820, 727945, 731792,
+    ],
+    Asturias: [
+      1084341, 1081487, 1077360, 1068165, 1061756, 1051229, 1042608, 1034960,
+      1028244, 1022800, 1018784, 1011792,
+    ],
+    Ávila: [
+      171896, 172704, 171265, 168825, 167015, 164925, 162514, 160700, 158498,
+      157640, 157664, 158421,
+    ],
+    Badajoz: [
+      692137, 693921, 694533, 693729, 690929, 686730, 684113, 679884, 676376,
+      673559, 672137, 669943,
+    ],
+    Burgos: [
+      374826, 375657, 374970, 371248, 366900, 364002, 360995, 358171, 357070,
+      356958, 357650, 356055,
+    ],
+    Cáceres: [
+      415083, 415446, 413597, 410275, 408703, 406267, 403665, 400036, 396487,
+      394151, 391850, 389558,
+    ],
+    Cádiz: [
+      1236739, 1243519, 1245164, 1238492, 1240175, 1240284, 1239889, 1239435,
+      1238714, 1240155, 1244049, 1245960,
+    ],
+    Cantabria: [
+      592250, 593121, 593861, 591888, 588656, 585179, 582206, 580295, 580229,
+      581078, 582905, 584507,
+    ],
+    "Ciudad Real": [
+      529453, 530175, 530250, 524962, 519613, 513713, 506888, 502578, 499100,
+      495761, 495045, 492591,
+    ],
+    Córdoba: [
+      805108, 805857, 804498, 802422, 799402, 795611, 791610, 788219, 785240,
+      782979, 781451, 776789,
+    ],
+    Cuenca: [
+      217716, 219138, 218036, 211899, 207449, 203841, 201071, 198718, 197222,
+      196329, 196139, 195516,
+    ],
+    Granada: [
+      918072, 924550, 922928, 919319, 919455, 917297, 915392, 912938, 912075,
+      914678, 919168, 921338,
+    ],
+    Guadalajara: [
+      251563, 256461, 259537, 257723, 255426, 253686, 252882, 253310, 254308,
+      257762, 261995, 265588,
+    ],
+    Huelva: [
+      518081, 521968, 522862, 520668, 519229, 520017, 519596, 518930, 519932,
+      521870, 524278, 525835,
+    ],
+    Huesca: [
+      228566, 228361, 227609, 226329, 224909, 222909, 221079, 219702, 219345,
+      220461, 222687, 224264,
+    ],
+    Jaén: [
+      670761, 670600, 670242, 664916, 659033, 654170, 648250, 643484, 638099,
+      633564, 631381, 627190,
+    ],
+    León: [
+      499284, 497799, 494451, 489752, 484694, 479395, 473604, 468316, 463746,
+      460001, 456439, 451706,
+    ],
+    Madrid: [
+      6458684, 6489680, 6498560, 6495551, 6454440, 6436996, 6466996, 6507184,
+      6578079, 6663394, 6779888, 6751251,
+    ],
+    Málaga: [
+      1609557, 1625827, 1641098, 1652999, 1621968, 1628973, 1629298, 1630615,
+      1641121, 1661785, 1685920, 1695651,
+    ],
+    Murcia: [
+      1461979, 1470069, 1474449, 1472049, 1466818, 1467288, 1464847, 1470273,
+      1478509, 1493898, 1511251, 1518486,
+    ],
+    Palencia: [
+      172510, 171668, 170713, 168955, 167609, 166035, 164644, 163390, 162035,
+      160980, 160321, 159123,
+    ],
+    "Palmas (Las)": [
+      1090605, 1096980, 1100813, 1103850, 1100027, 1098406, 1097800, 1100480,
+      1109175, 1120406, 1131065, 1128539,
+    ],
+    "Rioja (La)": [
+      322415, 322955, 323609, 322027, 319002, 317053, 315794, 315381, 315675,
+      316798, 319914, 319796,
+    ],
+    Salamanca: [
+      353619, 352986, 350564, 345548, 342459, 339395, 335985, 333603, 331473,
+      330119, 329245, 327338,
+    ],
+    "S/C Tenerife": [
+      1027914, 1029789, 1017531, 1014829, 1004788, 1001900, 1004124, 1007641,
+      1018510, 1032983, 1044887, 1044405,
+    ],
+    Segovia: [
+      164268, 164169, 163701, 161702, 159303, 157570, 155652, 154184, 153342,
+      153129, 153478, 153663,
+    ],
+    Sevilla: [
+      1917097, 1928962, 1938974, 1942155, 1941355, 1941480, 1939775, 1939527,
+      1939887, 1942389, 1950219, 1947852,
+    ],
+    Soria: [
+      95258, 95223, 94522, 93291, 92221, 91006, 90040, 88903, 88600, 88636,
+      88884, 88747,
+    ],
+    Teruel: [
+      145277, 144607, 143728, 142183, 140365, 138932, 136977, 135562, 134572,
+      134137, 134176, 134545,
+    ],
+    Toledo: [
+      697959, 707242, 711228, 706407, 699136, 693371, 688672, 686841, 687391,
+      694844, 703772, 709403,
+    ],
+    Valladolid: [
+      533640, 534874, 534280, 532284, 529157, 526288, 523679, 521130, 519851,
+      519546, 520649, 519361,
+    ],
+    Zamora: [
+      194214, 193383, 191612, 188270, 185432, 183436, 180406, 177404, 174549,
+      172539, 170588, 168725,
+    ],
+    Zaragoza: [
+      973252, 973325, 978130, 978638, 960111, 956006, 950507, 953486, 954811,
+      964693, 972528, 967452,
+    ],
+    Ceuta: [
+      80579, 82376, 84018, 84180, 84963, 84263, 84519, 84959, 85144, 84777,
+      84202, 83517,
+    ],
+    Melilla: [
+      76034, 78476, 80802, 83679, 84509, 85584, 86026, 86120, 86384, 86487,
+      87076, 86261,
+    ],
+  };
+
+  // Seats per Congreso district for an election held in year/month. The
+  // convocation decree uses the latest official population, approved each
+  // December: an election in year Y uses 1 January Y-1, or Y-2 when it is
+  // called before that December approval (January and February polls). Each
+  // province starts with 2 seats, Ceuta and Melilla with 1; the other 248 go by
+  // largest remainder over the peninsular and island population. Years outside
+  // the table reuse its nearest year.
+  function congresoApportionment(year, month) {
+    const electionYear = Number(year) || 2016;
+    const census = electionYear - ((Number(month) || 6) <= 2 ? 2 : 1);
+    const last =
+      CONGRESO_POPULATION_FIRST_YEAR + CONGRESO_POPULATION.Madrid.length - 1;
+    const index =
+      clamp(census, CONGRESO_POPULATION_FIRST_YEAR, last) -
+      CONGRESO_POPULATION_FIRST_YEAR;
+    const seats = { Ceuta: 1, Melilla: 1 };
+    const provinces = Object.keys(CONGRESO_POPULATION).filter(
+      (name) => name !== "Ceuta" && name !== "Melilla",
+    );
+    const quota =
+      provinces.reduce(
+        (sum, name) => sum + CONGRESO_POPULATION[name][index],
+        0,
+      ) / 248;
+    let assigned = 0;
+    const remainders = provinces.map((name) => {
+      const share = CONGRESO_POPULATION[name][index] / quota;
+      seats[name] = 2 + Math.floor(share);
+      assigned += Math.floor(share);
+      return [name, share - Math.floor(share)];
+    });
+    remainders.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+    for (let i = 0; i < 248 - assigned; i++) seats[remainders[i][0]]++;
+    return seats;
+  }
+
   // source/lib/index.js forwards these helpers to the engine's G object.
   var api = {
     ercLocalAppeal,
+    congresoApportionment,
     applyPoliticalEffect,
     clearPoliticalEffect,
     buildBrokenBurdensTransfers,

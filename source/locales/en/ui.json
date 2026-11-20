@@ -174,7 +174,29 @@
       "distribution": "Seat distribution in {region}",
       "noResults": "No results yet.",
       "selectRegion": "Click a region to see its seat distribution.",
-      "selectCity": "Click a city to see results"
+      "selectCity": "Click a city to see results",
+      "regions": {
+        "catalunya": "Catalonia",
+        "valencia": "Valencia",
+        "balears": "Balearic Islands",
+        "navarra": "Navarre",
+        "euskadi": "Basque Country",
+        "galicia": "Galicia",
+        "rest": "Rest of Spain",
+        "madrid": "Community of Madrid",
+        "andalusia": "Andalusia",
+        "extremadura": "Extremadura",
+        "castile_la_mancha": "Castile-La Mancha",
+        "castile_and_leon": "Castile and León",
+        "murcia": "Region of Murcia",
+        "la_rioja": "La Rioja",
+        "aragon": "Aragon",
+        "asturias": "Asturias",
+        "cantabria": "Cantabria",
+        "canary_islands": "Canary Islands",
+        "ceuta": "Ceuta",
+        "melilla": "Melilla"
+      }
     },
     "scene": {
       "party": "Party",
@@ -401,7 +423,20 @@
       "Navarre": "Navarre",
       "Basque Country": "Basque Country",
       "Galicia": "Galicia",
-      "Rest of Spain": "Rest of Spain"
+      "Rest of Spain": "Rest of Spain",
+      "Community of Madrid": "Community of Madrid",
+      "Andalusia": "Andalusia",
+      "Extremadura": "Extremadura",
+      "Castile-La Mancha": "Castile-La Mancha",
+      "Castile and León": "Castile and León",
+      "Region of Murcia": "Region of Murcia",
+      "La Rioja": "La Rioja",
+      "Aragon": "Aragon",
+      "Asturias": "Asturias",
+      "Cantabria": "Cantabria",
+      "Canary Islands": "Canary Islands",
+      "Ceuta": "Ceuta",
+      "Melilla": "Melilla"
     }
   }
 }

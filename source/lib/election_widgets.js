@@ -57,65 +57,111 @@
     basque_country: ["euskadi", "Basque Country"],
     galicia: ["galicia", "Galicia"],
   };
-  var REST_PROVINCES = [
-    "madrid",
-    "andalusia",
-    "extremadura",
-    "castile_la_mancha",
-    "castile_and_leon",
-    "murcia",
-    "la_rioja",
-    "aragon",
-    "asturias",
-    "cantabria",
-    "canary_islands",
-    "ceuta",
-    "melilla",
-  ];
+  // Rest-of-Spain map communities, in the election's community-ID vocabulary.
+  var REST_COMMUNITIES = {
+    madrid: "Community of Madrid",
+    andalusia: "Andalusia",
+    extremadura: "Extremadura",
+    castile_la_mancha: "Castile-La Mancha",
+    castile_and_leon: "Castile and León",
+    murcia: "Region of Murcia",
+    la_rioja: "La Rioja",
+    aragon: "Aragon",
+    asturias: "Asturias",
+    cantabria: "Cantabria",
+    canary_islands: "Canary Islands",
+    ceuta: "Ceuta",
+    melilla: "Melilla",
+  };
 
+  function sortPanelRows(rows) {
+    rows = rows.filter(function (row) {
+      return row.seats > 0;
+    });
+    rows.sort(function (a, b) {
+      return b.support - a.support || b.seats - a.seats;
+    });
+    return rows;
+  }
+
+  // Each map region names the panel it opens. A rest-of-Spain community opens
+  // its own panel when the election stored its provincial result; older saves
+  // without that record fall back to the pooled rest-of-Spain panel.
   function congresoResultsMap(Q) {
     Q = Q || {};
+    var stored = Q.congreso_rest_communities;
+    var communities = stored && typeof stored === "object" ? stored : {};
     var regions = Object.keys(CONGRESO_REGIONS).map(function (svgId) {
       var constituency = CONGRESO_REGIONS[svgId][0];
       return {
         id: svgId,
         constituency: constituency,
+        panel: constituency,
         winner: Q["congreso_" + constituency + "_wp"] || null,
       };
     });
-    REST_PROVINCES.forEach(function (id) {
+    Object.keys(REST_COMMUNITIES).forEach(function (id) {
+      var data = communities[id];
       regions.push({
         id: id,
         constituency: "rest",
+        panel: data && typeof data === "object" ? id : "rest",
         winner: Q["congreso_prov_" + id + "_wp"] || null,
       });
     });
-    var names = { rest: "Rest of Spain" };
+    var names = {};
     Object.keys(CONGRESO_REGIONS).forEach(function (svgId) {
       names[CONGRESO_REGIONS[svgId][0]] = CONGRESO_REGIONS[svgId][1];
     });
+    if (
+      regions.some(function (region) {
+        return region.panel === "rest";
+      })
+    )
+      names.rest = "Rest of Spain";
     var panels = {};
     Object.keys(names).forEach(function (constituency) {
       var parties = Q["congreso_parties_" + constituency] || [];
-      var rows = (Array.isArray(parties) ? parties : [])
-        .map(function (party) {
-          return {
-            party: party,
-            seats: Number(Q[party + "_congreso_s_" + constituency]) || 0,
-            support:
-              Number(Q[party + "_congreso_" + constituency + "_support"]) || 0,
-          };
-        })
-        .filter(function (row) {
-          return row.seats > 0;
-        });
-      rows.sort(function (a, b) {
-        return b.support - a.support || b.seats - a.seats;
+      var rows = (Array.isArray(parties) ? parties : []).map(function (party) {
+        return {
+          party: party,
+          seats: Number(Q[party + "_congreso_s_" + constituency]) || 0,
+          support:
+            Number(Q[party + "_congreso_" + constituency + "_support"]) || 0,
+        };
       });
       panels[constituency] = {
         name: names[constituency],
         seats: Number(Q.congreso_seats && Q.congreso_seats[constituency]) || 0,
-        rows: rows,
+        rows: sortPanelRows(rows),
+      };
+    });
+    // Community rows use that community's projected candidacy votes, as a
+    // percentage, with the seats its provinces elected.
+    regions.forEach(function (region) {
+      if (region.constituency !== "rest" || region.panel === "rest") return;
+      var data = communities[region.id];
+      var seats =
+        data.seats && typeof data.seats === "object" ? data.seats : {};
+      var votes =
+        data.votes && typeof data.votes === "object" ? data.votes : {};
+      var totalVotes = Object.keys(votes).reduce(function (sum, party) {
+        return sum + (Number(votes[party]) || 0);
+      }, 0);
+      var rows = Object.keys(seats).map(function (party) {
+        return {
+          party: party,
+          seats: Number(seats[party]) || 0,
+          support:
+            totalVotes > 0
+              ? ((Number(votes[party]) || 0) / totalVotes) * 100
+              : 0,
+        };
+      });
+      panels[region.id] = {
+        name: REST_COMMUNITIES[region.id],
+        seats: Number(data.total) || 0,
+        rows: sortPanelRows(rows),
       };
     });
     return { regions: regions, panels: panels };

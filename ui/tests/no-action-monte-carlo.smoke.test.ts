@@ -37,12 +37,16 @@ describe('no-action Monte Carlo runner', () => {
     expect(formed!.final.validVoteShare.jxsi).toBeGreaterThan(0);
   }, 30_000);
 
+  // The seeded policy decides list formations. Seed 12092014 now accepts the
+  // March 2015 JxCat list, which is a temporary game ending, so it never
+  // reaches the locals. This seed takes the plebiscitary election instead.
   it.skipIf(!existsSync(GAME))('continues past an early Parlament election to the May 2015 locals', () => {
     const result = runNoActionLocalSimulation({
       gamePath: GAME,
-      seed: 12092014,
+      seed: 12092015,
       difficulty: 'normal',
     });
+    expect(result.historicalStructuralEvents).toContain('plebiscite_election');
     expect(result.result.year).toBe(2015);
     expect(result.result.month).toBe(5);
     expect(result.result.totalBarcelonaSeats).toBe(41);

@@ -7,10 +7,18 @@ on-arrival: {!
     Q.congreso_coalition_barons_flag = 0;
     Q.congreso_coalition_sorpasso = false;
     Q.congreso_left_offer_pending = false;
-    Q.congreso_left_offer_erc_possible = false;
+    Q.congreso_left_gamble_offered = false;
+    Q.congreso_left_gamble_can_attempt = false;
+    Q.congreso_left_gamble_succeeds = false;
+    Q.congreso_left_gamble_choosable = false;
+    Q.congreso_left_offer_erc_arith = false;
+    Q.congreso_left_offer_compromis_arith = false;
     Q.congreso_left_offer_compromis_possible = false;
     Q.congreso_left_offer_erc_members = [];
     Q.congreso_left_offer_compromis_members = [];
+    // A left agreement belongs to the chamber that made it.
+    if (Q.congreso_left_agreement && Q.congreso_left_agreement.chamber !== (this.state.visits['congreso_election.post_election'] || 0))
+        Q.congreso_left_agreement = null;
 
     // ── Helper: live seats ───────────────────────────────────────────────────
     var S = function (p) { return (p && Q[p + "_congreso_s"] > 0) ? Q[p + "_congreso_s"] : 0; };
@@ -449,42 +457,6 @@ on-arrival: {!
         Q.congreso_coalition_progressive_talks = false;
     }
 
-    // These are concrete alternatives to the failed PSOE-Cs strategy, offered once.
-    // Alignment with Podemos does not prove that the player contacted Compromis.
-    Q.compromis_reached_out_ever = !!(Q.compromis_reached_out_ever
-        || this.state.visits['erc_reachout.compromis_reach'] || this.state.visits['erc_reachout.campaign_compromis']);
-    if (Q.congreso_coalition_psoe_cs_wtf && !Q.congreso_coalition_majority_reach && psoeLeadsLeft && leftSeats > 0
-        && !this.state.visits['congreso_coalition_left_offer']) {
-        var passesOffer = function (members) {
-            var yes = 0, abstain = 0;
-            for (var member of members) {
-                if (member.type == 'abstain') abstain += seatsOf(member);
-                else yes += seatsOf(member);
-            }
-            return yes > congresoTotal - yes - abstain;
-        };
-        var allyRelations = Q[Q.parlament_current_icv + '_relations'] || 0;
-        var excluded = ['erc', 'cup', 'fr', 'ciu', 'cdc', 'dl', 'pdcat', 'junts', 'jxsi', 'jxcat', 'ehbildu', 'amaiur'];
-        var mediationCandidates = candidates.filter(function (candidate) { return !excluded.includes(candidate.party); });
-        Q.congreso_left_offer_compromis_members = fill(progSeed, 'left', mediationCandidates, false, true);
-        Q.congreso_left_offer_compromis_possible = (Q.player_party == 'erc' || Q.player_party == 'cup')
-            && Q.compromis_reached_out_ever && Q.psc_relations >= 65 && allyRelations >= 65 && Q.party_resources >= 1
-            && passesOffer(Q.congreso_left_offer_compromis_members);
-
-        // ERC supplies an explicit YES; the other parties retain their normal postures.
-        var ercCandidates = candidates.filter(function (candidate) { return candidate.party != 'erc'; });
-        Q.congreso_left_offer_erc_members = fill(concat(progSeed, [{ party: 'erc', type: 'support' }]), 'left', ercCandidates, true, true);
-        Q.congreso_left_offer_erc_possible = Q.player_party == 'erc' && S('erc') > 0 && !Q.erc_in_jxsi && !Q.erc_in_jxcat
-            && Q[Q.parlament_current_icv + '_leader'] != 'Arcadi Oliveres'
-            && Q.erc_civic_strength < 15 && Q.erc_roadmap < 2
-            && Q.psc_relations >= 65 && allyRelations >= 65 && Q.party_resources >= 2
-            && passesOffer(Q.congreso_left_offer_erc_members);
-        Q.congreso_left_offer_pending = Q.congreso_left_offer_erc_possible || Q.congreso_left_offer_compromis_possible;
-        if (Q.congreso_left_offer_pending) {
-            Q.congreso_coalition_psoe_cs_wtf = false;
-            Q.congreso_coalition_psoe_cs_wtf_s = 0;
-        }
-    }
     // On-the-table indicators (drive the bar + the option view-if), split by who
     // leads: the bigger of PSOE/Cs takes the presidency. The "close but short" band
     // is owned by the wtf-flop option, so the PSOE-led one excludes it.
@@ -512,9 +484,55 @@ on-arrival: {!
     Q.congreso_coalition_right_alone = rightGovernsAlone;
 
     if ((Q.congreso_coalition_psoe_cs_wtf_happened || !Q.congreso_coalition_psoe_cs_wtf) && Q.psoe_leader == "Pedro Sánchez" && !Q.psoe_barons_revolted
-        && !Q.congreso_coalition_majority_reach && !rightGovernsAlone && !Q.congreso_left_offer_pending && !agreementServing
+        && !Q.congreso_coalition_majority_reach && !rightGovernsAlone && !agreementServing
         && (Q.congreso_coalition_grand_s_ppcs >= Q.congreso_s_majority || Q.congreso_coalition_grand_s_pp >= Q.congreso_s_majority)) {
         Q.congreso_coalition_barons_flag = 1;
+    }
+
+    // ── Left gamble: back a Sánchez-led government with Podemos ──────────────
+    // Offered once per game - Compromis' attempted mediation to avoid a deadlock
+    Q.compromis_reached_out_ever = !!(Q.compromis_reached_out_ever
+        || this.state.visits['erc_reachout.compromis_reach'] || this.state.visits['erc_reachout.campaign_compromis']);
+    Q.congreso_left_gamble_offered = (Q.congreso_coalition_psoe_cs_wtf || Q.congreso_coalition_barons_flag == 1)
+        && !Q.congreso_coalition_majority_reach && psoeLeadsLeft && leftSeats > 0
+        && Q.psoe_leader == "Pedro Sánchez" && !Q.psoe_barons_revolted && !Q.congreso_left_gamble_tried;
+    if (Q.congreso_left_gamble_offered) {
+        var passesOffer = function (members) {
+            var yes = 0, abstain = 0;
+            for (var member of members) {
+                if (member.type == 'abstain') abstain += seatsOf(member);
+                else yes += seatsOf(member);
+            }
+            return yes > congresoTotal - yes - abstain;
+        };
+        var allyRelations = Q[Q.parlament_current_icv + '_relations'] || 0;
+        // Easy, Normal, Hard difficuties change thresholds
+        var terms = [{ roadmap: 2, cost: 1, psc: 55, ally: 55 }, { roadmap: 2, cost: 2, psc: 65, ally: 65 },
+            { roadmap: 1, cost: 3, psc: 75, ally: 65 }][Math.max(-1, Math.min(1, Number(Q.difficulty) || 0)) + 1];
+        Q.congreso_left_gamble_cost = terms.cost;
+        Q.congreso_left_gamble_max_roadmap = terms.roadmap;
+        Q.congreso_left_gamble_psc_min = terms.psc;
+        Q.congreso_left_gamble_ally_min = terms.ally;
+        var excluded = ['erc', 'cup', 'fr', 'ciu', 'cdc', 'dl', 'pdcat', 'junts', 'jxsi', 'jxcat', 'ehbildu', 'amaiur'];
+        var mediationCandidates = candidates.filter(function (candidate) { return !excluded.includes(candidate.party); });
+        Q.congreso_left_offer_compromis_members = fill(progSeed, 'left', mediationCandidates, false, true);
+        Q.congreso_left_offer_compromis_arith = passesOffer(Q.congreso_left_offer_compromis_members);
+        Q.congreso_left_offer_compromis_possible = (Q.player_party == 'erc' || Q.player_party == 'cup')
+            && Q.compromis_reached_out_ever && (Q.psc_relations || 0) >= terms.psc && allyRelations >= terms.ally
+            && (Q.party_resources || 0) >= terms.cost
+            && Q.congreso_left_offer_compromis_arith;
+
+        var ercCandidates = candidates.filter(function (candidate) { return candidate.party != 'erc'; });
+        Q.congreso_left_offer_erc_members = fill(concat(progSeed, [{ party: 'erc', type: 'support' }]), 'left', ercCandidates, true, true);
+        Q.congreso_left_offer_erc_arith = passesOffer(Q.congreso_left_offer_erc_members);
+        Q.congreso_left_gamble_can_attempt = Q.player_party == 'erc' && S('erc') > 0
+            && !(Q.erc_in_jxsi && Q.jxsi_in_congreso) && !(Q.erc_in_jxcat && Q.jxcat_in_congreso)
+            && (Q.erc_roadmap || 0) <= terms.roadmap && (Q.party_resources || 0) >= terms.cost;
+        Q.congreso_left_gamble_succeeds = Q.congreso_left_gamble_can_attempt && Q.congreso_left_offer_erc_arith
+            && (Q.psc_relations || 0) >= terms.psc && allyRelations >= terms.ally
+            && Q[Q.parlament_current_icv + '_leader'] != 'Arcadi Oliveres' && !(Q.podemos_ideology || '').includes('Confederalism');
+        Q.congreso_left_gamble_choosable = Q.congreso_left_gamble_can_attempt || Q.congreso_left_offer_compromis_possible;
+        Q.congreso_left_offer_pending = true;
     }
 
     // ── Player kingmaker power: can the player force a repeat election? ───────
@@ -667,7 +685,7 @@ on-arrival: {!
         ]
     };
 !}
-go-to: congreso_coalition_left_offer if congreso_left_offer_pending; coalition_list if not congreso_left_offer_pending and congreso_coalition_barons_flag != 1; barons_intervene if not congreso_left_offer_pending and congreso_coalition_barons_flag = 1
+go-to: coalition_list if congreso_coalition_barons_flag != 1 or congreso_left_gamble_choosable; congreso_coalition_barons if congreso_coalition_barons_flag = 1 and not congreso_left_gamble_choosable
 
 = Coalitions and Negotiations
 
@@ -681,6 +699,7 @@ go-to: congreso_coalition_left_offer if congreso_left_offer_pending; coalition_l
 - @congreso_coalition_majority.party
 - @congreso_coalition_left.left
 - @congreso_coalition_left.change
+- @left_gamble
 - @congreso_coalition_progressive.progressive
 - @congreso_coalition_progressive.psoe_minority
 - @congreso_coalition_psoe_cs.government
@@ -694,16 +713,25 @@ go-to: congreso_coalition_left_offer if congreso_left_offer_pending; coalition_l
 - @congreso_coalition_right.pp_vox
 - @congreso_coalition_right.pp_minority
 - @new_congreso_elections
+- @barons_intervene
 
 @barons_intervene
+title: A revolt within the PSOE ?!
+subtitle: Left with only difficult options, the Barons do have some ideas of their own. What is even going on within the PSOE?
+view-if: congreso_coalition_barons_flag = 1
+go-to: congreso_coalition_barons
 
-- @congreso_coalition_barons
+@left_gamble
+title: <span class="gobierno-coalition" data-parties="psoe [+ congreso_left_carrier +]" data-summary="[? if psoe_congreso_s + congreso_left_carrier_s >= congreso_s_majority: Majority government?][? if psoe_congreso_s + congreso_left_carrier_s < congreso_s_majority: Minority government?] - [+ psoe_congreso_s + congreso_left_carrier_s +]/[+ congreso_s_majority +]"><span style="color: var(--psoe); font-style: italic;">Progressist</span> <span style="color: var(--up); font-style: italic;">Coalition</span></span> (PSOE - [? if congreso_left_carrier == "up": UP?][?if congreso_left_carrier != "up": [+ congreso_left_carrier +]?])
+subtitle: Not all within the PSOE are convinced by such a pact. We'll need to thread carefully. 
+view-if: congreso_left_gamble_choosable
+go-to: congreso_coalition_left_offer
 
 @new_congreso_elections
 title: Force new elections!
 subtitle: [? if psoe_holdout_congress: After all, there seems to be no agreement we can accept ?][? if not psoe_holdout_congress: We are the kingmakers with this arithmetics after all ?]
-choose-if: congreso_coalition_force_elections
-unavailable-subtitle: This is out of our control.
+choose-if: congreso_coalition_force_elections and congreso_coalition_barons_flag != 1
+unavailable-subtitle: [? if not congreso_coalition_force_elections: This is out of our control. ?][? if congreso_coalition_barons_flag = 1 and congreso_coalition_force_elections: The Barons of the PSOE have other plans. ?]
 on-arrival: {!    
     G.callCongresoRepeatElection(Q);
 

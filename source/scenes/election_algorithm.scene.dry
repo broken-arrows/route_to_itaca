@@ -181,89 +181,87 @@ title: Spanish General Election
 on-arrival: {!
 // Careful! Here, different constituencies have different parties!
 
-// Compact geography: province, 2015 seats, 2016+ seats, electorate.
-// Census and district sizes: JEC/BOE 2015 and 2016 results. Later changes are
-// approximated by 2016 sizes. No historical party vote profiles are used.
+// Compact geography: province, electorate (JEC/BOE 2015 and 2016 results).
+// District magnitudes follow the election date
 var CONGRESO_DISTRICTS = {
     catalunya: [
-        ["Barcelona",31,31,4128181],
-        ["Girona",6,6,511640],
-        ["Lleida",4,4,313836],
-        ["Tarragona",6,6,562799]
+        ["Barcelona",4128181],
+        ["Girona",511640],
+        ["Lleida",313836],
+        ["Tarragona",562799]
     ],
     valencia: [
-        ["Alicante/Alacant",12,12,1251941],
-        ["Castellón/Castelló",5,5,417197],
-        ["Valencia/València",15,16,1946144]
+        ["Alicante/Alacant",1251941],
+        ["Castellón/Castelló",417197],
+        ["Valencia/València",1946144]
     ],
     balears: [
-        ["Balears (Illes)",8,8,771381]
+        ["Balears (Illes)",771381]
     ],
     navarra: [
-        ["Navarra",5,5,502520]
+        ["Navarra",502520]
     ],
     euskadi: [
-        ["Araba/Álava",4,4,254327],
-        ["Bizkaia",8,8,949177],
-        ["Gipuzkoa",6,6,580725]
+        ["Araba/Álava",254327],
+        ["Bizkaia",949177],
+        ["Gipuzkoa",580725]
     ],
     galicia: [
-        ["Coruña (A)",8,8,1088822],
-        ["Lugo",4,4,349547],
-        ["Ourense",4,4,365513],
-        ["Pontevedra",7,7,901970]
+        ["Coruña (A)",1088822],
+        ["Lugo",349547],
+        ["Ourense",365513],
+        ["Pontevedra",901970]
     ],
     rest: [
-        ["Albacete",4,4,310674],
-        ["Almería",6,6,490192],
-        ["Asturias",8,8,985087],
-        ["Ávila",3,3,139955],
-        ["Badajoz",6,6,559247],
-        ["Burgos",4,4,300985],
-        ["Cáceres",4,4,351037],
-        ["Cádiz",9,9,993618],
-        ["Cantabria",5,5,498771],
-        ["Ciudad Real",5,5,401885],
-        ["Córdoba",6,6,651727],
-        ["Cuenca",3,3,158886],
-        ["Granada",7,7,748189],
-        ["Guadalajara",3,3,182321],
-        ["Huelva",5,5,396415],
-        ["Huesca",3,3,174072],
-        ["Jaén",5,5,533748],
-        ["León",5,4,442375],
-        ["Madrid",36,36,4913893],
-        ["Málaga",11,11,1160216],
-        ["Murcia",10,10,1031733],
-        ["Palencia",3,3,144427],
-        ["Palmas (Las)",8,8,838543],
-        ["Rioja (La)",4,4,247507],
-        ["Salamanca",4,4,309358],
-        ["S/C Tenerife",7,7,830368],
-        ["Segovia",3,3,121440],
-        ["Sevilla",12,12,1531161],
-        ["Soria",2,2,76986],
-        ["Teruel",3,3,109984],
-        ["Toledo",6,6,518838],
-        ["Valladolid",5,5,433667],
-        ["Zamora",3,3,174445],
-        ["Zaragoza",7,7,735079],
-        ["Ceuta",1,1,61660],
-        ["Melilla",1,1,57639]
+        ["Albacete",310674,"castile_la_mancha",1.19,1.2,1.02,0.84,0.86,0.84,1.2],
+        ["Almería",490192,"andalusia",1.04,1.05,0.85,0.65,0.63,0.65,1.33],
+        ["Asturias",985087,"asturias",0.83,0.85,0.8,1.09,1.53,1.18,0.79],
+        ["Ávila",139955,"castile_and_leon",1.46,0.83,1.07,0.69,0.8,0.71,1.1],
+        ["Badajoz",559247,"extremadura",1.07,1.52,0.76,0.68,0.63,0.67,0.92],
+        ["Burgos",300985,"castile_and_leon",1.18,0.85,1.05,0.98,0.97,0.98,0.84],
+        ["Cáceres",351037,"extremadura",1.09,1.39,0.76,0.8,0.59,0.75,0.85],
+        ["Cádiz",993618,"andalusia",0.78,1.04,0.9,1.06,1.12,1.07,1],
+        ["Cantabria",498771,"cantabria",1.12,0.9,1,1.01,0.89,0.98,0.84],
+        ["Ciudad Real",401885,"castile_la_mancha",1.22,1.31,0.85,0.74,0.7,0.73,1.16],
+        ["Córdoba",651727,"andalusia",0.95,1.32,0.8,0.85,1.66,1.03,0.99],
+        ["Cuenca",158886,"castile_la_mancha",1.38,1.34,0.77,0.71,0.66,0.7,1.14],
+        ["Granada",748189,"andalusia",0.92,1.21,0.89,0.9,1,0.92,1.08],
+        ["Guadalajara",182321,"castile_la_mancha",1.13,0.97,1.27,1.05,0.89,1.01,1.38],
+        ["Huelva",396415,"andalusia",0.81,1.38,0.73,0.8,0.85,0.81,0.99],
+        ["Huesca",174072,"aragon",0.99,0.99,1.07,1.01,1.06,1.02,0.82],
+        ["Jaén",533748,"andalusia",0.99,1.6,0.73,0.73,0.9,0.77,1.04],
+        ["León",442375,"castile_and_leon",1.02,0.96,0.8,0.94,0.91,0.93,0.81],
+        ["Madrid",4913893,"madrid",1.07,0.75,1.3,1.24,1.11,1.21,1.08],
+        ["Málaga",1160216,"andalusia",0.84,1.03,1.07,0.92,1.31,1.01,1.07],
+        ["Murcia",1031733,"murcia",1.24,0.82,1.17,0.86,0.63,0.81,1.48],
+        ["Palencia",144427,"castile_and_leon",1.27,1.02,0.96,0.78,0.93,0.82,0.87],
+        ["Palmas (Las)",838543,"canary_islands",0.75,0.79,0.71,1.31,0.52,1.14,0.53],
+        ["Rioja (La)",247507,"la_rioja",1.19,0.97,1.02,0.91,0.86,0.9,0.68],
+        ["Salamanca",309358,"castile_and_leon",1.25,0.85,1.07,0.67,0.65,0.67,0.94],
+        ["S/C Tenerife",830368,"canary_islands",0.72,0.71,0.57,0.92,0.54,0.84,0.39],
+        ["Segovia",121440,"castile_and_leon",1.29,0.93,1.21,0.87,0.88,0.87,1.01],
+        ["Sevilla",1531161,"andalusia",0.78,1.39,0.87,1.09,1.17,1.11,0.97],
+        ["Soria",76986,"castile_and_leon",1.13,0.92,0.96,0.87,0.68,0.83,0.7],
+        ["Teruel",109984,"aragon",1.11,1.04,0.98,0.87,1.02,0.9,0.76],
+        ["Toledo",518838,"castile_la_mancha",1.25,1.18,0.96,0.82,0.75,0.8,1.38],
+        ["Valladolid",433667,"castile_and_leon",1.21,0.94,1.22,0.93,1.19,0.99,1.1],
+        ["Zamora",174445,"castile_and_leon",1.2,0.85,0.79,0.73,0.91,0.77,0.85],
+        ["Zaragoza",735079,"aragon",0.95,0.93,1.21,1.12,1.36,1.17,1],
+        ["Ceuta",61660,"ceuta",1.04,0.71,0.67,0.61,0.2,0.52,1.43],
+        ["Melilla",57639,"melilla",0.93,0.69,0.71,0.45,0.18,0.39,0.81]
     ]
 };
-// District size is a simple rural/urban proxy within rest-of-Spain only.
-var RURAL_BIAS = {pp:1.15, psoe:1.05, podemos:0.75, cs:0.85};
-var URBAN_BIAS = {pp:0.95, psoe:0.95, podemos:1.15, cs:1.0};
-var BIAS_FAMILY = {up:"podemos", sumar:"podemos", mpais:"podemos", psc:"psoe", upn:"pp", nsuma:"pp"};
-// Concentrated local support earns seats through ordinary allocation. Treating
-// CC as Tenerife-centred is a coarse approximation, not a guaranteed seat.
-var LOCAL_PROVINCE = {cc:"S/C Tenerife", fac:"Asturias", prc:"Cantabria", te:"Teruel"};
-var seatColumn = Q.year < 2016 ? 1 : 2;
+// Profile column per rest-of-Spain ballot.
+// Sumar continues the joint UP ballot; Más País follows Podemos. Other ballots use the census.
+var REST_PROFILE = {pp:3, psoe:4, cs:5, podemos:6, mpais:6, iu:7, up:8, sumar:8, vox:9};
+var REST_HOME = {cc:"S/C Tenerife", fac:"Asturias", prc:"Cantabria", te:"Teruel"};
+var restCommunities = {};
+var districtSeats = G.congresoApportionment(Q.year, Q.month);
 Q.congreso_seats = {};
 for (var region in CONGRESO_DISTRICTS) {
     Q.congreso_seats[region] = CONGRESO_DISTRICTS[region].reduce(function (total, district) {
-        return total + district[seatColumn];
+        if (!districtSeats[district[0]]) throw new Error("No Congreso magnitude for " + district[0]);
+        return total + districtSeats[district[0]];
     }, 0);
 }
 
@@ -287,13 +285,11 @@ function allocate_region(region, votes) {
     var projected = districts.map(function () { return {}; });
     var result = Object.fromEntries(Object.keys(votes).map(function (p) { return [p, 0]; }));
     for (var party of Object.keys(votes)) {
-        var family = BIAS_FAMILY[party] || party;
-        var home = region === "rest" ? LOCAL_PROVINCE[party] : null;
+        var column = region === "rest" ? REST_PROFILE[party] : null;
+        var home = region === "rest" ? REST_HOME[party] : null;
         var weights = districts.map(function (district) {
-            if (home) return district[0] === home ? district[3] : 0;
-            var bias = region !== "rest" ? {} : district[seatColumn] <= 4 ? RURAL_BIAS :
-                district[seatColumn] >= 8 ? URBAN_BIAS : {};
-            return district[3] * (bias[family] || 1);
+            if (home) return district[0] === home ? 1 : 0;
+            return district[1] * (column ? district[column] : 1);
         });
         var totalWeight = weights.reduce(function (sum, weight) { return sum + weight; }, 0);
         if (!totalWeight) throw new Error("No Congreso district for " + party + " in " + region);
@@ -303,8 +299,17 @@ function allocate_region(region, votes) {
         });
     }
     districts.forEach(function (district, i) {
-        var seats = dhondt_method(projected[i], district[seatColumn]);
+        var seats = dhondt_method(projected[i], districtSeats[district[0]]);
         for (var party in result) result[party] += seats[party];
+        if (region === "rest") {
+            var community = restCommunities[district[2]] ||
+                (restCommunities[district[2]] = {total: 0, seats: {}, votes: {}});
+            community.total += districtSeats[district[0]];
+            for (var party in result) {
+                community.seats[party] = (community.seats[party] || 0) + seats[party];
+                community.votes[party] = (community.votes[party] || 0) + projected[i][party];
+            }
+        }
     });
     return result;
 }
@@ -463,56 +468,17 @@ for (var constituency of Q.congreso_constituencies) {
     }
 }
 
-// 03b. Map painting — synthetic 'rest' community winners. (Simulated regions are
-// coloured by their popular-vote winner, computed in the main loop above.)
-// 'rest' has no per-community model, and the map paints whole autonomous communities,
-// so synthesise a believable winner per community: the live national-'rest' support
-// scaled by a per-community CHARACTER multiplier, argmax = winner. Multiplicative, so a
-// party that is ~0 nationally (VOX pre-2019, Podemos pre-2014) stays ~0 everywhere; the
-// <1.0 down-weights suppress a structurally-weak party (e.g. PSOE in the right enclaves)
-// rather than only ever boosting. Map flavour only — the seat allocation above is the
-// real result and stays untouched.
-
-var REST_COMMUNITY_CHAR = {
-    madrid:            { char: { pp: 1.15, psoe: 0.85, vox: 1.05, podemos: 1.15, cs: 1.20 } },
-    andalusia:         { char: { pp: 0.90, psoe: 1.30, vox: 1.00, podemos: 1.05, cs: 0.90 } },
-    extremadura:       { char: { pp: 0.95, psoe: 1.30, vox: 0.80, podemos: 0.80, cs: 0.80 } },
-    castile_la_mancha: { char: { pp: 1.20, psoe: 1.20, vox: 0.95, podemos: 0.85, cs: 0.90 } },
-    castile_and_leon:  { char: { pp: 1.40, psoe: 0.95, vox: 1.05, podemos: 0.80, cs: 0.95 } },
-    murcia:            { char: { pp: 1.35, psoe: 0.90, vox: 1.80, podemos: 0.85, cs: 1.05 } },
-    la_rioja:          { char: { pp: 1.35, psoe: 1.00, vox: 1.00, cs: 1.00 } },
-    aragon:            { char: { pp: 1.25, psoe: 1.00, podemos: 0.95 }, minor: { party: "te",  factor: 10 } },
-    asturias:          { char: { pp: 0.95, psoe: 1.20, vox: 0.80, podemos: 1.20, iu: 1.50 }, minor: { party: "fac", factor: 34 } },
-    cantabria:         { char: { pp: 1.20, psoe: 1.00, vox: 0.95 }, minor: { party: "prc", factor: 55 } },
-    canary_islands:    { char: { pp: 1.00, psoe: 1.10, podemos: 1.00, cs: 0.95 }, minor: { party: "cc", factor: 15 } },
-    ceuta:             { char: { pp: 1.50, psoe: 0.72, vox: 2.00, podemos: 0.55, cs: 1.00 } },
-    melilla:           { char: { pp: 1.50, psoe: 0.78, vox: 1.40, podemos: 0.55, cs: 1.00 } }
-};
-var REST_MINOR_PARTIES = { cc: 1, prc: 1, fac: 1, te: 1 };
-// carrier -> canonical family: left-bloc carriers share the Podemos profile
-function _restFamily(party) { return (party === 'up' || party === 'sumar') ? 'podemos' : party; }
-var _restSupport = {};
-for (var p of Q.congreso_parties_rest) _restSupport[p] = Q[p + '_congreso_rest_support'] || 0;
-
-for (var cid in REST_COMMUNITY_CHAR) {
-    var cfg = REST_COMMUNITY_CHAR[cid];
-    var scores = {};
-    for (var p of Q.congreso_parties_rest) {
-        var mult;
-        if (REST_MINOR_PARTIES[p]) {
-            // regional minor: contends only in its home community, scaled by its
-            // geographic concentration (national-'rest' share is its home vote diluted
-            // across all of the rest), so a genuine surge lets it paint its community
-            mult = (cfg.minor && cfg.minor.party === p) ? cfg.minor.factor : 0;
-        } else {
-            var fam = _restFamily(p);
-            mult = (cfg.char && cfg.char[fam] != null) ? cfg.char[fam] : 1.0;
+Q.congreso_rest_communities = restCommunities;
+for (var cid in restCommunities) {
+    var communityVotes = restCommunities[cid].votes;
+    var leader = null, best = 0;
+    for (var party in communityVotes) {
+        if (communityVotes[party] > best) {
+            best = communityVotes[party];
+            leader = party;
         }
-        scores[p] = _restSupport[p] * mult;
     }
-    var winP = null, winBest = 0;
-    for (var p in scores) { if (scores[p] > winBest) { winBest = scores[p]; winP = p; } }
-    Q['congreso_prov_' + cid + '_wp'] = winP;
+    Q['congreso_prov_' + cid + '_wp'] = leader;
 }
 
 // 04. Final Global Calculations

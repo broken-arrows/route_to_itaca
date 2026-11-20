@@ -6,8 +6,10 @@ const { DendryEngine, NullUserInterface } = require('../../vendor/dendrynexus-te
 const { createSaveStore } = require('../../vendor/dendrynexus-ten/lib/persistence.js');
 const key = 'dnt:achievement-import:achievements';
 const date = '2026-08-15T12:00:00.000Z';
+// Loading re-renders the saved scene, so the fixture needs one to restore.
 const makeEngine = () => new DendryEngine(new NullUserInterface(), {
-  info: { ifid: 'achievement-import' }, qualities: {}, scenes: {},
+  info: { ifid: 'achievement-import' }, qualities: {},
+  scenes: { root: { id: 'root', content: { type: 'paragraph', content: '' } } },
 });
 
 describe('achievement isolation when importing an individual save', () => {
@@ -20,7 +22,7 @@ describe('achievement isolation when importing an individual save', () => {
   ])('uses the recipient ledger when it is %s', (_label, localLedger) => {
     const donor = makeEngine();
     donor.state = {
-      qualities: {}, achievements: {}, currentRandomState: [1, 2, 3, 4, 5], gameOver: true,
+      sceneId: 'root', qualities: {}, achievements: {}, currentRandomState: [1, 2, 3, 4, 5], gameOver: true,
     };
     donor.achieve('other_run');
     delete donor.state.qualities.game_achievement_other_run;

@@ -24,6 +24,7 @@ export interface SceneBar {
 }
 export interface GameLib {
   ercLocalAppeal(q: Record<string, unknown>): { carrier: string; barcelona: number; redBelt: number; interior: number };
+  congresoApportionment(year?: number, month?: number): Record<string, number>;
   electionResultRows(q: Record<string, unknown>, layout: string): Array<{
     id: string; label: string; colour: string; votes: number; seats: number;
     catalonia: number | null; voteChange: number | null; seatChange: number | null;
@@ -53,7 +54,8 @@ export interface GameLib {
   switchCoalitionBuilderParty(q: Record<string, unknown>, slot: string, direction: number): boolean;
   toggleCoalitionBuilderMember(q: Record<string, unknown>, slot: string): boolean;
   congresoResultsMap(q: Record<string, unknown>): {
-    regions: Array<{ id: string; constituency: string; winner: string | null }>;
+    /** `panel` is the key into `panels` that a map region opens. */
+    regions: Array<{ id: string; constituency: string; panel: string; winner: string | null }>;
     panels: Record<string, { name: string; seats: number; rows: Array<{ party: string; seats: number; support: number }> }>;
   };
   localResultsMap(q: Record<string, unknown>): {

@@ -174,7 +174,29 @@
       "distribution": "Distribució d'escons · {region}",
       "noResults": "Encara no hi ha resultats.",
       "selectRegion": "Feu clic a qualsevol zona del mapa per veure'n la distribució d'escons.",
-      "selectCity": "Feu clic a qualsevol ciutat per veure'n els resultats"
+      "selectCity": "Feu clic a qualsevol ciutat per veure'n els resultats",
+      "regions": {
+        "catalunya": "Catalunya",
+        "valencia": "País Valencià",
+        "balears": "Illes Balears",
+        "navarra": "Navarra",
+        "euskadi": "País Basc",
+        "galicia": "Galícia",
+        "rest": "Resta de l'Estat Espanyol",
+        "madrid": "Comunitat de Madrid",
+        "andalusia": "Andalusia",
+        "extremadura": "Extremadura",
+        "castile_la_mancha": "Castella-la Manxa",
+        "castile_and_leon": "Castella i Lleó",
+        "murcia": "Regió de Múrcia",
+        "la_rioja": "La Rioja",
+        "aragon": "Aragó",
+        "asturias": "Astúries",
+        "cantabria": "Cantàbria",
+        "canary_islands": "Canàries",
+        "ceuta": "Ceuta",
+        "melilla": "Melilla"
+      }
     },
     "scene": {
       "party": "Partit",
@@ -390,7 +412,7 @@
       "Click a region to see its seat distribution.": "Feu clic a qualsevol zona del mapa per veure'n la distribució d'escons",
       "support": "suport",
       "abst.": "abst.",
-      "{count} seat": "{count} escons",
+      "{count} seat": "{count} escó",
       "Route to Ítaca - An Alternate History": "Anàvem lluny... - Una història alternativa",
       "Between events": "Entre esdeveniments",
       "{name} image": "Imagte de {name}",
@@ -401,7 +423,20 @@
       "Navarre": "Navarra",
       "Basque Country": "País Basc",
       "Galicia": "Galícia",
-      "Rest of Spain": "Resta de l'Estat Espanyol"
+      "Rest of Spain": "Resta de l'Estat Espanyol",
+      "Community of Madrid": "Comunitat de Madrid",
+      "Andalusia": "Andalusia",
+      "Extremadura": "Extremadura",
+      "Castile-La Mancha": "Castella-la Manxa",
+      "Castile and León": "Castella i Lleó",
+      "Region of Murcia": "Regió de Múrcia",
+      "La Rioja": "La Rioja",
+      "Aragon": "Aragó",
+      "Asturias": "Astúries",
+      "Cantabria": "Cantàbria",
+      "Canary Islands": "Canàries",
+      "Ceuta": "Ceuta",
+      "Melilla": "Melilla"
     }
   }
 }
