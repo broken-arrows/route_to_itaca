@@ -58,18 +58,12 @@ on-arrival: {!
     var proposalMiddleLoss = assets ? 0 : 0.054;
     var proposalRetiredLoss = assets ? 0 : 0.03;
     for (const c of Q.parlament_constituencies) {
-        Q[author + "_parlament_" + c + "_unemployed_support"] += proposalUnemployed;
-        Q[socialDonor + "_parlament_" + c + "_unemployed_support"] -= proposalUnemployed;
-        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
-        Q[socialDonor + "_parlament_" + c + "_young_support"] -= proposalYoung;
-        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddleGain;
-        Q[socialDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddleGain;
-        Q[author + "_parlament_" + c + "_buss_support"] -= proposalBusinessLoss;
-        Q[backlash + "_parlament_" + c + "_buss_support"] += proposalBusinessLoss;
-        Q[author + "_parlament_" + c + "_middle_support"] -= proposalMiddleLoss;
-        Q[backlash + "_parlament_" + c + "_middle_support"] += proposalMiddleLoss;
-        Q[author + "_parlament_" + c + "_retired_support"] -= proposalRetiredLoss;
-        Q[backlash + "_parlament_" + c + "_retired_support"] += proposalRetiredLoss;
+        G.parlamentShift(Q, {from: socialDonor, to: {[author]: proposalUnemployed}, constituencies: [c], demographics: ["unemployed"]});
+        G.parlamentShift(Q, {from: socialDonor, to: {[author]: proposalYoung}, constituencies: [c], demographics: ["young"]});
+        G.parlamentShift(Q, {from: socialDonor, to: {[author]: proposalMiddleGain}, constituencies: [c], demographics: ["middle"]});
+        G.parlamentShift(Q, {from: author, to: {[backlash]: proposalBusinessLoss}, constituencies: [c], demographics: ["buss"]});
+        G.parlamentShift(Q, {from: author, to: {[backlash]: proposalMiddleLoss}, constituencies: [c], demographics: ["middle"]});
+        G.parlamentShift(Q, {from: author, to: {[backlash]: proposalRetiredLoss}, constituencies: [c], demographics: ["retired"]});
     }
 
     var yesNames = assets
@@ -114,18 +108,12 @@ on-arrival: {!
         var passageMiddleLoss = 0.126;
         var passageRetiredLoss = 0.07;
         for (const c of Q.parlament_constituencies) {
-            Q[author + "_parlament_" + c + "_unemployed_support"] += passageUnemployed;
-            Q[socialDonor + "_parlament_" + c + "_unemployed_support"] -= passageUnemployed;
-            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
-            Q[socialDonor + "_parlament_" + c + "_young_support"] -= passageYoung;
-            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddleGain;
-            Q[socialDonor + "_parlament_" + c + "_middle_support"] -= passageMiddleGain;
-            Q[author + "_parlament_" + c + "_buss_support"] -= passageBusinessLoss;
-            Q[backlash + "_parlament_" + c + "_buss_support"] += passageBusinessLoss;
-            Q[author + "_parlament_" + c + "_middle_support"] -= passageMiddleLoss;
-            Q[backlash + "_parlament_" + c + "_middle_support"] += passageMiddleLoss;
-            Q[author + "_parlament_" + c + "_retired_support"] -= passageRetiredLoss;
-            Q[backlash + "_parlament_" + c + "_retired_support"] += passageRetiredLoss;
+            G.parlamentShift(Q, {from: socialDonor, to: {[author]: passageUnemployed}, constituencies: [c], demographics: ["unemployed"]});
+            G.parlamentShift(Q, {from: socialDonor, to: {[author]: passageYoung}, constituencies: [c], demographics: ["young"]});
+            G.parlamentShift(Q, {from: socialDonor, to: {[author]: passageMiddleGain}, constituencies: [c], demographics: ["middle"]});
+            G.parlamentShift(Q, {from: author, to: {[backlash]: passageBusinessLoss}, constituencies: [c], demographics: ["buss"]});
+            G.parlamentShift(Q, {from: author, to: {[backlash]: passageMiddleLoss}, constituencies: [c], demographics: ["middle"]});
+            G.parlamentShift(Q, {from: author, to: {[backlash]: passageRetiredLoss}, constituencies: [c], demographics: ["retired"]});
         }
 
         if (assets) {

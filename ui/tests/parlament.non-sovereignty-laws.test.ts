@@ -12,17 +12,21 @@ describe('non-sovereignty law pilots', () => {
     const inheritance = scene('parlament/parlament_inheritance_tax.scene.dry');
     const digital = scene('parlament/parlament_digital.scene.dry');
 
+    const shifts = (demographic: string) => `demographics: ["${demographic}"]`;
     for (const source of [urbanism, inheritance, digital]) {
       expect(source).not.toContain('spaSupportInject');
-      expect(source).toContain('"_young_support"');
+      // Conserving scripted shifts only: a flat `-=` can drive a cell negative.
+      expect(source).toContain('G.parlamentShift(Q');
+      expect(source).not.toMatch(/_support"\] -= /);
+      expect(source).toContain(shifts('young'));
     }
-    expect(urbanism).toContain('"_unemployed_support"');
-    expect(inheritance).toContain('"_unemployed_support"');
-    expect(urbanism).toContain('"_middle_support"');
-    expect(inheritance).toContain('"_buss_support"');
-    expect(inheritance).toContain('"_retired_support"');
-    expect(digital).toContain('"_middle_support"');
-    expect(digital).toContain('"_buss_support"');
+    expect(urbanism).toContain(shifts('unemployed'));
+    expect(inheritance).toContain(shifts('unemployed'));
+    expect(urbanism).toContain(shifts('middle'));
+    expect(inheritance).toContain(shifts('buss'));
+    expect(inheritance).toContain(shifts('retired'));
+    expect(digital).toContain(shifts('middle'));
+    expect(digital).toContain(shifts('buss'));
   });
 
   it('allows failed bills to be retried but disables bills that passed', () => {

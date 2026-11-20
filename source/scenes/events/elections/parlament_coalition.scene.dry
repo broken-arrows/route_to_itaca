@@ -916,44 +916,29 @@ on-arrival: {!
     // This should consolidate votes towards larger parties
     Q.independence_trust -= 5;
     if (!(Q.erc_in_jxsi && !Q.jxsi_dissolved) && !(Q.erc_in_jxcat && !Q.jxcat_dissolved)) { 
+        // Conserving shifts: a list short of the authored amount gives what it has.
         if (Q.erc_parlament_s <= Q.parlament_current_ciu_s) {
-            for (var c of Q.parlament_constituencies) {
-                for (var d of Q.parlament_demographics){
-                    Q["erc_parlament_" + c + "_" + d + "_support"] -= 1;
-                    Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"] += 1.;
-                }
-            }
+            G.parlamentShift(Q, {from: "erc", to: {[Q.parlament_current_ciu]: 1}});
         } else {
-            for (var c of Q.parlament_constituencies) {
-                for (var d of Q.parlament_demographics){
-                    Q["erc_parlament_" + c + "_" + d + "_support"] += 1.25;
-                    Q[Q.parlament_current_ciu + "_parlament_" + c + "_" + d + "_support"] -= 1;
-                    Q["cup_parlament_" + c + "_" + d + "_support"] -= 0.25;
-                }
-            }
+            G.parlamentShift(Q, {from: Q.parlament_current_ciu, to: {erc: 1}});
+            G.parlamentShift(Q, {from: "cup", to: {erc: 0.25}});
         }
     }
     if (Q.cat_spa_relations < 40) {
-        for (var c of Q.parlament_constituencies) {
-            if (Q.psc_leader != "Àngel Ros" && Q.psc_leader != "Montserrat Tura") {
-                Q["cs_parlament_" + c + "_unemployed_support"] += 2;
-                Q["ppc_parlament_" + c + "_unemployed_support"] -= 1.25;
-                Q["psc_parlament_" + c + "_unemployed_support"] -= 0.75;
-            } else {
-                Q["cs_parlament_" + c + "_unemployed_support"] += 1.5;
-                Q["ppc_parlament_" + c + "_unemployed_support"] -= 1.25;
-                Q["psc_parlament_" + c + "_unemployed_support"] -= 0.25;
-                Q["cs_parlament_" + c + "_ind_support"] += 3;
-                Q["ppc_parlament_" + c + "_ind_support"] -= 1;
-                Q["psc_parlament_" + c + "_ind_support"] -= 1;
-            }
-            for (var d of Q.parlament_demographics){
-                if (d == "unemployed" || d == "ind") continue;
-                Q["cs_parlament_" + c + "_" + d + "_support"] += 1;
-                Q["ppc_parlament_" + c + "_" + d + "_support"] -= 0.8;
-                Q["psc_parlament_" + c + "_" + d + "_support"] -= 0.2;
-            } 
+        var otherDemographics = Q.parlament_demographics.filter(function (d) { return d != "unemployed" && d != "ind"; });
+        if (Q.psc_leader != "Àngel Ros" && Q.psc_leader != "Montserrat Tura") {
+            G.parlamentShift(Q, {from: "ppc", to: {cs: 1.25}, demographics: ["unemployed"]});
+            G.parlamentShift(Q, {from: "psc", to: {cs: 0.75}, demographics: ["unemployed"]});
+        } else {
+            G.parlamentShift(Q, {from: "ppc", to: {cs: 1.25}, demographics: ["unemployed"]});
+            G.parlamentShift(Q, {from: "psc", to: {cs: 0.25}, demographics: ["unemployed"]});
+            // Cs gained 3 here against 2 lost; the third point now comes from abstention.
+            G.parlamentShift(Q, {from: "ppc", to: {cs: 1}, demographics: ["ind"]});
+            G.parlamentShift(Q, {from: "psc", to: {cs: 1}, demographics: ["ind"]});
+            G.parlamentShift(Q, {from: "abstain", to: {cs: 1}, demographics: ["ind"]});
         }
+        G.parlamentShift(Q, {from: "ppc", to: {cs: 0.8}, demographics: otherDemographics});
+        G.parlamentShift(Q, {from: "psc", to: {cs: 0.2}, demographics: otherDemographics});
     }
 !}
 call: snap_election

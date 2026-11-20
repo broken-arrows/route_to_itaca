@@ -22,24 +22,34 @@ if (Q.cat_spa_relations > 100) Q.cat_spa_relations = 100;
 
 Q.player_roadmap = Q[Q.player_party + "_roadmap"];
 
+// Last-resort repair of every support stock before the monthly tick. Content should never need it but just in case
+var supportRepairs = [];
+function repairSupport(key, required, ceiling) {
+    var value = Q[key];
+    if (value === undefined && !required) return;
+    var next = value;
+    if (typeof value !== "number" || !isFinite(value) || value < 0) next = 0;
+    else if (value > ceiling) next = ceiling;
+    if (next === value) return;
+    supportRepairs.push({key: key, value: value});
+    Q[key] = next;
+}
 for (var c of Q.parlament_constituencies) {
     for (var d of Q.parlament_demographics) {
-        for (var p of Q.parties) {
-            if (Q[p + '_parlament_' + c + '_' + d + '_support'] < 0) {
-                Q[p + '_parlament_' + c + '_' + d + '_support'] = 0;
-            }
-            if (Q[p + '_parlament_' + c + '_' + d + '_support'] > 99) {
-                Q[p + '_parlament_' + c + '_' + d + '_support'] = 99;
-            }
-        }
-        if (Q['abstain_parlament_' + c + '_' + d + '_support'] < 0) {
-            Q['abstain_parlament_' + c + '_' + d + '_support'] = 0;
-        }
-        if (Q['abstain_parlament_' + c + '_' + d + '_support'] > 99) {
-            Q['abstain_parlament_' + c + '_' + d + '_support'] = 99;
+        for (var p of Q.parties.concat(["abstain"])) {
+            repairSupport(p + "_parlament_" + c + "_" + d + "_support", true, 99);
         }
     }
 }
+for (var c of (Q.congreso_constituencies || [])) {
+    for (var p of (Q["congreso_parties_" + c] || []).concat(["abstain"])) {
+        repairSupport(p + "_congreso_" + c + "_support", false, Infinity);
+    }
+}
+for (var p of (Q.parties_bcn || [])) {
+    repairSupport(p + "_local_barcelona_support", false, Infinity);
+}
+if (supportRepairs.length) console.warn("post_event repaired support stocks", supportRepairs);
 
 
 if (Q.coalition_phase_timer === undefined) Q.coalition_phase_timer = 0;

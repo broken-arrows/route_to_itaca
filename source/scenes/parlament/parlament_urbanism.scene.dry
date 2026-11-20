@@ -173,12 +173,9 @@ on-arrival: {!
     var proposalUnemployed = Q.parlament_urbanism_variant == "vacancy_tax" ? 0.105 : 0.225;
     var proposalMiddle = Q.parlament_urbanism_variant == "vacancy_tax" ? 0.045 : 0.09;
     for (const c of Q.parlament_constituencies) {
-        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
-        Q[donor + "_parlament_" + c + "_young_support"] -= proposalYoung;
-        Q[author + "_parlament_" + c + "_unemployed_support"] += proposalUnemployed;
-        Q[donor + "_parlament_" + c + "_unemployed_support"] -= proposalUnemployed;
-        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
-        Q[donor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
+        G.parlamentShift(Q, {from: donor, to: {[author]: proposalYoung}, constituencies: [c], demographics: ["young"]});
+        G.parlamentShift(Q, {from: donor, to: {[author]: proposalUnemployed}, constituencies: [c], demographics: ["unemployed"]});
+        G.parlamentShift(Q, {from: donor, to: {[author]: proposalMiddle}, constituencies: [c], demographics: ["middle"]});
     }
 
     var targeted = Q.parlament_urbanism_variant == "vacancy_tax";
@@ -226,12 +223,9 @@ on-arrival: {!
         var passageUnemployed = targeted ? 0.245 : 0.525;
         var passageMiddle = targeted ? 0.105 : 0.21;
         for (const c of Q.parlament_constituencies) {
-            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
-            Q[donor + "_parlament_" + c + "_young_support"] -= passageYoung;
-            Q[author + "_parlament_" + c + "_unemployed_support"] += passageUnemployed;
-            Q[donor + "_parlament_" + c + "_unemployed_support"] -= passageUnemployed;
-            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
-            Q[donor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
+            G.parlamentShift(Q, {from: donor, to: {[author]: passageYoung}, constituencies: [c], demographics: ["young"]});
+            G.parlamentShift(Q, {from: donor, to: {[author]: passageUnemployed}, constituencies: [c], demographics: ["unemployed"]});
+            G.parlamentShift(Q, {from: donor, to: {[author]: passageMiddle}, constituencies: [c], demographics: ["middle"]});
         }
         if (targeted) {
             G.registerLaw(Q, {fiscal_ticks:24, id:"vacant_homes_tax",colour:"green",description:"Homes left vacant for long periods are now heavily taxed.",title:"Vacant Homes Tax",icon:"img/community_icon.svg",targets:{generalitat_surplus:0.025,welfare_index_growth:0.05,social_dissent_eq:-1},ramp_ticks:12});

@@ -125,14 +125,9 @@ on-arrival: {!
         Q.csqp_leader_gender = "m";
         G.setText(Q, "csqp_ideology", G.text("Anticapitalism, Plurinationalism"));
 
-        Q.cup_parlament_barcelona_ind_support -= 1.5;
-        Q.csqp_parlament_barcelona_ind_support += 1.5;
-        Q.cup_parlament_barcelona_middle_support -= 0.7;
-        Q.csqp_parlament_barcelona_middle_support += 0.7;
-        Q.cup_parlament_barcelona_young_support -= 1;
-        Q.csqp_parlament_barcelona_young_support += 1;
-        Q.cup_parlament_barcelona_unemployed_support -= 0.75;
-        Q.csqp_parlament_barcelona_unemployed_support += 0.75;
+        var oliveresShifts = {ind: 1.5, middle: 0.7, young: 1, unemployed: 0.75};
+        for (var d in oliveresShifts)
+            G.parlamentShift(Q, {from: "cup", to: {csqp: oliveresShifts[d]}, constituencies: ["barcelona"], demographics: [d]});
     }
 !}
 

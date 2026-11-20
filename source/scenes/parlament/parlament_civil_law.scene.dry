@@ -37,12 +37,9 @@ on-arrival: {!
     var proposalRural = complete ? 0.06 : 0.03;
     var proposalBusiness = complete ? 0.036 : 0;
     for (const c of Q.parlament_constituencies) {
-        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
-        Q[competenceDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
-        Q[author + "_parlament_" + c + "_rural_support"] += proposalRural;
-        Q[competenceDonor + "_parlament_" + c + "_rural_support"] -= proposalRural;
-        Q[author + "_parlament_" + c + "_buss_support"] += proposalBusiness;
-        Q[competenceDonor + "_parlament_" + c + "_buss_support"] -= proposalBusiness;
+        G.parlamentShift(Q, {from: competenceDonor, to: {[author]: proposalMiddle}, constituencies: [c], demographics: ["middle"]});
+        G.parlamentShift(Q, {from: competenceDonor, to: {[author]: proposalRural}, constituencies: [c], demographics: ["rural"]});
+        G.parlamentShift(Q, {from: competenceDonor, to: {[author]: proposalBusiness}, constituencies: [c], demographics: ["buss"]});
     }
 
     // TODO: Refine the PSC's complete-Book-Six vote by leadership after playtesting.
@@ -85,12 +82,9 @@ on-arrival: {!
         var passageRural = complete ? 0.14 : 0.07;
         var passageBusiness = complete ? 0.084 : 0;
         for (const c of Q.parlament_constituencies) {
-            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
-            Q[competenceDonor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
-            Q[author + "_parlament_" + c + "_rural_support"] += passageRural;
-            Q[competenceDonor + "_parlament_" + c + "_rural_support"] -= passageRural;
-            Q[author + "_parlament_" + c + "_buss_support"] += passageBusiness;
-            Q[competenceDonor + "_parlament_" + c + "_buss_support"] -= passageBusiness;
+            G.parlamentShift(Q, {from: competenceDonor, to: {[author]: passageMiddle}, constituencies: [c], demographics: ["middle"]});
+            G.parlamentShift(Q, {from: competenceDonor, to: {[author]: passageRural}, constituencies: [c], demographics: ["rural"]});
+            G.parlamentShift(Q, {from: competenceDonor, to: {[author]: passageBusiness}, constituencies: [c], demographics: ["buss"]});
         }
         if (complete) {
             G.registerLaw(Q, {fiscal_ticks:12, id:"civil_code_book_six_core",colour:"green",description:"Catalan Civil Law has now one of the most modern approaches in Europe.",title:"Civil Code: Book Six",group:"government",icon:"img/scales_icon.svg",targets:{gdp_growth:0.03,generalitat_surplus:-0.001},ramp_ticks:9});

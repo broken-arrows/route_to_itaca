@@ -3869,6 +3869,94 @@
     return totalTransferred;
   }
 
+  // ===========================================================================
+  // SCRIPTED PARLAMENT SHIFTS
+  //
+  // Authored one-off moves (event outcomes, coalition fallout, law reactions)
+  // in percentage points, from ONE donor to one or more recipients:
+  //
+  //   G.parlamentShift(Q, { from: "erc", to: { ciu: 1, cup: 0.25 },
+  //                         constituencies: ["tarragona"], demographics: ["rural"] });
+  //
+  // Unlike cardSupportTransfer this is literal: no alias resolution, no
+  // recruitment damping, no 50% donor cap — it reproduces the flat `+=`/`-=`
+  // pairs it replaces, except that it conserves support. A donor holding less
+  // than requested gives what it has, split pro rata; it never goes negative.
+  // Recipients off the ballot (or equal to the donor) are skipped and their
+  // share stays with the donor; a donor off the ballot is a no-op. Every cell
+  // is validated before any is written. Returns the total moved.
+  // ===========================================================================
+  function parlamentShiftError(message) {
+    throw new Error("parlamentShift: " + message);
+  }
+
+  function parlamentShiftList(value, known, label) {
+    if (value === undefined || value === "all") return known.slice();
+    const selected = Array.isArray(value) ? value : [value];
+    for (const item of selected)
+      if (known.indexOf(item) === -1)
+        parlamentShiftError("unknown " + label + ' "' + item + '"');
+    return Array.from(new Set(selected));
+  }
+
+  function parlamentShift(Q, options) {
+    const from = options && options.from;
+    const to = options && options.to;
+    if (!to || typeof to !== "object")
+      parlamentShiftError("to must map recipients to amounts");
+    for (const [party, amount] of Object.entries(to))
+      if (typeof amount !== "number" || !Number.isFinite(amount) || amount < 0)
+        parlamentShiftError(
+          'amount for "' + party + '" must be finite and non-negative',
+        );
+    const constituencies = parlamentShiftList(
+      options.constituencies,
+      Q.parlament_constituencies || [],
+      "constituency",
+    );
+    const demographics = parlamentShiftList(
+      options.demographics,
+      Q.parlament_demographics || [],
+      "demographic",
+    );
+    const ballot = cardCellParties(Q, "parlament");
+    if (ballot.indexOf(from) === -1) return 0;
+    const recipients = Object.entries(to).filter(
+      ([party, amount]) =>
+        amount > 0 && party !== from && ballot.indexOf(party) !== -1,
+    );
+    const requested = recipients.reduce((n, [, amount]) => n + amount, 0);
+    if (!(requested > 0)) return 0;
+
+    const valid = (key) => {
+      const value = Q[key];
+      if (typeof value !== "number" || !Number.isFinite(value) || value < 0)
+        parlamentShiftError(key + " must hold finite, non-negative support");
+      return value;
+    };
+    const writes = [];
+    for (const c of constituencies)
+      for (const d of demographics) {
+        const fromKey = cardSupportKey("parlament", from, c, d);
+        const available = valid(fromKey);
+        const scale = Math.min(1, available / requested);
+        const cell = { fromKey, next: available - requested * scale, to: [] };
+        for (const [party, amount] of recipients) {
+          const key = cardSupportKey("parlament", party, c, d);
+          cell.to.push([key, valid(key) + amount * scale]);
+        }
+        writes.push(cell);
+      }
+
+    let moved = 0;
+    for (const cell of writes) {
+      moved += Q[cell.fromKey] - Math.max(0, cell.next);
+      Q[cell.fromKey] = Math.max(0, cell.next);
+      for (const [key, value] of cell.to) Q[key] = value;
+    }
+    return moved;
+  }
+
   // Saved, finite-lived public reactions. Funding/policy changes stay authored
   // in scenes; this owns only the immediate shock and its fading monthly pressure.
   const EFFECT_TARGETS = new Set([
@@ -4898,6 +4986,7 @@
       buildParlamentResponsibilityTransfers,
     engineTick: monthPasses,
     cardSupportTransfer: cardSupportTransfer,
+    parlamentShift: parlamentShift,
     spaSupportInject: spaSupportInject,
     callCongresoRepeatElection,
     reconcileCongresoLineup: reconcileCongresoLineup,

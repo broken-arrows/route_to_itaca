@@ -468,8 +468,6 @@ on-arrival: {!
 
 [? if parlament_budget_cabinet_breach_text: **Coalition agreement breached:** [+ parlament_budget_cabinet_breach_text +].?]
 
-[? if parlament_budget_external_breach_text: **Outside investiture agreement breached:** [+ parlament_budget_external_breach_text +].?]
-
 [? if parlament_budget_shortfall > 0: This proposed budget includes a **funding gap**, which the Generalitat will have to finance with debt. ?][? if parlament_budget_shortfall = 0: This proposed budget is, in principle, within projected fiscal room.?] [? if parlament_budget_inherited_deficit and parlament_budget_shortfall = 0: The Generalitat nevertheless inherits a deficit, so at best this would improve the current situation. ?]
 
 <div data-widget="chamber-vote" data-props='{"configFrom":"parlament_budget_vote_result"}'></div>

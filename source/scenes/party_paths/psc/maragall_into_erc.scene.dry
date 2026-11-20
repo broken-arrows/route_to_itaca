@@ -20,12 +20,8 @@ subtitle: Ernest Maragall will now be available as an advisor.
 on-arrival: {!
     Q.ernest_maragall_advisor_available = 1;
     Q.erc_local_barcelona_support += 2;
-    Q.erc_parlament_barcelona_ind_support += 2;
-    Q.psc_parlament_barcelona_ind_support -= 2;
-    Q.erc_parlament_barcelona_middle_support += 1;
-    Q.psc_parlament_barcelona_middle_support -= 1;
-    Q.erc_parlament_barcelona_unemployed_support += 1;
-    Q.psc_parlament_barcelona_unemployed_support -= 1;
+    G.parlamentShift(Q, {from: "psc", to: {erc: 2}, constituencies: ["barcelona"], demographics: ["ind"]});
+    G.parlamentShift(Q, {from: "psc", to: {erc: 1}, constituencies: ["barcelona"], demographics: ["middle", "unemployed"]});
     Q.erc_pragmatic_strength += 5;
     Q.erc_pragmatic_dissent -= 5;
 !}

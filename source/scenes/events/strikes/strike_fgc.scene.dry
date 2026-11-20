@@ -21,7 +21,7 @@ on-arrival: {!
 
 = FGC strike!
 
-Railway workers of the Generalitat railway company, FGC, are striking demanding for better work conditions, comparable to those of neighbouring agencies. Now pressure is on [? if territory_minister_gender = "m" : Conseller ?][? if territory_minister_gender = "f" : Consellera ?]of Territory [+ territory_minister +] as FGC lines come to a halt and workers march through the streets. What will our position be?
+Railway workers of the Generalitat railway company, FGC, are striking demanding for better work conditions, comparable to those of neighbouring agencies. Now pressure is on [? if territory_minister_gender = "m" : Conseller ?][? if territory_minister_gender = "f" : Consellera ?]of Territory [+ territory_minister +] as FGC lines come to a halt and workers march on the streets. What will our position be?
 
 - @accept
 - @pressure

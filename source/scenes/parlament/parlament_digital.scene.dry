@@ -190,12 +190,9 @@ on-arrival: {!
     var proposalMiddle = nationalScope ? 0.045 : 0.03;
     var proposalBusiness = nationalScope ? 0.03 : 0.02;
     for (const c of Q.parlament_constituencies) {
-        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
-        Q[leftDonor + "_parlament_" + c + "_young_support"] -= proposalYoung;
-        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
-        Q[modernisationDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
-        Q[author + "_parlament_" + c + "_buss_support"] += proposalBusiness;
-        Q[modernisationDonor + "_parlament_" + c + "_buss_support"] -= proposalBusiness;
+        G.parlamentShift(Q, {from: leftDonor, to: {[author]: proposalYoung}, constituencies: [c], demographics: ["young"]});
+        G.parlamentShift(Q, {from: modernisationDonor, to: {[author]: proposalMiddle}, constituencies: [c], demographics: ["middle"]});
+        G.parlamentShift(Q, {from: modernisationDonor, to: {[author]: proposalBusiness}, constituencies: [c], demographics: ["buss"]});
     }
 
     // TODO: Revisit the CUP's votes once CUP leadership dynamics are modelled.
@@ -260,12 +257,9 @@ on-arrival: {!
         var passageMiddle = nationalScope ? 0.105 : 0.07;
         var passageBusiness = nationalScope ? 0.07 : 0.046;
         for (const c of Q.parlament_constituencies) {
-            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
-            Q[leftDonor + "_parlament_" + c + "_young_support"] -= passageYoung;
-            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
-            Q[modernisationDonor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
-            Q[author + "_parlament_" + c + "_buss_support"] += passageBusiness;
-            Q[modernisationDonor + "_parlament_" + c + "_buss_support"] -= passageBusiness;
+            G.parlamentShift(Q, {from: leftDonor, to: {[author]: passageYoung}, constituencies: [c], demographics: ["young"]});
+            G.parlamentShift(Q, {from: modernisationDonor, to: {[author]: passageMiddle}, constituencies: [c], demographics: ["middle"]});
+            G.parlamentShift(Q, {from: modernisationDonor, to: {[author]: passageBusiness}, constituencies: [c], demographics: ["buss"]});
         }
 
         Q.cybersecurity_agency_scope = nationalScope ? "catalonia" : "generalitat";

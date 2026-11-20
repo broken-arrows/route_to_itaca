@@ -113,6 +113,18 @@ export interface GameLib {
   localizeGovernmentSummary(summary: string, translate: (key: string, params?: Record<string, string>) => string): string;
   rebrandGovernmentText(value: unknown, from: string, to: string, exact?: boolean): unknown;
   engineTick(Q: Record<string, unknown>): void;
+  /** Literal, conserved scripted Parlament shift (percentage points) from one
+   *  donor to several recipients. A short donor gives what it has, pro rata;
+   *  off-ballot recipients are skipped. Returns the total moved. */
+  parlamentShift(
+    Q: Record<string, unknown>,
+    options: {
+      from: string;
+      to: Record<string, number>;
+      constituencies?: 'all' | string | string[];
+      demographics?: 'all' | string | string[];
+    },
+  ): number;
   /** Bounded, conserved support movement for recurring card effects. Structural
    *  party formation/succession code deliberately uses separate helpers. */
   cardSupportTransfer(

@@ -172,12 +172,9 @@ on-arrival: {!
     var proposalMiddle = protective ? 0 : 0.03;
     var proposalWorkers = protective ? 0.045 : 0;
     for (const c of Q.parlament_constituencies) {
-        Q[author + "_parlament_" + c + "_buss_support"] += proposalBusiness;
-        Q[marketDonor + "_parlament_" + c + "_buss_support"] -= proposalBusiness;
-        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
-        Q[marketDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
-        Q[author + "_parlament_" + c + "_ind_support"] += proposalWorkers;
-        Q[workerDonor + "_parlament_" + c + "_ind_support"] -= proposalWorkers;
+        G.parlamentShift(Q, {from: marketDonor, to: {[author]: proposalBusiness}, constituencies: [c], demographics: ["buss"]});
+        G.parlamentShift(Q, {from: marketDonor, to: {[author]: proposalMiddle}, constituencies: [c], demographics: ["middle"]});
+        G.parlamentShift(Q, {from: workerDonor, to: {[author]: proposalWorkers}, constituencies: [c], demographics: ["ind"]});
     }
 
     var yesNames = protective
@@ -224,12 +221,9 @@ on-arrival: {!
         var passageMiddle = protective ? 0 : 0.07;
         var passageWorkers = protective ? 0.105 : 0;
         for (const c of Q.parlament_constituencies) {
-            Q[author + "_parlament_" + c + "_buss_support"] += passageBusiness;
-            Q[marketDonor + "_parlament_" + c + "_buss_support"] -= passageBusiness;
-            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
-            Q[marketDonor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
-            Q[author + "_parlament_" + c + "_ind_support"] += passageWorkers;
-            Q[workerDonor + "_parlament_" + c + "_ind_support"] -= passageWorkers;
+            G.parlamentShift(Q, {from: marketDonor, to: {[author]: passageBusiness}, constituencies: [c], demographics: ["buss"]});
+            G.parlamentShift(Q, {from: marketDonor, to: {[author]: passageMiddle}, constituencies: [c], demographics: ["middle"]});
+            G.parlamentShift(Q, {from: workerDonor, to: {[author]: passageWorkers}, constituencies: [c], demographics: ["ind"]});
         }
 
         G.registerLaw(Q, {fiscal_ticks:12, id:"commerce_internal_framework",colour:"green",description:"A set of rules simplifying and streamlining commercial operations in Catalonia.",title:"Internal Commerce Framework",icon:"img/store_icon.svg",targets:{gdp_growth:0.03,unemployment_recovery:0.01,generalitat_surplus:0.005},ramp_ticks:protective ? 5 : 8});

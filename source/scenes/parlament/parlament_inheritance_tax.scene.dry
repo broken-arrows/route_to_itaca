@@ -180,16 +180,11 @@ on-arrival: {!
     var proposalRetiredLoss = strong ? 0.06 : 0.03;
     var proposalMiddleLoss = strong ? 0.036 : 0;
     for (const c of Q.parlament_constituencies) {
-        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
-        Q[leftDonor + "_parlament_" + c + "_young_support"] -= proposalYoung;
-        Q[author + "_parlament_" + c + "_unemployed_support"] += proposalUnemployed;
-        Q[leftDonor + "_parlament_" + c + "_unemployed_support"] -= proposalUnemployed;
-        Q[author + "_parlament_" + c + "_buss_support"] -= proposalBussLoss;
-        Q[backlash + "_parlament_" + c + "_buss_support"] += proposalBussLoss;
-        Q[author + "_parlament_" + c + "_retired_support"] -= proposalRetiredLoss;
-        Q[backlash + "_parlament_" + c + "_retired_support"] += proposalRetiredLoss;
-        Q[author + "_parlament_" + c + "_middle_support"] -= proposalMiddleLoss;
-        Q[backlash + "_parlament_" + c + "_middle_support"] += proposalMiddleLoss;
+        G.parlamentShift(Q, {from: leftDonor, to: {[author]: proposalYoung}, constituencies: [c], demographics: ["young"]});
+        G.parlamentShift(Q, {from: leftDonor, to: {[author]: proposalUnemployed}, constituencies: [c], demographics: ["unemployed"]});
+        G.parlamentShift(Q, {from: author, to: {[backlash]: proposalBussLoss}, constituencies: [c], demographics: ["buss"]});
+        G.parlamentShift(Q, {from: author, to: {[backlash]: proposalRetiredLoss}, constituencies: [c], demographics: ["retired"]});
+        G.parlamentShift(Q, {from: author, to: {[backlash]: proposalMiddleLoss}, constituencies: [c], demographics: ["middle"]});
     }
 
     var yesNames = strong
@@ -238,16 +233,11 @@ on-arrival: {!
         var passageRetiredLoss = strong ? 0.14 : 0.07;
         var passageMiddleLoss = strong ? 0.084 : 0;
         for (const c of Q.parlament_constituencies) {
-            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
-            Q[leftDonor + "_parlament_" + c + "_young_support"] -= passageYoung;
-            Q[author + "_parlament_" + c + "_unemployed_support"] += passageUnemployed;
-            Q[leftDonor + "_parlament_" + c + "_unemployed_support"] -= passageUnemployed;
-            Q[author + "_parlament_" + c + "_buss_support"] -= passageBussLoss;
-            Q[backlash + "_parlament_" + c + "_buss_support"] += passageBussLoss;
-            Q[author + "_parlament_" + c + "_retired_support"] -= passageRetiredLoss;
-            Q[backlash + "_parlament_" + c + "_retired_support"] += passageRetiredLoss;
-            Q[author + "_parlament_" + c + "_middle_support"] -= passageMiddleLoss;
-            Q[backlash + "_parlament_" + c + "_middle_support"] += passageMiddleLoss;
+            G.parlamentShift(Q, {from: leftDonor, to: {[author]: passageYoung}, constituencies: [c], demographics: ["young"]});
+            G.parlamentShift(Q, {from: leftDonor, to: {[author]: passageUnemployed}, constituencies: [c], demographics: ["unemployed"]});
+            G.parlamentShift(Q, {from: author, to: {[backlash]: passageBussLoss}, constituencies: [c], demographics: ["buss"]});
+            G.parlamentShift(Q, {from: author, to: {[backlash]: passageRetiredLoss}, constituencies: [c], demographics: ["retired"]});
+            G.parlamentShift(Q, {from: author, to: {[backlash]: passageMiddleLoss}, constituencies: [c], demographics: ["middle"]});
         }
         if (strong) {
             G.registerLaw(Q, {fiscal_ticks:12, id:"inheritance_tax_strong",colour:"green",description:"Inheritance taxes have been restored with very progressive rates.",title:"Progressive Inheritance Tax",icon:"img/economy_icon.svg",targets:{generalitat_surplus:0.075,gdp_growth:-0.035,welfare_index_growth:0.04,social_dissent_eq:-1},ramp_ticks:3});

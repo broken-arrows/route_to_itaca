@@ -2,47 +2,20 @@ title: Sovereignty Declaration
 new-page: true
 on-arrival: {!
     if (!Q.coming_from_parlament && Q.player_party == "erc") {
-        Q.erc_parlament_barcelona_middle_support -= 2.5;
-        Q.erc_parlament_girona_middle_support -= 3.5;
-        Q.erc_parlament_lleida_middle_support -= 3.5;
-        Q.erc_parlament_tarragona_middle_support -= 1.5;
-        Q.erc_parlament_barcelona_rural_support -= 3;
-        Q.erc_parlament_girona_rural_support -= 4;
-        Q.erc_parlament_lleida_rural_support -= 4;
-        Q.erc_parlament_tarragona_rural_support -= 5;
-        function from_erc_to_ciu(ciu_name) {
-            Q[ciu_name + '_parlament_barcelona_middle_support'] += 2;
-            Q[ciu_name + '_parlament_girona_middle_support'] += 3;
-            Q[ciu_name + '_parlament_lleida_middle_support'] += 3;
-            Q[ciu_name + '_parlament_tarragona_middle_support'] += 1;
-            Q[ciu_name + '_parlament_barcelona_rural_support'] += 1;
-            Q[ciu_name + '_parlament_girona_rural_support'] += 2;
-            Q[ciu_name + '_parlament_lleida_rural_support'] += 2;
-            Q[ciu_name + '_parlament_tarragona_rural_support'] += 3;
+        var ciuName = ["ciu", "cdc", "jxcat", "junts", "dl", "pdcat"].find(function (p) { return Q[p + "_parlament_s"] > 0; });
+        // ERC voters split to the CiU-family list and CUP: [CiU, CUP] per cell.
+        // With no seated CiU-family list, ERC keeps that share.
+        var shifts = {
+            middle: {barcelona: [2, 0.5], girona: [3, 0.5], lleida: [3, 0.5], tarragona: [1, 0.5]},
+            rural: {barcelona: [1, 2], girona: [2, 2], lleida: [2, 2], tarragona: [3, 2]}
+        };
+        for (var d in shifts) {
+            for (var c in shifts[d]) {
+                var to = {cup: shifts[d][c][1]};
+                if (ciuName) to[ciuName] = shifts[d][c][0];
+                G.parlamentShift(Q, {from: "erc", to: to, constituencies: [c], demographics: [d]});
+            }
         }
-
-        if (Q.ciu_parlament_s > 0) {
-            from_erc_to_ciu('ciu');
-        } else if (Q.cdc_parlament_s > 0) {
-            from_erc_to_ciu('cdc');
-        } else if (Q.jxcat_parlament_s > 0) {
-            from_erc_to_ciu('jxcat');
-        } else if (Q.junts_parlament_s > 0) {
-            from_erc_to_ciu('junts');
-        } else if (Q.dl_parlament_s > 0) {
-            from_erc_to_ciu('dl');
-        } else if (Q.pdcat_parlament_s > 0) {
-            from_erc_to_ciu('pdcat');
-        }
-
-        Q.cup_parlament_barcelona_middle_support += 0.5;
-        Q.cup_parlament_barcelona_rural_support += 2;
-        Q.cup_parlament_girona_middle_support += 0.5;
-        Q.cup_parlament_girona_rural_support += 2;
-        Q.cup_parlament_lleida_middle_support += 0.5;
-        Q.cup_parlament_lleida_rural_support += 2;
-        Q.cup_parlament_tarragona_middle_support += 0.5;
-        Q.cup_parlament_tarragona_rural_support += 2;
 
         Q.parlament_sovereignty_declaration_legality = true;
     }

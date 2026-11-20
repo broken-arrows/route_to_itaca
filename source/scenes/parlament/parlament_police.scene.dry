@@ -184,18 +184,12 @@ on-arrival: {!
     var proposalBusinessLoss = democratic ? 0.03 : 0;
     var proposalRuralLoss = democratic ? 0.024 : 0;
     for (const c of Q.parlament_constituencies) {
-        Q[author + "_parlament_" + c + "_young_support"] += proposalYoung;
-        Q[reformDonor + "_parlament_" + c + "_young_support"] -= proposalYoung;
-        Q[author + "_parlament_" + c + "_middle_support"] += proposalMiddle;
-        Q[reformDonor + "_parlament_" + c + "_middle_support"] -= proposalMiddle;
-        Q[author + "_parlament_" + c + "_ind_support"] += proposalWorker;
-        Q[reformDonor + "_parlament_" + c + "_ind_support"] -= proposalWorker;
-        Q[author + "_parlament_" + c + "_retired_support"] -= proposalRetiredLoss;
-        Q[orderParty + "_parlament_" + c + "_retired_support"] += proposalRetiredLoss;
-        Q[author + "_parlament_" + c + "_buss_support"] -= proposalBusinessLoss;
-        Q[orderParty + "_parlament_" + c + "_buss_support"] += proposalBusinessLoss;
-        Q[author + "_parlament_" + c + "_rural_support"] -= proposalRuralLoss;
-        Q[orderParty + "_parlament_" + c + "_rural_support"] += proposalRuralLoss;
+        G.parlamentShift(Q, {from: reformDonor, to: {[author]: proposalYoung}, constituencies: [c], demographics: ["young"]});
+        G.parlamentShift(Q, {from: reformDonor, to: {[author]: proposalMiddle}, constituencies: [c], demographics: ["middle"]});
+        G.parlamentShift(Q, {from: reformDonor, to: {[author]: proposalWorker}, constituencies: [c], demographics: ["ind"]});
+        G.parlamentShift(Q, {from: author, to: {[orderParty]: proposalRetiredLoss}, constituencies: [c], demographics: ["retired"]});
+        G.parlamentShift(Q, {from: author, to: {[orderParty]: proposalBusinessLoss}, constituencies: [c], demographics: ["buss"]});
+        G.parlamentShift(Q, {from: author, to: {[orderParty]: proposalRuralLoss}, constituencies: [c], demographics: ["rural"]});
     }
 
     // TODO: Refine ERC, PSC and JxSi/JxCat positions by leadership after playtesting.
@@ -252,18 +246,12 @@ on-arrival: {!
         var passageBusinessLoss = democratic ? 0.07 : 0;
         var passageRuralLoss = democratic ? 0.056 : 0;
         for (const c of Q.parlament_constituencies) {
-            Q[author + "_parlament_" + c + "_young_support"] += passageYoung;
-            Q[reformDonor + "_parlament_" + c + "_young_support"] -= passageYoung;
-            Q[author + "_parlament_" + c + "_middle_support"] += passageMiddle;
-            Q[reformDonor + "_parlament_" + c + "_middle_support"] -= passageMiddle;
-            Q[author + "_parlament_" + c + "_ind_support"] += passageWorker;
-            Q[reformDonor + "_parlament_" + c + "_ind_support"] -= passageWorker;
-            Q[author + "_parlament_" + c + "_retired_support"] -= passageRetiredLoss;
-            Q[orderParty + "_parlament_" + c + "_retired_support"] += passageRetiredLoss;
-            Q[author + "_parlament_" + c + "_buss_support"] -= passageBusinessLoss;
-            Q[orderParty + "_parlament_" + c + "_buss_support"] += passageBusinessLoss;
-            Q[author + "_parlament_" + c + "_rural_support"] -= passageRuralLoss;
-            Q[orderParty + "_parlament_" + c + "_rural_support"] += passageRuralLoss;
+            G.parlamentShift(Q, {from: reformDonor, to: {[author]: passageYoung}, constituencies: [c], demographics: ["young"]});
+            G.parlamentShift(Q, {from: reformDonor, to: {[author]: passageMiddle}, constituencies: [c], demographics: ["middle"]});
+            G.parlamentShift(Q, {from: reformDonor, to: {[author]: passageWorker}, constituencies: [c], demographics: ["ind"]});
+            G.parlamentShift(Q, {from: author, to: {[orderParty]: passageRetiredLoss}, constituencies: [c], demographics: ["retired"]});
+            G.parlamentShift(Q, {from: author, to: {[orderParty]: passageBusinessLoss}, constituencies: [c], demographics: ["buss"]});
+            G.parlamentShift(Q, {from: author, to: {[orderParty]: passageRuralLoss}, constituencies: [c], demographics: ["rural"]});
         }
         if (democratic) {
             G.registerLaw(Q, {fiscal_ticks:12, id:"democratic_policing",colour:"green",description:"Police standards have been heavily reformed, greatly expanding public accountability and establishing protected independent watchdogs.",title:"Law on Democratic Policing",group:"rights",icon:"img/interior_icon.svg",targets:{generalitat_surplus:-0.012,social_dissent_eq:-2.5},ramp_ticks:8});
